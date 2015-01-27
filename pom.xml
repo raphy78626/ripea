@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>es.caib</groupId>
+	<artifactId>ripea</artifactId>
+	<version>0.1</version>
+	<packaging>pom</packaging>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.6</java.version>
+		<ripea.version>0.1</ripea.version>
+		<spring.version>3.2.4.RELEASE</spring.version>
+		<spring-security.version>3.1.3.RELEASE</spring-security.version>
+		<spring-data.version>1.4.1.RELEASE</spring-data.version>
+		<hibernate.version>3.6.5.Final</hibernate.version>
+		<hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
+		<groovy.version>2.1.6</groovy.version>
+		<jackson.version>1.9.12</jackson.version>
+		<xdocreport.version>1.0.3</xdocreport.version>
+		<slf4j.version>1.5.8</slf4j.version>
+	</properties>
+	<modules>
+		<module>ripea-core</module>
+		<module>ripea-war</module>
+		<module>ripea-core-api</module>
+		<module>ripea-plugin</module>
+		<module>ripea-plugin-impl</module>
+		<module>ripea-ear</module>
+		<module>ripea-applet</module>
+		<module>ripea-lib-common</module>
+	</modules>
+</project>

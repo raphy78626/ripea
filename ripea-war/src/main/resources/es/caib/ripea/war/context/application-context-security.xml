@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans	xmlns="http://www.springframework.org/schema/beans"
+		xmlns:sec="http://www.springframework.org/schema/security"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="
+				http://www.springframework.org/schema/beans
+				http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+				http://www.springframework.org/schema/security
+				http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<sec:http create-session="never" use-expressions="false" auto-config="true" entry-point-ref="preAuthenticatedProcessingFilterEntryPoint">
+		<sec:intercept-url pattern="/error" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<sec:intercept-url pattern="/ws/MCGDws*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<sec:intercept-url pattern="/entitat*" access="ROLE_SUPER"/>
+		<sec:intercept-url pattern="/permis*" access="ROLE_ADMIN"/>
+		<sec:intercept-url pattern="/metaExpedient*" access="ROLE_ADMIN"/>
+		<sec:intercept-url pattern="/metaDocument*" access="ROLE_ADMIN"/>
+		<sec:intercept-url pattern="/metaCarpeta*" access="ROLE_ADMIN"/>
+		<sec:intercept-url pattern="/metaDada*" access="ROLE_ADMIN"/>
+		<sec:intercept-url pattern="/*" access="ROLE_USER"/>
+		<sec:custom-filter position="PRE_AUTH_FILTER" ref="preauthFilter"/>
+		<sec:anonymous/>
+		<sec:session-management session-fixation-protection="none"/>
+	</sec:http>
+
+	<sec:authentication-manager alias="authenticationManager">
+		<sec:authentication-provider ref="preAuthenticatedAuthenticationProvider"/>
+	</sec:authentication-manager>
+
+	<bean id="preAuthenticatedProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
+	<bean id="preAuthenticatedAuthenticationProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+		<property name="preAuthenticatedUserDetailsService">
+			<bean class="org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesUserDetailsService" />
+		</property>
+	</bean>
+
+	<bean id="preauthFilter" class="org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthenticatedProcessingFilter">
+		<property name="authenticationDetailsSource">
+			<bean class="es.caib.ripea.war.security.RolesBasedPreAuthenticatedWebAuthenticationDetailsSource">
+				<property name="mappableRolesRetriever">
+					<bean class="es.caib.ripea.war.security.RolesBasedMappableAttributesRetriever">
+						<property name="defaultMappableAttributes">
+							<set>
+								<value>IPA_SUPER</value>
+								<value>IPA_ADMIN</value>
+								<value>IPA_REGWS</value>
+								<value>tothom</value>
+							</set>
+						</property>
+					</bean>
+				</property>
+				<property name="userRoles2GrantedAuthoritiesMapper">
+					<bean class="es.caib.ripea.war.security.RolesBasedAttributes2GrantedAuthoritiesMapper">
+						<property name="baseRoleMapping">
+							<map>
+								<entry key="IPA_SUPER" value="ROLE_SUPER"/>
+								<entry key="IPA_ADMIN" value="ROLE_ADMIN"/>
+								<entry key="IPA_REGWS" value="ROLE_REGWS"/>
+								<entry key="tothom" value="ROLE_USER"/>
+							</map>
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="authenticationManager" ref="authenticationManager"/>
+	</bean>
+
+	<bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
+
+</beans>

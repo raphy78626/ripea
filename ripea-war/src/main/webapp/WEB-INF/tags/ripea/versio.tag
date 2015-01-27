@@ -1,0 +1,1 @@
+<%=es.caib.ripea.war.helper.AplicacioHelper.getVersioActual(request)%>
