@@ -108,13 +108,12 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		bp.getRequestContext().put(
 				BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
 				getServiceUrl());
-				//"http://10.215.9.169/dir3caib/ws/ObtenerUnidadesImpl");
 		return client;
 	}
 
 	private String getServiceUrl() {
 		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.unitat.dir3.url");
+				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.url");
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UnitatsOrganitzativesPluginDir3.class);

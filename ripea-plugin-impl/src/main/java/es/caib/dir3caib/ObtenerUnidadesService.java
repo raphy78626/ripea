@@ -15,7 +15,7 @@ import javax.xml.ws.Service;
  * 
  */
 @WebServiceClient(name = "ObtenerUnidadesService", 
-                  wsdlLocation = "file:/home/likewise-open/LIMIT_CECOMASA/josepg/Feina/workspaces/workspace-luna/ripea/ripea-plugin-impl/../ripea-plugin/src/main/resources/es/caib/ripea/plugin/unitat/ObtenerUnidadesImpl.wsdl",
+                  wsdlLocation = "http://dev.caib.es/dir3caib/ws/ObtenerUnidadesImpl?wsdl",
                   targetNamespace = "http://www.caib.es/dir3caib") 
 public class ObtenerUnidadesService extends Service {
 
@@ -26,11 +26,11 @@ public class ObtenerUnidadesService extends Service {
     static {
         URL url = null;
         try {
-            url = new URL("file:/home/likewise-open/LIMIT_CECOMASA/josepg/Feina/workspaces/workspace-luna/ripea/ripea-plugin-impl/../ripea-plugin/src/main/resources/es/caib/ripea/plugin/unitat/ObtenerUnidadesImpl.wsdl");
+            url = new URL("http://dev.caib.es/dir3caib/ws/ObtenerUnidadesImpl?wsdl");
         } catch (MalformedURLException e) {
             java.util.logging.Logger.getLogger(ObtenerUnidadesService.class.getName())
                 .log(java.util.logging.Level.INFO, 
-                     "Can not initialize the default wsdl from {0}", "file:/home/likewise-open/LIMIT_CECOMASA/josepg/Feina/workspaces/workspace-luna/ripea/ripea-plugin-impl/../ripea-plugin/src/main/resources/es/caib/ripea/plugin/unitat/ObtenerUnidadesImpl.wsdl");
+                     "Can not initialize the default wsdl from {0}", "http://dev.caib.es/dir3caib/ws/ObtenerUnidadesImpl?wsdl");
         }
         WSDL_LOCATION = url;
     }

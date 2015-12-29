@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.plugin.custodia;
 
+import java.io.InputStream;
+
 import es.caib.ripea.plugin.SistemaExternException;
 
 
@@ -31,7 +33,7 @@ public interface CustodiaPlugin {
 			String documentId,
 			String documentTipus,
 			String arxiuNom,
-			byte[] arxiuContingut) throws SistemaExternException;
+			InputStream arxiuContingut) throws SistemaExternException;
 
 	/**
 	 * Obté el document custodiat.

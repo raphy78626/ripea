@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.CarpetaService;
-import es.caib.ripea.core.api.service.ContenidorService;
 import es.caib.ripea.war.command.CarpetaCommand;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorCommand.Update;
@@ -39,11 +37,7 @@ import es.caib.ripea.war.command.ContenidorCommand.Update;
 public class ContenidorCarpetaController extends BaseUserController {
 
 	@Autowired
-	private ContenidorService contenidorService;
-	@Autowired
 	private CarpetaService carpetaService;
-	@Autowired
-	private ArxiuService arxiuService;
 
 
 

@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.service.ws.registre;
 
+import javax.jws.WebParam;
 import javax.jws.WebService;
 
 
@@ -26,6 +27,6 @@ public interface Registre {
 	 */
 	//@PreAuthorize("hasRole('ROLE_REGWS')")
 	public boolean avisAnotacio(
-			AnotacionRegistro anotacio);
+			@WebParam(name="anotacio") AnotacionRegistro anotacio);
 
 }

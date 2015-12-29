@@ -110,7 +110,8 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Public areas</web-resource-name>
-			<url-pattern>/wspub/registre</url-pattern>
+			<url-pattern>/ws/bustia</url-pattern>
+			<url-pattern>/ws/registre</url-pattern>
 			<url-pattern>/ws/MCGDws</url-pattern>
 		</web-resource-collection>
 	</security-constraint>

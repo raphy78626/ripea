@@ -103,13 +103,15 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 		this.arxiuContingut = arxiuContingut;
 		this.arxiuContentLength = arxiuContingut.length;
 	}
-	public void updateDadesCustodia(
-			boolean custodiat,
-			String custodiaId,
+	public void updateCustodiaUrl(
 			String custodiaUrl) {
+		this.custodiaUrl = custodiaUrl;
+	}
+	public void updateCustodiaDades(
+			boolean custodiat,
+			String custodiaId) {
 		this.custodiat = custodiat;
 		this.custodiaId = custodiaId;
-		this.custodiaUrl = custodiaUrl;
 	}
 
 	/**

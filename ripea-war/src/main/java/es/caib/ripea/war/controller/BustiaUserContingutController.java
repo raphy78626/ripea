@@ -27,7 +27,6 @@ import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContenidorService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
-import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
@@ -53,8 +52,6 @@ public class BustiaUserContingutController extends BaseUserController {
 	private MetaExpedientService metaExpedientService;
 	@Autowired
 	private ArxiuService arxiuService;
-	@Autowired
-	private RegistreService registreService;
 
 
 

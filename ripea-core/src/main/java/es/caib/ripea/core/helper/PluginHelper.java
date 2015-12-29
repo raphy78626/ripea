@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.helper;
 
+import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +26,7 @@ import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
+import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.custodia.CustodiaPlugin;
@@ -333,10 +335,6 @@ public class PluginHelper {
 				String urlCustodia = null;
 				if (!getPortafirmesPlugin().isCustodiaAutomatica()) {
 					urlCustodia = custodiaReservarUrl(documentVersio);
-					documentVersio.updateDadesCustodia(
-							false,
-							null,
-							urlCustodia);
 				}
 				FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(documentVersio);
 				FitxerDto fitxerConvertit = conversioConvertirPdf(
@@ -496,7 +494,7 @@ public class PluginHelper {
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
-		} catch (Exception ex) {
+		} catch (SistemaExternException ex) {
 			String errorDescripcio = "Error al descarregar el document firmat";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_PFIRMA,
@@ -508,17 +506,16 @@ public class PluginHelper {
 			throw new PluginException(errorDescripcio, ex);
 		}
 		if (portafirmesDocument.isCustodiat()) {
-			documentVersio.updateDadesCustodia(
-					true,
-					portafirmesDocument.getCustodiaId(),
+			documentVersio.updateCustodiaUrl(
 					portafirmesDocument.getCustodiaUrl());
+			documentVersio.updateCustodiaDades(
+					true,
+					portafirmesDocument.getCustodiaId());
 		} else {
-			FitxerDto pdfFirmat = new FitxerDto();
-			pdfFirmat.setNom(portafirmesDocument.getArxiuNom());
-			pdfFirmat.setContingut(portafirmesDocument.getArxiuContingut());
 			custodiaCustodiarPdfFirmat(
 					documentVersio,
-					pdfFirmat);
+					portafirmesDocument.getArxiuNom(),
+					portafirmesDocument.getArxiuContingut());
 		}
 	}
 
@@ -568,6 +565,8 @@ public class PluginHelper {
 
 	public String custodiaReservarUrl(
 			DocumentVersioEntity documentVersio) {
+		if (documentVersio.getCustodiaUrl() != null)
+			return documentVersio.getCustodiaUrl();
 		String accioDescripcio = "Reservar URL";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
@@ -576,13 +575,14 @@ public class PluginHelper {
 		try {
 			String url = getCustodiaPlugin().reservarUrl(
 					documentVersio.getId().toString());
+			documentVersio.updateCustodiaUrl(url);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_CUSTODIA,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
 			return url;
-		} catch (Exception ex) {
+		} catch (SistemaExternException ex) {
 			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_CUSTODIA,
@@ -597,7 +597,8 @@ public class PluginHelper {
 
 	public void custodiaCustodiarPdfFirmat(
 			DocumentVersioEntity documentVersio,
-			FitxerDto pdfFirmat) {
+			String arxiuNom,
+			byte[] arxiuContingut) {
 		String accioDescripcio = "Custodiar PDF firmat";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
@@ -605,26 +606,25 @@ public class PluginHelper {
 				documentVersio.getId().toString());
 		accioParams.put(
 				"arxiuNom",
-				pdfFirmat.getNom());
+				arxiuNom);
 		accioParams.put(
 				"arxiuTamany",
-				new Integer(pdfFirmat.getContingut().length).toString());
+				new Integer(arxiuContingut.length).toString());
 		try {
 			getCustodiaPlugin().custodiarPdfFirmat(
 					documentVersio.getId().toString(),
 					documentVersio.getDocument().getMetaDocument().getCustodiaPolitica(),
-					pdfFirmat.getNom(),
-					pdfFirmat.getContingut());
+					arxiuNom,
+					new ByteArrayInputStream(arxiuContingut));
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_CUSTODIA,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
-			documentVersio.updateDadesCustodia(
+			documentVersio.updateCustodiaDades(
 					true,
-					documentVersio.getCustodiaId(),
-					documentVersio.getCustodiaUrl());
-		} catch (Exception ex) {
+					documentVersio.getCustodiaId());
+		} catch (SistemaExternException ex) {
 			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_CUSTODIA,

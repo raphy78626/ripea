@@ -12,6 +12,8 @@
 	<sec:http create-session="never" use-expressions="false" auto-config="true" entry-point-ref="preAuthenticatedProcessingFilterEntryPoint">
 		<sec:intercept-url pattern="/error" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/ws/MCGDws*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<sec:intercept-url pattern="/ws/bustia*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<sec:intercept-url pattern="/ws/registre*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/entitat*" access="ROLE_SUPER"/>
 		<sec:intercept-url pattern="/permis*" access="ROLE_ADMIN"/>
 		<sec:intercept-url pattern="/metaExpedient*" access="ROLE_ADMIN"/>
@@ -45,6 +47,7 @@
 								<value>IPA_SUPER</value>
 								<value>IPA_ADMIN</value>
 								<value>IPA_REGWS</value>
+								<value>IPA_BSTWS</value>
 								<value>tothom</value>
 							</set>
 						</property>
@@ -57,6 +60,7 @@
 								<entry key="IPA_SUPER" value="ROLE_SUPER"/>
 								<entry key="IPA_ADMIN" value="ROLE_ADMIN"/>
 								<entry key="IPA_REGWS" value="ROLE_REGWS"/>
+								<entry key="IPA_BSTWS" value="ROLE_BSTWS"/>
 								<entry key="tothom" value="ROLE_USER"/>
 							</map>
 						</property>

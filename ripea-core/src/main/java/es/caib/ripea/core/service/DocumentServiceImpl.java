@@ -995,12 +995,10 @@ public class DocumentServiceImpl implements DocumentService {
 					null,
 					true,
 					true);
-			FitxerDto pdfFirmat = new FitxerDto();
-			pdfFirmat.setNom(arxiuNom);
-			pdfFirmat.setContingut(arxiuContingut);
 			pluginHelper.custodiaCustodiarPdfFirmat(
 					documentVersio,
-					pdfFirmat);
+					arxiuNom,
+					arxiuContingut);
 			// Registra al log la custòdia de la firma del document
 			contenidorLogHelper.log(
 					document,

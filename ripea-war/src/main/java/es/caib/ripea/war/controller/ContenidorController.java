@@ -34,11 +34,9 @@ import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
-import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContenidorService;
 import es.caib.ripea.core.api.service.DocumentService;
-import es.caib.ripea.core.api.service.EntitatService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.api.service.MetaDadaService;
@@ -83,11 +81,7 @@ public class ContenidorController extends BaseUserController {
 	@Autowired
 	private MetaDadaService metaDadaService;
 	@Autowired
-	private ArxiuService arxiuService;
-	@Autowired
 	private BustiaService bustiaService;
-	@Autowired
-	private EntitatService entitatService;
 
 	@Autowired(required = true)
 	private javax.validation.Validator validator;

@@ -3,7 +3,7 @@
  */
 package es.caib.ripea.plugin.caib.custodia;
 
-import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.dom4j.Document;
@@ -38,7 +38,7 @@ public class ClienteCustodia {
 	}
 
 	public CustodiaResponse custodiarDocumentoSMIME(
-			ByteArrayInputStream documento,
+			InputStream documento,
 			String nombreDocumento,
 			String codigoExterno,
 			String codigoExternoTipoDocumento) throws Exception {
@@ -51,7 +51,7 @@ public class ClienteCustodia {
 	}
 
 	public CustodiaResponse custodiarDocumento(
-			ByteArrayInputStream documento,
+			InputStream documento,
 			String nombreDocumento,
 			String codigoExterno,
 			String codigoExternoTipoDocumento) throws Exception {
@@ -64,7 +64,7 @@ public class ClienteCustodia {
 	}
 
 	public CustodiaResponse custodiarPDFFirmado(
-			ByteArrayInputStream documento,
+			InputStream documento,
 			String nombreDocumento,
 			String codigoExterno,
 			String codigoExternoTipoDocumento) throws Exception {

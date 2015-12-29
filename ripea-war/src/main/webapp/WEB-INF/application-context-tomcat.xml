@@ -25,6 +25,11 @@
 			<ws:service bean="#registreImpl"/>
 		</wss:service>
 	</wss:binding>
+	<wss:binding url="/ws/bustia">
+		<wss:service>
+			<ws:service bean="#bustiaWsImpl"/>
+		</wss:service>
+	</wss:binding>
 	<wss:binding url="/ws/MCGDws">
 		<wss:service>
 			<ws:service bean="#MCGDwsImpl"/>

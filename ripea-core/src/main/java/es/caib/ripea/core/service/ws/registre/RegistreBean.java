@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.ejb;
+package es.caib.ripea.core.service.ws.registre;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;

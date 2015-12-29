@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
-import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.war.command.InteressatCommand;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
@@ -37,8 +36,6 @@ import es.caib.ripea.war.helper.AlertHelper;
 @RequestMapping("/expedient")
 public class InteressatController extends BaseUserController {
 
-	@Autowired
-	private ExpedientService expedientService;
 	@Autowired
 	private InteressatService interessatService;
 

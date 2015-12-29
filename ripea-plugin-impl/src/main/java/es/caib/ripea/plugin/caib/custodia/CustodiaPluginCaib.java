@@ -3,7 +3,7 @@
  */
 package es.caib.ripea.plugin.caib.custodia;
 
-import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.caib.custodia.ClienteCustodia.CustodiaResponse;
@@ -23,19 +23,19 @@ public class CustodiaPluginCaib implements CustodiaPlugin {
 			String documentId,
 			String documentTipus,
 			String arxiuNom,
-			byte[] arxiuContingut) throws SistemaExternException {
+			InputStream arxiuContingut) throws SistemaExternException {
 		String errorDescripcio = "No s'ha pogut custodiar el PDF firmat (" +
 				"documentId=" + documentId + ", " +
 				"documentTipus=" + documentTipus + ", " +
 				"arxiuNom=" + arxiuNom + ", " +
-				"arxiuContingut=" + arxiuContingut.length + "bytes)";
+				"arxiuContingut=" + arxiuContingut + ")";
 		if (documentTipus == null || documentTipus.isEmpty()) {
 			throw new SistemaExternException(
 					errorDescripcio + ": no s'ha especificat cap tipus de document");
 		}
 		try {
 			CustodiaResponse response = getClienteCustodia().custodiarPDFFirmado(
-					new ByteArrayInputStream(arxiuContingut),
+					arxiuContingut,
 					arxiuNom,
 					documentId,
 					documentTipus);
