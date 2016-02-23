@@ -8,15 +8,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -79,7 +76,7 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 				}
 			}
 			requestPeticioDeFirmaWs.setDataCaducitat(
-					toXMLGregorianCalendar(dataCaducitat));
+					new java.sql.Timestamp(dataCaducitat.getTime()));
 			if (flux == null && plantillaFluxId != null) {
 				FluxDeFirmesWs fluxWs = getPeticioDeFirmaWs().instantiatePlantillaFluxDeFirmes(
 						plantillaFluxId);
@@ -204,14 +201,14 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 		return api;
 	}
 
-	private XMLGregorianCalendar toXMLGregorianCalendar(
+	/*private XMLGregorianCalendar toXMLGregorianCalendar(
 			Date date) throws Exception {
 		if (date == null)
 			return null;
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(date);
 		return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-	}
+	}*/
 
 	private String getServiceUrl() {
 		return PropertiesHelper.getProperties().getProperty(
