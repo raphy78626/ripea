@@ -81,8 +81,9 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>mvn-local-repo</id>
-			<url>file://${basedir}/local-repo</url>
+			<name>Local Maven Repository</name>
+			<id>es.caib.ripea.local</id>
+			<url>file://${basedir}/../local-repo</url>
 		</repository>
 	</repositories>
 </project>
