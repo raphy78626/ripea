@@ -196,11 +196,11 @@
 		</plugins>
 	</build>
 	<repositories>
-		<!--repository>
+		<repository>
 			<id>jboss</id>
 			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
 		</repository>
-		<repository>
+		<!--repository>
 			<id>archiva.default</id>
 			<url>http://gforge.caib.es/archiva/repository/internal</url>
 		</repository-->
