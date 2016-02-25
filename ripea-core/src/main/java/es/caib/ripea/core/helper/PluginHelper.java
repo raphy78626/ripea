@@ -182,8 +182,7 @@ public class PluginHelper {
 						accioDescripcio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
-						errorMissatge,
-						null);
+						errorMissatge);
 				throw new PluginException(errorMissatge);
 			}
 		} catch (Exception ex) {
@@ -386,8 +385,7 @@ public class PluginHelper {
 						accioDescripcio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
-						errorMissatge,
-						null);
+						errorMissatge);
 				throw new PluginException(errorMissatge);
 			}
 		} else {
@@ -398,8 +396,7 @@ public class PluginHelper {
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					errorMissatge,
-					null);
+					errorMissatge);
 			throw new PluginException(errorMissatge);
 		}
 	}
