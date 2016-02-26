@@ -1,5 +1,5 @@
 
-package es.caib.dir3caib;
+package es.caib.dir3caib.ws.unidad;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for obtenerUnidadResponse complex type.
+ * <p>Java class for getVersionResponse complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="obtenerUnidadResponse">
+ * &lt;complexType name="getVersionResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="return" type="{http://www.caib.es/dir3caib}unidadTF" minOccurs="0"/>
+ *         &lt;element name="return" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -27,23 +27,23 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "obtenerUnidadResponse", propOrder = {
+@XmlType(name = "getVersionResponse", propOrder = {
     "_return"
 })
-public class ObtenerUnidadResponse {
+public class GetVersionResponse {
 
     @XmlElement(name = "return")
-    protected UnidadTF _return;
+    protected String _return;
 
     /**
      * Gets the value of the return property.
      * 
      * @return
      *     possible object is
-     *     {@link UnidadTF }
+     *     {@link String }
      *     
      */
-    public UnidadTF getReturn() {
+    public String getReturn() {
         return _return;
     }
 
@@ -52,10 +52,10 @@ public class ObtenerUnidadResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link UnidadTF }
+     *     {@link String }
      *     
      */
-    public void setReturn(UnidadTF value) {
+    public void setReturn(String value) {
         this._return = value;
     }
 

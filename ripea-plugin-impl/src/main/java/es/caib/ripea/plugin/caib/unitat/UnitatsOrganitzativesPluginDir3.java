@@ -3,18 +3,20 @@
  */
 package es.caib.ripea.plugin.caib.unitat;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.dir3caib.ObtenerUnidades;
-import es.caib.dir3caib.ObtenerUnidadesService;
-import es.caib.dir3caib.UnidadTF;
+import es.caib.dir3caib.ws.unidad.Dir3CaibObtenerUnidadesWs;
+import es.caib.dir3caib.ws.unidad.Dir3CaibObtenerUnidadesWsService;
+import es.caib.dir3caib.ws.unidad.UnidadTF;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
@@ -33,9 +35,13 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			List<UnitatOrganitzativa> unitats = new ArrayList<UnitatOrganitzativa>();
 			UnitatOrganitzativa unitatOrganitzativaArrel = findAmbCodi(pareCodi);
 			unitats.add(unitatOrganitzativaArrel);
-			List<UnidadTF> listaUnidades= getObtenerUnidadesService().obtenerArbolUnidades(pareCodi, null);//df.format(new Date()));
-			if (listaUnidades != null) {
-				for (UnidadTF unidad: listaUnidades) {
+			System.out.println(">>> pareCodi: " + pareCodi);
+			List<UnidadTF> unidades = getObtenerUnidadesService().obtenerArbolUnidades(
+					pareCodi,
+					null,
+					null);//df.format(new Date()));
+			if (unidades != null) {
+				for (UnidadTF unidad: unidades) {
 					if ("V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
 						UnitatOrganitzativa unitat = new UnitatOrganitzativa(
 								unidad.getCodigo(),
@@ -66,7 +72,10 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 	public UnitatOrganitzativa findAmbCodi(String codi) throws SistemaExternException {
 		try {
 			UnitatOrganitzativa unitat = null;
-			UnidadTF unidad = getObtenerUnidadesService().obtenerUnidad(codi, null);
+			UnidadTF unidad = getObtenerUnidadesService().obtenerUnidad(
+					codi,
+					null,
+					null);
 			if (unidad != null && "V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
 				unitat = new UnitatOrganitzativa(
 						unidad.getCodigo(),
@@ -98,22 +107,45 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					ex);
 		}
 	}
-	
-	private ObtenerUnidades getObtenerUnidadesService() throws Exception {
-		ObtenerUnidades client = null;
+
+
+
+	private Dir3CaibObtenerUnidadesWs getObtenerUnidadesService() throws MalformedURLException {
+		Dir3CaibObtenerUnidadesWs client = null;
 		URL url = new URL(getServiceUrl() + "?wsdl");
-		ObtenerUnidadesService service = new ObtenerUnidadesService(url);
-		client = service.getObtenerUnidades();
+		Dir3CaibObtenerUnidadesWsService service = new Dir3CaibObtenerUnidadesWsService(
+				url,
+				new QName(
+						"http://unidad.ws.dir3caib.caib.es/",
+						"Dir3CaibObtenerUnidadesWsService"));
+		client = service.getDir3CaibObtenerUnidadesWs();
 		BindingProvider bp = (BindingProvider)client;
 		bp.getRequestContext().put(
 				BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
 				getServiceUrl());
+		String username = getUsername();
+		if (username != null && !username.isEmpty()) {
+			bp.getRequestContext().put(
+					BindingProvider.USERNAME_PROPERTY,
+					username);
+			bp.getRequestContext().put(
+					BindingProvider.PASSWORD_PROPERTY,
+					getPassword());
+		}
 		return client;
 	}
 
 	private String getServiceUrl() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.url");
+	}
+	private String getUsername() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.username");
+	}
+	private String getPassword() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.password");
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UnitatsOrganitzativesPluginDir3.class);

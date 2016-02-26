@@ -1,8 +1,11 @@
 
-package es.caib.dir3caib;
+package es.caib.dir3caib.ws.unidad;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -18,17 +21,28 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element name="codAmbComunidad" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
+ *         &lt;element name="codAmbProvincia" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
+ *         &lt;element name="codPostal" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="codUnidadRaiz" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="codUnidadSuperior" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="codigo" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="codigoAmbPais" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
+ *         &lt;element name="codigoAmbitoTerritorial" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="codigoEstadoEntidad" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="codigoTipoVia" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
  *         &lt;element name="competencias" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="denominacion" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="descripcionLocalidad" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="fechaAltaOficial" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="fechaAnulacion" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="fechaBajaOficial" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="fechaExtincion" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         &lt;element name="historicosUO" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="nivelAdministracion" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
  *         &lt;element name="nivelJerarquico" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
+ *         &lt;element name="nombreVia" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="numVia" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -39,26 +53,44 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "unidadTF", propOrder = {
+    "codAmbComunidad",
+    "codAmbProvincia",
+    "codPostal",
     "codUnidadRaiz",
     "codUnidadSuperior",
     "codigo",
+    "codigoAmbPais",
+    "codigoAmbitoTerritorial",
     "codigoEstadoEntidad",
+    "codigoTipoVia",
     "competencias",
     "denominacion",
+    "descripcionLocalidad",
     "fechaAltaOficial",
     "fechaAnulacion",
     "fechaBajaOficial",
     "fechaExtincion",
-    "nivelJerarquico"
+    "historicosUO",
+    "nivelAdministracion",
+    "nivelJerarquico",
+    "nombreVia",
+    "numVia"
 })
 public class UnidadTF {
 
+    protected Long codAmbComunidad;
+    protected Long codAmbProvincia;
+    protected String codPostal;
     protected String codUnidadRaiz;
     protected String codUnidadSuperior;
     protected String codigo;
+    protected Long codigoAmbPais;
+    protected String codigoAmbitoTerritorial;
     protected String codigoEstadoEntidad;
+    protected Long codigoTipoVia;
     protected String competencias;
     protected String denominacion;
+    protected String descripcionLocalidad;
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar fechaAltaOficial;
     @XmlSchemaType(name = "dateTime")
@@ -67,7 +99,84 @@ public class UnidadTF {
     protected XMLGregorianCalendar fechaBajaOficial;
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar fechaExtincion;
+    @XmlElement(nillable = true)
+    protected List<String> historicosUO;
+    protected Long nivelAdministracion;
     protected Long nivelJerarquico;
+    protected String nombreVia;
+    protected String numVia;
+
+    /**
+     * Gets the value of the codAmbComunidad property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *     
+     */
+    public Long getCodAmbComunidad() {
+        return codAmbComunidad;
+    }
+
+    /**
+     * Sets the value of the codAmbComunidad property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *     
+     */
+    public void setCodAmbComunidad(Long value) {
+        this.codAmbComunidad = value;
+    }
+
+    /**
+     * Gets the value of the codAmbProvincia property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *     
+     */
+    public Long getCodAmbProvincia() {
+        return codAmbProvincia;
+    }
+
+    /**
+     * Sets the value of the codAmbProvincia property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *     
+     */
+    public void setCodAmbProvincia(Long value) {
+        this.codAmbProvincia = value;
+    }
+
+    /**
+     * Gets the value of the codPostal property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCodPostal() {
+        return codPostal;
+    }
+
+    /**
+     * Sets the value of the codPostal property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCodPostal(String value) {
+        this.codPostal = value;
+    }
 
     /**
      * Gets the value of the codUnidadRaiz property.
@@ -142,6 +251,54 @@ public class UnidadTF {
     }
 
     /**
+     * Gets the value of the codigoAmbPais property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *     
+     */
+    public Long getCodigoAmbPais() {
+        return codigoAmbPais;
+    }
+
+    /**
+     * Sets the value of the codigoAmbPais property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *     
+     */
+    public void setCodigoAmbPais(Long value) {
+        this.codigoAmbPais = value;
+    }
+
+    /**
+     * Gets the value of the codigoAmbitoTerritorial property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCodigoAmbitoTerritorial() {
+        return codigoAmbitoTerritorial;
+    }
+
+    /**
+     * Sets the value of the codigoAmbitoTerritorial property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCodigoAmbitoTerritorial(String value) {
+        this.codigoAmbitoTerritorial = value;
+    }
+
+    /**
      * Gets the value of the codigoEstadoEntidad property.
      * 
      * @return
@@ -163,6 +320,30 @@ public class UnidadTF {
      */
     public void setCodigoEstadoEntidad(String value) {
         this.codigoEstadoEntidad = value;
+    }
+
+    /**
+     * Gets the value of the codigoTipoVia property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *     
+     */
+    public Long getCodigoTipoVia() {
+        return codigoTipoVia;
+    }
+
+    /**
+     * Sets the value of the codigoTipoVia property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *     
+     */
+    public void setCodigoTipoVia(Long value) {
+        this.codigoTipoVia = value;
     }
 
     /**
@@ -211,6 +392,30 @@ public class UnidadTF {
      */
     public void setDenominacion(String value) {
         this.denominacion = value;
+    }
+
+    /**
+     * Gets the value of the descripcionLocalidad property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescripcionLocalidad() {
+        return descripcionLocalidad;
+    }
+
+    /**
+     * Sets the value of the descripcionLocalidad property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescripcionLocalidad(String value) {
+        this.descripcionLocalidad = value;
     }
 
     /**
@@ -310,6 +515,59 @@ public class UnidadTF {
     }
 
     /**
+     * Gets the value of the historicosUO property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the historicosUO property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getHistoricosUO().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
+     */
+    public List<String> getHistoricosUO() {
+        if (historicosUO == null) {
+            historicosUO = new ArrayList<String>();
+        }
+        return this.historicosUO;
+    }
+
+    /**
+     * Gets the value of the nivelAdministracion property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *     
+     */
+    public Long getNivelAdministracion() {
+        return nivelAdministracion;
+    }
+
+    /**
+     * Sets the value of the nivelAdministracion property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *     
+     */
+    public void setNivelAdministracion(Long value) {
+        this.nivelAdministracion = value;
+    }
+
+    /**
      * Gets the value of the nivelJerarquico property.
      * 
      * @return
@@ -331,6 +589,54 @@ public class UnidadTF {
      */
     public void setNivelJerarquico(Long value) {
         this.nivelJerarquico = value;
+    }
+
+    /**
+     * Gets the value of the nombreVia property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNombreVia() {
+        return nombreVia;
+    }
+
+    /**
+     * Sets the value of the nombreVia property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNombreVia(String value) {
+        this.nombreVia = value;
+    }
+
+    /**
+     * Gets the value of the numVia property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNumVia() {
+        return numVia;
+    }
+
+    /**
+     * Sets the value of the numVia property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNumVia(String value) {
+        this.numVia = value;
     }
 
 }

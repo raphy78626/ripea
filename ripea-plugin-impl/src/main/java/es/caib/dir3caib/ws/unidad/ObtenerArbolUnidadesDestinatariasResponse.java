@@ -1,5 +1,5 @@
 
-package es.caib.dir3caib;
+package es.caib.dir3caib.ws.unidad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for obtenerArbolUnidadesResponse complex type.
+ * <p>Java class for obtenerArbolUnidadesDestinatariasResponse complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="obtenerArbolUnidadesResponse">
+ * &lt;complexType name="obtenerArbolUnidadesDestinatariasResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="return" type="{http://www.caib.es/dir3caib}unidadTF" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="return" type="{http://unidad.ws.dir3caib.caib.es/}unidadTF" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,10 +29,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "obtenerArbolUnidadesResponse", propOrder = {
+@XmlType(name = "obtenerArbolUnidadesDestinatariasResponse", propOrder = {
     "_return"
 })
-public class ObtenerArbolUnidadesResponse {
+public class ObtenerArbolUnidadesDestinatariasResponse {
 
     @XmlElement(name = "return")
     protected List<UnidadTF> _return;
