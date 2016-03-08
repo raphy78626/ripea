@@ -14,6 +14,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
+import es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 import es.caib.ripea.war.validation.CodiMetaDocumentNoRepetit;
@@ -44,6 +45,8 @@ public class MetaDocumentCommand {
 	private String portafirmesDocumentTipus;
 	@Size(max=64)
 	private String portafirmesFluxId;
+	private String[] portafirmesResponsables;
+	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
 	@Size(max=64)
 	private String signaturaTipusMime;
 	protected MultipartFile plantilla;
@@ -111,6 +114,18 @@ public class MetaDocumentCommand {
 	}
 	public void setPortafirmesFluxId(String portafirmesFluxId) {
 		this.portafirmesFluxId = portafirmesFluxId;
+	}
+	public String[] getPortafirmesResponsables() {
+		return portafirmesResponsables;
+	}
+	public void setPortafirmesResponsables(String[] portafirmesResponsables) {
+		this.portafirmesResponsables = portafirmesResponsables;
+	}
+	public MetaDocumentFirmaFluxTipusEnumDto getPortafirmesFluxTipus() {
+		return portafirmesFluxTipus;
+	}
+	public void setPortafirmesFluxTipus(MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus) {
+		this.portafirmesFluxTipus = portafirmesFluxTipus;
 	}
 	public String getSignaturaTipusMime() {
 		return signaturaTipusMime;

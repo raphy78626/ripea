@@ -30,7 +30,7 @@ import es.caib.ripea.war.command.MetaExpedientCommand;
 import es.caib.ripea.war.command.MetaExpedientMetaDocumentCommand;
 import es.caib.ripea.war.command.MetaNodeMetaDadaCommand;
 import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.AlertHelper;
+import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.PaginacioHelper;
 
 /**
@@ -301,7 +301,7 @@ public class MetaExpedientController extends BaseAdminController {
 				entitatActual.getId(),
 				metaExpedientId,
 				metaDadaId);
-		AlertHelper.success(
+		MissatgesHelper.success(
 				request, 
 				getMessage(
 						request, 
@@ -445,7 +445,7 @@ public class MetaExpedientController extends BaseAdminController {
 				entitatActual.getId(),
 				metaExpedientId,
 				metaDocumentId);
-		AlertHelper.success(
+		MissatgesHelper.success(
 				request, 
 				getMessage(
 						request, 

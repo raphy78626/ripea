@@ -555,49 +555,55 @@ public class ContenidorHelper {
 			EntitatEntity entitat,
 			List<? extends ContenidorEntity> contenidors,
 			boolean comprovarPermisos) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		List<Object[]> countFillsTotals = contenidorRepository.countByPares(
-				entitat,
-				contenidors);
-		List<Object[]> countNodesTotals = nodeRepository.countByPares(
-				entitat,
-				contenidors);
-		List<Object[]> countNodesByPares;
-		if (comprovarPermisos) {
-			List<MetaNodeEntity> metaNodesPermesos = metaNodeRepository.findByEntitat(entitat);
-			permisosHelper.filterGrantedAll(
-					metaNodesPermesos,
-					new ObjectIdentifierExtractor<MetaNodeEntity>() {
-						public Long getObjectIdentifier(MetaNodeEntity metaNode) {
-							return metaNode.getId();
-						}
-					},
-					MetaNodeEntity.class,
-					new Permission[] {ExtendedPermission.READ},
-					auth);
-			countNodesByPares = nodeRepository.countAmbPermisReadByPares(
-					entitat,
-					contenidors,
-					metaNodesPermesos);
-		} else {
-			countNodesByPares = nodeRepository.countByPares(
+		long[] resposta = new long[contenidors.size()];
+		if (!contenidors.isEmpty()) {
+			List<Object[]> countFillsTotals = contenidorRepository.countByPares(
 					entitat,
 					contenidors);
-		}
-		long[] resposta = new long[contenidors.size()];
-		for (int i = 0; i < contenidors.size(); i++) {
-			ContenidorEntity contenidor = contenidors.get(i);
-			Long total = getCountByContenidor(
-					contenidor,
-					countFillsTotals);
-			Long totalNodes = getCountByContenidor(
-					contenidor,
-					countNodesTotals);
-			Long totalNodesPermisRead = getCountByContenidor(
-					contenidor,
-					countNodesByPares);
-			resposta[i] = total - totalNodes + totalNodesPermisRead;
-			
+			List<Object[]> countNodesTotals = nodeRepository.countByPares(
+					entitat,
+					contenidors);
+			List<Object[]> countNodesByPares;
+			if (comprovarPermisos) {
+				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				List<MetaNodeEntity> metaNodesPermesos = metaNodeRepository.findByEntitat(entitat);
+				permisosHelper.filterGrantedAll(
+						metaNodesPermesos,
+						new ObjectIdentifierExtractor<MetaNodeEntity>() {
+							public Long getObjectIdentifier(MetaNodeEntity metaNode) {
+								return metaNode.getId();
+							}
+						},
+						MetaNodeEntity.class,
+						new Permission[] {ExtendedPermission.READ},
+						auth);
+				if (!metaNodesPermesos.isEmpty()) {
+					countNodesByPares = nodeRepository.countAmbPermisReadByPares(
+							entitat,
+							contenidors,
+							metaNodesPermesos);
+				} else {
+					countNodesByPares = new ArrayList<Object[]>();
+				}
+			} else {
+				countNodesByPares = nodeRepository.countByPares(
+						entitat,
+						contenidors);
+			}
+			for (int i = 0; i < contenidors.size(); i++) {
+				ContenidorEntity contenidor = contenidors.get(i);
+				Long total = getCountByContenidor(
+						contenidor,
+						countFillsTotals);
+				Long totalNodes = getCountByContenidor(
+						contenidor,
+						countNodesTotals);
+				Long totalNodesPermisRead = getCountByContenidor(
+						contenidor,
+						countNodesByPares);
+				resposta[i] = total - totalNodes + totalNodesPermisRead;
+				
+			}
 		}
 		return resposta;
 	}

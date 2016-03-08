@@ -129,12 +129,12 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia.getUnitatCodi());
 		// Si la bústia superior no existeix la crea
 		if (bustiaPare == null) {
-			bustiaPare = BustiaEntity.getBuilder(
-					entitat,
-					unitat.getDenominacio(),
-					bustia.getUnitatCodi(),
-					null).build();
-			bustiaRepository.save(bustiaPare);
+			bustiaPare = bustiaRepository.save(
+					BustiaEntity.getBuilder(
+							entitat,
+							unitat.getDenominacio(),
+							bustia.getUnitatCodi(),
+							null).build());
 		}
 		// Crea la nova bústia
 		BustiaEntity entity = BustiaEntity.getBuilder(

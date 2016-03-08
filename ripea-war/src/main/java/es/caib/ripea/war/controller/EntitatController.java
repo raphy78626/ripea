@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.service.EntitatService;
 import es.caib.ripea.war.command.EntitatCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 
 /**
  * Controlador per al manteniment d'entitats.
@@ -39,7 +39,7 @@ public class EntitatController extends BaseController {
 	public String get() {
 		return "entitatList";
 	}
-	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesPagina<EntitatDto> datatable(
 			HttpServletRequest request,
@@ -50,6 +50,16 @@ public class EntitatController extends BaseController {
 						PaginacioHelper.getPaginacioDtoFromDatatable(
 								request,
 								null)));
+	}*/
+	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse datatable(
+			HttpServletRequest request) {
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
+				request,
+				entitatService.findAllPaginat(
+						DatatablesHelper.getPaginacioDtoFromRequest(request)));
+		return dtr;
 	}
 
 	@RequestMapping(value = "/new", method = RequestMethod.GET)

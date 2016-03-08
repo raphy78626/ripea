@@ -42,10 +42,10 @@ function changedCallback(e, data) {
 </head>
 <body>
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-6">
 			<rip:arbre id="arbreUnitats" arbre="${arbreUnitatsOrganitzatives}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback" seleccionatId="${unitatCodi}"/>
 		</div>
-		<div id="taulaLlistat" class="col-md-8"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
+		<div id="taulaLlistat" class="col-md-6"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
 			<table id="taulaDades" class="table table-striped table-bordered" data-rdt-button-template="tableButtonsTemplate" data-rdt-paginable="false">
 				<thead>
 					<tr>

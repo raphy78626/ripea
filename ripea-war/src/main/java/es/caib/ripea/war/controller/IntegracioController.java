@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.ripea.core.api.dto.IntegracioAccioDto;
 import es.caib.ripea.core.api.dto.IntegracioDto;
 import es.caib.ripea.core.api.service.IntegracioService;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
@@ -73,7 +73,7 @@ public class IntegracioController extends BaseUserController {
 		return "integracioList";
 	}
 
-	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesPagina<IntegracioAccioDto> datatable(
 			HttpServletRequest request,
@@ -91,6 +91,25 @@ public class IntegracioController extends BaseUserController {
 		return PaginacioHelper.getPaginaPerDatatables(
 				request,
 				accions);
+	}*/
+	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse datatable(
+			HttpServletRequest request) {
+		String codi = (String)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_FILTRE);
+		List<IntegracioAccioDto> accions = null;
+		if (codi != null) {
+			accions = integracioService.findDarreresAccionsByIntegracio(
+					codi);
+		} else {
+			accions = new ArrayList<IntegracioAccioDto>();
+		}
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
+				request,
+				accions);
+		return dtr;
 	}
 
 	@RequestMapping(value = "/{codi}/{index}", method = RequestMethod.GET)

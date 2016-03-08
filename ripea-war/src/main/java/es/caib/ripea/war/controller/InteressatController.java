@@ -25,7 +25,7 @@ import es.caib.ripea.war.command.InteressatCommand.Administracio;
 import es.caib.ripea.war.command.InteressatCommand.Ciutada;
 import es.caib.ripea.war.command.InteressatCommand.ComprovarAdministracio;
 import es.caib.ripea.war.command.InteressatCommand.ComprovarCiutada;
-import es.caib.ripea.war.helper.AlertHelper;
+import es.caib.ripea.war.helper.MissatgesHelper;
 
 /**
  * Controlador per als interessats dels expedients.
@@ -79,7 +79,7 @@ public class InteressatController extends BaseUserController {
 			command.setComprovat(true);
 			if (!interessats.isEmpty())
 				command.setId(interessats.get(0).getId());
-			AlertHelper.info(
+			MissatgesHelper.info(
 					request, 
 					getMessage(
 							request, 
@@ -108,7 +108,7 @@ public class InteressatController extends BaseUserController {
 			if (!interessats.isEmpty())
 				command.setId(interessats.get(0).getId());
 			model.addAttribute("interessats", interessats);
-			AlertHelper.info(
+			MissatgesHelper.info(
 					request, 
 					getMessage(
 							request, 

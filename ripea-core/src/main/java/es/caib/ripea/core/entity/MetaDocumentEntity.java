@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
@@ -27,8 +28,8 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 
 	@Column(name = "global_expedient")
 	private boolean globalExpedient;
-	@Column(name = "global_multiplicitat")
 	@Enumerated(EnumType.STRING)
+	@Column(name = "global_multiplicitat")
 	private MultiplicitatEnum globalMultiplicitat;
 	@Column(name = "global_readonly")
 	private boolean globalReadOnly;
@@ -42,6 +43,11 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	private String portafirmesDocumentTipus;
 	@Column(name = "portafirmes_fluxid", length = 64)
 	private String portafirmesFluxId;
+	@Column(name = "portafirmes_respons", length = 512)
+	private String portafirmesResponsables;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "portafirmes_fluxtip")
+	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
 	@Column(name = "custodia_politica", length = 64)
 	private String custodiaPolitica;
 	@Column(name = "plantilla_nom", length = 256)
@@ -79,6 +85,14 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	public String getPortafirmesFluxId() {
 		return portafirmesFluxId;
 	}
+	public String[] getPortafirmesResponsables() {
+		if (portafirmesResponsables == null)
+			return null;
+		return portafirmesResponsables.split(",");
+	}
+	public MetaDocumentFirmaFluxTipusEnumDto getPortafirmesFluxTipus() {
+		return portafirmesFluxTipus;
+	}
 	public String getCustodiaPolitica() {
 		return custodiaPolitica;
 	}
@@ -102,6 +116,8 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			String custodiaPolitica,
 			String portafirmesDocumentTipus,
 			String portafirmesFluxId,
+			String[] portafirmesResponsables,
+			MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus,
 			String signaturaTipusMime) {
 		update(
 				codi,
@@ -113,6 +129,8 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 		this.custodiaPolitica = custodiaPolitica;
 		this.portafirmesDocumentTipus = portafirmesDocumentTipus;
 		this.portafirmesFluxId = portafirmesFluxId;
+		this.portafirmesResponsables = getResponsablesFromArray(portafirmesResponsables);
+		this.portafirmesFluxTipus = portafirmesFluxTipus;
 		this.signaturaTipusMime = signaturaTipusMime;
 	}
 
@@ -125,97 +143,80 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 		this.plantillaContingut = plantillaContingut;
 	}
 
-	/**
-	 * Obté el Builder per a crear objectes de tipus meta-document.
-	 * 
-	 * @param codi
-	 *            El valor de l'atribut codi.
-	 * @param nom
-	 *            El valor de l'atribut nom.
-	 * @param descripcio
-	 *            El valor de l'atribut descripcio.
-	 * @param globalExpedient
-	 *            El valor de l'atribut globalExpedient.
-	 * @param globalDocument
-	 *            El valor de l'atribut globalDocument.
-	 * @param globalMultiplicitat
-	 *            El valor de l'atribut globalMultiplicitat.
-	 * @param globalReadOnly
-	 *            El valor de l'atribut globalReadOnly.
-	 * @param custodiaPolitica
-	 *            El valor de l'atribut custodiaPolitica.
-	 * @param portafirmesDocumentTipus
-	 *            El valor de l'atribut portafirmesDocumentTipus.
-	 * @param portafirmesFluxId
-	 *            El valor de l'atribut portafirmesFluxId.
-	 * @param signaturaTipusMime
-	 *            El valor de l'atribut signaturaTipusMime.
-	 * @param entitat
-	 *            L'entitat a la qual pertany aquest meta-document.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
+			EntitatEntity entitat,
 			String codi,
-			String nom,
-			String descripcio,
-			boolean globalExpedient,
-			MultiplicitatEnum globalMultiplicitat,
-			boolean globalReadOnly,
-			String custodiaPolitica,
-			String portafirmesDocumentTipus,
-			String portafirmesFluxId,
-			String signaturaTipusMime,
-			EntitatEntity entitat) {
+			String nom) {
 		return new Builder(
+				entitat,
 				codi,
-				nom,
-				descripcio,
-				globalExpedient,
-				globalMultiplicitat,
-				globalReadOnly,
-				custodiaPolitica,
-				portafirmesDocumentTipus,
-				portafirmesFluxId,
-				signaturaTipusMime,
-				entitat);
+				nom);
 	}
-
-	/**
-	 * Builder per a crear noves instàncies d'aquesta classe.
-	 * 
-	 * @author Limit Tecnologies <limit@limit.es>
-	 */
 	public static class Builder {
 		MetaDocumentEntity built;
 		Builder(
+				EntitatEntity entitat,
 				String codi,
-				String nom,
-				String descripcio,
-				boolean globalExpedient,
-				MultiplicitatEnum globalMultiplicitat,
-				boolean globalReadOnly,
-				String custodiaPolitica,
-				String portafirmesDocumentTipus,
-				String portafirmesFluxId,
-				String signaturaTipusMime,
-				EntitatEntity entitat) {
+				String nom) {
 			built = new MetaDocumentEntity();
+			built.entitat = entitat;
 			built.codi = codi;
 			built.nom = nom;
-			built.descripcio = descripcio;
-			built.globalExpedient = globalExpedient;
-			built.globalMultiplicitat = globalMultiplicitat;
-			built.globalReadOnly = globalReadOnly;
-			built.custodiaPolitica = custodiaPolitica;
-			built.portafirmesDocumentTipus = portafirmesDocumentTipus;
-			built.portafirmesFluxId = portafirmesFluxId;
-			built.signaturaTipusMime = signaturaTipusMime;
-			built.entitat = entitat;
 			built.tipus = MetaNodeTipusEnum.DOCUMENT;
+		}
+		public Builder descripcio(String descripcio) {
+			built.descripcio = descripcio;
+			return this;
+		}
+		public Builder globalExpedient(boolean globalExpedient) {
+			built.globalExpedient = globalExpedient;
+			return this;
+		}
+		public Builder globalMultiplicitat(MultiplicitatEnum globalMultiplicitat) {
+			built.globalMultiplicitat = globalMultiplicitat;
+			return this;
+		}
+		public Builder globalReadOnly(boolean globalReadOnly) {
+			built.globalReadOnly = globalReadOnly;
+			return this;
+		}
+		public Builder custodiaPolitica(String custodiaPolitica) {
+			built.custodiaPolitica = custodiaPolitica;
+			return this;
+		}
+		public Builder portafirmesDocumentTipus(String portafirmesDocumentTipus) {
+			built.portafirmesDocumentTipus = portafirmesDocumentTipus;
+			return this;
+		}
+		public Builder portafirmesFluxId(String portafirmesFluxId) {
+			built.portafirmesFluxId = portafirmesFluxId;
+			return this;
+		}
+		public Builder portafirmesResponsables(String[] portafirmesResponsables) {
+			built.portafirmesResponsables = getResponsablesFromArray(portafirmesResponsables);
+			return this;
+		}
+		public Builder portafirmesFluxTipus(MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus) {
+			built.portafirmesFluxTipus = portafirmesFluxTipus;
+			return this;
+		}
+		public Builder signaturaTipusMime(String signaturaTipusMime) {
+			built.signaturaTipusMime = signaturaTipusMime;
+			return this;
 		}
 		public MetaDocumentEntity build() {
 			return built;
 		}
+	}
+
+	private static String getResponsablesFromArray(String[] portafirmesResponsables) {
+		StringBuilder responsablesStr = new StringBuilder();
+		for (String responsable: portafirmesResponsables) {
+			if (responsablesStr.length() > 0)
+				responsablesStr.append(",");
+			responsablesStr.append(responsable);
+		}
+		return responsablesStr.toString();
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;

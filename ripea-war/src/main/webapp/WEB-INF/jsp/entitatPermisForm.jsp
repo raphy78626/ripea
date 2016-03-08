@@ -7,6 +7,9 @@
 
 <%
 pageContext.setAttribute(
+		"idioma",
+		org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage());
+pageContext.setAttribute(
 		"principalTipusEnumOptions",
 		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.PrincipalTipusEnumDto.class,
@@ -20,7 +23,11 @@ pageContext.setAttribute(
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${idioma}.js"/>"></script>
+	<rip:modalHead/>
 <script>
 	$(document).ready(function() {
 		$("#modal-botons button[type='submit']").on('click', function() {
@@ -39,9 +46,9 @@ pageContext.setAttribute(
 		<rip:inputText name="principalNom" textKey="entitat.permis.form.camp.principal" disabled="${not empty permisCommand.id}"/>
 		<rip:inputCheckbox name="administration" textKey="entitat.permis.form.camp.administracio"/>
 		<rip:inputCheckbox name="read" textKey="entitat.permis.form.camp.usuari"/>
-		<div id="modal-botons" class="well">
+		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/entitat/${entitat.id}/permis"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/entitat/${entitat.id}/permis"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 

@@ -25,8 +25,8 @@
 	<decorator:head />
 </head>
 <body>
-	<div class="container">
-		<div id="contingut-alertes"><rip:alertes/></div>
+	<div class="container-nocappeus">
+		<div id="contingut-missatges"><rip:missatges/></div>
 		<decorator:body />
 	</div>
     <script src="<c:url value="/js/bootstrap.min.js"/>"></script>

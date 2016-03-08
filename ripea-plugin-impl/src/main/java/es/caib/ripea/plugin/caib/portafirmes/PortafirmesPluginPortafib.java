@@ -23,6 +23,8 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
+import es.caib.portafib.ws.api.v1.BlocDeFirmesWs;
+import es.caib.portafib.ws.api.v1.FirmaBean;
 import es.caib.portafib.ws.api.v1.FitxerBean;
 import es.caib.portafib.ws.api.v1.FluxDeFirmesWs;
 import es.caib.portafib.ws.api.v1.PeticioDeFirmaWs;
@@ -77,13 +79,34 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 			}
 			requestPeticioDeFirmaWs.setDataCaducitat(
 					new java.sql.Timestamp(dataCaducitat.getTime()));
-			if (flux == null && plantillaFluxId != null) {
+			if (plantillaFluxId != null && flux == null) {
 				FluxDeFirmesWs fluxWs = getPeticioDeFirmaWs().instantiatePlantillaFluxDeFirmes(
 						plantillaFluxId);
 				requestPeticioDeFirmaWs.setFluxDeFirmes(fluxWs);
-			} else {
+			}
+			if (flux != null) {
+				FluxDeFirmesWs fluxWs = new FluxDeFirmesWs();
+				int index = 0;
+				for (PortafirmesFluxBloc fluxBloc: flux) {
+					BlocDeFirmesWs blocWs = new BlocDeFirmesWs();
+					blocWs.setMinimDeFirmes(fluxBloc.getMinSignataris());
+					blocWs.setOrdre(index);
+					if (fluxBloc.getDestinataris() != null) {
+						for (int i = 0; i < fluxBloc.getDestinataris().length; i++) {
+							FirmaBean firma = new FirmaBean();
+							firma.setDestinatariID(fluxBloc.getDestinataris()[i]);
+							firma.setObligatori(fluxBloc.getObligatorietats()[i]);
+							blocWs.getFirmes().add(firma);
+						}
+					}
+					fluxWs.getBlocsDeFirmes().add(blocWs);
+					index++;
+				}
+				requestPeticioDeFirmaWs.setFluxDeFirmes(fluxWs);
+			}
+			if (flux == null && plantillaFluxId == null) {
 				throw new SistemaExternException(
-						"La opció de especificar directament el flux de firmes no està suportada");
+						"No s'ha especificat cap flux de firma");
 			}
 			requestPeticioDeFirmaWs.setFitxerAFirmar(
 					toFitxerBean(document));

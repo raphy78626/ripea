@@ -38,7 +38,7 @@ import es.caib.ripea.war.command.ContenidorCommand.Update;
 import es.caib.ripea.war.command.DocumentCommand;
 import es.caib.ripea.war.command.FirmaAppletCommand;
 import es.caib.ripea.war.command.PortafirmesEnviarCommand;
-import es.caib.ripea.war.helper.AlertHelper;
+import es.caib.ripea.war.helper.MissatgesHelper;
 
 /**
  * Controlador per al manteniment de documents dels contenidors.
@@ -188,7 +188,7 @@ public class ContenidorDocumentController extends BaseUserController {
 					response);
 			return null;
 		}
-		AlertHelper.error(
+		MissatgesHelper.error(
 				request, 
 				getMessage(
 						request, 

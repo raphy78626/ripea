@@ -21,7 +21,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 @Table(name = "ipa_arxiu")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners(RipeaAuditingEntityListener.class)
-public class ArxiuEntity  extends ContenidorEntity {
+public class ArxiuEntity extends ContenidorEntity {
 
 	@Column(name = "unitat_codi", length = 9, nullable = false)
 	protected String unitatCodi;

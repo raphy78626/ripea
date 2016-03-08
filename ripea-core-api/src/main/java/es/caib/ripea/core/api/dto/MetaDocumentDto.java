@@ -22,6 +22,8 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	private boolean firmaPortafirmesActiva;
 	private String portafirmesDocumentTipus;
 	private String portafirmesFluxId;
+	private String[] portafirmesResponsables;
+	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
 	private String custodiaPolitica;
 	private String plantillaNom;
 	private String plantillaContentType;
@@ -73,6 +75,18 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	}
 	public void setPortafirmesFluxId(String portafirmesFluxId) {
 		this.portafirmesFluxId = portafirmesFluxId;
+	}
+	public String[] getPortafirmesResponsables() {
+		return portafirmesResponsables;
+	}
+	public void setPortafirmesResponsables(String[] portafirmesResponsables) {
+		this.portafirmesResponsables = portafirmesResponsables;
+	}
+	public MetaDocumentFirmaFluxTipusEnumDto getPortafirmesFluxTipus() {
+		return portafirmesFluxTipus;
+	}
+	public void setPortafirmesFluxTipus(MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus) {
+		this.portafirmesFluxTipus = portafirmesFluxTipus;
 	}
 	public String getCustodiaPolitica() {
 		return custodiaPolitica;

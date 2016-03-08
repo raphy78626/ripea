@@ -90,8 +90,8 @@
 						async: false,
 						timeout: 20000,
 						success: function (data) {
-							$('#contingut-alertes *').remove();
-							$('#contingut-alertes').append(data);
+							$('#contingut-missatges *').remove();
+							$('#contingut-missatges').append(data);
 						},
 						error: ajaxErrorFunction
 					});

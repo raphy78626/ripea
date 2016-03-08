@@ -4,9 +4,7 @@
 package es.caib.ripea.war.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -30,6 +28,8 @@ import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.war.command.MetaDocumentCommand;
 import es.caib.ripea.war.command.MetaNodeMetaDadaCommand;
 import es.caib.ripea.war.datatable.DatatablesPagina;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.PaginacioHelper;
 
 /**
@@ -40,11 +40,6 @@ import es.caib.ripea.war.helper.PaginacioHelper;
 @Controller
 @RequestMapping("/metaDocument")
 public class MetaDocumentController extends BaseAdminController {
-
-	private static final Map<String, String[]> COLUMNES_MAPEIG_ORDENACIO;
-	static {
-		COLUMNES_MAPEIG_ORDENACIO = new HashMap<String, String[]>();
-	}
 
 	@Autowired
 	private MetaDocumentService metaDocumentService;
@@ -59,7 +54,7 @@ public class MetaDocumentController extends BaseAdminController {
 		getEntitatActualComprovantPermisos(request);
 		return "metaDocumentList";
 	}
-	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesPagina<MetaDocumentDto> datatable(
 			HttpServletRequest request,
@@ -72,6 +67,18 @@ public class MetaDocumentController extends BaseAdminController {
 						PaginacioHelper.getPaginacioDtoFromDatatable(
 								request,
 								COLUMNES_MAPEIG_ORDENACIO)));
+	}*/
+	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse datatable(
+			HttpServletRequest request) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
+				request,
+				metaDocumentService.findByEntitatPaginat(
+						entitatActual.getId(),
+						DatatablesHelper.getPaginacioDtoFromRequest(request)));
+		return dtr;
 	}
 
 	@RequestMapping(value = "/new", method = RequestMethod.GET)

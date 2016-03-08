@@ -101,12 +101,12 @@ public class ArxiuServiceImpl implements ArxiuService {
 				arxiu.getUnitatCodi());
 		if (arxiuPare == null) {
 			// Si l'arxiu superior no existeix el crea
-			arxiuPare = ArxiuEntity.getBuilder(
-					entitat,
-					unitat.getDenominacio(),
-					arxiu.getUnitatCodi(),
-					null).build();
-			arxiuRepository.save(arxiuPare);
+			arxiuPare = arxiuRepository.save(
+					ArxiuEntity.getBuilder(
+							entitat,
+							unitat.getDenominacio(),
+							arxiu.getUnitatCodi(),
+							null).build());
 		}
 		ArxiuEntity entity = ArxiuEntity.getBuilder(
 				entitat,
@@ -568,12 +568,14 @@ public class ArxiuServiceImpl implements ArxiuService {
 				MetaNodeEntity.class,
 				new Permission[] {ExtendedPermission.READ},
 				auth);
-		List<Object[]> countExpedients = null;
+		List<Object[]> countExpedients;
 		if (metaExpedientsPermesos.size() > 0) {
 			// Si se passa una llista buida la consulta dona error
 			countExpedients = expedientRepository.countPermesosByArxiu(
 					entitat,
 					metaExpedientsPermesos);
+		} else {
+			return new ArrayList<Object[]>();
 		}
 		return countExpedients;
 	}

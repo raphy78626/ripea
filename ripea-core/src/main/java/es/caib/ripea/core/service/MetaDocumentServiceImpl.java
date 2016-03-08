@@ -114,17 +114,20 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				true,
 				false);
 		MetaDocumentEntity entity = MetaDocumentEntity.getBuilder(
+				entitat,
 				metaDocument.getCodi(),
-				metaDocument.getNom(),
-				metaDocument.getDescripcio(),
-				metaDocument.isGlobalExpedient(),
-				MultiplicitatEnum.valueOf(metaDocument.getGlobalMultiplicitat().name()),
-				metaDocument.isGlobalReadOnly(),
-				metaDocument.getCustodiaPolitica(),
-				metaDocument.getPortafirmesDocumentTipus(),
-				metaDocument.getPortafirmesFluxId(),
-				metaDocument.getSignaturaTipusMime(),
-				entitat).build();
+				metaDocument.getNom()).
+				descripcio(metaDocument.getDescripcio()).
+				globalExpedient(metaDocument.isGlobalExpedient()).
+				globalMultiplicitat(MultiplicitatEnum.valueOf(metaDocument.getGlobalMultiplicitat().name())).
+				globalReadOnly(metaDocument.isGlobalReadOnly()).
+				custodiaPolitica(metaDocument.getCustodiaPolitica()).
+				portafirmesDocumentTipus(metaDocument.getPortafirmesDocumentTipus()).
+				portafirmesFluxId(metaDocument.getPortafirmesFluxId()).
+				portafirmesResponsables(metaDocument.getPortafirmesResponsables()).
+				portafirmesFluxTipus(metaDocument.getPortafirmesFluxTipus()).
+				signaturaTipusMime(metaDocument.getSignaturaTipusMime()).
+				build();
 		if (plantillaContingut != null) {
 			entity.updatePlantilla(
 					plantillaNom,
@@ -165,6 +168,8 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				metaDocument.getCustodiaPolitica(),
 				metaDocument.getPortafirmesDocumentTipus(),
 				metaDocument.getPortafirmesFluxId(),
+				metaDocument.getPortafirmesResponsables(),
+				metaDocument.getPortafirmesFluxTipus(),
 				metaDocument.getSignaturaTipusMime());
 		if (plantillaContingut != null) {
 			metaDocumentEntitiy.updatePlantilla(

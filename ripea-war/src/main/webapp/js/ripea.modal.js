@@ -55,6 +55,10 @@
 						"src",
 						modalUrl);
 				$('iframe', modalobj).load(function() {
+					var pathname = this.contentDocument.location.pathname;
+					if (pathname == '/ripea/modal/tancar') {
+						$(this).closest('div.modal').modal('hide');
+					}
 					// Copiar el titol de la modal
 					var titol = $(this).contents().find("title").html();
 					$('.modal-header h4', $(this).parent().parent()).html(titol);
@@ -120,8 +124,8 @@
 								async: false,
 								timeout: 20000,
 								success: function (data) {
-									$('#contingut-alertes *').remove();
-									$('#contingut-alertes').append(data);
+									$('#contingut-missatges *').remove();
+									$('#contingut-missatges').append(data);
 								},
 								error: ajaxErrorFunction
 						    });
@@ -176,8 +180,8 @@
 						async: false,
 						timeout: 20000,
 						success: function (data) {
-							$('#contingut-alertes *').remove();
-							$('#contingut-alertes').append(data);
+							$('#contingut-missatges *').remove();
+							$('#contingut-missatges').append(data);
 						},
 						error: ajaxErrorFunction
 				    });

@@ -6,6 +6,7 @@ package es.caib.ripea.core.helper;
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.PluginException;
@@ -34,6 +36,7 @@ import es.caib.ripea.plugin.gesdoc.GestioDocumentalArxiu;
 import es.caib.ripea.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocument;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocumentTipus;
+import es.caib.ripea.plugin.portafirmes.PortafirmesFluxBloc;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPlugin;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPrioritatEnum;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
@@ -326,8 +329,9 @@ public class PluginHelper {
 			if (metaDocument.getPortafirmesDocumentTipus() == null || metaDocument.getPortafirmesDocumentTipus().isEmpty()) {
 				metaDocumentConfigurat = false;
 			}
-			if (metaDocument.getPortafirmesFluxId() == null || metaDocument.getPortafirmesFluxId().isEmpty())
+			if (metaDocument.getPortafirmesResponsables() == null || metaDocument.getPortafirmesResponsables().length == 0) {
 				metaDocumentConfigurat = false;
+			}
 			if (metaDocumentConfigurat) {
 				portafirmesDocument.setFirmat(
 						false);
@@ -343,11 +347,24 @@ public class PluginHelper {
 						fitxerConvertit.getNom());
 				portafirmesDocument.setArxiuContingut(
 						fitxerConvertit.getContingut());
-				/*List<PortafirmesFluxBloc> passos = new ArrayList<PortafirmesFluxBloc>();
-				PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
-				bloc.setMinSignataris(1);
-				bloc.setDestinataris(new String[] {"12345678Z"});
-				bloc.setObligatorietats(new boolean[] {true});*/
+				String[] responsables = metaDocument.getPortafirmesResponsables();
+				List<PortafirmesFluxBloc> flux = new ArrayList<PortafirmesFluxBloc>();
+				if (MetaDocumentFirmaFluxTipusEnumDto.SERIE.equals(metaDocument.getPortafirmesFluxTipus())) {
+					for (String responsable: responsables) {
+						PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
+						bloc.setMinSignataris(1);
+						bloc.setDestinataris(new String[] {responsable});
+						bloc.setObligatorietats(new boolean[] {true});
+						flux.add(bloc);
+					}
+				} else if (MetaDocumentFirmaFluxTipusEnumDto.PARALEL.equals(metaDocument.getPortafirmesFluxTipus())) {
+					PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
+					bloc.setMinSignataris(responsables.length);
+					bloc.setDestinataris(responsables);
+					boolean[] obligatorietats = new boolean[responsables.length];
+					Arrays.fill(obligatorietats, true);
+					bloc.setObligatorietats(obligatorietats);
+				}
 				try {
 					long portafirmesEnviamentId = getPortafirmesPlugin().upload(
 							portafirmesDocument,
@@ -356,7 +373,7 @@ public class PluginHelper {
 							"Aplicació RIPEA",
 							prioritat,
 							dataCaducitat,
-							null,
+							flux,
 							new Long(metaDocument.getPortafirmesFluxId()),
 							null,
 							false);
