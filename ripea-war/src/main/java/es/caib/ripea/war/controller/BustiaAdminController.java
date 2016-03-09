@@ -22,8 +22,8 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.war.command.BustiaCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -60,7 +60,8 @@ public class BustiaAdminController extends BaseAdminController {
 		model.addAttribute("unitatCodi", unitatCodi);
 		return "bustiaAdminList";
 	}
-	@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
+
+	/*@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesPagina<BustiaDto> datatable(
 			HttpServletRequest request,
@@ -76,6 +77,25 @@ public class BustiaAdminController extends BaseAdminController {
 					busties);
 		} else {
 			return PaginacioHelper.getPaginaPerDatatables(
+					request,
+					new ArrayList<BustiaDto>());
+		}
+	}*/
+	@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse datatable(
+			HttpServletRequest request,
+			@PathVariable String unitatCodi) {
+		if (!"null".equalsIgnoreCase(unitatCodi)) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			List<BustiaDto> busties = bustiaService.findByUnitatCodiAdmin(
+					entitatActual.getId(),
+					unitatCodi);
+			return DatatablesHelper.getDatatableResponse(
+					request,
+					busties);
+		} else {
+			return DatatablesHelper.getDatatableResponse(
 					request,
 					new ArrayList<BustiaDto>());
 		}

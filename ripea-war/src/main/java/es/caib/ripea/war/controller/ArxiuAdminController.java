@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import es.caib.ripea.core.api.dto.ArxiuDto;
+import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.service.ArxiuService;
@@ -36,6 +37,8 @@ import es.caib.ripea.war.command.ArxiuCommand;
 import es.caib.ripea.war.command.ArxiuExpedientAgafarCommand;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
 import es.caib.ripea.war.datatable.DatatablesPagina;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.PaginacioHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
@@ -78,7 +81,8 @@ public class ArxiuAdminController extends BaseAdminController {
 		model.addAttribute("unitatCodi", unitatCodi);
 		return "arxiuAdminList";
 	}
-	@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
+
+	/*@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesPagina<ArxiuDto> datatable(
 			HttpServletRequest request,
@@ -96,6 +100,25 @@ public class ArxiuAdminController extends BaseAdminController {
 			return PaginacioHelper.getPaginaPerDatatables(
 					request,
 					new ArrayList<ArxiuDto>());
+		}
+	}*/
+	@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse datatable(
+			HttpServletRequest request,
+			@PathVariable String unitatCodi) {
+		if (!"null".equalsIgnoreCase(unitatCodi)) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			List<ArxiuDto> busties = arxiuService.findByUnitatCodiAdmin(
+					entitatActual.getId(),
+					unitatCodi);
+			return DatatablesHelper.getDatatableResponse(
+					request,
+					busties);
+		} else {
+			return DatatablesHelper.getDatatableResponse(
+					request,
+					new ArrayList<BustiaDto>());
 		}
 	}
 

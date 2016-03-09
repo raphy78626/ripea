@@ -14,29 +14,21 @@
 <html>
 <head>
 	<title><spring:message code="bustia.list.titol"/></title>
-	<link href="<c:url value="/css/DT_bootstrap.css"/>" rel="stylesheet">
-	<script src="<c:url value="/js/jquery.dataTables.js"/>"></script>
-	<script src="<c:url value="/js/DT_bootstrap.js"/>"></script>
-	<script src="<c:url value="/js/jsrender.min.js"/>"></script>
-	<script src="<c:url value="/js/ripea.datatable.js"/>"></script>
-	<script src="<c:url value="/js/ripea.modal.js"/>"></script>
-	<link href="<c:url value="/css/jstree.min.css"/>" rel="stylesheet">
-	<script src="<c:url value="/js/jstree.min.js"/>"></script>
-	<script src="<c:url value="/js/jquery.dataTables.fnReloadAjax.js"/>"></script>
+	<script src="<c:url value="/webjars/datatables.net/1.10.11/js/jquery.dataTables.min.js"/>"></script>
+	<script src="<c:url value="/webjars/datatables.net-bs/1.10.11/js/dataTables.bootstrap.min.js"/>"></script>
+	<link href="<c:url value="/webjars/datatables.net-bs/1.10.11/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
+	<link href="<c:url value="/webjars/jstree/3.2.1/dist/themes/default/style.min.css"/>" rel="stylesheet">
+	<script src="<c:url value="/webjars/jstree/3.2.1/dist/jstree.min.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
+	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
+	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 <script>
-$(document).ready(function() {
-	$("#taulaDades").ripeaDataTable({
-		ajaxSourceUrl: "<c:url value="/bustiaAdmin/unitat/${unitatCodiPerUrl}/datatable"/>",
-		localeUrl: "<c:url value="/js/dataTables-locales/dataTables_locale_ca.txt"/>",
-		alertesRefreshUrl: "<c:url value="/nodeco/util/alertes"/>"
-	});
-});
 function changedCallback(e, data) {
 	var baseUrl = '${unitatCodiUrlPrefix}bustiaAdmin/unitat/' + data.node.id;
-	$('#tableButtonsTemplate').html('<p style="text-align:right"><a class="btn btn-default" href="' + baseUrl + '/new" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>');
-	$('#taulaDades').dataTable().fnReloadAjax(baseUrl  + '/datatable');
+	$('#bustia-boto-nova').attr('href', baseUrl + '/new');
+	$('#busties').webutilDatatable('refresh-url', baseUrl  + '/datatable');
 	$('#taulaLlistat').css('visibility', '');
-	
 }
 </script>
 </head>
@@ -46,29 +38,29 @@ function changedCallback(e, data) {
 			<rip:arbre id="arbreUnitats" arbre="${arbreUnitatsOrganitzatives}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback" seleccionatId="${unitatCodi}"/>
 		</div>
 		<div id="taulaLlistat" class="col-md-6"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
-			<table id="taulaDades" class="table table-striped table-bordered" data-rdt-button-template="tableButtonsTemplate" data-rdt-paginable="false">
+			<table id="busties" data-toggle="datatable" data-url="<c:url value="/bustiaAdmin/unitat/${unitatCodiPerUrl}/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-striped table-bordered" style="width:100%">
 				<thead>
 					<tr>
-						<th data-rdt-property="id" width="4%" data-rdt-visible="false">#</th>
-						<th data-rdt-property="nom" data-rdt-sorting="desc"><spring:message code="bustia.list.columna.nom"/></th>
-						<th data-rdt-property="perDefecte" data-rdt-template="cellPerDefecteTemplate">
+						<th data-col-name="id" width="4%" data-visible="false">#</th>
+						<th data-col-name="nom"><spring:message code="bustia.list.columna.nom"/></th>
+						<th data-col-name="perDefecte" data-template="#cellPerDefecteTemplate">
 							<spring:message code="bustia.list.columna.per.defecte"/>
 							<script id="cellPerDefecteTemplate" type="text/x-jsrender">
 								{{if perDefecte}}<span class="fa fa-check"></span>{{/if}}
 							</script>
 						</th>
-						<th data-rdt-property="activa" data-rdt-template="cellActivaTemplate">
+						<th data-col-name="activa" data-template="#cellActivaTemplate">
 							<spring:message code="bustia.list.columna.activa"/>
 							<script id="cellActivaTemplate" type="text/x-jsrender">
 								{{if activa}}<span class="fa fa-check"></span>{{/if}}
 							</script>
 						</th>
-						<th data-rdt-property="permisosCount" data-rdt-template="cellPermisosCountTemplate" data-rdt-sortable="false" width="10%">
+						<th data-col-name="permisosCount" data-template="#cellPermisosCountTemplate" data-orderable="false" width="10%">
 							<script id="cellPermisosCountTemplate" type="text/x-jsrender">
 								<a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/permis" class="btn btn-default"><span class="fa fa-file-alt"></span>&nbsp;<spring:message code="bustia.list.boto.permisos"/>&nbsp;<span class="badge">{{:permisosCount}}</span></a>
 							</script>
 						</th>
-						<th data-rdt-property="id" data-rdt-template="cellAccionsTemplate" data-rdt-sortable="false" width="10%">
+						<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 							<script id="cellAccionsTemplate" type="text/x-jsrender">
 								<div class="dropdown">
 									<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
@@ -88,8 +80,8 @@ function changedCallback(e, data) {
 					</tr>
 				</thead>
 			</table>
-			<script id="tableButtonsTemplate" type="text/x-jsrender">
-				<p style="text-align:right"><a class="btn btn-default" href="${unitatCodiUrlPrefix}bustiaAdmin/unitat/${unitatCodiPerUrl}/new" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
+			<script id="botonsTemplate" type="text/x-jsrender">
+				<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="${unitatCodiUrlPrefix}bustiaAdmin/unitat/${unitatCodiPerUrl}/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
 			</script>
 		</div>
 	</div>

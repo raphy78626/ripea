@@ -575,9 +575,6 @@
 		plugin.selection = function(ids) {
 			// TODO
 		}
-		plugin.changeUrl = function(url) {
-			$taula.dataTable().api().ajax.url(url).load();
-		}
 		// Mètodes privats
 		var headerTrFunction = function() {
 			return $('thead:first tr', $taula.closest('.dataTables_wrapper'));
@@ -947,7 +944,7 @@
             	if ('refresh' === options) {
             		$(this).data(pluginName).refresh(param1);
             	} else if ('refresh-url' === options) {
-            		$(this).data(pluginName).changeUrl(param1);
+            		$(this).data(pluginName).refreshUrl(param1);
             	} else if ('select-none' === options) {
             		$(this).data(pluginName).selectNone();
             	} else if ('select-all' === options) {

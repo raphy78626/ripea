@@ -501,7 +501,7 @@ $(document).ready(function() {
 																		</c:otherwise>
 																	</c:choose>
 																</c:if>
-																<c:if test="${contenidor.metaNode.firmaAppletActiva and not versio.firmaEstatPortafirmesBloquejat}">
+																<c:if test="${false and contenidor.metaNode.firmaAppletActiva and not versio.firmaEstatPortafirmesBloquejat}">
 																	<c:choose>
 																		<c:when test="${not versio.firmaEstatCustodiat}">
 																			<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/firmaApplet" data-rdt-link-modal="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contenidor.contingut.boto.firma.applet"/></a></li>

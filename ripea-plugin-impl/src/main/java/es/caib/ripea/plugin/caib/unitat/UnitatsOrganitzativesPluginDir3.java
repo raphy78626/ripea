@@ -35,7 +35,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			List<UnitatOrganitzativa> unitats = new ArrayList<UnitatOrganitzativa>();
 			UnitatOrganitzativa unitatOrganitzativaArrel = findAmbCodi(pareCodi);
 			unitats.add(unitatOrganitzativaArrel);
-			System.out.println(">>> pareCodi: " + pareCodi);
 			List<UnidadTF> unidades = getObtenerUnidadesService().obtenerArbolUnidades(
 					pareCodi,
 					null,

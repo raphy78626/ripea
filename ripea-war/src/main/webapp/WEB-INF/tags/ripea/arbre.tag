@@ -6,6 +6,7 @@
 <%@ attribute name="atributNom" required="true"%>
 <%@ attribute name="seleccionatId"%>
 <%@ attribute name="changedCallback"%>
+<%@ attribute name="deselectAllCallback"%>
 <%@ attribute name="fulles" type="java.lang.Object"%>
 <%@ attribute name="fullesAtributId"%>
 <%@ attribute name="fullesAtributNom"%>
@@ -80,9 +81,11 @@
 		iframe.height(height + 'px');
 	})<c:if test="${not empty changedCallback}">
 	.on('changed.jstree', function (e, data) {
+		//console.log('>>> changed.jstree');
 		return ${changedCallback}(e, data);
-	})
+	})</c:if><c:if test="${not empty deselectAllCallback}">
 	.on('deselect_all.jstree', function (e, data) {
-		return ${changedCallback}(e, data);
+		//console.log('>>> deselect_all.jstree');
+		//return ${changedCallback}(e, data);
 	})</c:if>;	
 </script>

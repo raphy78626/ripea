@@ -36,6 +36,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 				@UniqueConstraint(
 						name = "ipa_contenidor_mult_uk",
 						columnNames = {
+								"entitat_id",
 								"nom",
 								"pare_id",
 								"tipus_cont",
