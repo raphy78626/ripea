@@ -16,10 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDadaNotFoundException;
-import es.caib.ripea.core.api.exception.MetaNodeNotFoundException;
-import es.caib.ripea.core.api.exception.NodeNotFoundException;
 import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
@@ -31,8 +27,8 @@ import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.MultiplicitatEnum;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
@@ -66,7 +62,7 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
+	private EntityComprovarHelper entityComprovarHelper;
 
 
 
@@ -74,11 +70,11 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	@Override
 	public MetaDadaDto create(
 			Long entitatId,
-			MetaDadaDto metaDada) throws EntitatNotFoundException {
+			MetaDadaDto metaDada) {
 		logger.debug("Creant una nova meta-dada ("
 				+ "entitatId=" + entitatId + ", "
 				+ "metaDada=" + metaDada + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -102,16 +98,16 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	@Override
 	public MetaDadaDto update(
 			Long entitatId,
-			MetaDadaDto metaDada) throws EntitatNotFoundException, MetaDadaNotFoundException {
+			MetaDadaDto metaDada) {
 		logger.debug("Actualitzant meta-dada existent ("
 				+ "entitatId=" + entitatId + ", "
 				+ "metaDada=" + metaDada + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaDadaEntity entity = comprovarMetaDada(entitat, metaDada.getId());
+		MetaDadaEntity entity = entityComprovarHelper.comprovarMetaDada(entitat, metaDada.getId());
 		entity.update(
 				metaDada.getCodi(),
 				metaDada.getNom(),
@@ -132,17 +128,17 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	public MetaDadaDto updateActiva(
 			Long entitatId,
 			Long id,
-			boolean activa) throws EntitatNotFoundException, MetaDadaNotFoundException {
+			boolean activa) {
 		logger.debug("Actualitzant propietat activa de la meta-dada ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ","
 				+ "activa=" + activa + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaDadaEntity metaDada = comprovarMetaDada(entitat, id);
+		MetaDadaEntity metaDada = entityComprovarHelper.comprovarMetaDada(entitat, id);
 		metaDada.updateActiva(activa);
 		return conversioTipusHelper.convertir(
 				metaDada,
@@ -153,14 +149,14 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	@Override
 	public MetaDadaDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, MetaDadaNotFoundException {
+			Long id) {
 		logger.debug("Esborrant meta-dada (id=" + id +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaDadaEntity metaDada = comprovarMetaDada(entitat, id);
+		MetaDadaEntity metaDada = entityComprovarHelper.comprovarMetaDada(entitat, id);
 		metaDadaRepository.delete(metaDada);
 		return conversioTipusHelper.convertir(
 				metaDada,
@@ -173,12 +169,12 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 			Long entitatId,
 			Long id) {
 		logger.debug("Consulta de la meta-dada (id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaDadaEntity metaDada = comprovarMetaDada(entitat, id);
+		MetaDadaEntity metaDada = entityComprovarHelper.comprovarMetaDada(entitat, id);
 		return conversioTipusHelper.convertir(
 				metaDada,
 				MetaDadaDto.class);
@@ -188,11 +184,11 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	@Override
 	public MetaDadaDto findByEntitatCodi(
 			Long entitatId,
-			String codi) throws EntitatNotFoundException {
+			String codi) {
 		logger.debug("Consulta de la meta-dada per entitat i codi ("
 				+ "entitatId=" + entitatId + ", "
 				+ "codi=" + codi + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -206,9 +202,9 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	@Override
 	public PaginaDto<MetaDadaDto> findAllByEntitatPaginat(
 			Long entitatId,
-			PaginacioParamsDto paginacioParams) throws EntitatNotFoundException {
+			PaginacioParamsDto paginacioParams) {
 		logger.debug("Consulta paginada de les meta-dades de l'entitat (entitatId=" + entitatId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -235,9 +231,9 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	public List<MetaDadaDto> findActiveByEntitat(
 			Long entitatId,
 			boolean incloureGlobalsExpedient,
-			boolean incloureGlobalsDocument) throws EntitatNotFoundException {
+			boolean incloureGlobalsDocument) {
 		logger.debug("Consulta de les meta-dades de l'entitat (entitatId=" + entitatId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -254,16 +250,16 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	@Override
 	public List<MetaDadaDto> findByNodePerCreacio(
 			Long entitatId,
-			Long nodeId) throws EntitatNotFoundException, NodeNotFoundException {
+			Long nodeId) {
 		logger.debug("Consulta de les meta-dades candidates a afegir pel node ("
 				+ "entitatId=" + entitatId + ", "
 				+ "nodeId=" + nodeId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		NodeEntity node = comprovarNode(entitat, nodeId);
+		NodeEntity node = entityComprovarHelper.comprovarNode(entitat, nodeId);
 		List<MetaDadaEntity> metaDades = new ArrayList<MetaDadaEntity>();
 		// De les meta-dades actives pel meta-node només deixa les que encara
 		// es poden afegir al node especificat segons la multiplicitat.
@@ -311,39 +307,6 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 	}
 
 
-
-	private MetaDadaEntity comprovarMetaDada(
-			EntitatEntity entitat,
-			Long metaDadaId) {
-		MetaDadaEntity metaDada = metaDadaRepository.findOne(metaDadaId);
-		if (metaDada == null) {
-			logger.error("No s'ha trobat la meta-dada (metaDadaId=" + metaDadaId + ")");
-			throw new MetaDadaNotFoundException();
-		}
-		if (!entitat.equals(metaDada.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de la meta-dada ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + metaDada.getEntitat().getId() + ")");
-			throw new MetaDadaNotFoundException();
-		}
-		return metaDada;
-	}
-	private NodeEntity comprovarNode(
-			EntitatEntity entitat,
-			Long nodeId) {
-		NodeEntity node = nodeRepository.findOne(nodeId);
-		if (node == null) {
-			logger.error("No s'ha trobat el node (nodeId=" + nodeId + ")");
-			throw new NodeNotFoundException();
-		}
-		if (!entitat.equals(node.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat del node ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + node.getEntitat().getId() + ")");
-			throw new MetaNodeNotFoundException();
-		}
-		return node;
-	}
 
 	private static final Logger logger = LoggerFactory.getLogger(MetaDadaServiceImpl.class);
 

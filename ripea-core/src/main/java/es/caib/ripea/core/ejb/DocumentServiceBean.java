@@ -17,12 +17,6 @@ import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.DocumentNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDocumentNotFoundException;
-import es.caib.ripea.core.api.exception.NomInvalidException;
-import es.caib.ripea.core.api.exception.PluginException;
 import es.caib.ripea.core.api.service.DocumentService;
 
 /**
@@ -50,7 +44,7 @@ public class DocumentServiceBean implements DocumentService {
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) throws EntitatNotFoundException, ContenidorNotFoundException, MetaDocumentNotFoundException, NomInvalidException {
+			byte[] arxiuContingut) {
 		return delegate.create(
 				entitatId, contenidorId,
 				metaDocumentId,
@@ -71,7 +65,7 @@ public class DocumentServiceBean implements DocumentService {
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) throws EntitatNotFoundException, DocumentNotFoundException, NomInvalidException {
+			byte[] arxiuContingut) {
 		return delegate.update(
 				entitatId,
 				id,
@@ -87,7 +81,7 @@ public class DocumentServiceBean implements DocumentService {
 	@RolesAllowed("tothom")
 	public DocumentDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException {
+			Long id) {
 		return delegate.delete(
 				entitatId,
 				id);
@@ -97,7 +91,7 @@ public class DocumentServiceBean implements DocumentService {
 	@RolesAllowed("tothom")
 	public DocumentDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		return delegate.findById(entitatId, id);
 	}
 
@@ -105,7 +99,7 @@ public class DocumentServiceBean implements DocumentService {
 	@RolesAllowed("tothom")
 	public List<DocumentVersioDto> findVersionsByDocument(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException {
+			Long id) {
 		return delegate.findVersionsByDocument(entitatId, id);
 	}
 
@@ -113,7 +107,7 @@ public class DocumentServiceBean implements DocumentService {
 	@RolesAllowed("tothom")
 	public DocumentVersioDto findDarreraVersio(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException {
+			Long id) {
 		return delegate.findDarreraVersio(entitatId, id);
 	}
 
@@ -122,7 +116,7 @@ public class DocumentServiceBean implements DocumentService {
 	public DocumentVersioDto findVersio(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException {
+			int versio) {
 		return delegate.findVersio(entitatId, id, versio);
 	}
 
@@ -131,7 +125,7 @@ public class DocumentServiceBean implements DocumentService {
 	public FitxerDto descarregar(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException {
+			int versio) {
 		return delegate.descarregar(entitatId, id, versio);
 	}
 
@@ -143,7 +137,7 @@ public class DocumentServiceBean implements DocumentService {
 			int versio,
 			String motiu,
 			PortafirmesPrioritatEnumDto prioritat,
-			Date dataCaducitat) throws EntitatNotFoundException, DocumentNotFoundException, IllegalStateException, PluginException {
+			Date dataCaducitat) {
 		delegate.portafirmesEnviar(
 				entitatId,
 				id,
@@ -158,7 +152,7 @@ public class DocumentServiceBean implements DocumentService {
 	public void portafirmesCancelar(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException, IllegalStateException, PluginException {
+			int versio) {
 		delegate.portafirmesCancelar(
 				entitatId,
 				id,
@@ -175,7 +169,7 @@ public class DocumentServiceBean implements DocumentService {
 	public FitxerDto convertirPdf(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException, PluginException {
+			int versio) {
 		return convertirPdf(
 				entitatId,
 				id,
@@ -187,7 +181,7 @@ public class DocumentServiceBean implements DocumentService {
 	public String generarIdentificadorFirmaApplet(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException {
+			int versio) {
 		return delegate.generarIdentificadorFirmaApplet(
 				entitatId,
 				id,
@@ -199,7 +193,7 @@ public class DocumentServiceBean implements DocumentService {
 	public void custodiarFirmaApplet(
 			String identificador,
 			String arxiuNom,
-			byte[] arxiuContingut) throws DocumentNotFoundException, PluginException {
+			byte[] arxiuContingut) {
 		delegate.custodiarFirmaApplet(
 				identificador,
 				arxiuNom,

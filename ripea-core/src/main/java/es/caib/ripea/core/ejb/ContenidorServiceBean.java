@@ -22,14 +22,6 @@ import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
-import es.caib.ripea.core.api.exception.BustiaNotFoundException;
-import es.caib.ripea.core.api.exception.ContenidorNomDuplicatException;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.DadaNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDadaNotFoundException;
-import es.caib.ripea.core.api.exception.MultiplicitatException;
-import es.caib.ripea.core.api.exception.UsuariNotFoundException;
 import es.caib.ripea.core.api.service.ContenidorService;
 
 /**
@@ -52,7 +44,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	public ContenidorDto rename(
 			Long entitatId,
 			Long contenidorId,
-			String nom) throws EntitatNotFoundException, ContenidorNotFoundException {
+			String nom) {
 		return delegate.rename(
 				entitatId,
 				contenidorId,
@@ -65,7 +57,7 @@ public class ContenidorServiceBean implements ContenidorService {
 			Long entitatId,
 			Long contenidorId,
 			Long metaDadaId,
-			Object valor) throws EntitatNotFoundException, ContenidorNotFoundException, MetaDadaNotFoundException, MultiplicitatException {
+			Object valor) {
 		return delegate.dadaCreate(
 				entitatId,
 				contenidorId,
@@ -79,7 +71,7 @@ public class ContenidorServiceBean implements ContenidorService {
 			Long entitatId,
 			Long contenidorId,
 			Long dadaId,
-			Object valor) throws EntitatNotFoundException, ContenidorNotFoundException, DadaNotFoundException {
+			Object valor) {
 		return delegate.dadaUpdate(entitatId, contenidorId, dadaId, valor);
 	}
 
@@ -88,7 +80,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	public DadaDto dadaDelete(
 			Long entitatId,
 			Long contenidorId,
-			Long dadaId) throws EntitatNotFoundException, ContenidorNotFoundException, DadaNotFoundException {
+			Long dadaId) {
 		return delegate.dadaDelete(entitatId, contenidorId, dadaId);
 	}
 
@@ -97,7 +89,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	public DadaDto dadaFindById(
 			Long entitatId,
 			Long contenidorId,
-			Long dadaId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long dadaId) {
 		return delegate.dadaFindById(entitatId, contenidorId, dadaId);
 	}
 
@@ -105,7 +97,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public ContenidorDto deleteReversible(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.deleteReversible(entitatId, contenidorId);
 	}
 
@@ -113,7 +105,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("IPA_ADMIN")
 	public ContenidorDto deleteDefinitiu(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.deleteDefinitiu(entitatId, contenidorId);
 	}
 
@@ -121,7 +113,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("IPA_ADMIN")
 	public ContenidorDto undelete(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.undelete(entitatId, contenidorId);
 	}
 
@@ -130,7 +122,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	public ContenidorDto move(
 			Long entitatId,
 			Long contenidorOrigenId,
-			Long contenidorDestiId) throws EntitatNotFoundException, ContenidorNotFoundException, ContenidorNomDuplicatException {
+			Long contenidorDestiId) {
 		return delegate.move(entitatId, contenidorOrigenId, contenidorDestiId);
 	}
 
@@ -140,7 +132,7 @@ public class ContenidorServiceBean implements ContenidorService {
 			Long entitatId,
 			Long contenidorOrigenId,
 			Long contenidorDestiId,
-			boolean recursiu) throws EntitatNotFoundException, ContenidorNotFoundException, ContenidorNomDuplicatException {
+			boolean recursiu) {
 		return delegate.copy(entitatId, contenidorOrigenId, contenidorDestiId, recursiu);
 	}
 
@@ -150,7 +142,7 @@ public class ContenidorServiceBean implements ContenidorService {
 			Long entitatId,
 			Long contenidorId,
 			Long bustiaId,
-			String comentari) throws EntitatNotFoundException, ContenidorNotFoundException, BustiaNotFoundException {
+			String comentari) {
 		return delegate.send(entitatId, contenidorId, bustiaId, comentari);
 	}
 
@@ -160,7 +152,7 @@ public class ContenidorServiceBean implements ContenidorService {
 			Long entitatId,
 			Long bustiaId,
 			Long contenidorOrigenId,
-			Long contenidorDestiId) throws EntitatNotFoundException, BustiaNotFoundException, ContenidorNotFoundException {
+			Long contenidorDestiId) {
 		return delegate.receive(
 				entitatId,
 				bustiaId,
@@ -171,7 +163,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@Override
 	@RolesAllowed("tothom")
 	public EscriptoriDto getEscriptoriPerUsuariActual(
-			Long entitatId) throws EntitatNotFoundException, UsuariNotFoundException {
+			Long entitatId) {
 		return delegate.getEscriptoriPerUsuariActual(entitatId);
 	}
 
@@ -179,7 +171,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public ContenidorDto getContenidorSenseContingut(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.getContenidorSenseContingut(entitatId, contenidorId);
 	}
 
@@ -187,7 +179,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public ContenidorDto getContenidorAmbContingut(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.getContenidorAmbContingut(entitatId, contenidorId);
 	}
 
@@ -195,7 +187,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public ContenidorDto getContenidorAmbContingutPerPath(
 			Long entitatId,
-			String path) throws EntitatNotFoundException, ContenidorNotFoundException {
+			String path) {
 		return delegate.getContenidorAmbContingutPerPath(entitatId, path);
 	}
 
@@ -203,7 +195,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public List<ValidacioErrorDto> findErrorsValidacio(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.findErrorsValidacio(entitatId, contenidorId);
 	}
 
@@ -211,7 +203,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("IPA_ADMIN")
 	public List<ContenidorLogDto> findLogsPerContenidorAdmin(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.findLogsPerContenidorAdmin(entitatId, contenidorId);
 	}
 
@@ -219,7 +211,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public List<ContenidorLogDto> findLogsPerContenidorUser(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.findLogsPerContenidorUser(entitatId, contenidorId);
 	}
 
@@ -227,7 +219,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("IPA_ADMIN")
 	public List<ContenidorMovimentDto> findMovimentsPerContenidorAdmin(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.findMovimentsPerContenidorAdmin(entitatId, contenidorId);
 	}
 
@@ -235,7 +227,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public List<ContenidorMovimentDto> findMovimentsPerContenidorUser(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.findMovimentsPerContenidorUser(entitatId, contenidorId);
 	}
 
@@ -244,7 +236,7 @@ public class ContenidorServiceBean implements ContenidorService {
 	public PaginaDto<ContenidorDto> findAdmin(
 			Long entitatId,
 			ContenidorFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws EntitatNotFoundException {
+			PaginacioParamsDto paginacioParams) {
 		return delegate.findAdmin(
 				entitatId,
 				filtre,
@@ -259,7 +251,7 @@ public class ContenidorServiceBean implements ContenidorService {
 			String usuariCodi,
 			Date dataInici,
 			Date dataFi,
-			PaginacioParamsDto paginacioParams) throws EntitatNotFoundException, ContenidorNotFoundException {
+			PaginacioParamsDto paginacioParams) {
 		return delegate.findEsborrats(
 				entitatId,
 				nom,

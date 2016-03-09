@@ -25,9 +25,7 @@ import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.ArxiuNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.UnitatNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -35,7 +33,7 @@ import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContenidorHelper;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
@@ -67,9 +65,9 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
-	@Resource
 	private CacheHelper cacheHelper;
+	@Resource
+	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
@@ -79,11 +77,11 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional
 	public ArxiuDto create(
 			Long entitatId,
-			ArxiuDto arxiu) throws EntitatNotFoundException, UnitatNotFoundException {
+			ArxiuDto arxiu) {
 		logger.debug("Creant un nou arxiu ("
 				+ "entitatId=" + entitatId + ", "
 				+ "arxiuViu=" + arxiu + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -93,7 +91,9 @@ public class ArxiuServiceImpl implements ArxiuService {
 				arxiu.getUnitatCodi());
 		if (unitat == null) {
 			logger.error("No s'ha trobat l'unitat administrativa (codi=" + arxiu.getUnitatCodi() + ")");
-			throw new UnitatNotFoundException();
+			throw new NotFoundException(
+					arxiu.getUnitatCodi(),
+					UnitatOrganitzativaDto.class);
 		}
 		// Cerca l'arxiu superior
 		ArxiuEntity arxiuPare = arxiuRepository.findByEntitatAndUnitatCodiAndPareNull(
@@ -121,16 +121,16 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional
 	public ArxiuDto update(
 			Long entitatId,
-			ArxiuDto arxiu) throws EntitatNotFoundException, ArxiuNotFoundException {
+			ArxiuDto arxiu) {
 		logger.debug("Modificant l'arxiu ("
 				+ "entitatId=" + entitatId + ", "
 				+ "arxiu=" + arxiu + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		ArxiuEntity entity = comprovarArxiu(
+		ArxiuEntity entity = entityComprovarHelper.comprovarArxiu(
 				entitat,
 				arxiu.getId());
 		entity.update(
@@ -143,17 +143,17 @@ public class ArxiuServiceImpl implements ArxiuService {
 	public ArxiuDto updateActiu(
 			Long entitatId,
 			Long id,
-			boolean actiu) throws EntitatNotFoundException, ArxiuNotFoundException {
+			boolean actiu) throws NotFoundException {
 		logger.debug("Modificant propietat actiu de l'arxiu ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "actiu=" + actiu + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		ArxiuEntity entity = comprovarArxiu(
+		ArxiuEntity entity = entityComprovarHelper.comprovarArxiu(
 				entitat,
 				id);
 		entity.updateActiu(actiu);
@@ -164,16 +164,16 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional
 	public ArxiuDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ArxiuNotFoundException {
+			Long id) throws NotFoundException {
 		logger.debug("Esborrant l'arxiu ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		ArxiuEntity arxiu = comprovarArxiu(
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
 				entitat,
 				id);
 		arxiuRepository.delete(arxiu);
@@ -184,16 +184,16 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional(readOnly = true)
 	public ArxiuDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) throws NotFoundException {
 		logger.debug("Cercant l'arxiu ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		ArxiuEntity arxiu = comprovarArxiu(
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
 				entitat,
 				id);
 		ArxiuDto resposta = toArxiuDto(arxiu);
@@ -219,11 +219,11 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional(readOnly = true)
 	public List<ArxiuDto> findByUnitatCodiAdmin(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, UnitatNotFoundException {
+			String unitatCodi) throws NotFoundException {
 		logger.debug("Cercant els arxius de la unitat per admins ("
 				+ "entitatId=" + entitatId + ", "
 				+ "unitatCodi=" + unitatCodi + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -254,12 +254,12 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional(readOnly = true)
 	public List<ArxiuDto> findByUnitatCodiUsuari(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, UnitatNotFoundException {
+			String unitatCodi) throws NotFoundException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercant els arxius vius de la unitat per usuaris ("
 				+ "entitatId=" + entitatId + ", "
 				+ "unitatCodi=" + unitatCodi + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -304,12 +304,12 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Override
 	@Transactional
 	public List<ArxiuDto> findPermesosPerUsuari(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) throws NotFoundException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercan arxius permesos per a l'usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "usuariCodi=" + auth.getName() + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -351,17 +351,17 @@ public class ArxiuServiceImpl implements ArxiuService {
 	public void updatePermis(
 			Long entitatId,
 			Long id,
-			PermisDto permis) throws EntitatNotFoundException, ArxiuNotFoundException {
+			PermisDto permis) throws NotFoundException {
 		logger.debug("Actualitzant permis per a l'arxiu ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "permis=" + permis + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		comprovarArxiu(
+		entityComprovarHelper.comprovarArxiu(
 				entitat,
 				id);
 		permisosHelper.updatePermis(
@@ -375,17 +375,17 @@ public class ArxiuServiceImpl implements ArxiuService {
 	public void deletePermis(
 			Long entitatId,
 			Long id,
-			Long permisId) throws EntitatNotFoundException, ArxiuNotFoundException {
+			Long permisId) throws NotFoundException {
 		logger.debug("Esborrant permis per a l'arxiu ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "permisId=" + permisId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		comprovarArxiu(
+		entityComprovarHelper.comprovarArxiu(
 				entitat,
 				id);
 		permisosHelper.deletePermis(
@@ -397,10 +397,10 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional(readOnly = true)
 	@Override
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) throws NotFoundException {
 		logger.debug("Consulta de l'arbre d'unitats organitzatives per administrador ("
 				+ "entitatId=" + entitatId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
@@ -414,10 +414,10 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional(readOnly = true)
 	@Override
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesUser(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) throws NotFoundException {
 		logger.debug("Consulta de l'arbre d'unitats organitzatives per usuari ("
 				+ "entitatId=" + entitatId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
@@ -441,23 +441,6 @@ public class ArxiuServiceImpl implements ArxiuService {
 			resposta.add(
 					(ArxiuDto)contenidorHelper.toContenidorDto(arxiu));
 		return resposta;
-	}
-
-	private ArxiuEntity comprovarArxiu(
-			EntitatEntity entitat,
-			Long arxiuId) throws ArxiuNotFoundException {
-		ArxiuEntity arxiu = arxiuRepository.findOne(arxiuId);
-		if (arxiu == null) {
-			logger.error("No s'ha trobat l'arxiu (arxiuId=" + arxiuId + ")");
-			throw new ArxiuNotFoundException();
-		}
-		if (!entitat.equals(arxiu.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'arxiu ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + arxiu.getEntitat().getId() + ")");
-			throw new ArxiuNotFoundException();
-		}
-		return arxiu;
 	}
 
 	private void omplirPermisosPerArxius(

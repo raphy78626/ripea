@@ -16,7 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import es.caib.ripea.core.api.exception.UsuariNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.repository.UsuariRepository;
 
@@ -33,6 +33,10 @@ public class UsuariHelper {
 	private UsuariRepository usuariRepository;
 
 
+	/*public UsuariEntity getUsuariActualitzatAmbFontExterna(
+			String usuariCodi) {
+		
+	}*/
 
 	public Authentication generarUsuariAutenticat(
 			String usuariCodi,
@@ -70,7 +74,9 @@ public class UsuariHelper {
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
 			logger.error("No s'ha trobat l'usuari (codi=" + auth.getName() + ")");
-			throw new UsuariNotFoundException();
+			throw new NotFoundException(
+					auth.getName(),
+					UsuariEntity.class);
 		}
 		return usuari;
 	}

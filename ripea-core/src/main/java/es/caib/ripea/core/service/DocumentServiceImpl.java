@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +20,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
@@ -34,11 +32,8 @@ import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesEnviamentDto;
 import es.caib.ripea.core.api.dto.PortafirmesEstatEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.DocumentNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDocumentNotFoundException;
 import es.caib.ripea.core.api.exception.NomInvalidException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.PluginException;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.entity.ContenidorEntity;
@@ -52,14 +47,13 @@ import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientMetaDocumentEntity;
-import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MultiplicitatEnum;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.DocumentHelper;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.repository.ContenidorRepository;
@@ -69,7 +63,6 @@ import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.MetaDocumentRepository;
 import es.caib.ripea.core.repository.MetaExpedientMetaDocumentRepository;
-import es.caib.ripea.core.security.ExtendedPermission;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPrioritatEnum;
 
 /**
@@ -106,9 +99,9 @@ public class DocumentServiceImpl implements DocumentService {
 	@Resource
 	private PluginHelper pluginHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
-	@Resource
 	private CacheHelper cacheHelper;
+	@Resource
+	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private ContenidorLogHelper contenidorLogHelper;
 
@@ -124,7 +117,7 @@ public class DocumentServiceImpl implements DocumentService {
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) throws EntitatNotFoundException, ContenidorNotFoundException, MetaDocumentNotFoundException, NomInvalidException {
+			byte[] arxiuContingut) {
 		logger.debug("Creant nou document (" +
 				"entitatId=" + entitatId + ", " +
 				"contenidorId=" + contenidorId + ", " +
@@ -134,18 +127,19 @@ public class DocumentServiceImpl implements DocumentService {
 				"arxiuNom=" + arxiuNom + ", " +
 				"arxiuContentType=" + arxiuContentType + ", " +
 				"arxiuContingut=" + arxiuContingut + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = comprovarContenidor(
+		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
 				entitat,
-				contenidorId);
+				contenidorId,
+				null);
 		// Comprova el meta-document
 		MetaDocumentEntity metaDocument = null;
 		if (metaDocumentId != null) {
-			metaDocument = comprovarMetaDocument(
+			metaDocument = entityComprovarHelper.comprovarMetaDocument(
 					entitat,
 					metaDocumentId,
 					true);
@@ -279,18 +273,18 @@ public class DocumentServiceImpl implements DocumentService {
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) throws EntitatNotFoundException, DocumentNotFoundException, NomInvalidException {
+			byte[] arxiuContingut) {
 		logger.debug("Actualitzant el document ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "nom=" + nom + ", "
 				+ "data=" + data + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				false,
@@ -331,7 +325,7 @@ public class DocumentServiceImpl implements DocumentService {
 		// Comprova el meta-expedient
 		MetaDocumentEntity metaDocument = null;
 		if (metaDocumentId != null) {
-			metaDocument = comprovarMetaDocument(
+			metaDocument = entityComprovarHelper.comprovarMetaDocument(
 					entitat,
 					metaDocumentId,
 					true);
@@ -369,16 +363,16 @@ public class DocumentServiceImpl implements DocumentService {
 	@CacheEvict(value = "errorsValidacioNode", key = "#id")
 	public DocumentDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException {
+			Long id) {
 		logger.debug("Actualitzant el document ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				false,
@@ -436,16 +430,16 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public DocumentDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException {
+			Long id) {
 		logger.debug("Obtenint el document ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				true,
@@ -466,16 +460,16 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public List<DocumentVersioDto> findVersionsByDocument(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException {
+			Long id) {
 		logger.debug("Obtenint les versions del document ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				true,
@@ -504,7 +498,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public DocumentVersioDto findDarreraVersio(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException {
+			Long id) {
 		return findVersio(entitatId, id, -1);
 	}
 
@@ -513,17 +507,17 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentVersioDto findVersio(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException {
+			int versio) {
 		logger.debug("Obtenint la versió del document ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "versio=" + versio + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				true,
@@ -554,17 +548,17 @@ public class DocumentServiceImpl implements DocumentService {
 	public FitxerDto descarregar(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException {
+			int versio) {
 		logger.debug("Descarregant contingut del document ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "versio=" + versio + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				true,
@@ -585,7 +579,9 @@ public class DocumentServiceImpl implements DocumentService {
 			return documentHelper.getFitxerAssociat(
 					documentVersio);
 		} else {
-			throw new DocumentNotFoundException();
+			throw new NotFoundException(
+					"(documentId=" + document.getId() + ", versio=" + versio + ")",
+					DocumentVersioEntity.class);
 		}
 	}
 
@@ -597,7 +593,7 @@ public class DocumentServiceImpl implements DocumentService {
 			int versio,
 			String motiu,
 			PortafirmesPrioritatEnumDto prioritat,
-			Date dataCaducitat) throws EntitatNotFoundException, DocumentNotFoundException, IllegalStateException, PluginException {
+			Date dataCaducitat) {
 		logger.debug("Enviant document a portafirmes (" +
 				"entitatId=" + entitatId + ", " +
 				"id=" + id + ", " +
@@ -605,12 +601,12 @@ public class DocumentServiceImpl implements DocumentService {
 				"motiu=" + motiu + ", " +
 				"prioritat=" + prioritat + ", " +
 				"dataCaducitat=" + dataCaducitat + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				true,
@@ -673,17 +669,17 @@ public class DocumentServiceImpl implements DocumentService {
 	public void portafirmesCancelar(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException, IllegalStateException, PluginException {
+			int versio) {
 		logger.debug("Enviant document a portafirmes (" +
 				"entitatId=" + entitatId + ", " +
 				"id=" + id + ", " +
 				"versio=" + versio + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				true,
@@ -744,7 +740,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public Exception portafirmesCallback(
 			int documentId,
-			int estat) throws DocumentNotFoundException {
+			int estat) {
 		logger.debug("Processant petició del callback ("
 				+ "documentId=" + documentId + ", "
 				+ "estat=" + estat + ")");
@@ -752,7 +748,9 @@ public class DocumentServiceImpl implements DocumentService {
 				new Integer(documentId).longValue());
 		if (documentPortafirmes == null) {
 			logger.error("No s'ha trobat el document de portafirmes (documentId=" + documentId + ")");
-			throw new DocumentNotFoundException();
+			throw new NotFoundException(
+					documentId,
+					DocumentPortafirmesEntity.class);
 		}
 		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
 				documentPortafirmes.getDocument(),
@@ -761,7 +759,9 @@ public class DocumentServiceImpl implements DocumentService {
 			logger.error("No s'ha trobat la versió del document (" +
 					"documentId=" + documentPortafirmes.getDocument().getId() + ", " +
 					"versio=" + documentPortafirmes.getVersio() + ")");
-			throw new DocumentNotFoundException();
+			throw new NotFoundException(
+					"(documentId=" + documentPortafirmes.getDocument().getId() + ", versio=" + documentPortafirmes.getVersio() + ")",
+					DocumentVersioEntity.class);
 		}
 
 		// TODO Verificar permisos de l'usuari per fer aquesta acció
@@ -842,12 +842,12 @@ public class DocumentServiceImpl implements DocumentService {
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "versio=" + versio + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				true,
@@ -868,7 +868,9 @@ public class DocumentServiceImpl implements DocumentService {
 			logger.error("No s'ha trobat la versió del document (" +
 					"documentId=" + id + ", " +
 					"versio=" + versio + ")");
-			throw new DocumentNotFoundException();
+			throw new NotFoundException(
+					"(documentId=" + id + ", versio=" + versio + ")",
+					DocumentVersioEntity.class);
 		}
 		String url = pluginHelper.custodiaReservarUrl(documentVersio);
 		return pluginHelper.conversioConvertirPdf(
@@ -882,17 +884,17 @@ public class DocumentServiceImpl implements DocumentService {
 	public String generarIdentificadorFirmaApplet(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException {
+			int versio) {
 		logger.debug("Generar identificador firma applet ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "versio=" + versio + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = comprovarDocument(
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
 				id,
 				true,
@@ -913,7 +915,9 @@ public class DocumentServiceImpl implements DocumentService {
 			logger.error("No s'ha trobat la versió del document (" +
 					"documentId=" + id + ", " +
 					"versio=" + versio + ")");
-			throw new DocumentNotFoundException();
+			throw new NotFoundException(
+					"(documentId=" + id + ", versio=" + versio + ")",
+					DocumentVersioEntity.class);
 		}
 		try {
 			return firmaAppletXifrar(
@@ -942,7 +946,7 @@ public class DocumentServiceImpl implements DocumentService {
 	public void custodiarFirmaApplet(
 			String identificador,
 			String arxiuNom,
-			byte[] arxiuContingut) throws DocumentNotFoundException, PluginException {
+			byte[] arxiuContingut) {
 		logger.debug("Custodiar identificador firma applet ("
 				+ "identificador=" + identificador + ")");
 		ObjecteFirmaApplet objecte = null;
@@ -957,12 +961,12 @@ public class DocumentServiceImpl implements DocumentService {
 					ex);
 		}
 		if (objecte != null) {
-			EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 					objecte.getEntitatId(),
 					true,
 					false,
 					false);
-			DocumentEntity document = comprovarDocument(
+			DocumentEntity document = entityComprovarHelper.comprovarDocument(
 					entitat,
 					objecte.getDocumentId(),
 					true,
@@ -983,7 +987,9 @@ public class DocumentServiceImpl implements DocumentService {
 				logger.error("No s'ha trobat la versió del document (" +
 						"documentId=" + objecte.getDocumentId() + ", " +
 						"versio=" + objecte.getVersio() + ")");
-				throw new DocumentNotFoundException();
+				throw new NotFoundException(
+						"(documentId=" + objecte.getDocumentId() + ", versio=" + objecte.getVersio() + ")",
+						DocumentVersioEntity.class);
 			}
 			// Registra al log la firma del document
 			contenidorLogHelper.log(
@@ -1031,90 +1037,6 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				false);
-	}
-
-	private ContenidorEntity comprovarContenidor(
-			EntitatEntity entitat,
-			Long id) throws ContenidorNotFoundException {
-		ContenidorEntity contenidor = contenidorRepository.findOne(id);
-		if (contenidor == null) {
-			logger.error("No s'ha trobat el contenidor (contenidorId=" + id + ")");
-			throw new ContenidorNotFoundException();
-		}
-		if (!contenidor.getEntitat().equals(entitat)) {
-			logger.error("L'entitat del contenidor no coincideix ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + contenidor.getEntitat().getId() + ")");
-			throw new ContenidorNotFoundException();
-		}
-		return contenidor;
-	}
-	private MetaDocumentEntity comprovarMetaDocument(
-			EntitatEntity entitat,
-			Long id,
-			boolean comprovarPermisCreate) throws MetaDocumentNotFoundException {
-		MetaDocumentEntity metaDocument = metaDocumentRepository.findOne(id);
-		if (metaDocument == null) {
-			logger.error("No s'ha trobat el meta-document (id=" + id + ")");
-			throw new MetaDocumentNotFoundException();
-		}
-		if (!entitat.equals(metaDocument.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat del meta-document ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + metaDocument.getEntitat().getId() + ")");
-			throw new MetaDocumentNotFoundException();
-		}
-		if (comprovarPermisCreate) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			boolean granted = permisosHelper.isGrantedAll(
-					metaDocument.getId(),
-					MetaNodeEntity.class,
-					new Permission[] {ExtendedPermission.CREATE},
-					auth);
-			if (!granted) {
-				logger.error("No es tenen permisos per a crear documents amb el meta-document (id=" + id + ")");
-				throw new SecurityException("No es tenen permisos per a crear documents amb aquest meta-document");
-			}
-		}
-		return metaDocument;
-	}
-	private DocumentEntity comprovarDocument(
-			EntitatEntity entitat,
-			Long documentId,
-			boolean comprovarPermisRead,
-			boolean comprovarPermisWrite,
-			boolean comprovarPermisDelete) throws DocumentNotFoundException {
-		DocumentEntity document = documentRepository.findOne(documentId);
-		if (document == null) {
-			logger.error("No s'ha trobat el document (documentId=" + documentId + ")");
-			throw new DocumentNotFoundException();
-		}
-		if (!document.getEntitat().equals(entitat)) {
-			logger.error("L'entitat del document no coincideix ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + document.getEntitat().getId() + ")");
-			throw new DocumentNotFoundException();
-		}
-		if (document.getMetaDocument() != null && (comprovarPermisRead || comprovarPermisWrite || comprovarPermisDelete)) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			List<Permission> permisos = new ArrayList<Permission>();
-			if (comprovarPermisRead)
-				permisos.add(ExtendedPermission.READ);
-			if (comprovarPermisWrite)
-				permisos.add(ExtendedPermission.WRITE);
-			if (comprovarPermisDelete)
-				permisos.add(ExtendedPermission.DELETE);
-			boolean granted = permisosHelper.isGrantedAll(
-					document.getMetaDocument().getId(),
-					MetaNodeEntity.class,
-					permisos.toArray(new Permission[permisos.size()]),
-					auth);
-			if (!granted) {
-				logger.error("No es tenen permisos per a modificar el document (documentId=" + documentId + ")");
-				throw new SecurityException("No es tenen permisos per a modificar el document");
-			}
-		}
-		return document;
 	}
 
 	private void emplenarDadesPortafirmes(

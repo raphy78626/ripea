@@ -18,10 +18,6 @@ import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.BustiaNotFoundException;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.UnitatNotFoundException;
 import es.caib.ripea.core.api.service.BustiaService;
 
 /**
@@ -43,7 +39,7 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("IPA_ADMIN")
 	public BustiaDto create(
 			Long entitatId,
-			BustiaDto bustia) throws EntitatNotFoundException, UnitatNotFoundException {
+			BustiaDto bustia) {
 		return delegate.create(entitatId, bustia);
 	}
 
@@ -51,7 +47,7 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("IPA_ADMIN")
 	public BustiaDto update(
 			Long entitatId,
-			BustiaDto bustia) throws EntitatNotFoundException, BustiaNotFoundException {
+			BustiaDto bustia) {
 		return delegate.update(entitatId, bustia);
 	}
 
@@ -60,7 +56,7 @@ public class BustiaServiceBean implements BustiaService {
 	public BustiaDto updateActiva(
 			Long entitatId,
 			Long id,
-			boolean activa) throws EntitatNotFoundException, BustiaNotFoundException {
+			boolean activa) {
 		return delegate.updateActiva(entitatId, id, activa);
 	}
 
@@ -68,7 +64,7 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("IPA_ADMIN")
 	public BustiaDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long id) {
 		return delegate.delete(entitatId, id);
 	}
 
@@ -76,7 +72,7 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("IPA_ADMIN")
 	public BustiaDto marcarPerDefecte(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long id) {
 		return delegate.marcarPerDefecte(entitatId, id);
 	}
 
@@ -84,7 +80,7 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed({"IPA_ADMIN", "tothom"})
 	public BustiaDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		return delegate.findById(entitatId, id);
 	}
 
@@ -92,7 +88,7 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("IPA_ADMIN")
 	public List<BustiaDto> findByUnitatCodiAdmin(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, UnitatNotFoundException {
+			String unitatCodi) {
 		return delegate.findByUnitatCodiAdmin(entitatId, unitatCodi);
 	}
 
@@ -100,21 +96,21 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("tothom")
 	public List<BustiaDto> findByUnitatCodiUsuari(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, UnitatNotFoundException {
+			String unitatCodi) {
 		return delegate.findByUnitatCodiUsuari(entitatId, unitatCodi);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public List<BustiaDto> findByEntitatAndActivaTrue(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		return delegate.findByEntitatAndActivaTrue(entitatId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public List<BustiaDto> findPermesesPerUsuari(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		return delegate.findPermesesPerUsuari(entitatId);
 	}
 
@@ -122,7 +118,7 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("tothom")
 	public List<ContenidorDto> findContingutPendent(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long id) {
 		return delegate.findContingutPendent(entitatId, id);
 	}
 
@@ -130,7 +126,7 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("tothom")
 	public List<RegistreAnotacioDto> findRegistrePendent(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long id) {
 		return delegate.findRegistrePendent(entitatId, id);
 	}
 
@@ -139,7 +135,7 @@ public class BustiaServiceBean implements BustiaService {
 	public RegistreAnotacioDto findOneRegistrePendent(
 			Long entitatId,
 			Long id,
-			Long registreId) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long registreId) {
 		return delegate.findOneRegistrePendent(
 				entitatId,
 				id,
@@ -149,14 +145,14 @@ public class BustiaServiceBean implements BustiaService {
 	@Override
 	@RolesAllowed("tothom")
 	public long countElementsPendentsBustiesAll(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		return delegate.countElementsPendentsBustiesAll(entitatId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public void refreshCountElementsPendentsBustiesAll(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		delegate.refreshCountElementsPendentsBustiesAll(entitatId);
 	}
 
@@ -165,7 +161,7 @@ public class BustiaServiceBean implements BustiaService {
 	public void updatePermis(
 			Long entitatId,
 			Long id,
-			PermisDto permis) throws EntitatNotFoundException, BustiaNotFoundException {
+			PermisDto permis) {
 		delegate.updatePermis(entitatId, id, permis);
 	}	
 
@@ -174,7 +170,7 @@ public class BustiaServiceBean implements BustiaService {
 	public void deletePermis(
 			Long entitatId,
 			Long id,
-			Long permisId) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long permisId) {
 		delegate.deletePermis(entitatId, id, permisId);
 	}
 
@@ -183,7 +179,7 @@ public class BustiaServiceBean implements BustiaService {
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBustiesPermeses,
-			boolean comptarElementsPendents) throws EntitatNotFoundException {
+			boolean comptarElementsPendents) {
 		return delegate.findArbreUnitatsOrganitzatives(
 				entitatId,
 				nomesBustiesPermeses,
@@ -197,7 +193,7 @@ public class BustiaServiceBean implements BustiaService {
 			Long id,
 			Long contenidorId,
 			Long bustiaDestiId,
-			String comentari) throws EntitatNotFoundException, BustiaNotFoundException, ContenidorNotFoundException {
+			String comentari) {
 		delegate.forwardContenidor(
 				entitatId,
 				id,
@@ -213,7 +209,7 @@ public class BustiaServiceBean implements BustiaService {
 			Long id,
 			Long registreId,
 			Long bustiaDestiId,
-			String comentari) throws EntitatNotFoundException, BustiaNotFoundException, ContenidorNotFoundException {
+			String comentari) {
 		delegate.forwardRegistre(
 				entitatId,
 				id,

@@ -20,10 +20,6 @@ import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDadaNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDocumentNotFoundException;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 
 /**
@@ -64,7 +60,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 			MetaDocumentDto metaDocument,
 			String plantillaNom,
 			String plantillaContentType,
-			byte[] plantillaContingut) throws EntitatNotFoundException, MetaDocumentNotFoundException {
+			byte[] plantillaContingut) {
 		return delegate.update(
 				entitatId,
 				metaDocument,
@@ -78,7 +74,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	public MetaDocumentDto updateActiu(
 			Long entitatId,
 			Long id,
-			boolean actiu) throws EntitatNotFoundException, MetaDocumentNotFoundException {
+			boolean actiu) {
 		return delegate.updateActiu(entitatId, id, actiu);
 	}
 
@@ -86,7 +82,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	@RolesAllowed("IPA_ADMIN")
 	public MetaDocumentDto delete(
 			Long entitatId,
-			Long metaDocumentId) throws EntitatNotFoundException, MetaDocumentNotFoundException {
+			Long metaDocumentId) {
 		return delegate.delete(entitatId, metaDocumentId);
 	}
 
@@ -94,7 +90,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	@RolesAllowed("IPA_ADMIN")
 	public MetaDocumentDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		return delegate.findById(
 				entitatId,
 				id);
@@ -104,14 +100,14 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	@RolesAllowed("IPA_ADMIN")
 	public MetaDocumentDto findByEntitatCodi(
 			Long entitatId,
-			String codi) throws EntitatNotFoundException {
+			String codi) {
 		return delegate.findByEntitatCodi(entitatId, codi);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
 	public List<MetaDocumentDto> findByEntitat(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		return delegate.findByEntitat(entitatId);
 	}
 
@@ -119,7 +115,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	@RolesAllowed("IPA_ADMIN")
 	public PaginaDto<MetaDocumentDto> findByEntitatPaginat(
 			Long entitatId,
-			PaginacioParamsDto paginacioParams) throws EntitatNotFoundException {
+			PaginacioParamsDto paginacioParams) {
 		return delegate.findByEntitatPaginat(entitatId, paginacioParams);
 	}
 
@@ -127,7 +123,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	@RolesAllowed("IPA_ADMIN")
 	public List<MetaDocumentDto> findByEntitatAndActiveTrue(
 			Long entitatId,
-			boolean incloureGlobalsExpedient) throws EntitatNotFoundException {
+			boolean incloureGlobalsExpedient) {
 		return delegate.findByEntitatAndActiveTrue(
 				entitatId,
 				incloureGlobalsExpedient);
@@ -137,7 +133,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	@RolesAllowed({"IPA_ADMIN", "tothom"})
 	public FitxerDto getPlantilla(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, MetaDocumentNotFoundException {
+			Long id) {
 		return delegate.getPlantilla(entitatId, id);
 	}
 
@@ -148,7 +144,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 			Long id,
 			Long metaDadaId,
 			MultiplicitatEnumDto multiplicitat,
-			boolean readOnly) throws EntitatNotFoundException, MetaDocumentNotFoundException, MetaDadaNotFoundException {
+			boolean readOnly) {
 		delegate.metaDadaCreate(entitatId, id, metaDadaId, multiplicitat, readOnly);
 	}
 
@@ -159,7 +155,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 			Long id,
 			Long metaNodeMetaDadaId,
 			MultiplicitatEnumDto multiplicitat,
-			boolean readOnly) throws EntitatNotFoundException, MetaDocumentNotFoundException, MetaDadaNotFoundException {
+			boolean readOnly) {
 		delegate.metaDadaUpdate(entitatId, id, metaNodeMetaDadaId, multiplicitat, readOnly);
 	}
 
@@ -168,7 +164,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	public void metaDadaDelete(
 			Long entitatId,
 			Long id,
-			Long metaDadaId) throws EntitatNotFoundException, MetaDocumentNotFoundException, MetaDadaNotFoundException {
+			Long metaDadaId) {
 		delegate.metaDadaDelete(entitatId, id, metaDadaId);
 	}
 
@@ -178,7 +174,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 			Long entitatId,
 			Long id,
 			Long metaDadaId,
-			int posicio) throws EntitatNotFoundException, MetaDocumentNotFoundException, MetaDadaNotFoundException {
+			int posicio) {
 		delegate.metaDadaMove(entitatId, id, metaDadaId, posicio);
 	}
 
@@ -187,28 +183,25 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	public MetaNodeMetaDadaDto findMetaDada(
 			Long entitatId,
 			Long id,
-			Long metaNodeMetaDadaId) throws EntitatNotFoundException, MetaDocumentNotFoundException, MetaDadaNotFoundException {
+			Long metaNodeMetaDadaId) {
 		return delegate.findMetaDada(entitatId, id, metaNodeMetaDadaId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public List<PermisDto> findPermis(Long entitatId, Long id)
-			throws EntitatNotFoundException, MetaDocumentNotFoundException {
+	public List<PermisDto> findPermis(Long entitatId, Long id) {
 		return delegate.findPermis(entitatId, id);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public void updatePermis(Long entitatId, Long id, PermisDto permis)
-			throws EntitatNotFoundException, MetaDocumentNotFoundException {
+	public void updatePermis(Long entitatId, Long id, PermisDto permis) {
 		delegate.updatePermis(entitatId, id, permis);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public void deletePermis(Long entitatId, Long id, Long permisId)
-			throws EntitatNotFoundException, MetaDocumentNotFoundException {
+	public void deletePermis(Long entitatId, Long id, Long permisId) {
 		delegate.deletePermis(entitatId, id, permisId);
 	}
 
@@ -216,7 +209,7 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 	@RolesAllowed("tothom")
 	public List<MetaDocumentDto> findActiveByEntitatAndContenidorPerCreacio(
 			Long entitatId,
-			Long contenidorId) throws EntitatNotFoundException, ContenidorNotFoundException {
+			Long contenidorId) {
 		return delegate.findActiveByEntitatAndContenidorPerCreacio(
 				entitatId,
 				contenidorId);

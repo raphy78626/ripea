@@ -16,9 +16,6 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.ArxiuNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.UnitatNotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
 
 /**
@@ -40,7 +37,7 @@ public class ArxiuServiceBean implements ArxiuService {
 	@RolesAllowed("IPA_ADMIN")
 	public ArxiuDto create(
 			Long entitatId,
-			ArxiuDto arxiu) throws EntitatNotFoundException, UnitatNotFoundException {
+			ArxiuDto arxiu) {
 		return delegate.create(entitatId, arxiu);
 	}
 
@@ -48,7 +45,7 @@ public class ArxiuServiceBean implements ArxiuService {
 	@RolesAllowed("IPA_ADMIN")
 	public ArxiuDto update(
 			Long entitatId,
-			ArxiuDto arxiu) throws EntitatNotFoundException, ArxiuNotFoundException {
+			ArxiuDto arxiu) {
 		return delegate.update(entitatId, arxiu);
 	}
 
@@ -57,7 +54,7 @@ public class ArxiuServiceBean implements ArxiuService {
 	public ArxiuDto updateActiu(
 			Long entitatId,
 			Long id,
-			boolean actiu) throws EntitatNotFoundException, ArxiuNotFoundException {
+			boolean actiu) {
 		return delegate.updateActiu(entitatId, id, actiu);
 	}
 
@@ -65,7 +62,7 @@ public class ArxiuServiceBean implements ArxiuService {
 	@RolesAllowed("IPA_ADMIN")
 	public ArxiuDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ArxiuNotFoundException {
+			Long id) {
 		return delegate.delete(entitatId, id);
 	}
 
@@ -73,7 +70,7 @@ public class ArxiuServiceBean implements ArxiuService {
 	@RolesAllowed({"IPA_ADMIN", "tothom"})
 	public ArxiuDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		return delegate.findById(entitatId, id);
 	}
 
@@ -81,7 +78,7 @@ public class ArxiuServiceBean implements ArxiuService {
 	@RolesAllowed("IPA_ADMIN")
 	public List<ArxiuDto> findByUnitatCodiAdmin(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, ArxiuNotFoundException {
+			String unitatCodi) {
 		return delegate.findByUnitatCodiAdmin(entitatId, unitatCodi);
 	}
 
@@ -89,14 +86,14 @@ public class ArxiuServiceBean implements ArxiuService {
 	@RolesAllowed("tothom")
 	public List<ArxiuDto> findByUnitatCodiUsuari(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, ArxiuNotFoundException {
+			String unitatCodi) {
 		return delegate.findByUnitatCodiUsuari(entitatId, unitatCodi);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public List<ArxiuDto> findPermesosPerUsuari(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		return delegate.findPermesosPerUsuari(entitatId);
 	}
 
@@ -105,7 +102,7 @@ public class ArxiuServiceBean implements ArxiuService {
 	public void updatePermis(
 			Long entitatId,
 			Long id,
-			PermisDto permis) throws EntitatNotFoundException, ArxiuNotFoundException {
+			PermisDto permis) {
 		delegate.updatePermis(entitatId, id, permis);
 	}
 
@@ -114,21 +111,21 @@ public class ArxiuServiceBean implements ArxiuService {
 	public void deletePermis(
 			Long entitatId,
 			Long id,
-			Long permisId) throws EntitatNotFoundException, ArxiuNotFoundException {
+			Long permisId) {
 		delegate.deletePermis(entitatId, id, permisId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		return delegate.findArbreUnitatsOrganitzativesAdmin(entitatId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesUser(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		return delegate.findArbreUnitatsOrganitzativesUser(entitatId);
 	}
 

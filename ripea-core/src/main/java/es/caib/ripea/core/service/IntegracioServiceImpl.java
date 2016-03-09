@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.IntegracioAccioDto;
 import es.caib.ripea.core.api.dto.IntegracioDto;
-import es.caib.ripea.core.api.exception.IntegracioNotFoundException;
 import es.caib.ripea.core.api.service.IntegracioService;
 import es.caib.ripea.core.helper.IntegracioHelper;
 
@@ -40,8 +39,7 @@ public class IntegracioServiceImpl implements IntegracioService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<IntegracioAccioDto> findDarreresAccionsByIntegracio(String codi)
-			throws IntegracioNotFoundException {
+	public List<IntegracioAccioDto> findDarreresAccionsByIntegracio(String codi) {
 		logger.debug("Consultant les darreres accions per a la integració ("
 				+ "codi=" + codi + ")");
 		return integracioHelper.findAccionsByIntegracioCodi(codi);

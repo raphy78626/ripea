@@ -12,10 +12,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.api.exception.CarpetaNotFoundException;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.NomInvalidException;
 import es.caib.ripea.core.api.service.CarpetaService;
 
 /**
@@ -39,7 +35,7 @@ public class CarpetaServiceBean implements CarpetaService {
 			Long entitatId,
 			Long contenidorId,
 			String nom,
-			CarpetaTipusEnumDto tipus) throws EntitatNotFoundException, ContenidorNotFoundException, NomInvalidException {
+			CarpetaTipusEnumDto tipus) {
 		return delegate.create(
 				entitatId,
 				contenidorId,
@@ -53,7 +49,7 @@ public class CarpetaServiceBean implements CarpetaService {
 			Long entitatId,
 			Long id,
 			String nom,
-			CarpetaTipusEnumDto tipus) throws EntitatNotFoundException, CarpetaNotFoundException, NomInvalidException {
+			CarpetaTipusEnumDto tipus) {
 		return delegate.update(
 				entitatId,
 				id,
@@ -65,7 +61,7 @@ public class CarpetaServiceBean implements CarpetaService {
 	@RolesAllowed("tothom")
 	public CarpetaDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, CarpetaNotFoundException {
+			Long id) {
 		return delegate.delete(entitatId, id);
 	}
 
@@ -73,7 +69,7 @@ public class CarpetaServiceBean implements CarpetaService {
 	@RolesAllowed("tothom")
 	public CarpetaDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		return delegate.findById(entitatId, id);
 	}
 

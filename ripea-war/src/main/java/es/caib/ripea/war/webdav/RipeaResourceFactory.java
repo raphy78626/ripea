@@ -3,12 +3,6 @@
  */
 package es.caib.ripea.war.webdav;
 
-import io.milton.common.Path;
-import io.milton.http.ResourceFactory;
-import io.milton.http.exceptions.BadRequestException;
-import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.resource.Resource;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,12 +17,17 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.CarpetaService;
 import es.caib.ripea.core.api.service.ContenidorService;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.EntitatService;
+import io.milton.common.Path;
+import io.milton.http.ResourceFactory;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.resource.Resource;
 
 /**
  * ResourceFactory per a crear els recursos per al servidor
@@ -91,7 +90,7 @@ public class RipeaResourceFactory implements ResourceFactory {
 							contenidor,
 							path,
 							false);
-				} catch (ContenidorNotFoundException ex) {
+				} catch (NotFoundException ex) {
 					logger.debug("[F] getResource error (host=" + host + ", path=" + path + "): No s'ha trobat el contenidor");
 				}
 			}

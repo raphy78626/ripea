@@ -14,7 +14,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.IntegracioAccioDto;
 import es.caib.ripea.core.api.dto.IntegracioDto;
-import es.caib.ripea.core.api.exception.IntegracioNotFoundException;
 import es.caib.ripea.core.api.service.IntegracioService;
 
 /**
@@ -41,7 +40,7 @@ public class IntegracioServiceBean implements IntegracioService {
 	@Override
 	@RolesAllowed("IPA_SUPER")
 	public List<IntegracioAccioDto> findDarreresAccionsByIntegracio(
-			String codi) throws IntegracioNotFoundException {
+			String codi) {
 		return delegate.findDarreresAccionsByIntegracio(codi);
 	}
 

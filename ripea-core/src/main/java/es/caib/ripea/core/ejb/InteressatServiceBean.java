@@ -15,9 +15,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.ExpedientNotFoundException;
-import es.caib.ripea.core.api.exception.InteressatNotFoundException;
 import es.caib.ripea.core.api.service.InteressatService;
 
 /**
@@ -40,7 +37,7 @@ public class InteressatServiceBean implements InteressatService {
 	public InteressatDto create(
 			Long entitatId,
 			Long expedientId,
-			InteressatDto interessat) throws EntitatNotFoundException, ExpedientNotFoundException {
+			InteressatDto interessat) {
 		return delegate.create(entitatId, expedientId, interessat);
 	}
 
@@ -48,7 +45,7 @@ public class InteressatServiceBean implements InteressatService {
 	@RolesAllowed("tothom")
 	public void addToExpedient(
 			Long entitatId,
-			Long expedientId, Long id) throws EntitatNotFoundException, ExpedientNotFoundException, InteressatNotFoundException {
+			Long expedientId, Long id) {
 		delegate.addToExpedient(entitatId, expedientId, id);
 	}
 
@@ -57,7 +54,7 @@ public class InteressatServiceBean implements InteressatService {
 	public void removeFromExpedient(
 			Long entitatId,
 			Long expedientId,
-			Long id) throws EntitatNotFoundException, ExpedientNotFoundException, InteressatNotFoundException {
+			Long id) {
 		delegate.removeFromExpedient(entitatId, expedientId, id);
 	}
 
@@ -65,7 +62,7 @@ public class InteressatServiceBean implements InteressatService {
 	@RolesAllowed("tothom")
 	public InteressatDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		return delegate.findById(entitatId, id);
 	}
 
@@ -73,7 +70,7 @@ public class InteressatServiceBean implements InteressatService {
 	@RolesAllowed("tothom")
 	public List<InteressatDto> findByExpedient(
 			Long entitatId,
-			Long expedientId) throws EntitatNotFoundException, ExpedientNotFoundException {
+			Long expedientId) {
 		return delegate.findByExpedient(entitatId, expedientId);
 	}
 
@@ -96,7 +93,7 @@ public class InteressatServiceBean implements InteressatService {
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			Long entitatId,
 			String nom,
-			String identificador) throws EntitatNotFoundException {
+			String identificador) {
 		return delegate.findByFiltreAdministracio(
 				entitatId,
 				nom,

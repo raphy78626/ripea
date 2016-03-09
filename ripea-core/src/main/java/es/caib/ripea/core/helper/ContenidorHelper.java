@@ -645,7 +645,7 @@ public class ContenidorHelper {
 				break;
 			case ROL:
 			case GRUP:
-				List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariConsultarUsuarisAmbGrup(
+				List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariConsultarAmbGrup(
 						permis.getPrincipalNom());
 				if (usuarisGrup != null) {
 					for (DadesUsuari usuariGrup: usuarisGrup) {

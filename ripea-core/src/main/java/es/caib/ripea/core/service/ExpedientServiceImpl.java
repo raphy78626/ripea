@@ -24,15 +24,10 @@ import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.exception.ArxiuNotFoundException;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.ExpedientNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDocumentNotFoundException;
-import es.caib.ripea.core.api.exception.MetaExpedientNotFoundException;
 import es.caib.ripea.core.api.exception.NomInvalidException;
-import es.caib.ripea.core.api.exception.RegistreNotFoundException;
-import es.caib.ripea.core.api.exception.UsuariNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.PermissionDeniedException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
@@ -56,9 +51,9 @@ import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EmailHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.UsuariHelper;
@@ -122,7 +117,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Resource
 	private ContenidorLogHelper contenidorLogHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
+	private EntityComprovarHelper entityComprovarHelper;
 
 
 
@@ -136,7 +131,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 			Integer any,
 			String nom,
 			Long contingutId,
-			Long registreId) throws EntitatNotFoundException, ContenidorNotFoundException, MetaExpedientNotFoundException, ArxiuNotFoundException, NomInvalidException {
+			Long registreId) {
 		logger.debug("Creant nou expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contenidorId=" + contenidorId + ", "
@@ -146,7 +141,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				+ "nom=" + nom + ", "
 				+ "contingutId=" + contingutId + ", "
 				+ "registreId=" + registreId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -275,13 +270,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 			Long id,
 			Long arxiuId,
 			Long metaExpedientId,
-			String nom) throws EntitatNotFoundException, ExpedientNotFoundException, ArxiuNotFoundException, NomInvalidException {
+			String nom) {
 		logger.debug("Actualitzant dades de l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "arxiuId=" + arxiuId + ", "
 				+ "nom=" + nom + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -348,11 +343,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@CacheEvict(value = "errorsValidacioNode", key = "#id")
 	public ExpedientDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ExpedientNotFoundException {
+			Long id) {
 		logger.debug("Esborrant l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -407,11 +402,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Override
 	public ExpedientDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ExpedientNotFoundException {
+			Long id) {
 		logger.debug("Obtenint l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -438,11 +433,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 	public PaginaDto<ExpedientDto> findPaginatAdmin(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws EntitatNotFoundException, ArxiuNotFoundException, MetaExpedientNotFoundException {
+			PaginacioParamsDto paginacioParams) {
 		logger.debug("Consultant els expedients paginats per admins ("
 				+ "entitatId=" + entitatId + ", "
 				+ "paginacioParams=" + paginacioParams + ")");
-		permisosComprovacioHelper.comprovarEntitat(
+		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -460,11 +455,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 	public PaginaDto<ExpedientDto> findPaginatUser(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws EntitatNotFoundException, ArxiuNotFoundException, MetaExpedientNotFoundException {
+			PaginacioParamsDto paginacioParams) {
 		logger.debug("Consultant els expedients paginats per users ("
 				+ "entitatId=" + entitatId + ", "
 				+ "paginacioParams=" + paginacioParams + ")");
-		permisosComprovacioHelper.comprovarEntitat(
+		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -481,11 +476,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Override
 	public List<ContenidorDto> getContingutCarpetaNouvinguts(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ExpedientNotFoundException {
+			Long id) {
 		logger.debug("Consultant el contingut de la carpeta nouvinguts de l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -528,13 +523,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 	public void agafarUser(
 			Long entitatId,
 			Long arxiuId,
-			Long id) throws EntitatNotFoundException, ArxiuNotFoundException, ExpedientNotFoundException {
+			Long id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Agafant l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "usuari=" + auth.getName() + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -553,7 +548,10 @@ public class ExpedientServiceImpl implements ExpedientService {
 				false);
 		if (expedientSuperior != null) {
 			logger.error("No es pot agafar un expedient no arrel (id=" + id + ")");
-			throw new ExpedientNotFoundException();
+			throw new ValidationException(
+					id,
+					ExpedientEntity.class,
+					"No es pot agafar un expedient no arrel");
 		}
 		// Comprova que es pugui modificar l'expedient a agafar
 		contenidorHelper.comprovarPermisosContenidor(
@@ -595,13 +593,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 			Long entitatId,
 			Long arxiuId,
 			Long id,
-			String usuariCodi) throws EntitatNotFoundException, ArxiuNotFoundException, ExpedientNotFoundException, UsuariNotFoundException {
+			String usuariCodi) {
 		logger.debug("Agafant l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "arxiuId=" + arxiuId + ", "
 				+ "id=" + id + ", "
 				+ "usuariCodi=" + usuariCodi + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -620,7 +618,10 @@ public class ExpedientServiceImpl implements ExpedientService {
 				false);
 		if (expedientSuperior != null) {
 			logger.error("No es pot agafar un expedient no arrel (id=" + id + ")");
-			throw new ExpedientNotFoundException();
+			throw new ValidationException(
+					id,
+					ExpedientEntity.class,
+					"No es pot agafar un expedient no arrel");
 		}
 		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
 		ContenidorEntity arrel = contenidorHelper.findContenidorArrel(expedient);
@@ -652,13 +653,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Override
 	public void alliberarUser(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ArxiuNotFoundException, ExpedientNotFoundException {
+			Long id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Alliberant l'expedient com a usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "usuari=" + auth.getName() + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -689,13 +690,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Override
 	public void alliberarAdmin(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ArxiuNotFoundException, ExpedientNotFoundException {
+			Long id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Alliberant l'expedient com a administrador ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "usuari=" + auth.getName() + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -723,12 +724,12 @@ public class ExpedientServiceImpl implements ExpedientService {
 	public void finalitzar(
 			Long entitatId,
 			Long id,
-			String motiu) throws EntitatNotFoundException, ExpedientNotFoundException {
+			String motiu) {
 		logger.debug("Finalitzant l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ","
 				+ "mootiu=" + motiu + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -768,11 +769,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 	public void acumular(
 			Long entitatId,
 			Long id,
-			Long acumulatId) throws EntitatNotFoundException, ExpedientNotFoundException {
+			Long acumulatId) {
 		logger.debug("Finalitzant l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -818,7 +819,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 			PaginacioParamsDto paginacioParams,
 			boolean accesAdmin,
 			boolean comprovarAccesMetaExpedients) {
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				(!accesAdmin),
 				accesAdmin,
@@ -896,17 +897,21 @@ public class ExpedientServiceImpl implements ExpedientService {
 
 	private ContenidorEntity comprovarContenidor(
 			EntitatEntity entitat,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		ContenidorEntity contenidor = contenidorRepository.findOne(id);
 		if (contenidor == null) {
 			logger.error("No s'ha trobat el contenidor (contenidorId=" + id + ")");
-			throw new ContenidorNotFoundException();
+			throw new NotFoundException(
+					id,
+					ContenidorEntity.class);
 		}
 		if (!contenidor.getEntitat().equals(entitat)) {
 			logger.error("L'entitat del contenidor no coincideix ("
 					+ "entitatId1=" + entitat.getId() + ", "
 					+ "entitatId2=" + contenidor.getEntitat().getId() + ")");
-			throw new ContenidorNotFoundException();
+			throw new NotFoundException(
+					id,
+					ContenidorEntity.class);
 		}
 		return contenidor;
 	}
@@ -914,18 +919,22 @@ public class ExpedientServiceImpl implements ExpedientService {
 			EntitatEntity entitat,
 			Long id,
 			boolean comprovarPermisCreate,
-			boolean comprovarPermisRead) throws MetaExpedientNotFoundException {
+			boolean comprovarPermisRead) {
 		MetaExpedientEntity metaExpedient = metaExpedientRepository.findOne(
 				id);
 		if (metaExpedient == null) {
 			logger.error("No s'ha trobat el meta-expedient (id=" + id + ")");
-			throw new MetaExpedientNotFoundException();
+			throw new NotFoundException(
+					id,
+					MetaExpedientEntity.class);
 		}
 		if (!entitat.equals(metaExpedient.getEntitat())) {
 			logger.error("L'entitat especificada no coincideix amb l'entitat del meta-expedient ("
 					+ "entitatId1=" + entitat.getId() + ", "
 					+ "entitatId2=" + metaExpedient.getEntitat().getId() + ")");
-			throw new MetaExpedientNotFoundException();
+			throw new NotFoundException(
+					id,
+					MetaExpedientEntity.class);
 		}
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (comprovarPermisCreate) {
@@ -936,7 +945,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 					auth);
 			if (!granted) {
 				logger.error("No es tenen permisos per a crear expedients amb el meta-expedient (id=" + id + ")");
-				throw new MetaDocumentNotFoundException();
+				throw new PermissionDeniedException(
+						id,
+						MetaExpedientEntity.class,
+						auth.getName(),
+						"CREATE");
 			}
 		}
 		if (comprovarPermisRead) {
@@ -947,7 +960,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 					auth);
 			if (!granted) {
 				logger.error("No es tenen permisos per a llegir expedients amb el meta-expedient (id=" + id + ")");
-				throw new MetaDocumentNotFoundException();
+				throw new PermissionDeniedException(
+						id,
+						MetaExpedientEntity.class,
+						auth.getName(),
+						"READ");
 			}
 		}
 		return metaExpedient;
@@ -956,17 +973,21 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private ArxiuEntity comprovarArxiu(
 			EntitatEntity entitat,
 			Long id,
-			boolean comprovarAcces) throws ArxiuNotFoundException {
+			boolean comprovarAcces) {
 		ArxiuEntity arxiu = arxiuRepository.findOne(id);
 		if (arxiu == null) {
 			logger.error("No s'ha trobat l'arxiu (id=" + id + ")");
-			throw new ArxiuNotFoundException();
+			throw new NotFoundException(
+					id,
+					ArxiuEntity.class);
 		}
 		if (!entitat.equals(arxiu.getEntitat())) {
 			logger.error("L'entitat especificada no coincideix amb l'entitat de l'arxiu ("
 					+ "entitatId1=" + entitat.getId() + ", "
 					+ "entitatId2=" + arxiu.getEntitat().getId() + ")");
-			throw new ArxiuNotFoundException();
+			throw new NotFoundException(
+					id,
+					ArxiuEntity.class);
 		}
 		if (comprovarAcces) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -977,7 +998,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 					auth);
 			if (!granted) {
 				logger.error("No es tenen permisos per a accedir a l'arxiu (id=" + id + ")");
-				throw new ArxiuNotFoundException();
+				throw new PermissionDeniedException(
+						id,
+						ArxiuEntity.class,
+						auth.getName(),
+						"READ");
 			}
 		}
 		return arxiu;
@@ -986,41 +1011,51 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private ExpedientEntity comprovarExpedient(
 			EntitatEntity entitat,
 			ArxiuEntity arxiu,
-			Long id) throws ExpedientNotFoundException {
+			Long id)  {
 		ExpedientEntity expedient = expedientRepository.findOne(id);
 		if (expedient == null) {
 			logger.error("No s'ha trobat l'expedient (id=" + id + ")");
-			throw new ExpedientNotFoundException();
+			throw new NotFoundException(
+					id,
+					ExpedientEntity.class);
 		}
 		if (!entitat.getId().equals(expedient.getEntitat().getId())) {
 			logger.error("L'entitat especificada no coincideix amb l'entitat de l'expedient ("
 					+ "entitatId1=" + entitat.getId() + ", "
 					+ "entitatId2=" + expedient.getEntitat().getId() + ")");
-			throw new ExpedientNotFoundException();
+			throw new NotFoundException(
+					id,
+					ExpedientEntity.class);
 		}
 		if (arxiu != null && !arxiu.equals(expedient.getArxiu())) {
 			logger.error("L'arxiu de l'expedient no coincideix amb l'especificat ("
 					+ "id=" + id + ", "
 					+ "arxiuId1=" + arxiu.getId() + ", "
 					+ "arxiuId2=" + expedient.getArxiu().getId() + ")");
-			throw new ExpedientNotFoundException();
+			throw new NotFoundException(
+					id,
+					ExpedientEntity.class);
 		}
 		return expedient;
 	}
 
 	private RegistreEntity comprovarRegistre(
 			EntitatEntity entitat,
-			Long id) throws RegistreNotFoundException {
+			Long id) {
 		RegistreEntity registre = registreRepository.findOne(id);
 		if (registre == null) {
 			logger.error("No s'ha trobat l'anotació de registre (id=" + id + ")");
-			throw new RegistreNotFoundException();
+			throw new NotFoundException(
+					id,
+					RegistreEntity.class);
 		}
 		if (!entitat.getId().equals(registre.getEntitat().getId())) {
 			logger.error("L'entitat especificada no coincideix amb l'entitat de l'anotació de registre ("
 					+ "entitatId1=" + entitat.getId() + ", "
 					+ "entitatId2=" + registre.getEntitat().getId() + ")");
-			throw new RegistreNotFoundException();
+			throw new NotFoundException(
+					id,
+					RegistreEntity.class);
 		}
 		return registre;
 	}

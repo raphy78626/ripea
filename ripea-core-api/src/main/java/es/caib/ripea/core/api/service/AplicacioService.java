@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.UsuariDto;
-import es.caib.ripea.core.api.exception.UsuariNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 
 /**
  * Declaració dels mètodes comuns de l'aplicació.
@@ -28,11 +28,11 @@ public interface AplicacioService {
 	/**
 	 * Processa l'autenticació d'un usuari.
 	 * 
-	 * @throws UsuariNotFoundException
-	 *             Si l'usuari no es troba al plugin d'usuaris.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'usuari amb el codi de l'usuari autenticat.
 	 */
 	@PreAuthorize("hasRole('ROLE_SUPER') or hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-	public void processarAutenticacioUsuari() throws UsuariNotFoundException;
+	public void processarAutenticacioUsuari() throws NotFoundException;
 
 	/**
 	 * Obté l'usuari actual.

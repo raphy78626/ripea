@@ -4,30 +4,41 @@
 package es.caib.ripea.core.api.exception;
 
 /**
- * Excepció que es llança quan l'objecte especificat no existeix.
+ * Excepció que es llança quan l'usuari no te permisos per accedir a un objecte.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @SuppressWarnings("serial")
-public class NotFoundException extends RuntimeException {
+public class PermissionDeniedException extends RuntimeException {
 
 	private Object objectId;
 	private Class<?> objectClass;
+	private String userName;
+	private String permissionName;
 	
-	public NotFoundException(
+	public PermissionDeniedException(
 			Object objectId,
-			Class<?> objectClass) {
+			Class<?> objectClass,
+			String userName,
+			String permissionName) {
 		super();
 		this.objectId = objectId;
 		this.objectClass = objectClass;
+		this.userName = userName;
+		this.permissionName = permissionName;
 	}
 
 	public Object getObjectId() {
 		return objectId;
 	}
-
 	public Class<?> getObjectClass() {
 		return objectClass;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public String getPermissionName() {
+		return permissionName;
 	}
 
 	public String getObjectInfo() {

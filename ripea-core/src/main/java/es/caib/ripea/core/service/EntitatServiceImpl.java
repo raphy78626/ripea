@@ -20,13 +20,12 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
 import es.caib.ripea.core.api.service.EntitatService;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
 import es.caib.ripea.core.helper.PermisosEntitatHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.repository.ArxiuRepository;
@@ -60,7 +59,7 @@ public class EntitatServiceImpl implements EntitatService {
 	@Resource
 	private PermisosEntitatHelper permisosEntitatHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
+	private EntityComprovarHelper entityComprovarHelper;
 
 
 
@@ -83,9 +82,9 @@ public class EntitatServiceImpl implements EntitatService {
 	@Transactional
 	@Override
 	public EntitatDto update(
-			EntitatDto entitat) throws EntitatNotFoundException {
+			EntitatDto entitat) {
 		logger.debug("Actualitzant entitat existent (entitat=" + entitat + ")");
-		EntitatEntity entity = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entity = entityComprovarHelper.comprovarEntitat(
 				entitat.getId(),
 				false,
 				false,
@@ -105,11 +104,11 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	public EntitatDto updateActiva(
 			Long id,
-			boolean activa) throws EntitatNotFoundException {
+			boolean activa) {
 		logger.debug("Actualitzant propietat activa d'una entitat existent ("
 				+ "id=" + id + ", "
 				+ "activa=" + activa + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
 				false,
@@ -124,9 +123,9 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public EntitatDto delete(
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		logger.debug("Esborrant entitat (id=" + id +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
 				false,
@@ -199,7 +198,7 @@ public class EntitatServiceImpl implements EntitatService {
 	public List<PermisDto> findPermisSuper(
 			Long id) {
 		logger.debug("Consulta com a superusuari dels permisos de l'entitat (id=" + id + ")");
-		permisosComprovacioHelper.comprovarEntitat(
+		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
 				false,
@@ -213,11 +212,11 @@ public class EntitatServiceImpl implements EntitatService {
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public void updatePermisSuper(
 			Long id,
-			PermisDto permis) throws EntitatNotFoundException {
+			PermisDto permis) {
 		logger.debug("Modificació com a superusuari del permis de l'entitat ("
 				+ "id=" + id + ", "
 				+ "permis=" + permis + ")");
-		permisosComprovacioHelper.comprovarEntitat(
+		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
 				false,
@@ -232,11 +231,11 @@ public class EntitatServiceImpl implements EntitatService {
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public void deletePermisSuper(
 			Long id,
-			Long permisId) throws EntitatNotFoundException {
+			Long permisId) {
 		logger.debug("Eliminació com a superusuari del permis de l'entitat ("
 				+ "id=" + id + ", "
 				+ "permisId=" + permisId + ")");
-		permisosComprovacioHelper.comprovarEntitat(
+		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
 				false,
@@ -250,10 +249,10 @@ public class EntitatServiceImpl implements EntitatService {
 	@Transactional
 	@Override
 	public List<PermisDto> findPermisAdmin(
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Consulta com a administrador del permis de l'entitat (id=" + id + ")");
-		permisosComprovacioHelper.comprovarEntitat(
+		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
 				false,
@@ -277,12 +276,12 @@ public class EntitatServiceImpl implements EntitatService {
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public void updatePermisAdmin(
 			Long id,
-			PermisDto permis) throws EntitatNotFoundException {
+			PermisDto permis) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Modificació com a administrador del permis de l'entitat ("
 				+ "id=" + id + ", "
 				+ "permis=" + permis + ")");
-		permisosComprovacioHelper.comprovarEntitat(
+		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
 				false,
@@ -306,12 +305,12 @@ public class EntitatServiceImpl implements EntitatService {
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public void deletePermisAdmin(
 			Long id,
-			Long permisId) throws EntitatNotFoundException {
+			Long permisId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Eliminació com a administrador del permis de l'entitat ("
 				+ "id=" + id + ", "
 				+ "permisId=" + permisId + ")");
-		permisosComprovacioHelper.comprovarEntitat(
+		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
 				false,

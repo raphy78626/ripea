@@ -155,7 +155,7 @@ public class EmailHelper {
 		List<String> destinataris = new ArrayList<String>();
 		Set<String> usuaris = contenidorHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
 		for (String usuari: usuaris) {
-			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbUsuariCodi(
+			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbCodi(
 					usuari);
 			if (dadesUsuari != null && dadesUsuari.getEmail() != null)
 				destinataris.add(dadesUsuari.getEmail());

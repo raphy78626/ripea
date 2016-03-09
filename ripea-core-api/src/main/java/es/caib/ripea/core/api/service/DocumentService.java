@@ -12,11 +12,8 @@ import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.DocumentNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDocumentNotFoundException;
 import es.caib.ripea.core.api.exception.NomInvalidException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.PluginException;
 
 /**
@@ -46,12 +43,8 @@ public interface DocumentService {
 	 * @param arxiuContingut
 	 *            Contingut de l'arxiu del document.
 	 * @return El document creat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws ContenidorNotFoundException
-	 *             Si no s'ha trobat el contenidor amb l'id especificat.
-	 * @throws MetaDocumentNotFoundException
-	 *             Si no s'ha trobat el meta-document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws NomInvalidException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
@@ -64,7 +57,7 @@ public interface DocumentService {
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) throws EntitatNotFoundException, ContenidorNotFoundException, MetaDocumentNotFoundException, NomInvalidException;
+			byte[] arxiuContingut) throws NotFoundException, NomInvalidException;
 
 	/**
 	 * Modifica un document.
@@ -86,10 +79,8 @@ public interface DocumentService {
 	 * @param arxiuContingut
 	 *            Contingut de l'arxiu del document.
 	 * @return El document modificat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws NomInvalidException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
@@ -102,7 +93,7 @@ public interface DocumentService {
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) throws EntitatNotFoundException, DocumentNotFoundException, NomInvalidException;
+			byte[] arxiuContingut) throws NotFoundException, NomInvalidException;
 
 	/**
 	 * Esborra un document.
@@ -112,15 +103,13 @@ public interface DocumentService {
 	 * @param id
 	 *            Atribut id del document que es vol esborrar.
 	 * @return El document esborrat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public DocumentDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException;
+			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta un document donat el seu id.
@@ -130,15 +119,13 @@ public interface DocumentService {
 	 * @param id
 	 *            Atribut id del document que es vol trobar.
 	 * @return El document.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public DocumentDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException;
+			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta les versions d'un document.
@@ -148,15 +135,13 @@ public interface DocumentService {
 	 * @param id
 	 *            Atribut id del document del qual es volen recuperar les versions.
 	 * @return La llista de versions.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public List<DocumentVersioDto> findVersionsByDocument(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException;
+			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta la darrera versió del document.
@@ -166,15 +151,13 @@ public interface DocumentService {
 	 * @param id
 	 *            Atribut id del document del qual es vol descarregar el contingut.
 	 * @return la darrera versió del document.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public DocumentVersioDto findDarreraVersio(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, DocumentNotFoundException;
+			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta una versió del document.
@@ -186,16 +169,14 @@ public interface DocumentService {
 	 * @param versio
 	 *            El número de versió del document que es vol descarregar.
 	 * @return la versió del document.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public DocumentVersioDto findVersio(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException;
+			int versio) throws NotFoundException;
 
 	/**
 	 * Descarrega el contingut d'un document.
@@ -207,16 +188,14 @@ public interface DocumentService {
 	 * @param versio
 	 *            El número de versió del document que es vol descarregar.
 	 * @return el fitxer amb el contingut.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public FitxerDto descarregar(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException;
+			int versio) throws NotFoundException;
 
 
 	/**
@@ -234,10 +213,8 @@ public interface DocumentService {
 	 *            La prioritat de l'enviament.
 	 * @param dataCaducitat
 	 *            La data màxima per a firmar el document.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws IllegalStateException
 	 *             Si hi ha enviaments a portafirmes pendents per aquest document.
 	 * @throws PluginException
@@ -250,7 +227,7 @@ public interface DocumentService {
 			int versio,
 			String motiu,
 			PortafirmesPrioritatEnumDto prioritat,
-			Date dataCaducitat) throws EntitatNotFoundException, DocumentNotFoundException, IllegalStateException, PluginException;
+			Date dataCaducitat) throws NotFoundException, IllegalStateException, PluginException;
 
 	/**
 	 * Cancela l'enviament d'un document a firmar al portafirmes.
@@ -261,10 +238,8 @@ public interface DocumentService {
 	 *            Atribut id del document que es vol enviar a firmar.
 	 * @param versio
 	 *            El número de versió del document que es vol enviar a firmar.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws IllegalStateException
 	 *             Si no s'ha trobat l'enviament al portafirmes pel document.
 	 * @throws PluginException
@@ -274,7 +249,7 @@ public interface DocumentService {
 	public void portafirmesCancelar(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException, IllegalStateException, PluginException;
+			int versio) throws NotFoundException, IllegalStateException, PluginException;
 
 	/**
 	 * Processa una petició del callback de portafirmes.
@@ -285,12 +260,12 @@ public interface DocumentService {
 	 *            Nou estat del document.
 	 * @return null si tot ha anat bé o una excepció si s'ha produit algun error
 	 *            al processar el document firmat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document associat al documentId especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	public Exception portafirmesCallback(
 			int documentId,
-			int estat) throws DocumentNotFoundException;
+			int estat) throws NotFoundException;
 
 	/**
 	 * Converteix el document a format PDF.
@@ -302,10 +277,8 @@ public interface DocumentService {
 	 * @param versio
 	 *            El número de versió del document que es vol convertir.
 	 * @return el fitxer convertit.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws PluginException
 	 *             Hi ha hagut algun error en la comunicació amb el portafirmes.
 	 */
@@ -313,7 +286,7 @@ public interface DocumentService {
 	public FitxerDto convertirPdf(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException, PluginException;
+			int versio) throws NotFoundException, PluginException;
 
 	/**
 	 * Genera un identificador del document per firmar via applet.
@@ -323,18 +296,16 @@ public interface DocumentService {
 	 * @param id
 	 *            Atribut id del document que es vol convertir.
 	 * @param versio
-	 *            El número de versió del document que es vol convertir.
+	 *            El número de versió del document del qual es vol generar identif.
 	 * @return l'identificador generat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public String generarIdentificadorFirmaApplet(
 			Long entitatId,
 			Long id,
-			int versio) throws EntitatNotFoundException, DocumentNotFoundException;
+			int versio) throws NotFoundException;
 
 	/**
 	 * Envia a custòdia un document firmat amb l'applet.
@@ -345,8 +316,8 @@ public interface DocumentService {
 	 *            Nom de l'arxiu firmat.
 	 * @param arxiuContingut
 	 *            Contingut de l'arxiu firmat.
-	 * @throws DocumentNotFoundException
-	 *             Si no s'ha trobat el document amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws PluginException
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
@@ -354,6 +325,6 @@ public interface DocumentService {
 	public void custodiarFirmaApplet(
 			String identificador,
 			String arxiuNom,
-			byte[] arxiuContingut) throws DocumentNotFoundException, PluginException;
+			byte[] arxiuContingut) throws PluginException;
 
 }

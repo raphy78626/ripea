@@ -27,11 +27,7 @@ import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.BustiaNotFoundException;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.RegistreNotFoundException;
-import es.caib.ripea.core.api.exception.UnitatNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContenidorEntity;
@@ -46,7 +42,7 @@ import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EmailHelper;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
@@ -85,8 +81,6 @@ public class BustiaServiceImpl implements BustiaService {
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
-	@Resource
 	private ContenidorHelper contenidorHelper;
 	@Resource
 	private ContenidorLogHelper contenidorLogHelper;
@@ -99,6 +93,8 @@ public class BustiaServiceImpl implements BustiaService {
 	@Resource
 	private UsuariHelper usuariHelper;
 	@Resource
+	private EntityComprovarHelper entityComprovarHelper;
+	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 
@@ -107,11 +103,11 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	public BustiaDto create(
 			Long entitatId,
-			BustiaDto bustia) throws EntitatNotFoundException, UnitatNotFoundException {
+			BustiaDto bustia) {
 		logger.debug("Creant una nova bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustia=" + bustia + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -120,8 +116,10 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat.getCodi(),
 				bustia.getUnitatCodi());
 		if (unitat == null) {
-			logger.error("No s'ha trobat l'unitat administrativa (codi=" + bustia.getUnitatCodi() + ")");
-			throw new UnitatNotFoundException();
+			logger.error("No s'ha trobat la unitat administrativa (codi=" + bustia.getUnitatCodi() + ")");
+			throw new NotFoundException(
+					bustia.getUnitatCodi(),
+					UnitatOrganitzativaDto.class);
 		}
 		// Cerca la bústia superior
 		BustiaEntity bustiaPare = bustiaRepository.findByEntitatAndUnitatCodiAndPareNull(
@@ -158,16 +156,16 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	public BustiaDto update(
 			Long entitatId,
-			BustiaDto bustia) throws EntitatNotFoundException, BustiaNotFoundException {
+			BustiaDto bustia) {
 		logger.debug("Modificant la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustia=" + bustia + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		BustiaEntity entity = comprovarBustia(
+		BustiaEntity entity = entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustia.getId(),
 				false);
@@ -181,17 +179,17 @@ public class BustiaServiceImpl implements BustiaService {
 	public BustiaDto updateActiva(
 			Long entitatId,
 			Long id,
-			boolean activa) throws EntitatNotFoundException, BustiaNotFoundException {
+			boolean activa) {
 		logger.debug("Modificant propietat activa de la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "activa=" + activa + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		BustiaEntity entity = comprovarBustia(
+		BustiaEntity entity = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				false);
@@ -203,22 +201,24 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	public BustiaDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long id) {
 		logger.debug("Esborrant la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		BustiaEntity bustia = comprovarBustia(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				false);
 		if (bustia.isPerDefecte()) {
 			logger.error("No es pot esborrar la bústia per defecte (bustiaId=" + id + ")");
-			throw new BustiaNotFoundException();
+			throw new NotFoundException(
+					id,
+					BustiaEntity.class);
 		}
 		bustiaRepository.delete(bustia);
 		return toBustiaDto(bustia);
@@ -228,16 +228,16 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	public BustiaDto marcarPerDefecte(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long id) {
 		logger.debug("Marcant la bústia com a bústia per defecte("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		BustiaEntity bustia = comprovarBustia(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				false);
@@ -254,16 +254,16 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional(readOnly = true)
 	public BustiaDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		logger.debug("Cercant la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		BustiaEntity bustia = comprovarBustia(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				false);
@@ -279,11 +279,11 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional(readOnly = true)
 	public List<BustiaDto> findByUnitatCodiAdmin(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, UnitatNotFoundException {
+			String unitatCodi) {
 		logger.debug("Cercant les bústies de la unitat per admins ("
 				+ "entitatId=" + entitatId + ", "
 				+ "unitatCodi=" + unitatCodi + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -310,12 +310,12 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional(readOnly = true)
 	public List<BustiaDto> findByUnitatCodiUsuari(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, UnitatNotFoundException {
+			String unitatCodi) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercant les bústies de la unitat per usuaris ("
 				+ "entitatId=" + entitatId + ", "
 				+ "unitatCodi=" + unitatCodi + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -360,12 +360,12 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	@Transactional
 	public List<BustiaDto> findByEntitatAndActivaTrue(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercant bústies actives de l'entitat ("
 				+ "entitatId=" + entitatId + ", "
 				+ "usuariCodi=" + auth.getName() + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -377,12 +377,12 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	@Transactional
 	public List<BustiaDto> findPermesesPerUsuari(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercant bústies permeses per a l'usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "usuariCodi=" + auth.getName() + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -423,17 +423,17 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	public List<ContenidorDto> findContingutPendent(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long id) {
 		logger.debug("Consultant el contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = comprovarBustia(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				true);
@@ -452,17 +452,17 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	public List<RegistreAnotacioDto> findRegistrePendent(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long id) {
 		logger.debug("Consultant els registres pendents de la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = comprovarBustia(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				true);
@@ -482,18 +482,18 @@ public class BustiaServiceImpl implements BustiaService {
 	public RegistreAnotacioDto findOneRegistrePendent(
 			Long entitatId,
 			Long id,
-			Long registreId) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long registreId) {
 		logger.debug("Consultant un registre pendent a la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "registreId=" + registreId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = comprovarBustia(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				true);
@@ -508,10 +508,10 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional(readOnly = true)
 	@Override
 	public long countElementsPendentsBustiesAll(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		logger.debug("Consultant els elements pendents a totes les busties ("
 				+ "entitatId=" + entitatId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -525,10 +525,10 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	@Override
 	public void refreshCountElementsPendentsBustiesAll(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		logger.debug("Refrescant el comptador dels elements pendents a totes les busties ("
 				+ "entitatId=" + entitatId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -544,17 +544,17 @@ public class BustiaServiceImpl implements BustiaService {
 	public void updatePermis(
 			Long entitatId,
 			Long id,
-			PermisDto permis) throws EntitatNotFoundException, BustiaNotFoundException {
+			PermisDto permis) {
 		logger.debug("Actualitzant permis per a la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "permis=" + permis + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		BustiaEntity bustia = comprovarBustia(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				false);
@@ -572,17 +572,17 @@ public class BustiaServiceImpl implements BustiaService {
 	public void deletePermis(
 			Long entitatId,
 			Long id,
-			Long permisId) throws EntitatNotFoundException, BustiaNotFoundException {
+			Long permisId) {
 		logger.debug("Esborrant permis per a la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "permisId=" + permisId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		BustiaEntity bustia = comprovarBustia(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				false);
@@ -600,12 +600,12 @@ public class BustiaServiceImpl implements BustiaService {
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBustiesPermeses,
-			boolean comptarElementsPendents) throws EntitatNotFoundException {
+			boolean comptarElementsPendents) {
 		logger.debug("Consulta de l'arbre d'unitats organitzatives ("
 				+ "entitatId=" + entitatId + ", "
 				+ "nomesBustiesPermeses=" + nomesBustiesPermeses + ", "
 				+ "comptarElementsPendents=" + comptarElementsPendents + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
@@ -623,27 +623,27 @@ public class BustiaServiceImpl implements BustiaService {
 			Long id,
 			Long contenidorId,
 			Long bustiaDestiId,
-			String comentari) throws EntitatNotFoundException, BustiaNotFoundException, ContenidorNotFoundException {
+			String comentari) {
 		logger.debug("Reenviant contenidor ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "contenidorId=" + contenidorId + ", "
 				+ "bustiaDestiId=" + bustiaDestiId + ", "
 				+ "comentari=" + comentari + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		BustiaEntity bustiaOrigen = comprovarBustia(
+		BustiaEntity bustiaOrigen = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				true);
-		BustiaEntity bustiaDesti = comprovarBustia(
+		BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaDestiId,
 				false);
-		ContenidorEntity contenidor = comprovarContenidor(
+		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
 				entitat,
 				contenidorId,
 				bustiaOrigen);
@@ -674,27 +674,27 @@ public class BustiaServiceImpl implements BustiaService {
 			Long id,
 			Long registreId,
 			Long bustiaDestiId,
-			String comentari) throws EntitatNotFoundException, BustiaNotFoundException, ContenidorNotFoundException {
+			String comentari) {
 		logger.debug("Reenviant registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "registreId=" + registreId + ", "
 				+ "bustiaDestiId=" + bustiaDestiId + ", "
 				+ "comentari=" + comentari + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		BustiaEntity bustiaOrigen = comprovarBustia(
+		BustiaEntity bustiaOrigen = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				true);
-		BustiaEntity bustiaDesti = comprovarBustia(
+		BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaDestiId,
 				false);
-		RegistreEntity registre = comprovarRegistre(
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(
 				entitat,
 				registreId,
 				bustiaOrigen);
@@ -734,100 +734,6 @@ public class BustiaServiceImpl implements BustiaService {
 			resposta.add(
 					(BustiaDto)contenidorHelper.toContenidorDto(bustia));
 		return resposta;
-	}
-
-	private BustiaEntity comprovarBustia(
-			EntitatEntity entitat,
-			Long bustiaId,
-			boolean comprovarPermisRead) throws BustiaNotFoundException {
-		BustiaEntity bustia = bustiaRepository.findOne(bustiaId);
-		if (bustia == null) {
-			logger.error("No s'ha trobat la bústia (bustiaId=" + bustiaId + ")");
-			throw new BustiaNotFoundException();
-		}
-		if (!entitat.equals(bustia.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de la bústia ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + bustia.getEntitat().getId() + ")");
-			throw new BustiaNotFoundException();
-		}
-		if (comprovarPermisRead) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			boolean esPermisRead = permisosHelper.isGrantedAll(
-					bustiaId,
-					BustiaEntity.class,
-					new Permission[] {ExtendedPermission.READ},
-					auth);
-			if (!esPermisRead) {
-				logger.error("Aquest usuari no té permis per accedir a la bústia ("
-						+ "id=" + bustiaId + ", "
-						+ "usuari=" + auth.getName() + ")");
-				throw new SecurityException("Sense permisos d'accés a aquesta bústia");
-			}
-		}
-		return bustia;
-	}
-
-	private ContenidorEntity comprovarContenidor(
-			EntitatEntity entitat,
-			Long id,
-			BustiaEntity bustiaPare) throws EntitatNotFoundException {
-		ContenidorEntity contenidor = contenidorRepository.findOne(id);
-		if (contenidor == null) {
-			logger.error("No s'ha trobat el contenidor (contenidorId=" + id + ")");
-			throw new ContenidorNotFoundException();
-		}
-		if (!contenidor.getEntitat().equals(entitat)) {
-			logger.error("L'entitat del contenidor no coincideix ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + contenidor.getEntitat().getId() + ")");
-			throw new ContenidorNotFoundException();
-		}
-		if (bustiaPare != null) {
-			if (contenidor.getPare() != null) {
-				if (!contenidor.getPare().getId().equals(bustiaPare.getId())) {
-					logger.error("El contenidor no està dins la bústia especificada ("
-							+ "bustiaId1=" + bustiaPare.getId() + ", "
-							+ "bustiaId2=" + contenidor.getPare().getId() + ")");
-					throw new ContenidorNotFoundException();
-				}
-			} else {
-				
-			}
-			
-		}
-		return contenidor;
-	}
-
-	private RegistreEntity comprovarRegistre(
-			EntitatEntity entitat,
-			Long id,
-			BustiaEntity bustiaPare) throws RegistreNotFoundException {
-		RegistreEntity registre = registreRepository.findOne(id);
-		if (registre == null) {
-			logger.error("No s'ha trobat l'anotació de registre (id=" + id + ")");
-			throw new RegistreNotFoundException();
-		}
-		if (!entitat.getId().equals(registre.getEntitat().getId())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'anotació de registre ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + registre.getEntitat().getId() + ")");
-			throw new RegistreNotFoundException();
-		}
-		if (bustiaPare != null) {
-			if (registre.getContenidor() != null) {
-				if (!registre.getContenidor().getId().equals(bustiaPare.getId())) {
-					logger.error("El registre no està dins la bústia especificada ("
-							+ "bustiaId1=" + bustiaPare.getId() + ", "
-							+ "bustiaId2=" + registre.getContenidor().getId() + ")");
-					throw new RegistreNotFoundException();
-				}
-			} else {
-				
-			}
-			
-		}
-		return registre;
 	}
 
 	private void omplirPermisosPerBusties(

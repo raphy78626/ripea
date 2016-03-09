@@ -69,7 +69,7 @@ public class PluginHelper {
 
 
 
-	public DadesUsuari dadesUsuariConsultarAmbUsuariCodi(
+	public DadesUsuari dadesUsuariConsultarAmbCodi(
 			String usuariCodi) throws PluginException {
 		String accioDescripcio = "Consulta d'usuari amb codi";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -95,7 +95,7 @@ public class PluginHelper {
 			throw new PluginException(errorDescripcio, ex);
 		}
 	}
-	public DadesUsuari dadesUsuariConsultarAmbUsuariNif(
+	public DadesUsuari dadesUsuariConsultarAmbNif(
 			String usuariNif) throws PluginException {
 		String accioDescripcio = "Consulta d'usuari amb NIF";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -121,7 +121,7 @@ public class PluginHelper {
 			throw new PluginException(errorDescripcio, ex);
 		}
 	}
-	public List<DadesUsuari> dadesUsuariConsultarUsuarisAmbGrup(
+	public List<DadesUsuari> dadesUsuariConsultarAmbGrup(
 			String grupCodi) throws PluginException {
 		String accioDescripcio = "Consulta d'usuaris d'un grup";
 		Map<String, String> accioParams = new HashMap<String, String>();

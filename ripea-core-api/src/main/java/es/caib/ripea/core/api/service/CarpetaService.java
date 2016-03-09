@@ -7,10 +7,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.api.exception.CarpetaNotFoundException;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
 import es.caib.ripea.core.api.exception.NomInvalidException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 
 /**
  * Declaració dels mètodes per a gestionar contenidors.
@@ -31,12 +29,8 @@ public interface CarpetaService {
 	 * @param tipus
 	 *            Tipus de la carpeta.
 	 * @return La carpeta creada.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws ContenidorNotFoundException
-	 *             Si no s'ha trobat el contenidor amb l'id especificat.
-	 * @throws MetaCarpetaNotFoundException
-	 *             Si no s'ha trobat el meta-expedient amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws NomInvalidException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
@@ -45,7 +39,7 @@ public interface CarpetaService {
 			Long entitatId,
 			Long contenidorId,
 			String nom,
-			CarpetaTipusEnumDto tipus) throws EntitatNotFoundException, ContenidorNotFoundException, NomInvalidException;
+			CarpetaTipusEnumDto tipus) throws NotFoundException, NomInvalidException;
 
 	/**
 	 * Modifica una carpeta.
@@ -59,10 +53,8 @@ public interface CarpetaService {
 	 * @param tipus
 	 *            Tipus de la carpeta.
 	 * @return La carpeta modificada.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws CarpetaNotFoundException
-	 *             Si no s'ha trobat la carpeta amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws NomInvalidException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
@@ -71,7 +63,7 @@ public interface CarpetaService {
 			Long entitatId,
 			Long id,
 			String nom,
-			CarpetaTipusEnumDto tipus) throws EntitatNotFoundException, CarpetaNotFoundException, NomInvalidException;
+			CarpetaTipusEnumDto tipus) throws NotFoundException, NomInvalidException;
 
 	/**
 	 * Esborra una carpeta.
@@ -81,15 +73,13 @@ public interface CarpetaService {
 	 * @param id
 	 *           Atribut id de la carpeta que es vol esborrar.
 	 * @return La carpeta esborrada.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws CarpetaNotFoundException
-	 *             Si no s'ha trobat la carpeta amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public CarpetaDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, CarpetaNotFoundException;
+			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta una carpeta donat el seu id.
@@ -99,14 +89,12 @@ public interface CarpetaService {
 	 * @param id
 	 *            Atribut id de la carpeta que es vol trobar.
 	 * @return La carpeta.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws CarpetaNotFoundException
-	 *             Si no s'ha trobat la carpeta amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public CarpetaDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, CarpetaNotFoundException;
+			Long id) throws NotFoundException;
 
 }

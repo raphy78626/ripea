@@ -23,10 +23,6 @@ import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDadaNotFoundException;
-import es.caib.ripea.core.api.exception.MetaDocumentNotFoundException;
-import es.caib.ripea.core.api.exception.MetaExpedientNotFoundException;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.MetaDadaEntity;
@@ -37,9 +33,9 @@ import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.MultiplicitatEnum;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.MetaNodeHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.repository.EntitatRepository;
@@ -80,7 +76,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
+	private EntityComprovarHelper entityComprovarHelper;
 
 
 
@@ -88,18 +84,18 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Override
 	public MetaExpedientDto create(
 			Long entitatId,
-			MetaExpedientDto metaExpedient) throws EntitatNotFoundException, MetaExpedientNotFoundException {
+			MetaExpedientDto metaExpedient) {
 		logger.debug("Creant un nou meta-expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "metaExpedient=" + metaExpedient + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
 		MetaExpedientEntity metaExpedientPare = null;
 		if (metaExpedient.getPareId() != null) {
-			metaExpedientPare = comprovarMetaExpedient(
+			metaExpedientPare = entityComprovarHelper.comprovarMetaExpedient(
 					entitat,
 					metaExpedient.getPareId());
 		}
@@ -119,21 +115,21 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Override
 	public MetaExpedientDto update(
 			Long entitatId,
-			MetaExpedientDto metaExpedient) throws EntitatNotFoundException, MetaExpedientNotFoundException {
+			MetaExpedientDto metaExpedient) {
 		logger.debug("Actualitzant meta-expedient existent ("
 				+ "entitatId=" + entitatId + ", "
 				+ "metaExpedient=" + metaExpedient + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedientEntitiy = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedientEntitiy = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				metaExpedient.getId());
 		MetaExpedientEntity metaExpedientPare = null;
 		if (metaExpedient.getPareId() != null) {
-			metaExpedientPare = comprovarMetaExpedient(
+			metaExpedientPare = entityComprovarHelper.comprovarMetaExpedient(
 					entitat,
 					metaExpedient.getPareId());
 		}
@@ -153,17 +149,17 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	public MetaExpedientDto updateActiu(
 			Long entitatId,
 			Long id,
-			boolean actiu) throws EntitatNotFoundException {
+			boolean actiu) {
 		logger.debug("Actualitzant propietat activa d'un meta-expedient existent ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "actiu=" + actiu + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
 		metaExpedient.updateActiu(actiu);
@@ -176,14 +172,14 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Override
 	public MetaExpedientDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, MetaExpedientNotFoundException {
+			Long id) {
 		logger.debug("Esborrant meta-expedient (id=" + id +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
 		metaExpedientRepository.delete(metaExpedient);
@@ -196,16 +192,16 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Override
 	public MetaExpedientDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException {
+			Long id) {
 		logger.debug("Consulta del meta-expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(entitat, id);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(entitat, id);
 		MetaExpedientDto resposta = conversioTipusHelper.convertir(
 				metaExpedient,
 				MetaExpedientDto.class);
@@ -223,11 +219,11 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Override
 	public MetaExpedientDto findByEntitatCodi(
 			Long entitatId,
-			String codi) throws EntitatNotFoundException {
+			String codi) {
 		logger.debug("Consulta del meta-expedient per entitat i codi ("
 				+ "entitatId=" + entitatId + ", "
 				+ "codi=" + codi + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -252,9 +248,9 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Override
 	public PaginaDto<MetaExpedientDto> findByEntitatPaginat(
 			Long entitatId,
-			PaginacioParamsDto paginacioParams) throws EntitatNotFoundException {
+			PaginacioParamsDto paginacioParams) {
 		logger.debug("Consulta paginada dels meta-expedients de l'entitat (entitatId=" + entitatId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -288,22 +284,22 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 			Long id,
 			Long metaDadaId,
 			MultiplicitatEnumDto multiplicitat,
-			boolean readOnly) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDadaNotFoundException {
+			boolean readOnly) {
 		logger.debug("Afegint meta-dada al meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaDadaId=" + metaDadaId +  ","
 				+ "multiplicitat=" + multiplicitat +  ", "
 				+ "readOnly=" + readOnly +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaDadaEntity metaDada = comprovarMetaDada(
+		MetaDadaEntity metaDada = entityComprovarHelper.comprovarMetaDada(
 				entitat,
 				metaDadaId);
 		metaExpedient.metaDadaAdd(
@@ -319,22 +315,22 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 			Long id,
 			Long metaNodeMetaDadaId,
 			MultiplicitatEnumDto multiplicitat,
-			boolean readOnly) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDadaNotFoundException {
+			boolean readOnly) {
 		logger.debug("Actualitzant meta-dada del meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaNodeMetaDadaId=" + metaNodeMetaDadaId +  ","
 				+ "multiplicitat=" + multiplicitat +  ", "
 				+ "readOnly=" + readOnly +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaNodeMetaDadaEntity metaNodeMetaDada = comprovarMetaNodeMetaDada(
+		MetaNodeMetaDadaEntity metaNodeMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
 				entitat,
 				metaExpedient,
 				metaNodeMetaDadaId);
@@ -348,20 +344,20 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	public void metaDadaDelete(
 			Long entitatId,
 			Long id,
-			Long metaExpedientMetaDadaId) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDadaNotFoundException {
+			Long metaExpedientMetaDadaId) {
 		logger.debug("Esborrant meta-dada al meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaExpedientMetaDadaId=" + metaExpedientMetaDadaId +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaNodeMetaDadaEntity metaExpedientMetaDada = comprovarMetaNodeMetaDada(
+		MetaNodeMetaDadaEntity metaExpedientMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
 				entitat,
 				metaExpedient,
 				metaExpedientMetaDadaId);
@@ -375,21 +371,21 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 			Long entitatId,
 			Long id,
 			Long metaExpedientMetaDadaId,
-			int posicio) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDadaNotFoundException {
+			int posicio) {
 		logger.debug("Movent meta-dada al meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaExpedientMetaDadaId=" + metaExpedientMetaDadaId +  ", "
 				+ "posicio=" + posicio +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaNodeMetaDadaEntity metaExpedientMetaDada = comprovarMetaNodeMetaDada(
+		MetaNodeMetaDadaEntity metaExpedientMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
 				entitat,
 				metaExpedient,
 				metaExpedientMetaDadaId);
@@ -404,20 +400,20 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	public MetaNodeMetaDadaDto findMetaDada(
 			Long entitatId,
 			Long id,
-			Long metaNodeMetaDadaId) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDadaNotFoundException {
+			Long metaNodeMetaDadaId) {
 		logger.debug("Cercant la meta-dada del meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaNodeMetaDadaId=" + metaNodeMetaDadaId +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaNodeMetaDadaEntity metaNodeMetaDada = comprovarMetaNodeMetaDada(
+		MetaNodeMetaDadaEntity metaNodeMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
 				entitat,
 				metaExpedient,
 				metaNodeMetaDadaId);
@@ -433,24 +429,25 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 			Long id,
 			Long metaDocumentId,
 			MultiplicitatEnumDto multiplicitat,
-			boolean readOnly) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDocumentNotFoundException {
+			boolean readOnly) {
 		logger.debug("Afegint meta-document al meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaDocumentId=" + metaDocumentId +  ", "
 				+ "multiplicitat=" + multiplicitat +  ", "
 				+ "readOnly=" + readOnly +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaDocumentEntity metaDocument = comprovarMetaDocument(
+		MetaDocumentEntity metaDocument = entityComprovarHelper.comprovarMetaDocument(
 				entitat,
-				metaDocumentId);
+				metaDocumentId,
+				false);
 		metaExpedient.metaDocumentAdd(
 				metaDocument,
 				MultiplicitatEnum.valueOf(multiplicitat.toString()),
@@ -464,22 +461,22 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 			Long id,
 			Long metaExpedientMetaDocumentId,
 			MultiplicitatEnumDto multiplicitat,
-			boolean readOnly) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDadaNotFoundException {
+			boolean readOnly) {
 		logger.debug("Actualitzant meta-document del meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaNodeMetaDadaId=" + metaExpedientMetaDocumentId +  ","
 				+ "multiplicitat=" + multiplicitat +  ", "
 				+ "readOnly=" + readOnly +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = comprovarMetaExpedientMetaDocument(
+		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = entityComprovarHelper.comprovarMetaExpedientMetaDocument(
 				entitat,
 				metaExpedient,
 				metaExpedientMetaDocumentId);
@@ -493,20 +490,20 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	public void metaDocumentDelete(
 			Long entitatId,
 			Long id,
-			Long metaExpedientMetaDocumentId) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDocumentNotFoundException {
+			Long metaExpedientMetaDocumentId) {
 		logger.debug("Afegint meta-document al meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaExpedientMetaDocumentId=" + metaExpedientMetaDocumentId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = comprovarMetaExpedientMetaDocument(
+		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = entityComprovarHelper.comprovarMetaExpedientMetaDocument(
 				entitat,
 				metaExpedient,
 				metaExpedientMetaDocumentId);
@@ -520,21 +517,21 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 			Long entitatId,
 			Long id,
 			Long metaExpedientMetaDocumentId,
-			int posicio) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDocumentNotFoundException {
+			int posicio) {
 		logger.debug("Movent meta-document al meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaExpedientMetaDocumentId=" + metaExpedientMetaDocumentId +  ", "
 				+ "posicio=" + posicio +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = comprovarMetaExpedientMetaDocument(
+		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = entityComprovarHelper.comprovarMetaExpedientMetaDocument(
 				entitat,
 				metaExpedient,
 				metaExpedientMetaDocumentId);
@@ -549,20 +546,20 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	public MetaExpedientMetaDocumentDto findMetaDocument(
 			Long entitatId,
 			Long id,
-			Long metaExpedientMetaDocumentId) throws EntitatNotFoundException, MetaExpedientNotFoundException, MetaDocumentNotFoundException {
+			Long metaExpedientMetaDocumentId) {
 		logger.debug("Cercant el meta-document del meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaExpedientMetaDocumentId=" + metaExpedientMetaDocumentId +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
-		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = comprovarMetaExpedientMetaDocument(
+		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = entityComprovarHelper.comprovarMetaExpedientMetaDocument(
 				entitat,
 				metaExpedient,
 				metaExpedientMetaDocumentId);
@@ -575,16 +572,16 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Override
 	public List<PermisDto> findPermis(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, MetaExpedientNotFoundException {
+			Long id) {
 		logger.debug("Consulta dels permisos del meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ")"); 
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		comprovarMetaExpedient(
+		entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
 		return permisosHelper.findPermisos(
@@ -597,17 +594,17 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	public void updatePermis(
 			Long entitatId,
 			Long id,
-			PermisDto permis) throws EntitatNotFoundException, MetaExpedientNotFoundException {
+			PermisDto permis) {
 		logger.debug("Modificació del permis del meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id + ", "
 				+ "permis=" + permis + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		comprovarMetaExpedient(
+		entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
 		permisosHelper.updatePermis(
@@ -621,17 +618,17 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	public void deletePermis(
 			Long entitatId,
 			Long id,
-			Long permisId) throws EntitatNotFoundException, MetaExpedientNotFoundException {
+			Long permisId) {
 		logger.debug("Eliminació del permis del meta-expedient ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id + ", "
 				+ "permisId=" + permisId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		comprovarMetaExpedient(
+		entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id);
 		permisosHelper.deletePermis(
@@ -643,10 +640,10 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<MetaExpedientDto> findByEntitat(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		logger.debug("Consulta de meta-expedients de l'entitat ("
 				+ "entitatId=" + entitatId +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
@@ -660,11 +657,11 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<MetaExpedientDto> findActiveByEntitatPerCreacio(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Consulta de meta-expedients actius de l'entitat amb el permis CREATE ("
 				+ "entitatId=" + entitatId +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -688,11 +685,11 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<MetaExpedientDto> findByEntitatPerLectura(
-			Long entitatId) throws EntitatNotFoundException {
+			Long entitatId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Consulta de meta-expedients de l'entitat amb el permis READ ("
 				+ "entitatId=" + entitatId +  ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -714,90 +711,6 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	}
 
 
-
-	private MetaExpedientEntity comprovarMetaExpedient(
-			EntitatEntity entitat,
-			Long id) throws MetaExpedientNotFoundException {
-		MetaExpedientEntity metaExpedient = metaExpedientRepository.findOne(
-				id);
-		if (metaExpedient == null) {
-			logger.error("No s'ha trobat el meta-expedient (id=" + id + ")");
-			throw new MetaExpedientNotFoundException();
-		}
-		if (!entitat.equals(metaExpedient.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat del meta-expedient ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + metaExpedient.getEntitat().getId() + ")");
-			throw new MetaExpedientNotFoundException();
-		}
-		return metaExpedient;
-	}
-	private MetaDadaEntity comprovarMetaDada(
-			EntitatEntity entitat,
-			Long metaDadaId) throws MetaDadaNotFoundException {
-		MetaDadaEntity metaDada = metaDadaRepository.findOne(metaDadaId);
-		if (metaDada == null) {
-			logger.error("No s'ha trobat la meta-dada (metaDadaId=" + metaDadaId + ")");
-			throw new MetaDadaNotFoundException();
-		}
-		if (!entitat.equals(metaDada.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de la meta-dada ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + metaDada.getEntitat().getId() + ")");
-			throw new MetaDadaNotFoundException();
-		}
-		return metaDada;
-	}
-	private MetaNodeMetaDadaEntity comprovarMetaNodeMetaDada(
-			EntitatEntity entitat,
-			MetaExpedientEntity metaExpedient,
-			Long metaNodeMetaDadaId) throws MetaDadaNotFoundException {
-		MetaNodeMetaDadaEntity metaNodeMetaDada = metaNodeMetaDadaRepository.findOne(metaNodeMetaDadaId);
-		if (metaNodeMetaDada == null) {
-			logger.error("No s'ha trobat la meta-dada del meta-node (metaNodeMetaDadaId=" + metaNodeMetaDadaId + ")");
-			throw new MetaDadaNotFoundException();
-		}
-		if (!metaNodeMetaDada.getMetaNode().equals(metaExpedient)) {
-			logger.error("El meta-node de la meta-dada no coincideix amb el meta-expedient ("
-					+ "metaNodeId1=" + metaExpedient.getId() + ", "
-					+ "metaNodeId2=" + metaNodeMetaDada.getMetaNode().getId() + ")");
-			throw new MetaDadaNotFoundException();
-		}
-		return metaNodeMetaDada;
-	}
-	private MetaDocumentEntity comprovarMetaDocument(
-			EntitatEntity entitat,
-			Long metaDocumentId) throws MetaDocumentNotFoundException {
-		MetaDocumentEntity metaDocument = metaDocumentRepository.findOne(metaDocumentId);
-		if (metaDocument == null) {
-			logger.error("No s'ha trobat el meta-document (metaDocumentId=" + metaDocumentId + ")");
-			throw new MetaDocumentNotFoundException();
-		}
-		if (!entitat.equals(metaDocument.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat del meta-document ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + metaDocument.getEntitat().getId() + ")");
-			throw new MetaDocumentNotFoundException();
-		}
-		return metaDocument;
-	}
-	private MetaExpedientMetaDocumentEntity comprovarMetaExpedientMetaDocument(
-			EntitatEntity entitat,
-			MetaExpedientEntity metaExpedient,
-			Long metaExpedientMetaDocumentId) throws MetaDadaNotFoundException {
-		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = metaExpedientMetaDocumentRepository.findOne(metaExpedientMetaDocumentId);
-		if (metaExpedientMetaDocument == null) {
-			logger.error("No s'ha trobat el meta-document del meta-expedient (metaExpedientMetaDocumentId=" + metaExpedientMetaDocumentId + ")");
-			throw new MetaDocumentNotFoundException();
-		}
-		if (!metaExpedientMetaDocument.getMetaExpedient().equals(metaExpedient)) {
-			logger.error("El meta-expedient del meta-document no coincideix amb el meta-expedient ("
-					+ "metaNodeId1=" + metaExpedient.getId() + ", "
-					+ "metaNodeId2=" + metaExpedientMetaDocument.getMetaExpedient().getId() + ")");
-			throw new MetaDocumentNotFoundException();
-		}
-		return metaExpedientMetaDocument;
-	}
 
 	private void omplirMetaDocumentsPerMetaExpedients(
 			List<MetaExpedientDto> metaExpedients) {

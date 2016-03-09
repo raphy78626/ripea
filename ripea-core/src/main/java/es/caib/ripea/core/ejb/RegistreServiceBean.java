@@ -11,10 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
-import es.caib.ripea.core.api.exception.BustiaNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.ExpedientNotFoundException;
-import es.caib.ripea.core.api.exception.RegistreNotFoundException;
 import es.caib.ripea.core.api.service.RegistreService;
 
 /**
@@ -36,7 +32,7 @@ public class RegistreServiceBean implements RegistreService {
 	@RolesAllowed("IPA_REGWS")
 	public void create(
 			Long entitatId,
-			RegistreAnotacioDto registre) throws EntitatNotFoundException, BustiaNotFoundException {
+			RegistreAnotacioDto registre) {
 		delegate.create(entitatId, registre);
 	}
 
@@ -45,7 +41,7 @@ public class RegistreServiceBean implements RegistreService {
 	public void afegirAExpedient(
 			Long entitatId,
 			Long expedientId,
-			Long registreId) throws EntitatNotFoundException, ExpedientNotFoundException, RegistreNotFoundException {
+			Long registreId) {
 		delegate.afegirAExpedient(entitatId, expedientId, registreId);
 	}
 
@@ -54,7 +50,7 @@ public class RegistreServiceBean implements RegistreService {
 			Long entitatId,
 			Long bustiaId,
 			Long registreId,
-			String motiu) throws EntitatNotFoundException, BustiaNotFoundException, RegistreNotFoundException {
+			String motiu) {
 		delegate.rebutjar(entitatId, bustiaId, registreId, motiu);
 	}
 

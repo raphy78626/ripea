@@ -12,11 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.api.exception.CarpetaNotFoundException;
-import es.caib.ripea.core.api.exception.ContenidorNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.ExpedientNotFoundException;
 import es.caib.ripea.core.api.exception.NomInvalidException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.CarpetaService;
 import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.CarpetaTipusEnum;
@@ -27,7 +24,7 @@ import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.repository.CarpetaRepository;
 import es.caib.ripea.core.repository.ContenidorRepository;
@@ -49,8 +46,6 @@ public class CarpetaServiceImpl implements CarpetaService {
 	private ContenidorRepository contenidorRepository;
 	@Resource
 	private CarpetaRepository carpetaRepository;
-	//@Resource
-	//private ContenidorLogRepository contenidorLogRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -59,7 +54,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 	@Resource
 	private ContenidorHelper contenidorHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
+	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private ContenidorLogHelper contenidorLogHelper;
 
@@ -71,24 +66,24 @@ public class CarpetaServiceImpl implements CarpetaService {
 			Long entitatId,
 			Long contenidorId,
 			String nom,
-			CarpetaTipusEnumDto tipus) throws EntitatNotFoundException, ContenidorNotFoundException, NomInvalidException {
+			CarpetaTipusEnumDto tipus) {
 		logger.debug("Creant nova carpeta ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contenidorId=" + contenidorId + ", "
 				+ "nom=" + nom + ", "
 				+ "tipus=" + tipus + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
 		if (CarpetaTipusEnumDto.NOUVINGUT.equals(tipus)) {
-			logger.error("No es pot crear una carpeta de nouvinguts");
-			throw new CarpetaNotFoundException();
+			throw new ValidationException("No es pot crear una carpeta de nouvinguts");
 		}
-		ContenidorEntity contenidor = comprovarContenidor(
+		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
 				entitat,
-				contenidorId);
+				contenidorId,
+				null);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
 				entitat,
@@ -138,23 +133,26 @@ public class CarpetaServiceImpl implements CarpetaService {
 			Long entitatId,
 			Long id,
 			String nom,
-			CarpetaTipusEnumDto tipus) throws EntitatNotFoundException, CarpetaNotFoundException, NomInvalidException {
+			CarpetaTipusEnumDto tipus) {
 		logger.debug("Actualitzant dades de la carpeta ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
 				+ "nom=" + nom + ", "
 				+ "tipus=" + tipus + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		CarpetaEntity carpeta = comprovarCarpeta(
+		CarpetaEntity carpeta = entityComprovarHelper.comprovarCarpeta(
 				entitat,
 				id);
 		if (CarpetaTipusEnum.NOUVINGUT.equals(carpeta.getTipus())) {
 			logger.error("No es pot modificar la carpeta de nouvinguts (id=" + id + ")");
-			throw new CarpetaNotFoundException();
+			throw new ValidationException(
+					id,
+					CarpetaEntity.class,
+					"No es pot modificar la carpeta de nouvinguts");
 		}
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
@@ -200,21 +198,24 @@ public class CarpetaServiceImpl implements CarpetaService {
 	@Override
 	public CarpetaDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ExpedientNotFoundException {
+			Long id) {
 		logger.debug("Esborrant la carpeta ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		CarpetaEntity carpeta = comprovarCarpeta(
+		CarpetaEntity carpeta = entityComprovarHelper.comprovarCarpeta(
 				entitat,
 				id);
 		if (CarpetaTipusEnum.NOUVINGUT.equals(carpeta.getTipus())) {
 			logger.error("No es pot esborrar la carpeta de nouvinguts (id=" + id + ")");
-			throw new CarpetaNotFoundException();
+			throw new ValidationException(
+					id,
+					CarpetaEntity.class,
+					"No es pot esborrar la carpeta de nouvinguts");
 		}
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
@@ -254,16 +255,16 @@ public class CarpetaServiceImpl implements CarpetaService {
 	@Override
 	public CarpetaDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, CarpetaNotFoundException {
+			Long id) {
 		logger.debug("Obtenint la carpeta ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		CarpetaEntity carpeta = comprovarCarpeta(
+		CarpetaEntity carpeta = entityComprovarHelper.comprovarCarpeta(
 				entitat,
 				id);
 		// Per a consultes no es comprova el contenidor arrel
@@ -289,40 +290,6 @@ public class CarpetaServiceImpl implements CarpetaService {
 				false,
 				false,
 				false);
-	}
-
-	private ContenidorEntity comprovarContenidor(
-			EntitatEntity entitat,
-			Long id) throws EntitatNotFoundException {
-		ContenidorEntity contenidor = contenidorRepository.findOne(id);
-		if (contenidor == null) {
-			logger.error("No s'ha trobat el contenidor (contenidorId=" + id + ")");
-			throw new ContenidorNotFoundException();
-		}
-		if (!contenidor.getEntitat().equals(entitat)) {
-			logger.error("L'entitat del contenidor no coincideix ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + contenidor.getEntitat().getId() + ")");
-			throw new ContenidorNotFoundException();
-		}
-		return contenidor;
-	}
-
-	private CarpetaEntity comprovarCarpeta(
-			EntitatEntity entitat,
-			Long id) throws CarpetaNotFoundException {
-		CarpetaEntity carpeta = carpetaRepository.findOne(id);
-		if (carpeta == null) {
-			logger.error("No s'ha trobat la carpeta (id=" + id + ")");
-			throw new CarpetaNotFoundException();
-		}
-		if (!entitat.equals(carpeta.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de la carpeta ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + carpeta.getEntitat().getId() + ")");
-			throw new CarpetaNotFoundException();
-		}
-		return carpeta;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CarpetaServiceImpl.class);

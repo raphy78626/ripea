@@ -11,9 +11,7 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.ArxiuNotFoundException;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.UnitatNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 
 /**
  * Declaració dels mètodes per a gestionar arxius.
@@ -30,15 +28,13 @@ public interface ArxiuService {
 	 * @param arxiu
 	 *            Informació de l'arxiu a crear.
 	 * @return L'arxiu creat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws UnitatNotFoundException
-	 *             Si no s'ha trobat cap unitat amb el codi especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ArxiuDto create(
 			Long entitatId,
-			ArxiuDto arxiu) throws EntitatNotFoundException, UnitatNotFoundException;
+			ArxiuDto arxiu) throws NotFoundException;
 
 	/**
 	 * Actualitza la informació de l'arxiu.
@@ -48,15 +44,13 @@ public interface ArxiuService {
 	 * @param arxiu
 	 *            Informació de l'arxiu a modificar.
 	 * @return L'arxiu modificat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws ArxiuNotFoundException
-	 *             Si no s'ha trobat cap arxiu amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ArxiuDto update(
 			Long entitatId,
-			ArxiuDto arxiu) throws EntitatNotFoundException, ArxiuNotFoundException;
+			ArxiuDto arxiu) throws NotFoundException;
 
 	/**
 	 * Activa o desactiva un arxiu.
@@ -68,16 +62,14 @@ public interface ArxiuService {
 	 * @param actiu
 	 *            Indica si activar o desactivar l'arxiu.
 	 * @return L'arxiu modificat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws ArxiuNotFoundException
-	 *             Si no s'ha trobat cap arxiu amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ArxiuDto updateActiu(
 			Long entitatId,
 			Long id,
-			boolean actiu) throws EntitatNotFoundException, ArxiuNotFoundException;
+			boolean actiu) throws NotFoundException;
 
 	/**
 	 * Esborra l'arxiu amb l'id especificat.
@@ -87,15 +79,13 @@ public interface ArxiuService {
 	 * @param id
 	 *            Atribut id de l'arxiu a esborrar.
 	 * @return L'arxiu esborrat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws ArxiuNotFoundException
-	 *             Si no s'ha trobat cap arxiu amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ArxiuDto delete(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, ArxiuNotFoundException;
+			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta un arxiu donat el seu id.
@@ -105,13 +95,13 @@ public interface ArxiuService {
 	 * @param id
 	 *            Atribut id de l'arxiu a trobar.
 	 * @return L'arxiu amb l'id especificat o null si no s'ha trobat.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ArxiuDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException;
+			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta els arxius donat el codi d'unitat.
@@ -121,15 +111,13 @@ public interface ArxiuService {
 	 * @param unitatCodi
 	 *            Atribut unitatCodi dels arxius a trobar.
 	 * @return Els arxius amb la unitat especificada.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws UnitatNotFoundException
-	 *             Si no s'ha trobat cap unitat amb el codi especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ArxiuDto> findByUnitatCodiAdmin(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, UnitatNotFoundException;
+			String unitatCodi) throws NotFoundException;
 	
 	/**
 	 * Consulta els arxius donat el codi d'unitat.
@@ -139,15 +127,13 @@ public interface ArxiuService {
 	 * @param unitatCodi
 	 *            Atribut unitatCodi dels arxius a trobar.
 	 * @return Els arxius amb la unitat especificada.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws UnitatNotFoundException
-	 *             Si no s'ha trobat cap unitat amb el codi especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public List<ArxiuDto> findByUnitatCodiUsuari(
 			Long entitatId,
-			String unitatCodi) throws EntitatNotFoundException, UnitatNotFoundException;
+			String unitatCodi) throws NotFoundException;
 
 	/**
 	 * Consulta els arxius de l'entitat amb permisos d'accés per a
@@ -156,12 +142,12 @@ public interface ArxiuService {
 	 * @param entitatId
 	 *            Id de l'entitat.
 	 * @return Els arxius permesos.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public List<ArxiuDto> findPermesosPerUsuari(
-			Long entitatId) throws EntitatNotFoundException;
+			Long entitatId) throws NotFoundException;
 
 	/**
 	 * Modifica els permisos d'un usuari o d'un rol per a accedir a un arxiu.
@@ -172,16 +158,14 @@ public interface ArxiuService {
 	 *            Atribut id de l'arxiu del qual es modificar el permís.
 	 * @param permis
 	 *            El permís que es vol modificar.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws ArxiuNotFoundException
-	 *             Si no s'ha trobat cap arxiu amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void updatePermis(
 			Long entitatId,
 			Long id,
-			PermisDto permis) throws EntitatNotFoundException, ArxiuNotFoundException;
+			PermisDto permis) throws NotFoundException;
 
 	/**
 	 * Esborra els permisos d'un usuari o d'un rol per a accedir a un arxiu.
@@ -192,16 +176,14 @@ public interface ArxiuService {
 	 *            Atribut id de l'arxiu del qual es vol modificar el permís.
 	 * @param permisId
 	 *            Atribut id del permís que es vol esborrar.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
-	 * @throws ArxiuNotFoundException
-	 *             Si no s'ha trobat cap arxiu amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void deletePermis(
 			Long entitatId,
 			Long id,
-			Long permisId) throws EntitatNotFoundException, ArxiuNotFoundException;
+			Long permisId) throws NotFoundException;
 
 	/**
 	 * Consulta l'arbre de les unitats organitzatives per a mostrar els
@@ -210,12 +192,12 @@ public interface ArxiuService {
 	 * @param entitatId
 	 *            Id de l'entitat.
 	 * @return L'arbre de les unitats organitzatives.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
-			Long entitatId) throws EntitatNotFoundException;
+			Long entitatId) throws NotFoundException;
 
 	/**
 	 * Consulta l'arbre de les unitats organitzatives per a mostrar els
@@ -224,11 +206,11 @@ public interface ArxiuService {
 	 * @param entitatId
 	 *            Id de l'entitat.
 	 * @return L'arbre de les unitats organitzatives.
-	 * @throws EntitatNotFoundException
-	 *             Si no s'ha trobat cap entitat amb l'id especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesUser(
-			Long entitatId) throws EntitatNotFoundException;
+			Long entitatId) throws NotFoundException;
 
 }

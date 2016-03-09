@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.IntegracioAccioDto;
 import es.caib.ripea.core.api.dto.IntegracioDto;
-import es.caib.ripea.core.api.exception.IntegracioNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 
 /**
  * Declaració dels mètodes per al seguiment de la comunicació
@@ -33,11 +33,11 @@ public interface IntegracioService {
 	 * @param codi
 	 *             Codi de la integració.
 	 * @return La llista amb les darreres accions.
-	 * @throws IntegracioNotFoundException
-	 *             Si no hi ha cap integració amb el codi especificat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat la integració amb el codi especificat.
 	 */
 	@PreAuthorize("hasRole('ROLE_SUPER')")
 	public List<IntegracioAccioDto> findDarreresAccionsByIntegracio(
-			String codi) throws IntegracioNotFoundException;
+			String codi) throws NotFoundException;
 
 }

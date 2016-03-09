@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.UsuariDto;
-import es.caib.ripea.core.api.exception.UsuariNotFoundException;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
@@ -63,13 +63,13 @@ public class AplicacioServiceImpl implements AplicacioService {
 
 	@Transactional
 	@Override
-	public void processarAutenticacioUsuari() throws UsuariNotFoundException {
+	public void processarAutenticacioUsuari() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Processant autenticació (usuariCodi=" + auth.getName() + ")");
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
 			logger.debug("Consultant plugin de dades d'usuari (usuariCodi=" + auth.getName() + ")");
-			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbUsuariCodi(auth.getName());
+			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari = usuariRepository.save(
 						UsuariEntity.getBuilder(
@@ -78,18 +78,22 @@ public class AplicacioServiceImpl implements AplicacioService {
 								dadesUsuari.getNif(),
 								dadesUsuari.getEmail()).build());
 			} else {
-				throw new UsuariNotFoundException();
+				throw new NotFoundException(
+						auth.getName(),
+						DadesUsuari.class);
 			}
 		} else {
 			logger.debug("Consultant plugin de dades d'usuari (usuariCodi=" + auth.getName() + ")");
-			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbUsuariCodi(auth.getName());
+			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari.update(
 						dadesUsuari.getNom(),
 						dadesUsuari.getNif(),
 						dadesUsuari.getEmail());
 			} else {
-				throw new UsuariNotFoundException();
+				throw new NotFoundException(
+						auth.getName(),
+						DadesUsuari.class);
 			}
 		}
 	}

@@ -16,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
-import es.caib.ripea.core.api.exception.EntitatNotFoundException;
-import es.caib.ripea.core.api.exception.ExpedientNotFoundException;
-import es.caib.ripea.core.api.exception.InteressatNotFoundException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
@@ -30,7 +28,7 @@ import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
-import es.caib.ripea.core.helper.PermisosComprovacioHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.repository.ContenidorLogRepository;
 import es.caib.ripea.core.repository.ContenidorRepository;
@@ -66,7 +64,7 @@ public class InteressatServiceImpl implements InteressatService {
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private PermisosComprovacioHelper permisosComprovacioHelper;
+	private EntityComprovarHelper entityComprovarHelper;
 
 
 
@@ -75,17 +73,20 @@ public class InteressatServiceImpl implements InteressatService {
 	public InteressatDto create(
 			Long entitatId,
 			Long expedientId,
-			InteressatDto interessat) throws EntitatNotFoundException, ExpedientNotFoundException {
+			InteressatDto interessat) {
 		logger.debug("Creant nou interessat ("
 				+ "entitatId=" + entitatId + ", "
 				+ "expedientId=" + expedientId + ", "
 				+ "interessat=" + interessat + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ExpedientEntity expedient = comprovarExpedient(entitat, expedientId);
+		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
+				entitat,
+				null,
+				expedientId);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
 				entitat,
@@ -149,17 +150,20 @@ public class InteressatServiceImpl implements InteressatService {
 	public void addToExpedient(
 			Long entitatId,
 			Long expedientId,
-			Long id) throws EntitatNotFoundException, ExpedientNotFoundException, InteressatNotFoundException {
+			Long id) {
 		logger.debug("Afegint interessat a l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "expedientId=" + expedientId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ExpedientEntity expedient = comprovarExpedient(entitat, expedientId);
+		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
+				entitat,
+				null,
+				expedientId);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
 				entitat,
@@ -177,7 +181,7 @@ public class InteressatServiceImpl implements InteressatService {
 				false,
 				true,
 				false);
-		InteressatEntity interessat = comprovarInteressat(
+		InteressatEntity interessat = entityComprovarHelper.comprovarInteressat(
 				entitat,
 				id);
 		expedient.addInteressat(interessat);
@@ -200,17 +204,20 @@ public class InteressatServiceImpl implements InteressatService {
 	public void removeFromExpedient(
 			Long entitatId,
 			Long expedientId,
-			Long id) throws EntitatNotFoundException, ExpedientNotFoundException, InteressatNotFoundException {
+			Long id) {
 		logger.debug("Esborrant interessat de l'expedient  ("
 				+ "entitatId=" + entitatId + ", "
 				+ "expedientId=" + expedientId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ExpedientEntity expedient = comprovarExpedient(entitat, expedientId);
+		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
+				entitat,
+				null,
+				expedientId);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
 				entitat,
@@ -228,7 +235,7 @@ public class InteressatServiceImpl implements InteressatService {
 				false,
 				true,
 				false);
-		InteressatEntity interessat = comprovarInteressat(
+		InteressatEntity interessat = entityComprovarHelper.comprovarInteressat(
 				entitat,
 				id);
 		List<InteressatEntity> interessats = interessatRepository.findByEntitatAndExpedient(
@@ -260,7 +267,10 @@ public class InteressatServiceImpl implements InteressatService {
 			logger.error("No s'ha trobat l'interessat a l'expedient ("
 					+ "expedientId=" + expedientId + ", "
 					+ "id=" + id + ")");
-			throw new InteressatNotFoundException();
+			throw new ValidationException(
+					id,
+					InteressatEntity.class,
+					"No s'ha trobat l'interessat a l'expedient (expedientId=" + expedientId + ")");
 		}
 	}
 
@@ -268,16 +278,16 @@ public class InteressatServiceImpl implements InteressatService {
 	@Override
 	public InteressatDto findById(
 			Long entitatId,
-			Long id) throws EntitatNotFoundException, InteressatNotFoundException {
+			Long id) {
 		logger.debug("Consulta de l'interessat ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		InteressatEntity interessat = comprovarInteressat(
+		InteressatEntity interessat = entityComprovarHelper.comprovarInteressat(
 				entitat,
 				id);
 		return conversioTipusHelper.convertir(
@@ -289,16 +299,19 @@ public class InteressatServiceImpl implements InteressatService {
 	@Override
 	public List<InteressatDto> findByExpedient(
 			Long entitatId,
-			Long expedientId) throws EntitatNotFoundException, ExpedientNotFoundException {
+			Long expedientId) {
 		logger.debug("Consulta interessats de l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "expedientId=" + expedientId + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ExpedientEntity expedient = comprovarExpedient(entitat, expedientId);
+		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
+				entitat,
+				null,
+				expedientId);
 		List<InteressatEntity> interessats = interessatRepository.findByEntitatAndExpedient(
 				entitat,
 				expedient);
@@ -322,13 +335,13 @@ public class InteressatServiceImpl implements InteressatService {
 			Long entitatId,
 			String nom,
 			String nif,
-			String llinatges) throws EntitatNotFoundException {
+			String llinatges) {
 		logger.debug("Consulta interessats de tipus ciutadà ("
 				+ "entitatId=" + entitatId + ", "
 				+ "nom=" + nom + ", "
 				+ "nif=" + nif + ", "
 				+ "llinatges=" + llinatges + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -350,12 +363,12 @@ public class InteressatServiceImpl implements InteressatService {
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			Long entitatId,
 			String nom,
-			String identificador) throws EntitatNotFoundException {
+			String identificador) {
 		logger.debug("Consulta interessats de tipus administració ("
 				+ "entitatId=" + entitatId + ", "
 				+ "nom=" + nom + ", "
 				+ "identificador=" + identificador + ")");
-		EntitatEntity entitat = permisosComprovacioHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -372,40 +385,6 @@ public class InteressatServiceImpl implements InteressatService {
 	}
 
 
-
-	private ExpedientEntity comprovarExpedient(
-			EntitatEntity entitat,
-			Long id) throws ExpedientNotFoundException {
-		ExpedientEntity expedient = expedientRepository.findOne(id);
-		if (expedient == null) {
-			logger.error("No s'ha trobat l'expedient (id=" + id + ")");
-			throw new ExpedientNotFoundException();
-		}
-		if (!entitat.getId().equals(expedient.getEntitat().getId())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'expedient ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + expedient.getEntitat().getId() + ")");
-			throw new ExpedientNotFoundException();
-		}
-		return expedient;
-	}
-
-	private InteressatEntity comprovarInteressat(
-			EntitatEntity entitat,
-			Long id) throws InteressatNotFoundException {
-		InteressatEntity interessat = interessatRepository.findOne(id);
-		if (interessat == null) {
-			logger.error("No s'ha trobat l'interessat (id=" + id + ")");
-			throw new InteressatNotFoundException();
-		}
-		if (!entitat.getId().equals(interessat.getEntitat().getId())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'interessat ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + interessat.getEntitat().getId() + ")");
-			throw new InteressatNotFoundException();
-		}
-		return interessat;
-	}
 
 	private static final Logger logger = LoggerFactory.getLogger(InteressatServiceImpl.class);
 

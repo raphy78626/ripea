@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "Dir3CaibObtenerUnidadesWsService", targetNamespace = "http://unidad.ws.dir3caib.caib.es/", wsdlLocation = "http://dev.caib.es/dir3caib/ws/Dir3CaibObtenerUnidades?wsdl")
+@WebServiceClient(name = "Dir3CaibObtenerUnidadesWsService", targetNamespace = "http://unidad.ws.dir3caib.caib.es/", wsdlLocation = "file:/home/likewise-open/LIMIT_CECOMASA/josepg/Feina/tmp/wsimport/Dir3CaibObtenerUnidades.wsdl")
 public class Dir3CaibObtenerUnidadesWsService
     extends Service
 {
@@ -30,9 +30,9 @@ public class Dir3CaibObtenerUnidadesWsService
         try {
             URL baseUrl;
             baseUrl = es.caib.dir3caib.ws.unidad.Dir3CaibObtenerUnidadesWsService.class.getResource(".");
-            url = new URL(baseUrl, "http://dev.caib.es/dir3caib/ws/Dir3CaibObtenerUnidades?wsdl");
+            url = new URL(baseUrl, "file:/home/likewise-open/LIMIT_CECOMASA/josepg/Feina/tmp/wsimport/Dir3CaibObtenerUnidades.wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'http://dev.caib.es/dir3caib/ws/Dir3CaibObtenerUnidades?wsdl', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'file:/home/likewise-open/LIMIT_CECOMASA/josepg/Feina/tmp/wsimport/Dir3CaibObtenerUnidades.wsdl', retrying as a local file");
             logger.warning(e.getMessage());
         }
         DIR3CAIBOBTENERUNIDADESWSSERVICE_WSDL_LOCATION = url;
