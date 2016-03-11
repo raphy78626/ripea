@@ -114,10 +114,12 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			MultiplicitatEnum globalMultiplicitat,
 			boolean globalReadOnly,
 			String custodiaPolitica,
+			boolean firmaPortafirmesActiva,
 			String portafirmesDocumentTipus,
 			String portafirmesFluxId,
 			String[] portafirmesResponsables,
 			MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus,
+			boolean firmaAppletActiva,
 			String signaturaTipusMime) {
 		update(
 				codi,
@@ -127,10 +129,12 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 		this.globalMultiplicitat = globalMultiplicitat;
 		this.globalReadOnly = globalReadOnly;
 		this.custodiaPolitica = custodiaPolitica;
+		this.firmaPortafirmesActiva = firmaPortafirmesActiva;
 		this.portafirmesDocumentTipus = portafirmesDocumentTipus;
 		this.portafirmesFluxId = portafirmesFluxId;
 		this.portafirmesResponsables = getResponsablesFromArray(portafirmesResponsables);
 		this.portafirmesFluxTipus = portafirmesFluxTipus;
+		this.firmaAppletActiva = firmaAppletActiva;
 		this.signaturaTipusMime = signaturaTipusMime;
 	}
 

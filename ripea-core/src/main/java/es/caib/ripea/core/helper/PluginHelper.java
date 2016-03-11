@@ -374,7 +374,7 @@ public class PluginHelper {
 							prioritat,
 							dataCaducitat,
 							flux,
-							new Long(metaDocument.getPortafirmesFluxId()),
+							null, //new Long(metaDocument.getPortafirmesFluxId()),
 							null,
 							false);
 					integracioHelper.addAccioOk(

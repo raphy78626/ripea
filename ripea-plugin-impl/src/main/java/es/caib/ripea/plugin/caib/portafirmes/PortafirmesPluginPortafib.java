@@ -8,12 +8,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -23,14 +25,15 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import es.caib.portafib.ws.api.v1.BlocDeFirmesWs;
-import es.caib.portafib.ws.api.v1.FirmaBean;
 import es.caib.portafib.ws.api.v1.FitxerBean;
 import es.caib.portafib.ws.api.v1.FluxDeFirmesWs;
 import es.caib.portafib.ws.api.v1.PeticioDeFirmaWs;
 import es.caib.portafib.ws.api.v1.PortaFIBPeticioDeFirmaWs;
 import es.caib.portafib.ws.api.v1.PortaFIBPeticioDeFirmaWsService;
+import es.caib.portafib.ws.api.v1.PortaFIBUsuariEntitatWs;
+import es.caib.portafib.ws.api.v1.PortaFIBUsuariEntitatWsService;
 import es.caib.portafib.ws.api.v1.TipusDocumentInfoWs;
+import es.caib.portafib.ws.api.v1.utils.PeticioDeFirmaUtils;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocument;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocumentTipus;
@@ -77,37 +80,15 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 					requestPeticioDeFirmaWs.setPrioritatID(9);
 				}
 			}
+			GregorianCalendar gcal = new GregorianCalendar();
+			gcal.setTime(dataCaducitat);
+			DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
 			requestPeticioDeFirmaWs.setDataCaducitat(
 					new java.sql.Timestamp(dataCaducitat.getTime()));
-			if (plantillaFluxId != null && flux == null) {
-				FluxDeFirmesWs fluxWs = getPeticioDeFirmaWs().instantiatePlantillaFluxDeFirmes(
-						plantillaFluxId);
-				requestPeticioDeFirmaWs.setFluxDeFirmes(fluxWs);
-			}
-			if (flux != null) {
-				FluxDeFirmesWs fluxWs = new FluxDeFirmesWs();
-				int index = 0;
-				for (PortafirmesFluxBloc fluxBloc: flux) {
-					BlocDeFirmesWs blocWs = new BlocDeFirmesWs();
-					blocWs.setMinimDeFirmes(fluxBloc.getMinSignataris());
-					blocWs.setOrdre(index);
-					if (fluxBloc.getDestinataris() != null) {
-						for (int i = 0; i < fluxBloc.getDestinataris().length; i++) {
-							FirmaBean firma = new FirmaBean();
-							firma.setDestinatariID(fluxBloc.getDestinataris()[i]);
-							firma.setObligatori(fluxBloc.getObligatorietats()[i]);
-							blocWs.getFirmes().add(firma);
-						}
-					}
-					fluxWs.getBlocsDeFirmes().add(blocWs);
-					index++;
-				}
-				requestPeticioDeFirmaWs.setFluxDeFirmes(fluxWs);
-			}
-			if (flux == null && plantillaFluxId == null) {
-				throw new SistemaExternException(
-						"No s'ha especificat cap flux de firma");
-			}
+			requestPeticioDeFirmaWs.setFluxDeFirmes(
+					toFluxDeFirmes(
+							flux,
+							plantillaFluxId));
 			requestPeticioDeFirmaWs.setFitxerAFirmar(
 					toFitxerBean(document));
 			requestPeticioDeFirmaWs.setTipusDocumentID(documentTipus);
@@ -199,16 +180,97 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 		return fitxer;
 	}
 
+	private FluxDeFirmesWs toFluxDeFirmes(
+			List<PortafirmesFluxBloc> flux,
+			Long plantillaFluxId) throws Exception {
+		if (flux == null && plantillaFluxId == null) {
+			throw new SistemaExternException(
+					"No s'ha especificat cap flux de firma");
+		}
+		FluxDeFirmesWs fluxWs;
+		if (plantillaFluxId != null && flux == null) {
+			fluxWs = getPeticioDeFirmaWs().instantiatePlantillaFluxDeFirmes(
+					plantillaFluxId);
+		} else {
+			int numNifs = 0;
+			if (flux.size() > 0) {
+				numNifs = flux.get(0).getDestinataris().length;
+			}
+			String[][] nifs = new String[numNifs][flux.size()];
+			for (int i = 0; i < flux.size(); i++) {
+				PortafirmesFluxBloc fluxBloc = flux.get(i);
+				for (int j = 0; j < fluxBloc.getDestinataris().length; j++) {
+					nifs[j][i] = fluxBloc.getDestinataris()[j];
+				}
+			}
+			fluxWs = PeticioDeFirmaUtils.constructFluxDeFirmesWsUsingBlocDeFirmes(
+					getUsuariEntitatWs(),
+					nifs);
+			/*fluxWs = new FluxDeFirmesWs();
+			fluxWs.setNom("qwerty");
+			int index = 0;
+			for (PortafirmesFluxBloc fluxBloc: flux) {
+				BlocDeFirmesWs blocWs = new BlocDeFirmesWs();
+				blocWs.setMinimDeFirmes(fluxBloc.getMinSignataris());
+				blocWs.setOrdre(index);
+				if (fluxBloc.getDestinataris() != null) {
+					for (int i = 0; i < fluxBloc.getDestinataris().length; i++) {
+						FirmaBean firma = new FirmaBean();
+						firma.setDestinatariID(fluxBloc.getDestinataris()[i]);
+						firma.setObligatori(fluxBloc.getObligatorietats()[i]);
+						blocWs.getFirmes().add(firma);
+					}
+				}
+				fluxWs.getBlocsDeFirmes().add(blocWs);
+				index++;
+			}*/
+		}
+		return fluxWs;
+	}
+
+	/*private XMLGregorianCalendar toXMLGregorianCalendar(
+			Date date) throws Exception {
+		if (date == null)
+			return null;
+		GregorianCalendar c = new GregorianCalendar();
+		c.setTime(date);
+		return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+	}*/
+
 	private PortaFIBPeticioDeFirmaWs getPeticioDeFirmaWs() throws Exception {
-		//final String endpoint = "http://portafibcaib.fundaciobit.org/portafib/ws/v1/PortaFIBPeticioDeFirma";
-		URL wsdl = new URL(getServiceUrl() + "?wsdl");
-		PortaFIBPeticioDeFirmaWsService service = new PortaFIBPeticioDeFirmaWsService(wsdl);
+		String webServiceUrl = getBaseUrl() + "/ws/v1/PortaFIBPeticioDeFirma";
+		URL wsdlUrl = new URL(webServiceUrl + "?wsdl");
+		PortaFIBPeticioDeFirmaWsService service = new PortaFIBPeticioDeFirmaWsService(wsdlUrl);
 		PortaFIBPeticioDeFirmaWs api = service.getPortaFIBPeticioDeFirmaWs();
 		BindingProvider bp = (BindingProvider)api;
 		Map<String, Object> reqContext = bp.getRequestContext();
 		reqContext.put(
 				BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-				getServiceUrl());
+				webServiceUrl);
+		reqContext.put(
+				BindingProvider.USERNAME_PROPERTY,
+				getUsername());
+		reqContext.put(
+				BindingProvider.PASSWORD_PROPERTY,
+				getPassword());
+		if (isLogMissatgesActiu()) {
+			@SuppressWarnings("rawtypes")
+			List<Handler> handlerChain = new ArrayList<Handler>();
+			handlerChain.add(new LogMessageHandler());
+			bp.getBinding().setHandlerChain(handlerChain);
+		}
+		return api;
+	}
+	private PortaFIBUsuariEntitatWs getUsuariEntitatWs() throws Exception {
+		String webServiceUrl = getBaseUrl() + "/ws/v1/PortaFIBUsuariEntitat";
+		URL wsdlUrl = new URL(webServiceUrl + "?wsdl");
+		PortaFIBUsuariEntitatWsService service = new PortaFIBUsuariEntitatWsService(wsdlUrl);
+		PortaFIBUsuariEntitatWs api = service.getPortaFIBUsuariEntitatWs();
+		BindingProvider bp = (BindingProvider)api;
+		Map<String, Object> reqContext = bp.getRequestContext();
+		reqContext.put(
+				BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+				webServiceUrl);
 		reqContext.put(
 				BindingProvider.USERNAME_PROPERTY,
 				getUsername());
@@ -224,18 +286,9 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 		return api;
 	}
 
-	/*private XMLGregorianCalendar toXMLGregorianCalendar(
-			Date date) throws Exception {
-		if (date == null)
-			return null;
-		GregorianCalendar c = new GregorianCalendar();
-		c.setTime(date);
-		return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-	}*/
-
-	private String getServiceUrl() {
+	private String getBaseUrl() {
 		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.portafirmes.portafib.service.url");
+				"es.caib.ripea.plugin.portafirmes.portafib.base.url");
 	}
 	private String getUsername() {
 		return PropertiesHelper.getProperties().getProperty(

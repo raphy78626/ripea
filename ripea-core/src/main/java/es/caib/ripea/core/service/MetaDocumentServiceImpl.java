@@ -162,10 +162,12 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				MultiplicitatEnum.valueOf(metaDocument.getGlobalMultiplicitat().name()),
 				metaDocument.isGlobalReadOnly(),
 				metaDocument.getCustodiaPolitica(),
+				metaDocument.isFirmaPortafirmesActiva(),
 				metaDocument.getPortafirmesDocumentTipus(),
 				metaDocument.getPortafirmesFluxId(),
 				metaDocument.getPortafirmesResponsables(),
 				metaDocument.getPortafirmesFluxTipus(),
+				metaDocument.isFirmaAppletActiva(),
 				metaDocument.getSignaturaTipusMime());
 		if (plantillaContingut != null) {
 			metaDocumentEntitiy.updatePlantilla(

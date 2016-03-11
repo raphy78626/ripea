@@ -42,8 +42,9 @@ pageContext.setAttribute(
 	<c:set var="formAction"><rip:modalUrl value="/metaDocument"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="metaDocumentCommand" enctype="multipart/form-data">
 		<ul class="nav nav-tabs" role="tablist">
-			<li role="presentation" class="active"><a href="#dades" aria-controls="dades" role="tab" data-toggle="tab">Dades</a></li>
-			<li role="presentation"><a href="#firma" aria-controls="firma" role="tab" data-toggle="tab">Firma</a></li>
+			<li role="presentation" class="active"><a href="#dades" aria-controls="dades" role="tab" data-toggle="tab"><spring:message code="metadocument.form.camp.tab.dades"/></a></li>
+			<li role="presentation"><a href="#firma-portafirmes" aria-controls="firma-portafirmes" role="tab" data-toggle="tab"><spring:message code="metadocument.form.camp.tab.firma.portafirmes"/></a></li>
+			<%--li role="presentation"><a href="#firma-applet" aria-controls="firma-applet" role="tab" data-toggle="tab"><spring:message code="metadocument.form.camp.tab.firma.applet"/></a></li--%>
 		</ul>
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
@@ -58,8 +59,8 @@ pageContext.setAttribute(
 				<rip:inputCheckbox name="globalReadOnly" textKey="metadada.form.camp.global.readonly"/>
 				<rip:inputFile name="plantilla" textKey="metadocument.form.camp.plantilla"/>
 			</div>
-			<div role="tabpanel" class="tab-pane" id="firma">
-				<rip:inputText name="custodiaPolitica" textKey="metadocument.form.camp.custodia.politica"/>
+			<div role="tabpanel" class="tab-pane" id="firma-portafirmes">
+				<rip:inputCheckbox name="firmaPortafirmesActiva" textKey="metadocument.form.camp.firma.portafirmes.activa"/>
 				<c:choose>
 					<c:when test="${isPortafirmesDocumentTipusSuportat}">
 						<rip:inputSelect name="portafirmesDocumentTipus" textKey="metadocument.form.camp.portafirmes.document.tipus" optionItems="${portafirmesDocumentTipus}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true"/>
@@ -71,7 +72,11 @@ pageContext.setAttribute(
 				<%--rip:inputText name="portafirmesFluxId" textKey="metadocument.form.camp.portafirmes.flux.id"/--%>
 				<rip:inputText name="portafirmesResponsables" textKey="metadocument.form.camp.portafirmes.responsables" multiple="true"/>
 				<rip:inputSelect name="portafirmesFluxTipus" textKey="metadocument.form.camp.portafirmes.fluxtip" optionItems="${metadocumentFluxtipEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
-				<%--rip:inputText name="signaturaTipusMime" textKey="metadocument.form.camp.signatura.tipus.mime"/--%>
+				<rip:inputText name="custodiaPolitica" textKey="metadocument.form.camp.custodia.politica"/>				
+			</div>
+			<div role="tabpanel" class="tab-pane" id="firma-applet">
+				<rip:inputCheckbox name="firmaAppletActiva" textKey="metadocument.form.camp.firma.applet.activa"/>
+				<rip:inputText name="signaturaTipusMime" textKey="metadocument.form.camp.signatura.tipus.mime"/>
 			</div>
 		</div>
 		<div id="modal-botons">

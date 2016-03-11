@@ -54,13 +54,13 @@
 								'					<h4 class="modal-title"></h4>' +
 								'				</div>' +
 								'				<div class="modal-body">' +
-								'					<iframe frameborder="0" height="100" width="100%"></iframe>' +
+								'					<iframe frameborder="0" height="10" width="100%"></iframe>' +
 								'				</div>' +
 								'				<div class="modal-footer"></div>' +
 								'			</div>' +
 								'		</div>' +
 								'	</div>' +
-								'</div>');						
+								'</div>');
 							elementPerEvaluar.data("modal-id", modalDivId);
 							$('#' + modalDivId).webutilModalShow({
 								adjustHeight: plugin.settings.adjustHeight,

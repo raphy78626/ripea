@@ -41,12 +41,14 @@ public class MetaDocumentCommand {
 	private boolean globalReadOnly;
 	@Size(max=64)
 	private String custodiaPolitica;
+	private boolean FirmaPortafirmesActiva;
 	@Size(max=64)
 	private String portafirmesDocumentTipus;
 	@Size(max=64)
 	private String portafirmesFluxId;
 	private String[] portafirmesResponsables;
 	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
+	boolean firmaAppletActiva;
 	@Size(max=64)
 	private String signaturaTipusMime;
 	protected MultipartFile plantilla;
@@ -103,6 +105,12 @@ public class MetaDocumentCommand {
 	public void setCustodiaPolitica(String custodiaPolitica) {
 		this.custodiaPolitica = custodiaPolitica;
 	}
+	public boolean isFirmaPortafirmesActiva() {
+		return FirmaPortafirmesActiva;
+	}
+	public void setFirmaPortafirmesActiva(boolean firmaPortafirmesActiva) {
+		FirmaPortafirmesActiva = firmaPortafirmesActiva;
+	}
 	public String getPortafirmesDocumentTipus() {
 		return portafirmesDocumentTipus;
 	}
@@ -126,6 +134,12 @@ public class MetaDocumentCommand {
 	}
 	public void setPortafirmesFluxTipus(MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus) {
 		this.portafirmesFluxTipus = portafirmesFluxTipus;
+	}
+	public boolean isFirmaAppletActiva() {
+		return firmaAppletActiva;
+	}
+	public void setFirmaAppletActiva(boolean firmaAppletActiva) {
+		this.firmaAppletActiva = firmaAppletActiva;
 	}
 	public String getSignaturaTipusMime() {
 		return signaturaTipusMime;
