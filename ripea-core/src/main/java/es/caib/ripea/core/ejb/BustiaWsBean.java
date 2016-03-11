@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.service.ws.bustia;
+package es.caib.ripea.core.ejb;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -12,6 +12,10 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
+
+import es.caib.ripea.core.service.ws.bustia.AnotacionRegistro;
+import es.caib.ripea.core.service.ws.bustia.BustiaWs;
+import es.caib.ripea.core.service.ws.bustia.BustiaWsImpl;
 
 /**
  * Implementació dels mètodes per al servei de bústies de RIPEA.

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.service.ws.registre;
+package es.caib.ripea.core.ejb;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -38,7 +38,7 @@ import es.caib.ripea.core.service.ws.registre.RegistreImpl;
 @RolesAllowed({"IPA_REGWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
-public class RegistreBean implements Registre {
+public class RegistreWsBean implements Registre {
 
 	@Autowired
 	private RegistreImpl delegate;

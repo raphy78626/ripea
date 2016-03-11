@@ -52,12 +52,17 @@
 			<groupId>axis</groupId>
 			<artifactId>axis</artifactId>
 			<version>1.4</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>axis-jaxrpc</artifactId>
+					<groupId>org.apache.axis</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.axis</groupId>
-			<artifactId>axis-jaxrpc</artifactId>
-			<version>1.4</version>
-			<scope>provided</scope>
+			<groupId>javax.xml</groupId>
+			<artifactId>jaxrpc-api</artifactId>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.activation</groupId>
@@ -207,10 +212,15 @@
 		</pluginManagement-->
 	</build>
 	<repositories>
-		<repository>
+		<!--repository>
 			<name>PortaFIB Maven Repository</name>
 			<id>es.caib.portafib</id>
 			<url>http://portafib.sourceforge.net/maven/</url>
+		</repository-->
+		<repository>
+			<name>PortaFIB Maven Repository</name>
+			<id>es.caib.portafib</id>
+			<url>https://github.com/GovernIB/portafib/tree/gh-pages/maven</url>
 		</repository>
 		<repository>
 			<name>Local Maven Repository</name>

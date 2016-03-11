@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.service.ws.callback;
+package es.caib.ripea.core.ejb;
 
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -35,7 +35,7 @@ import es.caib.ripea.core.service.ws.callback.MCGDwsImpl;
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
 @Interceptors(SpringBeanAutowiringInterceptor.class)
-public class MCGDwsBean implements MCGDws {
+public class MCGDWsBean implements MCGDws {
 
 	@Autowired
 	private MCGDwsImpl delegate;
