@@ -316,6 +316,24 @@ public class ContenidorDocumentController extends BaseUserController {
 				"document.controller.portafirmes.cancel.ok");
 	}
 
+	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/custodia/reintentar", method = RequestMethod.GET)
+	public String custodiaReintentar(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			@PathVariable Long documentId,
+			@PathVariable int versio,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		documentService.custodiaPortafirmesReintentar(
+				entitatActual.getId(),
+				documentId,
+				versio);
+		return this.getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../../../../../../contenidor/" + documentId,
+				"document.controller.portafirmes.cancel.ok");
+	}
+
 	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/pdf", method = RequestMethod.GET)
 	public String convertirPdf(
 			HttpServletRequest request,

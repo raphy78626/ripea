@@ -635,6 +635,14 @@ public class DocumentServiceImpl implements DocumentService {
 		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
 				document,
 				versio);
+		if (documentVersio == null) {
+			logger.error("No s'ha trobat la versió del document (" +
+					"documentId=" + id + ", " +
+					"versio=" + versio + ")");
+			throw new NotFoundException(
+					"(documentId=" + id + ", versio=" + versio + ")",
+					DocumentVersioEntity.class);
+		}
 
 		// TODO Verificar permisos de l'usuari per fer aquesta acció
 
@@ -716,6 +724,14 @@ public class DocumentServiceImpl implements DocumentService {
 		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
 				document,
 				versio);
+		if (documentVersio == null) {
+			logger.error("No s'ha trobat la versió del document (" +
+					"documentId=" + id + ", " +
+					"versio=" + versio + ")");
+			throw new NotFoundException(
+					"(documentId=" + id + ", versio=" + versio + ")",
+					DocumentVersioEntity.class);
+		}
 
 		// TODO Verificar permisos de l'usuari per fer aquesta acció
 
@@ -767,7 +783,7 @@ public class DocumentServiceImpl implements DocumentService {
 		// TODO Verificar permisos de l'usuari per fer aquesta acció
 
 		documentPortafirmes.updateNouCallback();
-		if (documentPortafirmes.getPortafirmesEstat().equals(DocumentPortafirmesEstatEnum.PENDENT)) {
+		if (!documentPortafirmes.getPortafirmesEstat().equals(DocumentPortafirmesEstatEnum.PENDENT)) {
 			return new IllegalStateException(
 					"L'enviament a portafirmes no es troba en estat pendent (" +
 					"documentId=" + documentId + ", " +
@@ -778,22 +794,22 @@ public class DocumentServiceImpl implements DocumentService {
 		private static final int DOCUMENT_PENDENT = 1;
 		private static final int DOCUMENT_FIRMAT = 2;
 		private static final int DOCUMENT_REBUTJAT = 3;*/
-		try {
-			switch (estat) {
-			case 0:
-			case 1:
-				break;
-			case 2:
-				// Registra al log la firma del document
-				contenidorLogHelper.log(
-						documentPortafirmes.getDocument(),
-						LogTipusEnum.PFIRMA_FIRMA,
-						null,
-						null,
-						new Integer(documentVersio.getVersio()).toString(),
-						null,
-						true,
-						true);
+		switch (estat) {
+		case 0:
+		case 1:
+			break;
+		case 2:
+			// Registra al log la firma del document
+			contenidorLogHelper.log(
+					documentPortafirmes.getDocument(),
+					LogTipusEnum.PFIRMA_FIRMA,
+					null,
+					null,
+					new Integer(documentVersio.getVersio()).toString(),
+					null,
+					true,
+					true);
+			try {
 				pluginHelper.portafirmesProcessarCallbackEstatFirmat(
 						documentVersio,
 						documentPortafirmes);
@@ -809,27 +825,27 @@ public class DocumentServiceImpl implements DocumentService {
 						true);
 				documentPortafirmes.updateEstat(
 						DocumentPortafirmesEstatEnum.FIRMAT);
-				break;
-			case 3:
-				// Registra al log el rebuig de la firma del document
-				contenidorLogHelper.log(
-						documentPortafirmes.getDocument(),
-						LogTipusEnum.PFIRMA_REBUIG,
-						null,
-						null,
-						new Integer(documentVersio.getVersio()).toString(),
-						null,
-						true,
-						true);
-				documentPortafirmes.updateEstat(
-						DocumentPortafirmesEstatEnum.REBUTJAT);
+			} catch (PluginException ex) {
+				documentPortafirmes.updateEstatErrorCustodia(
+						ex.getMessage());
+				return ex;
 			}
-			return null;
-		} catch (PluginException ex) {
-			documentPortafirmes.updateEstatError(
-					ex.getMessage());
-			return ex;
+			break;
+		case 3:
+			// Registra al log el rebuig de la firma del document
+			contenidorLogHelper.log(
+					documentPortafirmes.getDocument(),
+					LogTipusEnum.PFIRMA_REBUIG,
+					null,
+					null,
+					new Integer(documentVersio.getVersio()).toString(),
+					null,
+					true,
+					true);
+			documentPortafirmes.updateEstat(
+					DocumentPortafirmesEstatEnum.REBUTJAT);
 		}
+		return null;
 	}
 
 	@Transactional
@@ -943,7 +959,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Transactional
 	@Override
-	public void custodiarFirmaApplet(
+	public void custodiaEnviarDocumentFirmat(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) {
@@ -1025,6 +1041,65 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 
+	@Transactional
+	@Override
+	public void custodiaPortafirmesReintentar(
+			Long entitatId,
+			Long id,
+			int versio) {
+		logger.debug("Reintentant custòdia de document firmat amb portafirmes que ha donat error ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "versio=" + versio + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
+				entitat,
+				id,
+				true,
+				false,
+				false);
+		// Per a consultes no es comprova el contenidor arrel
+		// Comprova l'accés al path del document
+		contenidorHelper.comprovarPermisosPathContenidor(
+				document,
+				true,
+				false,
+				false,
+				true);
+		DocumentPortafirmesEntity documentPortafirmesDarrer = findDocumentPortafirmesDarrer(
+				entitat,
+				document,
+				versio);
+		if (documentPortafirmesDarrer == null) {
+			logger.error(
+					"No s'ha trobat cap enviament a portafirmes pel document (" +
+					"entitatId=" + entitat.getId() + ", " +
+					"id=" + document.getId() + ", " +
+					"versio=" + versio + ")");
+			throw new IllegalStateException("No s'ha trobat cap enviament a portafirmes pel document)");
+		}
+		if (!DocumentPortafirmesEstatEnum.ERROR_CUSTODIA.equals(documentPortafirmesDarrer.getPortafirmesEstat())) {
+			logger.error(
+					"No s'ha trobat cap enviament a portafirmes en estat pendent pel document (" +
+					"entitatId=" + entitatId + ", " +
+					"id=" + id + ", " +
+					"versio=" + versio + ")");
+			throw new IllegalStateException("No s'ha trobat cap enviament a portafirmes en estat d'error pel document");
+		}
+		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
+				document,
+				versio);
+
+		// TODO Verificar permisos de l'usuari per fer aquesta acció
+
+		pluginHelper.portafirmesProcessarCallbackEstatFirmat(
+				documentVersio,
+				documentPortafirmesDarrer);
+	}
 
 
 	private DocumentDto toDocumentDto(

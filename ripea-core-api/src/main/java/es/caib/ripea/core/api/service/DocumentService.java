@@ -308,7 +308,7 @@ public interface DocumentService {
 			int versio) throws NotFoundException;
 
 	/**
-	 * Envia a custòdia un document firmat amb l'applet.
+	 * Envia a custòdia un document firmat al navegador.
 	 * 
 	 * @param identificador
 	 *            Identificador del document generat amb anterioritat.
@@ -322,9 +322,30 @@ public interface DocumentService {
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public void custodiarFirmaApplet(
+	public void custodiaEnviarDocumentFirmat(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) throws PluginException;
+
+	/**
+	 * Reintenta la custòdia d'un document firmat amb portafirmes que ha donat
+	 * error al custodiar.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contenidor.
+	 * @param id
+	 *            Atribut id del document que es vol custodiar.
+	 * @param versio
+	 *            El número de versió del document que es vol custodiar.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 * @throws PluginException
+	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
+	 */
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public void custodiaPortafirmesReintentar(
+			Long entitatId,
+			Long id,
+			int versio) throws PluginException;
 
 }

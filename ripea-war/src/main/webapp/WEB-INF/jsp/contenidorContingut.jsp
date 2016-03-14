@@ -400,7 +400,7 @@ $(document).ready(function() {
 		</c:if>
 		<div class="${contingutClass}">
 			<c:if test="${contenidor.node and not contenidor.valid}">
-				<div id="botons-errors-validacio" class="alert well-sm alert-danger alert-dismissable">
+				<div id="botons-errors-validacio" class="alert well-sm alert-warning alert-dismissable">
 					<span class="fa fa-exclamation-triangle"></span>
 					<c:choose>
 						<c:when test="${contenidor.expedient}"><spring:message code="contenidor.contingut.errors.expedient"/></c:when>
@@ -468,7 +468,7 @@ $(document).ready(function() {
 													<dd><fmt:formatDate value="${versio.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
 													<dt><spring:message code="contenidor.contingut.versions.firma.estat"/>:</dt>
 													<dd>
-														<c:if test="${versio.firmaEstatError}"><span class="fa fa-warning" style="color:#a94442"></span></c:if>
+														<c:if test="${versio.firmaEstatCustodiaError}"><span class="fa fa-warning" style="color:#a94442"></span></c:if>
 														<spring:message code="document.firma.estat.enum.${versio.firmaEstat}"/>
 													</dd>
 												</dl>
@@ -490,10 +490,13 @@ $(document).ready(function() {
 																				<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/portafirmes/upload" data-rdt-link-modal="true"><span class="fa fa-send"></span>&nbsp;<spring:message code="contenidor.contingut.boto.portafirmes.enviar"/></a></li>
 																			</c:if>
 																			<c:if test="${versio.firmaEstatPortafirmesPendent}">
-																				<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/portafirmes/cancel" data-rdt-link-confirm="<spring:message code="contenidor.contingut.boto.portafirmes.cancelar.confirm"/>"><span class="fa fa-undo"></span>&nbsp;<spring:message code="contenidor.contingut.boto.portafirmes.cancelar"/></a></li>
+																				<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/portafirmes/cancel" data-rdt-link-confirm="<spring:message code="contenidor.contingut.boto.portafirmes.cancelar.confirm"/>"><span class="fa fa-times"></span>&nbsp;<spring:message code="contenidor.contingut.boto.portafirmes.cancelar"/></a></li>
 																			</c:if>
 																			<c:if test="${versio.firmaEstatPortafirmesBloquejat}">
 																				<li><a href="#" data-toggle="modal" data-target="#pfirma-info-${versio.id}"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contenidor.contingut.boto.portafirmes.info"/></a></li>
+																			</c:if>
+																			<c:if test="${versio.firmaEstatCustodiaError}">
+																				<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/custodia/reintentar"><span class="fa fa-repeat"></span>&nbsp;<spring:message code="contenidor.contingut.boto.custodia.reintentar"/></a></li>
 																			</c:if>
 																		</c:when>
 																		<c:otherwise>

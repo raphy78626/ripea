@@ -32,7 +32,7 @@
 							</div>
 							<div class="caption">
 								<p class="text-center">
-									<c:if test="${fill.node and not fill.valid}"><span class="fa fa-exclamation-triangle text-danger"></span></c:if>
+									<c:if test="${fill.node and not fill.valid}"><span class="fa fa-exclamation-triangle text-warning"></span></c:if>
 									${fill.nom}
 								</p>
 								<rip:blocContenidorAccions id="accions-fill-${fill.id}" className="botons-accions-element" modeLlistat="false" contenidor="${fill}"/>
@@ -126,7 +126,7 @@
 								<c:when test="${fill.carpeta}"><rip:blocIconaCarpeta carpeta="${fill}" petita="${true}"/></c:when>
 								<c:when test="${fill.document}"><span class="fa fa-file" title="<spring:message code="contenidor.contingut.icona.document"/>"></span></c:when>
 							</c:choose>
-							<c:if test="${fill.node and not fill.valid}">&nbsp;<span class="fa fa-exclamation-triangle text-danger"></span></c:if>
+							<c:if test="${fill.node and not fill.valid}">&nbsp;<span class="fa fa-exclamation-triangle text-warning"></span></c:if>
 							&nbsp;${fill.nom}
 						</td>
 						<td>

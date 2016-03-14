@@ -190,14 +190,26 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void custodiarFirmaApplet(
+	public void custodiaEnviarDocumentFirmat(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) {
-		delegate.custodiarFirmaApplet(
+		delegate.custodiaEnviarDocumentFirmat(
 				identificador,
 				arxiuNom,
 				arxiuContingut);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void custodiaPortafirmesReintentar(
+			Long entitatId,
+			Long id,
+			int versio) {
+		delegate.custodiaPortafirmesReintentar(
+				entitatId,
+				id,
+				versio);
 	}
 
 }

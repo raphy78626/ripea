@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -366,13 +367,24 @@ public class PluginHelper {
 					bloc.setObligatorietats(obligatorietats);
 				}
 				try {
+					Calendar dataCaducitatCal = Calendar.getInstance();
+					dataCaducitatCal.setTime(dataCaducitat);
+					if (	dataCaducitatCal.get(Calendar.HOUR_OF_DAY) == 0 &&
+							dataCaducitatCal.get(Calendar.MINUTE) == 0 &&
+							dataCaducitatCal.get(Calendar.SECOND) == 0 &&
+							dataCaducitatCal.get(Calendar.MILLISECOND) == 0) {
+						dataCaducitatCal.set(Calendar.HOUR_OF_DAY, 23);
+						dataCaducitatCal.set(Calendar.MINUTE, 59);
+						dataCaducitatCal.set(Calendar.SECOND, 59);
+						dataCaducitatCal.set(Calendar.MILLISECOND, 999);
+					}
 					long portafirmesEnviamentId = getPortafirmesPlugin().upload(
 							portafirmesDocument,
 							Long.parseLong(metaDocument.getPortafirmesDocumentTipus()),
 							motiu,
 							"Aplicació RIPEA",
 							prioritat,
-							dataCaducitat,
+							dataCaducitatCal.getTime(),
 							flux,
 							null, //new Long(metaDocument.getPortafirmesFluxId()),
 							null,

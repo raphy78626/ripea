@@ -118,8 +118,8 @@ public class DocumentVersioDto extends AuditoriaDto {
 					return DocumentFirmaEstatEnumDto.PFIRMA_FIRMAT;
 			case CANCELAT:
 				return DocumentFirmaEstatEnumDto.PFIRMA_CANCELAT;
-			case ERROR:
-				return DocumentFirmaEstatEnumDto.CALLBACK_ERROR;
+			case ERROR_CUSTODIA:
+				return DocumentFirmaEstatEnumDto.CUSTODIA_ERROR;
 			}
 		}
 		return DocumentFirmaEstatEnumDto.SENSE_FIRMA;
@@ -139,11 +139,11 @@ public class DocumentVersioDto extends AuditoriaDto {
 		return	firmaEstat.equals(DocumentFirmaEstatEnumDto.PFIRMA_PENDENT) ||
 				firmaEstat.equals(DocumentFirmaEstatEnumDto.PFIRMA_FIRMAT) ||
 				firmaEstat.equals(DocumentFirmaEstatEnumDto.PFIRMA_CUSTODIAT) ||
-				firmaEstat.equals(DocumentFirmaEstatEnumDto.CALLBACK_ERROR);
+				firmaEstat.equals(DocumentFirmaEstatEnumDto.CUSTODIA_ERROR);
 	}
-	public boolean isFirmaEstatError() {
+	public boolean isFirmaEstatCustodiaError() {
 		DocumentFirmaEstatEnumDto firmaEstat = getFirmaEstat();
-		return firmaEstat.equals(DocumentFirmaEstatEnumDto.CALLBACK_ERROR);
+		return firmaEstat.equals(DocumentFirmaEstatEnumDto.CUSTODIA_ERROR);
 	}
 
 	private static final long serialVersionUID = -139254994389509932L;

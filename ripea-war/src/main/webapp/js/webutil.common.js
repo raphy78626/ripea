@@ -169,7 +169,6 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 
 	$.fn.webutilMultifield = function() {
 		var $multifield = $(this);
-		$multifield.css('display', 'none');
 		var multifieldAfegirClick = function(inputValor) {
 			var $clon = $multifield.clone();
 			$clon.css('display', '');
@@ -177,6 +176,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 			var $buttonAfegir = $('<button class="btn btn-default pull-right"><span class="fa fa-plus"></span></button>');
 			$('div', $clon).append($buttonAfegir);
 			var $fieldInput = $('div :input:first', $clon);
+			$fieldInput.prop('disabled', '');
 			$fieldInput.addClass('pull-left');
 			$fieldInput.css('width', '93%');
 			if (inputValor) {
@@ -212,7 +212,10 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 			webutilModalAdjustHeight();
 			return false;
 		}
-		var valor = $(':input:first', $multifield).val();
+		$multifield.css('display', 'none');
+		var $multifieldInput = $(':input:first', $multifield);
+		$multifieldInput.prop('disabled', 'disabled');
+		var valor = $multifieldInput.val();
 		var separador = ',';
 		if (valor && valor.indexOf(separador) != -1) {
 			var parts = valor.split(separador);
@@ -223,6 +226,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		} else {
 			multifieldAfegirClick();
 		}
+		$multifieldInput.val('')
 	}
 	$.fn.webutilMultifieldEval = function() {
 		$('[data-toggle="multifield"]', $(this)).each(function() {

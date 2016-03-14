@@ -106,9 +106,9 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 			DocumentPortafirmesEstatEnum portafirmesEstat) {
 		this.portafirmesEstat = portafirmesEstat;
 	}
-	public void updateEstatError(
+	public void updateEstatErrorCustodia(
 			String errorDescripcio) {
-		this.portafirmesEstat = DocumentPortafirmesEstatEnum.ERROR;
+		this.portafirmesEstat = DocumentPortafirmesEstatEnum.ERROR_CUSTODIA;
 		this.errorDescripcio = errorDescripcio;
 	}
 	public void updateNouCallback() {

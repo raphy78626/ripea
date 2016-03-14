@@ -25,7 +25,7 @@
 		<c:if test="${error.errorMetaDocument}"><c:set var="hiHaMetaDocuments" value="${true}"/></c:if>
 	</c:forEach>
 	<c:if test="${hiHaMetaDades}">
-		<h4><span class="fa fa-exclamation-triangle text-danger"></span>&nbsp;<spring:message code="contenidor.errors.falten.metadades"/></h4>
+		<h4><span class="fa fa-exclamation-triangle text-warning"></span>&nbsp;<spring:message code="contenidor.errors.falten.metadades"/></h4>
 		<ul class="list-group">
 			<c:forEach var="error" items="${errors}">
 				<c:if test="${error.errorMetaDada}">
@@ -35,7 +35,7 @@
 		</ul>
 	</c:if>
 	<c:if test="${hiHaMetaDocuments}">
-		<h4><span class="fa fa-exclamation-triangle text-danger"></span>&nbsp;<spring:message code="contenidor.errors.falten.metadocuments"/></h4>
+		<h4><span class="fa fa-exclamation-triangle text-warning"></span>&nbsp;<spring:message code="contenidor.errors.falten.metadocuments"/></h4>
 		<ul class="list-group">
 			<c:forEach var="error" items="${errors}">
 				<c:if test="${error.errorMetaDocument}">

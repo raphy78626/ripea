@@ -15,5 +15,5 @@ public enum DocumentPortafirmesEstatEnum {
 	FIRMAT,
 	REBUTJAT,
 	CANCELAT,
-	ERROR
+	ERROR_CUSTODIA
 }
