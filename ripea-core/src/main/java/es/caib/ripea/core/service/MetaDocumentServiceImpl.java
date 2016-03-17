@@ -595,7 +595,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 	public List<MetaDocumentDto> findActiveByEntitatAndContenidorPerCreacio(
 			Long entitatId,
 			Long contenidorId) {
-		logger.debug("Consulta de meta-documents actius per a crear ("
+		logger.debug("Consulta de meta-documents actius per a creació ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "contenidorId=" + contenidorId +  ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -610,16 +610,72 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
 				contenidor,
 				true);
-		// Només es poden crear documents amb meta-document a dins els expedients
+		List<MetaDocumentEntity> metaDocuments = findMetaDocumentsDisponiblesPerCreacio(
+				entitat,
+				expedientSuperior);
+		return conversioTipusHelper.convertirList(
+				metaDocuments,
+				MetaDocumentDto.class);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<MetaDocumentDto> findActiveByEntitatAndContenidorPerModificacio(
+			Long entitatId,
+			Long documentId) {
+		logger.debug("Consulta de meta-documents actius per a modificació ("
+				+ "entitatId=" + entitatId +  ", "
+				+ "documentId=" + documentId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
+				entitat,
+				documentId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+				document,
+				true);
+		// Han de ser els mateixos que per a la creació però afegit el meta-document
+		// del document que es vol modificar
+		List<MetaDocumentEntity> metaDocuments = findMetaDocumentsDisponiblesPerCreacio(
+				entitat,
+				expedientSuperior);
+		if (document.getMetaDocument() != null && !metaDocuments.contains(document.getMetaDocument())) {
+			metaDocuments.add(document.getMetaDocument());
+		}
+		return conversioTipusHelper.convertirList(
+				metaDocuments,
+				MetaDocumentDto.class);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<PortafirmesDocumentTipusDto> findPortafirmesDocumentTipus() {
+		return pluginHelper.portafirmesFindDocumentTipus();
+	}
+
+
+
+	private List<MetaDocumentEntity> findMetaDocumentsDisponiblesPerCreacio(
+			EntitatEntity entitat,
+			ExpedientEntity expedientSuperior) {
 		List<MetaDocumentEntity> metaDocuments;
 		if (expedientSuperior != null) {
+			// A dins els expedients només es poden crear documents amb meta-document 
 			metaDocuments = new ArrayList<MetaDocumentEntity>();
 			// Dels meta-documents actius pel meta-expedient només deixa els que
 			// encara es poden afegir segons la multiplicitat.
 			List<MetaExpedientMetaDocumentEntity> metaExpedientMetaDocuments = metaExpedientMetaDocumentRepository.findByMetaExpedientAndMetaDocumentActiuTrueOrderByMetaDocumentNomAsc(
 					expedientSuperior.getMetaExpedient());
-			List<DocumentEntity> documents = documentRepository.findByExpedient(
-					expedientSuperior);
+			// Nomes retorna els documents que no s'hagin esborrat
+			List<DocumentEntity> documents = documentRepository.findByExpedientAndEsborrat(
+					expedientSuperior,
+					0);
 			for (MetaExpedientMetaDocumentEntity metaExpedientMetaDocument: metaExpedientMetaDocuments) {
 				boolean afegir = true;
 				for (DocumentEntity document: documents) {
@@ -665,18 +721,8 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 					auth);
 			
 		}
-		return conversioTipusHelper.convertirList(
-				metaDocuments,
-				MetaDocumentDto.class);
+		return metaDocuments;
 	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public List<PortafirmesDocumentTipusDto> findPortafirmesDocumentTipus() {
-		return pluginHelper.portafirmesFindDocumentTipus();
-	}
-
-
 
 	private static final Logger logger = LoggerFactory.getLogger(MetaDocumentServiceImpl.class);
 

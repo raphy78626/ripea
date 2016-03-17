@@ -57,7 +57,7 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 	@Column(name = "custodia_id", length = 256)
 	private String custodiaId;
 	@Column(name = "custodia_url", length = 1024)
-	protected String custodiaUrl;
+	private String custodiaUrl;
 	@Version
 	private long version = 0;
 
@@ -107,7 +107,7 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 			String custodiaUrl) {
 		this.custodiaUrl = custodiaUrl;
 	}
-	public void updateCustodiaDades(
+	public void updateCustodiaEstat(
 			boolean custodiat,
 			String custodiaId) {
 		this.custodiat = custodiat;

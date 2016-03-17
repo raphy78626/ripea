@@ -21,6 +21,7 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
 
+import es.caib.ripea.core.api.dto.PortafirmesEstatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
@@ -58,7 +59,7 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 	private long portafirmesId;
 	@Column(name = "pfirmes_estat", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private DocumentPortafirmesEstatEnum portafirmesEstat;
+	private PortafirmesEstatEnumDto portafirmesEstat;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "callback_darrer")
 	private Date callbackDarrer;
@@ -89,7 +90,7 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 	public long getPortafirmesId() {
 		return portafirmesId;
 	}
-	public DocumentPortafirmesEstatEnum getPortafirmesEstat() {
+	public PortafirmesEstatEnumDto getPortafirmesEstat() {
 		return portafirmesEstat;
 	}
 	public Date getCallbackDarrer() {
@@ -103,12 +104,11 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 	}
 
 	public void updateEstat(
-			DocumentPortafirmesEstatEnum portafirmesEstat) {
+			PortafirmesEstatEnumDto portafirmesEstat) {
 		this.portafirmesEstat = portafirmesEstat;
 	}
-	public void updateEstatErrorCustodia(
+	public void updateError(
 			String errorDescripcio) {
-		this.portafirmesEstat = DocumentPortafirmesEstatEnum.ERROR_CUSTODIA;
 		this.errorDescripcio = errorDescripcio;
 	}
 	public void updateNouCallback() {
@@ -142,7 +142,7 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 			DocumentPortafirmesPrioritatEnum prioritat,
 			Date dataCaducitat,
 			long portafirmesId,
-			DocumentPortafirmesEstatEnum portafirmesEstat) {
+			PortafirmesEstatEnumDto portafirmesEstat) {
 		return new Builder(
 				document,
 				versio,
@@ -167,7 +167,7 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 				DocumentPortafirmesPrioritatEnum prioritat,
 				Date dataCaducitat,
 				long portafirmesId,
-				DocumentPortafirmesEstatEnum portafirmesEstat) {
+				PortafirmesEstatEnumDto portafirmesEstat) {
 			built = new DocumentPortafirmesEntity();
 			built.document = document;
 			built.versio = versio;

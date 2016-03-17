@@ -380,6 +380,22 @@ public interface MetaDocumentService {
 			Long contenidorId) throws NotFoundException;
 
 	/**
+	 * Consulta els meta-documents actius donada una entitat i un document.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param documentId
+	 *            Id del document.
+	 * @return La llista de meta-documents per crear.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public List<MetaDocumentDto> findActiveByEntitatAndContenidorPerModificacio(
+			Long entitatId,
+			Long documentId) throws NotFoundException;
+
+	/**
 	 * Consulta la llista de tipus de document del plugin de portafirmes.
 	 * @return La llista de tipus o null si el plugin no suporta la consulta.
 	 */

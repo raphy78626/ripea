@@ -14,6 +14,7 @@ public enum PortafirmesEstatEnumDto {
 	PENDENT,
 	FIRMAT,
 	REBUTJAT,
-	CANCELAT,
-	ERROR_CUSTODIA
+	CANCELAT, // Enviament a portafirmes esborrat
+	CUSTODIAT, // Firmat i enviat a custòdia amb èxit
+	ESBORRAT // Firmat, custodiat i posteriorment esborrat
 }

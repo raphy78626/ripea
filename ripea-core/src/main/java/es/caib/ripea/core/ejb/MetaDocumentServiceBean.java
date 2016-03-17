@@ -20,6 +20,7 @@ import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 
 /**
@@ -213,6 +214,16 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 		return delegate.findActiveByEntitatAndContenidorPerCreacio(
 				entitatId,
 				contenidorId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<MetaDocumentDto> findActiveByEntitatAndContenidorPerModificacio(
+			Long entitatId,
+			Long documentId) throws NotFoundException {
+		return delegate.findActiveByEntitatAndContenidorPerModificacio(
+				entitatId,
+				documentId);
 	}
 
 	@Override

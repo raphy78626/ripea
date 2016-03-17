@@ -19,6 +19,7 @@ public class DocumentVersioDto extends AuditoriaDto {
 	private String arxiuNom;
 	private String arxiuContentType;
 	private long arxiuContentLength;
+	private boolean custodiat;
 	private String custodiaId;
 	protected String custodiaUrl;
 
@@ -56,6 +57,12 @@ public class DocumentVersioDto extends AuditoriaDto {
 	}
 	public void setArxiuContentLength(long arxiuContentLength) {
 		this.arxiuContentLength = arxiuContentLength;
+	}
+	public boolean isCustodiat() {
+		return custodiat;
+	}
+	public void setCustodiat(boolean custodiat) {
+		this.custodiat = custodiat;
 	}
 	public String getCustodiaId() {
 		return custodiaId;
@@ -103,47 +110,33 @@ public class DocumentVersioDto extends AuditoriaDto {
 		return darrer;
 	}
 
-	public DocumentFirmaEstatEnumDto getFirmaEstat() {
+	public PortafirmesEstatEnumDto getFirmaEstat() {
 		PortafirmesEnviamentDto portafirmesEnviamentDarrer = getPortafirmesEnviamentDarrer();
 		if (portafirmesEnviamentDarrer != null) {
-			switch (portafirmesEnviamentDarrer.getPortafirmesEstat()) {
-			case PENDENT:
-				return DocumentFirmaEstatEnumDto.PFIRMA_PENDENT;
-			case REBUTJAT:
-				return DocumentFirmaEstatEnumDto.PFIRMA_REBUTJAT;
-			case FIRMAT:
-				if (getCustodiaId() != null)
-					return DocumentFirmaEstatEnumDto.PFIRMA_CUSTODIAT;
-				else
-					return DocumentFirmaEstatEnumDto.PFIRMA_FIRMAT;
-			case CANCELAT:
-				return DocumentFirmaEstatEnumDto.PFIRMA_CANCELAT;
-			case ERROR_CUSTODIA:
-				return DocumentFirmaEstatEnumDto.CUSTODIA_ERROR;
-			}
+			return portafirmesEnviamentDarrer.getPortafirmesEstat();
 		}
-		return DocumentFirmaEstatEnumDto.SENSE_FIRMA;
+		return null;
 	}
 
-	public boolean isFirmaEstatCustodiat() {
-		DocumentFirmaEstatEnumDto firmaEstat = getFirmaEstat();
-		return	firmaEstat.equals(DocumentFirmaEstatEnumDto.PFIRMA_CUSTODIAT) ||
-				firmaEstat.equals(DocumentFirmaEstatEnumDto.APPLET_CUSTODIAT);
+	public boolean isFirmaEstatPendent() {
+		return PortafirmesEstatEnumDto.PENDENT.equals(getFirmaEstat());
 	}
-	public boolean isFirmaEstatPortafirmesPendent() {
-		DocumentFirmaEstatEnumDto firmaEstat = getFirmaEstat();
-		return firmaEstat.equals(DocumentFirmaEstatEnumDto.PFIRMA_PENDENT);
+	public boolean isFirmaEstatBloquejarEnviaments() {
+		return	PortafirmesEstatEnumDto.PENDENT.equals(getFirmaEstat()) ||
+				PortafirmesEstatEnumDto.FIRMAT.equals(getFirmaEstat());
 	}
-	public boolean isFirmaEstatPortafirmesBloquejat() {
-		DocumentFirmaEstatEnumDto firmaEstat = getFirmaEstat();
-		return	firmaEstat.equals(DocumentFirmaEstatEnumDto.PFIRMA_PENDENT) ||
-				firmaEstat.equals(DocumentFirmaEstatEnumDto.PFIRMA_FIRMAT) ||
-				firmaEstat.equals(DocumentFirmaEstatEnumDto.PFIRMA_CUSTODIAT) ||
-				firmaEstat.equals(DocumentFirmaEstatEnumDto.CUSTODIA_ERROR);
+	public boolean isFirmaError() {
+		PortafirmesEnviamentDto portafirmesEnviamentDarrer = getPortafirmesEnviamentDarrer();
+		if (portafirmesEnviamentDarrer != null) {
+			String error = portafirmesEnviamentDarrer.getErrorDescripcio();
+			return error != null && !error.isEmpty();
+		}
+		return false;
 	}
-	public boolean isFirmaEstatCustodiaError() {
-		DocumentFirmaEstatEnumDto firmaEstat = getFirmaEstat();
-		return firmaEstat.equals(DocumentFirmaEstatEnumDto.CUSTODIA_ERROR);
+
+	public boolean isFirmaIntentat() {
+		PortafirmesEnviamentDto portafirmesEnviamentDarrer = getPortafirmesEnviamentDarrer();
+		return portafirmesEnviamentDarrer != null;
 	}
 
 	private static final long serialVersionUID = -139254994389509932L;

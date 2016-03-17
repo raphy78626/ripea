@@ -268,7 +268,7 @@ public interface DocumentService {
 			int estat) throws NotFoundException;
 
 	/**
-	 * Converteix el document a format PDF.
+	 * Converteix el document a format PDF per a firmar-lo.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
@@ -283,7 +283,7 @@ public interface DocumentService {
 	 *             Hi ha hagut algun error en la comunicació amb el portafirmes.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public FitxerDto convertirPdf(
+	public FitxerDto convertirPdfPerFirma(
 			Long entitatId,
 			Long id,
 			int versio) throws NotFoundException, PluginException;
@@ -300,12 +300,14 @@ public interface DocumentService {
 	 * @return l'identificador generat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 * @throws PluginException
+	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public String generarIdentificadorFirmaApplet(
 			Long entitatId,
 			Long id,
-			int versio) throws NotFoundException;
+			int versio) throws NotFoundException, PluginException;
 
 	/**
 	 * Envia a custòdia un document firmat al navegador.
@@ -325,7 +327,7 @@ public interface DocumentService {
 	public void custodiaEnviarDocumentFirmat(
 			String identificador,
 			String arxiuNom,
-			byte[] arxiuContingut) throws PluginException;
+			byte[] arxiuContingut) throws NotFoundException, PluginException;
 
 	/**
 	 * Reintenta la custòdia d'un document firmat amb portafirmes que ha donat
@@ -346,6 +348,26 @@ public interface DocumentService {
 	public void custodiaPortafirmesReintentar(
 			Long entitatId,
 			Long id,
-			int versio) throws PluginException;
+			int versio) throws NotFoundException, PluginException;
+
+	/**
+	 * Esborrar un document custodiat.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contenidor.
+	 * @param id
+	 *            Atribut id del document que es vol custodiar.
+	 * @param versio
+	 *            El número de versió del document que es vol custodiar.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 * @throws PluginException
+	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
+	 */
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public void custodiaEsborrar(
+			Long entitatId,
+			Long id,
+			int versio) throws NotFoundException, PluginException;
 
 }

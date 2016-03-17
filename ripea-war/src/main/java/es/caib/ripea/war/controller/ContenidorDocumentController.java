@@ -79,18 +79,25 @@ public class ContenidorDocumentController extends BaseUserController {
 					documentId);
 		}
 		DocumentCommand command = null;
-		if (document != null)
+		if (document != null) {
 			command = DocumentCommand.asCommand(document);
-		else
+			model.addAttribute(
+					"metaDocuments",
+					metaDocumentService.findActiveByEntitatAndContenidorPerModificacio(
+							entitatActual.getId(),
+							documentId));
+		} else {
 			command = new DocumentCommand();
+			command.setData(new Date());
+			model.addAttribute(
+					"metaDocuments",
+					metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
+							entitatActual.getId(),
+							contenidorId));
+		}
 		command.setEntitatId(entitatActual.getId());
 		command.setPareId(contenidorId);
 		model.addAttribute(command);
-		model.addAttribute(
-				"metaDocuments",
-				metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
-						entitatActual.getId(),
-						contenidorId));
 		return "contenidorDocumentForm";
 	}
 	@RequestMapping(value = "/{contenidorId}/document/new", method = RequestMethod.POST)
@@ -100,6 +107,15 @@ public class ContenidorDocumentController extends BaseUserController {
 			@Validated({Create.class}) DocumentCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
+		if (bindingResult.hasErrors()) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			model.addAttribute(
+					"metaDocuments",
+					metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
+							entitatActual.getId(),
+							contenidorId));
+			return "contenidorDocumentForm";
+		}
 		return postUpdate(
 				request,
 				contenidorId,
@@ -118,7 +134,7 @@ public class ContenidorDocumentController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"metaDocuments",
-					metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
+					metaDocumentService.findActiveByEntitatAndContenidorPerModificacio(
 							entitatActual.getId(),
 							contenidorId));
 			return "contenidorDocumentForm";
@@ -331,7 +347,25 @@ public class ContenidorDocumentController extends BaseUserController {
 		return this.getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../../../../../../contenidor/" + documentId,
-				"document.controller.portafirmes.cancel.ok");
+				"document.controller.custodia.reintentar.ok");
+	}
+
+	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/custodia/esborrar", method = RequestMethod.GET)
+	public String custodiaEsborrar(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			@PathVariable Long documentId,
+			@PathVariable int versio,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		documentService.custodiaEsborrar(
+				entitatActual.getId(),
+				documentId,
+				versio);
+		return this.getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../../../../../../contenidor/" + documentId,
+				"document.controller.custodia.esborrar.ok");
 	}
 
 	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/pdf", method = RequestMethod.GET)
@@ -342,7 +376,7 @@ public class ContenidorDocumentController extends BaseUserController {
 			@PathVariable Long documentId,
 			@PathVariable int versio) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		FitxerDto convertit = documentService.convertirPdf(
+		FitxerDto convertit = documentService.convertirPdfPerFirma(
 				entitatActual.getId(),
 				documentId,
 				versio);

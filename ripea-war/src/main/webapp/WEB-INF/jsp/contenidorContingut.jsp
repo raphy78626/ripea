@@ -6,6 +6,9 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%
 pageContext.setAttribute(
+		"edicioOnlineActiva",
+		new Boolean(false));
+pageContext.setAttribute(
 		"registreAccioEnumOptions",
 		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.RegistreAccioEnumDto.class,
@@ -131,7 +134,7 @@ ul.interessats {
 	background-color: #f5f5f5;
 }
 </style>
-<c:if test="${contenidor.document and not empty contenidor.escriptoriPare}">
+<c:if test="${edicioOnlineActiva and contenidor.document and not empty contenidor.escriptoriPare}">
 	<script src="http://www.java.com/js/deployJava.js"></script>
 <script type="text/javascript">
 var officeExecAttributes = {
@@ -466,15 +469,30 @@ $(document).ready(function() {
 													<dd>${versio.arxiuNom}</dd>
 													<dt><spring:message code="contenidor.contingut.versions.createl"/>:</dt>
 													<dd><fmt:formatDate value="${versio.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
-													<dt><spring:message code="contenidor.contingut.versions.firma.estat"/>:</dt>
-													<dd>
-														<c:if test="${versio.firmaEstatCustodiaError}"><span class="fa fa-warning" style="color:#a94442"></span></c:if>
-														<spring:message code="document.firma.estat.enum.${versio.firmaEstat}"/>
-													</dd>
+													<c:if test="${versio.firmaIntentat}">
+														<dt><spring:message code="contenidor.contingut.versions.firma.estat"/>:</dt>
+														<dd>
+															<c:choose>
+																<c:when test="${versio.firmaError}">
+																	<span class="label label-danger" title="${versio.portafirmesEnviamentDarrer.errorDescripcio}"><span class="fa fa-warning"></span>&nbsp;ERROR</span>
+																</c:when>
+																<c:otherwise><spring:message code="document.firma.estat.enum.${versio.firmaEstat}"/></c:otherwise>
+															</c:choose>
+														</dd>
+													</c:if>
+													<c:if test="${versio.custodiat}">
+														<dt><spring:message code="contenidor.contingut.versions.custodia.url"/>:</dt>
+														<dd><a href="${versio.custodiaUrl}" target="_blank">${versio.custodiaUrl}</a> <span class="fa fa-external-link"></span></dd>
+													</c:if>
 												</dl>
 												<div class="btn-toolbar pull-right">
 													<c:if test="${not empty contenidor.escriptoriPare and status.first}">
-														<a href="../webdav${contenidor.pathAsString}/${contenidor.nom}/${contenidor.darreraVersio.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contenidor.contingut.boto.editar.office"/></a>
+														<a href="../webdav${contenidor.pathAsString}/${contenidor.nom}/${contenidor.darreraVersio.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contenidor.contingut.boto.link.dav"/></a>
+													</c:if>
+													<c:if test="${edicioOnlineActiva}">
+														<c:if test="${not empty contenidor.escriptoriPare and status.first}">
+															<a href="../webdav${contenidor.pathAsString}/${contenidor.nom}/${contenidor.darreraVersio.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contenidor.contingut.boto.editar.office"/></a>
+														</c:if>
 													</c:if>
 													<a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/descarregar" class="btn btn-default"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
 													<c:if test="${not empty contenidor.metaNode and (contenidor.metaNode.firmaPortafirmesActiva or contenidor.metaNode.firmaAppletActiva)}">
@@ -485,17 +503,17 @@ $(document).ready(function() {
 															<ul class="dropdown-menu" role="menu">
 																<c:if test="${contenidor.metaNode.firmaPortafirmesActiva}">
 																	<c:choose>
-																		<c:when test="${not versio.firmaEstatCustodiat}">
-																			<c:if test="${not versio.firmaEstatPortafirmesBloquejat}">
+																		<c:when test="${not versio.custodiat}">
+																			<c:if test="${not versio.firmaEstatBloquejarEnviaments}">
 																				<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/portafirmes/upload" data-rdt-link-modal="true"><span class="fa fa-send"></span>&nbsp;<spring:message code="contenidor.contingut.boto.portafirmes.enviar"/></a></li>
 																			</c:if>
-																			<c:if test="${versio.firmaEstatPortafirmesPendent}">
+																			<c:if test="${versio.firmaEstatPendent}">
 																				<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/portafirmes/cancel" data-rdt-link-confirm="<spring:message code="contenidor.contingut.boto.portafirmes.cancelar.confirm"/>"><span class="fa fa-times"></span>&nbsp;<spring:message code="contenidor.contingut.boto.portafirmes.cancelar"/></a></li>
 																			</c:if>
-																			<c:if test="${versio.firmaEstatPortafirmesBloquejat}">
+																			<c:if test="${versio.firmaEstatBloquejarEnviaments}">
 																				<li><a href="#" data-toggle="modal" data-target="#pfirma-info-${versio.id}"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contenidor.contingut.boto.portafirmes.info"/></a></li>
 																			</c:if>
-																			<c:if test="${versio.firmaEstatCustodiaError}">
+																			<c:if test="${versio.firmaError}">
 																				<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/custodia/reintentar"><span class="fa fa-repeat"></span>&nbsp;<spring:message code="contenidor.contingut.boto.custodia.reintentar"/></a></li>
 																			</c:if>
 																		</c:when>
@@ -506,7 +524,7 @@ $(document).ready(function() {
 																</c:if>
 																<c:if test="${contenidor.metaNode.firmaAppletActiva and not versio.firmaEstatPortafirmesBloquejat}">
 																	<c:choose>
-																		<c:when test="${not versio.firmaEstatCustodiat}">
+																		<c:when test="${not versio.custodiat}">
 																			<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/firmaApplet" data-rdt-link-modal="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contenidor.contingut.boto.firma.applet"/></a></li>
 																		</c:when>
 																		<c:otherwise>
@@ -515,7 +533,7 @@ $(document).ready(function() {
 																	</c:choose>
 																</c:if>
 															</ul>
-															<c:if test="${contenidor.metaNode.firmaPortafirmesActiva and versio.firmaEstatPortafirmesBloquejat}">
+															<c:if test="${contenidor.metaNode.firmaPortafirmesActiva and versio.firmaEstatBloquejarEnviaments}">
 																<div id="pfirma-info-${versio.id}" class="modal fade">
 																	<div class="modal-dialog">
 																		<div class="modal-content">
@@ -524,6 +542,12 @@ $(document).ready(function() {
 																				<h4 class="modal-title"><spring:message code="contenidor.contingut.boto.portafirmes.info.modal.titol"/></h4>
 																			</div>
 																			<div class="modal-body">
+																				<c:if test="${versio.firmaError}">
+																					<div class="alert well-sm alert-danger">
+																						<span class="fa fa-exclamation-triangle"></span>
+																						${versio.portafirmesEnviamentDarrer.errorDescripcio}
+																					</div>
+																				</c:if>
 																				<dl class="dl-horizontal">
 																					<dt><spring:message code="contenidor.contingut.boto.portafirmes.info.modal.motiu"/>:</dt>
 																					<dd>${versio.portafirmesEnviamentDarrer.motiu}</dd>
@@ -542,10 +566,6 @@ $(document).ready(function() {
 																						<dd>${versio.portafirmesEnviamentDarrer.callbackCount}</dd>
 																						<dt><spring:message code="contenidor.contingut.boto.portafirmes.info.modal.darrer"/>:</dt>
 																						<dd><fmt:formatDate value="${versio.portafirmesEnviamentDarrer.callbackDarrer}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-																					</c:if>
-																					<c:if test="${not empty versio.portafirmesEnviamentDarrer.errorDescripcio}">
-																						<dt><spring:message code="contenidor.contingut.boto.portafirmes.info.modal.error"/>:</dt>
-																						<dd>${versio.portafirmesEnviamentDarrer.errorDescripcio}</dd>
 																					</c:if>
 																				</dl>
 																			</div>

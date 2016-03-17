@@ -20,8 +20,14 @@ import es.caib.ripea.core.entity.MetaNodeEntity;
 public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> {
 
 	List<DocumentEntity> findByExpedient(ExpedientEntity expedient);
-	List<DocumentEntity> findByExpedientAndMetaNode(
+
+	List<DocumentEntity> findByExpedientAndEsborrat(
 			ExpedientEntity expedient,
-			MetaNodeEntity metaNode);
+			int esborrat);
+
+	List<DocumentEntity> findByExpedientAndMetaNodeAndEsborrat(
+			ExpedientEntity expedient,
+			MetaNodeEntity metaNode,
+			int esborrat);
 
 }

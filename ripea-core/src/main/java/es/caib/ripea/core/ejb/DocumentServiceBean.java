@@ -166,11 +166,11 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public FitxerDto convertirPdf(
+	public FitxerDto convertirPdfPerFirma(
 			Long entitatId,
 			Long id,
 			int versio) {
-		return convertirPdf(
+		return convertirPdfPerFirma(
 				entitatId,
 				id,
 				versio);
@@ -207,6 +207,18 @@ public class DocumentServiceBean implements DocumentService {
 			Long id,
 			int versio) {
 		delegate.custodiaPortafirmesReintentar(
+				entitatId,
+				id,
+				versio);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void custodiaEsborrar(
+			Long entitatId,
+			Long id,
+			int versio) {
+		delegate.custodiaEsborrar(
 				entitatId,
 				id,
 				versio);

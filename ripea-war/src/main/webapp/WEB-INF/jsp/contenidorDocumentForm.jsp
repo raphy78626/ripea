@@ -64,8 +64,8 @@ $(document).ready(function() {
 			<div id="plantilla-descarregar" class="hidden"><a href="#" class="btn btn-info btn-xs"><span class="fa fa-file"></span>&nbsp;Descarregar</a></div>
 		</rip:inputFixed>
 		<rip:inputText name="nom" textKey="contenidor.document.form.camp.nom" required="true"/>
-		<rip:inputDate name="data" textKey="contenidor.document.form.camp.data" required="true"/>
 		<rip:inputFile name="arxiu" textKey="contenidor.document.form.camp.arxiu" required="${empty documentCommand.id}"/>
+		<rip:inputDate name="data" textKey="contenidor.document.form.camp.data" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/contenidor/${documentCommand.pareId}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
