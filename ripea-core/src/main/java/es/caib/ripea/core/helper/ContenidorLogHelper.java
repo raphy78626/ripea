@@ -28,8 +28,6 @@ import es.caib.ripea.core.entity.ContenidorLogEntity;
 import es.caib.ripea.core.entity.ContenidorMovimentEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.entity.LogObjecteTipusEnum;
-import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.repository.ContenidorLogRepository;
 import es.caib.ripea.core.repository.ContenidorMovimentRepository;
 import es.caib.ripea.core.repository.ContenidorRepository;
@@ -63,7 +61,7 @@ public class ContenidorLogHelper {
 
 	public ContenidorLogEntity log(
 			ContenidorEntity contenidor,
-			LogTipusEnum tipus,
+			LogTipusEnumDto tipus,
 			ContenidorLogEntity contenidorLogPare,
 			ContenidorMovimentEntity contenidorMoviment,
 			boolean logContenidorPare,
@@ -83,7 +81,7 @@ public class ContenidorLogHelper {
 	}
 	public ContenidorLogEntity log(
 			ContenidorEntity contenidor,
-			LogTipusEnum tipus,
+			LogTipusEnumDto tipus,
 			ContenidorLogEntity contenidorLogPare,
 			ContenidorMovimentEntity contenidorMoviment,
 			String param1,
@@ -105,12 +103,12 @@ public class ContenidorLogHelper {
 	}
 	public ContenidorLogEntity log(
 			ContenidorEntity contenidor,
-			LogTipusEnum tipus,
+			LogTipusEnumDto tipus,
 			ContenidorLogEntity contenidorLogPare,
 			ContenidorMovimentEntity contenidorMoviment,
 			AbstractPersistable<Long> objecte,
-			LogObjecteTipusEnum objecteTipus,
-			LogTipusEnum objecteLogTipus,
+			LogObjecteTipusEnumDto objecteTipus,
+			LogTipusEnumDto objecteLogTipus,
 			String param1,
 			String param2,
 			boolean logContenidorPare,
@@ -244,7 +242,7 @@ public class ContenidorLogHelper {
 
 	private void logExpedientSuperior(
 			ContenidorEntity contenidor,
-			LogTipusEnum tipus,
+			LogTipusEnumDto tipus,
 			ContenidorEntity contenidorSuperior,
 			ContenidorLogEntity contenidorLogPare) {
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
@@ -260,11 +258,11 @@ public class ContenidorLogHelper {
 	}
 	private void logContenidorSuperior(
 			ContenidorEntity contenidor,
-			LogTipusEnum tipus,
+			LogTipusEnumDto tipus,
 			ContenidorEntity contenidorSuperior,
 			ContenidorLogEntity contenidorLogPare) {
 		log(	contenidorSuperior,
-				LogTipusEnum.MODIFICACIO,
+				LogTipusEnumDto.MODIFICACIO,
 				contenidorLogPare,
 				null,
 				contenidor,
@@ -276,12 +274,12 @@ public class ContenidorLogHelper {
 
 	private ContenidorLogEntity log(
 			ContenidorEntity contenidor,
-			LogTipusEnum tipus,
+			LogTipusEnumDto tipus,
 			ContenidorLogEntity logPare,
 			ContenidorMovimentEntity contenidorMoviment,
 			AbstractPersistable<Long> objecte,
-			LogObjecteTipusEnum objecteTipus,
-			LogTipusEnum objecteLogTipus,
+			LogObjecteTipusEnumDto objecteTipus,
+			LogTipusEnumDto objecteLogTipus,
 			String param1,
 			String param2) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -303,15 +301,15 @@ public class ContenidorLogHelper {
 		return contenidorLogRepository.save(log);
 	}
 
-	private LogObjecteTipusEnum getLogObjecteTipus(ContenidorEntity contenidor) {
+	private LogObjecteTipusEnumDto getLogObjecteTipus(ContenidorEntity contenidor) {
 		if (contenidor instanceof ExpedientEntity) {
-			return LogObjecteTipusEnum.EXPEDIENT;
+			return LogObjecteTipusEnumDto.EXPEDIENT;
 		} else if (contenidor instanceof DocumentEntity) {
-			return LogObjecteTipusEnum.DOCUMENT;
+			return LogObjecteTipusEnumDto.DOCUMENT;
 		} else if (contenidor instanceof CarpetaEntity) {
-			return LogObjecteTipusEnum.CARPETA;
+			return LogObjecteTipusEnumDto.CARPETA;
 		} else {
-			return LogObjecteTipusEnum.CONTENIDOR;
+			return LogObjecteTipusEnumDto.CONTENIDOR;
 		}
 	}
 

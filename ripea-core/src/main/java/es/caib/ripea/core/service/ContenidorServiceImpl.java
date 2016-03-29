@@ -27,11 +27,13 @@ import es.caib.ripea.core.api.dto.ContenidorMovimentDto;
 import es.caib.ripea.core.api.dto.ContenidorTipusEnumDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
+import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
-import es.caib.ripea.core.api.exception.ContenidorNomDuplicatException;
-import es.caib.ripea.core.api.exception.MultiplicitatException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ContenidorService;
@@ -45,12 +47,8 @@ import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.entity.LogObjecteTipusEnum;
-import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.entity.MetaDadaEntity;
-import es.caib.ripea.core.entity.MetaDadaTipusEnum;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
-import es.caib.ripea.core.entity.MultiplicitatEnum;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
@@ -171,13 +169,19 @@ public class ContenidorServiceImpl implements ContenidorService {
 					true,
 					false);
 		}
+		if (!contenidorHelper.isNomValid(nom)) {
+			throw new ValidationException(
+					contenidorId,
+					ContenidorEntity.class,
+					"El nom del contenidor no és vàlid (no pot començar amb \".\")");
+		}
 		// Canvia el nom del contenidor
 		String nomAnterior = contenidor.getNom();
 		contenidor.update(nom);
 		// Registra al log la modificació del contenidor
 		contenidorLogHelper.log(
 				contenidor,
-				LogTipusEnum.MODIFICACIO,
+				LogTipusEnumDto.MODIFICACIO,
 				null,
 				null,
 				"Canvi de nom",
@@ -253,12 +257,27 @@ public class ContenidorServiceImpl implements ContenidorService {
 						node.getMetaNode(),
 						metaDada);
 				// Comprova que no s'afegeixin més dades de les permeses
-				if (dades.size() > 0 && (metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnum.M_0_1) || metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnum.M_1))) {
-					throw new MultiplicitatException();
+				if (dades.size() > 0 && (metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_1))) {
+					throw new ValidationException(
+							contenidorId,
+							ContenidorEntity.class,
+							"La multiplicitat del meta-node no permet afegir més dades d'aquest tipus (" +
+							"metaNodeId=" + metaNodeMetaDada.getMetaNode().getId() + ", " +
+							"metaNodeCodi=" + metaNodeMetaDada.getMetaNode().getCodi() + ", " +
+							"metaNodeTipus=" + metaNodeMetaDada.getMetaNode().getClass().getName() + ", " +
+							"metaDadaId=" + metaDada.getId() + ", " +
+							"metaDadaCodi=" + metaDada.getCodi() + ", " +
+							"multiplicitat=" + metaNodeMetaDada.getMultiplicitat() + ")");
 				}
 			} else {
-				if (dades.size() > 0 && (metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnum.M_0_1) || metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnum.M_1))) {
-					throw new MultiplicitatException();
+				if (dades.size() > 0 && (metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_1))) {
+					throw new ValidationException(
+							contenidorId,
+							ContenidorEntity.class,
+							"La multiplicitat global no permet afegir més dades d'aquest tipus (" +
+							"metaDadaId=" + metaDada.getId() + ", " +
+							"metaDadaCodi=" + metaDada.getCodi() + ", " +
+							"multiplicitat=" + metaDada.getGlobalMultiplicitat() + ")");
 				}
 			}
 			int ordre = dades.size();
@@ -275,12 +294,12 @@ public class ContenidorServiceImpl implements ContenidorService {
 			// Registra al log la creació de la dada
 			contenidorLogHelper.log(
 					contenidor,
-					LogTipusEnum.MODIFICACIO,
+					LogTipusEnumDto.MODIFICACIO,
 					null,
 					null,
 					dada,
-					LogObjecteTipusEnum.DADA,
-					LogTipusEnum.CREACIO,
+					LogObjecteTipusEnumDto.DADA,
+					LogTipusEnumDto.CREACIO,
 					metaDada.getCodi(),
 					dada.getValor(),
 					true,
@@ -352,12 +371,12 @@ public class ContenidorServiceImpl implements ContenidorService {
 			// Registra al log la modificació de la dada
 			contenidorLogHelper.log(
 					contenidor,
-					LogTipusEnum.MODIFICACIO,
+					LogTipusEnumDto.MODIFICACIO,
 					null,
 					null,
 					dada,
-					LogObjecteTipusEnum.DADA,
-					LogTipusEnum.MODIFICACIO,
+					LogObjecteTipusEnumDto.DADA,
+					LogTipusEnumDto.MODIFICACIO,
 					dada.getMetaDada().getCodi(),
 					dada.getValor(),
 					true,
@@ -427,12 +446,12 @@ public class ContenidorServiceImpl implements ContenidorService {
 			// Registra al log la eliminació de la dada
 			contenidorLogHelper.log(
 					contenidor,
-					LogTipusEnum.MODIFICACIO,
+					LogTipusEnumDto.MODIFICACIO,
 					null,
 					null,
 					dada,
-					LogObjecteTipusEnum.DADA,
-					LogTipusEnum.ELIMINACIO,
+					LogObjecteTipusEnumDto.DADA,
+					LogTipusEnumDto.ELIMINACIO,
 					dada.getMetaDada().getCodi(),
 					null,
 					true,
@@ -571,7 +590,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 		// Registra al log l'eliminació del contenidor
 		contenidorLogHelper.log(
 				contenidor,
-				LogTipusEnum.ELIMINACIO,
+				LogTipusEnumDto.ELIMINACIO,
 				null,
 				null,
 				true,
@@ -620,7 +639,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 		// Registra al log l'eliminació definitiva del contenidor
 		contenidorLogHelper.log(
 				contenidor,
-				LogTipusEnum.ELIMINACIODEF,
+				LogTipusEnumDto.ELIMINACIODEF,
 				null,
 				null,
 				true,
@@ -665,14 +684,16 @@ public class ContenidorServiceImpl implements ContenidorService {
 				contenidor.getNom(),
 				0) != null;
 		if (nomDuplicat) {
-			logger.error("Ja existeix un altre contenidor amb el mateix nom dins el mateix pare (contenidorId=" + contenidorId + ")");
-			throw new ContenidorNomDuplicatException();
+			throw new ValidationException(
+					contenidorId,
+					ContenidorEntity.class,
+					"Ja existeix un altre contenidor amb el mateix nom dins el mateix pare");
 		}
 		contenidor.updateEsborrat(0);
 		// Registra al log la recuperació del contenidor
 		contenidorLogHelper.log(
 				contenidor,
-				LogTipusEnum.RECUPERACIO,
+				LogTipusEnumDto.RECUPERACIO,
 				null,
 				null,
 				true,
@@ -747,10 +768,11 @@ public class ContenidorServiceImpl implements ContenidorService {
 				contenidorOrigen.getNom(),
 				0) != null;
 		if (nomDuplicat) {
-			logger.error("Ja existeix un altre contenidor amb el mateix nom dins el contenidor destí ("
-					+ "contenidorOrigenId=" + contenidorOrigenId + ", "
-					+ "contenidorDestiId=" + contenidorDestiId + ")");
-			throw new ContenidorNomDuplicatException();
+			throw new ValidationException(
+					contenidorOrigenId,
+					ContenidorEntity.class,
+					"Ja existeix un altre contenidor amb el mateix nom dins el contenidor destí ("
+							+ "contenidorDestiId=" + contenidorDestiId + ")");
 		}
 		ContenidorMovimentEntity contenidorMoviment = contenidorHelper.ferIEnregistrarMovimentContenidor(
 				contenidorOrigen,
@@ -759,7 +781,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 		// Registra al log el moviment del node
 		contenidorLogHelper.log(
 				contenidorOrigen,
-				LogTipusEnum.MOVIMENT,
+				LogTipusEnumDto.MOVIMENT,
 				null,
 				contenidorMoviment,
 				true,
@@ -852,10 +874,11 @@ public class ContenidorServiceImpl implements ContenidorService {
 				contenidorOrigen.getNom(),
 				0) != null;
 		if (nomDuplicat) {
-			logger.error("Ja existeix un altre contenidor amb el mateix nom dins el contenidor destí ("
-					+ "contenidorOrigenId=" + contenidorOrigenId + ", "
-					+ "contenidorDestiId=" + contenidorDestiId + ")");
-			throw new ContenidorNomDuplicatException();
+			throw new ValidationException(
+					contenidorOrigenId,
+					ContenidorEntity.class,
+					"Ja existeix un altre contenidor amb el mateix nom dins el contenidor destí ("
+							+ "contenidorDestiId=" + contenidorDestiId + ")");
 		}
 		// Fa la còpia del contenidor
 		ContenidorEntity contenidorCopia = copiarContenidor(
@@ -866,7 +889,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 		// Registra al log la còpia del node
 		contenidorLogHelper.log(
 				contenidorCopia,
-				LogTipusEnum.COPIA,
+				LogTipusEnumDto.COPIA,
 				null,
 				null,
 				true,
@@ -937,7 +960,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 		// Registra al log l'enviament del contenidor
 		contenidorLogHelper.log(
 				contenidor,
-				LogTipusEnum.ENVIAMENT,
+				LogTipusEnumDto.ENVIAMENT,
 				null,
 				contenidorMoviment,
 				true,
@@ -1013,7 +1036,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 		// Registra al log el processament del contenidor
 		contenidorLogHelper.log(
 				contenidorOrigen,
-				LogTipusEnum.PROCESSAMENT,
+				LogTipusEnumDto.PROCESSAMENT,
 				null,
 				contenidorMoviment,
 				true,
@@ -1524,38 +1547,38 @@ public class ContenidorServiceImpl implements ContenidorService {
 	private String getDadaValorPerGuardar(
 			MetaDadaEntity metaDada,
 			Object valor) {
-		if (metaDada.getTipus().equals(MetaDadaTipusEnum.TEXT)) {
+		if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.TEXT)) {
 			if (valor instanceof String) {
 				return (String)valor;
 			} else {
 				throw new RuntimeException();
 			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnum.DATA)) {
+		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.DATA)) {
 			if (valor instanceof Date) {
 				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 				return sdf.format((Date)valor);
 			} else {
 				throw new RuntimeException();
 			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnum.SENCER)) {
+		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.SENCER)) {
 			if (valor instanceof Long) {
 				return ((Long)valor).toString();
 			} else {
 				throw new RuntimeException();
 			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnum.FLOTANT)) {
+		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.FLOTANT)) {
 			if (valor instanceof Double) {
 				return ((Double)valor).toString();
 			} else {
 				throw new RuntimeException();
 			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnum.IMPORT)) {
+		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.IMPORT)) {
 			if (valor instanceof BigDecimal) {
 				return ((BigDecimal)valor).toString();
 			} else {
 				throw new RuntimeException();
 			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnum.BOOLEA)) {
+		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.BOOLEA)) {
 			if (valor instanceof Boolean) {
 				return ((Boolean)valor).toString();
 			} else {

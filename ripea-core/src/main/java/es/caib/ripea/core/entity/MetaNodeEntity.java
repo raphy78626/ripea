@@ -26,6 +26,7 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
 
+import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
@@ -113,7 +114,7 @@ public abstract class MetaNodeEntity extends RipeaAuditable<Long> {
 
 	public void metaDadaAdd(
 			MetaDadaEntity metaDada,
-			MultiplicitatEnum multiplicitat,
+			MultiplicitatEnumDto multiplicitat,
 			boolean readOnly) {
 		MetaNodeMetaDadaEntity metaNodeMetaDada = MetaNodeMetaDadaEntity.getBuilder(
 				this,

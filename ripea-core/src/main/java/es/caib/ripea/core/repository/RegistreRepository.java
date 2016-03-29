@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import es.caib.ripea.core.entity.ContenidorEntity;
-import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 
 /**
@@ -21,13 +20,11 @@ import es.caib.ripea.core.entity.RegistreEntity;
  */
 public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> {
 
-	RegistreEntity findByEntitatAndContenidorAndId(
-			EntitatEntity entitat,
+	RegistreEntity findByContenidorAndId(
 			ContenidorEntity contenidor,
 			Long id);
 
-	List<RegistreEntity> findByEntitatAndContenidorAndMotiuRebuigNullOrderByDataAsc(
-			EntitatEntity entitat,
+	List<RegistreEntity> findByContenidorAndMotiuRebuigNullOrderByDataAsc(
 			ContenidorEntity contenidor);
 
 	@Query(	"select " +
@@ -36,13 +33,11 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"from " +
 			"    RegistreEntity " +
 			"where " +
-			"    entitat = :entitat " +
-			"and motiuRebuig is null " +
+			"    motiuRebuig is null " +
 			"and (contenidor is not null and contenidor in (:contenidors)) " +
 			"group by " +
 			"    contenidor.id")
-	List<Object[]> countByEntitatAndContenidorsAndNotRebutjat(
-			@Param("entitat") EntitatEntity entitat,
+	List<Object[]> countByContenidorsAndNotRebutjat(
 			@Param("contenidors") List<? extends ContenidorEntity> contenidors);
 
 }

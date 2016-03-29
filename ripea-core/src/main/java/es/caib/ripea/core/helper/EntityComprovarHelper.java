@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -107,7 +105,6 @@ public class EntityComprovarHelper {
 			boolean comprovarPermisUsuariOrAdmin) throws NotFoundException {
 		EntitatEntity entitat = entitatRepository.findOne(entitatId);
 		if (entitat == null) {
-			logger.error("No s'ha trobat l'entitat (entitatId=" + entitatId + ")");
 			throw new NotFoundException(
 					entitatId,
 					EntitatEntity.class);
@@ -120,9 +117,6 @@ public class EntityComprovarHelper {
 					new Permission[] {ExtendedPermission.READ},
 					auth);
 			if (!esLectorEntitat) {
-				logger.error("Aquest usuari no té permisos d'accés sobre l'entitat ("
-						+ "id=" + entitatId + ", "
-						+ "usuari=" + auth.getName() + ")");
 				throw new PermissionDeniedException(
 						entitatId,
 						EntitatEntity.class,
@@ -137,9 +131,6 @@ public class EntityComprovarHelper {
 					new Permission[] {ExtendedPermission.ADMINISTRATION},
 					auth);
 			if (!esAdministradorEntitat) {
-				logger.error("Aquest usuari no té permisos d'administrador sobre l'entitat ("
-						+ "id=" + entitatId + ", "
-						+ "usuari=" + auth.getName() + ")");
 				throw new PermissionDeniedException(
 						entitatId,
 						EntitatEntity.class,
@@ -156,9 +147,6 @@ public class EntityComprovarHelper {
 						ExtendedPermission.READ},
 					auth);
 			if (!esAdministradorOLectorEntitat) {
-				logger.error("Aquest usuari no té permisos d'administrador o d'accés sobre l'entitat ("
-						+ "id=" + entitatId + ", "
-						+ "usuari=" + auth.getName() + ")");
 				throw new PermissionDeniedException(
 						entitatId,
 						EntitatEntity.class,
@@ -176,15 +164,11 @@ public class EntityComprovarHelper {
 		MetaDocumentEntity metaDocument = metaDocumentRepository.findOne(
 				id);
 		if (metaDocument == null) {
-			logger.error("No s'ha trobat el meta-expedient (id=" + id + ")");
 			throw new NotFoundException(
 					id,
 					MetaDocumentEntity.class);
 		}
 		if (!entitat.equals(metaDocument.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat del meta-expedient ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + metaDocument.getEntitat().getId() + ")");
 			throw new ValidationException(
 					id,
 					MetaDocumentEntity.class,
@@ -198,7 +182,6 @@ public class EntityComprovarHelper {
 					new Permission[] {ExtendedPermission.CREATE},
 					auth);
 			if (!granted) {
-				logger.error("No es tenen permisos per a crear documents amb el meta-document (id=" + id + ")");
 				throw new PermissionDeniedException(
 						id,
 						MetaDocumentEntity.class,
@@ -215,15 +198,11 @@ public class EntityComprovarHelper {
 		MetaExpedientEntity metaExpedient = metaExpedientRepository.findOne(
 				id);
 		if (metaExpedient == null) {
-			logger.error("No s'ha trobat el meta-expedient (id=" + id + ")");
 			throw new NotFoundException(
 					id,
 					MetaExpedientEntity.class);
 		}
 		if (!entitat.equals(metaExpedient.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat del meta-expedient ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + metaExpedient.getEntitat().getId() + ")");
 			throw new ValidationException(
 					id,
 					MetaExpedientEntity.class,
@@ -238,15 +217,11 @@ public class EntityComprovarHelper {
 			Long metaExpedientMetaDocumentId) {
 		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = metaExpedientMetaDocumentRepository.findOne(metaExpedientMetaDocumentId);
 		if (metaExpedientMetaDocument == null) {
-			logger.error("No s'ha trobat el meta-document del meta-expedient (metaExpedientMetaDocumentId=" + metaExpedientMetaDocumentId + ")");
 			throw new NotFoundException(
 					metaExpedientMetaDocumentId,
 					MetaExpedientMetaDocumentEntity.class);
 		}
 		if (!metaExpedientMetaDocument.getMetaExpedient().equals(metaExpedient)) {
-			logger.error("El meta-expedient del meta-document no coincideix amb el meta-expedient ("
-					+ "metaNodeId1=" + metaExpedient.getId() + ", "
-					+ "metaNodeId2=" + metaExpedientMetaDocument.getMetaExpedient().getId() + ")");
 			throw new ValidationException(
 					metaExpedientMetaDocumentId,
 					MetaExpedientMetaDocumentEntity.class,
@@ -260,15 +235,11 @@ public class EntityComprovarHelper {
 			Long metaDadaId) {
 		MetaDadaEntity metaDada = metaDadaRepository.findOne(metaDadaId);
 		if (metaDada == null) {
-			logger.error("No s'ha trobat la meta-dada (metaDadaId=" + metaDadaId + ")");
 			throw new NotFoundException(
 					metaDadaId,
 					MetaDadaEntity.class);
 		}
 		if (!entitat.equals(metaDada.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de la meta-dada ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + metaDada.getEntitat().getId() + ")");
 			throw new ValidationException(
 					metaDadaId,
 					MetaDadaEntity.class,
@@ -283,15 +254,11 @@ public class EntityComprovarHelper {
 			Long metaNodeMetaDadaId) {
 		MetaNodeMetaDadaEntity metaNodeMetaDada = metaNodeMetaDadaRepository.findOne(metaNodeMetaDadaId);
 		if (metaNodeMetaDada == null) {
-			logger.error("No s'ha trobat la meta-dada del meta-node (metaNodeMetaDadaId=" + metaNodeMetaDadaId + ")");
 			throw new NotFoundException(
 					metaNodeMetaDadaId,
 					MetaDadaEntity.class);
 		}
 		if (!metaNodeMetaDada.getMetaNode().equals(metaNode)) {
-			logger.error("El meta-node de la meta-dada no coincideix amb el meta-document ("
-					+ "metaNodeId1=" + metaNode.getId() + ", "
-					+ "metaNodeId2=" + metaNodeMetaDada.getMetaNode().getId() + ")");
 			throw new ValidationException(
 					metaNodeMetaDadaId,
 					MetaDadaEntity.class,
@@ -308,9 +275,6 @@ public class EntityComprovarHelper {
 				metaNode.getId(),
 				metaDada);
 		if (metaNodeMetaDada == null) {
-			logger.error("No s'ha trobat la meta-dada pel meta-node ("
-					+ "metaNodeId=" + metaNode.getId() + ","
-					+ "metaDadaId=" + metaDada.getId() + ")");
 			throw new NotFoundException(
 					"(metaNodeId=" + metaNode.getId() + ", metaDadaId=" + metaDada.getId() + ")",
 					MetaNodeMetaDadaEntity.class);
@@ -324,15 +288,11 @@ public class EntityComprovarHelper {
 			BustiaEntity bustiaPare) {
 		ContenidorEntity contenidor = contenidorRepository.findOne(id);
 		if (contenidor == null) {
-			logger.error("No s'ha trobat el contenidor (contenidorId=" + id + ")");
 			throw new NotFoundException(
 					id,
 					ContenidorEntity.class);
 		}
 		if (!contenidor.getEntitat().equals(entitat)) {
-			logger.error("L'entitat del contenidor no coincideix ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + contenidor.getEntitat().getId() + ")");
 			throw new ValidationException(
 					id,
 					ContenidorEntity.class,
@@ -341,9 +301,6 @@ public class EntityComprovarHelper {
 		if (bustiaPare != null) {
 			if (contenidor.getPare() != null) {
 				if (!contenidor.getPare().getId().equals(bustiaPare.getId())) {
-					logger.error("El contenidor no està dins la bústia especificada ("
-							+ "bustiaId1=" + bustiaPare.getId() + ", "
-							+ "bustiaId2=" + contenidor.getPare().getId() + ")");
 					throw new ValidationException(
 							id,
 							ContenidorEntity.class,
@@ -359,15 +316,11 @@ public class EntityComprovarHelper {
 			Long nodeId) {
 		NodeEntity node = nodeRepository.findOne(nodeId);
 		if (node == null) {
-			logger.error("No s'ha trobat el node (nodeId=" + nodeId + ")");
 			throw new NotFoundException(
 					nodeId,
 					NodeEntity.class);
 		}
 		if (!entitat.equals(node.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat del node ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + node.getEntitat().getId() + ")");
 			throw new ValidationException(
 					nodeId,
 					NodeEntity.class,
@@ -381,15 +334,11 @@ public class EntityComprovarHelper {
 			Long id) {
 		CarpetaEntity carpeta = carpetaRepository.findOne(id);
 		if (carpeta == null) {
-			logger.error("No s'ha trobat la carpeta (id=" + id + ")");
 			throw new NotFoundException(
 					id,
 					CarpetaEntity.class);
 		}
 		if (!entitat.equals(carpeta.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de la carpeta ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + carpeta.getEntitat().getId() + ")");
 			throw new ValidationException(
 					id,
 					CarpetaEntity.class,
@@ -404,25 +353,17 @@ public class EntityComprovarHelper {
 			Long id) {
 		ExpedientEntity expedient = expedientRepository.findOne(id);
 		if (expedient == null) {
-			logger.error("No s'ha trobat l'expedient (id=" + id + ")");
 			throw new NotFoundException(
 					id,
 					ExpedientEntity.class);
 		}
 		if (!entitat.getId().equals(expedient.getEntitat().getId())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'expedient ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + expedient.getEntitat().getId() + ")");
 			throw new ValidationException(
 					id,
 					ExpedientEntity.class,
 					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de l'expedient");
 		}
 		if (arxiu != null && !arxiu.equals(expedient.getArxiu())) {
-			logger.error("L'arxiu de l'expedient no coincideix amb l'especificat ("
-					+ "id=" + id + ""
-					+ "arxiuId1=" + arxiu.getId() + ", "
-					+ "arxiuId2=" + expedient.getArxiu().getId() + ")");
 			throw new ValidationException(
 					id,
 					ExpedientEntity.class,
@@ -439,15 +380,11 @@ public class EntityComprovarHelper {
 			boolean comprovarPermisDelete) {
 		DocumentEntity document = documentRepository.findOne(documentId);
 		if (document == null) {
-			logger.error("No s'ha trobat el document (documentId=" + documentId + ")");
 			throw new NotFoundException(
 					documentId,
 					DocumentEntity.class);
 		}
 		if (!document.getEntitat().equals(entitat)) {
-			logger.error("L'entitat del document no coincideix ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + document.getEntitat().getId() + ")");
 			throw new ValidationException(
 					documentId,
 					DocumentEntity.class,
@@ -481,7 +418,6 @@ public class EntityComprovarHelper {
 					permisos.toArray(new Permission[permisos.size()]),
 					auth);
 			if (!granted) {
-				logger.error("No es tenen els permisos requerits pel document (documentId=" + documentId + ")");
 				throw new PermissionDeniedException(
 						documentId,
 						DocumentEntity.class,
@@ -497,15 +433,11 @@ public class EntityComprovarHelper {
 			Long dadaId) {
 		DadaEntity dada = dadaRepository.findOne(dadaId);
 		if (dada == null) {
-			logger.error("No s'ha trobat la dada (dadaId=" + dadaId + ")");
 			throw new NotFoundException(
 					dadaId,
 					DadaEntity.class);
 		}
 		if (!dada.getNode().equals(node)) {
-			logger.error("L'usuari no te els permisos requerits ("
-					+ "nodeId1=" + node.getId() + ","
-					+ "nodeId2=" + dada.getNode().getId() + ")");
 			throw new ValidationException(
 					dadaId,
 					DadaEntity.class,
@@ -520,15 +452,11 @@ public class EntityComprovarHelper {
 			boolean comprovarPermisRead) {
 		BustiaEntity bustia = bustiaRepository.findOne(bustiaId);
 		if (bustia == null) {
-			logger.error("No s'ha trobat la bústia (bustiaId=" + bustiaId + ")");
 			throw new NotFoundException(
 					bustiaId,
 					BustiaEntity.class);
 		}
 		if (!entitat.equals(bustia.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de la bústia ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + bustia.getEntitat().getId() + ")");
 			throw new ValidationException(
 					bustiaId,
 					BustiaEntity.class,
@@ -542,9 +470,6 @@ public class EntityComprovarHelper {
 					new Permission[] {ExtendedPermission.READ},
 					auth);
 			if (!esPermisRead) {
-				logger.error("Aquest usuari no té permis per accedir a la bústia ("
-						+ "id=" + bustiaId + ", "
-						+ "usuari=" + auth.getName() + ")");
 				throw new PermissionDeniedException(
 						bustiaId,
 						BustiaEntity.class,
@@ -560,15 +485,11 @@ public class EntityComprovarHelper {
 			Long arxiuId) throws NotFoundException {
 		ArxiuEntity arxiu = arxiuRepository.findOne(arxiuId);
 		if (arxiu == null) {
-			logger.error("No s'ha trobat l'arxiu (arxiuId=" + arxiuId + ")");
 			throw new NotFoundException(
 					arxiuId,
 					ArxiuEntity.class);
 		}
 		if (!entitat.equals(arxiu.getEntitat())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'arxiu ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + arxiu.getEntitat().getId() + ")");
 			throw new ValidationException(
 					arxiuId,
 					ArxiuEntity.class,
@@ -578,31 +499,17 @@ public class EntityComprovarHelper {
 	}
 
 	public RegistreEntity comprovarRegistre(
-			EntitatEntity entitat,
 			Long id,
 			BustiaEntity bustiaPare) {
 		RegistreEntity registre = registreRepository.findOne(id);
 		if (registre == null) {
-			logger.error("No s'ha trobat l'anotació de registre (id=" + id + ")");
 			throw new NotFoundException(
 					id,
 					RegistreEntity.class);
 		}
-		if (!entitat.getId().equals(registre.getEntitat().getId())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'anotació de registre ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + registre.getEntitat().getId() + ")");
-			throw new ValidationException(
-					id,
-					RegistreEntity.class,
-					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de l'anotació de registre");
-		}
 		if (bustiaPare != null) {
 			if (registre.getContenidor() != null) {
 				if (!registre.getContenidor().getId().equals(bustiaPare.getId())) {
-					logger.error("El registre no està dins la bústia especificada ("
-							+ "bustiaId1=" + bustiaPare.getId() + ", "
-							+ "bustiaId2=" + registre.getContenidor().getId() + ")");
 					throw new ValidationException(
 							id,
 							RegistreEntity.class,
@@ -618,15 +525,11 @@ public class EntityComprovarHelper {
 			Long id) {
 		InteressatEntity interessat = interessatRepository.findOne(id);
 		if (interessat == null) {
-			logger.error("No s'ha trobat l'interessat (id=" + id + ")");
 			throw new NotFoundException(
 					id,
 					InteressatEntity.class);
 		}
 		if (!entitat.getId().equals(interessat.getEntitat().getId())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'interessat ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + interessat.getEntitat().getId() + ")");
 			throw new ValidationException(
 					id,
 					InteressatEntity.class,
@@ -634,7 +537,5 @@ public class EntityComprovarHelper {
 		}
 		return interessat;
 	}
-
-	private static final Logger logger = LoggerFactory.getLogger(EntityComprovarHelper.class);
 
 }

@@ -30,7 +30,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDadaDto create(
 			Long entitatId,
 			MetaDadaDto metaDada) throws NotFoundException;
@@ -47,7 +47,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDadaDto update(
 			Long entitatId,
 			MetaDadaDto metaDada) throws NotFoundException;
@@ -67,7 +67,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDadaDto updateActiva(
 			Long entitatId,
 			Long id,
@@ -84,7 +84,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDadaDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -100,7 +100,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDadaDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -116,7 +116,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDadaDto findByEntitatCodi(
 			Long entitatId,
 			String codi) throws NotFoundException;
@@ -132,7 +132,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public PaginaDto<MetaDadaDto> findAllByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
@@ -150,7 +150,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<MetaDadaDto> findActiveByEntitat(
 			Long entitatId,
 			boolean incloureGlobalsExpedient,
@@ -167,7 +167,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<MetaDadaDto> findByNodePerCreacio(
 			Long entitatId,
 			Long nodeId) throws NotFoundException;

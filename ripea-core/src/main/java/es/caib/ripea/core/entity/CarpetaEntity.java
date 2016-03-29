@@ -10,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
+import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
@@ -24,17 +25,17 @@ public class CarpetaEntity extends ContenidorEntity {
 
 	@Column(name = "tipus", nullable = false)
 	@Enumerated(EnumType.STRING)
-	protected CarpetaTipusEnum tipus;
+	protected CarpetaTipusEnumDto tipus;
 
 
 
-	public CarpetaTipusEnum getTipus() {
+	public CarpetaTipusEnumDto getTipus() {
 		return tipus;
 	}
 
 	public void update(
 			String nom,
-			CarpetaTipusEnum tipus) {
+			CarpetaTipusEnumDto tipus) {
 		this.nom = nom;
 		this.tipus = tipus;
 	}
@@ -56,7 +57,7 @@ public class CarpetaEntity extends ContenidorEntity {
 	 */
 	public static Builder getBuilder(
 			String nom,
-			CarpetaTipusEnum tipus,
+			CarpetaTipusEnumDto tipus,
 			ContenidorEntity pare,
 			EntitatEntity entitat) {
 		return new Builder(
@@ -75,7 +76,7 @@ public class CarpetaEntity extends ContenidorEntity {
 		CarpetaEntity built;
 		Builder(
 				String nom,
-				CarpetaTipusEnum tipus,
+				CarpetaTipusEnumDto tipus,
 				ContenidorEntity pare,
 				EntitatEntity entitat) {
 			built = new CarpetaEntity();

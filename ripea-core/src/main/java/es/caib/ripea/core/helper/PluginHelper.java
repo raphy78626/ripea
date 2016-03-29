@@ -24,12 +24,11 @@ import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.PluginException;
+import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
-import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.custodia.CustodiaPlugin;
@@ -40,6 +39,8 @@ import es.caib.ripea.plugin.portafirmes.PortafirmesDocumentTipus;
 import es.caib.ripea.plugin.portafirmes.PortafirmesFluxBloc;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPlugin;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPrioritatEnum;
+import es.caib.ripea.plugin.registre.RegistreAnotacio;
+import es.caib.ripea.plugin.registre.RegistrePlugin;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.ripea.plugin.usuari.DadesUsuari;
@@ -60,6 +61,7 @@ public class PluginHelper {
 	private PortafirmesPlugin portafirmesPlugin;
 	private ConversioPlugin conversioPlugin;
 	private CustodiaPlugin custodiaPlugin;
+	private RegistrePlugin registrePlugin;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -71,7 +73,7 @@ public class PluginHelper {
 
 
 	public DadesUsuari dadesUsuariConsultarAmbCodi(
-			String usuariCodi) throws PluginException {
+			String usuariCodi) {
 		String accioDescripcio = "Consulta d'usuari amb codi";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("codi", usuariCodi);
@@ -93,11 +95,14 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_USUARIS,
+					errorDescripcio,
+					ex);
 		}
 	}
 	public DadesUsuari dadesUsuariConsultarAmbNif(
-			String usuariNif) throws PluginException {
+			String usuariNif) {
 		String accioDescripcio = "Consulta d'usuari amb NIF";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("nif", usuariNif);
@@ -119,11 +124,14 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_USUARIS,
+					errorDescripcio,
+					ex);
 		}
 	}
 	public List<DadesUsuari> dadesUsuariConsultarAmbGrup(
-			String grupCodi) throws PluginException {
+			String grupCodi) {
 		String accioDescripcio = "Consulta d'usuaris d'un grup";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("grup", grupCodi);
@@ -145,12 +153,15 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_USUARIS,
+					errorDescripcio,
+					ex);
 		}
 	}
 
 	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(
-			String pareCodi) throws PluginException {
+			String pareCodi) {
 		String accioDescripcio = "Consulta de l'arbre d'unitats donat un pare";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("unitatPare", pareCodi);
@@ -187,7 +198,9 @@ public class PluginHelper {
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						errorMissatge);
-				throw new PluginException(errorMissatge);
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_UNITATS,
+						errorMissatge);
 			}
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";
@@ -198,11 +211,14 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_UNITATS,
+					errorDescripcio,
+					ex);
 		}
 	}
 	public UnitatOrganitzativaDto unitatsOrganitzativesFindByCodi(
-			String codi) throws PluginException {
+			String codi) {
 		String accioDescripcio = "Consulta d'unitat organitzativa donat el seu codi";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("codi", codi);
@@ -225,7 +241,10 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_UNITATS,
+					errorDescripcio,
+					ex);
 		}
 	}
 
@@ -234,68 +253,128 @@ public class PluginHelper {
 	}
 	public String gestioDocumentalCreate(
 			String arxiuNom,
-			byte[] contingut) throws PluginException {
+			byte[] contingut) {
+		String accioDescripcio = "Creació d'un arxiu";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("arxiuNom", arxiuNom);
+		accioParams.put("contingut", new Integer(contingut.length).toString());
 		try {
-			if (!isGestioDocumentalPluginActiu())
-				throw new PluginException(
-						"La classe del plugin de gestió documental no està configurada");
-			return getGestioDocumentalPlugin().create(
+			String gestioDocumentalId = getGestioDocumentalPlugin().create(
 					new GestioDocumentalArxiu(
 							arxiuNom,
 							contingut));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT);
+			return gestioDocumentalId;
 		} catch (Exception ex) {
-			throw new PluginException(
-					"Error en el plugin de gestió documental",
+			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
 					ex);
 		}
 	}
 	public void gestioDocumentalUpdate(
 			String id,
 			String arxiuNom,
-			byte[] contingut) throws PluginException {
+			byte[] contingut) {
+			String accioDescripcio = "Modificació d'un arxiu";
+			Map<String, String> accioParams = new HashMap<String, String>();
+			accioParams.put("id", id);
+			accioParams.put("arxiuNom", arxiuNom);
+			accioParams.put("contingut", new Integer(contingut.length).toString());
 		try {
-			if (!isGestioDocumentalPluginActiu())
-				throw new PluginException(
-						"La classe del plugin de gestió documental no està configurada");
 			getGestioDocumentalPlugin().update(
 					id,
 					new GestioDocumentalArxiu(
 							arxiuNom,
 							contingut));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT);
 		} catch (Exception ex) {
-			throw new PluginException(
-					"Error en el plugin de gestió documental",
+			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
 					ex);
 		}
 	}
 	public void gestioDocumentalDelete(
-			String id) throws PluginException {
+			String id) {
+		String accioDescripcio = "Eliminació d'un arxiu";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", id);
 		try {
-			if (!isGestioDocumentalPluginActiu())
-				throw new PluginException(
-						"La classe del plugin de gestió documental no està configurada");
 			getGestioDocumentalPlugin().delete(
 					id);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT);
 		} catch (Exception ex) {
-			throw new PluginException(
-					"Error en el plugin de gestió documental",
+			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
 					ex);
 		}
 	}
 	public FitxerDto gestioDocumentalGet(
-			String id) throws PluginException {
+			String id) {
+		String accioDescripcio = "Obtenció d'un arxiu";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", id);
 		try {
-			if (!isGestioDocumentalPluginActiu())
-				throw new PluginException(
-						"La classe del plugin de gestió documental no està configurada");
 			GestioDocumentalArxiu gesdocArxiu = getGestioDocumentalPlugin().get(id);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT);
 			FitxerDto fitxer = new FitxerDto();
 			fitxer.setNom(gesdocArxiu.getFileName());
 			fitxer.setContingut(gesdocArxiu.getContent());
 			return fitxer;
 		} catch (Exception ex) {
-			throw new PluginException(
-					"Error en el plugin de gestió documental",
+			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
 					ex);
 		}
 	}
@@ -304,7 +383,7 @@ public class PluginHelper {
 			DocumentVersioEntity documentVersio,
 			String motiu,
 			PortafirmesPrioritatEnum prioritat,
-			Date dataCaducitat) throws PluginException {
+			Date dataCaducitat) {
 		String accioDescripcio = "Enviament de document a firmar";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
@@ -404,7 +483,10 @@ public class PluginHelper {
 							IntegracioAccioTipusEnumDto.ENVIAMENT,
 							errorDescripcio,
 							ex);
-					throw new PluginException(errorDescripcio, ex);
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_PFIRMA,
+							errorDescripcio,
+							ex);
 				}
 			} else {
 				String errorMissatge = "El meta-document associat no està correctament configurat per a fer enviaments al portafirmes (" +
@@ -415,24 +497,28 @@ public class PluginHelper {
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						errorMissatge);
-				throw new PluginException(errorMissatge);
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_PFIRMA,
+						errorMissatge);
 			}
 		} else {
 			String errorMissatge = "El document que s'intenta enviar no te meta-document associat (" +
 							"documentVersioId=" + documentVersio.getId().toString() + ")";
 			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_USUARIS,
+					IntegracioHelper.INTCODI_PFIRMA,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorMissatge);
-			throw new PluginException(errorMissatge);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_PFIRMA,
+					errorMissatge);
 		}
 	}
 
 	public PortafirmesDocument portafirmesDownload(
 			DocumentVersioEntity documentVersio,
-			DocumentPortafirmesEntity documentPortafirmes) throws PluginException {
+			DocumentPortafirmesEntity documentPortafirmes) {
 		String accioDescripcio = "Descarregar document firmat";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
@@ -458,7 +544,7 @@ public class PluginHelper {
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
 			return portafirmesDocument;
-		} catch (SistemaExternException ex) {
+		} catch (Exception ex) {
 			String errorDescripcio = "Error al descarregar el document firmat";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_PFIRMA,
@@ -467,13 +553,16 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_PFIRMA,
+					errorDescripcio,
+					ex);
 		}
 	}
 
 	public void portafirmesDelete(
 			DocumentVersioEntity documentVersio,
-			DocumentPortafirmesEntity documentPortafirmes) throws PluginException {
+			DocumentPortafirmesEntity documentPortafirmes) {
 		String accioDescripcio = "Esborrar document enviat a firmar";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
@@ -506,7 +595,10 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_PFIRMA,
+					errorDescripcio,
+					ex);
 		}
 	}
 
@@ -540,7 +632,10 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_PFIRMA,
+					errorDescripcio,
+					ex);
 		}
 	}
 
@@ -588,7 +683,10 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CONVERT,
+					errorDescripcio,
+					ex);
 		}
 	}
 
@@ -610,7 +708,7 @@ public class PluginHelper {
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
 			return url;
-		} catch (SistemaExternException ex) {
+		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_CUSTODIA,
@@ -619,7 +717,10 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					errorDescripcio,
+					ex);
 		}
 	}
 
@@ -650,7 +751,7 @@ public class PluginHelper {
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
 			return documentVersio.getId().toString();
-		} catch (SistemaExternException ex) {
+		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_CUSTODIA,
@@ -659,7 +760,10 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					errorDescripcio,
+					ex);
 		}
 	}
 
@@ -681,7 +785,7 @@ public class PluginHelper {
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
-		} catch (SistemaExternException ex) {
+		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_CUSTODIA,
@@ -690,7 +794,39 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
-			throw new PluginException(errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public RegistreAnotacio registreEntradaConsultar(
+			String identificador) {
+		String accioDescripcio = "Consulta d'una anotació d'entrada";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("identificador", identificador);
+		try {
+			RegistreAnotacio anotacio = getRegistrePlugin().entradaConsultar(identificador);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_REGISTRE,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT);
+			return anotacio;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de registre";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_REGISTRE,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_REGISTRE,
+					errorDescripcio,
+					ex);
 		}
 	}
 
@@ -729,12 +865,14 @@ public class PluginHelper {
 					Class<?> clazz = Class.forName(pluginClass);
 					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.newInstance();
 				} catch (Exception ex) {
-					throw new PluginException(
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_USUARIS,
 							"Error al crear la instància del plugin de dades d'usuari",
 							ex);
 				}
 			} else {
-				throw new PluginException(
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_USUARIS,
 						"La classe del plugin de dades d'usuari no està configurada");
 			}
 		}
@@ -748,12 +886,14 @@ public class PluginHelper {
 					Class<?> clazz = Class.forName(pluginClass);
 					unitatsOrganitzativesPlugin = (UnitatsOrganitzativesPlugin)clazz.newInstance();
 				} catch (Exception ex) {
-					throw new PluginException(
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_UNITATS,
 							"Error al crear la instància del plugin d'unitats organitzatives",
 							ex);
 				}
 			} else {
-				throw new PluginException(
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_UNITATS,
 						"La classe del plugin d'unitats organitzatives no està configurada");
 			}
 		}
@@ -767,7 +907,8 @@ public class PluginHelper {
 					Class<?> clazz = Class.forName(pluginClass);
 					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.newInstance();
 				} catch (Exception ex) {
-					throw new PluginException(
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_GESDOC,
 							"Error al crear la instància del plugin de gestió documental",
 							ex);
 				}
@@ -784,7 +925,8 @@ public class PluginHelper {
 					Class<?> clazz = Class.forName(pluginClass);
 					portafirmesPlugin = (PortafirmesPlugin)clazz.newInstance();
 				} catch (Exception ex) {
-					throw new PluginException(
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_PFIRMA,
 							"Error al crear la instància del plugin de portafirmes",
 							ex);
 				}
@@ -800,7 +942,8 @@ public class PluginHelper {
 					Class<?> clazz = Class.forName(pluginClass);
 					conversioPlugin = (ConversioPlugin)clazz.newInstance();
 				} catch (Exception ex) {
-					throw new PluginException(
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_CONVERT,
 							"Error al crear la instància del plugin de conversió de documents",
 							ex);
 				}
@@ -816,13 +959,31 @@ public class PluginHelper {
 					Class<?> clazz = Class.forName(pluginClass);
 					custodiaPlugin = (CustodiaPlugin)clazz.newInstance();
 				} catch (Exception ex) {
-					throw new PluginException(
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_CUSTODIA,
 							"Error al crear la instància del plugin de custòdia de documents",
 							ex);
 				}
 			}
 		}
 		return custodiaPlugin;
+	}
+	private RegistrePlugin getRegistrePlugin() {
+		if (registrePlugin == null) {
+			String pluginClass = getPropertyPluginRegistre();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					registrePlugin = (RegistrePlugin)clazz.newInstance();
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_REGISTRE,
+							"Error al crear la instància del plugin de registre",
+							ex);
+				}
+			}
+		}
+		return registrePlugin;
 	}
 
 	private String getPropertyPluginDadesUsuari() {
@@ -842,6 +1003,9 @@ public class PluginHelper {
 	}
 	private String getPropertyPluginCustodia() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.custodia.class");
+	}
+	private String getPropertyPluginRegistre() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.registre.class");
 	}
 
 }

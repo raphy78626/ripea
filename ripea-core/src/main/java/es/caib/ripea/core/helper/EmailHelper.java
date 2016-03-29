@@ -138,11 +138,10 @@ public class EmailHelper {
 					"\tUnitat organitzativa: " + unitatOrganitzativa + "\n" +
 					"\tBústia: " + bustia.getNom() + "\n\n" +
 					"Dades de l'anotació: \n" +
-					"\tAcció: " + registre.getAccio() + "\n" +
 					"\tTipus: " + registre.getTipus() + "\n" +
 					"\tNúmero: " + registre.getNumero() + "\n" +
 					"\tData: " + registre.getData() + "\n" +
-					"\tAssumpte: " + registre.getAssumpteResum() + "\n");
+					"\tExtracte: " + registre.getExtracte() + "\n");
 			mailSender.send(missatge);
 		}
 	}
@@ -155,7 +154,7 @@ public class EmailHelper {
 		List<String> destinataris = new ArrayList<String>();
 		Set<String> usuaris = contenidorHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
 		for (String usuari: usuaris) {
-			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbCodi(
+			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(
 					usuari);
 			if (dadesUsuari != null && dadesUsuari.getEmail() != null)
 				destinataris.add(dadesUsuari.getEmail());

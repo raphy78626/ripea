@@ -15,6 +15,9 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
 
+import es.caib.ripea.core.api.dto.RegistreInteressatCanalEnumDto;
+import es.caib.ripea.core.api.dto.RegistreInteressatDocumentTipusEnumDto;
+import es.caib.ripea.core.api.dto.RegistreInteressatTipusEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
@@ -27,19 +30,23 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 @Entity
 @Table(	name = "ipa_registre_inter",
 		uniqueConstraints = {
-				@UniqueConstraint(columnNames = {
-						"registre_id",
-						"doc_tipus",
-						"doc_num",
-						"nom",
-						"llinatge1",
-						"llinatge2",
-						"rao_social"})})
+				@UniqueConstraint(
+						name = "ipa_regint_mult_uk",
+						columnNames = {
+								"registre_id",
+								"doc_tipus",
+								"doc_num",
+								"nom",
+								"llinatge1",
+								"llinatge2",
+								"rao_social"})})
 @EntityListeners(RipeaAuditingEntityListener.class)
 public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 
-	@Column(name = "doc_tipus")
-	private RegistreInteressatDocumentTipusEnum documentTipus;
+	@Column(name = "tipus", length = 1, nullable = false)
+	private String tipus;
+	@Column(name = "doc_tipus", length = 1)
+	private String documentTipus;
 	@Column(name = "doc_num", length = 17)
 	private String documentNum;
 	@Column(name = "nom", length = 30)
@@ -66,51 +73,32 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	private String telefon;
 	@Column(name = "email_hab", length = 160)
 	private String emailHabilitat;
-	@Column(name = "canal_pref")
-	private RegistreInteressatCanalEnum canalPreferent;
-	@Column(name = "rep_doc_tipus")
-	private RegistreInteressatDocumentTipusEnum representantDocumentTipus;
-	@Column(name = "rep_doc_num", length = 17)
-	private String representantDocumentNum;
-	@Column(name = "rep_nom", length = 30)
-	private String representantNom;
-	@Column(name = "rep_llinatge1", length = 30)
-	private String representantLlinatge1;
-	@Column(name = "rep_llinatge2", length = 30)
-	private String representantLlinatge2;
-	@Column(name = "rep_rao_social", length = 80)
-	private String representantRaoSocial;
-	@Column(name = "rep_pais", length = 4)
-	private String representantPais;
-	@Column(name = "rep_provincia", length = 2)
-	private String representantProvincia;
-	@Column(name = "rep_municipi", length = 5)
-	private String representantMunicipi;
-	@Column(name = "rep_adresa", length = 160)
-	private String representantAdresa;
-	@Column(name = "rep_codi_postal", length = 5)
-	private String representantCodiPostal;
-	@Column(name = "rep_email", length = 160)
-	private String representantEmail;
-	@Column(name = "rep_telefon", length = 20)
-	private String representantTelefon;
-	@Column(name = "rep_email_hab", length = 160)
-	private String representantEmailHabilitat;
-	@Column(name = "rep_canal_pref")
-	private RegistreInteressatCanalEnum representantCanalPreferent;
+	@Column(name = "canal_pref", length = 2)
+	private String canalPreferent;
 	@Column(name = "observacions", length = 160)
 	private String observacions;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "registre_id")
 	@ForeignKey(name = "ipa_interessat_registre_fk")
 	protected RegistreEntity registre;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "representant_id")
+	@ForeignKey(name = "ipa_interessat_representant_fk")
+	protected RegistreInteressatEntity representant;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "representat_id")
+	@ForeignKey(name = "ipa_interessat_representat_fk")
+	protected RegistreInteressatEntity representat;
 	@Version
 	private long version = 0;
 
 
 
-	public RegistreInteressatDocumentTipusEnum getDocumentTipus() {
-		return documentTipus;
+	public RegistreInteressatTipusEnumDto getTipus() {
+		return RegistreInteressatTipusEnumDto.valorAsEnum(tipus);
+	}
+	public RegistreInteressatDocumentTipusEnumDto getDocumentTipus() {
+		return RegistreInteressatDocumentTipusEnumDto.valorAsEnum(documentTipus);
 	}
 	public String getDocumentNum() {
 		return documentNum;
@@ -151,66 +139,16 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	public String getEmailHabilitat() {
 		return emailHabilitat;
 	}
-	public RegistreInteressatCanalEnum getCanalPreferent() {
-		return canalPreferent;
-	}
-	public RegistreInteressatDocumentTipusEnum getRepresentantDocumentTipus() {
-		return representantDocumentTipus;
-	}
-	public String getRepresentantDocumentNum() {
-		return representantDocumentNum;
-	}
-	public String getRepresentantNom() {
-		return representantNom;
-	}
-	public String getRepresentantLlinatge1() {
-		return representantLlinatge1;
-	}
-	public String getRepresentantLlinatge2() {
-		return representantLlinatge2;
-	}
-	public String getRepresentantRaoSocial() {
-		return representantRaoSocial;
-	}
-	public String getRepresentantPais() {
-		return representantPais;
-	}
-	public String getRepresentantProvincia() {
-		return representantProvincia;
-	}
-	public String getRepresentantMunicipi() {
-		return representantMunicipi;
-	}
-	public String getRepresentantAdresa() {
-		return representantAdresa;
-	}
-	public String getRepresentantCodiPostal() {
-		return representantCodiPostal;
-	}
-	public String getRepresentantEmail() {
-		return representantEmail;
-	}
-	public String getRepresentantTelefon() {
-		return representantTelefon;
-	}
-	public String getRepresentantEmailHabilitat() {
-		return representantEmailHabilitat;
-	}
-	public RegistreInteressatCanalEnum getRepresentantCanalPreferent() {
-		return representantCanalPreferent;
+	public RegistreInteressatCanalEnumDto getCanalPreferent() {
+		return RegistreInteressatCanalEnumDto.valorAsEnum(canalPreferent);
 	}
 	public String getObservacions() {
 		return observacions;
 	}
-	public long getVersion() {
-		return version;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 
-	public void updateDadesRepresentant(
-			RegistreInteressatDocumentTipusEnum documentTipus,
+	public void updateRepresentant(
+			RegistreInteressatTipusEnumDto tipus,
+			RegistreInteressatDocumentTipusEnumDto documentTipus,
 			String documentNum,
 			String nom,
 			String llinatge1,
@@ -224,141 +162,145 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 			String email,
 			String telefon,
 			String emailHabilitat,
-			RegistreInteressatCanalEnum canalPreferent) {
-		this.representantDocumentTipus = documentTipus;
-		this.representantDocumentNum = documentNum;
-		this.representantNom = nom;
-		this.representantLlinatge1 = llinatge1;
-		this.representantLlinatge2 = llinatge2;
-		this.representantRaoSocial = raoSocial;
-		this.representantPais = pais;
-		this.representantProvincia = provincia;
-		this.representantMunicipi = municipi;
-		this.representantAdresa = adresa;
-		this.representantCodiPostal = codiPostal;
-		this.representantEmail = email;
-		this.representantTelefon = telefon;
-		this.representantEmailHabilitat = emailHabilitat;
-		this.representantCanalPreferent = canalPreferent;
+			RegistreInteressatCanalEnumDto canalPreferent) {
+		Builder representantBuilder;
+		if (nom == null) {
+			representantBuilder = getBuilder(
+					tipus,
+					documentTipus,
+					documentNum,
+					nom,
+					llinatge1,
+					llinatge2,
+					registre);
+		} else {
+			representantBuilder = getBuilder(
+					tipus,
+					documentTipus,
+					documentNum,
+					raoSocial,
+					registre);
+		}
+		representantBuilder.
+				pais(pais).
+				provincia(provincia).
+				municipi(municipi).
+				adresa(adresa).
+				codiPostal(codiPostal).
+				email(email).
+				telefon(telefon).
+				emailHabilitat(emailHabilitat).
+				canalPreferent(canalPreferent).
+				representat(this);
+		this.representant = representantBuilder.build();
 	}
 
-	/**
-	 * Obté el Builder per a crear objectes de tipus interessat d'una
-	 * anotació de registre.
-	 * 
-	 * @param documentNum
-	 *            El valor de l'atribut documentNum.
-	 * @param nom
-	 *            El valor de l'atribut nom.
-	 * @param llinatge1
-	 *            El valor de l'atribut llinatge1.
-	 * @param llinatge2
-	 *            El valor de l'atribut llinatge2.
-	 * @param raoSocial
-	 *            El valor de l'atribut raoSocial.
-	 * @param pais
-	 *            El valor de l'atribut pais.
-	 * @param provincia
-	 *            El valor de l'atribut provincia.
-	 * @param municipi
-	 *            El valor de l'atribut municipi.
-	 * @param adresa
-	 *            El valor de l'atribut adresa.
-	 * @param codiPostal
-	 *            El valor de l'atribut codiPostal.
-	 * @param email
-	 *            El valor de l'atribut email.
-	 * @param telefon
-	 *            El valor de l'atribut telefon.
-	 * @param emailHabilitat
-	 *            El valor de l'atribut emailHabilitat.
-	 * @param canalPreferent
-	 *            El valor de l'atribut canalPreferent.
-	 * @param observacions
-	 *            El valor de l'atribut observacions.
-	 * @param registre
-	 *            El valor de l'atribut registre.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
-			RegistreInteressatDocumentTipusEnum documentTipus,
+			RegistreInteressatTipusEnumDto tipus,
+			RegistreInteressatDocumentTipusEnumDto documentTipus,
 			String documentNum,
 			String nom,
 			String llinatge1,
 			String llinatge2,
-			String raoSocial,
-			String pais,
-			String provincia,
-			String municipi,
-			String adresa,
-			String codiPostal,
-			String email,
-			String telefon,
-			String emailHabilitat,
-			RegistreInteressatCanalEnum canalPreferent,
-			String observacions,
 			RegistreEntity registre) {
 		return new Builder(
+				tipus,
 				documentTipus,
 				documentNum,
 				nom,
 				llinatge1,
 				llinatge2,
+				registre);
+	}
+	public static Builder getBuilder(
+			RegistreInteressatTipusEnumDto tipus,
+			RegistreInteressatDocumentTipusEnumDto documentTipus,
+			String documentNum,
+			String raoSocial,
+			RegistreEntity registre) {
+		return new Builder(
+				tipus,
+				documentTipus,
+				documentNum,
 				raoSocial,
-				pais,
-				provincia,
-				municipi,
-				adresa,
-				codiPostal,
-				email,
-				telefon,
-				emailHabilitat,
-				canalPreferent,
-				observacions,
 				registre);
 	}
 
-	/**
-	 * Builder per a crear noves instàncies d'aquesta classe.
-	 * 
-	 * @author Limit Tecnologies <limit@limit.es>
-	 */
 	public static class Builder {
 		RegistreInteressatEntity built;
 		Builder(
-				RegistreInteressatDocumentTipusEnum documentTipus,
+				RegistreInteressatTipusEnumDto tipus,
+				RegistreInteressatDocumentTipusEnumDto documentTipus,
 				String documentNum,
 				String nom,
 				String llinatge1,
 				String llinatge2,
-				String raoSocial,
-				String pais,
-				String provincia,
-				String municipi,
-				String adresa,
-				String codiPostal,
-				String email,
-				String telefon,
-				String emailHabilitat,
-				RegistreInteressatCanalEnum canalPreferent,
-				String observacions,
 				RegistreEntity registre) {
 			built = new RegistreInteressatEntity();
-			built.documentTipus = documentTipus;
+			built.tipus = tipus.getValor();
+			built.documentTipus = documentTipus.getValor();
 			built.documentNum = documentNum;
 			built.nom = nom;
 			built.llinatge1 = llinatge1;
 			built.llinatge2 = llinatge2;
+			built.registre = registre;
+		}
+		Builder(
+				RegistreInteressatTipusEnumDto tipus,
+				RegistreInteressatDocumentTipusEnumDto documentTipus,
+				String documentNum,
+				String raoSocial,
+				RegistreEntity registre) {
+			built = new RegistreInteressatEntity();
+			built.tipus = tipus.getValor();
+			built.documentTipus = documentTipus.getValor();
+			built.documentNum = documentNum;
 			built.raoSocial = raoSocial;
+			built.registre = registre;
+		}
+		public Builder pais(String pais) {
 			built.pais = pais;
+			return this;
+		}
+		public Builder provincia(String provincia) {
 			built.provincia = provincia;
+			return this;
+		}
+		public Builder municipi(String municipi) {
 			built.municipi = municipi;
+			return this;
+		}
+		public Builder adresa(String adresa) {
 			built.adresa = adresa;
+			return this;
+		}
+		public Builder codiPostal(String codiPostal) {
 			built.codiPostal = codiPostal;
+			return this;
+		}
+		public Builder email(String email) {
 			built.email = email;
+			return this;
+		}
+		public Builder telefon(String telefon) {
 			built.telefon = telefon;
+			return this;
+		}
+		public Builder emailHabilitat(String emailHabilitat) {
 			built.emailHabilitat = emailHabilitat;
-			built.canalPreferent = canalPreferent;
+			return this;
+		}
+		public Builder canalPreferent(RegistreInteressatCanalEnumDto canalPreferent) {
+			built.canalPreferent = canalPreferent.getValor();
+			return this;
+		}
+		public Builder observacions(String observacions) {
+			built.observacions = observacions;
+			return this;
+		}
+		public Builder representat(RegistreInteressatEntity representat) {
+			built.representant = representat;
+			return this;
 		}
 		public RegistreInteressatEntity build() {
 			return built;

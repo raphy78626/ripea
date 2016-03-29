@@ -18,6 +18,9 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+
 /**
  * Classe del model de dades que representa un log de modificació
  * a un contenidor.
@@ -32,7 +35,7 @@ public class ContenidorLogEntity extends AbstractPersistable<Long> {
 	@Column(name = "data", nullable = false)
 	private Date data;
 	@Column(name = "tipus", nullable = false)
-	private LogTipusEnum tipus;
+	private LogTipusEnumDto tipus;
 	@Column(name = "usuari_id", nullable = false)
 	private String usuariId;
 	@Column(name = "contenidor_id", nullable = false)
@@ -42,9 +45,9 @@ public class ContenidorLogEntity extends AbstractPersistable<Long> {
 	@Column(name = "objecte_id")
 	private Long objecteId;
 	@Column(name = "objecte_tipus")
-	private LogObjecteTipusEnum objecteTipus;
+	private LogObjecteTipusEnumDto objecteTipus;
 	@Column(name = "objecte_log_tipus")
-	private LogTipusEnum objecteLogTipus;
+	private LogTipusEnumDto objecteLogTipus;
 	@Column(name = "param1", length = 256)
 	private String param1;
 	@Column(name = "param2", length = 256)
@@ -61,7 +64,7 @@ public class ContenidorLogEntity extends AbstractPersistable<Long> {
 	public Date getData() {
 		return data;
 	}
-	public LogTipusEnum getTipus() {
+	public LogTipusEnumDto getTipus() {
 		return tipus;
 	}
 	public String getUsuariId() {
@@ -76,10 +79,10 @@ public class ContenidorLogEntity extends AbstractPersistable<Long> {
 	public Long getObjecteId() {
 		return objecteId;
 	}
-	public LogObjecteTipusEnum getObjecteTipus() {
+	public LogObjecteTipusEnumDto getObjecteTipus() {
 		return objecteTipus;
 	}
-	public LogTipusEnum getObjecteLogTipus() {
+	public LogTipusEnumDto getObjecteLogTipus() {
 		return objecteLogTipus;
 	}
 	public String getParam1() {
@@ -104,14 +107,14 @@ public class ContenidorLogEntity extends AbstractPersistable<Long> {
 	 */
 	public static Builder getBuilder(
 			Date data,
-			LogTipusEnum tipus,
+			LogTipusEnumDto tipus,
 			String usuariId,
 			ContenidorEntity contenidor,
 			ContenidorLogEntity pare,
 			ContenidorMovimentEntity contenidorMoviment,
 			AbstractPersistable<Long> objecte,
-			LogObjecteTipusEnum objecteTipus,
-			LogTipusEnum objecteLogTipus) {
+			LogObjecteTipusEnumDto objecteTipus,
+			LogTipusEnumDto objecteLogTipus) {
 		return new Builder(
 				data,
 				tipus,
@@ -133,14 +136,14 @@ public class ContenidorLogEntity extends AbstractPersistable<Long> {
 		ContenidorLogEntity built;
 		Builder(
 				Date data,
-				LogTipusEnum tipus,
+				LogTipusEnumDto tipus,
 				String usuariId,
 				ContenidorEntity contenidor,
 				ContenidorLogEntity pare,
 				ContenidorMovimentEntity contenidorMoviment,
 				AbstractPersistable<Long> objecte,
-				LogObjecteTipusEnum objecteTipus,
-				LogTipusEnum objecteLogTipus) {
+				LogObjecteTipusEnumDto objecteTipus,
+				LogTipusEnumDto objecteLogTipus) {
 			built = new ContenidorLogEntity();
 			built.data = data;
 			built.tipus = tipus;

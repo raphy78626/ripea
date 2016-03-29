@@ -41,7 +41,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDocumentDto create(
 			Long entitatId,
 			MetaDocumentDto metaDocument,
@@ -67,7 +67,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDocumentDto update(
 			Long entitatId,
 			MetaDocumentDto metaDocument,
@@ -88,7 +88,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDocumentDto updateActiu(
 			Long entitatId,
 			Long id,
@@ -105,7 +105,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDocumentDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -121,7 +121,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDocumentDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -137,7 +137,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaDocumentDto findByEntitatCodi(
 			Long entitatId,
 			String codi) throws NotFoundException;
@@ -151,7 +151,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<MetaDocumentDto> findByEntitat(
 			Long entitatId) throws NotFoundException;
 
@@ -166,7 +166,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public PaginaDto<MetaDocumentDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
@@ -182,7 +182,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<MetaDocumentDto> findByEntitatAndActiveTrue(
 			Long entitatId,
 			boolean incloureGlobalsExpedient) throws NotFoundException;
@@ -198,7 +198,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public FitxerDto getPlantilla(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -219,7 +219,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void metaDadaCreate(
 			Long entitatId,
 			Long id,
@@ -243,7 +243,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void metaDadaUpdate(
 			Long entitatId,
 			Long id,
@@ -263,7 +263,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void metaDadaDelete(
 			Long entitatId,
 			Long id,
@@ -283,7 +283,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void metaDadaMove(
 			Long entitatId,
 			Long id,
@@ -304,7 +304,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaNodeMetaDadaDto findMetaDada(
 			Long entitatId,
 			Long id,
@@ -321,7 +321,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<PermisDto> findPermis(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -338,7 +338,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void updatePermis(
 			Long entitatId,
 			Long id,
@@ -356,7 +356,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void deletePermis(
 			Long entitatId,
 			Long id,
@@ -374,7 +374,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<MetaDocumentDto> findActiveByEntitatAndContenidorPerCreacio(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -390,7 +390,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<MetaDocumentDto> findActiveByEntitatAndContenidorPerModificacio(
 			Long entitatId,
 			Long documentId) throws NotFoundException;
@@ -399,7 +399,7 @@ public interface MetaDocumentService {
 	 * Consulta la llista de tipus de document del plugin de portafirmes.
 	 * @return La llista de tipus o null si el plugin no suporta la consulta.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<PortafirmesDocumentTipusDto> findPortafirmesDocumentTipus();
 
 }

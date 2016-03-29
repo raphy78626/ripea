@@ -12,8 +12,8 @@ import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.exception.NomInvalidException;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.ValidationException;
 
 /**
  * Declaració dels mètodes per a gestionar contenidors.
@@ -48,7 +48,7 @@ public interface ExpedientService {
 	 * @throws NomInvalidException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ExpedientDto create(
 			Long entitatId,
 			Long contenidorId,
@@ -57,7 +57,7 @@ public interface ExpedientService {
 			Integer any,
 			String nom,
 			Long contingutId,
-			Long registreId) throws NotFoundException, NomInvalidException;
+			Long registreId) throws NotFoundException, ValidationException;
 
 	/**
 	 * Modifica un expedient.
@@ -78,13 +78,13 @@ public interface ExpedientService {
 	 * @throws NomInvalidException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ExpedientDto update(
 			Long entitatId,
 			Long id,
 			Long arxiuId,
 			Long metaExpedientId,
-			String nom) throws NotFoundException, NomInvalidException;
+			String nom) throws NotFoundException, ValidationException;
 
 	/**
 	 * Esborra un expedient.
@@ -97,7 +97,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ExpedientDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -113,7 +113,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ExpedientDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -133,7 +133,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public PaginaDto<ExpedientDto> findPaginatAdmin(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
@@ -154,7 +154,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public PaginaDto<ExpedientDto> findPaginatUser(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
@@ -171,7 +171,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<ContenidorDto> getContingutCarpetaNouvinguts(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -188,7 +188,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void agafarUser(
 			Long entitatId,
 			Long arxiuId,
@@ -208,7 +208,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void agafarAdmin(
 			Long entitatId,
 			Long arxiuId,
@@ -225,7 +225,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void alliberarUser(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -240,7 +240,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void alliberarAdmin(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -257,7 +257,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void finalitzar(
 			Long entitatId,
 			Long id,
@@ -276,7 +276,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void acumular(
 			Long entitatId,
 			Long id,

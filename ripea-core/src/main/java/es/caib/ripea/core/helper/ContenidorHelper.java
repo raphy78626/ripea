@@ -42,7 +42,6 @@ import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
-import es.caib.ripea.core.entity.CarpetaTipusEnum;
 import es.caib.ripea.core.entity.ContenidorEntity;
 import es.caib.ripea.core.entity.ContenidorMovimentEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
@@ -285,7 +284,7 @@ public class ContenidorHelper {
 							false));
 				}
 				for (ContenidorEntity fill: fills) {
-					boolean esCarpetaNouvinguts = fill instanceof CarpetaEntity && CarpetaTipusEnum.NOUVINGUT.equals(((CarpetaEntity)fill).getTipus());
+					boolean esCarpetaNouvinguts = fill instanceof CarpetaEntity && CarpetaTipusEnumDto.NOUVINGUT.equals(((CarpetaEntity)fill).getTipus());
 					if (fill.getEsborrat() == 0 && !esCarpetaNouvinguts) {
 						ContenidorDto fillDto = toContenidorDto(
 								fill,
@@ -304,8 +303,7 @@ public class ContenidorHelper {
 				// Incorpora les anotacions de registre
 				resposta.setRegistres(
 						conversioTipusHelper.convertirList(
-								registreRepository.findByEntitatAndContenidorAndMotiuRebuigNullOrderByDataAsc(
-										contenidor.getEntitat(),
+								registreRepository.findByContenidorAndMotiuRebuigNullOrderByDataAsc(
 										contenidor),
 								RegistreAnotacioDto.class));
 			}
@@ -611,8 +609,7 @@ public class ContenidorHelper {
 	public long[] countRegistresByContenidors(
 			EntitatEntity entitat,
 			List<? extends ContenidorEntity> contenidors) {
-		List<Object[]> countRegistres = registreRepository.countByEntitatAndContenidorsAndNotRebutjat(
-				entitat,
+		List<Object[]> countRegistres = registreRepository.countByContenidorsAndNotRebutjat(
 				contenidors);
 		long[] resposta = new long[contenidors.size()];
 		for (int i = 0; i < contenidors.size(); i++) {

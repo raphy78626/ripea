@@ -14,38 +14,40 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class RegistreInteressatDto implements Serializable {
 
-	private RegistreInteressatDocumentTipusEnumDto documentTipus;
-	private String documentNum;
-	private String nom;
-	private String llinatge1;
-	private String llinatge2;
-	private String raoSocial;
-	private String pais;
-	private String provincia;
-	private String municipi;
-	private String adresa;
-	private String codiPostal;
-	private String email;
-	private String telefon;
-	private String emailHabilitat;
-	private RegistreInteressatCanalEnumDto canalPreferent;
-	private RegistreInteressatDocumentTipusEnumDto representantDocumentTipus;
-	private String representantDocumentNum;
-	private String representantNom;
-	private String representantLlinatge1;
-	private String representantLlinatge2;
-	private String representantRaoSocial;
-	private String representantPais;
-	private String representantProvincia;
-	private String representantMunicipi;
-	private String representantAdresa;
-	private String representantCodiPostal;
-	private String representantEmail;
-	private String representantTelefon;
-	private String representantEmailHabilitat;
-	private RegistreInteressatCanalEnumDto representantCanalPreferent;
-	private String observacions;
+	public Long id;
+	public RegistreInteressatTipusEnumDto tipus;
+	public RegistreInteressatDocumentTipusEnumDto documentTipus;
+	public String documentNum;
+	public String nom;
+	public String llinatge1;
+	public String llinatge2;
+	public String raoSocial;
+	public String pais;
+	public String provincia;
+	public String municipi;
+	public String adresa;
+	public String codiPostal;
+	public String email;
+	public String telefon;
+	public String emailHabilitat;
+	public RegistreInteressatCanalEnumDto canalPreferent;
+	public String observacions;
+	public RegistreInteressatDto representant;
 
+
+
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public RegistreInteressatTipusEnumDto getTipus() {
+		return tipus;
+	}
+	public void setTipus(RegistreInteressatTipusEnumDto tipus) {
+		this.tipus = tipus;
+	}
 	public RegistreInteressatDocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
 	}
@@ -137,103 +139,17 @@ public class RegistreInteressatDto implements Serializable {
 	public void setCanalPreferent(RegistreInteressatCanalEnumDto canalPreferent) {
 		this.canalPreferent = canalPreferent;
 	}
-	public RegistreInteressatDocumentTipusEnumDto getRepresentantDocumentTipus() {
-		return representantDocumentTipus;
-	}
-	public void setRepresentantDocumentTipus(
-			RegistreInteressatDocumentTipusEnumDto representantDocumentTipus) {
-		this.representantDocumentTipus = representantDocumentTipus;
-	}
-	public String getRepresentantDocumentNum() {
-		return representantDocumentNum;
-	}
-	public void setRepresentantDocumentNum(String representantDocumentNum) {
-		this.representantDocumentNum = representantDocumentNum;
-	}
-	public String getRepresentantNom() {
-		return representantNom;
-	}
-	public void setRepresentantNom(String representantNom) {
-		this.representantNom = representantNom;
-	}
-	public String getRepresentantLlinatge1() {
-		return representantLlinatge1;
-	}
-	public void setRepresentantLlinatge1(String representantLlinatge1) {
-		this.representantLlinatge1 = representantLlinatge1;
-	}
-	public String getRepresentantLlinatge2() {
-		return representantLlinatge2;
-	}
-	public void setRepresentantLlinatge2(String representantLlinatge2) {
-		this.representantLlinatge2 = representantLlinatge2;
-	}
-	public String getRepresentantRaoSocial() {
-		return representantRaoSocial;
-	}
-	public void setRepresentantRaoSocial(String representantRaoSocial) {
-		this.representantRaoSocial = representantRaoSocial;
-	}
-	public String getRepresentantPais() {
-		return representantPais;
-	}
-	public void setRepresentantPais(String representantPais) {
-		this.representantPais = representantPais;
-	}
-	public String getRepresentantProvincia() {
-		return representantProvincia;
-	}
-	public void setRepresentantProvincia(String representantProvincia) {
-		this.representantProvincia = representantProvincia;
-	}
-	public String getRepresentantMunicipi() {
-		return representantMunicipi;
-	}
-	public void setRepresentantMunicipi(String representantMunicipi) {
-		this.representantMunicipi = representantMunicipi;
-	}
-	public String getRepresentantAdresa() {
-		return representantAdresa;
-	}
-	public void setRepresentantAdresa(String representantAdresa) {
-		this.representantAdresa = representantAdresa;
-	}
-	public String getRepresentantCodiPostal() {
-		return representantCodiPostal;
-	}
-	public void setRepresentantCodiPostal(String representantCodiPostal) {
-		this.representantCodiPostal = representantCodiPostal;
-	}
-	public String getRepresentantEmail() {
-		return representantEmail;
-	}
-	public void setRepresentantEmail(String representantEmail) {
-		this.representantEmail = representantEmail;
-	}
-	public String getRepresentantTelefon() {
-		return representantTelefon;
-	}
-	public void setRepresentantTelefon(String representantTelefon) {
-		this.representantTelefon = representantTelefon;
-	}
-	public String getRepresentantEmailHabilitat() {
-		return representantEmailHabilitat;
-	}
-	public void setRepresentantEmailHabilitat(String representantEmailHabilitat) {
-		this.representantEmailHabilitat = representantEmailHabilitat;
-	}
-	public RegistreInteressatCanalEnumDto getRepresentantCanalPreferent() {
-		return representantCanalPreferent;
-	}
-	public void setRepresentantCanalPreferent(
-			RegistreInteressatCanalEnumDto representantCanalPreferent) {
-		this.representantCanalPreferent = representantCanalPreferent;
-	}
 	public String getObservacions() {
 		return observacions;
 	}
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
+	}
+	public RegistreInteressatDto getRepresentant() {
+		return representant;
+	}
+	public void setRepresentant(RegistreInteressatDto representant) {
+		this.representant = representant;
 	}
 
 	@Override

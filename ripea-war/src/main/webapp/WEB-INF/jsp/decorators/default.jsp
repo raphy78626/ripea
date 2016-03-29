@@ -150,7 +150,13 @@ body {
 						<c:choose>
 							<c:when test="${isRolActualSuperusuari}">
 								<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>
-								<a href="<c:url value="/integracio"/>" class="btn btn-primary"><spring:message code="decorator.menu.integracions"/></a>
+								<div class="btn-group">
+									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.monitoritzacio"/>&nbsp;<span class="caret caret-white"></span></button>
+									<ul class="dropdown-menu">
+										<li><a href="<c:url value="/integracio"/>"><spring:message code="decorator.menu.integracions"/></a></li>
+										<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
+									</ul>
+								</div>
 							</c:when>
 							<c:when test="${isRolActualAdministrador}">
 								<div class="btn-group">

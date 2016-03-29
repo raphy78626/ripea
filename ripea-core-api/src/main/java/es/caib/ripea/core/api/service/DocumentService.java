@@ -12,9 +12,9 @@ import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
-import es.caib.ripea.core.api.exception.NomInvalidException;
 import es.caib.ripea.core.api.exception.NotFoundException;
-import es.caib.ripea.core.api.exception.PluginException;
+import es.caib.ripea.core.api.exception.SistemaExternException;
+import es.caib.ripea.core.api.exception.ValidationException;
 
 /**
  * Declaració dels mètodes per a gestionar documents.
@@ -45,10 +45,10 @@ public interface DocumentService {
 	 * @return El document creat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws NomInvalidException
+	 * @throws ValidationException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DocumentDto create(
 			Long entitatId,
 			Long contenidorId,
@@ -57,7 +57,7 @@ public interface DocumentService {
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) throws NotFoundException, NomInvalidException;
+			byte[] arxiuContingut) throws NotFoundException, ValidationException;
 
 	/**
 	 * Modifica un document.
@@ -81,10 +81,10 @@ public interface DocumentService {
 	 * @return El document modificat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws NomInvalidException
+	 * @throws ValidationException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DocumentDto update(
 			Long entitatId,
 			Long id,
@@ -93,7 +93,7 @@ public interface DocumentService {
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) throws NotFoundException, NomInvalidException;
+			byte[] arxiuContingut) throws NotFoundException, ValidationException;
 
 	/**
 	 * Esborra un document.
@@ -106,7 +106,7 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DocumentDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -122,7 +122,7 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DocumentDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -138,7 +138,7 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<DocumentVersioDto> findVersionsByDocument(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -154,7 +154,7 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DocumentVersioDto findDarreraVersio(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -172,7 +172,7 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DocumentVersioDto findVersio(
 			Long entitatId,
 			Long id,
@@ -191,7 +191,7 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto descarregar(
 			Long entitatId,
 			Long id,
@@ -217,17 +217,17 @@ public interface DocumentService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws IllegalStateException
 	 *             Si hi ha enviaments a portafirmes pendents per aquest document.
-	 * @throws PluginException
+	 * @throws SistemaExternException
 	 *             Hi ha hagut algun error en la comunicació amb el portafirmes.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void portafirmesEnviar(
 			Long entitatId,
 			Long id,
 			int versio,
 			String motiu,
 			PortafirmesPrioritatEnumDto prioritat,
-			Date dataCaducitat) throws NotFoundException, IllegalStateException, PluginException;
+			Date dataCaducitat) throws NotFoundException, IllegalStateException, SistemaExternException;
 
 	/**
 	 * Cancela l'enviament d'un document a firmar al portafirmes.
@@ -242,14 +242,14 @@ public interface DocumentService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws IllegalStateException
 	 *             Si no s'ha trobat l'enviament al portafirmes pel document.
-	 * @throws PluginException
+	 * @throws SistemaExternException
 	 *             Hi ha hagut algun error en la comunicació amb el portafirmes.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void portafirmesCancelar(
 			Long entitatId,
 			Long id,
-			int versio) throws NotFoundException, IllegalStateException, PluginException;
+			int versio) throws NotFoundException, IllegalStateException, SistemaExternException;
 
 	/**
 	 * Processa una petició del callback de portafirmes.
@@ -279,14 +279,14 @@ public interface DocumentService {
 	 * @return el fitxer convertit.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws PluginException
+	 * @throws SistemaExternException
 	 *             Hi ha hagut algun error en la comunicació amb el portafirmes.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto convertirPdfPerFirma(
 			Long entitatId,
 			Long id,
-			int versio) throws NotFoundException, PluginException;
+			int versio) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Genera un identificador del document per firmar via applet.
@@ -300,14 +300,14 @@ public interface DocumentService {
 	 * @return l'identificador generat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws PluginException
+	 * @throws SistemaExternException
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public String generarIdentificadorFirmaApplet(
 			Long entitatId,
 			Long id,
-			int versio) throws NotFoundException, PluginException;
+			int versio) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Envia a custòdia un document firmat al navegador.
@@ -320,14 +320,14 @@ public interface DocumentService {
 	 *            Contingut de l'arxiu firmat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws PluginException
+	 * @throws SistemaExternException
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void custodiaEnviarDocumentFirmat(
 			String identificador,
 			String arxiuNom,
-			byte[] arxiuContingut) throws NotFoundException, PluginException;
+			byte[] arxiuContingut) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Reintenta la custòdia d'un document firmat amb portafirmes que ha donat
@@ -341,14 +341,14 @@ public interface DocumentService {
 	 *            El número de versió del document que es vol custodiar.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws PluginException
+	 * @throws SistemaExternException
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void custodiaPortafirmesReintentar(
 			Long entitatId,
 			Long id,
-			int versio) throws NotFoundException, PluginException;
+			int versio) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Esborrar un document custodiat.
@@ -361,13 +361,13 @@ public interface DocumentService {
 	 *            El número de versió del document que es vol custodiar.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws PluginException
+	 * @throws SistemaExternException
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void custodiaEsborrar(
 			Long entitatId,
 			Long id,
-			int versio) throws NotFoundException, PluginException;
+			int versio) throws NotFoundException, SistemaExternException;
 
 }

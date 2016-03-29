@@ -5,7 +5,6 @@ package es.caib.ripea.core.api.service;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
 /**
@@ -15,21 +14,6 @@ import es.caib.ripea.core.api.exception.NotFoundException;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface RegistreService {
-
-	/**
-	 * Crea un nou registre.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param registre
-	 *            Informació de l'anotacio a crear.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('ROLE_REGWS')")
-	public void create(
-			Long entitatId,
-			RegistreAnotacioDto registre) throws NotFoundException;
 
 	/**
 	 * Rebutja un registre situat dins una bústia.
@@ -45,7 +29,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void rebutjar(
 			Long entitatId,
 			Long bustiaId,
@@ -64,7 +48,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void afegirAExpedient(
 			Long entitatId,
 			Long expedientId,

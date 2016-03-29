@@ -23,6 +23,9 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
 
+import es.caib.ripea.core.api.dto.RegistreDocumentacioFisicaTipusEnumDto;
+import es.caib.ripea.core.api.dto.RegistreTipusEnumDto;
+import es.caib.ripea.core.api.dto.RegistreTransportTipusEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
@@ -35,63 +38,67 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 @Entity
 @Table(	name = "ipa_registre",
 		uniqueConstraints = {
-				@UniqueConstraint(columnNames = {
-						"entitat_id",
-						"accio",
-						"tipus",
-						"entitat_codi",
-						"numero",
-						"data"})})
+				@UniqueConstraint(
+						name = "ipa_reg_mult_uk",
+						columnNames = {
+								"tipus",
+								"identificador",
+								"oficina",
+								"llibre",
+								"data"})})
 @EntityListeners(RipeaAuditingEntityListener.class)
 public class RegistreEntity extends RipeaAuditable<Long> {
 
-	@Column(name = "accio", nullable = false)
-	private RegistreAccioEnum accio;
-	@Column(name = "tipus", nullable = false)
-	private RegistreTipusEnum tipus;
-	@Column(name = "entitat_codi", length = 21, nullable = false)
-	private String entitatCodi;
-	@Column(name = "entitat_nom", length = 80)
-	private String entitatNom;
-	@Column(name = "numero", length = 20, nullable = false)
-	private String numero;
+	@Column(name = "tipus", length = 1, nullable = false)
+	private String tipus;
+	@Column(name = "numero", nullable = false)
+	private int numero;
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "data", nullable = false)
+	@Column(name = "data")
 	private Date data;
-	@Column(name = "assumpte_resum", length = 240, nullable = false)
-	private String assumpteResum;
+	@Column(name = "identificador")
+	private String identificador;
+	@Column(name = "oficina", length = 21, nullable = false)
+	private String oficina;
+	@Column(name = "llibre", length = 4, nullable = false)
+	private String llibre;
+	@Column(name = "extracte", length = 240)
+	private String extracte;
+	@Column(name = "assumpte_tipus", length = 16, nullable = false)
+	private String assumpteTipus;
 	@Column(name = "assumpte_codi", length = 16)
 	private String assumpteCodi;
-	@Column(name = "assumpte_referencia", length = 16)
+	@Column(name = "assumpte_ref", length = 16)
 	private String assumpteReferencia;
 	@Column(name = "assumpte_numexp", length = 80)
 	private String assumpteNumExpedient;
-	@Column(name = "transport_tipus")
-	private RegistreTransportTipusEnum transportTipus;
+	@Column(name = "idioma", length = 2, nullable = false)
+	private String idioma;
+	@Column(name = "transport_tipus", length = 2)
+	private String transportTipus;
 	@Column(name = "transport_num", length = 20)
 	private String transportNumero;
-	@Column(name = "usuari_nom", length = 80)
+	@Column(name = "usuari_nom", length = 80, nullable = false)
 	private String usuariNom;
 	@Column(name = "usuari_contacte", length = 160)
 	private String usuariContacte;
-	@Column(name = "aplicacio_emissora", length = 4)
-	private String aplicacioEmissora;
-	@Column(name = "documentacio_fis")
-	private RegistreDocumentacioFisicaTipusEnum documentacioFisica;
+	@Column(name = "aplicacio_codi", length = 20)
+	private String aplicacioCodi;
+	@Column(name = "aplicacio_versio", length = 15)
+	private String aplicacioVersio;
+	@Column(name = "documentacio_fis", length = 1, nullable = false)
+	private String documentacioFisica;
 	@Column(name = "observacions", length = 50)
 	private String observacions;
-	@Column(name = "prova")
-	private boolean prova;
+	@Column(name = "exposa", length = 4000)
+	private String exposa;
+	@Column(name = "solicita", length = 4000)
+	private String solicita;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "data_processat")
+	private Date dataProcessat;
 	@Column(name = "motiu_rebuig", length = 1024)
 	private String motiuRebuig;
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contenidor_id")
-	@ForeignKey(name = "ipa_contenidor_registre_fk")
-	private ContenidorEntity contenidor;
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "entitat_id")
-	@ForeignKey(name = "ipa_entitat_registre_fk")
-	protected EntitatEntity entitat;
 	@OneToMany(
 			mappedBy = "registre",
 			fetch = FetchType.LAZY,
@@ -103,32 +110,39 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
-	private List<RegistreDocumentEntity> documents = new ArrayList<RegistreDocumentEntity>();
+	private List<RegistreAnnexEntity> annexos = new ArrayList<RegistreAnnexEntity>();
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "contenidor_id")
+	@ForeignKey(name = "ipa_contenidor_registre_fk")
+	private ContenidorEntity contenidor;
 	@Version
 	private long version = 0;
 
 
 
-	public RegistreAccioEnum getAccio() {
-		return accio;
+	public RegistreTipusEnumDto getTipus() {
+		return RegistreTipusEnumDto.valorAsEnum(tipus);
 	}
-	public RegistreTipusEnum getTipus() {
-		return tipus;
-	}
-	public String getEntitatCodi() {
-		return entitatCodi;
-	}
-	public String getEntitatNom() {
-		return entitatNom;
-	}
-	public String getNumero() {
+	public int getNumero() {
 		return numero;
 	}
 	public Date getData() {
 		return data;
 	}
-	public String getAssumpteResum() {
-		return assumpteResum;
+	public String getIdentificador() {
+		return identificador;
+	}
+	public String getOficina() {
+		return oficina;
+	}
+	public String getLlibre() {
+		return llibre;
+	}
+	public String getExtracte() {
+		return extracte;
+	}
+	public String getAssumpteTipus() {
+		return assumpteTipus;
 	}
 	public String getAssumpteCodi() {
 		return assumpteCodi;
@@ -139,8 +153,11 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public String getAssumpteNumExpedient() {
 		return assumpteNumExpedient;
 	}
-	public RegistreTransportTipusEnum getTransportTipus() {
-		return transportTipus;
+	public String getIdioma() {
+		return idioma;
+	}
+	public RegistreTransportTipusEnumDto getTransportTipus() {
+		return RegistreTransportTipusEnumDto.valorAsEnum(transportTipus);
 	}
 	public String getTransportNumero() {
 		return transportNumero;
@@ -151,132 +168,69 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public String getUsuariContacte() {
 		return usuariContacte;
 	}
-	public String getAplicacioEmissora() {
-		return aplicacioEmissora;
+	public String getAplicacioCodi() {
+		return aplicacioCodi;
 	}
-	public RegistreDocumentacioFisicaTipusEnum getDocumentacioFisica() {
-		return documentacioFisica;
+	public String getAplicacioVersio() {
+		return aplicacioVersio;
+	}
+	public RegistreDocumentacioFisicaTipusEnumDto getDocumentacioFisica() {
+		return RegistreDocumentacioFisicaTipusEnumDto.valorAsEnum(documentacioFisica);
 	}
 	public String getObservacions() {
 		return observacions;
 	}
-	public boolean isProva() {
-		return prova;
+	public String getExposa() {
+		return exposa;
 	}
-	public ContenidorEntity getContenidor() {
-		return contenidor;
+	public String getSolicita() {
+		return solicita;
 	}
-	public EntitatEntity getEntitat() {
-		return entitat;
+	public Date getDataProcessat() {
+		return dataProcessat;
+	}
+	public String getMotiuRebuig() {
+		return motiuRebuig;
 	}
 	public List<RegistreInteressatEntity> getInteressats() {
 		return interessats;
 	}
-	public List<RegistreDocumentEntity> getDocuments() {
-		return documents;
+	public List<RegistreAnnexEntity> getAnnexos() {
+		return annexos;
 	}
-	public long getVersion() {
-		return version;
+	public ContenidorEntity getContenidor() {
+		return contenidor;
 	}
 
 	public void updateContenidor(ContenidorEntity contenidor) {
 		this.contenidor = contenidor;
 	}
-
 	public void updateMotiuRebuig(String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
 	}
 
-	public void addDocument(RegistreDocumentEntity document) {
-		this.documents.add(document);
-	}
-	public void addInteressat(RegistreInteressatEntity interessat) {
-		this.interessats.add(interessat);
-	}
-
-	/**
-	 * Obté el Builder per a crear objectes de tipus registre.
-	 * 
-	 * @param accio
-	 *            El valor de l'atribut accio.
-	 * @param tipus
-	 *            El valor de l'atribut tipus.
-	 * @param entitatCodi
-	 *            El valor de l'atribut entitatCodi.
-	 * @param entitatNom
-	 *            El valor de l'atribut entitatNom.
-	 * @param numero
-	 *            El valor de l'atribut numero.
-	 * @param data
-	 *            El valor de l'atribut data.
-	 * @param assumpteResum
-	 *            El valor de l'atribut assumpteResum.
-	 * @param assumpteCodi
-	 *            El valor de l'atribut assumpteCodi.
-	 * @param assumpteReferencia
-	 *            El valor de l'atribut assumpteReferencia.
-	 * @param assumpteNumExpedient
-	 *            El valor de l'atribut assumpteNumExpedient.
-	 * @param transportTipus
-	 *            El valor de l'atribut transportTipus.
-	 * @param transportNumero
-	 *            El valor de l'atribut transportNumero.
-	 * @param usuariNom
-	 *            El valor de l'atribut usuariNom.
-	 * @param usuariContacte
-	 *            El valor de l'atribut usuariContacte.
-	 * @param aplicacioEmissora
-	 *            El valor de l'atribut aplicacioEmissora.
-	 * @param documentacioFisica
-	 *            El valor de l'atribut documentacioFisica.
-	 * @param observacions
-	 *            El valor de l'atribut observacions.
-	 * @param entitat
-	 *            El valor de l'atribut entitat.
-	 * @param prova
-	 *            El valor de l'atribut prova.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
-			RegistreAccioEnum accio,
-			RegistreTipusEnum tipus,
-			String entitatCodi,
-			String entitatNom,
-			String numero,
+			RegistreTipusEnumDto tipus,
+			int numero,
 			Date data,
-			String assumpteResum,
-			String assumpteCodi,
-			String assumpteReferencia,
-			String assumpteNumExpedient,
-			RegistreTransportTipusEnum transportTipus,
-			String transportNumero,
+			String identificador,
+			String oficina,
+			String llibre,
+			String assumpteTipus,
+			String idioma,
 			String usuariNom,
-			String usuariContacte,
-			String aplicacioEmissora,
-			RegistreDocumentacioFisicaTipusEnum documentacioFisica,
-			String observacions,
-			EntitatEntity entitat,
-			boolean prova) {
+			String documentacioFisica) {
 		return new Builder(
-				accio,
 				tipus,
-				entitatCodi,
-				entitatNom,
 				numero,
 				data,
-				assumpteResum,
-				assumpteCodi,
-				assumpteReferencia,
-				assumpteNumExpedient,
-				transportTipus,
-				transportNumero,
+				identificador,
+				oficina,
+				llibre,
+				assumpteTipus,
+				idioma,
 				usuariNom,
-				usuariContacte,
-				aplicacioEmissora,
-				documentacioFisica,
-				observacions,
-				entitat,
-				prova);
+				documentacioFisica);
 	}
 
 	/**
@@ -287,45 +241,87 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public static class Builder {
 		RegistreEntity built;
 		Builder(
-				RegistreAccioEnum accio,
-				RegistreTipusEnum tipus,
-				String entitatCodi,
-				String entitatNom,
-				String numero,
+				RegistreTipusEnumDto tipus,
+				int numero,
 				Date data,
-				String assumpteResum,
-				String assumpteCodi,
-				String assumpteReferencia,
-				String assumpteNumExpedient,
-				RegistreTransportTipusEnum transportTipus,
-				String transportNumero,
+				String identificador,
+				String oficina,
+				String llibre,
+				String assumpteTipus,
+				String idioma,
 				String usuariNom,
-				String usuariContacte,
-				String aplicacioEmissora,
-				RegistreDocumentacioFisicaTipusEnum documentacioFisica,
-				String observacions,
-				EntitatEntity entitat,
-				boolean prova) {
+				String documentacioFisica) {
 			built = new RegistreEntity();
-			built.accio = accio;
-			built.tipus = tipus;
-			built.entitatCodi = entitatCodi;
-			built.entitatNom = entitatNom;
+			built.tipus = tipus.getValor();
 			built.numero = numero;
 			built.data = data;
-			built.assumpteResum = assumpteResum;
-			built.assumpteCodi = assumpteCodi;
-			built.assumpteReferencia = assumpteReferencia;
-			built.assumpteNumExpedient = assumpteNumExpedient;
-			built.transportTipus = transportTipus;
-			built.transportNumero = transportNumero;
+			built.identificador = identificador;
+			built.oficina = oficina;
+			built.llibre = llibre;
+			built.assumpteTipus = assumpteTipus;
+			built.idioma = idioma;
 			built.usuariNom = usuariNom;
-			built.usuariContacte = usuariContacte;
-			built.aplicacioEmissora = aplicacioEmissora;
 			built.documentacioFisica = documentacioFisica;
+		}
+		public Builder extracte(String extracte) {
+			built.extracte = extracte;
+			return this;
+		}
+		public Builder assumpteCodi(String assumpteCodi) {
+			built.assumpteCodi = assumpteCodi;
+			return this;
+		}
+		public Builder assumpteReferencia(String assumpteReferencia) {
+			built.assumpteReferencia = assumpteReferencia;
+			return this;
+		}
+		public Builder assumpteNumExpedient(String assumpteNumExpedient) {
+			built.assumpteNumExpedient = assumpteNumExpedient;
+			return this;
+		}
+		public Builder transportTipus(RegistreTransportTipusEnumDto transportTipus) {
+			built.transportTipus = transportTipus.getValor();
+			return this;
+		}
+		public Builder transportNumero(String transportNumero) {
+			built.transportNumero = transportNumero;
+			return this;
+		}
+		public Builder usuariContacte(String usuariContacte) {
+			built.usuariContacte = usuariContacte;
+			return this;
+		}
+		public Builder aplicacioCodi(String aplicacioCodi) {
+			built.aplicacioCodi = aplicacioCodi;
+			return this;
+		}
+		public Builder aplicacioVersio(String aplicacioVersio) {
+			built.aplicacioVersio = aplicacioVersio;
+			return this;
+		}
+		public Builder observacions(String observacions) {
 			built.observacions = observacions;
-			built.entitat = entitat;
-			built.prova = prova;
+			return this;
+		}
+		public Builder exposa(String exposa) {
+			built.exposa = exposa;
+			return this;
+		}
+		public Builder solicita(String solicita) {
+			built.solicita = solicita;
+			return this;
+		}
+		public Builder dataProcessat(Date dataProcessat) {
+			built.dataProcessat = dataProcessat;
+			return this;
+		}
+		public Builder motiuRebuig(String motiuRebuig) {
+			built.motiuRebuig = motiuRebuig;
+			return this;
+		}
+		public Builder contenidor(ContenidorEntity contenidor) {
+			built.contenidor = contenidor;
+			return this;
 		}
 		public RegistreEntity build() {
 			return built;
@@ -336,12 +332,10 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((accio == null) ? 0 : accio.hashCode());
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
-		result = prime * result + ((entitat == null) ? 0 : entitat.hashCode());
-		result = prime * result
-				+ ((entitatCodi == null) ? 0 : entitatCodi.hashCode());
-		result = prime * result + ((numero == null) ? 0 : numero.hashCode());
+		result = prime * result + ((identificador == null) ? 0 : identificador.hashCode());
+		result = prime * result + ((llibre == null) ? 0 : llibre.hashCode());
+		result = prime * result + ((oficina == null) ? 0 : oficina.hashCode());
 		result = prime * result + ((tipus == null) ? 0 : tipus.hashCode());
 		return result;
 	}
@@ -354,29 +348,30 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 		if (getClass() != obj.getClass())
 			return false;
 		RegistreEntity other = (RegistreEntity) obj;
-		if (accio != other.accio)
-			return false;
 		if (data == null) {
 			if (other.data != null)
 				return false;
 		} else if (!data.equals(other.data))
 			return false;
-		if (entitat == null) {
-			if (other.entitat != null)
+		if (identificador == null) {
+			if (other.identificador != null)
 				return false;
-		} else if (!entitat.equals(other.entitat))
+		} else if (!identificador.equals(other.identificador))
 			return false;
-		if (entitatCodi == null) {
-			if (other.entitatCodi != null)
+		if (llibre == null) {
+			if (other.llibre != null)
 				return false;
-		} else if (!entitatCodi.equals(other.entitatCodi))
+		} else if (!llibre.equals(other.llibre))
 			return false;
-		if (numero == null) {
-			if (other.numero != null)
+		if (oficina == null) {
+			if (other.oficina != null)
 				return false;
-		} else if (!numero.equals(other.numero))
+		} else if (!oficina.equals(other.oficina))
 			return false;
-		if (tipus != other.tipus)
+		if (tipus == null) {
+			if (other.tipus != null)
+				return false;
+		} else if (!tipus.equals(other.tipus))
 			return false;
 		return true;
 	}

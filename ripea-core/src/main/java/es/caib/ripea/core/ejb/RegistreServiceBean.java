@@ -10,7 +10,6 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.service.RegistreService;
 
 /**
@@ -29,14 +28,6 @@ public class RegistreServiceBean implements RegistreService {
 
 
 	@Override
-	@RolesAllowed("IPA_REGWS")
-	public void create(
-			Long entitatId,
-			RegistreAnotacioDto registre) {
-		delegate.create(entitatId, registre);
-	}
-
-	@Override
 	@RolesAllowed("tothom")
 	public void afegirAExpedient(
 			Long entitatId,
@@ -46,6 +37,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
+	@RolesAllowed("tothom")
 	public void rebutjar(
 			Long entitatId,
 			Long bustiaId,

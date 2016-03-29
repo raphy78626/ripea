@@ -19,6 +19,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.ForeignKey;
 
+import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
@@ -70,7 +71,7 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 
 	public void metaDocumentAdd(
 			MetaDocumentEntity metaDocument,
-			MultiplicitatEnum multiplicitat,
+			MultiplicitatEnumDto multiplicitat,
 			boolean readOnly) {
 		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = MetaExpedientMetaDocumentEntity.getBuilder(
 				this,

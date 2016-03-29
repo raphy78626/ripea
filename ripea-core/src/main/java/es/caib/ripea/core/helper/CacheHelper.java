@@ -18,6 +18,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,6 @@ import es.caib.ripea.core.entity.MetaDadaEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientMetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
-import es.caib.ripea.core.entity.MultiplicitatEnum;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.repository.BustiaRepository;
@@ -50,6 +50,7 @@ import es.caib.ripea.core.repository.MetaDocumentRepository;
 import es.caib.ripea.core.repository.MetaExpedientMetaDocumentRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
+import es.caib.ripea.plugin.usuari.DadesUsuari;
 
 /**
  * Utilitat per a accedir a les caches. Els mètodes cacheables es
@@ -102,6 +103,10 @@ public class CacheHelper {
 	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuari) {
 		logger.debug("Consulta entitats accessibles (usuari=" + usuari + ")");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(">>> usuari: " + auth.getName());
+		for (GrantedAuthority ga: auth.getAuthorities()) {
+			System.out.println(">>> authority: " + ga.getAuthority());
+		}
 		List<EntitatEntity> entitats = entitatRepository.findByActiva(true);
 		permisosHelper.filterGrantedAny(
 				entitats,
@@ -143,7 +148,7 @@ public class CacheHelper {
 					node.getEntitat());
 		if (metaDadesGlobals != null) {
 			for (MetaDadaEntity metaDada: metaDadesGlobals) {
-				if (metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnum.M_1) || metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnum.M_1_N)) {
+				if (metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_1) || metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_1_N)) {
 					boolean trobada = false;
 					for (DadaEntity dada: dades) {
 						if (dada.getMetaDada().equals(metaDada)) {
@@ -162,7 +167,7 @@ public class CacheHelper {
 		// Valida dades específiques del meta-node
 		List<MetaNodeMetaDadaEntity> metaNodeMetaDades = metaNodeMetaDadaRepository.findByMetaNodeAndActivaTrue(node.getMetaNode());
 		for (MetaNodeMetaDadaEntity metaNodeMetaDada: metaNodeMetaDades) {
-			if (metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnum.M_1) || metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnum.M_1_N)) {
+			if (metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_1) || metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_1_N)) {
 				boolean trobada = false;
 				for (DadaEntity dada: dades) {
 					if (dada.getMetaDada() != null && dada.getMetaDada().equals(metaNodeMetaDada.getMetaDada())) {
@@ -184,7 +189,7 @@ public class CacheHelper {
 			List<MetaDocumentEntity> metaDocumentsGlobals = metaDocumentRepository.findByEntitatAndGlobalExpedientTrueAndActiuTrueOrderByNomAsc(
 					node.getEntitat());
 			for (MetaDocumentEntity metaDocument: metaDocumentsGlobals) {
-				if (metaDocument.getGlobalMultiplicitat().equals(MultiplicitatEnum.M_1) || metaDocument.getGlobalMultiplicitat().equals(MultiplicitatEnum.M_1_N)) {
+				if (metaDocument.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_1) || metaDocument.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_1_N)) {
 					boolean trobat = false;
 					for (DocumentEntity document: documents) {
 						if (document.getMetaDocument() != null && document.getMetaDocument().equals(metaDocument)) {
@@ -202,7 +207,7 @@ public class CacheHelper {
 			// Valida documents específics del meta-node
 			List<MetaExpedientMetaDocumentEntity> metaExpedientMetaDocuments = metaExpedientMetaDocumentRepository.findByMetaExpedient(expedient.getMetaExpedient());
 			for (MetaExpedientMetaDocumentEntity metaExpedientMetaDocument: metaExpedientMetaDocuments) {
-				if (metaExpedientMetaDocument.getMultiplicitat().equals(MultiplicitatEnum.M_1) || metaExpedientMetaDocument.getMultiplicitat().equals(MultiplicitatEnum.M_1_N)) {
+				if (metaExpedientMetaDocument.getMultiplicitat().equals(MultiplicitatEnumDto.M_1) || metaExpedientMetaDocument.getMultiplicitat().equals(MultiplicitatEnumDto.M_1_N)) {
 					boolean trobat = false;
 					for (DocumentEntity document: documents) {
 						if (document.getMetaDocument() != null && document.getMetaDocument().equals(metaExpedientMetaDocument.getMetaDocument())) {
@@ -223,6 +228,13 @@ public class CacheHelper {
 	@CacheEvict(value = "errorsValidacioNode", key = "#node.id")
 	public void evictErrorsValidacioPerNode(
 			NodeEntity node) {
+	}
+
+	@Cacheable(value = "usuariAmbCodi")
+	public DadesUsuari findUsuariAmbCodi(
+			String usuariCodi) {
+		return pluginHelper.dadesUsuariConsultarAmbCodi(
+				usuariCodi);
 	}
 
 	@Cacheable(value = "unitatsOrganitzatives")
@@ -287,7 +299,7 @@ public class CacheHelper {
 
 	private ValidacioErrorDto crearValidacioError(
 			MetaDadaEntity metaDada,
-			MultiplicitatEnum multiplicitat) {
+			MultiplicitatEnumDto multiplicitat) {
 		return new ValidacioErrorDto(
 				conversioTipusHelper.convertir(
 						metaDada,
@@ -296,7 +308,7 @@ public class CacheHelper {
 	}
 	private ValidacioErrorDto crearValidacioError(
 			MetaDocumentEntity metaDocument,
-			MultiplicitatEnum multiplicitat) {
+			MultiplicitatEnumDto multiplicitat) {
 		return new ValidacioErrorDto(
 				conversioTipusHelper.convertir(
 						metaDocument,

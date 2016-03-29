@@ -26,7 +26,7 @@ import es.caib.ripea.core.api.dto.IntegracioDto;
 @Component
 public class IntegracioHelper {
 
-	public static final int DEFAULT_MAX_ACCIONS = 10;
+	public static final int DEFAULT_MAX_ACCIONS = 20;
 
 	public static final String INTCODI_USUARIS = "USUARIS";
 	public static final String INTCODI_UNITATS = "UNITATS";
@@ -174,9 +174,11 @@ public class IntegracioHelper {
 		LinkedList<IntegracioAccioDto> accions = getLlistaAccions(integracioCodi);
 		int max = getMaxAccions(integracioCodi);
 		while (accions.size() >= max) {
-			accions.poll();
+			accions.remove(accions.size() - 1);
 		}
-		accions.add(accio);
+		accions.add(
+				0,
+				accio);
 	}
 
 	private IntegracioDto novaIntegracio(

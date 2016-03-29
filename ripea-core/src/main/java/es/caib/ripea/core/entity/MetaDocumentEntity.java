@@ -14,6 +14,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto;
+import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
@@ -30,7 +31,7 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	private boolean globalExpedient;
 	@Enumerated(EnumType.STRING)
 	@Column(name = "global_multiplicitat")
-	private MultiplicitatEnum globalMultiplicitat;
+	private MultiplicitatEnumDto globalMultiplicitat;
 	@Column(name = "global_readonly")
 	private boolean globalReadOnly;
 	@Column(name = "firma_applet")
@@ -64,7 +65,7 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	public boolean isGlobalExpedient() {
 		return globalExpedient;
 	}
-	public MultiplicitatEnum getGlobalMultiplicitat() {
+	public MultiplicitatEnumDto getGlobalMultiplicitat() {
 		return globalMultiplicitat;
 	}
 	public boolean isGlobalReadOnly() {
@@ -111,7 +112,7 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			String nom,
 			String descripcio,
 			boolean globalExpedient,
-			MultiplicitatEnum globalMultiplicitat,
+			MultiplicitatEnumDto globalMultiplicitat,
 			boolean globalReadOnly,
 			String custodiaPolitica,
 			boolean firmaPortafirmesActiva,
@@ -176,7 +177,7 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			built.globalExpedient = globalExpedient;
 			return this;
 		}
-		public Builder globalMultiplicitat(MultiplicitatEnum globalMultiplicitat) {
+		public Builder globalMultiplicitat(MultiplicitatEnumDto globalMultiplicitat) {
 			built.globalMultiplicitat = globalMultiplicitat;
 			return this;
 		}

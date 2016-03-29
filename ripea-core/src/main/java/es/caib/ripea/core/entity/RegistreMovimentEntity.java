@@ -33,10 +33,12 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 @Entity
 @Table(	name = "ipa_registre_mov",
 		uniqueConstraints = {
-				@UniqueConstraint(columnNames = {
-						"registre_id",
-						"desti_id",
-						"data"})})
+				@UniqueConstraint(
+						name = "ipa_regmov_mult_uk",
+						columnNames = {
+								"registre_id",
+								"desti_id",
+								"data"})})
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners(RipeaAuditingEntityListener.class)
 public class RegistreMovimentEntity extends RipeaAuditable<Long> {

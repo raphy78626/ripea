@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.MetaDadaDto;
+import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.service.MetaDadaService;
@@ -22,9 +23,7 @@ import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDadaEntity;
-import es.caib.ripea.core.entity.MetaDadaTipusEnum;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
-import es.caib.ripea.core.entity.MultiplicitatEnum;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
@@ -83,10 +82,10 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 				metaDada.getCodi(),
 				metaDada.getNom(),
 				metaDada.getDescripcio(),
-				MetaDadaTipusEnum.valueOf(metaDada.getTipus().name()),
+				metaDada.getTipus(),
 				metaDada.isGlobalExpedient(),
 				metaDada.isGlobalDocument(),
-				MultiplicitatEnum.valueOf(metaDada.getGlobalMultiplicitat().name()),
+				metaDada.getGlobalMultiplicitat(),
 				metaDada.isGlobalReadOnly(),
 				entitat).build();
 		return conversioTipusHelper.convertir(
@@ -112,10 +111,10 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 				metaDada.getCodi(),
 				metaDada.getNom(),
 				metaDada.getDescripcio(),
-				MetaDadaTipusEnum.valueOf(metaDada.getTipus().name()),
+				metaDada.getTipus(),
 				metaDada.isGlobalExpedient(),
 				metaDada.isGlobalDocument(),
-				MultiplicitatEnum.valueOf(metaDada.getGlobalMultiplicitat().name()),
+				metaDada.getGlobalMultiplicitat(),
 				metaDada.isGlobalReadOnly(),
 				entitat);
 		return conversioTipusHelper.convertir(
@@ -269,7 +268,7 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 			boolean afegir = true;
 			for (DadaEntity dada: dades) {
 				if (dada.getMetaDada().equals(metaNodeMetaDada.getMetaDada())) {
-					if (metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnum.M_0_1) || metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnum.M_1))
+					if (metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_1))
 						afegir = false;
 					break;
 				}
@@ -292,7 +291,7 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 				boolean afegir = true;
 				for (DadaEntity dada: dades) {
 					if (dada.getMetaDada().equals(metaDada)) {
-						if (metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnum.M_0_1) || metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnum.M_1))
+						if (metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_1))
 							afegir = false;
 						break;
 					}

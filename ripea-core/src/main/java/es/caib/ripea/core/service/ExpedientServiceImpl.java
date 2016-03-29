@@ -19,12 +19,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.exception.NomInvalidException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.PermissionDeniedException;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -32,14 +33,12 @@ import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
-import es.caib.ripea.core.entity.CarpetaTipusEnum;
 import es.caib.ripea.core.entity.ContenidorEntity;
 import es.caib.ripea.core.entity.ContenidorLogEntity;
 import es.caib.ripea.core.entity.ContenidorMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientSequenciaEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
@@ -175,7 +174,10 @@ public class ExpedientServiceImpl implements ExpedientService {
 				true);
 		// Comprova que el nom sigui vàlid
 		if (!contenidorHelper.isNomValid(nom)) {
-			throw new NomInvalidException();
+			throw new ValidationException(
+					"<creacio>",
+					ExpedientEntity.class,
+					"El nom de l'expedient no és vàlid (no pot començar amb \".\")");
 		}
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
@@ -215,9 +217,9 @@ public class ExpedientServiceImpl implements ExpedientService {
 		}
 		// Lliga l'anotació de registre al nou contenidor
 		if (registreId != null) {
-			RegistreEntity registre = comprovarRegistre(
-					entitat,
-					registreId);
+			RegistreEntity registre = entityComprovarHelper.comprovarRegistre(
+					registreId,
+					null);
 			bustiaHelper.evictElementsPendentsBustiaPerRegistre(
 					entitat,
 					registre);
@@ -246,14 +248,14 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Crear carpeta de nouvinguts
 		CarpetaEntity nouvinguts = CarpetaEntity.getBuilder(
 				CarpetaServiceImpl.CARPETA_NOUVINGUTS_NOM,
-				CarpetaTipusEnum.NOUVINGUT,
+				CarpetaTipusEnumDto.NOUVINGUT,
 				expedient,
 				entitat).build();
 		carpetaRepository.save(nouvinguts);
 		// Registra al log la creació de l'expedient
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.CREACIO,
+				LogTipusEnumDto.CREACIO,
 				null,
 				null,
 				true,
@@ -318,7 +320,10 @@ public class ExpedientServiceImpl implements ExpedientService {
 		}
 		// Comprova que el nom sigui vàlid
 		if (!contenidorHelper.isNomValid(nom)) {
-			throw new NomInvalidException();
+			throw new ValidationException(
+					id,
+					ExpedientEntity.class,
+					"El nom de l'expedient no és vàlid (no pot començar amb \".\")");
 		}
 		// Modifica l'expedient
 		expedient.update(
@@ -328,7 +333,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log la modificació de l'expedient
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.MODIFICACIO,
+				LogTipusEnumDto.MODIFICACIO,
 				null,
 				null,
 				false,
@@ -388,7 +393,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'eliminació de l'expedient
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.ELIMINACIO,
+				LogTipusEnumDto.ELIMINACIO,
 				null,
 				null,
 				true,
@@ -503,7 +508,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				new Sort("createdDate"));
 		for (ContenidorEntity fill: fills) {
 			// Si es la carpeta de nouvinguts
-			if (fill instanceof CarpetaEntity && CarpetaTipusEnum.NOUVINGUT.equals(((CarpetaEntity)fill).getTipus())) {
+			if (fill instanceof CarpetaEntity && CarpetaTipusEnumDto.NOUVINGUT.equals(((CarpetaEntity)fill).getTipus())) {
 				ContenidorDto fillDto = contenidorHelper.toContenidorDto(
 						fill,
 						true,
@@ -580,7 +585,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'apropiació de l'expedient
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.RESERVA,
+				LogTipusEnumDto.RESERVA,
 				null,
 				null,
 				false,
@@ -642,7 +647,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'apropiacio de l'expedient
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.RESERVA,
+				LogTipusEnumDto.RESERVA,
 				null,
 				null,
 				false,
@@ -679,7 +684,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'alliberació de l'expedient
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.ALLIBERACIO,
+				LogTipusEnumDto.ALLIBERACIO,
 				null,
 				null,
 				false,
@@ -712,7 +717,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'alliberació de l'expedient
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.ALLIBERACIO,
+				LogTipusEnumDto.ALLIBERACIO,
 				null,
 				null,
 				false,
@@ -757,7 +762,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		expedient.updateFinalitzar(motiu);
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.FINALITZACIO,
+				LogTipusEnumDto.FINALITZACIO,
 				null,
 				null,
 				false,
@@ -790,7 +795,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'acumulació
 		ContenidorLogEntity contenidorLog = contenidorLogHelper.log(
 				expedientDesti,
-				LogTipusEnum.ACUMULACIO,
+				LogTipusEnumDto.ACUMULACIO,
 				null,
 				null,
 				false,
@@ -803,7 +808,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 			// Registra al log el moviment del node
 			contenidorLogHelper.log(
 					contenidor,
-					LogTipusEnum.MOVIMENT,
+					LogTipusEnumDto.MOVIMENT,
 					contenidorLog,
 					contenidorMoviment,
 					true,
@@ -1037,27 +1042,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 					ExpedientEntity.class);
 		}
 		return expedient;
-	}
-
-	private RegistreEntity comprovarRegistre(
-			EntitatEntity entitat,
-			Long id) {
-		RegistreEntity registre = registreRepository.findOne(id);
-		if (registre == null) {
-			logger.error("No s'ha trobat l'anotació de registre (id=" + id + ")");
-			throw new NotFoundException(
-					id,
-					RegistreEntity.class);
-		}
-		if (!entitat.getId().equals(registre.getEntitat().getId())) {
-			logger.error("L'entitat especificada no coincideix amb l'entitat de l'anotació de registre ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + registre.getEntitat().getId() + ")");
-			throw new NotFoundException(
-					id,
-					RegistreEntity.class);
-		}
-		return registre;
 	}
 
 	private CarpetaEntity findCarpetaNouvinguts(ExpedientEntity expedient) {

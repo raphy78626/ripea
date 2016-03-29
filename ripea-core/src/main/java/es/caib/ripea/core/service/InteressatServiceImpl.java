@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
+import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -23,8 +25,6 @@ import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatCiutadaEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
-import es.caib.ripea.core.entity.LogObjecteTipusEnum;
-import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
@@ -124,12 +124,12 @@ public class InteressatServiceImpl implements InteressatService {
 		// Registra al log la creació de l'interessat
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.MODIFICACIO,
+				LogTipusEnumDto.MODIFICACIO,
 				null,
 				null,
 				interessatEntity,
-				LogObjecteTipusEnum.INTERESSAT,
-				LogTipusEnum.CREACIO,
+				LogObjecteTipusEnumDto.INTERESSAT,
+				LogTipusEnumDto.CREACIO,
 				null,
 				null,
 				false,
@@ -188,12 +188,12 @@ public class InteressatServiceImpl implements InteressatService {
 		// Registra al log la creació de l'interessat
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnum.MODIFICACIO,
+				LogTipusEnumDto.MODIFICACIO,
 				null,
 				null,
 				interessat,
-				LogObjecteTipusEnum.INTERESSAT,
-				LogTipusEnum.CREACIO,
+				LogObjecteTipusEnumDto.INTERESSAT,
+				LogTipusEnumDto.CREACIO,
 				null,
 				null,
 				false,
@@ -253,12 +253,12 @@ public class InteressatServiceImpl implements InteressatService {
 			// Registra al log la baixa de l'interessat
 			contenidorLogHelper.log(
 					expedient,
-					LogTipusEnum.MODIFICACIO,
+					LogTipusEnumDto.MODIFICACIO,
 					null,
 					null,
 					interessat,
-					LogObjecteTipusEnum.INTERESSAT,
-					LogTipusEnum.ELIMINACIO,
+					LogObjecteTipusEnumDto.INTERESSAT,
+					LogTipusEnumDto.ELIMINACIO,
 					null,
 					null,
 					false,

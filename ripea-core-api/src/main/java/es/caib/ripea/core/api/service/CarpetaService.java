@@ -7,8 +7,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.api.exception.NomInvalidException;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.ValidationException;
 
 /**
  * Declaració dels mètodes per a gestionar contenidors.
@@ -31,15 +31,15 @@ public interface CarpetaService {
 	 * @return La carpeta creada.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws NomInvalidException
+	 * @throws ValidationException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public CarpetaDto create(
 			Long entitatId,
 			Long contenidorId,
 			String nom,
-			CarpetaTipusEnumDto tipus) throws NotFoundException, NomInvalidException;
+			CarpetaTipusEnumDto tipus) throws NotFoundException, ValidationException;
 
 	/**
 	 * Modifica una carpeta.
@@ -55,15 +55,15 @@ public interface CarpetaService {
 	 * @return La carpeta modificada.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws NomInvalidException
+	 * @throws ValidationException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public CarpetaDto update(
 			Long entitatId,
 			Long id,
 			String nom,
-			CarpetaTipusEnumDto tipus) throws NotFoundException, NomInvalidException;
+			CarpetaTipusEnumDto tipus) throws NotFoundException, ValidationException;
 
 	/**
 	 * Esborra una carpeta.
@@ -76,7 +76,7 @@ public interface CarpetaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public CarpetaDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -92,7 +92,7 @@ public interface CarpetaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public CarpetaDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;

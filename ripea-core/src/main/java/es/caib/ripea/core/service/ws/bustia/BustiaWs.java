@@ -19,10 +19,10 @@ import javax.jws.WebService;
 		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
 public interface BustiaWs {
 
-	public enum BustiaEnviamentTipus {
+	public enum BustiaContingutTipus {
 		EXPEDIENT,
 		DOCUMENT,
-		REGISTRE
+		REGISTRE_ENTRADA
 	}
 
 	/**
@@ -31,12 +31,10 @@ public interface BustiaWs {
 	 * @param anotacio Dades de l'anotació.
 	 */
 	//@PreAuthorize("hasRole('ROLE_BSTWS')")
-	public void enviarUnitatAdministrativa(
-			@WebParam(name="entitatId") Long entitatId,
-			@WebParam(name="unitatCodi") String unitatCodi,
-			@WebParam(name="tipus") BustiaEnviamentTipus tipus,
-			@WebParam(name="expedientRef") String expedientRef,
-			@WebParam(name="documentRef") String documentRef,
-			@WebParam(name="anotacio") AnotacionRegistro anotacio);
+	public void enviarContingut(
+			@WebParam(name="entitat") String entitat,
+			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
+			@WebParam(name="tipus") BustiaContingutTipus tipus,
+			@WebParam(name="referencia") String referencia);
 
 }

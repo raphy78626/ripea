@@ -12,15 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.api.exception.NomInvalidException;
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.CarpetaService;
 import es.caib.ripea.core.entity.CarpetaEntity;
-import es.caib.ripea.core.entity.CarpetaTipusEnum;
 import es.caib.ripea.core.entity.ContenidorEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
@@ -97,7 +95,10 @@ public class CarpetaServiceImpl implements CarpetaService {
 				true);
 		// Comprova que el nom sigui vàlid
 		if (!contenidorHelper.isNomValid(nom)) {
-			throw new NomInvalidException();
+			throw new ValidationException(
+					"<creacio>",
+					CarpetaEntity.class,
+					"El nom de la carpeta no és vàlid (no pot començar amb \".\")");
 		}
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
@@ -112,14 +113,14 @@ public class CarpetaServiceImpl implements CarpetaService {
 		}
 		CarpetaEntity carpeta = CarpetaEntity.getBuilder(
 				nom,
-				CarpetaTipusEnum.valueOf(tipus.name()),
+				tipus,
 				contenidor,
 				entitat).build();
 		carpeta = carpetaRepository.save(carpeta);
 		// Registra al log la creació de la carpeta
 		contenidorLogHelper.log(
 				carpeta,
-				LogTipusEnum.CREACIO,
+				LogTipusEnumDto.CREACIO,
 				null,
 				null,
 				true,
@@ -147,7 +148,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 		CarpetaEntity carpeta = entityComprovarHelper.comprovarCarpeta(
 				entitat,
 				id);
-		if (CarpetaTipusEnum.NOUVINGUT.equals(carpeta.getTipus())) {
+		if (CarpetaTipusEnumDto.NOUVINGUT.equals(carpeta.getTipus())) {
 			logger.error("No es pot modificar la carpeta de nouvinguts (id=" + id + ")");
 			throw new ValidationException(
 					id,
@@ -167,7 +168,10 @@ public class CarpetaServiceImpl implements CarpetaService {
 				true);
 		// Comprova que el nom sigui vàlid
 		if (!contenidorHelper.isNomValid(nom)) {
-			throw new NomInvalidException();
+			throw new ValidationException(
+					id,
+					CarpetaEntity.class,
+					"El nom de la carpeta no és vàlid (no pot començar amb \".\")");
 		}
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
@@ -182,11 +186,11 @@ public class CarpetaServiceImpl implements CarpetaService {
 		}
 		carpeta.update(
 				nom,
-				CarpetaTipusEnum.valueOf(tipus.name()));
+				tipus);
 		// Registra al log la modificació de la carpeta
 		contenidorLogHelper.log(
 				carpeta,
-				LogTipusEnum.MODIFICACIO,
+				LogTipusEnumDto.MODIFICACIO,
 				null,
 				null,
 				false,
@@ -210,7 +214,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 		CarpetaEntity carpeta = entityComprovarHelper.comprovarCarpeta(
 				entitat,
 				id);
-		if (CarpetaTipusEnum.NOUVINGUT.equals(carpeta.getTipus())) {
+		if (CarpetaTipusEnumDto.NOUVINGUT.equals(carpeta.getTipus())) {
 			logger.error("No es pot esborrar la carpeta de nouvinguts (id=" + id + ")");
 			throw new ValidationException(
 					id,
@@ -243,7 +247,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 		// Registra al log l'eliminació de la carpeta
 		contenidorLogHelper.log(
 				carpeta,
-				LogTipusEnum.ELIMINACIO,
+				LogTipusEnumDto.ELIMINACIO,
 				null,
 				null,
 				true,

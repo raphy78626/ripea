@@ -24,6 +24,7 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
@@ -33,7 +34,6 @@ import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContenidorEntity;
 import es.caib.ripea.core.entity.ContenidorMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.LogTipusEnum;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.RegistreMovimentEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
@@ -498,8 +498,7 @@ public class BustiaServiceImpl implements BustiaService {
 				id,
 				true);
 		return conversioTipusHelper.convertir(
-				registreRepository.findByEntitatAndContenidorAndId(
-						entitat,
+				registreRepository.findByContenidorAndId(
 						bustia,
 						registreId),
 				RegistreAnotacioDto.class);
@@ -655,7 +654,7 @@ public class BustiaServiceImpl implements BustiaService {
 		// Registra al log l'enviament del contenidor
 		contenidorLogHelper.log(
 				contenidor,
-				LogTipusEnum.ELIMINACIO,
+				LogTipusEnumDto.ELIMINACIO,
 				null,
 				contenidorMoviment,
 				true,
@@ -695,7 +694,6 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaDestiId,
 				false);
 		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(
-				entitat,
 				registreId,
 				bustiaOrigen);
 		// Fa l'enviament

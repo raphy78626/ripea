@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.IntegracioAccioDto;
 import es.caib.ripea.core.api.dto.IntegracioDto;
-import es.caib.ripea.core.api.service.IntegracioService;
+import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.RequestSessionHelper;
@@ -35,7 +35,7 @@ public class IntegracioController extends BaseUserController {
 	private static final String SESSION_ATTRIBUTE_FILTRE = "IntegracioController.session.filtre";
 
 	@Autowired
-	private IntegracioService integracioService;
+	private AplicacioService aplicacioService;
 
 
 
@@ -50,7 +50,7 @@ public class IntegracioController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable String codi,
 			Model model) {
-		List<IntegracioDto> integracions = integracioService.findAll();
+		List<IntegracioDto> integracions = aplicacioService.integracioFindAll();
 		model.addAttribute(
 				"integracions",
 				integracions);
@@ -101,8 +101,7 @@ public class IntegracioController extends BaseUserController {
 				SESSION_ATTRIBUTE_FILTRE);
 		List<IntegracioAccioDto> accions = null;
 		if (codi != null) {
-			accions = integracioService.findDarreresAccionsByIntegracio(
-					codi);
+			accions = aplicacioService.integracioFindDarreresAccionsByCodi(codi);
 		} else {
 			accions = new ArrayList<IntegracioAccioDto>();
 		}
@@ -118,7 +117,7 @@ public class IntegracioController extends BaseUserController {
 			@PathVariable String codi,
 			@PathVariable int index,
 			Model model) {
-		List<IntegracioAccioDto> accions = integracioService.findDarreresAccionsByIntegracio(codi);
+		List<IntegracioAccioDto> accions = aplicacioService.integracioFindDarreresAccionsByCodi(codi);
 		if (index < accions.size()) {
 			model.addAttribute(
 					"integracio",

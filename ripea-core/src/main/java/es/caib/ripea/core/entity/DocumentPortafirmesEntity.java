@@ -22,6 +22,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 
 import es.caib.ripea.core.api.dto.PortafirmesEstatEnumDto;
+import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
@@ -51,7 +52,7 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 	protected String motiu;
 	@Column(name = "prioritat", nullable = false)
 	@Enumerated(EnumType.STRING)
-	protected DocumentPortafirmesPrioritatEnum prioritat;
+	protected PortafirmesPrioritatEnumDto prioritat;
 	@Temporal(TemporalType.DATE)
 	@Column(name = "data_caducitat")
 	protected Date dataCaducitat;
@@ -81,7 +82,7 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 	public String getMotiu() {
 		return motiu;
 	}
-	public DocumentPortafirmesPrioritatEnum getPrioritat() {
+	public PortafirmesPrioritatEnumDto getPrioritat() {
 		return prioritat;
 	}
 	public Date getDataCaducitat() {
@@ -139,7 +140,7 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 			DocumentEntity document,
 			int versio,
 			String motiu,
-			DocumentPortafirmesPrioritatEnum prioritat,
+			PortafirmesPrioritatEnumDto prioritat,
 			Date dataCaducitat,
 			long portafirmesId,
 			PortafirmesEstatEnumDto portafirmesEstat) {
@@ -164,7 +165,7 @@ public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 				DocumentEntity document,
 				int versio,
 				String motiu,
-				DocumentPortafirmesPrioritatEnum prioritat,
+				PortafirmesPrioritatEnumDto prioritat,
 				Date dataCaducitat,
 				long portafirmesId,
 				PortafirmesEstatEnumDto portafirmesEstat) {

@@ -33,7 +33,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public BustiaDto create(
 			Long entitatId,
 			BustiaDto bustia) throws NotFoundException;
@@ -49,7 +49,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public BustiaDto update(
 			Long entitatId,
 			BustiaDto bustia) throws NotFoundException;
@@ -67,7 +67,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public BustiaDto updateActiva(
 			Long entitatId,
 			Long id,
@@ -84,7 +84,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public BustiaDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -99,7 +99,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public BustiaDto marcarPerDefecte(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -115,7 +115,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public BustiaDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -131,7 +131,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<BustiaDto> findByUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
@@ -147,7 +147,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<BustiaDto> findByUnitatCodiUsuari(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
@@ -161,7 +161,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<BustiaDto> findByEntitatAndActivaTrue(
 			Long entitatId) throws NotFoundException;
 
@@ -174,7 +174,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<BustiaDto> findPermesesPerUsuari(
 			Long entitatId) throws NotFoundException;
 
@@ -189,7 +189,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<ContenidorDto> findContingutPendent(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -205,7 +205,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<RegistreAnotacioDto> findRegistrePendent(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -223,7 +223,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public RegistreAnotacioDto findOneRegistrePendent(
 			Long entitatId,
 			Long id,
@@ -239,7 +239,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public long countElementsPendentsBustiesAll(
 			Long entitatId) throws NotFoundException;
 
@@ -252,7 +252,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void refreshCountElementsPendentsBustiesAll(
 			Long entitatId) throws NotFoundException;
 
@@ -268,7 +268,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void updatePermis(
 			Long entitatId,
 			Long id,
@@ -286,7 +286,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void deletePermis(
 			Long entitatId,
 			Long id,
@@ -306,7 +306,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBustiesPermeses,
@@ -328,7 +328,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void forwardContenidor(
 			Long entitatId,
 			Long id,
@@ -352,7 +352,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void forwardRegistre(
 			Long entitatId,
 			Long id,

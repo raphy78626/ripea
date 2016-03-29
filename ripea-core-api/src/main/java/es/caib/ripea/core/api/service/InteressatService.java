@@ -32,7 +32,7 @@ public interface InteressatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public InteressatDto create(
 			Long entitatId,
 			Long expedientId,
@@ -50,7 +50,7 @@ public interface InteressatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void addToExpedient(
 			Long entitatId,
 			Long expedientId,
@@ -68,7 +68,7 @@ public interface InteressatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public void removeFromExpedient(
 			Long entitatId,
 			Long expedientId,
@@ -85,7 +85,7 @@ public interface InteressatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public InteressatDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -101,7 +101,7 @@ public interface InteressatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<InteressatDto> findByExpedient(
 			Long entitatId,
 			Long expedientId) throws NotFoundException;
@@ -121,7 +121,7 @@ public interface InteressatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<InteressatCiutadaDto> findByFiltreCiutada(
 			Long entitatId,
 			String nom,
@@ -141,7 +141,7 @@ public interface InteressatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			Long entitatId,
 			String nom,

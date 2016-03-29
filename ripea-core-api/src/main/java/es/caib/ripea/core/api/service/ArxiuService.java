@@ -31,7 +31,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ArxiuDto create(
 			Long entitatId,
 			ArxiuDto arxiu) throws NotFoundException;
@@ -47,7 +47,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ArxiuDto update(
 			Long entitatId,
 			ArxiuDto arxiu) throws NotFoundException;
@@ -65,7 +65,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ArxiuDto updateActiu(
 			Long entitatId,
 			Long id,
@@ -82,7 +82,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ArxiuDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -98,7 +98,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public ArxiuDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -114,7 +114,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<ArxiuDto> findByUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
@@ -130,7 +130,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<ArxiuDto> findByUnitatCodiUsuari(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
@@ -145,7 +145,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<ArxiuDto> findPermesosPerUsuari(
 			Long entitatId) throws NotFoundException;
 
@@ -161,7 +161,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void updatePermis(
 			Long entitatId,
 			Long id,
@@ -179,7 +179,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public void deletePermis(
 			Long entitatId,
 			Long id,
@@ -195,7 +195,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
 			Long entitatId) throws NotFoundException;
 
@@ -209,7 +209,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesUser(
 			Long entitatId) throws NotFoundException;
 

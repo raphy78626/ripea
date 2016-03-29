@@ -31,7 +31,6 @@ import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientMetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
-import es.caib.ripea.core.entity.MultiplicitatEnum;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.MetaNodeHelper;
@@ -304,7 +303,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaDadaId);
 		metaExpedient.metaDadaAdd(
 				metaDada,
-				MultiplicitatEnum.valueOf(multiplicitat.name()),
+				multiplicitat,
 				readOnly);
 	}
 
@@ -335,7 +334,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaExpedient,
 				metaNodeMetaDadaId);
 		metaNodeMetaDada.update(
-				MultiplicitatEnum.valueOf(multiplicitat.name()),
+				multiplicitat,
 				readOnly);
 	}
 
@@ -450,7 +449,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		metaExpedient.metaDocumentAdd(
 				metaDocument,
-				MultiplicitatEnum.valueOf(multiplicitat.toString()),
+				multiplicitat,
 				readOnly);
 	}
 
@@ -481,7 +480,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaExpedient,
 				metaExpedientMetaDocumentId);
 		metaExpedientMetaDocument.update(
-				MultiplicitatEnum.valueOf(multiplicitat.name()),
+				multiplicitat,
 				readOnly);
 	}
 

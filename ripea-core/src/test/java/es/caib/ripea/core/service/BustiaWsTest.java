@@ -5,10 +5,8 @@ package es.caib.ripea.core.service;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -24,59 +22,44 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import es.caib.ripea.core.service.ws.registre.AnotacionRegistro;
-import es.caib.ripea.core.service.ws.registre.Asunto;
-import es.caib.ripea.core.service.ws.registre.Control;
-import es.caib.ripea.core.service.ws.registre.Origen;
-import es.caib.ripea.core.service.ws.registre.Registre;
+import es.caib.ripea.core.service.ws.bustia.BustiaWs;
+import es.caib.ripea.core.service.ws.bustia.BustiaWs.BustiaContingutTipus;
 
 /**
  * Classe de proves pel registre.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class RegistreWsTest {
+public class BustiaWsTest {
 
-	private static final String ENDPOINT_ADDRESS = "http://10.35.3.243:8380/ripea/ws/registre";
+	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/bustia";
 	private static final String USERNAME = "tomeud";
 	private static final String PASSWORD = "tomeud";
 
 	public static void main(String[] args) {
 		try {
-			boolean processat = new RegistreWsTest().provaAvisAnotacio();
-			System.out.println(">>> Processat: " + processat);
+			new BustiaWsTest().provaEnviamentContingut();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	private boolean provaAvisAnotacio() throws Exception {
-		AnotacionRegistro anotacio = new AnotacionRegistro();
-		anotacio.setAccion("0");
-		Origen origen = new Origen();
-		origen.setCodigoEntidadRegistralOrigen("LIM000001");
-		origen.setNumeroRegistroEntrada("" + System.currentTimeMillis() + "/2014");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-		origen.setFechaHoraEntrada(sdf.format(new Date()));
-		anotacio.setOrigen(origen);
-		Asunto asunto = new Asunto();
-		asunto.setResumen("Prova d'anotació " + System.currentTimeMillis());
-		anotacio.setAsunto(asunto);
-		Control control = new Control();
-		control.setTipoRegistro("0");
-		control.setIndicadorPrueba("1");
-		anotacio.setControl(control);
-		return getRegistreService().avisAnotacio(anotacio);
+	private void provaEnviamentContingut() throws Exception {
+		getBustiaService().enviarContingut(
+				"ENTITAT_CODI",
+				"UNITAT_ADM_CODI",
+				BustiaContingutTipus.REGISTRE_ENTRADA,
+				"REGISTRE_REF");
 	}
 
-	private Registre getRegistreService() throws Exception {
+	private BustiaWs getBustiaService() throws Exception {
 		URL url = new URL(ENDPOINT_ADDRESS + "?wsdl");
 		QName qname = new QName(
-				"http://www.caib.es/ripea/ws/registre",
-				"RegistreService");
+				"http://www.caib.es/ripea/ws/bustia",
+				"BustiaService");
 		Service service = Service.create(url, qname);
-		Registre registre = service.getPort(Registre.class);
-		BindingProvider bp = (BindingProvider)registre;
+		BustiaWs bustiaWs = service.getPort(BustiaWs.class);
+		BindingProvider bp = (BindingProvider)bustiaWs;
 		@SuppressWarnings("rawtypes")
 		List<Handler> handlerChain = new ArrayList<Handler>();
 		handlerChain.add(new LogMessageHandler());
@@ -87,7 +70,7 @@ public class RegistreWsTest {
 		bp.getRequestContext().put(
 				BindingProvider.PASSWORD_PROPERTY,
 				PASSWORD);
-		return registre;
+		return bustiaWs;
 	}
 
 	private class LogMessageHandler implements SOAPHandler<SOAPMessageContext> {

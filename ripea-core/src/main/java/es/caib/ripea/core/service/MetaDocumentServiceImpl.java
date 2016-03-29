@@ -34,7 +34,6 @@ import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientMetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
-import es.caib.ripea.core.entity.MultiplicitatEnum;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
@@ -114,7 +113,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				metaDocument.getNom()).
 				descripcio(metaDocument.getDescripcio()).
 				globalExpedient(metaDocument.isGlobalExpedient()).
-				globalMultiplicitat(MultiplicitatEnum.valueOf(metaDocument.getGlobalMultiplicitat().name())).
+				globalMultiplicitat(metaDocument.getGlobalMultiplicitat()).
 				globalReadOnly(metaDocument.isGlobalReadOnly()).
 				custodiaPolitica(metaDocument.getCustodiaPolitica()).
 				portafirmesDocumentTipus(metaDocument.getPortafirmesDocumentTipus()).
@@ -159,7 +158,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				metaDocument.getNom(),
 				metaDocument.getDescripcio(),
 				metaDocument.isGlobalExpedient(),
-				MultiplicitatEnum.valueOf(metaDocument.getGlobalMultiplicitat().name()),
+				metaDocument.getGlobalMultiplicitat(),
 				metaDocument.isGlobalReadOnly(),
 				metaDocument.getCustodiaPolitica(),
 				metaDocument.isFirmaPortafirmesActiva(),
@@ -396,7 +395,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				metaDadaId);
 		metaDocument.metaDadaAdd(
 				metaDada,
-				MultiplicitatEnum.valueOf(multiplicitat.name()),
+				multiplicitat,
 				readOnly);
 	}
 
@@ -428,7 +427,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				metaDocument,
 				metaNodeMetaDadaId);
 		metaNodeMetaDada.update(
-				MultiplicitatEnum.valueOf(multiplicitat.name()),
+				multiplicitat,
 				readOnly);
 	}
 
@@ -680,7 +679,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				boolean afegir = true;
 				for (DocumentEntity document: documents) {
 					if (document.getMetaNode() != null && document.getMetaNode().equals(metaExpedientMetaDocument.getMetaDocument())) {
-						if (metaExpedientMetaDocument.getMultiplicitat().equals(MultiplicitatEnum.M_0_1) || metaExpedientMetaDocument.getMultiplicitat().equals(MultiplicitatEnum.M_1))
+						if (metaExpedientMetaDocument.getMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaExpedientMetaDocument.getMultiplicitat().equals(MultiplicitatEnumDto.M_1))
 							afegir = false;
 						break;
 					}

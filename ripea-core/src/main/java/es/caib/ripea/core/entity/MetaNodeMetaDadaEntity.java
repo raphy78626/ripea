@@ -16,6 +16,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.ForeignKey;
 
+import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
@@ -41,7 +42,7 @@ public class MetaNodeMetaDadaEntity extends RipeaAuditable<Long> {
 	private MetaDadaEntity metaDada;
 	@Column(name = "multiplicitat", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private MultiplicitatEnum multiplicitat;
+	private MultiplicitatEnumDto multiplicitat;
 	@Column(name = "readonly")
 	private boolean readOnly;
 	private int ordre;
@@ -54,7 +55,7 @@ public class MetaNodeMetaDadaEntity extends RipeaAuditable<Long> {
 	public MetaDadaEntity getMetaDada() {
 		return metaDada;
 	}
-	public MultiplicitatEnum getMultiplicitat() {
+	public MultiplicitatEnumDto getMultiplicitat() {
 		return multiplicitat;
 	}
 	public boolean isReadOnly() {
@@ -65,7 +66,7 @@ public class MetaNodeMetaDadaEntity extends RipeaAuditable<Long> {
 	}
 
 	public void update(
-			MultiplicitatEnum multiplicitat,
+			MultiplicitatEnumDto multiplicitat,
 			boolean readOnly) {
 		this.multiplicitat = multiplicitat;
 		this.readOnly = readOnly;
@@ -92,7 +93,7 @@ public class MetaNodeMetaDadaEntity extends RipeaAuditable<Long> {
 	public static Builder getBuilder(
 			MetaNodeEntity metaNode,
 			MetaDadaEntity metaDada,
-			MultiplicitatEnum multiplicitat,
+			MultiplicitatEnumDto multiplicitat,
 			boolean readOnly,
 			int ordre) {
 		return new Builder(
@@ -113,7 +114,7 @@ public class MetaNodeMetaDadaEntity extends RipeaAuditable<Long> {
 		Builder(
 				MetaNodeEntity metaNode,
 				MetaDadaEntity metaDada,
-				MultiplicitatEnum multiplicitat,
+				MultiplicitatEnumDto multiplicitat,
 				boolean readOnly,
 				int ordre) {
 			built = new MetaNodeMetaDadaEntity();

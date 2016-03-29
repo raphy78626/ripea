@@ -3,38 +3,30 @@
  */
 package es.caib.ripea.core.service.ws.bustia;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.jws.WebService;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import es.caib.ripea.core.api.dto.RegistreAccioEnumDto;
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
-import es.caib.ripea.core.api.dto.RegistreDocumentDto;
+import es.caib.ripea.core.api.dto.RegistreAnnexFirmaModeEnumDto;
+import es.caib.ripea.core.api.dto.RegistreAnnexOrigenEnumDto;
 import es.caib.ripea.core.api.dto.RegistreDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreDocumentValidesaEnumDto;
-import es.caib.ripea.core.api.dto.RegistreDocumentacioFisicaTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreInteressatCanalEnumDto;
 import es.caib.ripea.core.api.dto.RegistreInteressatDocumentTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreInteressatDto;
+import es.caib.ripea.core.api.dto.RegistreInteressatTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreTransportTipusEnumDto;
-import es.caib.ripea.core.api.service.RegistreService;
-import es.caib.ripea.core.service.ws.bustia.Asunto;
-import es.caib.ripea.core.service.ws.bustia.Control;
-import es.caib.ripea.core.service.ws.bustia.Origen;
-import es.caib.ripea.core.service.ws.bustia.Anexo;
-import es.caib.ripea.core.service.ws.bustia.AnotacionRegistro;
-import es.caib.ripea.core.service.ws.bustia.Interesado;
+import es.caib.ripea.core.entity.RegistreAnnexEntity;
+import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.entity.RegistreInteressatEntity;
+import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.repository.RegistreRepository;
+import es.caib.ripea.plugin.registre.RegistreAnnex;
+import es.caib.ripea.plugin.registre.RegistreAnotacio;
+import es.caib.ripea.plugin.registre.RegistreInteressat;
 
 /**
  * Implementació dels mètodes per al servei de bústia de RIPEA.
@@ -51,264 +43,163 @@ import es.caib.ripea.core.service.ws.bustia.Interesado;
 public class BustiaWsImpl implements BustiaWs {
 
 	@Resource
-	private RegistreService registreService;
+	private RegistreRepository registreRepository;
+
+	@Resource
+	private PluginHelper pluginHelper;
 
 
 
 	@Override
-	public void enviarUnitatAdministrativa(
-			Long entitatId,
-			String unitatCodi,
-			BustiaEnviamentTipus tipus,
-			String expedientRef,
-			String documentRef,
-			AnotacionRegistro anotacio) {
+	public void enviarContingut(
+			String entitat,
+			String unitatAdministrativa,
+			BustiaContingutTipus tipus,
+			String referencia) {
 		logger.debug("Processant enviament al servei web de bústia (" +
-				"unitatCodi:" + unitatCodi + ", " +
+				"unitatCodi:" + entitat + ", " +
+				"unitatAdministrativa:" + unitatAdministrativa + ", " +
 				"tipus:" + tipus + ", " +
-				"expedientRef:" + expedientRef + ", " +
-				"documentRef:" + documentRef + ", " +
-				"anotacio:" + anotacio + ")");
-		if (BustiaEnviamentTipus.EXPEDIENT.equals(tipus)) {
+				"referencia:" + referencia + ")");
+		if (BustiaContingutTipus.EXPEDIENT.equals(tipus)) {
 			throw new BustiaException(
 					"Els enviaments de tipus EXPEDIENT encara no estan suportats");
-		} else if (BustiaEnviamentTipus.DOCUMENT.equals(tipus)) {
+		} else if (BustiaContingutTipus.DOCUMENT.equals(tipus)) {
 			throw new BustiaException(
 					"Els enviaments de tipus DOCUMENT encara no estan suportats");
-		} else if (BustiaEnviamentTipus.REGISTRE.equals(tipus)) {
-			String numRegistre = null;
-			String dataEntrada = null;
-			if (anotacio.getOrigen() != null) {
-				numRegistre = anotacio.getOrigen().getNumeroRegistroEntrada();
-				dataEntrada = anotacio.getOrigen().getFechaHoraEntrada();
-			}
-			String tipusAnotacio = null;
-			if (anotacio.getOrigen() != null)
-				tipusAnotacio = ("0".equals(anotacio.getControl().getTipoRegistro())) ? "entrada" : "sortida";
-			logger.debug("Processant avís d'anotació al servei web de bústia (" +
-					"accio:" + anotacio.getAccion() + ", " +
-					"numRegistre:" + numRegistre + ", " +
-					"dataEntrada:" + dataEntrada + ", " +
-					"tipusAnotacio:" + tipusAnotacio + ")");
-			// Comprova els camps obligatoris
-			if (anotacio.getAccion() == null) {
-				throw new BustiaException(
-						"Error al processar anotació: Falta element obligatori 'accion'");
-			}
-			if (anotacio.getControl() != null) {
-				Control control = anotacio.getControl();
-				if (control.getTipoRegistro() == null)
-					throw new BustiaException(
-							"Error al processar anotació: Falta camp obligatori 'control.tipoRegistro'");
-			} else {
-				throw new BustiaException(
-						"Error al processar anotació: Falta element obligatori 'control'");
-			}
-			if (anotacio.getOrigen() != null) {
-				Origen origen = anotacio.getOrigen();
-				if (origen.getCodigoEntidadRegistralOrigen() == null)
-					throw new BustiaException(
-							"Error al processar anotació: Falta camp obligatori 'origen.codigoEntidadRegistralOrigen'");
-				if (origen.getNumeroRegistroEntrada() == null)
-					throw new BustiaException(
-							"Error al processar anotació: Falta camp obligatori 'origen.numeroRegistroEntrada'");
-				if (origen.getFechaHoraEntrada() == null)
-					throw new BustiaException(
-							"Error al processar anotació: Falta camp obligatori 'origen.fechaHoraEntrada'");
-			} else {
-				throw new BustiaException(
-						"Error al processar anotació: Falta element obligatori 'origen'");
-			}
-			if (anotacio.getAsunto() != null) {
-				Asunto asunto = anotacio.getAsunto();
-				if (asunto.getResumen() == null)
-					throw new BustiaException(
-							"Error al processar anotació: Falta camp obligatori 'asunto.resumen'");
-			} else {
-				throw new BustiaException(
-						"Error al processar anotació: Falta element obligatori 'asunto'");
-			}
-			try {
-				RegistreAnotacioDto registreAnotacioDto = toRegistreAnotacioDto(anotacio);
-				registreService.create(
-						entitatId,
-						registreAnotacioDto);
-			} catch (Exception ex) {
-				logger.error("Error al processar anotació (" +
-					"numRegistre:" + numRegistre + ", " +
-					"dataEntrada:" + dataEntrada + ", " +
-					"tipusAnotacio:" + tipusAnotacio + ")", ex);
-				throw new BustiaException(
-						"Error al processar anotació: " + ExceptionUtils.getStackTrace(ex));
-			}
+		} else if (BustiaContingutTipus.REGISTRE_ENTRADA.equals(tipus)) {
+			RegistreAnotacio anotacio = pluginHelper.registreEntradaConsultar(referencia);
+			saveRegistreEntity(anotacio);
 		}
 	}
 
 
 
-	private RegistreAnotacioDto toRegistreAnotacioDto(
-			AnotacionRegistro anotacio) throws ParseException {
-		RegistreAnotacioDto registreAnotacio = new RegistreAnotacioDto();
-		if (anotacio.getAccion() != null) {
-			String accion = anotacio.getAccion();
-			if ("0".equals(accion))
-				registreAnotacio.setAccio(RegistreAccioEnumDto.CREATE);
-			else if ("1".equals(accion))
-				registreAnotacio.setAccio(RegistreAccioEnumDto.UPDATE);
-			else if ("2".equals(accion))
-				registreAnotacio.setAccio(RegistreAccioEnumDto.DELETE);
-		}
-		if (anotacio.getOrigen() != null) {
-			Origen origen = anotacio.getOrigen();
-			registreAnotacio.setEntitatCodi(origen.getCodigoEntidadRegistralOrigen());
-			registreAnotacio.setEntitatNom(origen.getDecodificacionEntidadRegistralOrigen());
-			registreAnotacio.setNumero(origen.getNumeroRegistroEntrada());
-			DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-			registreAnotacio.setData(df.parse(origen.getFechaHoraEntrada()));
-		}
-		if (anotacio.getAsunto() != null) {
-			Asunto asunto = anotacio.getAsunto();
-			registreAnotacio.setAssumpteResum(asunto.getResumen());
-			registreAnotacio.setAssumpteCodi(asunto.getCodigoAsuntoSegunDestino());
-			registreAnotacio.setAssumpteReferencia(asunto.getReferenciaExterna());
-			registreAnotacio.setAssumpteNumExpedient(asunto.getNumeroExpediente());
-		}
-		if (anotacio.getControl() != null) {
-			Control control = anotacio.getControl();
-			if ("0".equals(control.getTipoRegistro()))
-				registreAnotacio.setTipus(RegistreTipusEnumDto.ENTRADA);
-			else if ("1".equals(control.getTipoRegistro()))
-				registreAnotacio.setTipus(RegistreTipusEnumDto.SORTIDA);
-			if ("01".equals(control.getTipoTransporteEntrada()))
-				registreAnotacio.setTransportTipus(RegistreTransportTipusEnumDto.MISSATGERIA);
-			else if ("02".equals(control.getTipoRegistro()))
-				registreAnotacio.setTransportTipus(RegistreTransportTipusEnumDto.CORREU);
-			else if ("03".equals(control.getTipoRegistro()))
-				registreAnotacio.setTransportTipus(RegistreTransportTipusEnumDto.CORREU_CERTIFICAT);
-			else if ("04".equals(control.getTipoRegistro()))
-				registreAnotacio.setTransportTipus(RegistreTransportTipusEnumDto.BUROFAX);
-			else if ("05".equals(control.getTipoRegistro()))
-				registreAnotacio.setTransportTipus(RegistreTransportTipusEnumDto.EN_PERSONA);
-			else if ("06".equals(control.getTipoRegistro()))
-				registreAnotacio.setTransportTipus(RegistreTransportTipusEnumDto.FAX);
-			else if ("07".equals(control.getTipoRegistro()))
-				registreAnotacio.setTransportTipus(RegistreTransportTipusEnumDto.ALTRES);
-			registreAnotacio.setTransportNumero(control.getNumeroTransporteEntrada());
-			registreAnotacio.setUsuariNom(control.getNombreUsuario());
-			registreAnotacio.setUsuariContacte(control.getContactoUsuario());
-			registreAnotacio.setAplicacioEmissora(control.getAplicacionVersionEmisora());
-			if ("1".equals(control.getDocumentacionFisica()))
-				registreAnotacio.setDocumentacioFisica(RegistreDocumentacioFisicaTipusEnumDto.AMB_REQUERIDA);
-			else if ("2".equals(control.getDocumentacionFisica()))
-				registreAnotacio.setDocumentacioFisica(RegistreDocumentacioFisicaTipusEnumDto.AMB_COMPLEM);
-			else if ("3".equals(control.getDocumentacionFisica()))
-				registreAnotacio.setDocumentacioFisica(RegistreDocumentacioFisicaTipusEnumDto.SENSE);
-			registreAnotacio.setObservacions(control.getObservacionesApunte());
-			if ("0".equals(control.getIndicadorPrueba()))
-				registreAnotacio.setProva(false);
-			else if ("1".equals(control.getIndicadorPrueba()))
-				registreAnotacio.setProva(true);
-		}
-		if (anotacio.getInteresados() != null) {
-			List<RegistreInteressatDto> registreInteressats = new ArrayList<RegistreInteressatDto>();
-			for (Interesado interesado: anotacio.getInteresados()) {
-				RegistreInteressatDto interessat = new RegistreInteressatDto();
-				interessat.setDocumentTipus(
-						getDocumentTipusEnum(
-								interesado.getTipoDocumentoIdentificacionInteresado()));
-				interessat.setDocumentNum(interesado.getDocumentoIdentificacionInteresado());
-				interessat.setNom(interesado.getNombreInteresado());
-				interessat.setLlinatge1(interesado.getPrimerApellidoInteresado());
-				interessat.setLlinatge2(interesado.getSegundoApellidoInteresado());
-				interessat.setRaoSocial(interesado.getRazonSocialInteresado());
-				interessat.setPais(interesado.getPaisInteresado());
-				interessat.setProvincia(interesado.getProvinciaInteresado());
-				interessat.setMunicipi(interesado.getMunicipioInteresado());
-				interessat.setAdresa(interesado.getDireccionInteresado());
-				interessat.setCodiPostal(interesado.getCodigoPostalInteresado());
-				interessat.setEmail(interesado.getCorreoElectronicoInteresado());
-				interessat.setTelefon(interesado.getTelefonoContactoInteresado());
-				interessat.setEmailHabilitat(interesado.getDireccionElectronicaHabilitadaInteresado());
-				interessat.setCanalPreferent(
-						getCanalEnum(
-								interesado.getCanalPreferenteComunicacionInteresado()));
-				interessat.setObservacions(interesado.getObservaciones());
-				interessat.setRepresentantDocumentTipus(
-						getDocumentTipusEnum(
-								interesado.getTipoDocumentoIdentificacionRepresentante()));
-				interessat.setRepresentantDocumentNum(interesado.getDocumentoIdentificacionRepresentante());
-				interessat.setRepresentantNom(interesado.getNombreRepresentante());
-				interessat.setRepresentantLlinatge1(interesado.getPrimerApellidoRepresentante());
-				interessat.setRepresentantLlinatge2(interesado.getSegundoApellidoRepresentante());
-				interessat.setRepresentantRaoSocial(interesado.getRazonSocialRepresentante());
-				interessat.setRepresentantPais(interesado.getPaisRepresentante());
-				interessat.setRepresentantProvincia(interesado.getProvinciaRepresentante());
-				interessat.setRepresentantMunicipi(interesado.getMunicipioRepresentante());
-				interessat.setRepresentantAdresa(interesado.getDireccionRepresentante());
-				interessat.setRepresentantCodiPostal(interesado.getCodigoPostalRepresentante());
-				interessat.setRepresentantEmail(interesado.getCorreoElectronicoRepresentante());
-				interessat.setRepresentantTelefon(interesado.getTelefonoContactoRepresentante());
-				interessat.setRepresentantEmailHabilitat(interesado.getDireccionElectronicaHabilitadaRepresentante());
-				interessat.setRepresentantCanalPreferent(
-						getCanalEnum(
-								interesado.getCanalPreferenteComunicacionRepresentante()));
-				registreInteressats.add(interessat);
+	private RegistreEntity saveRegistreEntity(RegistreAnotacio anotacio) {
+		RegistreEntity entity = RegistreEntity.getBuilder(
+				RegistreTipusEnumDto.ENTRADA,
+				anotacio.getNumero(),
+				anotacio.getData(),
+				anotacio.getIdentificador(),
+				anotacio.getOficina(),
+				anotacio.getLlibre(),
+				anotacio.getAssumpteTipus(),
+				anotacio.getIdioma(),
+				anotacio.getUsuariNom(),
+				anotacio.getDocumentacioFisica()).
+		extracte(anotacio.getExtracte()).
+		assumpteCodi(anotacio.getAssumpteCodi()).
+		assumpteReferencia(anotacio.getAssumpteReferencia()).
+		assumpteNumExpedient(anotacio.getAssumpteNumExpedient()).
+		transportTipus(RegistreTransportTipusEnumDto.valorAsEnum(anotacio.getTransportTipus())).
+		transportNumero(anotacio.getTransportNumero()).
+		usuariContacte(anotacio.getUsuariContacte()).
+		aplicacioCodi(anotacio.getAplicacioCodi()).
+		aplicacioVersio(anotacio.getAplicacioVersio()).
+		observacions(anotacio.getObservacions()).
+		exposa(anotacio.getExposa()).
+		solicita(anotacio.getSolicita()).
+		build();
+		if (anotacio.getInteressats() != null) {
+			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
+				entity.getInteressats().add(
+						toInteressatEntity(
+								registreInteressat,
+								entity));
 			}
-			registreAnotacio.setInteressats(registreInteressats);
 		}
-		if (anotacio.getAnexos() != null) {
-			List<RegistreDocumentDto> registreAnnexos = new ArrayList<RegistreDocumentDto>();
-			for (Anexo anexo: anotacio.getAnexos()) {
-				RegistreDocumentDto annex = new RegistreDocumentDto();
-				annex.setFitxerNom(anexo.getNombreFichero());
-				annex.setIdentificador(anexo.getIdentificador());
-				if ("01".equals(anexo.getValidez()))
-					annex.setValidesa(RegistreDocumentValidesaEnumDto.COPIA);
-				else if ("02".equals(anexo.getValidez()))
-					annex.setValidesa(RegistreDocumentValidesaEnumDto.COMPULSA);
-				else if ("03".equals(anexo.getValidez()))
-					annex.setValidesa(RegistreDocumentValidesaEnumDto.COPIA_ORIGINAL);
-				else if ("04".equals(anexo.getValidez()))
-					annex.setValidesa(RegistreDocumentValidesaEnumDto.ORIGINAL);
-				if ("01".equals(anexo.getTipo()))
-					annex.setTipus(RegistreDocumentTipusEnumDto.FORM);
-				else if ("02".equals(anexo.getTipo()))
-					annex.setTipus(RegistreDocumentTipusEnumDto.FORM_ADJUNT);
-				else if ("03".equals(anexo.getTipo()))
-					annex.setTipus(RegistreDocumentTipusEnumDto.INTERN);
-				annex.setGestioDocumentalId(anexo.getGestionDocumentalId());
-				annex.setIndentificadorDocumentFirmat(anexo.getIdentificadorDocumentoFirmado());
-				annex.setObservacions(anexo.getObservaciones());
-				registreAnnexos.add(annex);
+		if (anotacio.getAnnexos() != null) {
+			for (RegistreAnnex registreAnnex: anotacio.getAnnexos()) {
+				entity.getAnnexos().add(
+						toAnnexEntity(
+								registreAnnex,
+								entity));
 			}
-			registreAnotacio.setAnnexos(registreAnnexos);
 		}
-		return registreAnotacio;
+		RegistreEntity saved = registreRepository.save(entity);
+		return saved;
 	}
 
-	private RegistreInteressatDocumentTipusEnumDto getDocumentTipusEnum(String documentTipus) {
-		if ("N".equals(documentTipus))
-			return RegistreInteressatDocumentTipusEnumDto.NIF;
-		else if ("C".equals(documentTipus))
-			return RegistreInteressatDocumentTipusEnumDto.CIF;
-		else if ("P".equals(documentTipus))
-			return RegistreInteressatDocumentTipusEnumDto.PASSAPORT;
-		else if ("E".equals(documentTipus))
-			return RegistreInteressatDocumentTipusEnumDto.ESTRANGER;
-		else if ("X".equals(documentTipus))
-			return RegistreInteressatDocumentTipusEnumDto.PERSONA_FIS;
-		else if ("O".equals(documentTipus))
-			return RegistreInteressatDocumentTipusEnumDto.CODI_ORIGEN;
-		return null;
+	private RegistreInteressatEntity toInteressatEntity(
+			RegistreInteressat registreInteressat,
+			RegistreEntity registre) {
+		RegistreInteressatTipusEnumDto interessatTipus = RegistreInteressatTipusEnumDto.valorAsEnum(registreInteressat.getTipus());
+		RegistreInteressatEntity.Builder interessatBuilder;
+		switch (interessatTipus) {
+		case PERSONA_FIS:
+			interessatBuilder = RegistreInteressatEntity.getBuilder(
+					interessatTipus,
+					RegistreInteressatDocumentTipusEnumDto.valorAsEnum(registreInteressat.getDocumentTipus()),
+					registreInteressat.getDocumentNum(),
+					registreInteressat.getNom(),
+					registreInteressat.getLlinatge1(),
+					registreInteressat.getLlinatge2(),
+					registre);
+			break;
+		default: // PERSONA_JUR o ADMINISTRACIO
+			interessatBuilder = RegistreInteressatEntity.getBuilder(
+					interessatTipus,
+					RegistreInteressatDocumentTipusEnumDto.valorAsEnum(registreInteressat.getDocumentTipus()),
+					registreInteressat.getDocumentNum(),
+					registreInteressat.getRaoSocial(),
+					registre);
+			break;
+		}
+		RegistreInteressatEntity interessatEntity = interessatBuilder.
+		pais(registreInteressat.getPais()).
+		provincia(registreInteressat.getProvincia()).
+		municipi(registreInteressat.getMunicipi()).
+		adresa(registreInteressat.getAdresa()).
+		codiPostal(registreInteressat.getCodiPostal()).
+		email(registreInteressat.getEmail()).
+		telefon(registreInteressat.getTelefon()).
+		emailHabilitat(registreInteressat.getEmailHabilitat()).
+		canalPreferent(
+				RegistreInteressatCanalEnumDto.valorAsEnum(
+						registreInteressat.getCanalPreferent())).
+		observacions(registreInteressat.getObservacions()).
+		build();
+		if (registreInteressat.getRepresentant() != null) {
+			RegistreInteressat representant = registreInteressat.getRepresentant();
+			interessatEntity.updateRepresentant(
+					RegistreInteressatTipusEnumDto.valorAsEnum(representant.getTipus()),
+					RegistreInteressatDocumentTipusEnumDto.valorAsEnum(representant.getDocumentTipus()),
+					representant.getDocumentNum(),
+					representant.getNom(),
+					representant.getLlinatge1(),
+					representant.getLlinatge2(),
+					representant.getRaoSocial(),
+					representant.getPais(),
+					representant.getProvincia(),
+					representant.getMunicipi(),
+					representant.getAdresa(),
+					representant.getCodiPostal(),
+					representant.getEmail(),
+					representant.getTelefon(),
+					representant.getEmailHabilitat(),
+					RegistreInteressatCanalEnumDto.valorAsEnum(representant.getCanalPreferent()));
+		}
+		return interessatEntity;
 	}
-	private RegistreInteressatCanalEnumDto getCanalEnum(String canal) {
-		if ("01".equals(canal))
-			return RegistreInteressatCanalEnumDto.POSTAL;
-		else if ("02".equals(canal))
-			return RegistreInteressatCanalEnumDto.EMAIL;
-		else if ("03".equals(canal))
-			return RegistreInteressatCanalEnumDto.COMP_ELEC;
-		return null;
+
+	private RegistreAnnexEntity toAnnexEntity(
+			RegistreAnnex registreAnnex,
+			RegistreEntity registre) {
+		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
+				registreAnnex.getTitol(),
+				registreAnnex.getFitxerNom(),
+				registreAnnex.getFitxerTamany(),
+				registreAnnex.getNtiTipoDocumental(),
+				RegistreDocumentTipusEnumDto.valorAsEnum(registreAnnex.getTipus()),
+				RegistreAnnexOrigenEnumDto.valorAsEnum(registreAnnex.getOrigen()),
+				registreAnnex.getDataCaptura(),
+				registre).
+				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
+				validesa(RegistreDocumentValidesaEnumDto.valorAsEnum(registreAnnex.getValidesa())).
+				observacions(registreAnnex.getObservacions()).
+				firmaMode(RegistreAnnexFirmaModeEnumDto.valorAsEnum(registreAnnex.getFirmaMode())).
+				build();
+		return annexEntity;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaWsImpl.class);

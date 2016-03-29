@@ -17,9 +17,8 @@ import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
-import es.caib.ripea.core.api.exception.ContenidorNomDuplicatException;
-import es.caib.ripea.core.api.exception.MultiplicitatException;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.ValidationException;
 
 /**
  * Declaració dels mètodes per a gestionar contenidors.
@@ -41,7 +40,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto rename(
 			Long entitatId,
 			Long contenidorId,
@@ -61,15 +60,15 @@ public interface ContenidorService {
 	 * @return La dada creada.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws MultiplicitatException
+	 * @throws ValidationException
 	 *             Si es volen afegir al node més dades de les permeses.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DadaDto dadaCreate(
 			Long entitatId,
 			Long contenidorId,
 			Long metaDadaId,
-			Object valor) throws NotFoundException, MultiplicitatException;
+			Object valor) throws NotFoundException, ValidationException;
 
 	/**
 	 * Modifica una dada a dins el node.
@@ -86,7 +85,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DadaDto dadaUpdate(
 			Long entitatId,
 			Long contenidorId,
@@ -106,7 +105,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DadaDto dadaDelete(
 			Long entitatId,
 			Long contenidorId,
@@ -125,7 +124,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public DadaDto dadaFindById(
 			Long entitatId,
 			Long contenidorId,
@@ -146,7 +145,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto deleteReversible(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -162,7 +161,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ContenidorDto deleteDefinitiu(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -177,14 +176,14 @@ public interface ContenidorService {
 	 * @return El contenidor recuperat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws ContenidorNomDuplicatException
+	 * @throws ValidationException
 	 *             Si ja existeix un altre contenidor amb el mateix nom
 	 *             a dins el mateix pare.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ContenidorDto undelete(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException, ContenidorNomDuplicatException;
+			Long contenidorId) throws NotFoundException, ValidationException;
 
 	/**
 	 * Mou un contenidor al destí especificat.
@@ -198,15 +197,15 @@ public interface ContenidorService {
 	 * @return El contenidor mogut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws ContenidorNomDuplicatException
+	 * @throws ValidationException
 	 *             Si ja existeix un altre contenidor amb el mateix nom
 	 *             a dins el destí.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto move(
 			Long entitatId,
 			Long contenidorOrigenId,
-			Long contenidorDestiId) throws NotFoundException, ContenidorNomDuplicatException;
+			Long contenidorDestiId) throws NotFoundException, ValidationException;
 
 	/**
 	 * Copia un contenidor al destí especificat.
@@ -222,16 +221,16 @@ public interface ContenidorService {
 	 * @return El contenidor creat amb la còpia.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws ContenidorNomDuplicatException
+	 * @throws ValidationException
 	 *             Si ja existeix un altre contenidor amb el mateix nom
 	 *             a dins el destí.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto copy(
 			Long entitatId,
 			Long contenidorOrigenId,
 			Long contenidorDestiId,
-			boolean recursiu) throws NotFoundException, ContenidorNomDuplicatException;
+			boolean recursiu) throws NotFoundException, ValidationException;
 
 	/**
 	 * Envia un contenidor a la bústia especificada.
@@ -248,7 +247,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto send(
 			Long entitatId,
 			Long contenidorId,
@@ -270,7 +269,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto receive(
 			Long entitatId,
 			Long bustiaId,
@@ -286,7 +285,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public EscriptoriDto getEscriptoriPerUsuariActual(
 			Long entitatId) throws NotFoundException;
 
@@ -301,7 +300,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto getContenidorSenseContingut(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -317,7 +316,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto getContenidorAmbContingut(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -333,7 +332,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public ContenidorDto getContenidorAmbContingutPerPath(
 			Long entitatId,
 			String path) throws NotFoundException;
@@ -349,7 +348,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<ValidacioErrorDto> findErrorsValidacio(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -365,7 +364,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<ContenidorLogDto> findLogsPerContenidorAdmin(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -381,7 +380,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<ContenidorLogDto> findLogsPerContenidorUser(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -397,7 +396,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<ContenidorMovimentDto> findMovimentsPerContenidorAdmin(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -413,7 +412,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('tothom')")
 	public List<ContenidorMovimentDto> findMovimentsPerContenidorUser(
 			Long entitatId,
 			Long contenidorId) throws NotFoundException;
@@ -432,7 +431,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public PaginaDto<ContenidorDto> findAdmin(
 			Long entitatId,
 			ContenidorFiltreDto filtre,
@@ -458,7 +457,7 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public PaginaDto<ContenidorDto> findEsborrats(
 			Long entitatId,
 			String nom,

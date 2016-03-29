@@ -17,27 +17,33 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class RegistreAnotacioDto implements Serializable {
 
 	private Long id;
-	private RegistreAccioEnumDto accio;
 	private RegistreTipusEnumDto tipus;
-	private String entitatCodi;
-	private String entitatNom;
-	private String numero;
+	private int numero;
 	private Date data;
-	private String assumpteResum;
-	private String assumpteCodi;
-	private String assumpteReferencia;
-	private String assumpteNumExpedient;
-	private RegistreTransportTipusEnumDto transportTipus;
-	private String transportNumero;
-	private String usuariNom;
-	private String usuariContacte;
-	private String aplicacioEmissora;
-	private RegistreDocumentacioFisicaTipusEnumDto documentacioFisica;
-	private String observacions;
-	private boolean prova;
+	private String identificador;
+	private String oficina;
+	private String llibre;
+	private String extracte;
+	private String assumpteTipus;
+	public String assumpteCodi;
+	public String assumpteReferencia;
+	public String assumpteNumExpedient;
+	public String idioma;
+	public RegistreTransportTipusEnumDto transportTipus;
+	public String transportNumero;
+	public String usuariNom;
+	public String usuariContacte;
+	public String aplicacioCodi;
+	public String aplicacioVersio;
+	public RegistreDocumentacioFisicaTipusEnumDto documentacioFisica;
+	public String observacions;
+	public String exposa;
+	public String solicita;
+	public Date dataProcessat;
+	public String motiuRebuig;
 
 	private List<RegistreInteressatDto> interessats;
-	private List<RegistreDocumentDto> annexos;
+	private List<RegistreAnnexDto> annexos;
 
 
 
@@ -47,34 +53,16 @@ public class RegistreAnotacioDto implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public RegistreAccioEnumDto getAccio() {
-		return accio;
-	}
-	public void setAccio(RegistreAccioEnumDto accio) {
-		this.accio = accio;
-	}
 	public RegistreTipusEnumDto getTipus() {
 		return tipus;
 	}
 	public void setTipus(RegistreTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
-	public String getEntitatCodi() {
-		return entitatCodi;
-	}
-	public void setEntitatCodi(String entitatCodi) {
-		this.entitatCodi = entitatCodi;
-	}
-	public String getEntitatNom() {
-		return entitatNom;
-	}
-	public void setEntitatNom(String entitatNom) {
-		this.entitatNom = entitatNom;
-	}
-	public String getNumero() {
+	public int getNumero() {
 		return numero;
 	}
-	public void setNumero(String numero) {
+	public void setNumero(int numero) {
 		this.numero = numero;
 	}
 	public Date getData() {
@@ -83,11 +71,35 @@ public class RegistreAnotacioDto implements Serializable {
 	public void setData(Date data) {
 		this.data = data;
 	}
-	public String getAssumpteResum() {
-		return assumpteResum;
+	public String getIdentificador() {
+		return identificador;
 	}
-	public void setAssumpteResum(String assumpteResum) {
-		this.assumpteResum = assumpteResum;
+	public void setIdentificador(String identificador) {
+		this.identificador = identificador;
+	}
+	public String getOficina() {
+		return oficina;
+	}
+	public void setOficina(String oficina) {
+		this.oficina = oficina;
+	}
+	public String getLlibre() {
+		return llibre;
+	}
+	public void setLlibre(String llibre) {
+		this.llibre = llibre;
+	}
+	public String getExtracte() {
+		return extracte;
+	}
+	public void setExtracte(String extracte) {
+		this.extracte = extracte;
+	}
+	public String getAssumpteTipus() {
+		return assumpteTipus;
+	}
+	public void setAssumpteTipus(String assumpteTipus) {
+		this.assumpteTipus = assumpteTipus;
 	}
 	public String getAssumpteCodi() {
 		return assumpteCodi;
@@ -106,6 +118,12 @@ public class RegistreAnotacioDto implements Serializable {
 	}
 	public void setAssumpteNumExpedient(String assumpteNumExpedient) {
 		this.assumpteNumExpedient = assumpteNumExpedient;
+	}
+	public String getIdioma() {
+		return idioma;
+	}
+	public void setIdioma(String idioma) {
+		this.idioma = idioma;
 	}
 	public RegistreTransportTipusEnumDto getTransportTipus() {
 		return transportTipus;
@@ -131,17 +149,22 @@ public class RegistreAnotacioDto implements Serializable {
 	public void setUsuariContacte(String usuariContacte) {
 		this.usuariContacte = usuariContacte;
 	}
-	public String getAplicacioEmissora() {
-		return aplicacioEmissora;
+	public String getAplicacioCodi() {
+		return aplicacioCodi;
 	}
-	public void setAplicacioEmissora(String aplicacioEmissora) {
-		this.aplicacioEmissora = aplicacioEmissora;
+	public void setAplicacioCodi(String aplicacioCodi) {
+		this.aplicacioCodi = aplicacioCodi;
+	}
+	public String getAplicacioVersio() {
+		return aplicacioVersio;
+	}
+	public void setAplicacioVersio(String aplicacioVersio) {
+		this.aplicacioVersio = aplicacioVersio;
 	}
 	public RegistreDocumentacioFisicaTipusEnumDto getDocumentacioFisica() {
 		return documentacioFisica;
 	}
-	public void setDocumentacioFisica(
-			RegistreDocumentacioFisicaTipusEnumDto documentacioFisica) {
+	public void setDocumentacioFisica(RegistreDocumentacioFisicaTipusEnumDto documentacioFisica) {
 		this.documentacioFisica = documentacioFisica;
 	}
 	public String getObservacions() {
@@ -150,11 +173,29 @@ public class RegistreAnotacioDto implements Serializable {
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
 	}
-	public boolean isProva() {
-		return prova;
+	public String getExposa() {
+		return exposa;
 	}
-	public void setProva(boolean prova) {
-		this.prova = prova;
+	public void setExposa(String exposa) {
+		this.exposa = exposa;
+	}
+	public String getSolicita() {
+		return solicita;
+	}
+	public void setSolicita(String solicita) {
+		this.solicita = solicita;
+	}
+	public Date getDataProcessat() {
+		return dataProcessat;
+	}
+	public void setDataProcessat(Date dataProcessat) {
+		this.dataProcessat = dataProcessat;
+	}
+	public String getMotiuRebuig() {
+		return motiuRebuig;
+	}
+	public void setMotiuRebuig(String motiuRebuig) {
+		this.motiuRebuig = motiuRebuig;
 	}
 	public List<RegistreInteressatDto> getInteressats() {
 		return interessats;
@@ -162,10 +203,10 @@ public class RegistreAnotacioDto implements Serializable {
 	public void setInteressats(List<RegistreInteressatDto> interessats) {
 		this.interessats = interessats;
 	}
-	public List<RegistreDocumentDto> getAnnexos() {
+	public List<RegistreAnnexDto> getAnnexos() {
 		return annexos;
 	}
-	public void setAnnexos(List<RegistreDocumentDto> annexos) {
+	public void setAnnexos(List<RegistreAnnexDto> annexos) {
 		this.annexos = annexos;
 	}
 
