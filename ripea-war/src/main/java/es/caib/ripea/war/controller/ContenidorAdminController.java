@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.exception.ContenidorNomDuplicatException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ContenidorService;
 import es.caib.ripea.war.command.ContenidorFiltreCommand;
 import es.caib.ripea.war.command.ContenidorFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
@@ -100,7 +100,7 @@ public class ContenidorAdminController extends BaseAdminController {
 					request,
 					"redirect:../../esborrat",
 					"contenidor.admin.controller.recuperat.ok");
-		} catch (ContenidorNomDuplicatException ex) {
+		} catch (ValidationException ex) {
 			return getAjaxControllerReturnValueError(
 					request,
 					"redirect:../../esborrat",

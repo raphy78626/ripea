@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -10,16 +11,23 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.ExcepcioLogDto;
+import es.caib.ripea.core.api.dto.IntegracioAccioDto;
+import es.caib.ripea.core.api.dto.IntegracioDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.entity.UsuariEntity;
+import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
-import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.ExcepcioLogHelper;
+import es.caib.ripea.core.helper.IntegracioHelper;
+import es.caib.ripea.core.repository.AclSidRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.plugin.usuari.DadesUsuari;
 
@@ -31,26 +39,26 @@ import es.caib.ripea.plugin.usuari.DadesUsuari;
 @Service
 public class AplicacioServiceImpl implements AplicacioService {
 
-	private static final MajorVersion MAJOR_VERSION = MajorVersion.V0_7;
-	private static final int MINOR_VERSION = 0;
+	private static final MajorVersion MAJOR_VERSION = MajorVersion.V0_8;
+	private static final int MINOR_VERSION = 2;
 
 	private enum MajorVersion {
-		V0_1,
-		V0_2,
-		V0_3,
-		V0_4,
-		V0_5,
-		V0_6,
-		V0_7
+		V0_1, V0_2, V0_3, V0_4, V0_5, V0_6, V0_7, V0_8
 	}
 
 	@Resource
 	private UsuariRepository usuariRepository;
+	@Resource
+	private AclSidRepository aclSidRepository;
 
 	@Resource
-	private PluginHelper pluginHelper;
+	private CacheHelper cacheHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
+	@Resource
+	private IntegracioHelper integracioHelper;
+	@Resource
+	private ExcepcioLogHelper excepcioLogHelper;
 
 
 
@@ -69,7 +77,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
 			logger.debug("Consultant plugin de dades d'usuari (usuariCodi=" + auth.getName() + ")");
-			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbCodi(auth.getName());
+			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari = usuariRepository.save(
 						UsuariEntity.getBuilder(
@@ -84,7 +92,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 			}
 		} else {
 			logger.debug("Consultant plugin de dades d'usuari (usuariCodi=" + auth.getName() + ")");
-			DadesUsuari dadesUsuari = pluginHelper.dadesUsuariConsultarAmbCodi(auth.getName());
+			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari.update(
 						dadesUsuari.getNom(),
@@ -103,9 +111,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 	public UsuariDto getUsuariActual() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Obtenint usuari actual");
-		return conversioTipusHelper.convertir(
-				usuariRepository.findOne(auth.getName()),
-				UsuariDto.class);
+		return toUsuariDtoAmbRols(
+				usuariRepository.findOne(auth.getName()));
 	}
 
 	@Transactional(readOnly = true)
@@ -121,12 +128,68 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Override
 	public List<UsuariDto> findUsuariAmbText(String text) {
 		logger.debug("Consultant usuaris amb text (text=" + text + ")");
+		
 		return conversioTipusHelper.convertirList(
 				usuariRepository.findByText(text),
 				UsuariDto.class);
 	}
 
+	@Override
+	public List<IntegracioDto> integracioFindAll() {
+		logger.debug("Consultant les integracions");
+		return integracioHelper.findAll();
+	}
 
+	@Override
+	public List<IntegracioAccioDto> integracioFindDarreresAccionsByCodi(String codi) {
+		logger.debug("Consultant les darreres accions per a la integració ("
+				+ "codi=" + codi + ")");
+		return integracioHelper.findAccionsByIntegracioCodi(codi);
+	}
+
+	@Override
+	public void excepcioSave(Throwable exception) {
+		logger.debug("Emmagatzemant excepció ("
+				+ "exception=" + exception + ")");
+		excepcioLogHelper.addExcepcio(exception);
+	}
+
+	@Override
+	public ExcepcioLogDto excepcioFindOne(Long index) {
+		logger.debug("Consulta d'una excepció (index=" + index + ")");
+		return excepcioLogHelper.findAll().get(index.intValue());
+	}
+
+	@Override
+	public List<ExcepcioLogDto> excepcioFindAll() {
+		logger.debug("Consulta de les excepcions disponibles");
+		return excepcioLogHelper.findAll();
+	}
+
+	@Override
+	public List<String> permisosFindRolsDistinctAll() {
+		logger.debug("Consulta dels rols definits a les ACLs");
+		return aclSidRepository.findSidByPrincipalFalse();
+	}
+
+
+
+	private UsuariDto toUsuariDtoAmbRols(
+			UsuariEntity usuari) {
+		UsuariDto dto = conversioTipusHelper.convertir(
+				usuari,
+				UsuariDto.class);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities() != null) {
+			String[] rols = new String[auth.getAuthorities().size()];
+			int index = 0;
+			for (GrantedAuthority grantedAuthority: auth.getAuthorities()) {
+				rols[index++] = grantedAuthority.getAuthority();
+			}
+			dto.setRols(rols);
+		}
+		return dto;
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(AplicacioServiceImpl.class);
 

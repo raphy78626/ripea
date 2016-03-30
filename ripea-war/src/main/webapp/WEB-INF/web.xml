@@ -89,7 +89,7 @@
 		<role-name>IPA_ADMIN</role-name>
 	</security-role>
 	<security-role>
-		<role-name>IPA_REGWS</role-name>
+		<role-name>IPA_BSTWS</role-name>
 	</security-role>
 	<security-role>
 		<role-name>tothom</role-name>
@@ -103,7 +103,7 @@
 		<auth-constraint>
 			<role-name>IPA_SUPER</role-name>
 			<role-name>IPA_ADMIN</role-name>
-			<role-name>IPA_REGWS</role-name>
+			<role-name>IPA_BSTWS</role-name>
 			<role-name>tothom</role-name>
 		</auth-constraint>
 	</security-constraint>
@@ -111,7 +111,6 @@
 		<web-resource-collection>
 			<web-resource-name>Public areas</web-resource-name>
 			<url-pattern>/ws/bustia</url-pattern>
-			<url-pattern>/ws/registre</url-pattern>
 			<url-pattern>/ws/MCGDws</url-pattern>
 		</web-resource-collection>
 	</security-constraint>

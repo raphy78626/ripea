@@ -20,9 +20,9 @@ import es.caib.ripea.core.api.dto.EntitatDto;
  */
 public class RolHelper {
 
-	private static final String ROLE_SUPER = "ROLE_SUPER";
-	private static final String ROLE_ADMIN = "ROLE_ADMIN";
-	private static final String ROLE_USER = "ROLE_USER";
+	private static final String ROLE_SUPER = "IPA_SUPER";
+	private static final String ROLE_ADMIN = "IPA_ADMIN";
+	private static final String ROLE_USER = "tothom";
 
 	private static final String REQUEST_PARAMETER_CANVI_ROL = "canviRol";
 	private static final String SESSION_ATTRIBUTE_ROL_ACTUAL = "RolHelper.rol.actual";

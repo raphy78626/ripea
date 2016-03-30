@@ -18,7 +18,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -103,10 +102,6 @@ public class CacheHelper {
 	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuari) {
 		logger.debug("Consulta entitats accessibles (usuari=" + usuari + ")");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println(">>> usuari: " + auth.getName());
-		for (GrantedAuthority ga: auth.getAuthorities()) {
-			System.out.println(">>> authority: " + ga.getAuthority());
-		}
 		List<EntitatEntity> entitats = entitatRepository.findByActiva(true);
 		permisosHelper.filterGrantedAny(
 				entitats,

@@ -8,7 +8,10 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.mapping.MappableAttributesRetriever;
+
+import es.caib.ripea.core.api.service.AplicacioService;
 
 /**
  * Aconsegueix els rols que seran rellevants per a l'aplicació.
@@ -17,8 +20,9 @@ import org.springframework.security.core.authority.mapping.MappableAttributesRet
  */
 public class RolesBasedMappableAttributesRetriever implements MappableAttributesRetriever {
 
-	//private ApplicationContext applicationContext;
-	//private ServeiService serveiService;
+	@Autowired
+	private AplicacioService aplicacioService;
+
 	private Set<String> defaultMappableAttributes;
 	private Set<String> mappableAttributes = new HashSet<String>();
 
@@ -33,11 +37,6 @@ public class RolesBasedMappableAttributesRetriever implements MappableAttributes
 		this.defaultMappableAttributes = defaultMappableAttributes;
 	}
 
-	/*@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}*/
-
 
 
 	private void refrescarMappableAttributes() {
@@ -45,15 +44,8 @@ public class RolesBasedMappableAttributesRetriever implements MappableAttributes
 		mappableAttributes.clear();
 		if (defaultMappableAttributes != null)
 			mappableAttributes.addAll(defaultMappableAttributes);
-		/*if (serveiService == null) {
-			LOGGER.debug("El serveiService és null. Obtenint el serveiService mitjançant l'applicationContext");
-			serveiService = applicationContext.getBean(ServeiService.class);
-		}
-		if (serveiService != null) {
-			mappableAttributes.addAll(serveiService.getRolsConfigurats());
-		} else {
-			LOGGER.error("No s'han pogut obtenir els rols addicionals del serveiService: El service és null");
-		}*/
+		mappableAttributes.addAll(
+				aplicacioService.permisosFindRolsDistinctAll());
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RolesBasedMappableAttributesRetriever.class);

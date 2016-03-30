@@ -16,6 +16,7 @@ public class UsuariDto implements Serializable {
 	private String codi;
 	private String nom;
 	private String nif;
+	private String[] rols;
 
 	public String getCodi() {
 		return codi;
@@ -34,6 +35,12 @@ public class UsuariDto implements Serializable {
 	}
 	public void setNif(String nif) {
 		this.nif = nif;
+	}
+	public String[] getRols() {
+		return rols;
+	}
+	public void setRols(String[] rols) {
+		this.rols = rols;
 	}
 
 	private static final long serialVersionUID = -139254994389509932L;

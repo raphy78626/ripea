@@ -39,9 +39,9 @@
 	<sec:authentication-manager alias="authenticationManager">
         <sec:authentication-provider>
             <sec:user-service>
-                <sec:user name="super" password="super" authorities="ROLE_SUPER" />
-                <sec:user name="admin" password="admin" authorities="ROLE_ADMIN" />
-                <sec:user name="user" password="user" authorities="ROLE_USER" />
+                <sec:user name="super" password="super" authorities="IPA_SUPER,tothom" />
+                <sec:user name="admin" password="admin" authorities="IPA_ADMIN,tothom" />
+                <sec:user name="user" password="user" authorities="tothom" />
             </sec:user-service>
         </sec:authentication-provider>
     </sec:authentication-manager>
@@ -73,13 +73,13 @@
 		<constructor-arg>
 			<list>
 				<bean class="org.springframework.security.core.authority.GrantedAuthorityImpl">
-					<constructor-arg value="ROLE_ADMIN" />
+					<constructor-arg value="IPA_ADMIN" />
 				</bean>
 				<bean class="org.springframework.security.core.authority.GrantedAuthorityImpl">
-					<constructor-arg value="ROLE_ADMIN" />
+					<constructor-arg value="IPA_ADMIN" />
 				</bean>
 				<bean class="org.springframework.security.core.authority.GrantedAuthorityImpl">
-					<constructor-arg value="ROLE_ADMIN" />
+					<constructor-arg value="IPA_ADMIN" />
 				</bean>
 			</list>
 		</constructor-arg>

@@ -6,14 +6,18 @@ package es.caib.ripea.war.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.UsuariDto;
+import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.war.helper.AjaxHelper;
 import es.caib.ripea.war.helper.EntitatHelper;
 import es.caib.ripea.war.helper.ModalHelper;
@@ -26,6 +30,11 @@ import es.caib.ripea.war.helper.RolHelper;
  */
 @Controller
 public class RipeaController {
+
+	@Autowired
+	private AplicacioService aplicacioService;
+
+
 
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String get(
@@ -57,6 +66,12 @@ public class RipeaController {
 	@RequestMapping(value = "/missatges", method = RequestMethod.GET)
 	public String get() {
 		return "util/missatges";
+	}
+
+	@RequestMapping(value = "/desenv/usuariActual", method = RequestMethod.GET)
+	@ResponseBody
+	public UsuariDto desenvUsuariActual() {
+		return aplicacioService.getUsuariActual();
 	}
 
 	// PER LLEVAR
