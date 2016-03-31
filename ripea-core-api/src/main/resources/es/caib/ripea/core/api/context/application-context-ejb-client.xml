@@ -45,10 +45,6 @@
 			jndi-name="ripea/ExpedientServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.ExpedientService"/>
 	<jee:local-slsb
-			id="integracioService"
-			jndi-name="ripea/IntegracioServiceBean/local"
-			business-interface="es.caib.ripea.core.api.service.IntegracioService"/>
-	<jee:local-slsb
 			id="interessatService"
 			jndi-name="ripea/InteressatServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.InteressatService"/>
