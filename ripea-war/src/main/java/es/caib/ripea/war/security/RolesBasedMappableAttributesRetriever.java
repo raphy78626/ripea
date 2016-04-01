@@ -8,10 +8,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.mapping.MappableAttributesRetriever;
-
-import es.caib.ripea.core.api.service.AplicacioService;
 
 /**
  * Aconsegueix els rols que seran rellevants per a l'aplicació.
@@ -20,11 +17,12 @@ import es.caib.ripea.core.api.service.AplicacioService;
  */
 public class RolesBasedMappableAttributesRetriever implements MappableAttributesRetriever {
 
-	@Autowired
-	private AplicacioService aplicacioService;
+	/*@Autowired
+	private AplicacioService aplicacioService;*/
 
 	private Set<String> defaultMappableAttributes;
 	private Set<String> mappableAttributes = new HashSet<String>();
+	private boolean refrescat = false;
 
 
 
@@ -40,12 +38,15 @@ public class RolesBasedMappableAttributesRetriever implements MappableAttributes
 
 
 	private void refrescarMappableAttributes() {
-		LOGGER.debug("Refrescant el llistat de rols per mapejar");
-		mappableAttributes.clear();
-		if (defaultMappableAttributes != null)
-			mappableAttributes.addAll(defaultMappableAttributes);
-		mappableAttributes.addAll(
-				aplicacioService.permisosFindRolsDistinctAll());
+		if (!refrescat) {
+			LOGGER.debug("Refrescant el llistat de rols per mapejar");
+			mappableAttributes.clear();
+			if (defaultMappableAttributes != null) {
+				mappableAttributes.addAll(defaultMappableAttributes);
+			}
+			//List<String> rolsPermisos = aplicacioService.permisosFindRolsDistinctAll();
+			//mappableAttributes.addAll(rolsPermisos);
+		}
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RolesBasedMappableAttributesRetriever.class);
