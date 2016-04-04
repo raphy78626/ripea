@@ -20,11 +20,11 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.PortafirmesEstatEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un enviament d'una versió
@@ -39,7 +39,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 						"document_id",
 						"versio",
 						"pfirmes_id"})})
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class DocumentPortafirmesEntity extends RipeaAuditable<Long> {
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)

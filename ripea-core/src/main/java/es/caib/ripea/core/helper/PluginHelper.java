@@ -802,12 +802,15 @@ public class PluginHelper {
 	}
 
 	public RegistreAnotacio registreEntradaConsultar(
-			String identificador) {
+			String identificador,
+			String entitatCodi) {
 		String accioDescripcio = "Consulta d'una anotació d'entrada";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("identificador", identificador);
 		try {
-			RegistreAnotacio anotacio = getRegistrePlugin().entradaConsultar(identificador);
+			RegistreAnotacio anotacio = getRegistrePlugin().entradaConsultar(
+					identificador,
+					entitatCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_REGISTRE,
 					accioDescripcio,

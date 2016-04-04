@@ -5,14 +5,15 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="
 				http://www.springframework.org/schema/beans
-				http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+				http://www.springframework.org/schema/beans/spring-beans.xsd
 				http://www.springframework.org/schema/security
-				http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+				http://www.springframework.org/schema/security/spring-security.xsd">
 
 	<sec:http create-session="never" use-expressions="true" auto-config="true" entry-point-ref="preAuthenticatedProcessingFilterEntryPoint">
 		<sec:intercept-url pattern="/error" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/ws/MCGDws*" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/ws/bustia*" access="isAnonymous()"/>
+		<sec:intercept-url pattern="/rest/bustia" access="hasRole('IPA_BSTWS')"/>
 		<sec:intercept-url pattern="/entitat*" access="hasRole('IPA_SUPER')"/>
 		<sec:intercept-url pattern="/permis*" access="hasRole('IPA_ADMIN')"/>
 		<sec:intercept-url pattern="/metaExpedient*" access="hasRole('IPA_ADMIN')"/>
@@ -23,6 +24,9 @@
 		<sec:custom-filter position="PRE_AUTH_FILTER" ref="preauthFilter"/>
 		<sec:anonymous/>
 		<sec:session-management session-fixation-protection="none"/>
+		<sec:headers>
+			<sec:frame-options policy="SAMEORIGIN"/>
+		</sec:headers>
 	</sec:http>
 
 	<sec:authentication-manager alias="authenticationManager">
@@ -60,5 +64,6 @@
 	</bean>
 
 	<bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
+	<bean class="es.caib.ripea.war.security.DefaultRolesPrefixPostProcessor"/>
 
 </beans>

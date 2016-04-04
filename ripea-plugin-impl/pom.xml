@@ -82,6 +82,11 @@
 			<version>1.0.0</version>
 		</dependency>
   		<dependency>
+			<groupId>es.caib.regweb3</groupId>
+			<artifactId>regweb3-ws-api</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+  		<dependency>
 			<groupId>es.caib</groupId>
 			<artifactId>valcert-sar-axis</artifactId>
 			<version>1.5</version>
@@ -221,6 +226,11 @@
 			<name>PortaFIB Maven Repository</name>
 			<id>es.caib.portafib</id>
 			<url>https://github.com/GovernIB/portafib/tree/gh-pages/maven</url>
+		</repository>
+		<repository>
+			<name>Regweb Maven Repository</name>
+			<id>es.caib.regweb</id>
+			<url>http://registre.sourceforge.net/maven/</url>
 		</repository>
 		<repository>
 			<name>Local Maven Repository</name>

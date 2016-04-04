@@ -65,4 +65,9 @@
 			jndi-name="ripea/RegistreServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.RegistreService"/>
 
+	<jee:local-slsb
+			id="bustiaWs"
+			jndi-name="ripea/BustiaWsBean/local"
+			business-interface="es.caib.ripea.core.api.service.ws.BustiaWs"/>
+
 </beans>

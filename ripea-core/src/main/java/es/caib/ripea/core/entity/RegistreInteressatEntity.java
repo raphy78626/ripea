@@ -14,12 +14,12 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.RegistreInteressatCanalEnumDto;
 import es.caib.ripea.core.api.dto.RegistreInteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreInteressatTipusEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un interessat
@@ -40,7 +40,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 								"llinatge1",
 								"llinatge2",
 								"rao_social"})})
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 
 	@Column(name = "tipus", length = 1, nullable = false)
@@ -253,7 +253,8 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 				RegistreEntity registre) {
 			built = new RegistreInteressatEntity();
 			built.tipus = tipus.getValor();
-			built.documentTipus = documentTipus.getValor();
+			if (documentTipus != null)
+				built.documentTipus = documentTipus.getValor();
 			built.documentNum = documentNum;
 			built.raoSocial = raoSocial;
 			built.registre = registre;
@@ -291,7 +292,8 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 			return this;
 		}
 		public Builder canalPreferent(RegistreInteressatCanalEnumDto canalPreferent) {
-			built.canalPreferent = canalPreferent.getValor();
+			if (canalPreferent != null)
+				built.canalPreferent = canalPreferent.getValor();
 			return this;
 		}
 		public Builder observacions(String observacions) {

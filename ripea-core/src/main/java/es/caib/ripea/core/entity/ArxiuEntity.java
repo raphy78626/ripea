@@ -10,7 +10,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un arxiu.
@@ -20,7 +20,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 @Entity
 @Table(name = "ipa_arxiu")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class ArxiuEntity extends ContenidorEntity {
 
 	@Column(name = "unitat_codi", length = 9, nullable = false)

@@ -10,8 +10,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa una carpeta.
@@ -20,7 +21,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
  */
 @Entity
 @Table(name = "ipa_carpeta")
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class CarpetaEntity extends ContenidorEntity {
 
 	@Column(name = "tipus", nullable = false)

@@ -20,9 +20,9 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.audit.RipeaAuditable;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un interessat.
@@ -39,7 +39,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 						"llinatges",
 						"identificador"})})
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public abstract class InteressatEntity extends RipeaAuditable<Long> {
 
 	@Column(name = "nom", length = 256, nullable = false)

@@ -25,10 +25,10 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un meta-node.
@@ -43,7 +43,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 						"codi",
 						"tipus"})})
 @Inheritance(strategy=InheritanceType.JOINED)
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public abstract class MetaNodeEntity extends RipeaAuditable<Long> {
 
 	@Column(name = "codi", length = 64, nullable = false)

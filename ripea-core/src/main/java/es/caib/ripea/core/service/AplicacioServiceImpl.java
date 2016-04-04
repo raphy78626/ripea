@@ -3,7 +3,6 @@
  */
 package es.caib.ripea.core.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;

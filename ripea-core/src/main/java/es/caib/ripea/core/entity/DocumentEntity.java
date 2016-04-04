@@ -15,8 +15,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.ForeignKey;
-
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un document.
@@ -25,7 +24,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
  */
 @Entity
 @Table(name = "ipa_document")
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class DocumentEntity extends NodeEntity {
 
 	@ManyToOne(optional = true)

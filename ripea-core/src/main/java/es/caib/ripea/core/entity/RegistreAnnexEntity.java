@@ -18,13 +18,13 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.RegistreAnnexFirmaModeEnumDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexOrigenEnumDto;
 import es.caib.ripea.core.api.dto.RegistreDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreDocumentValidesaEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un document
@@ -43,7 +43,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 								"fitxer_nom",
 								"fitxer_tamany",
 								"tipus"})})
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 
 	@Column(name = "titol", length = 200, nullable = false)
@@ -150,8 +150,10 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			built.fitxerNom = fitxerNom;
 			built.fitxerTamany = fitxerTamany;
 			built.ntiTipoDocumental = ntiTipoDocumental;
-			built.tipus = tipus.getValor();
-			built.origen = origen.getValor();
+			if (tipus != null)
+				built.tipus = tipus.getValor();
+			if (origen != null)
+				built.origen = origen.getValor();
 			built.dataCaptura = dataCaptura;
 			built.registre = registre;
 		}
@@ -160,7 +162,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			return this;
 		}
 		public Builder validesa(RegistreDocumentValidesaEnumDto validesa) {
-			built.validesa = validesa.getValor();
+			if (validesa != null)
+				built.validesa = validesa.getValor();
 			return this;
 		}
 		public Builder observacions(String observacions) {
@@ -168,7 +171,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			return this;
 		}
 		public Builder firmaMode(RegistreAnnexFirmaModeEnumDto firmaMode) {
-			built.firmaMode = firmaMode.getValor();
+			if (firmaMode != null)
+				built.firmaMode = firmaMode.getValor();
 			return this;
 		}
 		public RegistreAnnexEntity build() {

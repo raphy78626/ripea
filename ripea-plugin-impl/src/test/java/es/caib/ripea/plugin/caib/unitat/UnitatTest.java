@@ -26,13 +26,15 @@ public class UnitatTest {
 	private static final String ENDPOINT_ADDRESS = "http://dev.caib.es/dir3caib/ws/Dir3CaibObtenerUnidades";
 	private static final String USERNAME = "$ripea_dir3caib";
 	private static final String PASSWORD = "ripea_dir3caib";
+	//private static final String UNITAT_ARREL = "A04006741";
+	private static final String UNITAT_ARREL = "A04003003";
 
 
 
 	@Test
 	public void test() throws MalformedURLException {
 		List<UnidadTF> unidades = getObtenerUnidadesService().obtenerArbolUnidades(
-				"A04006741",
+				UNITAT_ARREL,
 				null,
 				null);
 		for (UnidadTF unidad: unidades) {

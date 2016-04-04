@@ -258,9 +258,7 @@ public class PermisosHelper {
 					objectIdentifier,
 					getPermissionsFromPermis(permis),
 					true);
-		} else if (
-				PrincipalTipusEnumDto.ROL.equals(permis.getPrincipalTipus()) ||
-				PrincipalTipusEnumDto.GRUP.equals(permis.getPrincipalTipus())) {
+		} else if (PrincipalTipusEnumDto.ROL.equals(permis.getPrincipalTipus())) {
 			assignarPermisos(
 					new GrantedAuthoritySid(getMapeigRol(permis.getPrincipalNom())),
 					objectClass,

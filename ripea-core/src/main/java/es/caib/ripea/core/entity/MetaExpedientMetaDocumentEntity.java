@@ -15,10 +15,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.ForeignKey;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa una relació entre
@@ -29,7 +29,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 @Entity
 @Table(	name="ipa_metaexpedient_metadocument",
 		uniqueConstraints={@UniqueConstraint(columnNames = {"metaexpedient_id", "metadocument_id"})})
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class MetaExpedientMetaDocumentEntity extends RipeaAuditable<Long> {
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)

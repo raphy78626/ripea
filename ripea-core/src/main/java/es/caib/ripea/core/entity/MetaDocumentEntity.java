@@ -13,9 +13,10 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un meta-document.
@@ -24,7 +25,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
  */
 @Entity
 @Table(name = "ipa_metadocument")
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class MetaDocumentEntity extends MetaNodeEntity {
 
 	@Column(name = "global_expedient")

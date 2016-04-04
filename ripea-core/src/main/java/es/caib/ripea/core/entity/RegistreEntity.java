@@ -22,12 +22,12 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.RegistreDocumentacioFisicaTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreTransportTipusEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 
 /**
  * Classe del model de dades que representa una anotació al
@@ -46,11 +46,13 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 								"oficina",
 								"llibre",
 								"data"})})
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends RipeaAuditable<Long> {
 
 	@Column(name = "tipus", length = 1, nullable = false)
 	private String tipus;
+	@Column(name = "unitat_adm", length = 21, nullable = false)
+	private String unitatAdministrativa;
 	@Column(name = "numero", nullable = false)
 	private int numero;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -86,7 +88,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	private String aplicacioCodi;
 	@Column(name = "aplicacio_versio", length = 15)
 	private String aplicacioVersio;
-	@Column(name = "documentacio_fis", length = 1, nullable = false)
+	@Column(name = "documentacio_fis", length = 1)
 	private String documentacioFisica;
 	@Column(name = "observacions", length = 50)
 	private String observacions;
@@ -211,6 +213,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 
 	public static Builder getBuilder(
 			RegistreTipusEnumDto tipus,
+			String unitatAdministrativa,
 			int numero,
 			Date data,
 			String identificador,
@@ -218,10 +221,10 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			String llibre,
 			String assumpteTipus,
 			String idioma,
-			String usuariNom,
-			String documentacioFisica) {
+			String usuariNom) {
 		return new Builder(
 				tipus,
+				unitatAdministrativa,
 				numero,
 				data,
 				identificador,
@@ -229,8 +232,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				llibre,
 				assumpteTipus,
 				idioma,
-				usuariNom,
-				documentacioFisica);
+				usuariNom);
 	}
 
 	/**
@@ -242,6 +244,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 		RegistreEntity built;
 		Builder(
 				RegistreTipusEnumDto tipus,
+				String unitatAdministrativa,
 				int numero,
 				Date data,
 				String identificador,
@@ -249,10 +252,10 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				String llibre,
 				String assumpteTipus,
 				String idioma,
-				String usuariNom,
-				String documentacioFisica) {
+				String usuariNom) {
 			built = new RegistreEntity();
 			built.tipus = tipus.getValor();
+			built.unitatAdministrativa = unitatAdministrativa;
 			built.numero = numero;
 			built.data = data;
 			built.identificador = identificador;
@@ -261,7 +264,6 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			built.assumpteTipus = assumpteTipus;
 			built.idioma = idioma;
 			built.usuariNom = usuariNom;
-			built.documentacioFisica = documentacioFisica;
 		}
 		public Builder extracte(String extracte) {
 			built.extracte = extracte;
@@ -280,7 +282,8 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			return this;
 		}
 		public Builder transportTipus(RegistreTransportTipusEnumDto transportTipus) {
-			built.transportTipus = transportTipus.getValor();
+			if (transportTipus != null)
+				built.transportTipus = transportTipus.getValor();
 			return this;
 		}
 		public Builder transportNumero(String transportNumero) {
@@ -297,6 +300,11 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 		}
 		public Builder aplicacioVersio(String aplicacioVersio) {
 			built.aplicacioVersio = aplicacioVersio;
+			return this;
+		}
+		public Builder documentacioFisica(RegistreDocumentacioFisicaTipusEnumDto documentacioFisica) {
+			if (documentacioFisica != null)
+				built.documentacioFisica = documentacioFisica.getValor();
 			return this;
 		}
 		public Builder observacions(String observacions) {

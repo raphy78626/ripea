@@ -19,8 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ForeignKey;
-
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un expedient.
@@ -29,7 +28,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
  */
 @Entity
 @Table(name = "ipa_expedient")
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class ExpedientEntity extends NodeEntity {
 
 	@ManyToOne(

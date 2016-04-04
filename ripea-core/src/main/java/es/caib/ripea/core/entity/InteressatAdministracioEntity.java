@@ -7,7 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un interessat de tipus
@@ -16,7 +16,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public class InteressatAdministracioEntity extends InteressatEntity {
 
 	@Column(name = "identificador", length = 9)

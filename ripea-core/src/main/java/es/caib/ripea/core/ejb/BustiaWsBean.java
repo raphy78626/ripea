@@ -13,7 +13,7 @@ import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.service.ws.bustia.BustiaWs;
+import es.caib.ripea.core.api.service.ws.BustiaWs;
 import es.caib.ripea.core.service.ws.bustia.BustiaWsImpl;
 
 /**

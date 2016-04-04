@@ -22,8 +22,8 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import es.caib.ripea.core.service.ws.bustia.BustiaWs;
-import es.caib.ripea.core.service.ws.bustia.BustiaWs.BustiaContingutTipus;
+import es.caib.ripea.core.api.service.ws.BustiaWs;
+import es.caib.ripea.core.api.service.ws.BustiaWs.BustiaContingutTipus;
 
 /**
  * Classe de proves pel registre.

@@ -13,8 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ForeignKey;
-
-import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Classe del model de dades que representa un node.
@@ -24,7 +23,7 @@ import es.caib.ripea.core.audit.RipeaAuditingEntityListener;
 @Entity
 @Table(	name = "ipa_node")
 @Inheritance(strategy=InheritanceType.JOINED)
-@EntityListeners(RipeaAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public abstract class NodeEntity extends ContenidorEntity {
 
 	@ManyToOne(

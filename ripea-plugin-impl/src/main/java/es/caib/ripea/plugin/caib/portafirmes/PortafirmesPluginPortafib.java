@@ -4,6 +4,7 @@
 package es.caib.ripea.plugin.caib.portafirmes;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -237,7 +238,7 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 		return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
 	}*/
 
-	private PortaFIBPeticioDeFirmaWs getPeticioDeFirmaWs() throws Exception {
+	private PortaFIBPeticioDeFirmaWs getPeticioDeFirmaWs() throws MalformedURLException {
 		String webServiceUrl = getBaseUrl() + "/ws/v1/PortaFIBPeticioDeFirma";
 		URL wsdlUrl = new URL(webServiceUrl + "?wsdl");
 		PortaFIBPeticioDeFirmaWsService service = new PortaFIBPeticioDeFirmaWsService(wsdlUrl);
@@ -261,7 +262,7 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 		}
 		return api;
 	}
-	private PortaFIBUsuariEntitatWs getUsuariEntitatWs() throws Exception {
+	private PortaFIBUsuariEntitatWs getUsuariEntitatWs() throws MalformedURLException {
 		String webServiceUrl = getBaseUrl() + "/ws/v1/PortaFIBUsuariEntitat";
 		URL wsdlUrl = new URL(webServiceUrl + "?wsdl");
 		PortaFIBUsuariEntitatWsService service = new PortaFIBUsuariEntitatWsService(wsdlUrl);
