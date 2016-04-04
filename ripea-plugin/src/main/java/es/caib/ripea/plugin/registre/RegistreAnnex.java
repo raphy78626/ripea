@@ -16,7 +16,6 @@ public class RegistreAnnex {
 	private String titol;
 	private String fitxerNom;
 	private byte[] fitxerContingut;
-	private int fitxerTamany;
 	private String fitxerTipusMime;
 	private String ntiTipoDocumental;
 	private String validesa;
@@ -27,12 +26,8 @@ public class RegistreAnnex {
 	private Integer firmaMode;
 	private String firmaFitxerNom;
 	private byte[] firmaFitxerContingut;
-	private int firmaFitxerTamany;
-	private int firmaFitxerTipusMime;
-	private String firmaCertificat;
+	private String firmaFitxerTipusMime;
 	private String firmaCsv;
-	private String firmaTimestamp;
-	private String firmaValidacioOcsp;
 
 
 
@@ -53,12 +48,6 @@ public class RegistreAnnex {
 	}
 	public void setFitxerContingut(byte[] fitxerContingut) {
 		this.fitxerContingut = fitxerContingut;
-	}
-	public int getFitxerTamany() {
-		return fitxerTamany;
-	}
-	public void setFitxerTamany(int fitxerTamany) {
-		this.fitxerTamany = fitxerTamany;
 	}
 	public String getFitxerTipusMime() {
 		return fitxerTipusMime;
@@ -120,41 +109,17 @@ public class RegistreAnnex {
 	public void setFirmaFitxerContingut(byte[] firmaFitxerContingut) {
 		this.firmaFitxerContingut = firmaFitxerContingut;
 	}
-	public int getFirmaFitxerTamany() {
-		return firmaFitxerTamany;
-	}
-	public void setFirmaFitxerTamany(int firmaFitxerTamany) {
-		this.firmaFitxerTamany = firmaFitxerTamany;
-	}
-	public int getFirmaFitxerTipusMime() {
+	public String getFirmaFitxerTipusMime() {
 		return firmaFitxerTipusMime;
 	}
-	public void setFirmaFitxerTipusMime(int firmaFitxerTipusMime) {
+	public void setFirmaFitxerTipusMime(String firmaFitxerTipusMime) {
 		this.firmaFitxerTipusMime = firmaFitxerTipusMime;
-	}
-	public String getFirmaCertificat() {
-		return firmaCertificat;
-	}
-	public void setFirmaCertificat(String firmaCertificat) {
-		this.firmaCertificat = firmaCertificat;
 	}
 	public String getFirmaCsv() {
 		return firmaCsv;
 	}
 	public void setFirmaCsv(String firmaCsv) {
 		this.firmaCsv = firmaCsv;
-	}
-	public String getFirmaTimestamp() {
-		return firmaTimestamp;
-	}
-	public void setFirmaTimestamp(String firmaTimestamp) {
-		this.firmaTimestamp = firmaTimestamp;
-	}
-	public String getFirmaValidacioOcsp() {
-		return firmaValidacioOcsp;
-	}
-	public void setFirmaValidacioOcsp(String firmaValidacioOcsp) {
-		this.firmaValidacioOcsp = firmaValidacioOcsp;
 	}
 
 }

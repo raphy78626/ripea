@@ -14,7 +14,13 @@ import java.util.List;
  */
 public class RegistreAnotacio {
 
-	private String tipus;
+	public enum RegistreTipusEnum {
+		ENTRADA,
+		SORTIDA;
+	}
+
+	private RegistreTipusEnum tipus;
+	private String unitatAdministrativa;
 	private int numero;
 	private Date data;
 	private String identificador;
@@ -39,11 +45,17 @@ public class RegistreAnotacio {
 	private List<RegistreInteressat> interessats;
 	private List<RegistreAnnex> annexos;
 
-	public String getTipus() {
+	public RegistreTipusEnum getTipus() {
 		return tipus;
 	}
-	public void setTipus(String tipus) {
+	public void setTipus(RegistreTipusEnum tipus) {
 		this.tipus = tipus;
+	}
+	public String getUnitatAdministrativa() {
+		return unitatAdministrativa;
+	}
+	public void setUnitatAdministrativa(String unitatAdministrativa) {
+		this.unitatAdministrativa = unitatAdministrativa;
 	}
 	public int getNumero() {
 		return numero;
@@ -182,6 +194,13 @@ public class RegistreAnotacio {
 	}
 	public void setAnnexos(List<RegistreAnnex> annexos) {
 		this.annexos = annexos;
+	}
+
+	public boolean isEntrada() {
+		return RegistreTipusEnum.ENTRADA.equals(tipus);
+	}
+	public boolean isSortida() {
+		return RegistreTipusEnum.SORTIDA.equals(tipus);
 	}
 
 }

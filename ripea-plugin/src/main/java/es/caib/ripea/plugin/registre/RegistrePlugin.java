@@ -14,11 +14,29 @@ public interface RegistrePlugin {
 	 * 
 	 * @param identificador
 	 *            L'identificador de l'anotació a consultar.
+	 * @param entitat
+	 *            El codi de l'entitat a la quan pertany l'usuari.
 	 * @return La informació de l'anotació.
 	 * @throws SistemaExternException
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
 	public RegistreAnotacio entradaConsultar(
-			String identificador) throws SistemaExternException;
+			String identificador,
+			String entitat) throws SistemaExternException;
+
+	/**
+	 * Consulta la informació d'una anotació de sortida al registre.
+	 * 
+	 * @param identificador
+	 *            L'identificador de l'anotació a consultar.
+	 * @param entitat
+	 *            El codi de l'entitat a la quan pertany l'usuari.
+	 * @return La informació de l'anotació.
+	 * @throws SistemaExternException
+	 *            Si hi ha hagut algun problema per dur a terme l'acció.
+	 */
+	public RegistreAnotacio sortidaConsultar(
+			String identificador,
+			String entitat) throws SistemaExternException;
 
 }
