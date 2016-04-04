@@ -272,7 +272,14 @@
 					<plugin>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
-							<packagingExcludes>META-INF/context.xml,WEB-INF/classes/log4j.xml</packagingExcludes>
+							<packagingExcludes>META-INF/context.xml,WEB-INF/classes/log4j.xml,WEB-INF/classes/META-INF/resources/**</packagingExcludes>
+							<webResources>
+								<resource>
+									<filtering>false</filtering>
+									<targetPath>META-INF/resources</targetPath>
+									<directory>src/main/resources/META-INF/resources</directory>
+								</resource>
+							</webResources>
 						</configuration>
 					</plugin>
 					<plugin>
