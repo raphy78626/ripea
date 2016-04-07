@@ -16,8 +16,8 @@ $(document).ready(function() {
 			type: 'POST',
 			url: $('#form_enviarContingut').attr('action'),
 			data: {
-				entitat: "A04003003",
-				unitatAdministrativa: "A04003003",
+				entitat: "TEST1",
+				unitatAdministrativa: "A04013501",
 				tipus: "REGISTRE_ENTRADA",
 				referencia: "L19E2/2016"
 			},

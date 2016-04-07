@@ -117,21 +117,15 @@ $(document).ready(function() {
 				<thead>
 					<tr>
 						<th data-rdt-property="id" data-rdt-visible="false">#</th>
-						<th data-rdt-property="accio" data-rdt-template="cellAccioTemplate" data-rdt-sortable="false" width="10%">
-							<spring:message code="bustia.pendent.registre.columna.accio"/>
-							<script id="cellAccioTemplate" type="text/x-jsrender">
-								{{:~eval('accioText["' + accio + '"]')}}
-							</script>
-						</th>
 						<th data-rdt-property="tipus" data-rdt-template="cellTipusTemplate" data-rdt-sortable="false" width="10%">
 							<spring:message code="bustia.pendent.registre.columna.tipus"/>
 							<script id="cellTipusTemplate" type="text/x-jsrender">
 								{{:~eval('tipusText["' + tipus + '"]')}}
 							</script>
 						</th>
-						<th data-rdt-property="numero" data-rdt-sortable="false" width="10%"><spring:message code="bustia.pendent.registre.columna.numero"/></th>
+						<th data-rdt-property="identificador" data-rdt-sortable="false" width="10%"><spring:message code="bustia.pendent.registre.columna.identificador"/></th>
 						<th data-rdt-property="data" data-rdt-type="datetime" data-rdt-sortable="false" width="20%"><spring:message code="bustia.pendent.registre.columna.data"/></th>
-						<th data-rdt-property="assumpteResum" data-rdt-sortable="false" width="40%"><spring:message code="bustia.pendent.registre.columna.assumpte"/></th>
+						<th data-rdt-property="extracte" data-rdt-sortable="false" width="40%"><spring:message code="bustia.pendent.registre.columna.extracte"/></th>
 						<th data-rdt-property="id" data-rdt-sortable="false" data-rdt-template="cellAccionsRegistreTemplate" width="10%">
 							<script id="cellAccionsRegistreTemplate" type="text/x-jsrender">
 								<div class="dropdown">

@@ -20,15 +20,22 @@ import es.caib.ripea.core.api.dto.RegistreInteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreInteressatTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreTransportTipusEnumDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ws.BustiaWs;
+import es.caib.ripea.core.entity.BustiaEntity;
+import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.RegistreInteressatEntity;
 import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
+import es.caib.ripea.core.repository.BustiaRepository;
+import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.plugin.registre.RegistreAnnex;
 import es.caib.ripea.plugin.registre.RegistreAnotacio;
+import es.caib.ripea.plugin.registre.RegistreAnotacio.RegistreTipusEnum;
 import es.caib.ripea.plugin.registre.RegistreInteressat;
 
 /**
@@ -46,10 +53,16 @@ import es.caib.ripea.plugin.registre.RegistreInteressat;
 public class BustiaWsImpl implements BustiaWs {
 
 	@Resource
+	private EntitatRepository entitatRepository;
+	@Resource
 	private RegistreRepository registreRepository;
+	@Resource
+	private BustiaRepository bustiaRepository;
 
 	@Resource
 	private PluginHelper pluginHelper;
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 
 
@@ -71,16 +84,93 @@ public class BustiaWsImpl implements BustiaWs {
 			throw new ValidationException(
 					"Els enviaments de tipus DOCUMENT encara no estan suportats");
 		} else if (BustiaContingutTipus.REGISTRE_ENTRADA.equals(tipus)) {
+			EntitatEntity entitatEntity = entitatRepository.findByCodi(entitat);
+			if (entitatEntity == null) {
+				throw new ValidationException(
+						"No existeix cap entitat amb el codi especificat (" +
+						"codi=" + entitat + ")");
+			}
+			UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
+					entitat,
+					unitatAdministrativa);
+			if (unitat == null) {
+				throw new ValidationException(
+						"No existeix cap unitat administrativa amb el codi especificat (" +
+						"codi=" + unitatAdministrativa + ")");
+			}
 			RegistreAnotacio anotacio = pluginHelper.registreEntradaConsultar(
 					referencia,
-					entitat);
-			saveRegistreEntity(anotacio);
+					entitatEntity.getUnitatArrel());
+			String anotacioTipus;
+			if (RegistreTipusEnum.ENTRADA.equals(anotacio.getTipus())) {
+				anotacioTipus = RegistreTipusEnumDto.ENTRADA.getValor();
+			} else {
+				anotacioTipus = RegistreTipusEnumDto.SORTIDA.getValor();
+			}
+			RegistreEntity registreRepetit = registreRepository.findByTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaAndLlibre(
+					anotacioTipus,
+					anotacio.getUnitatAdministrativa(),
+					anotacio.getNumero(),
+					anotacio.getData(),
+					anotacio.getOficina(),
+					anotacio.getLlibre());
+			if (registreRepetit != null) {
+				throw new ValidationException(
+						"Aquesta anotació ja ha estat donada d'alta a l'aplicació (" +
+						"tipus=" + anotacio.getTipus() + ", " +
+						"unitatAdministrativa=" + anotacio.getUnitatAdministrativa() + ", " +
+						"numero=" + anotacio.getNumero() + ", " +
+						"data=" + anotacio.getData() + ", " +
+						"oficina=" + anotacio.getOficina() + ", " +
+						"llibre=" + anotacio.getLlibre() + ")");
+			}
+			saveRegistreEntity(
+					anotacio,
+					findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
+							entitatEntity,
+							unitat));
 		}
 	}
 
 
 
-	private RegistreEntity saveRegistreEntity(RegistreAnotacio anotacio) {
+	public BustiaEntity findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
+			EntitatEntity entitat,
+			UnitatOrganitzativaDto unitat) {
+		String unitatOrganitzativaCodi = unitat.getCodi();
+		BustiaEntity bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
+				entitat,
+				unitatOrganitzativaCodi);
+		// Si la bústia no existeix la crea
+		if (bustia == null) {
+			// Cerca la bústia superior
+			BustiaEntity bustiaPare = bustiaRepository.findByEntitatAndUnitatCodiAndPareNull(
+					entitat,
+					unitatOrganitzativaCodi);
+			// Si la bústia superior no existeix la crea
+			if (bustiaPare == null) {
+				bustiaPare = bustiaRepository.save(
+						BustiaEntity.getBuilder(
+								entitat,
+								unitat.getDenominacio(),
+								unitatOrganitzativaCodi,
+								null).build());
+			}
+			// Crea la nova bústia
+			BustiaEntity entity = BustiaEntity.getBuilder(
+					entitat,
+					unitat.getDenominacio() + " (default)",
+					unitatOrganitzativaCodi,
+					bustiaPare).build();
+			entity.updatePerDefecte(true);
+			bustia = bustiaRepository.save(entity);
+		}
+		return bustia;
+	}
+
+	private RegistreEntity saveRegistreEntity(
+			RegistreAnotacio anotacio,
+			BustiaEntity bustia) {
 		RegistreEntity entity = RegistreEntity.getBuilder(
 				RegistreTipusEnumDto.ENTRADA,
 				anotacio.getUnitatAdministrativa(),
@@ -91,7 +181,8 @@ public class BustiaWsImpl implements BustiaWs {
 				anotacio.getLlibre(),
 				anotacio.getAssumpteTipus(),
 				anotacio.getIdioma(),
-				anotacio.getUsuariNom()).
+				anotacio.getUsuariNom(),
+				bustia).
 		extracte(anotacio.getExtracte()).
 		assumpteCodi(anotacio.getAssumpteCodi()).
 		assumpteReferencia(anotacio.getAssumpteReferencia()).

@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +61,8 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 			RegistreAnotacio anotacio = toRegistreAnotacio(registro);
 			anotacio.setTipus(RegistreTipusEnum.ENTRADA);
 			anotacio.setUnitatAdministrativa(registro.getDestino());
+			// TODO eliminar una vegada arreglades problemes amb REGWEB
+			arreglarAnotacio(anotacio);
 			return anotacio;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
@@ -81,6 +84,8 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 			RegistreAnotacio anotacio = toRegistreAnotacio(registro);
 			anotacio.setTipus(RegistreTipusEnum.SORTIDA);
 			anotacio.setUnitatAdministrativa(registro.getOrigen());
+			// TODO eliminar una vegada arreglades problemes amb REGWEB
+			arreglarAnotacio(anotacio);
 			return anotacio;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
@@ -184,6 +189,17 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 			interessat.setCanalPreferent(interesado.getCanal().toString());
 		interessat.setObservacions(interesado.getObservaciones());
 		return interessat;
+	}
+
+	private void arreglarAnotacio(
+			RegistreAnotacio anotacio) {
+		anotacio.setIdioma("ca");
+		anotacio.setDocumentacioFisica("1");
+		anotacio.setLlibre("1234");
+		//anotacio.setAssumpteTipus("");
+		anotacio.setOficina("O00009560");
+		anotacio.setUnitatAdministrativa("A04013612");
+		anotacio.setData(new Date(0));
 	}
 
 	private RegWebRegistroEntradaWs getRegistroEntradaWs() throws MalformedURLException {

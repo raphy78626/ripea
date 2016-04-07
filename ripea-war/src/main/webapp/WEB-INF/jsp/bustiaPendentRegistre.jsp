@@ -34,14 +34,44 @@
 		<div class="tab-pane active in" id="informacio">
 			<dl class="dl-horizontal">
 				<dt><spring:message code="contenidor.registre.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${registre.tipus}"/></dd>
-				<dt><spring:message code="contenidor.registre.camp.numero"/></dt><dd>${registre.numero}</dd>
+				<c:if test="${registre.tipus == 'ENTRADA'}">
+					<dt><spring:message code="contenidor.registre.camp.desti"/></dt><dd>${registre.unitatAdministrativa}</dd>				
+				</c:if>
+				<c:if test="${registre.tipus == 'SORTIDA'}">
+					<dt><spring:message code="contenidor.registre.camp.origen"/></dt><dd>${registre.unitatAdministrativa}</dd>
+				</c:if>
+				<dt><spring:message code="contenidor.registre.camp.numero"/></dt><dd>${registre.identificador}</dd>
 				<dt><spring:message code="contenidor.registre.camp.data"/></dt><dd><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-				<dt><spring:message code="contenidor.registre.camp.assumpte"/></dt><dd>${registre.assumpteResum}</dd>
-				<dt><spring:message code="contenidor.registre.camp.origen"/></dt><dd><c:choose><c:when test="${not empty registre.entitatNom}">${registre.entitatNom}</c:when><c:otherwise>${registre.entitatCodi}</c:otherwise></c:choose></dd>
+				<dt><spring:message code="contenidor.registre.camp.extracte"/></dt><dd>${registre.extracte}</dd>
+				
 			</dl>
 		</div>
 		<div class="tab-pane" id="interessats">
-			
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th><spring:message code="contenidor.registre.camp.interessat.tipus"/></th>
+						<th><spring:message code="contenidor.registre.camp.interessat.document"/></th>
+						<th><spring:message code="contenidor.registre.camp.interessat.nom"/></th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="interessat" items="${registre.interessats}">
+						<tr>
+							<td><spring:message code="registre.interessat.tipus.enum.${interessat.tipus}"/></td>
+							<td>${interessat.documentTipus}: ${interessat.documentNum}</td>
+							<c:choose>
+								<c:when test="${interessat.tipus == 'PERSONA_FIS'}">
+									<td>${interessat.nom} ${interessat.llinatge1} ${interessat.llinatge2}</td>
+								</c:when>
+								<c:otherwise>
+									<td>${interessat.raoSocial}</td>
+								</c:otherwise>
+							</c:choose>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
 		</div>
 		<div class="tab-pane" id="annexos">
 			

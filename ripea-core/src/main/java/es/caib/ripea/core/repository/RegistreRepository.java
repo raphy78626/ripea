@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,5 +40,13 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    contenidor.id")
 	List<Object[]> countByContenidorsAndNotRebutjat(
 			@Param("contenidors") List<? extends ContenidorEntity> contenidors);
+
+	RegistreEntity findByTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaAndLlibre(
+			String tipus,
+			String unitatAdministrativa,
+			int numero,
+			Date data,
+			String oficina,
+			String llibre);
 
 }

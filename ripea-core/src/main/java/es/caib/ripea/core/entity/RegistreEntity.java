@@ -42,10 +42,11 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 						name = "ipa_reg_mult_uk",
 						columnNames = {
 								"tipus",
-								"identificador",
+								"unitat_adm",
+								"numero",
+								"data",
 								"oficina",
-								"llibre",
-								"data"})})
+								"llibre"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends RipeaAuditable<Long> {
 
@@ -113,7 +114,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreAnnexEntity> annexos = new ArrayList<RegistreAnnexEntity>();
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "contenidor_id")
 	@ForeignKey(name = "ipa_contenidor_registre_fk")
 	private ContenidorEntity contenidor;
@@ -124,6 +125,9 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 
 	public RegistreTipusEnumDto getTipus() {
 		return RegistreTipusEnumDto.valorAsEnum(tipus);
+	}
+	public String getUnitatAdministrativa() {
+		return unitatAdministrativa;
 	}
 	public int getNumero() {
 		return numero;
@@ -221,7 +225,8 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			String llibre,
 			String assumpteTipus,
 			String idioma,
-			String usuariNom) {
+			String usuariNom,
+			ContenidorEntity contenidor) {
 		return new Builder(
 				tipus,
 				unitatAdministrativa,
@@ -232,7 +237,8 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				llibre,
 				assumpteTipus,
 				idioma,
-				usuariNom);
+				usuariNom,
+				contenidor);
 	}
 
 	/**
@@ -252,7 +258,8 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				String llibre,
 				String assumpteTipus,
 				String idioma,
-				String usuariNom) {
+				String usuariNom,
+				ContenidorEntity contenidor) {
 			built = new RegistreEntity();
 			built.tipus = tipus.getValor();
 			built.unitatAdministrativa = unitatAdministrativa;
@@ -264,6 +271,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			built.assumpteTipus = assumpteTipus;
 			built.idioma = idioma;
 			built.usuariNom = usuariNom;
+			built.contenidor = contenidor;
 		}
 		public Builder extracte(String extracte) {
 			built.extracte = extracte;
@@ -325,10 +333,6 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 		}
 		public Builder motiuRebuig(String motiuRebuig) {
 			built.motiuRebuig = motiuRebuig;
-			return this;
-		}
-		public Builder contenidor(ContenidorEntity contenidor) {
-			built.contenidor = contenidor;
 			return this;
 		}
 		public RegistreEntity build() {

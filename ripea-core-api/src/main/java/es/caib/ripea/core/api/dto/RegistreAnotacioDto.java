@@ -18,6 +18,7 @@ public class RegistreAnotacioDto implements Serializable {
 
 	private Long id;
 	private RegistreTipusEnumDto tipus;
+	private String unitatAdministrativa;
 	private int numero;
 	private Date data;
 	private String identificador;
@@ -58,6 +59,12 @@ public class RegistreAnotacioDto implements Serializable {
 	}
 	public void setTipus(RegistreTipusEnumDto tipus) {
 		this.tipus = tipus;
+	}
+	public String getUnitatAdministrativa() {
+		return unitatAdministrativa;
+	}
+	public void setUnitatAdministrativa(String unitatAdministrativa) {
+		this.unitatAdministrativa = unitatAdministrativa;
 	}
 	public int getNumero() {
 		return numero;
