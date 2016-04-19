@@ -139,31 +139,29 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<!--plugin>
-				<groupId>org.apache.cxf</groupId>
-				<artifactId>cxf-codegen-plugin</artifactId>
-				<version>${cxf.version}</version>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxws-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>generate-sources</id>
+						<id>generate-reports-ws-code</id>
 						<phase>generate-sources</phase>
-						<configuration>
-							<sourceRoot>${project.basedir}/src/main/java/</sourceRoot>
-							<wsdlOptions>
-								<wsdlOption>
-									<wsdl>${project.basedir}/../ripea-plugin-impl/src/main/resources/es/caib/ripea/plugin/unitat/ObtenerUnidadesImpl.wsdl</wsdl>
-								</wsdlOption>
-							</wsdlOptions>
-							<defaultOptions>
-								<frontEnd>jaxws21</frontEnd>
-							</defaultOptions>
-						</configuration>
 						<goals>
-							<goal>wsdl2java</goal>
+							<goal>wsimport</goal>
 						</goals>
+						<configuration>
+							<wsdlUrls>
+								<wsdlUrl>${basedir}/wsdl/cws/CWS.wsdl</wsdlUrl>
+								<wsdlUrl>${basedir}/wsdl/dir3caib/Dir3CaibObtenerUnidades.wsdl</wsdlUrl>
+								<wsdlUrl>${basedir}/wsdl/sistra-zonaper/BackofficeFacade.wsdl</wsdlUrl>
+								<wsdlUrl>${basedir}/wsdl/sistra-regtel/BackofficeFacade.wsdl</wsdlUrl>
+							</wsdlUrls>
+							<verbose>true</verbose>
+							<sourceDestDir>${basedir}/src/main/java</sourceDestDir>
+						</configuration>
 					</execution>
 				</executions>
-			</plugin-->
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
