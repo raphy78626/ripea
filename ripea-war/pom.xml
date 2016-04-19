@@ -103,6 +103,66 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>jquery</artifactId>
+			<version>1.12.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>3.3.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>font-awesome</artifactId>
+			<version>4.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>datatables.net</artifactId>
+			<version>1.10.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>datatables.net-bs</artifactId>
+			<version>1.10.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>datatables.net-scroller</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>datatables.net-select</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>datatables.net-select-bs</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>select2</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>select2-bootstrap-theme</artifactId>
+			<version>0.1.0-beta.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>jsrender</artifactId>
+			<version>1.0.0-rc.70</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>jstree</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
@@ -125,6 +185,7 @@
 				<application.context>application-context-tomcat.xml</application.context>
 				<enable.tomcat.ws.start>--&gt;</enable.tomcat.ws.start>
 				<enable.tomcat.ws.end>&lt;!--</enable.tomcat.ws.end>
+				<mvc.resources.classpath>classpath:</mvc.resources.classpath>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -154,66 +215,6 @@
 					<groupId>javax.transaction</groupId>
 					<artifactId>jta</artifactId>
 					<version>1.1</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>jquery</artifactId>
-					<version>1.12.0</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>bootstrap</artifactId>
-					<version>3.3.6</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>font-awesome</artifactId>
-					<version>4.5.0</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>datatables.net</artifactId>
-					<version>1.10.11</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>datatables.net-bs</artifactId>
-					<version>1.10.11</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>datatables.net-scroller</artifactId>
-					<version>1.4.0</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>datatables.net-select</artifactId>
-					<version>1.1.2</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>datatables.net-select-bs</artifactId>
-					<version>1.1.2</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>select2</artifactId>
-					<version>4.0.1</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>select2-bootstrap-theme</artifactId>
-					<version>0.1.0-beta.4</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>jsrender</artifactId>
-					<version>1.0.0-rc.70</version>
-				</dependency>
-				<dependency>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>jstree</artifactId>
-					<version>3.2.1</version>
 				</dependency>
 				<dependency>
 					<groupId>es.caib</groupId>
@@ -251,6 +252,7 @@
 			</activation>
 			<properties>
 				<application.context>application-context-jboss.xml</application.context>
+				<mvc.resources.classpath></mvc.resources.classpath>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -272,7 +274,18 @@
 					<plugin>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
-							<packagingExcludes>META-INF/context.xml,WEB-INF/classes/log4j.xml,WEB-INF/classes/META-INF/resources/**</packagingExcludes>
+							<packagingExcludes>
+								META-INF/context.xml,
+								WEB-INF/classes/log4j.xml,
+								WEB-INF/classes/META-INF/resources/**,
+								WEB-INF/lib/jquery*,
+								WEB-INF/lib/bootstrap*,
+								WEB-INF/lib/font-awesome*,
+								WEB-INF/lib/datatables*,
+								WEB-INF/lib/select2*,
+								WEB-INF/lib/jsrender*,
+								WEB-INF/lib/jstree*
+							</packagingExcludes>
 							<webResources>
 								<resource>
 									<filtering>false</filtering>
@@ -283,12 +296,22 @@
 						</configuration>
 					</plugin>
 					<plugin>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<configuration>
-							<excludes>
-								<exclude>es/caib/ripea/war/cxf/**</exclude>
-							</excludes>
-						</configuration>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack dependencies</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>unpack-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeGroupIds>org.webjars</includeGroupIds>
+									<includes>**/*</includes>
+									<outputDirectory>${project.build.directory}/ripea</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
