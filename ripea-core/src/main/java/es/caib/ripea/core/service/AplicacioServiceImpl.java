@@ -41,7 +41,7 @@ import es.caib.ripea.plugin.usuari.DadesUsuari;
 public class AplicacioServiceImpl implements AplicacioService {
 
 	private static final MajorVersion MAJOR_VERSION = MajorVersion.V0_8;
-	private static final int MINOR_VERSION = 2;
+	private static final int MINOR_VERSION = 3;
 
 	private enum MajorVersion {
 		V0_1, V0_2, V0_3, V0_4, V0_5, V0_6, V0_7, V0_8
@@ -131,7 +131,6 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Override
 	public List<UsuariDto> findUsuariAmbText(String text) {
 		logger.debug("Consultant usuaris amb text (text=" + text + ")");
-		
 		return conversioTipusHelper.convertirList(
 				usuariRepository.findByText(text),
 				UsuariDto.class);

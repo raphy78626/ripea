@@ -28,11 +28,7 @@ import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
-import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
-import es.caib.ripea.plugin.ciutada.CiutadaPersona;
-import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.custodia.CustodiaPlugin;
@@ -66,7 +62,7 @@ public class PluginHelper {
 	private ConversioPlugin conversioPlugin;
 	private CustodiaPlugin custodiaPlugin;
 	private RegistrePlugin registrePlugin;
-	private CiutadaPlugin ciutadaPlugin;
+	// private CiutadaPlugin ciutadaPlugin;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -838,7 +834,7 @@ public class PluginHelper {
 		}
 	}
 
-	public void sistraExpedientCrear(
+	/*public void sistraExpedientCrear(
 			ExpedientEntity expedient,
 			long unitatAdministrativa,
 			String idioma,
@@ -895,7 +891,7 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 		}
-	}
+	}*/
 
 
 
@@ -1052,7 +1048,7 @@ public class PluginHelper {
 		}
 		return registrePlugin;
 	}
-	private CiutadaPlugin getCiutadaPlugin() {
+	/*private CiutadaPlugin getCiutadaPlugin() {
 		if (ciutadaPlugin == null) {
 			String pluginClass = getPropertyPluginCiutada();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -1068,7 +1064,7 @@ public class PluginHelper {
 			}
 		}
 		return ciutadaPlugin;
-	}
+	}*/
 
 	private String getPropertyPluginDadesUsuari() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.dades.usuari.class");
@@ -1091,8 +1087,8 @@ public class PluginHelper {
 	private String getPropertyPluginRegistre() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.registre.class");
 	}
-	private String getPropertyPluginCiutada() {
+	/*private String getPropertyPluginCiutada() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.ciutada.class");
-	}
+	}*/
 
 }
