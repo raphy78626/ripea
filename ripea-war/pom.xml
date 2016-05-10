@@ -210,7 +210,6 @@
 				<application.context>application-context-tomcat.xml</application.context>
 				<enable.tomcat.ws.start>--&gt;</enable.tomcat.ws.start>
 				<enable.tomcat.ws.end>&lt;!--</enable.tomcat.ws.end>
-				<mvc.resources.classpath>classpath:</mvc.resources.classpath>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -276,7 +275,6 @@
 			</activation>
 			<properties>
 				<application.context>application-context-jboss.xml</application.context>
-				<mvc.resources.classpath></mvc.resources.classpath>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -344,7 +342,6 @@
 							<directory>${basedir}/src/main/webapp/WEB-INF</directory>
 							<includes>
 								<include>web.xml</include>
-								<include>emiserv-servlet.xml</include>
 							</includes>
 							<targetPath>WEB-INF</targetPath>
 							<filtering>true</filtering>
