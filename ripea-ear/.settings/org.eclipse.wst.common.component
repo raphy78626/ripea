@@ -233,10 +233,16 @@
         <dependent-module archiveName="jaxrpc-api-1.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/javax/xml/jaxrpc-api/1.1/jaxrpc-api-1.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="portafib-ws-api-1.0.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/portafib/portafib-ws-api/1.0.0/portafib-ws-api-1.0.0.jar">
+        <dependent-module archiveName="portafib-ws-api-1.1.0.jar" deploy-path="/" handle="module:/resource/portafib-ws-api/portafib-ws-api">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="regweb3-ws-api-3.0.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/regweb3/regweb3-ws-api/3.0.0/regweb3-ws-api-3.0.0.jar">
+        <dependent-module archiveName="portafib-utils-1.1.0.jar" deploy-path="/" handle="module:/resource/portafib-utils/portafib-utils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="genapp-core-1.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/fundaciobit/genapp/genapp-core/1.0/genapp-core-1.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="regweb3-ws-api-3.0.5.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/regweb3/regweb3-ws-api/3.0.5/regweb3-ws-api-3.0.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="valcert-sar-axis-1.5.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/valcert-sar-axis/1.5/valcert-sar-axis-1.5.jar">

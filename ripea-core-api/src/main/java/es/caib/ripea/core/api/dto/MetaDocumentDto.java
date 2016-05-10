@@ -17,13 +17,13 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	private boolean globalExpedient;
 	private MultiplicitatEnumDto globalMultiplicitat;
 	private boolean globalReadOnly;
-	private boolean firmaAppletActiva;
 	private String signaturaTipusMime;
 	private boolean firmaPortafirmesActiva;
 	private String portafirmesDocumentTipus;
 	private String portafirmesFluxId;
 	private String[] portafirmesResponsables;
 	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
+	private boolean firmaPassarelaActiva;
 	private String custodiaPolitica;
 	private String plantillaNom;
 	private String plantillaContentType;
@@ -45,12 +45,6 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	}
 	public void setGlobalReadOnly(boolean globalReadOnly) {
 		this.globalReadOnly = globalReadOnly;
-	}
-	public boolean isFirmaAppletActiva() {
-		return firmaAppletActiva;
-	}
-	public void setFirmaAppletActiva(boolean firmaAppletActiva) {
-		this.firmaAppletActiva = firmaAppletActiva;
 	}
 	public String getSignaturaTipusMime() {
 		return signaturaTipusMime;
@@ -87,6 +81,12 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	}
 	public void setPortafirmesFluxTipus(MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus) {
 		this.portafirmesFluxTipus = portafirmesFluxTipus;
+	}
+	public boolean isFirmaPassarelaActiva() {
+		return firmaPassarelaActiva;
+	}
+	public void setFirmaPassarelaActiva(boolean firmaPassarelaActiva) {
+		this.firmaPassarelaActiva = firmaPassarelaActiva;
 	}
 	public String getCustodiaPolitica() {
 		return custodiaPolitica;

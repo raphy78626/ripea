@@ -16,6 +16,7 @@ public class UsuariDto implements Serializable {
 	private String codi;
 	private String nom;
 	private String nif;
+	private String email;
 	private String[] rols;
 
 	public String getCodi() {
@@ -35,6 +36,12 @@ public class UsuariDto implements Serializable {
 	}
 	public void setNif(String nif) {
 		this.nif = nif;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	public String[] getRols() {
 		return rols;

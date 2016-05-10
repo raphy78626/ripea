@@ -495,7 +495,7 @@ $(document).ready(function() {
 														</c:if>
 													</c:if>
 													<a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/descarregar" class="btn btn-default"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
-													<c:if test="${not empty contenidor.metaNode and (contenidor.metaNode.firmaPortafirmesActiva or contenidor.metaNode.firmaAppletActiva)}">
+													<c:if test="${not empty contenidor.metaNode and (contenidor.metaNode.firmaPortafirmesActiva or contenidor.metaNode.firmaPassarelaActiva)}">
 														<div class="btn-group">
   															<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 																<spring:message code="contenidor.contingut.boto.firma.accions"/> <span class="caret"></span>
@@ -522,10 +522,10 @@ $(document).ready(function() {
 																		</c:otherwise>
 																	</c:choose>
 																</c:if>
-																<c:if test="${contenidor.metaNode.firmaAppletActiva and not versio.firmaEstatPortafirmesBloquejat}">
+																<c:if test="${contenidor.metaNode.firmaPassarelaActiva and not versio.firmaEstatBloquejarEnviaments}">
 																	<c:choose>
 																		<c:when test="${not versio.custodiat}">
-																			<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/firmaApplet" data-rdt-link-modal="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contenidor.contingut.boto.firma.applet"/></a></li>
+																			<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/firmaPassarela" data-rdt-link-modal="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contenidor.contingut.boto.firma.passarela"/></a></li>
 																		</c:when>
 																		<c:otherwise>
 																			<li><a href="../contenidor/${contenidor.id}/document/${contenidor.id}/versio/${versio.versio}/custodia/esborrar"><span class="fa fa-remove"></span>&nbsp;<spring:message code="contenidor.contingut.boto.custodia.esborrar"/></a></li>
@@ -695,7 +695,7 @@ $(document).ready(function() {
 											<div class="dropdown">
 												<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 												<ul class="dropdown-menu">
-													<li><a href="../contenidor/${contenidor.id}/registre/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.registre.accio.detalls"/></a></li>
+													<li><a href="../contenidor/${contenidor.id}/registre/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
 													<li><a href="../contenidor/${contenidor.id}/registre/{{:id}}/log" data-rdt-link-modal="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 												</ul>
 											</div>

@@ -79,12 +79,12 @@
   		<dependency>
 			<groupId>es.caib.portafib</groupId>
 			<artifactId>portafib-ws-api</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 		</dependency>
   		<dependency>
 			<groupId>es.caib.regweb3</groupId>
 			<artifactId>regweb3-ws-api</artifactId>
-			<version>3.0.0</version>
+			<version>3.0.5</version>
 		</dependency>
   		<dependency>
 			<groupId>es.caib</groupId>
@@ -221,17 +221,17 @@
 			<url>http://portafib.sourceforge.net/maven/</url>
 		</repository-->
 		<repository>
-			<name>PortaFIB Maven Repository</name>
+			<name>PortaFIB Maven repository</name>
 			<id>es.caib.portafib</id>
-			<url>https://github.com/GovernIB/portafib/tree/gh-pages/maven</url>
+			<url>https://github.com/GovernIB/portafib/raw/gh-pages/maven</url>
 		</repository>
 		<repository>
-			<name>Regweb Maven Repository</name>
+			<name>Regweb Maven repository</name>
 			<id>es.caib.regweb</id>
-			<url>http://registre.sourceforge.net/maven/</url>
+			<url>https://github.com/GovernIB/registre/raw/gh-pages/maven</url>
 		</repository>
 		<repository>
-			<name>Local Maven Repository</name>
+			<name>Local Maven repository</name>
 			<id>es.caib.ripea.local</id>
 			<url>file://${basedir}/../local-repo</url>
 		</repository>

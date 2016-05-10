@@ -38,12 +38,11 @@
 				<dd>${integracio.errorDescripcio}</dd>
 				<dt><spring:message code="integracio.detall.camp.excepcio.missatge"/></dt>
 				<dd>${integracio.excepcioMessage}</dd>
-				<dt><spring:message code="integracio.detall.camp.excepcio.stacktrace"/></dt>
-				<dd>
-					<pre>${integracio.excepcioStacktrace}</pre>
-				</dd>
 			</c:if>
 		</dl>
+		<c:if test="${integracio.estat == 'ERROR' && not empty integracio.excepcioMessage}">
+			<pre style="height:300px">${integracio.excepcioStacktrace}</pre>
+		</c:if>
 	</c:if>
 	<div id="modal-botons">
 		<a href="<c:url value="/integracio/${codiActual}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>

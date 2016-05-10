@@ -35,8 +35,6 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	private MultiplicitatEnumDto globalMultiplicitat;
 	@Column(name = "global_readonly")
 	private boolean globalReadOnly;
-	@Column(name = "firma_applet")
-	private boolean firmaAppletActiva;
 	@Column(name = "signatura_tipmime", length = 64)
 	private String signaturaTipusMime;
 	@Column(name = "firma_pfirma")
@@ -52,6 +50,8 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
 	@Column(name = "custodia_politica", length = 64)
 	private String custodiaPolitica;
+	@Column(name = "firma_passarela")
+	private boolean firmaPassarelaActiva;
 	@Column(name = "plantilla_nom", length = 256)
 	private String plantillaNom;
 	@Column(name = "plantilla_content_type", length = 256)
@@ -72,9 +72,6 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	public boolean isGlobalReadOnly() {
 		return globalReadOnly;
 	}
-	public boolean isFirmaAppletActiva() {
-		return firmaAppletActiva;
-	}
 	public String getSignaturaTipusMime() {
 		return signaturaTipusMime;
 	}
@@ -94,6 +91,9 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	}
 	public MetaDocumentFirmaFluxTipusEnumDto getPortafirmesFluxTipus() {
 		return portafirmesFluxTipus;
+	}
+	public boolean isFirmaPassarelaActiva() {
+		return firmaPassarelaActiva;
 	}
 	public String getCustodiaPolitica() {
 		return custodiaPolitica;
@@ -121,7 +121,7 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			String portafirmesFluxId,
 			String[] portafirmesResponsables,
 			MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus,
-			boolean firmaAppletActiva,
+			boolean firmaPassarelaActiva,
 			String signaturaTipusMime) {
 		update(
 				codi,
@@ -136,7 +136,7 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 		this.portafirmesFluxId = portafirmesFluxId;
 		this.portafirmesResponsables = getResponsablesFromArray(portafirmesResponsables);
 		this.portafirmesFluxTipus = portafirmesFluxTipus;
-		this.firmaAppletActiva = firmaAppletActiva;
+		this.firmaPassarelaActiva = firmaPassarelaActiva;
 		this.signaturaTipusMime = signaturaTipusMime;
 	}
 

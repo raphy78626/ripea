@@ -42,7 +42,7 @@
 		</dl>
 		<c:if test="${not empty excepcio.stacktrace}">
 			<div class="panel-body" >
-				<pre>${excepcio.stacktrace}</pre>
+				<pre style="height:300px">${excepcio.stacktrace}</pre>
 			</div>
 		</c:if>
 	</c:if>

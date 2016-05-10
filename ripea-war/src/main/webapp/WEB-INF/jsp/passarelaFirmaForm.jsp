@@ -5,15 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<%
-pageContext.setAttribute(
-		"portafirmesPrioritatEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto.class,
-				"portafirmes.prioritat.enum."));
-%>
-
-<c:set var="titol"><spring:message code="contenidor.document.portafirmes.titol"/></c:set>
+<c:set var="titol"><spring:message code="contenidor.document.passarelafirma.titol"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
@@ -30,17 +22,16 @@ pageContext.setAttribute(
 	<c:if test="${documentVersio.arxiuNom != documentVersio.portafirmesConversioArxiuNom}">
 		<div class="alert well-sm alert-warning alert-dismissable">
 			<span class="fa fa-exclamation-triangle"></span>
-			<spring:message code="contenidor.document.portafirmes.conversio.avis"/>
-			<a data-rdt-link-modal="true" class="btn btn-xs btn-default pull-right" href="../pdf">
-				<spring:message code="contenidor.document.portafirmes.conversio.boto.previsualitzar"/>
+			<spring:message code="contenidor.document.passarelafirma.conversio.avis"/>
+			<a data-rdt-link-modal="true" class="btn btn-xs btn-default pull-right" href="pdf">
+				<spring:message code="contenidor.document.passarelafirma.conversio.boto.previsualitzar"/>
 			</a>
 		</div>
 	</c:if>
-	<c:set var="formAction"><rip:modalUrl value="/contenidor/${document.id}/document/${document.id}/versio/${documentVersio.versio}/portafirmes/upload"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="portafirmesEnviarCommand" role="form">
-		<rip:inputText name="motiu" textKey="contenidor.document.portafirmes.camp.motiu" required="true"/>
-		<rip:inputSelect name="prioritat" textKey="contenidor.document.portafirmes.camp.prioritat" optionItems="${portafirmesPrioritatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
-		<rip:inputDate name="dataCaducitat" textKey="contenidor.document.portafirmes.camp.data.caducitat" required="true"/>
+	<c:set var="formAction"><rip:modalUrl value="/contenidor/${document.id}/document/${document.id}/versio/${documentVersio.versio}/firmaPassarela"/></c:set>
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="passarelaFirmaEnviarCommand" role="form">
+		<rip:inputText name="motiu" textKey="contenidor.document.passarelafirma.camp.motiu" required="true"/>
+		<rip:inputText name="lloc" textKey="contenidor.document.passarelafirma.camp.lloc" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>
 			<a href="<c:url value="/contenidor/${document.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>

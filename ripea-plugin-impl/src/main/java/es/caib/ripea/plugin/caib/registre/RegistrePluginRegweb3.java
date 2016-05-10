@@ -31,9 +31,9 @@ import es.caib.regweb3.ws.api.v3.RegWebRegistroEntradaWs;
 import es.caib.regweb3.ws.api.v3.RegWebRegistroEntradaWsService;
 import es.caib.regweb3.ws.api.v3.RegWebRegistroSalidaWs;
 import es.caib.regweb3.ws.api.v3.RegWebRegistroSalidaWsService;
-import es.caib.regweb3.ws.api.v3.RegistroEntradaWs;
-import es.caib.regweb3.ws.api.v3.RegistroSalidaWs;
-import es.caib.regweb3.ws.api.v3.RegistroWs;
+import es.caib.regweb3.ws.api.v3.RegistroEntradaResponseWs;
+import es.caib.regweb3.ws.api.v3.RegistroResponseWs;
+import es.caib.regweb3.ws.api.v3.RegistroSalidaResponseWs;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.registre.RegistreAnnex;
 import es.caib.ripea.plugin.registre.RegistreAnotacio;
@@ -54,13 +54,13 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 			String identificador,
 			String entitat) throws SistemaExternException {
 		try {
-			RegistroEntradaWs registro = getRegistroEntradaWs().obtenerRegistroEntrada(
+			RegistroEntradaResponseWs registro = getRegistroEntradaWs().obtenerRegistroEntrada(
 					identificador,
 					"e43110511r", // getUsername();
 					entitat);
 			RegistreAnotacio anotacio = toRegistreAnotacio(registro);
 			anotacio.setTipus(RegistreTipusEnum.ENTRADA);
-			anotacio.setUnitatAdministrativa(registro.getDestino());
+			anotacio.setUnitatAdministrativa(registro.getDestinoCodigo());
 			// TODO eliminar una vegada arreglades problemes amb REGWEB
 			arreglarAnotacio(anotacio);
 			return anotacio;
@@ -77,13 +77,13 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 			String identificador,
 			String entitat) throws SistemaExternException {
 		try {
-			RegistroSalidaWs registro = getRegistroSalidaWs().obtenerRegistroSalida(
+			RegistroSalidaResponseWs registro = getRegistroSalidaWs().obtenerRegistroSalida(
 					identificador,
 					"e43110511r", // getUsername();
 					entitat);
 			RegistreAnotacio anotacio = toRegistreAnotacio(registro);
 			anotacio.setTipus(RegistreTipusEnum.SORTIDA);
-			anotacio.setUnitatAdministrativa(registro.getOrigen());
+			anotacio.setUnitatAdministrativa(registro.getOrigenCodigo());
 			// TODO eliminar una vegada arreglades problemes amb REGWEB
 			arreglarAnotacio(anotacio);
 			return anotacio;
@@ -98,27 +98,27 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 
 
 	private RegistreAnotacio toRegistreAnotacio(
-			RegistroWs registro) {
+			RegistroResponseWs registro) {
 		RegistreAnotacio anotacio = new RegistreAnotacio();
-		anotacio.setNumero(registro.getNumero());
-		anotacio.setData(registro.getFecha());
+		anotacio.setNumero(registro.getNumeroRegistro());
+		anotacio.setData(registro.getFechaRegistro());
 		anotacio.setIdentificador(registro.getNumeroRegistroFormateado());
-		anotacio.setOficina(registro.getOficina());
-		anotacio.setLlibre(registro.getLibro());
+		anotacio.setOficina(registro.getOficinaCodigo());
+		anotacio.setLlibre(registro.getLibroCodigo());
 		anotacio.setExtracte(registro.getExtracto());
-		anotacio.setAssumpteTipus(registro.getTipoAsunto());
-		anotacio.setAssumpteCodi(registro.getCodigoAsunto());
+		anotacio.setAssumpteTipus(registro.getTipoAsuntoCodigo());
+		anotacio.setAssumpteCodi(registro.getCodigoAsuntoCodigo());
 		anotacio.setAssumpteReferencia(registro.getRefExterna());
 		anotacio.setAssumpteNumExpedient(registro.getNumExpediente());
-		anotacio.setIdioma(registro.getIdioma());
-		anotacio.setTransportTipus(registro.getTipoTransporte());
+		anotacio.setIdioma(registro.getIdiomaCodigo());
+		anotacio.setTransportTipus(registro.getTipoTransporteCodigo());
 		anotacio.setTransportNumero(registro.getNumTransporte());
 		anotacio.setUsuariNom(registro.getCodigoUsuario());
 		anotacio.setUsuariContacte(registro.getContactoUsuario());
 		anotacio.setAplicacioCodi(registro.getAplicacion());
 		anotacio.setAplicacioVersio(registro.getVersion());
-		if (registro.getDocFisica() != null)
-			anotacio.setDocumentacioFisica(registro.getDocFisica().toString());
+		if (registro.getDocFisicaCodigo() != null)
+			anotacio.setDocumentacioFisica(registro.getDocFisicaCodigo().toString());
 		anotacio.setObservacions(registro.getObservaciones());
 		anotacio.setExposa(registro.getExpone());
 		anotacio.setSolicita(registro.getSolicita());

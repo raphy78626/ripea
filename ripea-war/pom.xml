@@ -103,6 +103,31 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.fundaciobit.plugins</groupId>
+			<artifactId>plugins-api</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.fundaciobit.plugins</groupId>
+			<artifactId>plugin-signatureweb-api</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.fundaciobit.plugins</groupId>
+			<artifactId>plugin-signatureweb-portafib</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.fundaciobit.plugins</groupId>
+			<artifactId>plugin-signatureweb-miniappletinclient</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.fundaciobit.plugins</groupId>
+			<artifactId>plugin-signatureweb-miniappletinserver</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars.bower</groupId>
 			<artifactId>jquery</artifactId>
 			<version>1.12.0</version>
@@ -239,7 +264,6 @@
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
 							<packagingExcludes>META-INF/context.xml</packagingExcludes>
-							<packagingExcludes>WEB-INF/classes/META-INF/resources/**</packagingExcludes>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -277,7 +301,6 @@
 							<packagingExcludes>
 								META-INF/context.xml,
 								WEB-INF/classes/log4j.xml,
-								WEB-INF/classes/META-INF/resources/**,
 								WEB-INF/lib/jquery*,
 								WEB-INF/lib/bootstrap*,
 								WEB-INF/lib/font-awesome*,
@@ -286,13 +309,6 @@
 								WEB-INF/lib/jsrender*,
 								WEB-INF/lib/jstree*
 							</packagingExcludes>
-							<webResources>
-								<resource>
-									<filtering>false</filtering>
-									<targetPath>META-INF/resources</targetPath>
-									<directory>src/main/resources/META-INF/resources</directory>
-								</resource>
-							</webResources>
 						</configuration>
 					</plugin>
 					<plugin>
@@ -328,6 +344,7 @@
 							<directory>${basedir}/src/main/webapp/WEB-INF</directory>
 							<includes>
 								<include>web.xml</include>
+								<include>emiserv-servlet.xml</include>
 							</includes>
 							<targetPath>WEB-INF</targetPath>
 							<filtering>true</filtering>
@@ -375,8 +392,19 @@
 	</build>
 	<repositories>
 		<repository>
+			<name>Milton DAV repository</name>
 			<id>ettrema-repo</id>
 			<url>http://milton.io/maven</url>
+		</repository>
+		<repository>
+			<name>PortaFIB Maven repository</name>
+			<id>es.caib.portafib</id>
+			<url>https://github.com/GovernIB/portafib/raw/gh-pages/maven</url>
+		</repository>
+		<repository>
+			<name>PluginsIB Maven repository</name>
+			<id>org.fundaciobit.plugins</id>
+			<url>https://github.com/GovernIB/pluginsib/raw/gh-pages/maven</url>
 		</repository>
 	</repositories>
 </project>

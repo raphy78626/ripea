@@ -166,7 +166,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				metaDocument.getPortafirmesFluxId(),
 				metaDocument.getPortafirmesResponsables(),
 				metaDocument.getPortafirmesFluxTipus(),
-				metaDocument.isFirmaAppletActiva(),
+				metaDocument.isFirmaPassarelaActiva(),
 				metaDocument.getSignaturaTipusMime());
 		if (plantillaContingut != null) {
 			metaDocumentEntitiy.updatePlantilla(

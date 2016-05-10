@@ -4,6 +4,7 @@
 package es.caib.ripea.core.api.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -92,7 +93,7 @@ public interface AplicacioService {
 	 * @param exception
 	 *             L'excepció a emmagatzemar.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public void excepcioSave(Throwable exception);
 
 	/**
@@ -120,5 +121,25 @@ public interface AplicacioService {
 	 * @return La llista amb els rols.
 	 */
 	public List<String> permisosFindRolsDistinctAll();
+
+	/**
+	 * Retorna el valor d'un paràmetre de configuració de l'aplicació.
+	 * 
+	 * @param property
+	 *             el codi del paràmetre
+	 * @return el valor del paràmetre
+	 */
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public String propertyGet(String property);
+
+	/**
+	 * Retorna el valor d'un paràmetre de configuració de l'aplicació.
+	 * 
+	 * @param prefix
+	 *             el prefix dells paràmetres a consultar
+	 * @return un Map amb els paràmetres trobats.
+	 */
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public Map<String, String> propertyFindByPrefix(String prefix);
 
 }

@@ -178,11 +178,11 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public String generarIdentificadorFirmaApplet(
+	public String generarIdentificadorFirmaClient(
 			Long entitatId,
 			Long id,
 			int versio) {
-		return delegate.generarIdentificadorFirmaApplet(
+		return delegate.generarIdentificadorFirmaClient(
 				entitatId,
 				id,
 				versio);
@@ -190,11 +190,11 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void custodiaEnviarDocumentFirmat(
+	public void custodiarDocumentFirmaClient(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) {
-		delegate.custodiaEnviarDocumentFirmat(
+		delegate.custodiarDocumentFirmaClient(
 				identificador,
 				arxiuNom,
 				arxiuContingut);

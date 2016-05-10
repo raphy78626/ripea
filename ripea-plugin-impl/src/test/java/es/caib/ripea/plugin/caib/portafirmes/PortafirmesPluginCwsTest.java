@@ -45,8 +45,7 @@ public class PortafirmesPluginCwsTest {
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.ripea.plugin.portafirmes.signatura.tipus",
 				"1");
-		//plugin = new PortafirmesPluginCwsJaxws();
-		plugin = new PortafirmesPluginCwsAxis();
+		plugin = new PortafirmesPluginCwsJaxws();
 		uploadDocument = new PortafirmesDocument();
 		uploadDocument.setTitol("(RIP) Document per firmar");
 		uploadDocument.setArxiuNom("document_firma.pdf");

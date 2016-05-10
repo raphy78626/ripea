@@ -28,7 +28,11 @@ import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
+import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
+import es.caib.ripea.plugin.ciutada.CiutadaPersona;
+import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.custodia.CustodiaPlugin;
@@ -62,6 +66,7 @@ public class PluginHelper {
 	private ConversioPlugin conversioPlugin;
 	private CustodiaPlugin custodiaPlugin;
 	private RegistrePlugin registrePlugin;
+	private CiutadaPlugin ciutadaPlugin;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -833,6 +838,65 @@ public class PluginHelper {
 		}
 	}
 
+	public void sistraExpedientCrear(
+			ExpedientEntity expedient,
+			long unitatAdministrativa,
+			String idioma,
+			String descripcio,
+			InteressatEntity destinatari,
+			InteressatEntity representat,
+			String bantelNumeroEntrada,
+			boolean avisosHabilitats,
+			String avisosEmail,
+			String avisosMobil) {
+		String accioDescripcio = "Creació d'un expedient a la zona personal del ciutadà";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		try {
+			CiutadaPersona personaDestinatari = new CiutadaPersona();
+			personaDestinatari.setNif(destinatari.getNom());
+			personaDestinatari.setNom(destinatari.getNom());
+			personaDestinatari.setLlinatge1(destinatari.getNom());
+			personaDestinatari.setLlinatge2(destinatari.getNom());
+			CiutadaPersona personaRepresentat = null;
+			if (representat != null) {
+				personaRepresentat = new CiutadaPersona();
+				personaDestinatari.setNif(representat.getNom());
+				personaDestinatari.setNom(representat.getNom());
+				personaDestinatari.setLlinatge1(representat.getNom());
+				personaDestinatari.setLlinatge2(representat.getNom());
+			}
+			getCiutadaPlugin().expedientCrear(
+					expedient.getId().toString(),
+					unitatAdministrativa,
+					idioma,
+					descripcio,
+					personaDestinatari,
+					personaRepresentat,
+					bantelNumeroEntrada,
+					avisosHabilitats,
+					avisosEmail,
+					avisosMobil);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_SISTRA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'interacció amb el ciutadà";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_SISTRA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_SISTRA,
+					errorDescripcio,
+					ex);
+		}
+	}
+
 
 
 	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
@@ -988,6 +1052,23 @@ public class PluginHelper {
 		}
 		return registrePlugin;
 	}
+	private CiutadaPlugin getCiutadaPlugin() {
+		if (ciutadaPlugin == null) {
+			String pluginClass = getPropertyPluginCiutada();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					ciutadaPlugin = (CiutadaPlugin)clazz.newInstance();
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_SISTRA,
+							"Error al crear la instància del plugin d'interacció amb el ciutadà",
+							ex);
+				}
+			}
+		}
+		return ciutadaPlugin;
+	}
 
 	private String getPropertyPluginDadesUsuari() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.dades.usuari.class");
@@ -1009,6 +1090,9 @@ public class PluginHelper {
 	}
 	private String getPropertyPluginRegistre() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.registre.class");
+	}
+	private String getPropertyPluginCiutada() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.ciutada.class");
 	}
 
 }

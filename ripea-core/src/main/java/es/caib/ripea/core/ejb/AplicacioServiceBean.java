@@ -4,6 +4,7 @@
 package es.caib.ripea.core.ejb;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -76,7 +77,7 @@ public class AplicacioServiceBean implements AplicacioService {
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER"})
+	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
 	public void excepcioSave(Throwable exception) {
 		delegate.excepcioSave(exception);
 	}
@@ -96,6 +97,18 @@ public class AplicacioServiceBean implements AplicacioService {
 	@Override
 	public List<String> permisosFindRolsDistinctAll() {
 		return delegate.permisosFindRolsDistinctAll();
+	}
+
+	@Override
+	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	public String propertyGet(String property) {
+		return delegate.propertyGet(property);
+	}
+
+	@Override
+	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	public Map<String, String> propertyFindByPrefix(String prefix) {
+		return delegate.propertyFindByPrefix(prefix);
 	}
 
 }

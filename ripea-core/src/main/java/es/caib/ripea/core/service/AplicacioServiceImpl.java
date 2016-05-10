@@ -4,6 +4,7 @@
 package es.caib.ripea.core.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -26,6 +27,7 @@ import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.ExcepcioLogHelper;
 import es.caib.ripea.core.helper.IntegracioHelper;
+import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.repository.AclSidRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.plugin.usuari.DadesUsuari;
@@ -75,7 +77,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 		logger.debug("Processant autenticació (usuariCodi=" + auth.getName() + ")");
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
-			logger.debug("Consultant plugin de dades d'usuari (usuariCodi=" + auth.getName() + ")");
+			logger.debug("Consultant plugin de dades d'usuari (" +
+					"usuariCodi=" + auth.getName() + ")");
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari = usuariRepository.save(
@@ -90,7 +93,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 						DadesUsuari.class);
 			}
 		} else {
-			logger.debug("Consultant plugin de dades d'usuari (usuariCodi=" + auth.getName() + ")");
+			logger.debug("Consultant plugin de dades d'usuari (" +
+					"usuariCodi=" + auth.getName() + ")");
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari.update(
@@ -141,15 +145,15 @@ public class AplicacioServiceImpl implements AplicacioService {
 
 	@Override
 	public List<IntegracioAccioDto> integracioFindDarreresAccionsByCodi(String codi) {
-		logger.debug("Consultant les darreres accions per a la integració ("
-				+ "codi=" + codi + ")");
+		logger.debug("Consultant les darreres accions per a la integració (" +
+				"codi=" + codi + ")");
 		return integracioHelper.findAccionsByIntegracioCodi(codi);
 	}
 
 	@Override
 	public void excepcioSave(Throwable exception) {
-		logger.debug("Emmagatzemant excepció ("
-				+ "exception=" + exception + ")");
+		logger.debug("Emmagatzemant excepció (" +
+				"exception=" + exception + ")");
 		excepcioLogHelper.addExcepcio(exception);
 	}
 
@@ -169,6 +173,20 @@ public class AplicacioServiceImpl implements AplicacioService {
 	public List<String> permisosFindRolsDistinctAll() {
 		logger.debug("Consulta dels rols definits a les ACLs");
 		return aclSidRepository.findSidByPrincipalFalse();
+	}
+
+	@Override
+	public String propertyGet(String property) {
+		logger.debug("Consulta del valor de la property (" +
+				"property=" + property + ")");
+		return PropertiesHelper.getProperties().getProperty(property);
+	}
+
+	@Override
+	public Map<String, String> propertyFindByPrefix(String prefix) {
+		logger.debug("Consulta del valor dels properties amb prefix (" +
+				"prefix=" + prefix + ")");
+		return PropertiesHelper.getProperties().findByPrefix(prefix);
 	}
 
 

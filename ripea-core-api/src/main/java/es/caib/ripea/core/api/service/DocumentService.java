@@ -289,7 +289,8 @@ public interface DocumentService {
 			int versio) throws NotFoundException, SistemaExternException;
 
 	/**
-	 * Genera un identificador del document per firmar via applet.
+	 * Genera un identificador del document per firmar en el navegador
+	 * del client.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
@@ -304,7 +305,7 @@ public interface DocumentService {
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public String generarIdentificadorFirmaApplet(
+	public String generarIdentificadorFirmaClient(
 			Long entitatId,
 			Long id,
 			int versio) throws NotFoundException, SistemaExternException;
@@ -324,7 +325,7 @@ public interface DocumentService {
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public void custodiaEnviarDocumentFirmat(
+	public void custodiarDocumentFirmaClient(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) throws NotFoundException, SistemaExternException;

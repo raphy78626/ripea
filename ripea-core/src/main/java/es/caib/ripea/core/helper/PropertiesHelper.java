@@ -4,6 +4,8 @@
 package es.caib.ripea.core.helper;
 
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -77,6 +79,21 @@ public class PropertiesHelper extends Properties {
 	}
 	public double getAsDouble(String key) {
 		return new Double(getProperty(key)).doubleValue();
+	}
+
+	public Map<String, String> findByPrefix(String prefix) {
+		Map<String, String> properties = new HashMap<String, String>();
+		for (Object key: this.keySet()) {
+			if (key instanceof String) {
+				String keystr = (String)key;
+				if (keystr.startsWith(prefix)) {
+					properties.put(
+							keystr,
+							getProperty(keystr));
+				}
+			}
+		}
+		return properties;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(PropertiesHelper.class);

@@ -53,7 +53,12 @@ public class ExpedientEntity extends NodeEntity {
 	protected int any;
 	@Column(name = "sequencia")
 	protected long sequencia;
-	
+	@Column(name = "sistra_publicat")
+	protected boolean sistraPublicat;
+	@Column(name = "sistra_unitat_adm")
+	protected Integer sistraUnitatAdministrativa;
+	@Column(name = "sistra_clau")
+	protected String sistraClau;
 
 
 

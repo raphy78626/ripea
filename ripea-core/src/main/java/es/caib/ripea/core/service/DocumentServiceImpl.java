@@ -891,7 +891,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Transactional
 	@Override
-	public String generarIdentificadorFirmaApplet(
+	public String generarIdentificadorFirmaClient(
 			Long entitatId,
 			Long id,
 			int versio) {
@@ -935,8 +935,7 @@ public class DocumentServiceImpl implements DocumentService {
 							new Long(System.currentTimeMillis()),
 							entitatId,
 							id,
-							versio),
-					CLAU_SECRETA);
+							versio));
 		} catch (Exception ex) {
 			logger.error(
 					"Error al generar l'identificador per la firma via applet (" +
@@ -953,7 +952,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Transactional
 	@Override
-	public void custodiaEnviarDocumentFirmat(
+	public void custodiarDocumentFirmaClient(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) {
@@ -1290,8 +1289,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	private static final String CLAU_SECRETA = "R1p3AR1p3AR1p3AR";
 	private String firmaAppletXifrar(
-			ObjecteFirmaApplet objecte,
-			String key) throws Exception {
+			ObjecteFirmaApplet objecte) throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream os = new ObjectOutputStream(baos);
 		Long[] array = new Long[] {
@@ -1304,14 +1302,9 @@ public class DocumentServiceImpl implements DocumentService {
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(
 				Cipher.ENCRYPT_MODE,
-				buildKey(key));
+				buildKey(CLAU_SECRETA));
 		byte[] xifrat = cipher.doFinal(baos.toByteArray());
-		String xifratBase64 = new String(Base64.encode(xifrat));
-		System.out.println(">>> Dades del xifrat (" +
-				"original=" + baos.size() + ", " +
-				"xifrat=" + xifrat.length + ", " +
-				"xifratB64=" + xifratBase64.length() + ")");
-		return xifratBase64;
+		return new String(Base64.encode(xifrat));
 	}
 	private ObjecteFirmaApplet firmaAppletDesxifrar(
 			String missatge,
