@@ -262,6 +262,7 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 		}
 		return api;
 	}
+
 	private PortaFIBUsuariEntitatWs getUsuariEntitatWs() throws MalformedURLException {
 		String webServiceUrl = getBaseUrl() + "/ws/v1/PortaFIBUsuariEntitat";
 		URL wsdlUrl = new URL(webServiceUrl + "?wsdl");

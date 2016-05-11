@@ -23,7 +23,7 @@
 		</c:if>
 		<div class="well" style="max-width: 400px; margin: 0 auto 10px;">
 			<c:forEach items="${plugins}" var="plugin">
-				<a href="../showsignaturemodule/${plugin.pluginID}/${signaturesSetId}" class="btn btn-large btn-block btn-primary">
+				<a href="../showsignaturemodule/${plugin.pluginId}/${signaturesSetId}" class="btn btn-large btn-block btn-primary">
 					<b>${plugin.nom}</b><br />
 					<small><i>${plugin.descripcioCurta}</i></small>
 				</a>

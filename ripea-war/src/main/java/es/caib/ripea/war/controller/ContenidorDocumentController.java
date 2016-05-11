@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.io.IOUtils;
 import org.fundaciobit.plugins.signatureweb.api.FileInfoSignature;
 import org.fundaciobit.plugins.signatureweb.api.StatusSignature;
 import org.fundaciobit.plugins.signatureweb.api.StatusSignaturesSet;
@@ -43,7 +45,6 @@ import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorCommand.Update;
 import es.caib.ripea.war.command.DocumentCommand;
-import es.caib.ripea.war.command.FirmaAppletCommand;
 import es.caib.ripea.war.command.PassarelaFirmaEnviarCommand;
 import es.caib.ripea.war.command.PortafirmesEnviarCommand;
 import es.caib.ripea.war.helper.MissatgesHelper;
@@ -403,23 +404,6 @@ public class ContenidorDocumentController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/firmaApplet", method = RequestMethod.GET)
-	public String firmaAppletGet(
-			HttpServletRequest request,
-			@PathVariable Long contenidorId,
-			@PathVariable Long documentId,
-			@PathVariable int versio,
-			Model model) {
-		String identificador = emplenarModelFirmaApplet(
-				request,
-				documentId,
-				versio,
-				model);
-		model.addAttribute(
-				new FirmaAppletCommand(identificador));
-		return "firmaAppletForm";
-	}
-
 	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/firmaPassarela", method = RequestMethod.GET)
 	public String firmaPassarelaGet(
 			HttpServletRequest request,
@@ -427,7 +411,7 @@ public class ContenidorDocumentController extends BaseUserController {
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			Model model) {
-		emplenarModelPassarela(
+		emplenarModelFirmaClient(
 				request,
 				documentId,
 				versio,
@@ -446,7 +430,7 @@ public class ContenidorDocumentController extends BaseUserController {
 			Model model) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
-			emplenarModelPassarela(
+			emplenarModelFirmaClient(
 					request,
 					documentId,
 					versio,
@@ -479,7 +463,7 @@ public class ContenidorDocumentController extends BaseUserController {
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			@RequestParam("signaturesSetId") String signaturesSetId,
-			Model model) {
+			Model model) throws IOException {
 		PassarelaFirmaSignaturesSet signaturesSet = passarelaFirmaHelper.finalitzarProcesDeFirma(
 				request,
 				signaturesSetId);
@@ -499,7 +483,16 @@ public class ContenidorDocumentController extends BaseUserController {
 									request, 
 									"document.controller.firma.passarela.final.ok.nofile"));
 				} else {
-					System.out.println(">>> fitxer firmat: " + firmaStatus.getSignedData().getAbsolutePath());
+					FileInputStream fis = new FileInputStream(firmaStatus.getSignedData());
+					EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+					String identificador = documentService.generarIdentificadorFirmaClient(
+							entitatActual.getId(),
+							documentId,
+							versio);
+					documentService.custodiarDocumentFirmaClient(
+							identificador,
+							firmaStatus.getSignedData().getName(),
+							IOUtils.toByteArray(fis));
 					MissatgesHelper.success(
 							request,
 							getMessage(
@@ -571,7 +564,7 @@ public class ContenidorDocumentController extends BaseUserController {
 						documentId,
 						versio));
 	}
-	private void emplenarModelPassarela(
+	private void emplenarModelFirmaClient(
 			HttpServletRequest request,
 			Long documentId,
 			int versio,
@@ -581,26 +574,6 @@ public class ContenidorDocumentController extends BaseUserController {
 				documentId,
 				versio,
 				model);
-	}
-	private String emplenarModelFirmaApplet(
-			HttpServletRequest request,
-			Long documentId,
-			int versio,
-			Model model) {
-		emplenarModelPortafirmes(
-				request,
-				documentId,
-				versio,
-				model);
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		String identificador = documentService.generarIdentificadorFirmaClient(
-				entitatActual.getId(),
-				documentId,
-				versio);
-		model.addAttribute(
-				"identificadorFirmaApplet",
-				identificador);
-		return identificador;
 	}
 	
 }
