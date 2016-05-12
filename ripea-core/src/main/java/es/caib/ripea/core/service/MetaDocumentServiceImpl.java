@@ -115,12 +115,13 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				globalExpedient(metaDocument.isGlobalExpedient()).
 				globalMultiplicitat(metaDocument.getGlobalMultiplicitat()).
 				globalReadOnly(metaDocument.isGlobalReadOnly()).
-				custodiaPolitica(metaDocument.getCustodiaPolitica()).
 				portafirmesDocumentTipus(metaDocument.getPortafirmesDocumentTipus()).
 				portafirmesFluxId(metaDocument.getPortafirmesFluxId()).
 				portafirmesResponsables(metaDocument.getPortafirmesResponsables()).
 				portafirmesFluxTipus(metaDocument.getPortafirmesFluxTipus()).
-				signaturaTipusMime(metaDocument.getSignaturaTipusMime()).
+				portafirmesCustodiaTipus(metaDocument.getPortafirmesCustodiaTipus()).
+				firmaPassarelaActiva(metaDocument.isFirmaPassarelaActiva()).
+				firmaPassarelaCustodiaTipus(metaDocument.getFirmaPassarelaCustodiaTipus()).
 				build();
 		if (plantillaContingut != null) {
 			entity.updatePlantilla(
@@ -160,14 +161,14 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				metaDocument.isGlobalExpedient(),
 				metaDocument.getGlobalMultiplicitat(),
 				metaDocument.isGlobalReadOnly(),
-				metaDocument.getCustodiaPolitica(),
 				metaDocument.isFirmaPortafirmesActiva(),
 				metaDocument.getPortafirmesDocumentTipus(),
 				metaDocument.getPortafirmesFluxId(),
 				metaDocument.getPortafirmesResponsables(),
 				metaDocument.getPortafirmesFluxTipus(),
+				metaDocument.getPortafirmesCustodiaTipus(),
 				metaDocument.isFirmaPassarelaActiva(),
-				metaDocument.getSignaturaTipusMime());
+				metaDocument.getFirmaPassarelaCustodiaTipus());
 		if (plantillaContingut != null) {
 			metaDocumentEntitiy.updatePlantilla(
 					plantillaNom,

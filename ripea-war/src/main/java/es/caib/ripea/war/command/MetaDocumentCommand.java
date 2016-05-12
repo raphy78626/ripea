@@ -39,8 +39,6 @@ public class MetaDocumentCommand {
 	@NotNull
 	private MultiplicitatEnumDto globalMultiplicitat;
 	private boolean globalReadOnly;
-	@Size(max=64)
-	private String custodiaPolitica;
 	private boolean FirmaPortafirmesActiva;
 	@Size(max=64)
 	private String portafirmesDocumentTipus;
@@ -48,9 +46,11 @@ public class MetaDocumentCommand {
 	private String portafirmesFluxId;
 	private String[] portafirmesResponsables;
 	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
-	boolean firmaAppletActiva;
 	@Size(max=64)
-	private String signaturaTipusMime;
+	private String portafirmesCustodiaTipus;
+	private boolean firmaPassarelaActiva;
+	@Size(max=64)
+	private String firmaPassarelaCustodiaTipus;
 	protected MultipartFile plantilla;
 
 	private Long entitatId;
@@ -99,12 +99,6 @@ public class MetaDocumentCommand {
 	public void setGlobalReadOnly(boolean globalReadOnly) {
 		this.globalReadOnly = globalReadOnly;
 	}
-	public String getCustodiaPolitica() {
-		return custodiaPolitica;
-	}
-	public void setCustodiaPolitica(String custodiaPolitica) {
-		this.custodiaPolitica = custodiaPolitica;
-	}
 	public boolean isFirmaPortafirmesActiva() {
 		return FirmaPortafirmesActiva;
 	}
@@ -135,17 +129,23 @@ public class MetaDocumentCommand {
 	public void setPortafirmesFluxTipus(MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus) {
 		this.portafirmesFluxTipus = portafirmesFluxTipus;
 	}
-	public boolean isFirmaAppletActiva() {
-		return firmaAppletActiva;
+	public String getPortafirmesCustodiaTipus() {
+		return portafirmesCustodiaTipus;
 	}
-	public void setFirmaAppletActiva(boolean firmaAppletActiva) {
-		this.firmaAppletActiva = firmaAppletActiva;
+	public void setPortafirmesCustodiaTipus(String portafirmesCustodiaTipus) {
+		this.portafirmesCustodiaTipus = portafirmesCustodiaTipus;
 	}
-	public String getSignaturaTipusMime() {
-		return signaturaTipusMime;
+	public boolean isFirmaPassarelaActiva() {
+		return firmaPassarelaActiva;
 	}
-	public void setSignaturaTipusMime(String signaturaTipusMime) {
-		this.signaturaTipusMime = signaturaTipusMime;
+	public void setFirmaPassarelaActiva(boolean firmaPassarelaActiva) {
+		this.firmaPassarelaActiva = firmaPassarelaActiva;
+	}
+	public String getFirmaPassarelaCustodiaTipus() {
+		return firmaPassarelaCustodiaTipus;
+	}
+	public void setFirmaPassarelaCustodiaTipus(String firmaPassarelaCustodiaTipus) {
+		this.firmaPassarelaCustodiaTipus = firmaPassarelaCustodiaTipus;
 	}
 	public MultipartFile getPlantilla() {
 		return plantilla;

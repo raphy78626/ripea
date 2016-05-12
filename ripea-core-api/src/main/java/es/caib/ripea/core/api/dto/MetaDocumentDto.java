@@ -17,14 +17,14 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	private boolean globalExpedient;
 	private MultiplicitatEnumDto globalMultiplicitat;
 	private boolean globalReadOnly;
-	private String signaturaTipusMime;
 	private boolean firmaPortafirmesActiva;
 	private String portafirmesDocumentTipus;
 	private String portafirmesFluxId;
 	private String[] portafirmesResponsables;
 	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
+	private String portafirmesCustodiaTipus;
 	private boolean firmaPassarelaActiva;
-	private String custodiaPolitica;
+	private String firmaPassarelaCustodiaTipus;
 	private String plantillaNom;
 	private String plantillaContentType;
 
@@ -45,12 +45,6 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	}
 	public void setGlobalReadOnly(boolean globalReadOnly) {
 		this.globalReadOnly = globalReadOnly;
-	}
-	public String getSignaturaTipusMime() {
-		return signaturaTipusMime;
-	}
-	public void setSignaturaTipusMime(String signaturaTipusMime) {
-		this.signaturaTipusMime = signaturaTipusMime;
 	}
 	public boolean isFirmaPortafirmesActiva() {
 		return firmaPortafirmesActiva;
@@ -82,17 +76,23 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	public void setPortafirmesFluxTipus(MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus) {
 		this.portafirmesFluxTipus = portafirmesFluxTipus;
 	}
+	public String getPortafirmesCustodiaTipus() {
+		return portafirmesCustodiaTipus;
+	}
+	public void setPortafirmesCustodiaTipus(String portafirmesCustodiaTipus) {
+		this.portafirmesCustodiaTipus = portafirmesCustodiaTipus;
+	}
 	public boolean isFirmaPassarelaActiva() {
 		return firmaPassarelaActiva;
 	}
 	public void setFirmaPassarelaActiva(boolean firmaPassarelaActiva) {
 		this.firmaPassarelaActiva = firmaPassarelaActiva;
 	}
-	public String getCustodiaPolitica() {
-		return custodiaPolitica;
+	public String getFirmaPassarelaCustodiaTipus() {
+		return firmaPassarelaCustodiaTipus;
 	}
-	public void setCustodiaPolitica(String custodiaPolitica) {
-		this.custodiaPolitica = custodiaPolitica;
+	public void setFirmaPassarelaCustodiaTipus(String firmaPassarelaCustodiaTipus) {
+		this.firmaPassarelaCustodiaTipus = firmaPassarelaCustodiaTipus;
 	}
 	public String getPlantillaNom() {
 		return plantillaNom;

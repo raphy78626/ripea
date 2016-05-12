@@ -35,8 +35,6 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	private MultiplicitatEnumDto globalMultiplicitat;
 	@Column(name = "global_readonly")
 	private boolean globalReadOnly;
-	@Column(name = "signatura_tipmime", length = 64)
-	private String signaturaTipusMime;
 	@Column(name = "firma_pfirma")
 	private boolean firmaPortafirmesActiva;
 	@Column(name = "portafirmes_doctip", length = 64)
@@ -48,10 +46,12 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "portafirmes_fluxtip")
 	private MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus;
-	@Column(name = "custodia_politica", length = 64)
-	private String custodiaPolitica;
+	@Column(name = "portafirmes_custip", length = 64)
+	private String portafirmesCustodiaTipus;
 	@Column(name = "firma_passarela")
 	private boolean firmaPassarelaActiva;
+	@Column(name = "passarela_custip", length = 64)
+	private String firmaPassarelaCustodiaTipus;
 	@Column(name = "plantilla_nom", length = 256)
 	private String plantillaNom;
 	@Column(name = "plantilla_content_type", length = 256)
@@ -72,9 +72,6 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	public boolean isGlobalReadOnly() {
 		return globalReadOnly;
 	}
-	public String getSignaturaTipusMime() {
-		return signaturaTipusMime;
-	}
 	public boolean isFirmaPortafirmesActiva() {
 		return firmaPortafirmesActiva;
 	}
@@ -92,11 +89,14 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	public MetaDocumentFirmaFluxTipusEnumDto getPortafirmesFluxTipus() {
 		return portafirmesFluxTipus;
 	}
+	public String getPortafirmesCustodiaTipus() {
+		return portafirmesCustodiaTipus;
+	}
 	public boolean isFirmaPassarelaActiva() {
 		return firmaPassarelaActiva;
 	}
-	public String getCustodiaPolitica() {
-		return custodiaPolitica;
+	public String getFirmaPassarelaCustodiaTipus() {
+		return firmaPassarelaCustodiaTipus;
 	}
 	public String getPlantillaNom() {
 		return plantillaNom;
@@ -115,14 +115,14 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			boolean globalExpedient,
 			MultiplicitatEnumDto globalMultiplicitat,
 			boolean globalReadOnly,
-			String custodiaPolitica,
 			boolean firmaPortafirmesActiva,
 			String portafirmesDocumentTipus,
 			String portafirmesFluxId,
 			String[] portafirmesResponsables,
 			MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus,
+			String portafirmesCustodiaTipus,
 			boolean firmaPassarelaActiva,
-			String signaturaTipusMime) {
+			String firmaPassarelaCustodiaTipus) {
 		update(
 				codi,
 				nom,
@@ -130,14 +130,14 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 		this.globalExpedient = globalExpedient;
 		this.globalMultiplicitat = globalMultiplicitat;
 		this.globalReadOnly = globalReadOnly;
-		this.custodiaPolitica = custodiaPolitica;
 		this.firmaPortafirmesActiva = firmaPortafirmesActiva;
 		this.portafirmesDocumentTipus = portafirmesDocumentTipus;
 		this.portafirmesFluxId = portafirmesFluxId;
 		this.portafirmesResponsables = getResponsablesFromArray(portafirmesResponsables);
 		this.portafirmesFluxTipus = portafirmesFluxTipus;
+		this.portafirmesCustodiaTipus = portafirmesCustodiaTipus;
 		this.firmaPassarelaActiva = firmaPassarelaActiva;
-		this.signaturaTipusMime = signaturaTipusMime;
+		this.firmaPassarelaCustodiaTipus = firmaPassarelaCustodiaTipus;
 	}
 
 	public void updatePlantilla(
@@ -186,10 +186,6 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			built.globalReadOnly = globalReadOnly;
 			return this;
 		}
-		public Builder custodiaPolitica(String custodiaPolitica) {
-			built.custodiaPolitica = custodiaPolitica;
-			return this;
-		}
 		public Builder portafirmesDocumentTipus(String portafirmesDocumentTipus) {
 			built.portafirmesDocumentTipus = portafirmesDocumentTipus;
 			return this;
@@ -206,8 +202,16 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			built.portafirmesFluxTipus = portafirmesFluxTipus;
 			return this;
 		}
-		public Builder signaturaTipusMime(String signaturaTipusMime) {
-			built.signaturaTipusMime = signaturaTipusMime;
+		public Builder portafirmesCustodiaTipus(String portafirmesCustodiaTipus) {
+			built.portafirmesCustodiaTipus = portafirmesCustodiaTipus;
+			return this;
+		}
+		public Builder firmaPassarelaActiva(boolean firmaPassarelaActiva) {
+			built.firmaPassarelaActiva = firmaPassarelaActiva;
+			return this;
+		}
+		public Builder firmaPassarelaCustodiaTipus(String firmaPassarelaCustodiaTipus) {
+			built.firmaPassarelaCustodiaTipus = firmaPassarelaCustodiaTipus;
 			return this;
 		}
 		public MetaDocumentEntity build() {

@@ -1012,6 +1012,7 @@ public class DocumentServiceImpl implements DocumentService {
 					true);
 			String custodiaDocumentId = pluginHelper.custodiaCustodiarDocumentFirmat(
 					documentVersio,
+					documentVersio.getDocument().getMetaDocument().getFirmaPassarelaCustodiaTipus(),
 					arxiuNom,
 					arxiuContingut);
 			documentVersio.updateCustodiaEstat(
@@ -1211,6 +1212,7 @@ public class DocumentServiceImpl implements DocumentService {
 				try {
 					String custodiaDocumentId = pluginHelper.custodiaCustodiarDocumentFirmat(
 							documentVersio,
+							documentVersio.getDocument().getMetaDocument().getPortafirmesCustodiaTipus(),
 							portafirmesDocument.getArxiuNom(),
 							portafirmesDocument.getArxiuContingut());
 					documentVersio.updateCustodiaEstat(

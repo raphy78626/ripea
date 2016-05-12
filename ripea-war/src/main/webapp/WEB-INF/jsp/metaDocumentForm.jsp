@@ -44,7 +44,7 @@ pageContext.setAttribute(
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active"><a href="#dades" aria-controls="dades" role="tab" data-toggle="tab"><spring:message code="metadocument.form.camp.tab.dades"/></a></li>
 			<li role="presentation"><a href="#firma-portafirmes" aria-controls="firma-portafirmes" role="tab" data-toggle="tab"><spring:message code="metadocument.form.camp.tab.firma.portafirmes"/></a></li>
-			<%--li role="presentation"><a href="#firma-applet" aria-controls="firma-applet" role="tab" data-toggle="tab"><spring:message code="metadocument.form.camp.tab.firma.applet"/></a></li--%>
+			<li role="presentation"><a href="#firma-passarela" aria-controls="firma-passarela" role="tab" data-toggle="tab"><spring:message code="metadocument.form.camp.tab.firma.passarela"/></a></li>
 		</ul>
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
@@ -72,11 +72,11 @@ pageContext.setAttribute(
 				<%--rip:inputText name="portafirmesFluxId" textKey="metadocument.form.camp.portafirmes.flux.id"/--%>
 				<rip:inputText name="portafirmesResponsables" textKey="metadocument.form.camp.portafirmes.responsables" multiple="true"/>
 				<rip:inputSelect name="portafirmesFluxTipus" textKey="metadocument.form.camp.portafirmes.fluxtip" optionItems="${metadocumentFluxtipEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
-				<rip:inputText name="custodiaPolitica" textKey="metadocument.form.camp.custodia.politica"/>				
+				<rip:inputText name="portafirmesCustodiaTipus" textKey="metadocument.form.camp.portafirmes.custodia"/>				
 			</div>
-			<div role="tabpanel" class="tab-pane" id="firma-applet">
-				<rip:inputCheckbox name="firmaAppletActiva" textKey="metadocument.form.camp.firma.applet.activa"/>
-				<rip:inputText name="signaturaTipusMime" textKey="metadocument.form.camp.signatura.tipus.mime"/>
+			<div role="tabpanel" class="tab-pane" id="firma-passarela">
+				<rip:inputCheckbox name="firmaPassarelaActiva" textKey="metadocument.form.camp.passarela.activa"/>
+				<rip:inputText name="firmaPassarelaCustodiaTipus" textKey="metadocument.form.camp.passarela.custodia"/>
 			</div>
 		</div>
 		<div id="modal-botons">

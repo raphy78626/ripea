@@ -727,6 +727,7 @@ public class PluginHelper {
 
 	public String custodiaCustodiarDocumentFirmat(
 			DocumentVersioEntity documentVersio,
+			String custodiaTipus,
 			String arxiuNom,
 			byte[] arxiuContingut) {
 		String accioDescripcio = "Custodiar document firmat";
@@ -743,7 +744,7 @@ public class PluginHelper {
 		try {
 			getCustodiaPlugin().custodiarPdfFirmat(
 					documentVersio.getId().toString(),
-					documentVersio.getDocument().getMetaDocument().getCustodiaPolitica(),
+					custodiaTipus,
 					arxiuNom,
 					new ByteArrayInputStream(arxiuContingut));
 			integracioHelper.addAccioOk(
