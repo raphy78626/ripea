@@ -33,7 +33,7 @@
 		<rip:inputText name="motiu" textKey="contenidor.document.passarelafirma.camp.motiu" required="true"/>
 		<rip:inputText name="lloc" textKey="contenidor.document.passarelafirma.camp.lloc" required="true"/>
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>
+			<button type="submit" class="btn btn-success"><span class="fa fa-play"></span> <spring:message code="contenidor.document.passarelafirma.iniciar"/></button>
 			<a href="<c:url value="/contenidor/${document.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

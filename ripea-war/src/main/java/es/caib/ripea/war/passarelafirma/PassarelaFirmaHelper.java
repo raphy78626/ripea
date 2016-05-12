@@ -129,11 +129,6 @@ public class PassarelaFirmaHelper {
 		}
 		List<PassarelaFirmaPlugin> pluginsFiltered = new ArrayList<PassarelaFirmaPlugin>();
 		ISignatureWebPlugin signaturePlugin;
-		CommonInfoSignature cis = signaturesSet.getCommonInfoSignature();
-		String filtreCerts = cis.getFiltreCertificats();
-		String username = cis.getUsername();
-		String administrationID = cis.getAdministrationID();
-		boolean browserSupportsJava = cis.isBrowserSupportsJava();
 		for (PassarelaFirmaPlugin pluginDeFirma : plugins) {
 			// 1.- Es pot instanciar el plugin ?
 			signaturePlugin = getInstanceByPluginId(pluginDeFirma.getPluginId());
@@ -209,7 +204,7 @@ public class PassarelaFirmaHelper {
 				}
 			}
 			// 5.- Passa el filtre ...
-			if (signaturePlugin.filter(request, username, administrationID, filtreCerts, browserSupportsJava)) {
+			if (signaturePlugin.filter(request, signaturesSet)) {
 				pluginsFiltered.add(pluginDeFirma);
 			} else {
 				// Exclude Plugin
@@ -407,8 +402,7 @@ public class PassarelaFirmaHelper {
 				request.getUserPrincipal().getName(),
 				destinatariNif,
 				pis,
-				urlFinalCalculada,
-		        navegadorSuportaJava);
+				urlFinalCalculada);
 		File filePerFirmar = getFitxerAFirmarPath(signaturaId);
 		FileUtils.writeByteArrayToFile(
 				filePerFirmar,

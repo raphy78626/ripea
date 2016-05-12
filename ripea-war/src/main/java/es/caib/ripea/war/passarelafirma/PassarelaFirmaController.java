@@ -35,7 +35,7 @@ import es.caib.ripea.war.helper.MissatgesHelper;
 @RequestMapping(value = PassarelaFirmaHelper.CONTEXTWEB)
 public class PassarelaFirmaController {
 
-	public static final boolean stepSelectionWhenOnlyOnePlugin = false;
+	public static final boolean stepSelectionWhenOnlyOnePlugin = true;
 
 	@Autowired
 	private PassarelaFirmaHelper passarelaFirmaHelper;
