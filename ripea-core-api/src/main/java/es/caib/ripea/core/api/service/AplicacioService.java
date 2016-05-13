@@ -50,7 +50,7 @@ public interface AplicacioService {
 	 * Obté un usuari donat el seu codi.
 	 * 
 	 * @param codi
-	 *            codi de l'usuari a cercar.
+	 *            Codi de l'usuari a cercar.
 	 * @return L'usuari obtingut o null si no s'ha trobat.
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
@@ -60,7 +60,7 @@ public interface AplicacioService {
 	 * Consulta els usuaris donat un text.
 	 * 
 	 * @param text
-	 *            text per a fer la consulta.
+	 *            Text per a fer la consulta.
 	 * @return La llista d'usuaris.
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
@@ -126,7 +126,7 @@ public interface AplicacioService {
 	 * Retorna el valor d'un paràmetre de configuració de l'aplicació.
 	 * 
 	 * @param property
-	 *             el codi del paràmetre
+	 *             El codi del paràmetre
 	 * @return el valor del paràmetre
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
@@ -136,7 +136,7 @@ public interface AplicacioService {
 	 * Retorna el valor d'un paràmetre de configuració de l'aplicació.
 	 * 
 	 * @param prefix
-	 *             el prefix dells paràmetres a consultar
+	 *             El prefix dels paràmetres a consultar
 	 * @return un Map amb els paràmetres trobats.
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")

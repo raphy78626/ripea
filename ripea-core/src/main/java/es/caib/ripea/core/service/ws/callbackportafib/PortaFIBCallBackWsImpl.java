@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.service.ws.callback;
+package es.caib.ripea.core.service.ws.callbackportafib;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,12 +25,12 @@ import es.caib.ripea.core.helper.IntegracioHelper;
  */
 @Component
 @WebService(
-		name = "MCGDws",
-		serviceName = "MCGDwsService",
-		portName = "MCGDwsServicePort",
-		endpointInterface = "es.caib.ripea.core.service.ws.callback.MCGDws",
-		targetNamespace = "http://www.indra.es/portafirmasmcgdws/mcgdws")
-public class MCGDwsImpl implements MCGDws {
+		name = "PortaFIBCallBackWs",
+		serviceName = "PortaFIBCallBackWsService",
+		portName = "PortaFIBCallBackWsServicePort",
+		endpointInterface = "es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWs",
+		targetNamespace = "http://v1.server.callback.ws.portafib.caib.es/")
+public class PortaFIBCallBackWsImpl implements PortaFIBCallBackWs {
 
 	@Resource
 	private DocumentService documentService;
@@ -39,31 +39,35 @@ public class MCGDwsImpl implements MCGDws {
 
 
 	@Override
-	public CallbackResponse callback(
-			CallbackRequest callbackRequest) {
-		int documentId = callbackRequest.getApplication().getDocument().getId();
-		Integer estat = callbackRequest.getApplication().getDocument().getAttributes().getState();
+	public int getVersionWs() {
+		return 1;
+	}
+
+	@Override
+	public void event(PortaFIBEvent event) throws CallBackException {
+		long documentId = event.getSigningRequest().getID();
+		int estat = event.getEventTypeID();
 		logger.debug("Rebuda petició al callback de portafirmes (" +
 				"documentId:" + documentId + ", " +
 				"estat:" + estat + ")");
 		String accioDescripcio = "Petició rebuda al callback";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("documentId", new Integer(documentId).toString());
-		accioParams.put("estat", estat.toString());
-		CallbackResponse callbackResponse = new CallbackResponse();
-		PortafirmesCallbackEstatEnum estatEnum = null;
+		accioParams.put("documentId", new Long(documentId).toString());
+		accioParams.put("estat", new Integer(estat).toString());
+		PortafirmesCallbackEstatEnum estatEnum;
 		switch (estat) {
 		case 0:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_PAUSAT;
-			break;
-		case 1:
+		case 50:
 			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_PENDENT;
 			break;
-		case 2:
+		case 60:
 			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_FIRMAT;
 			break;
-		case 3:
+		case 70:
 			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_REBUTJAT;
+			break;
+		case 80:
+			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_PAUSAT;
 			break;
 		default:
 			String errorDescripcio = "No es reconeix el codi d'estat (" + estat + ")";
@@ -73,7 +77,7 @@ public class MCGDwsImpl implements MCGDws {
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					errorDescripcio);
-			callbackResponse.setReturn(-1);
+			throw new CallBackException(errorDescripcio, new CallBackFault());
 		}
 		if (estatEnum != null) {
 			try {
@@ -86,7 +90,6 @@ public class MCGDwsImpl implements MCGDws {
 							accioDescripcio,
 							accioParams,
 							IntegracioAccioTipusEnumDto.RECEPCIO);
-					callbackResponse.setReturn(1);
 				} else {
 					logger.error(
 							"Error al processar petició rebuda al callback de portafirmes (" +
@@ -101,7 +104,10 @@ public class MCGDwsImpl implements MCGDws {
 							IntegracioAccioTipusEnumDto.RECEPCIO,
 							errorDescripcio,
 							ex);
-					callbackResponse.setReturn(-1);
+					throw new CallBackException(
+							"Error al processar petició rebuda al callback de portafirmes",
+							new CallBackFault(),
+							ex);
 				}
 			} catch (Exception ex) {
 				logger.error(
@@ -117,12 +123,14 @@ public class MCGDwsImpl implements MCGDws {
 						IntegracioAccioTipusEnumDto.RECEPCIO,
 						errorDescripcio,
 						ex);
-				callbackResponse.setReturn(-1);
+				throw new CallBackException(
+						"Excepcio al processar petició rebuda al callback de portafirmes",
+						new CallBackFault(),
+						ex);
 			}
 		}
-		return callbackResponse;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(MCGDwsImpl.class);
-			
+	private static final Logger logger = LoggerFactory.getLogger(PortaFIBCallBackWsImpl.class);
+
 }
