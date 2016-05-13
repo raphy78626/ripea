@@ -179,47 +179,8 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<!--pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.cxf
-										</groupId>
-										<artifactId>
-											cxf-codegen-plugin
-										</artifactId>
-										<versionRange>
-											[${cxf.version},)
-										</versionRange>
-										<goals>
-											<goal>wsdl2java</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement-->
 	</build>
 	<repositories>
-		<!--repository>
-			<name>PortaFIB Maven Repository</name>
-			<id>es.caib.portafib</id>
-			<url>http://portafib.sourceforge.net/maven/</url>
-		</repository-->
 		<repository>
 			<name>PortaFIB Maven repository</name>
 			<id>es.caib.portafib</id>

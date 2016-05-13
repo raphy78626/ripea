@@ -772,13 +772,13 @@ public class DocumentServiceImpl implements DocumentService {
 	@Transactional
 	@Override
 	public Exception portafirmesCallback(
-			int documentId,
-			int estat) {
+			long documentId,
+			PortafirmesCallbackEstatEnum estat) {
 		logger.debug("Processant petició del callback ("
 				+ "documentId=" + documentId + ", "
 				+ "estat=" + estat + ")");
 		DocumentPortafirmesEntity documentPortafirmes = documentPortafirmesRepository.findByPortafirmesId(
-				new Integer(documentId).longValue());
+				documentId);
 		if (documentPortafirmes == null) {
 			logger.error("No s'ha trobat el document de portafirmes (documentId=" + documentId + ")");
 			return new NotFoundException(
@@ -806,10 +806,10 @@ public class DocumentServiceImpl implements DocumentService {
 					"estatRebut=" + estat + ")");
 		}
 		switch (estat) {
-		case 0: // DOCUMENT_BLOQUEJAT
-		case 1: // DOCUMENT_PENDENT
+		case DOCUMENT_PAUSAT:
+		case DOCUMENT_PENDENT:
 			break;
-		case 2: // DOCUMENT_FIRMAT
+		case DOCUMENT_FIRMAT:
 			// Registra al log la firma del document
 			contenidorLogHelper.log(
 					documentPortafirmes.getDocument(),
@@ -826,7 +826,7 @@ public class DocumentServiceImpl implements DocumentService {
 					documentVersio,
 					documentPortafirmes);
 			break;
-		case 3: // DOCUMENT_REBUTJAT
+		case DOCUMENT_REBUTJAT:
 			// Registra al log el rebuig de la firma del document
 			contenidorLogHelper.log(
 					documentPortafirmes.getDocument(),
@@ -839,6 +839,11 @@ public class DocumentServiceImpl implements DocumentService {
 					true);
 			documentPortafirmes.updateEstat(
 					PortafirmesEstatEnumDto.REBUTJAT);
+		default:
+			return new ValidationException(
+					documentPortafirmes.getId(),
+					DocumentPortafirmesEntity.class,
+					"S'ha rebut un estat de callback desconegut");
 		}
 		return null;
 	}

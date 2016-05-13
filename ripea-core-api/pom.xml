@@ -40,12 +40,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!--dependency>
-			<groupId>javax.ejb</groupId>
-			<artifactId>ejb-api</artifactId>
-			<version>3.0</version>
-			<scope>provided</scope>
-		</dependency-->
+		<dependency>
+			<groupId>es.caib.regweb3</groupId>
+			<artifactId>regweb3-ws-api</artifactId>
+			<version>3.0.5</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -60,4 +59,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<name>Regweb Maven repository</name>
+			<id>es.caib.regweb</id>
+			<url>https://github.com/GovernIB/registre/raw/gh-pages/maven</url>
+		</repository>
+	</repositories>
 </project>

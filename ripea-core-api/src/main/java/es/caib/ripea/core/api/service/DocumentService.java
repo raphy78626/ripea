@@ -23,6 +23,13 @@ import es.caib.ripea.core.api.exception.ValidationException;
  */
 public interface DocumentService {
 
+	public enum PortafirmesCallbackEstatEnum {
+		DOCUMENT_PAUSAT,
+		DOCUMENT_PENDENT,
+		DOCUMENT_FIRMAT,
+		DOCUMENT_REBUTJAT
+	}
+
 	/**
 	 * Crea un nou document a dins un contenidor.
 	 * 
@@ -264,8 +271,8 @@ public interface DocumentService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	public Exception portafirmesCallback(
-			int documentId,
-			int estat) throws NotFoundException;
+			long documentId,
+			PortafirmesCallbackEstatEnum estat) throws NotFoundException;
 
 	/**
 	 * Converteix el document a format PDF per a firmar-lo.
