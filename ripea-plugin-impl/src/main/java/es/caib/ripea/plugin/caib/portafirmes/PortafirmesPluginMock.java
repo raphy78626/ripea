@@ -51,15 +51,16 @@ public class PortafirmesPluginMock implements PortafirmesPlugin {
 
 	@Override
 	public List<PortafirmesDocumentTipus> findDocumentTipus() throws SistemaExternException {
+		
 		List<PortafirmesDocumentTipus> resposta = new ArrayList<PortafirmesDocumentTipus>();
-		PortafirmesDocumentTipus tipusDocument1 = new PortafirmesDocumentTipus();
-		tipusDocument1.setId(new Long(1));
-		tipusDocument1.setNom("Tipus 1");
-		resposta.add(tipusDocument1);
-		PortafirmesDocumentTipus tipusDocument2 = new PortafirmesDocumentTipus();
-		tipusDocument2.setId(new Long(2));
-		tipusDocument2.setNom("Tipus 2");
-		resposta.add(tipusDocument2);
+		PortafirmesDocumentTipus tipusDocument = new PortafirmesDocumentTipus();
+		for(int i = 0; i < 5; i++) {
+			tipusDocument = new PortafirmesDocumentTipus();
+			tipusDocument.setId(new Long(i));
+			tipusDocument.setCodi("T" + i);
+			tipusDocument.setNom("Tipus " + i);
+			resposta.add(tipusDocument);				
+		}		
 		return resposta;
 	}
 

@@ -617,6 +617,7 @@ public class PluginHelper {
 				for (PortafirmesDocumentTipus t: tipus) {
 					PortafirmesDocumentTipusDto dto = new PortafirmesDocumentTipusDto();
 					dto.setId(t.getId());
+					dto.setCodi(t.getCodi());
 					dto.setNom(t.getNom());
 					resposta.add(dto);
 				}
