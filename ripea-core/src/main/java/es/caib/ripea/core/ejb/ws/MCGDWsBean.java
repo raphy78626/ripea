@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.ejb;
+package es.caib.ripea.core.ejb.ws;
 
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;

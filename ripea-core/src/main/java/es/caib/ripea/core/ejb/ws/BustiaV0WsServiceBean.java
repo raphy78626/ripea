@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.ejb;
+package es.caib.ripea.core.ejb.ws;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -13,8 +13,8 @@ import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.api.service.ws.BustiaWs;
-import es.caib.ripea.core.service.ws.bustia.BustiaWsImpl;
+import es.caib.ripea.core.api.service.ws.BustiaV0WsService;
+import es.caib.ripea.core.service.ws.bustia.BustiaV0WsServiceImpl;
 
 /**
  * Implementació dels mètodes per al servei de bústies de RIPEA.
@@ -23,23 +23,23 @@ import es.caib.ripea.core.service.ws.bustia.BustiaWsImpl;
  */
 @Stateless
 @WebService(
-		name = "Bustia",
-		serviceName = "BustiaService",
-		portName = "BustiaServicePort",
-		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
+		name = "BustiaV0",
+		serviceName = "BustiaV0Service",
+		portName = "BustiaV0ServicePort",
+		targetNamespace = "http://www.caib.es/ripea/ws/v0/bustia")
 @WebContext(
 		contextRoot = "/ripea/ws",
-		urlPattern = "/bustia",
+		urlPattern = "/v0/bustia",
 		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
 @RolesAllowed({"IPA_BSTWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
-public class BustiaWsBean implements BustiaWs {
+public class BustiaV0WsServiceBean implements BustiaV0WsService {
 
 	@Autowired
-	private BustiaWsImpl delegate;
+	private BustiaV0WsServiceImpl delegate;
 
 	@Override
 	public void enviarContingut(

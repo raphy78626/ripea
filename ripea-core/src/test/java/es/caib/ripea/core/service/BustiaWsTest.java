@@ -22,8 +22,8 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import es.caib.ripea.core.api.service.ws.BustiaWs;
-import es.caib.ripea.core.api.service.ws.BustiaWs.BustiaContingutTipus;
+import es.caib.ripea.core.api.service.ws.BustiaV0WsService;
+import es.caib.ripea.core.api.service.ws.BustiaV0WsService.BustiaContingutTipus;
 
 /**
  * Classe de proves pel registre.
@@ -52,13 +52,13 @@ public class BustiaWsTest {
 				"REGISTRE_REF");
 	}
 
-	private BustiaWs getBustiaService() throws Exception {
+	private BustiaV0WsService getBustiaService() throws Exception {
 		URL url = new URL(ENDPOINT_ADDRESS + "?wsdl");
 		QName qname = new QName(
 				"http://www.caib.es/ripea/ws/bustia",
 				"BustiaService");
 		Service service = Service.create(url, qname);
-		BustiaWs bustiaWs = service.getPort(BustiaWs.class);
+		BustiaV0WsService bustiaWs = service.getPort(BustiaV0WsService.class);
 		BindingProvider bp = (BindingProvider)bustiaWs;
 		@SuppressWarnings("rawtypes")
 		List<Handler> handlerChain = new ArrayList<Handler>();
