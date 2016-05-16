@@ -8,16 +8,17 @@ import javax.jws.WebService;
 
 
 /**
- * Declaració dels mètodes per al servei de bústia de RIPEA.
+ * Declaració dels mètodes per al servei d'enviament de contingut a
+ * bústies de RIPEA v0.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @WebService(
-		name = "Bustia",
-		serviceName = "BustiaService",
-		portName = "BustiaServicePort",
-		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
-public interface BustiaWs {
+		name = "BustiaV0",
+		serviceName = "BustiaV0Service",
+		portName = "BustiaV0ServicePort",
+		targetNamespace = "http://www.caib.es/ripea/ws/v0/bustia")
+public interface BustiaV0WsService {
 
 	public enum BustiaContingutTipus {
 		EXPEDIENT,
@@ -28,9 +29,15 @@ public interface BustiaWs {
 	/**
 	 * Envia un contingut a la bústia per defecte de la unitat administrativa.
 	 * 
-	 * @param anotacio Dades de l'anotació.
+	 * @param entitat
+	 *            Codi de l'entitat.
+	 * @param unitatAdministrativa
+	 *            Codi de la unitat administrativa.
+	 * @param tipus
+	 *            Codi de l'usuari a cercar.
+	 * @param referencia
+	 *            Referència per a consultar el contingut i posar-lo dins la bústia.
 	 */
-	//@PreAuthorize("hasRole('ROLE_BSTWS')")
 	public void enviarContingut(
 			@WebParam(name="entitat") String entitat,
 			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,

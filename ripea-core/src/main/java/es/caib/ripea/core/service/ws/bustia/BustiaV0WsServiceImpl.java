@@ -22,7 +22,7 @@ import es.caib.ripea.core.api.dto.RegistreTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreTransportTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.service.ws.BustiaWs;
+import es.caib.ripea.core.api.service.ws.BustiaV0WsService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
@@ -45,12 +45,12 @@ import es.caib.ripea.plugin.registre.RegistreInteressat;
  */
 @Service
 @WebService(
-		name = "Bustia",
-		serviceName = "BustiaService",
-		portName = "BustiaServicePort",
-		endpointInterface = "es.caib.ripea.core.api.service.ws.BustiaWs",
-		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
-public class BustiaWsImpl implements BustiaWs {
+		name = "BustiaV0",
+		serviceName = "BustiaV0Service",
+		portName = "BustiaV0ServicePort",
+		endpointInterface = "es.caib.ripea.core.api.service.ws.BustiaV0WsService",
+		targetNamespace = "http://www.caib.es/ripea/ws/v0/bustia")
+public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 
 	@Resource
 	private EntitatRepository entitatRepository;
@@ -73,7 +73,7 @@ public class BustiaWsImpl implements BustiaWs {
 			BustiaContingutTipus tipus,
 			String referencia) {
 		logger.debug("Processant enviament al servei web de bústia (" +
-				"unitatCodi:" + entitat + ", " +
+				"entitat:" + entitat + ", " +
 				"unitatAdministrativa:" + unitatAdministrativa + ", " +
 				"tipus:" + tipus + ", " +
 				"referencia:" + referencia + ")");
@@ -134,7 +134,7 @@ public class BustiaWsImpl implements BustiaWs {
 
 
 
-	public BustiaEntity findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
+	private BustiaEntity findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
 			EntitatEntity entitat,
 			UnitatOrganitzativaDto unitat) {
 		String unitatOrganitzativaCodi = unitat.getCodi();
@@ -299,6 +299,6 @@ public class BustiaWsImpl implements BustiaWs {
 		return annexEntity;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(BustiaWsImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(BustiaV0WsServiceImpl.class);
 
 }

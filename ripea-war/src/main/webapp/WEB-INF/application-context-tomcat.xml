@@ -23,9 +23,14 @@
 	<import resource="classpath:es/caib/ripea/core/context/application-context-war.xml" />
 	<import resource="classpath:es/caib/ripea/war/context/application-context-security.xml" />
 
-	<wss:binding url="/ws/bustia">
+	<wss:binding url="/ws/v0/bustia">
 		<wss:service>
-			<ws:service bean="#bustiaWsImpl"/>
+			<ws:service bean="#bustiaV0WsImpl"/>
+		</wss:service>
+	</wss:binding>
+	<wss:binding url="/ws/v1/bustia">
+		<wss:service>
+			<ws:service bean="#bustiaV1WsImpl"/>
 		</wss:service>
 	</wss:binding>
 	<wss:binding url="/ws/MCGDws">

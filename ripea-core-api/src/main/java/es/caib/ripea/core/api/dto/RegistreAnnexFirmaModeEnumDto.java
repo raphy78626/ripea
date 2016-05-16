@@ -32,7 +32,9 @@ public enum RegistreAnnexFirmaModeEnumDto {
 		for (RegistreAnnexFirmaModeEnumDto s: EnumSet.allOf(RegistreAnnexFirmaModeEnumDto.class))
 			lookup.put(new Integer(s.getValor()), s);
 	}
-	public static RegistreAnnexFirmaModeEnumDto valorAsEnum(int valor) {
+	public static RegistreAnnexFirmaModeEnumDto valorAsEnum(Integer valor) {
+		if (valor == null)
+			return null;
         return lookup.get(new Integer(valor)); 
     }
 
