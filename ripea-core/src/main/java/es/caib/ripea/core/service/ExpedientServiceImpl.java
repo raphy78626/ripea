@@ -153,6 +153,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 					metaExpedientId,
 					true,
 					false);
+		} else {
+			throw new ValidationException(
+					"<creacio>",
+					ExpedientEntity.class,
+					"No es pot crear un expedient sense un meta-expedient associat");			
 		}
 		ArxiuEntity arxiu = comprovarArxiu(
 				entitat,
@@ -317,6 +322,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 					true,
 					false);
 			cacheHelper.evictErrorsValidacioPerNode(expedient);
+		} else {
+			throw new ValidationException(
+					"<creacio>",
+					ExpedientEntity.class,
+					"No es pot actualitzar un expedient sense un meta-expedient associat");			
 		}
 		// Comprova que el nom sigui vàlid
 		if (!contenidorHelper.isNomValid(nom)) {

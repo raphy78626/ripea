@@ -19,7 +19,7 @@
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
 		<form:hidden path="registreId"/>
-		<rip:inputSelect name="metaNodeId" textKey="contenidor.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" emptyOptionTextKey="contenidor.expedient.form.camp.metanode.buit" disabled="${not empty expedientCommand.id}"/>
+		<rip:inputSelect name="metaNodeId" textKey="contenidor.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" disabled="${not empty expedientCommand.id}"/>
 		<rip:inputSelect name="arxiuId" textKey="contenidor.expedient.form.camp.arxiu" required="true" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nomAmbUnitat"/>
 		<rip:inputText name="nom" textKey="contenidor.expedient.form.camp.nom" required="true"/>
 		<div id="modal-botons" class="well">
