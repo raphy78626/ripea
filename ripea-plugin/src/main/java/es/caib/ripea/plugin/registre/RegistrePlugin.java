@@ -20,7 +20,7 @@ public interface RegistrePlugin {
 	 * @throws SistemaExternException
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
-	public RegistreAnotacio entradaConsultar(
+	public RegistreAnotacioResposta entradaConsultar(
 			String identificador,
 			String entitat) throws SistemaExternException;
 
@@ -35,7 +35,7 @@ public interface RegistrePlugin {
 	 * @throws SistemaExternException
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
-	public RegistreAnotacio sortidaConsultar(
+	public RegistreAnotacioResposta sortidaConsultar(
 			String identificador,
 			String entitat) throws SistemaExternException;
 

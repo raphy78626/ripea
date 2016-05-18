@@ -6,7 +6,7 @@ package es.caib.ripea.core.api.service.ws;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
-import es.caib.regweb3.ws.api.v3.RegistroEntradaWs;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 
 
 /**
@@ -36,7 +36,7 @@ public interface BustiaV1WsService {
 	public void enviarAnotacioRegistreEntrada(
 			@WebParam(name="entitat") String entitat,
 			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
-			@WebParam(name="registreEntrada") RegistroEntradaWs registroEntrada);
+			@WebParam(name="registreEntrada") RegistreAnotacio registreEntrada);
 
 	/**
 	 * Envia una anotació de registre d'entrada a la bústia per defecte

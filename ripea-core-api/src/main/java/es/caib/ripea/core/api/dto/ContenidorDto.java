@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
+
 /**
  * Informació d'un contenidor.
  * 
@@ -21,7 +23,7 @@ public abstract class ContenidorDto extends AuditoriaDto {
 	protected String nom;
 	protected List<ContenidorDto> fills;
 	protected List<ContenidorDto> path;
-	protected List<RegistreAnotacioDto> registres;
+	protected List<RegistreAnotacio> registres;
 	protected EntitatDto entitat;
 	protected int esborrat;
 	protected Date darrerMovimentData;
@@ -56,10 +58,10 @@ public abstract class ContenidorDto extends AuditoriaDto {
 	public void setPath(List<ContenidorDto> path) {
 		this.path = path;
 	}
-	public List<RegistreAnotacioDto> getRegistres() {
+	public List<RegistreAnotacio> getRegistres() {
 		return registres;
 	}
-	public void setRegistres(List<RegistreAnotacioDto> registres) {
+	public void setRegistres(List<RegistreAnotacio> registres) {
 		this.registres = registres;
 	}
 	public EntitatDto getEntitat() {

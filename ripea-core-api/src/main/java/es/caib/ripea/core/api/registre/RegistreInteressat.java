@@ -1,58 +1,46 @@
 /**
  * 
  */
-package es.caib.ripea.core.api.dto;
-
-import java.io.Serializable;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
+package es.caib.ripea.core.api.registre;
 
 /**
- * Informació d'un interessat d'una anotació de registre.
+ * Classe que representa un interessat d'una anotació de registre.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class RegistreInteressatDto implements Serializable {
+public class RegistreInteressat {
 
-	public Long id;
-	public RegistreInteressatTipusEnumDto tipus;
-	public RegistreInteressatDocumentTipusEnumDto documentTipus;
-	public String documentNum;
-	public String nom;
-	public String llinatge1;
-	public String llinatge2;
-	public String raoSocial;
-	public String pais;
-	public String provincia;
-	public String municipi;
-	public String adresa;
-	public String codiPostal;
-	public String email;
-	public String telefon;
-	public String emailHabilitat;
-	public RegistreInteressatCanalEnumDto canalPreferent;
-	public String observacions;
-	public RegistreInteressatDto representant;
-
+	private String tipus;
+	private String documentTipus;
+	private String documentNum;
+	private String nom;
+	private String llinatge1;
+	private String llinatge2;
+	private String raoSocial;
+	private String pais;
+	private String provincia;
+	private String municipi;
+	private String adresa;
+	private String codiPostal;
+	private String email;
+	private String telefon;
+	private String emailHabilitat;
+	private String canalPreferent;
+	private String observacions;
+	private RegistreInteressat representant;
 
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public RegistreInteressatTipusEnumDto getTipus() {
+
+	public String getTipus() {
 		return tipus;
 	}
-	public void setTipus(RegistreInteressatTipusEnumDto tipus) {
+	public void setTipus(String tipus) {
 		this.tipus = tipus;
 	}
-	public RegistreInteressatDocumentTipusEnumDto getDocumentTipus() {
+	public String getDocumentTipus() {
 		return documentTipus;
 	}
-	public void setDocumentTipus(
-			RegistreInteressatDocumentTipusEnumDto documentTipus) {
+	public void setDocumentTipus(String documentTipus) {
 		this.documentTipus = documentTipus;
 	}
 	public String getDocumentNum() {
@@ -133,10 +121,10 @@ public class RegistreInteressatDto implements Serializable {
 	public void setEmailHabilitat(String emailHabilitat) {
 		this.emailHabilitat = emailHabilitat;
 	}
-	public RegistreInteressatCanalEnumDto getCanalPreferent() {
+	public String getCanalPreferent() {
 		return canalPreferent;
 	}
-	public void setCanalPreferent(RegistreInteressatCanalEnumDto canalPreferent) {
+	public void setCanalPreferent(String canalPreferent) {
 		this.canalPreferent = canalPreferent;
 	}
 	public String getObservacions() {
@@ -145,18 +133,11 @@ public class RegistreInteressatDto implements Serializable {
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
 	}
-	public RegistreInteressatDto getRepresentant() {
+	public RegistreInteressat getRepresentant() {
 		return representant;
 	}
-	public void setRepresentant(RegistreInteressatDto representant) {
+	public void setRepresentant(RegistreInteressat representant) {
 		this.representant = representant;
 	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
-
-	private static final long serialVersionUID = -139254994389509932L;
 
 }

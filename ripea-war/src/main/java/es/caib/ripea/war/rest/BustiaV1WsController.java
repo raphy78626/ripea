@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import es.caib.regweb3.ws.api.v3.RegistroEntradaWs;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.service.ws.BustiaV1WsService;
 
 /**
@@ -66,7 +66,7 @@ public class BustiaV1WsController {
 		bustiaWs.enviarAnotacioRegistreEntrada(
 				entitat,
 				unitatAdministrativa,
-				new RegistroEntradaWs());
+				new RegistreAnotacio());
 	}
 
 }

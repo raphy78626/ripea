@@ -4,7 +4,7 @@
 package es.caib.ripea.plugin.caib.registre;
 
 import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.registre.RegistreAnotacio;
+import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 import es.caib.ripea.plugin.registre.RegistrePlugin;
 
 /**
@@ -15,14 +15,14 @@ import es.caib.ripea.plugin.registre.RegistrePlugin;
 public class RegistrePluginMock implements RegistrePlugin {
 
 	@Override
-	public RegistreAnotacio entradaConsultar(
+	public RegistreAnotacioResposta entradaConsultar(
 			String identificador,
 			String entitat) throws SistemaExternException {
 		return null;
 	}
 
 	@Override
-	public RegistreAnotacio sortidaConsultar(
+	public RegistreAnotacioResposta sortidaConsultar(
 			String identificador,
 			String entitat) throws SistemaExternException {
 		return null;

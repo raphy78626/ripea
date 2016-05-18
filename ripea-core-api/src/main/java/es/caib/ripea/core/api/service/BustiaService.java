@@ -11,9 +11,9 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.PermisDto;
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 
 /**
  * Declaració dels mètodes per a gestionar bústies.
@@ -206,7 +206,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<RegistreAnotacioDto> findRegistrePendent(
+	public List<RegistreAnotacio> findRegistrePendent(
 			Long entitatId,
 			Long id) throws NotFoundException;
 
@@ -224,7 +224,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnotacioDto findOneRegistrePendent(
+	public RegistreAnotacio findOneRegistrePendent(
 			Long entitatId,
 			Long id,
 			Long registreId) throws NotFoundException;

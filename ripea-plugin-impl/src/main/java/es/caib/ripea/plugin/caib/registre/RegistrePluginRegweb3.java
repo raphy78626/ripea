@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,11 +33,12 @@ import es.caib.regweb3.ws.api.v3.RegWebRegistroSalidaWsService;
 import es.caib.regweb3.ws.api.v3.RegistroEntradaResponseWs;
 import es.caib.regweb3.ws.api.v3.RegistroResponseWs;
 import es.caib.regweb3.ws.api.v3.RegistroSalidaResponseWs;
+import es.caib.ripea.core.api.registre.RegistreAnnex;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
+import es.caib.ripea.core.api.registre.RegistreInteressat;
 import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.registre.RegistreAnnex;
-import es.caib.ripea.plugin.registre.RegistreAnotacio;
-import es.caib.ripea.plugin.registre.RegistreAnotacio.RegistreTipusEnum;
-import es.caib.ripea.plugin.registre.RegistreInteressat;
+import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
+import es.caib.ripea.plugin.registre.RegistreAnotacioResposta.RegistreTipusEnum;
 import es.caib.ripea.plugin.registre.RegistrePlugin;
 import es.caib.ripea.plugin.utils.PropertiesHelper;
 
@@ -50,20 +50,19 @@ import es.caib.ripea.plugin.utils.PropertiesHelper;
 public class RegistrePluginRegweb3 implements RegistrePlugin {
 
 	@Override
-	public RegistreAnotacio entradaConsultar(
+	public RegistreAnotacioResposta entradaConsultar(
 			String identificador,
 			String entitat) throws SistemaExternException {
 		try {
 			RegistroEntradaResponseWs registro = getRegistroEntradaWs().obtenerRegistroEntrada(
 					identificador,
-					"e43110511r", // getUsername();
+					getUsername(),
 					entitat);
-			RegistreAnotacio anotacio = toRegistreAnotacio(registro);
-			anotacio.setTipus(RegistreTipusEnum.ENTRADA);
-			anotacio.setUnitatAdministrativa(registro.getDestinoCodigo());
-			// TODO eliminar una vegada arreglades problemes amb REGWEB
-			arreglarAnotacio(anotacio);
-			return anotacio;
+			RegistreAnotacioResposta resposta = new RegistreAnotacioResposta();
+			resposta.setTipus(RegistreTipusEnum.ENTRADA);
+			resposta.setUnitatAdministrativa(registro.getDestinoCodigo());
+			resposta.setRegistreAnotacio(toRegistreAnotacio(registro));
+			return resposta;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut consulta l'anotació (" +
@@ -73,20 +72,19 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 	}
 
 	@Override
-	public RegistreAnotacio sortidaConsultar(
+	public RegistreAnotacioResposta sortidaConsultar(
 			String identificador,
 			String entitat) throws SistemaExternException {
 		try {
 			RegistroSalidaResponseWs registro = getRegistroSalidaWs().obtenerRegistroSalida(
 					identificador,
-					"e43110511r", // getUsername();
+					getUsername(),
 					entitat);
-			RegistreAnotacio anotacio = toRegistreAnotacio(registro);
-			anotacio.setTipus(RegistreTipusEnum.SORTIDA);
-			anotacio.setUnitatAdministrativa(registro.getOrigenCodigo());
-			// TODO eliminar una vegada arreglades problemes amb REGWEB
-			arreglarAnotacio(anotacio);
-			return anotacio;
+			RegistreAnotacioResposta resposta = new RegistreAnotacioResposta();
+			resposta.setTipus(RegistreTipusEnum.SORTIDA);
+			resposta.setUnitatAdministrativa(registro.getOrigenCodigo());
+			resposta.setRegistreAnotacio(toRegistreAnotacio(registro));
+			return resposta;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut consulta l'anotació (" +
@@ -103,22 +101,31 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 		anotacio.setNumero(registro.getNumeroRegistro());
 		anotacio.setData(registro.getFechaRegistro());
 		anotacio.setIdentificador(registro.getNumeroRegistroFormateado());
-		anotacio.setOficina(registro.getOficinaCodigo());
-		anotacio.setLlibre(registro.getLibroCodigo());
+		anotacio.setEntitatCodi(registro.getEntidadCodigo());
+		anotacio.setEntitatDescripcio(registro.getEntidadDenominacion());
+		anotacio.setOficinaCodi(registro.getOficinaCodigo());
+		anotacio.setOficinaDescripcio(registro.getOficinaDenominacion());
+		anotacio.setLlibreCodi(registro.getLibroCodigo());
+		anotacio.setLlibreDescripcio(registro.getLibroDescripcion());
 		anotacio.setExtracte(registro.getExtracto());
-		anotacio.setAssumpteTipus(registro.getTipoAsuntoCodigo());
 		anotacio.setAssumpteCodi(registro.getCodigoAsuntoCodigo());
-		anotacio.setAssumpteReferencia(registro.getRefExterna());
-		anotacio.setAssumpteNumExpedient(registro.getNumExpediente());
-		anotacio.setIdioma(registro.getIdiomaCodigo());
-		anotacio.setTransportTipus(registro.getTipoTransporteCodigo());
+		anotacio.setAssumpteDescripcio(registro.getCodigoAsuntoDescripcion());
+		anotacio.setAssumpteTipusCodi(registro.getTipoAsuntoCodigo());
+		anotacio.setAssumpteTipusDescripcio(registro.getTipoAsuntoDescripcion());
+		anotacio.setReferencia(registro.getRefExterna());
+		anotacio.setExpedientNumero(registro.getNumExpediente());
+		anotacio.setIdiomaCodi(registro.getIdiomaCodigo());
+		anotacio.setIdiomaDescripcio(registro.getIdiomaDescripcion());
+		anotacio.setTransportTipusCodi(registro.getTipoTransporteCodigo());
+		anotacio.setTransportTipusDescripcio(registro.getTipoTransporteDescripcion());
 		anotacio.setTransportNumero(registro.getNumTransporte());
-		anotacio.setUsuariNom(registro.getCodigoUsuario());
+		anotacio.setUsuariCodi(registro.getCodigoUsuario());
+		anotacio.setUsuariNom(registro.getNombreUsuario());
 		anotacio.setUsuariContacte(registro.getContactoUsuario());
 		anotacio.setAplicacioCodi(registro.getAplicacion());
 		anotacio.setAplicacioVersio(registro.getVersion());
-		if (registro.getDocFisicaCodigo() != null)
-			anotacio.setDocumentacioFisica(registro.getDocFisicaCodigo().toString());
+		anotacio.setDocumentacioFisicaCodi(registro.getDocFisicaCodigo());
+		anotacio.setDocumentacioFisicaDescripcio(registro.getDocFisicaDescripcion());
 		anotacio.setObservacions(registro.getObservaciones());
 		anotacio.setExposa(registro.getExpone());
 		anotacio.setSolicita(registro.getSolicita());
@@ -144,12 +151,12 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 				annex.setFitxerNom(anexo.getNombreFicheroAnexado());
 				annex.setFitxerContingut(anexo.getFicheroAnexado());
 				annex.setFitxerTipusMime(anexo.getTipoMIMEFicheroAnexado());
-				annex.setNtiTipoDocumental(anexo.getTipoDocumental());
-				annex.setValidesa(anexo.getValidezDocumento());
-				annex.setTipus(anexo.getTipoDocumento());
+				annex.setNtiTipusDocument(anexo.getTipoDocumental());
+				annex.setEstatElaboracio(anexo.getValidezDocumento());
+				annex.setSicresTipusDocument(anexo.getTipoDocumento());
 				annex.setObservacions(anexo.getObservaciones());
 				if (anexo.getOrigenCiudadanoAdmin() != null)
-					annex.setOrigen(anexo.getOrigenCiudadanoAdmin().toString());
+					annex.setOrigenCiutadaAdmin(anexo.getOrigenCiudadanoAdmin().toString());
 				annex.setDataCaptura(anexo.getFechaCaptura());
 				annex.setFirmaMode(anexo.getModoFirma());
 				annex.setFirmaFitxerNom(anexo.getNombreFirmaAnexada());
@@ -191,7 +198,7 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 		return interessat;
 	}
 
-	private void arreglarAnotacio(
+	/*private void arreglarAnotacio(
 			RegistreAnotacio anotacio) {
 		anotacio.setIdioma("ca");
 		anotacio.setDocumentacioFisica("1");
@@ -200,7 +207,7 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 		anotacio.setOficina("O00009560");
 		anotacio.setUnitatAdministrativa("A04013612");
 		anotacio.setData(new Date(0));
-	}
+	}*/
 
 	private RegWebRegistroEntradaWs getRegistroEntradaWs() throws MalformedURLException {
 		String webServiceUrl = getBaseUrl() + "/ws/v3/RegWebRegistroEntrada";

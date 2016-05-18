@@ -13,7 +13,7 @@ import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.regweb3.ws.api.v3.RegistroEntradaWs;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.service.ws.BustiaV1WsService;
 import es.caib.ripea.core.service.ws.bustia.BustiaV1WsServiceImpl;
 
@@ -46,11 +46,11 @@ public class BustiaV1WsServiceBean implements BustiaV1WsService {
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
 			String unitatAdministrativa,
-			RegistroEntradaWs registroEntrada) {
+			RegistreAnotacio registreEntrada) {
 		delegate.enviarAnotacioRegistreEntrada(
 				entitat,
 				unitatAdministrativa,
-				registroEntrada);
+				registreEntrada);
 		
 	}
 

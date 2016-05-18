@@ -16,8 +16,8 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.PermisDto;
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.service.BustiaService;
 
 /**
@@ -124,7 +124,7 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<RegistreAnotacioDto> findRegistrePendent(
+	public List<RegistreAnotacio> findRegistrePendent(
 			Long entitatId,
 			Long id) {
 		return delegate.findRegistrePendent(entitatId, id);
@@ -132,7 +132,7 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnotacioDto findOneRegistrePendent(
+	public RegistreAnotacio findOneRegistrePendent(
 			Long entitatId,
 			Long id,
 			Long registreId) {

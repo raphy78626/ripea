@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.api.dto;
+package es.caib.ripea.core.api.registre;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.Map;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public enum RegistreInteressatDocumentTipusEnumDto {
+public enum RegistreInteressatDocumentTipusEnum {
 
 	NIF("N"),
 	CIF("C"),
@@ -23,19 +23,19 @@ public enum RegistreInteressatDocumentTipusEnumDto {
 	CODI_ORIGEN("O");
 
 	private final String valor;
-	private RegistreInteressatDocumentTipusEnumDto(String valor) {
+	private RegistreInteressatDocumentTipusEnum(String valor) {
 		this.valor = valor;
 	}
 	public String getValor() {
 		return valor;
 	}
-	private static final Map<String, RegistreInteressatDocumentTipusEnumDto> lookup;
+	private static final Map<String, RegistreInteressatDocumentTipusEnum> lookup;
 	static {
-		lookup = new HashMap<String, RegistreInteressatDocumentTipusEnumDto>();
-		for (RegistreInteressatDocumentTipusEnumDto s: EnumSet.allOf(RegistreInteressatDocumentTipusEnumDto.class))
+		lookup = new HashMap<String, RegistreInteressatDocumentTipusEnum>();
+		for (RegistreInteressatDocumentTipusEnum s: EnumSet.allOf(RegistreInteressatDocumentTipusEnum.class))
 			lookup.put(s.getValor(), s);
 	}
-	public static RegistreInteressatDocumentTipusEnumDto valorAsEnum(String valor) {
+	public static RegistreInteressatDocumentTipusEnum valorAsEnum(String valor) {
 		if (valor == null)
 			return null;
         return lookup.get(valor); 

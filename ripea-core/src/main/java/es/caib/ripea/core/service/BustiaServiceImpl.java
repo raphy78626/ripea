@@ -26,9 +26,9 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PermisDto;
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContenidorEntity;
@@ -450,7 +450,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<RegistreAnotacioDto> findRegistrePendent(
+	public List<RegistreAnotacio> findRegistrePendent(
 			Long entitatId,
 			Long id) {
 		logger.debug("Consultant els registres pendents de la bústia ("
@@ -479,7 +479,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public RegistreAnotacioDto findOneRegistrePendent(
+	public RegistreAnotacio findOneRegistrePendent(
 			Long entitatId,
 			Long id,
 			Long registreId) {
@@ -501,7 +501,7 @@ public class BustiaServiceImpl implements BustiaService {
 				registreRepository.findByContenidorAndId(
 						bustia,
 						registreId),
-				RegistreAnotacioDto.class);
+				RegistreAnotacio.class);
 	}
 
 	@Transactional(readOnly = true)

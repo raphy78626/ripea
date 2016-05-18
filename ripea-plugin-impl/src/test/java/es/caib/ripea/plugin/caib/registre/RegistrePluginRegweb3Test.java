@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import es.caib.ripea.plugin.registre.RegistreAnotacio;
+import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 import es.caib.ripea.plugin.registre.RegistrePlugin;
 import es.caib.ripea.plugin.utils.PropertiesHelper;
 
@@ -49,7 +49,7 @@ public class RegistrePluginRegweb3Test {
 
 	@Test
 	public void entradaConsultar() throws Exception {
-		RegistreAnotacio anotacio = plugin.entradaConsultar(
+		RegistreAnotacioResposta anotacio = plugin.entradaConsultar(
 				REGISTRE_NUM,
 				ENTITAT);
 		assertTrue(anotacio != null);

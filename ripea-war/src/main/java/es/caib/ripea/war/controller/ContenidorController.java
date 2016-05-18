@@ -33,7 +33,7 @@ import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContenidorService;
 import es.caib.ripea.core.api.service.DocumentService;
@@ -486,12 +486,12 @@ public class ContenidorController extends BaseUserController {
 
 	@RequestMapping(value = "/contenidor/{contenidorId}/registre/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<RegistreAnotacioDto> registreDatatable(
+	public DatatablesPagina<RegistreAnotacio> registreDatatable(
 			HttpServletRequest request,
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<RegistreAnotacioDto> registres = null;
+		List<RegistreAnotacio> registres = null;
 		ContenidorDto contenidor = contenidorService.getContenidorAmbContingut(
 				entitatActual.getId(),
 				contenidorId);
@@ -499,22 +499,22 @@ public class ContenidorController extends BaseUserController {
 			ExpedientDto expedient = (ExpedientDto)contenidor;
 			registres = expedient.getRegistres();
 		} else {
-			registres = new ArrayList<RegistreAnotacioDto>();
+			registres = new ArrayList<RegistreAnotacio>();
 		}
 		return PaginacioHelper.getPaginaPerDatatables(request, registres);
 	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreIdentificador}", method = RequestMethod.GET)
 	public String registreInfo(
 			HttpServletRequest request,
 			@PathVariable Long contenidorId,
-			@PathVariable Long registreId,
+			@PathVariable String registreIdentificador,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ContenidorDto contenidor = contenidorService.getContenidorAmbContingut(
 				entitatActual.getId(),
 				contenidorId);
-		for (RegistreAnotacioDto registre: contenidor.getRegistres()) {
-			if (registreId.equals(registre.getId())) {
+		for (RegistreAnotacio registre: contenidor.getRegistres()) {
+			if (registreIdentificador.equals(registre.getIdentificador())) {
 				model.addAttribute("registre", registre);
 				break;
 			}

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContenidorService;
@@ -61,7 +61,7 @@ public class BustiaUserRegistreController extends BaseUserController {
 
 	@RequestMapping(value = "/{bustiaId}/pendent/registre/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<RegistreAnotacioDto> pendentRegistreDatatable(
+	public DatatablesPagina<RegistreAnotacio> pendentRegistreDatatable(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
