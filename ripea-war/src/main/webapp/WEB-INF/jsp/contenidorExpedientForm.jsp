@@ -26,7 +26,7 @@
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
-		<rip:inputSelect name="metaNodeId" textKey="contenidor.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" emptyOptionTextKey="contenidor.expedient.form.camp.metanode.buit"/>
+		<rip:inputSelect name="metaNodeId" textKey="contenidor.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom"/>
 		<rip:inputSelect name="arxiuId" textKey="contenidor.expedient.form.camp.arxiu" required="true" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nomAmbUnitat"/>
 		<rip:inputText name="nom" textKey="contenidor.expedient.form.camp.nom" required="true"/>
 		<rip:inputText name="any" textKey="contenidor.expedient.form.camp.any" required="true"/>
