@@ -17,6 +17,7 @@ public class RegistrePluginMock implements RegistrePlugin {
 	@Override
 	public RegistreAnotacioResposta entradaConsultar(
 			String identificador,
+			String usuariCodi,
 			String entitat) throws SistemaExternException {
 		return null;
 	}
@@ -24,6 +25,7 @@ public class RegistrePluginMock implements RegistrePlugin {
 	@Override
 	public RegistreAnotacioResposta sortidaConsultar(
 			String identificador,
+			String usuariCodi,
 			String entitat) throws SistemaExternException {
 		return null;
 	}

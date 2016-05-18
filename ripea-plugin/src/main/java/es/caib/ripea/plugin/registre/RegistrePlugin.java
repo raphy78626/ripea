@@ -22,6 +22,7 @@ public interface RegistrePlugin {
 	 */
 	public RegistreAnotacioResposta entradaConsultar(
 			String identificador,
+			String usuariCodi,
 			String entitat) throws SistemaExternException;
 
 	/**
@@ -37,6 +38,7 @@ public interface RegistrePlugin {
 	 */
 	public RegistreAnotacioResposta sortidaConsultar(
 			String identificador,
+			String usuariCodi,
 			String entitat) throws SistemaExternException;
 
 }

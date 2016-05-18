@@ -55,39 +55,39 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	@Column(name = "numero", nullable = false)
 	private int numero;
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "data")
+	@Column(name = "data", nullable = false)
 	private Date data;
-	@Column(name = "identificador")
+	@Column(name = "identificador", length = 100, nullable = false)
 	private String identificador;
-	@Column(name = "entitat_codi", length = 10, nullable = false)
+	@Column(name = "entitat_codi", length = 21, nullable = false)
 	private String entitatCodi;
-	@Column(name = "entitat_desc", length = 100, nullable = false)
+	@Column(name = "entitat_desc", length = 100)
 	private String entitatDescripcio;
 	@Column(name = "oficina_codi", length = 21, nullable = false)
 	private String oficinaCodi;
-	@Column(name = "oficina_desc", length = 100, nullable = false)
+	@Column(name = "oficina_desc", length = 100)
 	private String oficinaDescripcio;
 	@Column(name = "llibre_codi", length = 4, nullable = false)
 	private String llibreCodi;
-	@Column(name = "llibre_desc", length = 100, nullable = false)
+	@Column(name = "llibre_desc", length = 100)
 	private String llibreDescripcio;
 	@Column(name = "extracte", length = 240)
 	private String extracte;
 	@Column(name = "assumpte_tipus_codi", length = 16, nullable = false)
 	private String assumpteTipusCodi;
-	@Column(name = "assumpte_tipus_desc", length = 100, nullable = false)
+	@Column(name = "assumpte_tipus_desc", length = 100)
 	private String assumpteTipusDescripcio;
 	@Column(name = "assumpte_codi", length = 16)
 	private String assumpteCodi;
 	@Column(name = "assumpte_desc", length = 100)
 	private String assumpteDescripcio;
-	@Column(name = "assumpte_ref", length = 16)
+	@Column(name = "referencia", length = 16)
 	private String referencia;
-	@Column(name = "numexp", length = 80)
+	@Column(name = "expedient_num", length = 80)
 	private String expedientNumero;
 	@Column(name = "idioma_codi", length = 2, nullable = false)
 	private String idiomaCodi;
-	@Column(name = "idioma_desc", length = 100, nullable = false)
+	@Column(name = "idioma_desc", length = 100)
 	private String idiomaDescripcio;
 	@Column(name = "transport_tipus_codi", length = 2)
 	private String transportTipusCodi;
@@ -105,9 +105,9 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	private String aplicacioCodi;
 	@Column(name = "aplicacio_versio", length = 15)
 	private String aplicacioVersio;
-	@Column(name = "documentacio_fis_codi", length = 1)
+	@Column(name = "docfis_codi", length = 1)
 	private String documentacioFisicaCodi;
-	@Column(name = "documentacio_fis_desc", length = 100)
+	@Column(name = "docfis_desc", length = 100)
 	private String documentacioFisicaDescripcio;
 	@Column(name = "observacions", length = 50)
 	private String observacions;

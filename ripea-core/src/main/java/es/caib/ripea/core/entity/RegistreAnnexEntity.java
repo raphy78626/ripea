@@ -40,13 +40,10 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 						columnNames = {
 								"registre_id",
 								"titol",
-								"fitxer_nom",
-								"fitxer_tamany",
 								"fitxer_gesdoc_id",
 								"data_captura",
 								"origen_ciuadm",
-								"nti_tipus_doc",
-								"sicres_tipus_doc"})})
+								"nti_tipus_doc"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 
@@ -71,12 +68,28 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	private String ntiTipusDocument;
 	@Column(name = "sicres_tipus_doc", length = 2, nullable = false)
 	private String sicresTipusDocument;
-	@Column(name = "nti_estat_elab", length = 2)
-	private String estatElaboracio;
-	@Column(name = "firma_csv", length = 50)
-	private String firmaCsv;
+	@Column(name = "nti_elaboracio_estat", length = 2)
+	private String ntiElaboracioEstat;
 	@Column(name = "observacions", length = 50)
 	private String observacions;
+	@Column(name = "firma_mode")
+	private Integer firmaMode;
+	@Column(name = "firma_fitxer_nom", length = 80)
+	private String firmaFitxerNom;
+	@Column(name = "firma_fitxer_tamany")
+	private Integer firmaFitxerTamany;
+	@Column(name = "firma_fitxer_mime", length = 30)
+	private String firmaFitxerTipusMime;
+	@Column(name = "firma_fitxer_gesdoc", length = 100)
+	private String firmaFitxerGestioDocumentalId;
+	@Column(name = "firma_csv", length = 100)
+	private String firmaCsv;
+	@Column(name = "timestamp", length = 100)
+	private String timestamp;
+	@Column(name = "validacio_ocsp", length = 100)
+	private String validacioOCSP;
+	
+	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "registre_id")
 	@ForeignKey(name = "ipa_annex_registre_fk")
@@ -116,14 +129,35 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	public RegistreAnnexSicresTipusDocumentEnum getSicresTipusDocument() {
 		return RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(sicresTipusDocument);
 	}
-	public RegistreAnnexElaboracioEstatEnum getEstatElaboracio() {
-		return RegistreAnnexElaboracioEstatEnum.valorAsEnum(estatElaboracio);
+	public RegistreAnnexElaboracioEstatEnum getNtiElaboracioEstat() {
+		return RegistreAnnexElaboracioEstatEnum.valorAsEnum(ntiElaboracioEstat);
+	}
+	public String getObservacions() {
+		return observacions;
+	}
+	public Integer getFirmaMode() {
+		return firmaMode;
+	}
+	public String getFirmaFitxerNom() {
+		return firmaFitxerNom;
+	}
+	public int getFirmaFitxerTamany() {
+		return firmaFitxerTamany;
+	}
+	public String getFirmaFitxerTipusMime() {
+		return firmaFitxerTipusMime;
+	}
+	public String getFirmaFitxerGestioDocumentalId() {
+		return firmaFitxerGestioDocumentalId;
 	}
 	public String getFirmaCsv() {
 		return firmaCsv;
 	}
-	public String getObservacions() {
-		return observacions;
+	public String getTimestamp() {
+		return timestamp;
+	}
+	public String getValidacioOCSP() {
+		return validacioOCSP;
 	}
 	public RegistreEntity getRegistre() {
 		return registre;
@@ -184,17 +218,45 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			built.localitzacio = localitzacio;
 			return this;
 		}
-		public Builder estatElaboracio(RegistreAnnexElaboracioEstatEnum estatElaboracio) {
-			if (estatElaboracio != null)
-				built.estatElaboracio = estatElaboracio.getValor();
+		public Builder ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum ntiElaboracioEstat) {
+			if (ntiElaboracioEstat != null)
+				built.ntiElaboracioEstat = ntiElaboracioEstat.getValor();
+			return this;
+		}
+		public Builder observacions(String observacions) {
+			built.observacions = observacions;
+			return this;
+		}
+		public Builder firmaMode(Integer firmaMode) {
+			built.firmaMode = firmaMode;
+			return this;
+		}
+		public Builder firmaFitxerNom(String firmaFitxerNom) {
+			built.firmaFitxerNom = firmaFitxerNom;
+			return this;
+		}
+		public Builder firmaFitxerTamany(Integer firmaFitxerTamany) {
+			built.firmaFitxerTamany = firmaFitxerTamany;
+			return this;
+		}
+		public Builder firmaFitxerTipusMime(String firmaFitxerTipusMime) {
+			built.firmaFitxerTipusMime = firmaFitxerTipusMime;
+			return this;
+		}
+		public Builder firmaFitxerGestioDocumentalId(String firmaFitxerGestioDocumentalId) {
+			built.firmaFitxerGestioDocumentalId = firmaFitxerGestioDocumentalId;
 			return this;
 		}
 		public Builder firmaCsv(String firmaCsv) {
 			built.firmaCsv = firmaCsv;
 			return this;
 		}
-		public Builder observacions(String observacions) {
-			built.observacions = observacions;
+		public Builder timestamp(String timestamp) {
+			built.timestamp = timestamp;
+			return this;
+		}
+		public Builder validacioOCSP(String validacioOCSP) {
+			built.validacioOCSP = validacioOCSP;
 			return this;
 		}
 		public RegistreAnnexEntity build() {

@@ -24,7 +24,7 @@ public class RegistreAnnex {
 	private String origenCiutadaAdmin;
 	private String ntiTipusDocument;
 	private String sicresTipusDocument;
-	private String estatElaboracio;
+	private String ntiElaboracioEstat;
 	private String observacions;
 	private Integer firmaMode;
 	private String firmaFitxerNom;
@@ -104,11 +104,11 @@ public class RegistreAnnex {
 	public void setSicresTipusDocument(String sicresTipusDocument) {
 		this.sicresTipusDocument = sicresTipusDocument;
 	}
-	public String getEstatElaboracio() {
-		return estatElaboracio;
+	public String getNtiElaboracioEstat() {
+		return ntiElaboracioEstat;
 	}
-	public void setEstatElaboracio(String estatElaboracio) {
-		this.estatElaboracio = estatElaboracio;
+	public void setNtiElaboracioEstat(String ntiElaboracioEstat) {
+		this.ntiElaboracioEstat = ntiElaboracioEstat;
 	}
 	public String getObservacions() {
 		return observacions;

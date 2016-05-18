@@ -52,11 +52,15 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 	@Override
 	public RegistreAnotacioResposta entradaConsultar(
 			String identificador,
+			String usuariCodi,
 			String entitat) throws SistemaExternException {
+		String requestUser = getRequestUser();
+		if (requestUser == null || requestUser.isEmpty())
+			requestUser = usuariCodi;
 		try {
 			RegistroEntradaResponseWs registro = getRegistroEntradaWs().obtenerRegistroEntrada(
 					identificador,
-					getUsername(),
+					requestUser,
 					entitat);
 			RegistreAnotacioResposta resposta = new RegistreAnotacioResposta();
 			resposta.setTipus(RegistreTipusEnum.ENTRADA);
@@ -65,8 +69,10 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 			return resposta;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
-					"No s'ha pogut consulta l'anotació (" +
-					"identificador=" + identificador + ")",
+					"No s'ha pogut consultar l'anotació d'entrada (" +
+					"identificador=" + identificador + "," +
+					"usuari=" + requestUser + "," +
+					"entitat=" + entitat + ")",
 					ex);
 		}
 	}
@@ -74,11 +80,15 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 	@Override
 	public RegistreAnotacioResposta sortidaConsultar(
 			String identificador,
+			String usuariCodi,
 			String entitat) throws SistemaExternException {
+		String requestUser = getRequestUser();
+		if (requestUser == null || requestUser.isEmpty())
+			requestUser = usuariCodi;
 		try {
 			RegistroSalidaResponseWs registro = getRegistroSalidaWs().obtenerRegistroSalida(
 					identificador,
-					getUsername(),
+					usuariCodi,
 					entitat);
 			RegistreAnotacioResposta resposta = new RegistreAnotacioResposta();
 			resposta.setTipus(RegistreTipusEnum.SORTIDA);
@@ -87,9 +97,11 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 			return resposta;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
-					"No s'ha pogut consulta l'anotació (" +
-					"identificador=" + identificador + ")",
-					ex);
+					"No s'ha pogut consultar l'anotació de sortida (" +
+							"identificador=" + identificador + "," +
+							"usuari=" + requestUser + "," +
+							"entitat=" + entitat + ")",
+							ex);
 		}
 	}
 
@@ -152,7 +164,7 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 				annex.setFitxerContingut(anexo.getFicheroAnexado());
 				annex.setFitxerTipusMime(anexo.getTipoMIMEFicheroAnexado());
 				annex.setNtiTipusDocument(anexo.getTipoDocumental());
-				annex.setEstatElaboracio(anexo.getValidezDocumento());
+				annex.setNtiElaboracioEstat(anexo.getValidezDocumento());
 				annex.setSicresTipusDocument(anexo.getTipoDocumento());
 				annex.setObservacions(anexo.getObservaciones());
 				if (anexo.getOrigenCiudadanoAdmin() != null)
@@ -295,6 +307,10 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 	private String getPassword() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.registre.regweb3.password");
+	}
+	private String getRequestUser() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.registre.regweb3.request.user");
 	}
 	private boolean isLogMissatgesActiu() {
 		return PropertiesHelper.getProperties().getAsBoolean(

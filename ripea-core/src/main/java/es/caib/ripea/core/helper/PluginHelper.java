@@ -15,6 +15,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
@@ -811,8 +813,10 @@ public class PluginHelper {
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("identificador", identificador);
 		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			RegistreAnotacioResposta resposta = getRegistrePlugin().entradaConsultar(
 					identificador,
+					auth.getName(),
 					entitatCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_REGISTRE,

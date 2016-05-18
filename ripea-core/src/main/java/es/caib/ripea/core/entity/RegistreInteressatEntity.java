@@ -34,12 +34,9 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 						name = "ipa_regint_mult_uk",
 						columnNames = {
 								"registre_id",
+								"tipus",
 								"doc_tipus",
-								"doc_num",
-								"nom",
-								"llinatge1",
-								"llinatge2",
-								"rao_social"})})
+								"doc_num"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 

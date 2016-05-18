@@ -318,7 +318,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				registre).
 				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
 				localitzacio(registreAnnex.getLocalitzacio()).
-				estatElaboracio(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getEstatElaboracio())).
+				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getNtiElaboracioEstat())).
 				firmaCsv(registreAnnex.getFirmaCsv()).
 				observacions(registreAnnex.getObservacions()).
 				build();
