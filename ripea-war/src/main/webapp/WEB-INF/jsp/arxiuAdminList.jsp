@@ -49,6 +49,11 @@ function changedCallback(e, data) {
 								{{if actiu}}<span class="fa fa-check"></span>{{/if}}
 							</script>
 						</th>
+						<th data-col-name="metaExpedientsCount" data-template="#cellMetaExpedientsCountTemplate" data-orderable="false" width="10%">
+							<script id="cellMetaExpedientsCountTemplate" type="text/x-jsrender">
+								<a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}/metaExpedient" class="btn btn-default"><span class="fa fa-file-alt"></span>&nbsp;<spring:message code="arxiu.list.boto.metaexpedients"/>&nbsp;<span class="badge">{{:metaExpedientsCount}}</span></a>
+							</script>
+						</th>
 						<th data-col-name="expedientsCount" data-template="#cellExpedientsCountTemplate" data-orderable="false" width="10%">
 							<script id="cellExpedientsCountTemplate" type="text/x-jsrender">
 								<a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}/expedient" class="btn btn-default"><span class="fa fa-file-alt"></span>&nbsp;<spring:message code="arxiu.list.boto.expedients"/>&nbsp;<span class="badge">{{:expedientsCount}}</span></a>

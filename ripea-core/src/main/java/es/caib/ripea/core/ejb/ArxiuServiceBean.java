@@ -129,4 +129,22 @@ public class ArxiuServiceBean implements ArxiuService {
 		return delegate.findArbreUnitatsOrganitzativesUser(entitatId);
 	}
 
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public void addMetaExpedient(
+			Long entitatId, 
+			Long id, 
+			Long metaExpedientId) {
+		delegate.addMetaExpedient(entitatId, id, metaExpedientId);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public void removeMetaExpedient(
+			Long entitatId, 
+			Long id, 
+			Long metaExpedientId) {
+		delegate.removeMetaExpedient(entitatId, id, metaExpedientId);
+	}
+
 }

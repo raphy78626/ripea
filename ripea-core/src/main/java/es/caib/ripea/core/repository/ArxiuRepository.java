@@ -6,6 +6,7 @@ package es.caib.ripea.core.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -27,5 +28,13 @@ public interface ArxiuRepository extends JpaRepository<ArxiuEntity, Long> {
 	ArxiuEntity findByEntitatAndUnitatCodiAndPareNull(
 			EntitatEntity entitat,
 			String unitatCodi);
+	
+	@Query(	"select " +
+			"    id, " +
+			"    size(metaExpedients) " +
+			"from " +
+			"    ArxiuEntity " +
+			"group by id ")
+	List<Object[]> countExpedients();
 
 }

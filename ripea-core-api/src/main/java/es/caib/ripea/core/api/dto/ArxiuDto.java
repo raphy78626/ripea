@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.api.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -22,8 +23,8 @@ public class ArxiuDto extends ContenidorDto {
 	private boolean usuariActualRead;
 	private int expedientsCount;
 	private UnitatOrganitzativaDto unitat;
-
-
+	private List<MetaExpedientDto> metaExpedients;
+	private int metaExpedientsCount;
 
 	public String getUnitatCodi() {
 		return unitatCodi;
@@ -67,6 +68,27 @@ public class ArxiuDto extends ContenidorDto {
 			return 0;
 		else
 			return permisos.size();
+	}
+	public int getMetaExpedientsCount() {
+		return metaExpedientsCount;
+	}
+	/**
+	 * @return the metaExpedients
+	 */
+	public List<MetaExpedientDto> getMetaExpedients() {
+		if(metaExpedients == null){
+			this.metaExpedients = new ArrayList<MetaExpedientDto>();
+		}
+		return metaExpedients;
+	}
+	/**
+	 * @param metaExpedients the metaExpedients to set
+	 */
+	public void setMetaExpedients(List<MetaExpedientDto> metaExpedients) {
+		this.metaExpedients = metaExpedients;
+	}
+	public void setMetaExpedientsCount(int metaExpedientsCount) {
+		this.metaExpedientsCount = metaExpedientsCount;
 	}
 
 	private static final String SEPARADOR_NOM_UNITAT = " / ";

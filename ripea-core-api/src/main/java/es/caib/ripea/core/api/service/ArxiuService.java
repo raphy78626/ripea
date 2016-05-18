@@ -212,5 +212,43 @@ public interface ArxiuService {
 	@PreAuthorize("hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesUser(
 			Long entitatId) throws NotFoundException;
+	
+	
+	
+	/**
+	 * Afegeix el meta-expedient en la relació amb l'arxiu si aquest no existia.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param id
+	 *            Atribut id de l'arxiu al qual es vol afegir el meta-expedient.
+	 * @param metaExpedientId
+	 *            El meta-exedient que es vol relacionar.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public void addMetaExpedient(
+			Long entitatId,
+			Long id,
+			Long metaExpedientId) throws NotFoundException;
+
+	/**
+	 * Esborra la relació de l'arxiu amb el meta-expedient.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param id
+	 *            Atribut id de l'arxiu del qual es vol esborrar la relació amb el meta-expedient.
+	 * @param metaExpedientId
+	 *            Atribut id del meta-expedient del que es vol esborrar la relació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public void removeMetaExpedient(
+			Long entitatId,
+			Long id,
+			Long metaExpedientId) throws NotFoundException;
 
 }

@@ -3,11 +3,18 @@
  */
 package es.caib.ripea.core.entity;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -27,9 +34,15 @@ public class ArxiuEntity extends ContenidorEntity {
 	protected String unitatCodi;
 	@Column(name = "actiu")
 	protected boolean actiu;
-
-
-
+	@ManyToMany(
+			cascade = CascadeType.ALL,
+			fetch = FetchType.LAZY)
+	@JoinTable(
+			name = "ipa_metaexpedient_arxiu",
+			joinColumns = {@JoinColumn(name = "arxiu_id")},
+			inverseJoinColumns = {@JoinColumn(name = "metaexpedient_id")})
+	protected List<MetaExpedientEntity> metaExpedients;
+		
 	public String getUnitatCodi() {
 		return unitatCodi;
 	}
@@ -37,6 +50,12 @@ public class ArxiuEntity extends ContenidorEntity {
 		return actiu;
 	}
 
+	public List<MetaExpedientEntity> getMetaExpedients() {
+		return metaExpedients;
+	}
+	public void setMetaExpedients(List<MetaExpedientEntity> metaExpedients) {
+		this.metaExpedients = metaExpedients;
+	}
 	public void update(String nom) {
 		this.nom = nom;
 	}
