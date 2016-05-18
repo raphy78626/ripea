@@ -43,8 +43,8 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 								"unitat_adm",
 								"numero",
 								"data",
-								"oficina",
-								"llibre"})})
+								"oficina_codi",
+								"llibre_codi"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends RipeaAuditable<Long> {
 
@@ -122,13 +122,13 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	private String motiuRebuig;
 	@OneToMany(
 			mappedBy = "registre",
-			fetch = FetchType.EAGER,
+			fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreInteressatEntity> interessats = new ArrayList<RegistreInteressatEntity>();
 	@OneToMany(
 			mappedBy = "registre",
-			fetch = FetchType.EAGER,
+			fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreAnnexEntity> annexos = new ArrayList<RegistreAnnexEntity>();

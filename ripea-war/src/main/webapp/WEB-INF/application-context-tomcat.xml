@@ -25,12 +25,12 @@
 
 	<wss:binding url="/ws/v0/bustia">
 		<wss:service>
-			<ws:service bean="#bustiaV0WsImpl"/>
+			<ws:service bean="#bustiaV0WsServiceImpl"/>
 		</wss:service>
 	</wss:binding>
 	<wss:binding url="/ws/v1/bustia">
 		<wss:service>
-			<ws:service bean="#bustiaV1WsImpl"/>
+			<ws:service bean="#bustiaV1WsServiceImpl"/>
 		</wss:service>
 	</wss:binding>
 	<wss:binding url="/ws/MCGDws">
