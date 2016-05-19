@@ -23,10 +23,10 @@ import es.caib.ripea.core.service.ws.bustia.BustiaV0WsServiceImpl;
  */
 @Stateless
 @WebService(
-		name = "BustiaV0",
-		serviceName = "BustiaV0Service",
-		portName = "BustiaV0ServicePort",
-		targetNamespace = "http://www.caib.es/ripea/ws/v0/bustia")
+		name = "Bustia",
+		serviceName = "BustiaService",
+		portName = "BustiaServicePort",
+		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
 @WebContext(
 		contextRoot = "/ripea/ws",
 		urlPattern = "/v0/bustia",

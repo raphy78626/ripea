@@ -43,11 +43,11 @@ import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
  */
 @Service
 @WebService(
-		name = "BustiaV0",
-		serviceName = "BustiaV0Service",
-		portName = "BustiaV0ServicePort",
-		endpointInterface = "es.caib.ripea.core.api.service.ws.BustiaV0WsService",
-		targetNamespace = "http://www.caib.es/ripea/ws/v0/bustia")
+		name = "Bustia",
+		serviceName = "BustiaService",
+		portName = "BustiaServicePort",
+		endpointInterface = "es.caib.ripea.core.api.service.ws.BustiaWsService",
+		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
 public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 
 	@Resource

@@ -44,11 +44,11 @@ import es.caib.ripea.core.repository.RegistreRepository;
  */
 @Service
 @WebService(
-		name = "BustiaV1",
-		serviceName = "BustiaV1Service",
-		portName = "BustiaV1ServicePort",
-		endpointInterface = "es.caib.ripea.core.api.service.ws.BustiaV1WsService",
-		targetNamespace = "http://www.caib.es/ripea/ws/v1/bustia")
+		name = "Bustia",
+		serviceName = "BustiaService",
+		portName = "BustiaServicePort",
+		endpointInterface = "es.caib.ripea.core.api.service.ws.BustiaWsService",
+		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
 public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 
 	@Resource
