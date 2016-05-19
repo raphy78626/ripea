@@ -5,6 +5,7 @@ package es.caib.ripea.core.api.service.ws;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.bind.annotation.XmlElement;
 
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 
@@ -33,9 +34,9 @@ public interface BustiaV1WsService {
 	 */
 	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarAnotacioRegistreEntrada(
-			@WebParam(name="entitat") String entitat,
-			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
-			@WebParam(name="registreEntrada") RegistreAnotacio registreEntrada);
+			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
+			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
+			@WebParam(name="registreEntrada") @XmlElement(required=true) RegistreAnotacio registreEntrada);
 
 	/**
 	 * Envia una anotació de registre d'entrada a la bústia per defecte
@@ -50,9 +51,9 @@ public interface BustiaV1WsService {
 	 */
 	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarDocument(
-			@WebParam(name="entitat") String entitat,
-			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
-			@WebParam(name="referenciaDocument") String referenciaDocument);
+			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
+			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
+			@WebParam(name="referenciaDocument") @XmlElement(required=true) String referenciaDocument);
 
 	/**
 	 * Envia una anotació de registre d'entrada a la bústia per defecte
@@ -67,8 +68,8 @@ public interface BustiaV1WsService {
 	 */
 	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarExpedient(
-			@WebParam(name="entitat") String entitat,
-			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
-			@WebParam(name="referenciaExpedient") String referenciaExpedient);
+			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
+			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
+			@WebParam(name="referenciaExpedient") @XmlElement(required=true) String referenciaExpedient);
 
 }
