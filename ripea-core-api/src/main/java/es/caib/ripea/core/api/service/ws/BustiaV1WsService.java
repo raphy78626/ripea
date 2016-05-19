@@ -6,8 +6,6 @@ package es.caib.ripea.core.api.service.ws;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 
 
@@ -18,10 +16,8 @@ import es.caib.ripea.core.api.registre.RegistreAnotacio;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @WebService(
-		name = "Bustia",
-		serviceName = "BustiaService",
-		portName = "BustiaServicePort",
-		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
+		name = "BustiaV1",
+		targetNamespace = "http://www.caib.es/ripea/ws/v1/bustia")
 public interface BustiaV1WsService {
 
 	/**
@@ -35,7 +31,7 @@ public interface BustiaV1WsService {
 	 * @param registreEntrada
 	 *            Dades de l'anotació al registre d'entrada.
 	 */
-	@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarAnotacioRegistreEntrada(
 			@WebParam(name="entitat") String entitat,
 			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
@@ -52,7 +48,7 @@ public interface BustiaV1WsService {
 	 * @param referenciaDocument
 	 *            Referència per a consultar el document.
 	 */
-	@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarDocument(
 			@WebParam(name="entitat") String entitat,
 			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
@@ -69,7 +65,7 @@ public interface BustiaV1WsService {
 	 * @param referenciaDocument
 	 *            Referència per a consultar l'expedient.
 	 */
-	@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarExpedient(
 			@WebParam(name="entitat") String entitat,
 			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,

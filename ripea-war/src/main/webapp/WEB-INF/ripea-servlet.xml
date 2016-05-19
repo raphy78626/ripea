@@ -20,7 +20,8 @@
 	<mvc:annotation-driven/>
 	<mvc:default-servlet-handler/>
 
-	<!--<mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/>-->
+	<!-- TOMCAT: <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/> -->
+	<!-- JBOSS: <mvc:resources mapping="/webjars/**" location="/META-INF/resources/webjars/"/> -->
 	<mvc:resources mapping="/webjars/**" location="/META-INF/resources/webjars/"/>
 
 	<mvc:interceptors>

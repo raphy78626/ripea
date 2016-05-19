@@ -8,7 +8,7 @@ import javax.jws.WebService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -41,13 +41,13 @@ import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-@Service
+@Component
 @WebService(
-		name = "Bustia",
-		serviceName = "BustiaService",
-		portName = "BustiaServicePort",
-		endpointInterface = "es.caib.ripea.core.api.service.ws.BustiaWsService",
-		targetNamespace = "http://www.caib.es/ripea/ws/bustia")
+		name = "BustiaV0",
+		serviceName = "BustiaV0Service",
+		portName = "BustiaV0ServicePort",
+		endpointInterface = "es.caib.ripea.core.api.service.ws.BustiaV0WsService",
+		targetNamespace = "http://www.caib.es/ripea/ws/v0/bustia")
 public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 
 	@Resource

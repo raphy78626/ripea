@@ -30,7 +30,7 @@ import es.caib.ripea.core.service.ws.callback.MCGDwsImpl;
 		targetNamespace = "http://v1.server.callback.ws.portafib.caib.es/")
 @WebContext(
 		contextRoot = "/ripea/ws",
-		urlPattern = "/PortaFIBCallBackWs",
+		urlPattern = "/portafibCallback",
 		//authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
