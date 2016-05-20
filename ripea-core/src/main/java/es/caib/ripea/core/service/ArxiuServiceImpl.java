@@ -422,7 +422,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Transactional(readOnly = true)
 	@Override
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
-			Long entitatId) throws NotFoundException {
+			Long entitatId,
+			boolean nomesAmbArxiusPermesos) throws NotFoundException {
 		logger.debug("Consulta de l'arbre d'unitats organitzatives per administrador ("
 				+ "entitatId=" + entitatId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -432,7 +433,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 				true);
 		return findArbreUnitatsOrganitzatives(
 				entitat,
-				false,
+				nomesAmbArxiusPermesos,
 				false);
 	}
 

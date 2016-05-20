@@ -446,4 +446,40 @@ public interface MetaExpedientService {
 	public List<MetaExpedientDto> findByEntitatPerLectura(
 			Long entitatId) throws NotFoundException;
 
+	/**
+	 * Afegeix l'arxiu en la relació amb el meta-expedient si aquest no existia.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param id
+	 *            Atribut id de l'arxiu al qual es vol afegir el meta-expedient.
+	 * @param arxiuId
+	 *            L'arxiu que es vol relacionar.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public void addArxiu(
+			Long entitatId,
+			Long id,
+			Long arxiuId) throws NotFoundException;
+	
+	/**
+	 * Esborra la relació del meta-expedient amb l'arxiu.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param metaExpedientId
+	 *            Atribut id del meta-expedient del qual es vol esborrar la relació amb l'arxiu.
+	 * @param metaExpedientId
+	 *            Atribut id de l'arxiu del que es vol esborrar la relació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public void removeArxiu(
+			Long entitatId,
+			Long metaExpedientId,
+			Long arxiuId) throws NotFoundException;
+
 }

@@ -77,7 +77,8 @@ public class ArxiuAdminController extends BaseAdminController {
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
 				arxiuService.findArbreUnitatsOrganitzativesAdmin(
-						entitatActual.getId()));
+						entitatActual.getId(),
+						false));
 		model.addAttribute("unitatCodi", unitatCodi);
 		return "arxiuAdminList";
 	}

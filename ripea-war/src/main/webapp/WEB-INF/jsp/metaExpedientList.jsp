@@ -47,6 +47,11 @@ $(document).ready(function() {
 						<a href="metaExpedient/{{:id}}/metaDada" class="btn btn-default"><span class="fa fa-file-alt"></span>&nbsp;<spring:message code="metaexpedient.list.boto.meta.dades"/>&nbsp;<span class="badge">{{:metaDadesCount}}</span></a>
 					</script>
 				</th>
+				<th data-rdt-property="arxiusCount" data-rdt-template="cellArxiusTemplate" data-rdt-sortable="false" width="10%">
+					<script id="cellArxiusTemplate" type="text/x-jsrender">
+						<a href="metaExpedient/{{:id}}/arxiu" class="btn btn-default"><span class="fa fa-file-alt"></span>&nbsp;<spring:message code="metaexpedient.list.boto.arxius"/>&nbsp;<span class="badge">{{:arxiusCount}}</span></a>
+					</script>
+				</th>
 				<th data-rdt-property="permisosCount" data-rdt-template="cellPermisosTemplate" data-rdt-sortable="false" width="10%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a href="metaExpedient/{{:id}}/permis" class="btn btn-default"><span class="fa fa-file-alt"></span>&nbsp;<spring:message code="metaexpedient.list.boto.permisos"/>&nbsp;<span class="badge">{{:permisosCount}}</span></a>

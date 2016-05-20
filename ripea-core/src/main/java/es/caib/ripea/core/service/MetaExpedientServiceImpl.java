@@ -23,7 +23,9 @@ import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.MetaExpedientService;
+import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.MetaDadaEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
@@ -777,4 +779,61 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MetaExpedientServiceImpl.class);
 
+
+
+	@Override
+	@Transactional
+	public void addArxiu(
+			Long entitatId, 
+			Long id, 
+			Long arxiuId) throws NotFoundException {
+		logger.debug("Afegint la relació amb arxiu pel meta-expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "arxiuId=" + arxiuId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat, 
+				id);
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				arxiuId);
+		
+		// Si no està relacionat afegeix la relació i guarda
+		if(!metaExpedient.getArxius().contains(arxiu)) {
+			metaExpedient.getArxius().add(arxiu);
+			metaExpedientRepository.saveAndFlush(metaExpedient);	
+		}
+	}
+
+	@Override
+	@Transactional
+	public void removeArxiu(
+			Long entitatId, 
+			Long id, 
+			Long arxiuId) throws NotFoundException {
+		logger.debug("Esborrant relació amb arxiu pel meta-expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "metaExpedientId=" + arxiuId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat, 
+				id);
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				arxiuId);
+		
+		// Esborra la relació i guarda
+		metaExpedient.getArxius().remove(arxiu);
+		metaExpedientRepository.saveAndFlush(metaExpedient);
+	}
 }

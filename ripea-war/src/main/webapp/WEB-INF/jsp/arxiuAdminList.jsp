@@ -35,7 +35,7 @@ function changedCallback(e, data) {
 <body>
 	<div class="row">
 		<div class="col-md-6">
-			<rip:arbre id="arbreUnitats" arbre="${arbreUnitatsOrganitzatives}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback" seleccionatId="${unitatCodi}"/>
+			<rip:arbre id="arbreUnitats" arbre="${arbreUnitatsOrganitzatives}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback" seleccionatId="${unitatCodi}" />
 		</div>
 		<div id="taulaLlistat" class="col-md-6"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
 			<table id="arxius" data-toggle="datatable" data-url="<c:url value="/arxiuAdmin/unitat/${unitatCodiPerUrl}/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-striped table-bordered" style="width:100%">

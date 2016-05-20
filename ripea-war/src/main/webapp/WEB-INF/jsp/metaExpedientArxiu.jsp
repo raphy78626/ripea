@@ -10,8 +10,8 @@ pageContext.setAttribute(
 %>
 <html>
 <head>
-	<title><spring:message code="arxiu.metaexpedient.titol"/></title>
-	<meta name="subtitle" content="${arxiu.nom}"/>
+	<title><spring:message code="metaexpedient.arxiu.titol"/></title>
+	<meta name="subtitle" content="${metaExpedient.nom}"/>
 	<link href="<c:url value="/css/DT_bootstrap.css"/>" rel="stylesheet">
 	<script src="<c:url value="/js/jquery.dataTables.js"/>"></script>
 	<script src="<c:url value="/js/DT_bootstrap.js"/>"></script>
@@ -25,7 +25,7 @@ principalTipusText["${principalTipus}"] = "<spring:message code="principal.tipus
 </c:forEach>
 $(document).ready(function() {
 	$("#taulaDades").ripeaDataTable({
-		ajaxSourceUrl: "<c:url value="/arxiuAdmin/${arxiu.id}/metaExpedient/datatable"/>",
+		ajaxSourceUrl: "<c:url value="/metaExpedient/${metaExpedient.id}/arxiu/datatable"/>",
 		localeUrl: "<c:url value="/js/dataTables-locales/dataTables_locale_ca.txt"/>",
 		alertesRefreshUrl: "<c:url value="/nodeco/util/alertes"/>"
 	});
@@ -37,26 +37,25 @@ $(document).ready(function() {
 		<thead>
 			<tr>
 				<th data-rdt-property="id" width="4%" data-rdt-visible="false">#</th>
-				<th data-rdt-property="codi"><spring:message code="arxiu.metaexpedient.list.columna.codi"/></th>
-				<th data-rdt-property="nom" data-rdt-sorting="desc"><spring:message code="arxiu.metaexpedient.list.columna.nom"/></th>
+				<th data-rdt-property="nom" data-rdt-sorting="desc"><spring:message code="metaexpedient.list.columna.nom"/></th>
 				<th data-rdt-property="actiu" data-rdt-template="cellActiuTemplate">
-					<spring:message code="arxiu.metaexpedient.list.columna.actiu"/>
+					<spring:message code="metaexpedient.list.columna.actiu"/>
 					<script id="cellActiuTemplate" type="text/x-jsrender">
 						{{if actiu}}<span class="fa fa-check"></span>{{/if}}
 					</script>
 				</th>			
 				<th data-rdt-property="id" data-rdt-template="cellAccionsTemplate" data-rdt-sortable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<a class="btn btn-default" href="../../arxiuAdmin/${arxiu.id}/metaExpedient/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="arxiu.metaexpedient.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a>
+						<a class="btn btn-default" href="../../metaExpedient/${metaExpedient.id}/arxiu/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="metaexpedient.arxiu.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a>
 					</script>
 				</th>
 			</tr>
 		</thead>
 	</table>
 	<script id="tableButtonsTemplate" type="text/x-jsrender">
-		<p style="text-align:right"><a class="btn btn-default" href="../../arxiuAdmin/${arxiu.id}/metaExpedient/new" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="arxiu.metaexpedient.boto.nou.metaexpedient"/></a></p>
+		<p style="text-align:right"><a class="btn btn-default" href="../../metaExpedient/${metaExpedient.id}/arxiu/new" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="metaexpedient.arxiu.boto.nou.metaexpedient"/></a></p>
 	</script>
-	<a href="<c:url value="/arxiuAdmin/unitat/${arxiu.unitatCodi}"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span>&nbsp;<spring:message code="comu.boto.tornar"/></a>
+	<a href="<c:url value="/metaExpedient"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span>&nbsp;<spring:message code="comu.boto.tornar"/></a>
 	<div class="clearfix"></div>
 	<rip:modalDefinir modalId="perform" refrescarAlertes="true" refrescarTaula="true" refrescarTaulaId="taulaDades"/>
 </body>

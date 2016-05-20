@@ -79,12 +79,6 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 		model.addAttribute("arxiu", arxiu);
 		// Consulta els meta-expedients en els que té permisos
 		List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId());
-		// Elimina dels seleccionables els que ja estan relaciontats
-		for(MetaExpedientDto metaExpedientExistent : arxiu.getMetaExpedients()) {
-			if(metaExpedients.contains(metaExpedientExistent)) {
-				metaExpedients.remove(metaExpedientExistent);
-			}
-		}
 		model.addAttribute(
 				"metaExpedients",
 				metaExpedients
@@ -102,25 +96,28 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		ArxiuDto arxiu = arxiuService.findById(entitatActual.getId(), arxiuId);
 		if (bindingResult.hasErrors()) {
-			ArxiuDto arxiu = arxiuService.findById(entitatActual.getId(), arxiuId);
 			model.addAttribute(
 					"arxiu",
 					arxiu);
 			// Consulta els meta-expedients en els que té permisos
 			List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId());
-			// Elimina dels seleccionables els que ja estan relaciontats
-			for(MetaExpedientDto metaExpedientExistent : arxiu.getMetaExpedients()) {
-				if(metaExpedients.contains(metaExpedientExistent)) {
-					metaExpedients.remove(metaExpedientExistent);
-				}
-			}
 			model.addAttribute(
 					"metaExpedients",
 					metaExpedients
 					);
 			return "arxiuAdminMetaExpedientForm";
 		}
+		// Comprova si la relació ja existeix
+		MetaExpedientDto metaExpedient = metaExpedientService.findById(entitatActual.getId(), command.getMetaExpedientId());
+		if(arxiu.getMetaExpedients().contains(metaExpedient)) {
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../../arxiuAdmin/" + arxiuId + "/metaExpedient",
+					"arxiu.controller.metaexpedient.afegit.existent");
+		}
+		// Afegeix la relació
 		arxiuService.addMetaExpedient(
 				entitatActual.getId(),
 				arxiuId,
@@ -128,7 +125,7 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../arxiuAdmin/" + arxiuId + "/metaExpedient",
-				"arxiu.controller.metaExpedient.afegit.ok");
+				"arxiu.controller.metaexpedient.afegit.ok");
 	}
 
 	@RequestMapping(value = "/{arxiuId}/metaExpedient/{metaExpedientId}/delete", method = RequestMethod.GET)
@@ -145,7 +142,7 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../../../arxiuAdmin/" + arxiuId + "/metaExpedient",
-				"arxiu.controller.metaExpedient.esborrat.ok");
+				"arxiu.controller.metaexpedient.esborrat.ok");
 	}
 
 }

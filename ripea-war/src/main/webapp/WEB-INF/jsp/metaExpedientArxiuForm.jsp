@@ -15,7 +15,7 @@ pageContext.setAttribute(
 				es.caib.ripea.core.api.dto.PrincipalTipusEnumDto.class,
 				"principal.tipus.enum."));
 %>
-	<c:set var="titol"><spring:message code="arxiu.metaexpedient.form.titol.crear"/></c:set>
+	<c:set var="titol"><spring:message code="metaexpedient.arxiu.form.titol.crear"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
@@ -23,21 +23,45 @@ pageContext.setAttribute(
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${idioma}.js"/>"></script>
+	<link href="<c:url value="/webjars/jstree/3.2.1/dist/themes/default/style.min.css"/>" rel="stylesheet">
+	<script src="<c:url value="/webjars/jstree/3.2.1/dist/jstree.min.js"/>"></script>
 	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
 <script>
+
+	var metaExpedientId = ${metaExpedient.id};
+
 	$(document).ready(function() {
 		$("#modal-botons button[type='submit']").on('click', function() {
 			$("form#arxiuMetaExpedientCommand *:disabled").attr('readonly', 'readonly');
 			$("form#arxiuMetaExpedientCommand *:disabled").removeAttr('disabled');
-		});
+		});		
 	});
+
+	function changedCallback(e, data) {
+		// Buida les opcions del select2
+		$('#arxiuId').select2('val', '', true);
+		$('#arxiuId option[value!=""]').remove();
+		// Obté la llista d'arxius per a aquell node contenidor
+		var baseUrl = '../../${metaExpedient.id}/unitat/' + data.node.id + '/arxiu/findAll';
+		$.get(baseUrl)
+			.done(function(data) {
+				for (var i = 0; i < data.length; i++) {
+					$('#arxiuId').append('<option value="' + data[i].id + '">' + data[i].nom + '</option>');
+				}			
+			})
+			.fail(function() {
+				alert("<spring:message code="error.jquery.ajax"/>");
+			});
+	}
+
 </script>
 </head>
 <body>
 
-	<c:set var="formAction"><rip:modalUrl value="/arxiuAdmin/${arxiu.id}/metaExpedient"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="arxiuMetaExpedientCommand">
-		<rip:inputSelect name="metaExpedientId" textKey="arxiu.metaexpedient.form.camp.metaexpedient" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom"/>
+	<c:set var="formAction"><rip:modalUrl value="/metaExpedient/${metaExpedient.id}/arxiu"/></c:set>
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="metaExpedientArxiuCommand">
+		<rip:arbre id="arbreUnitats" arbre="${arbreUnitatsOrganitzatives}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback" seleccionatId="${unitatCodi}" height="400px" />
+		<rip:inputSelect name="arxiuId" textKey="metaexpedient.arxiu.form.camp.arxiu" required="true" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nom"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/arxiuAdmin/${arxiu.id}/metaExpedient"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>

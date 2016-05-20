@@ -18,6 +18,7 @@ public class MetaExpedientDto extends MetaNodeAmbMetaDadesDto implements Seriali
 	private String classificacio;
 	private Long pareId;
 	private List<MetaExpedientMetaDocumentDto> metaDocuments;
+	private List<ArxiuDto> arxius;
 
 
 
@@ -45,6 +46,20 @@ public class MetaExpedientDto extends MetaNodeAmbMetaDadesDto implements Seriali
 			return 0;
 		else
 			return metaDocuments.size();
+	}
+	
+	public List<ArxiuDto> getArxius() {
+		return arxius;
+	}
+	public void setArxius(List<ArxiuDto> arxius) {
+		this.arxius = arxius;
+	}
+
+	public int getArxiusCount() {
+		if  (arxius == null)
+			return 0;
+		else
+			return arxius.size();
 	}
 
 	@Override
