@@ -15,6 +15,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
@@ -39,7 +41,7 @@ import es.caib.ripea.plugin.portafirmes.PortafirmesDocumentTipus;
 import es.caib.ripea.plugin.portafirmes.PortafirmesFluxBloc;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPlugin;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPrioritatEnum;
-import es.caib.ripea.plugin.registre.RegistreAnotacio;
+import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 import es.caib.ripea.plugin.registre.RegistrePlugin;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
@@ -804,22 +806,24 @@ public class PluginHelper {
 		}
 	}
 
-	public RegistreAnotacio registreEntradaConsultar(
+	public RegistreAnotacioResposta registreEntradaConsultar(
 			String identificador,
 			String entitatCodi) {
 		String accioDescripcio = "Consulta d'una anotació d'entrada";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("identificador", identificador);
 		try {
-			RegistreAnotacio anotacio = getRegistrePlugin().entradaConsultar(
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			RegistreAnotacioResposta resposta = getRegistrePlugin().entradaConsultar(
 					identificador,
+					auth.getName(),
 					entitatCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_REGISTRE,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
-			return anotacio;
+			return resposta;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de registre";
 			integracioHelper.addAccioError(

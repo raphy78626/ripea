@@ -16,9 +16,9 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.ripea.core.api.dto.RegistreInteressatCanalEnumDto;
-import es.caib.ripea.core.api.dto.RegistreInteressatDocumentTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreInteressatTipusEnumDto;
+import es.caib.ripea.core.api.registre.RegistreInteressatCanalEnum;
+import es.caib.ripea.core.api.registre.RegistreInteressatDocumentTipusEnum;
+import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.ripea.core.audit.RipeaAuditable;
 
 /**
@@ -34,12 +34,9 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 						name = "ipa_regint_mult_uk",
 						columnNames = {
 								"registre_id",
+								"tipus",
 								"doc_tipus",
-								"doc_num",
-								"nom",
-								"llinatge1",
-								"llinatge2",
-								"rao_social"})})
+								"doc_num"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 
@@ -94,11 +91,11 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 
 
 
-	public RegistreInteressatTipusEnumDto getTipus() {
-		return RegistreInteressatTipusEnumDto.valorAsEnum(tipus);
+	public RegistreInteressatTipusEnum getTipus() {
+		return RegistreInteressatTipusEnum.valorAsEnum(tipus);
 	}
-	public RegistreInteressatDocumentTipusEnumDto getDocumentTipus() {
-		return RegistreInteressatDocumentTipusEnumDto.valorAsEnum(documentTipus);
+	public RegistreInteressatDocumentTipusEnum getDocumentTipus() {
+		return RegistreInteressatDocumentTipusEnum.valorAsEnum(documentTipus);
 	}
 	public String getDocumentNum() {
 		return documentNum;
@@ -139,16 +136,16 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	public String getEmailHabilitat() {
 		return emailHabilitat;
 	}
-	public RegistreInteressatCanalEnumDto getCanalPreferent() {
-		return RegistreInteressatCanalEnumDto.valorAsEnum(canalPreferent);
+	public RegistreInteressatCanalEnum getCanalPreferent() {
+		return RegistreInteressatCanalEnum.valorAsEnum(canalPreferent);
 	}
 	public String getObservacions() {
 		return observacions;
 	}
 
 	public void updateRepresentant(
-			RegistreInteressatTipusEnumDto tipus,
-			RegistreInteressatDocumentTipusEnumDto documentTipus,
+			RegistreInteressatTipusEnum tipus,
+			RegistreInteressatDocumentTipusEnum documentTipus,
 			String documentNum,
 			String nom,
 			String llinatge1,
@@ -162,7 +159,7 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 			String email,
 			String telefon,
 			String emailHabilitat,
-			RegistreInteressatCanalEnumDto canalPreferent) {
+			RegistreInteressatCanalEnum canalPreferent) {
 		Builder representantBuilder;
 		if (nom == null) {
 			representantBuilder = getBuilder(
@@ -196,8 +193,8 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	}
 
 	public static Builder getBuilder(
-			RegistreInteressatTipusEnumDto tipus,
-			RegistreInteressatDocumentTipusEnumDto documentTipus,
+			RegistreInteressatTipusEnum tipus,
+			RegistreInteressatDocumentTipusEnum documentTipus,
 			String documentNum,
 			String nom,
 			String llinatge1,
@@ -213,8 +210,8 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 				registre);
 	}
 	public static Builder getBuilder(
-			RegistreInteressatTipusEnumDto tipus,
-			RegistreInteressatDocumentTipusEnumDto documentTipus,
+			RegistreInteressatTipusEnum tipus,
+			RegistreInteressatDocumentTipusEnum documentTipus,
 			String documentNum,
 			String raoSocial,
 			RegistreEntity registre) {
@@ -229,8 +226,8 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	public static class Builder {
 		RegistreInteressatEntity built;
 		Builder(
-				RegistreInteressatTipusEnumDto tipus,
-				RegistreInteressatDocumentTipusEnumDto documentTipus,
+				RegistreInteressatTipusEnum tipus,
+				RegistreInteressatDocumentTipusEnum documentTipus,
 				String documentNum,
 				String nom,
 				String llinatge1,
@@ -246,8 +243,8 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 			built.registre = registre;
 		}
 		Builder(
-				RegistreInteressatTipusEnumDto tipus,
-				RegistreInteressatDocumentTipusEnumDto documentTipus,
+				RegistreInteressatTipusEnum tipus,
+				RegistreInteressatDocumentTipusEnum documentTipus,
 				String documentNum,
 				String raoSocial,
 				RegistreEntity registre) {
@@ -291,7 +288,7 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 			built.emailHabilitat = emailHabilitat;
 			return this;
 		}
-		public Builder canalPreferent(RegistreInteressatCanalEnumDto canalPreferent) {
+		public Builder canalPreferent(RegistreInteressatCanalEnum canalPreferent) {
 			if (canalPreferent != null)
 				built.canalPreferent = canalPreferent.getValor();
 			return this;

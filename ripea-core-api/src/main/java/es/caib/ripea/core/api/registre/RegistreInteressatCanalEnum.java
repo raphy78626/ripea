@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.api.dto;
+package es.caib.ripea.core.api.registre;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -13,26 +13,26 @@ import java.util.Map;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public enum RegistreInteressatCanalEnumDto {
+public enum RegistreInteressatCanalEnum {
 
 	POSTAL("01"),
 	ADRECA_ELEC_HAB("02"),
 	COMPAREIXENCA_ELEC("03");
 
 	private final String valor;
-	private RegistreInteressatCanalEnumDto(String valor) {
+	private RegistreInteressatCanalEnum(String valor) {
 		this.valor = valor;
 	}
 	public String getValor() {
 		return valor;
 	}
-	private static final Map<String, RegistreInteressatCanalEnumDto> lookup;
+	private static final Map<String, RegistreInteressatCanalEnum> lookup;
 	static {
-		lookup = new HashMap<String, RegistreInteressatCanalEnumDto>();
-		for (RegistreInteressatCanalEnumDto s: EnumSet.allOf(RegistreInteressatCanalEnumDto.class))
+		lookup = new HashMap<String, RegistreInteressatCanalEnum>();
+		for (RegistreInteressatCanalEnum s: EnumSet.allOf(RegistreInteressatCanalEnum.class))
 			lookup.put(s.getValor(), s);
 	}
-	public static RegistreInteressatCanalEnumDto valorAsEnum(String valor) {
+	public static RegistreInteressatCanalEnum valorAsEnum(String valor) {
 		if (valor == null)
 			return null;
         return lookup.get(valor); 

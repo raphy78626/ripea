@@ -5,8 +5,9 @@ package es.caib.ripea.core.api.service.ws;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.bind.annotation.XmlElement;
 
-import es.caib.regweb3.ws.api.v3.RegistroEntradaWs;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
 
 
 /**
@@ -17,8 +18,6 @@ import es.caib.regweb3.ws.api.v3.RegistroEntradaWs;
  */
 @WebService(
 		name = "BustiaV1",
-		serviceName = "BustiaV1Service",
-		portName = "BustiaV1ServicePort",
 		targetNamespace = "http://www.caib.es/ripea/ws/v1/bustia")
 public interface BustiaV1WsService {
 
@@ -33,10 +32,11 @@ public interface BustiaV1WsService {
 	 * @param registreEntrada
 	 *            Dades de l'anotació al registre d'entrada.
 	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarAnotacioRegistreEntrada(
-			@WebParam(name="entitat") String entitat,
-			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
-			@WebParam(name="registreEntrada") RegistroEntradaWs registroEntrada);
+			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
+			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
+			@WebParam(name="registreEntrada") @XmlElement(required=true) RegistreAnotacio registreEntrada);
 
 	/**
 	 * Envia una anotació de registre d'entrada a la bústia per defecte
@@ -49,10 +49,11 @@ public interface BustiaV1WsService {
 	 * @param referenciaDocument
 	 *            Referència per a consultar el document.
 	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarDocument(
-			@WebParam(name="entitat") String entitat,
-			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
-			@WebParam(name="referenciaDocument") String referenciaDocument);
+			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
+			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
+			@WebParam(name="referenciaDocument") @XmlElement(required=true) String referenciaDocument);
 
 	/**
 	 * Envia una anotació de registre d'entrada a la bústia per defecte
@@ -65,9 +66,10 @@ public interface BustiaV1WsService {
 	 * @param referenciaDocument
 	 *            Referència per a consultar l'expedient.
 	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarExpedient(
-			@WebParam(name="entitat") String entitat,
-			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
-			@WebParam(name="referenciaExpedient") String referenciaExpedient);
+			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
+			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
+			@WebParam(name="referenciaExpedient") @XmlElement(required=true) String referenciaExpedient);
 
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.api.dto;
+package es.caib.ripea.core.api.registre;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -13,25 +13,25 @@ import java.util.Map;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public enum RegistreAnnexOrigenEnumDto {
+public enum RegistreAnnexOrigenEnum {
 
 	CIUTADA("0"),
 	ADMINISTRACIO("1");
 
 	private final String valor;
-	private RegistreAnnexOrigenEnumDto(String valor) {
+	private RegistreAnnexOrigenEnum(String valor) {
 		this.valor = valor;
 	}
 	public String getValor() {
 		return valor;
 	}
-	private static final Map<String, RegistreAnnexOrigenEnumDto> lookup;
+	private static final Map<String, RegistreAnnexOrigenEnum> lookup;
 	static {
-		lookup = new HashMap<String, RegistreAnnexOrigenEnumDto>();
-		for (RegistreAnnexOrigenEnumDto s: EnumSet.allOf(RegistreAnnexOrigenEnumDto.class))
+		lookup = new HashMap<String, RegistreAnnexOrigenEnum>();
+		for (RegistreAnnexOrigenEnum s: EnumSet.allOf(RegistreAnnexOrigenEnum.class))
 			lookup.put(s.getValor(), s);
 	}
-	public static RegistreAnnexOrigenEnumDto valorAsEnum(String valor) {
+	public static RegistreAnnexOrigenEnum valorAsEnum(String valor) {
 		if (valor == null)
 			return null;
         return lookup.get(valor); 

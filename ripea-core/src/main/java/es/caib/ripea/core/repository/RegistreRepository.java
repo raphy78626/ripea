@@ -41,12 +41,12 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<Object[]> countByContenidorsAndNotRebutjat(
 			@Param("contenidors") List<? extends ContenidorEntity> contenidors);
 
-	RegistreEntity findByTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaAndLlibre(
+	RegistreEntity findByTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaCodiAndLlibreCodi(
 			String tipus,
 			String unitatAdministrativa,
 			int numero,
 			Date data,
-			String oficina,
-			String llibre);
+			String oficinaCodi,
+			String llibreCodi);
 
 }

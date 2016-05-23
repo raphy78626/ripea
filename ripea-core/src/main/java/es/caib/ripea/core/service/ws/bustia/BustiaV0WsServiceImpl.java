@@ -8,20 +8,21 @@ import javax.jws.WebService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import es.caib.ripea.core.api.dto.RegistreAnnexFirmaModeEnumDto;
-import es.caib.ripea.core.api.dto.RegistreAnnexOrigenEnumDto;
-import es.caib.ripea.core.api.dto.RegistreDocumentTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreDocumentValidesaEnumDto;
-import es.caib.ripea.core.api.dto.RegistreDocumentacioFisicaTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreInteressatCanalEnumDto;
-import es.caib.ripea.core.api.dto.RegistreInteressatDocumentTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreInteressatTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreTransportTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.ValidationException;
+import es.caib.ripea.core.api.registre.RegistreAnnex;
+import es.caib.ripea.core.api.registre.RegistreAnnexElaboracioEstatEnum;
+import es.caib.ripea.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
+import es.caib.ripea.core.api.registre.RegistreAnnexOrigenEnum;
+import es.caib.ripea.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
+import es.caib.ripea.core.api.registre.RegistreAnotacio;
+import es.caib.ripea.core.api.registre.RegistreInteressat;
+import es.caib.ripea.core.api.registre.RegistreInteressatCanalEnum;
+import es.caib.ripea.core.api.registre.RegistreInteressatDocumentTipusEnum;
+import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
+import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.ws.BustiaV0WsService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -33,17 +34,14 @@ import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
-import es.caib.ripea.plugin.registre.RegistreAnnex;
-import es.caib.ripea.plugin.registre.RegistreAnotacio;
-import es.caib.ripea.plugin.registre.RegistreAnotacio.RegistreTipusEnum;
-import es.caib.ripea.plugin.registre.RegistreInteressat;
+import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 
 /**
  * Implementació dels mètodes per al servei de bústia de RIPEA.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-@Service
+@Component
 @WebService(
 		name = "BustiaV0",
 		serviceName = "BustiaV0Service",
@@ -98,34 +96,35 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 						"No existeix cap unitat administrativa amb el codi especificat (" +
 						"codi=" + unitatAdministrativa + ")");
 			}
-			RegistreAnotacio anotacio = pluginHelper.registreEntradaConsultar(
+			RegistreAnotacioResposta resposta = pluginHelper.registreEntradaConsultar(
 					referencia,
 					entitatEntity.getUnitatArrel());
 			String anotacioTipus;
-			if (RegistreTipusEnum.ENTRADA.equals(anotacio.getTipus())) {
-				anotacioTipus = RegistreTipusEnumDto.ENTRADA.getValor();
+			if (RegistreTipusEnum.ENTRADA.equals(resposta.getTipus())) {
+				anotacioTipus = RegistreTipusEnum.ENTRADA.getValor();
 			} else {
-				anotacioTipus = RegistreTipusEnumDto.SORTIDA.getValor();
+				anotacioTipus = RegistreTipusEnum.SORTIDA.getValor();
 			}
-			RegistreEntity registreRepetit = registreRepository.findByTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaAndLlibre(
+			RegistreAnotacio anotacio = resposta.getRegistreAnotacio();
+			RegistreEntity registreRepetit = registreRepository.findByTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaCodiAndLlibreCodi(
 					anotacioTipus,
-					anotacio.getUnitatAdministrativa(),
+					resposta.getUnitatAdministrativa(),
 					anotacio.getNumero(),
 					anotacio.getData(),
-					anotacio.getOficina(),
-					anotacio.getLlibre());
+					anotacio.getOficinaCodi(),
+					anotacio.getLlibreCodi());
 			if (registreRepetit != null) {
 				throw new ValidationException(
 						"Aquesta anotació ja ha estat donada d'alta a l'aplicació (" +
-						"tipus=" + anotacio.getTipus() + ", " +
-						"unitatAdministrativa=" + anotacio.getUnitatAdministrativa() + ", " +
+						"tipus=" + resposta.getTipus() + ", " +
+						"unitatAdministrativa=" + resposta.getUnitatAdministrativa() + ", " +
 						"numero=" + anotacio.getNumero() + ", " +
 						"data=" + anotacio.getData() + ", " +
-						"oficina=" + anotacio.getOficina() + ", " +
-						"llibre=" + anotacio.getLlibre() + ")");
+						"oficinaCodi=" + anotacio.getOficinaCodi() + ", " +
+						"llibreCodi=" + anotacio.getLlibreCodi() + ")");
 			}
 			saveRegistreEntity(
-					anotacio,
+					resposta,
 					findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
 							entitatEntity,
 							unitat));
@@ -169,30 +168,41 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 	}
 
 	private RegistreEntity saveRegistreEntity(
-			RegistreAnotacio anotacio,
+			RegistreAnotacioResposta resposta,
 			BustiaEntity bustia) {
+		RegistreAnotacio anotacio = resposta.getRegistreAnotacio();
 		RegistreEntity entity = RegistreEntity.getBuilder(
-				RegistreTipusEnumDto.ENTRADA,
-				anotacio.getUnitatAdministrativa(),
+				RegistreTipusEnum.ENTRADA,
+				resposta.getUnitatAdministrativa(),
 				anotacio.getNumero(),
 				anotacio.getData(),
 				anotacio.getIdentificador(),
-				anotacio.getOficina(),
-				anotacio.getLlibre(),
-				anotacio.getAssumpteTipus(),
-				anotacio.getIdioma(),
-				anotacio.getUsuariNom(),
+				anotacio.getOficinaCodi(),
+				anotacio.getLlibreCodi(),
+				anotacio.getAssumpteTipusCodi(),
+				anotacio.getIdiomaCodi(),
 				bustia).
+		entitatCodi(anotacio.getEntitatCodi()).
+		entitatDescripcio(anotacio.getEntitatDescripcio()).
+		oficinaDescripcio(anotacio.getOficinaDescripcio()).
+		llibreDescripcio(anotacio.getLlibreDescripcio()).
 		extracte(anotacio.getExtracte()).
+		assumpteTipusDescripcio(anotacio.getAssumpteTipusDescripcio()).
 		assumpteCodi(anotacio.getAssumpteCodi()).
-		assumpteReferencia(anotacio.getAssumpteReferencia()).
-		assumpteNumExpedient(anotacio.getAssumpteNumExpedient()).
-		transportTipus(RegistreTransportTipusEnumDto.valorAsEnum(anotacio.getTransportTipus())).
+		assumpteDescripcio(anotacio.getAssumpteDescripcio()).
+		referencia(anotacio.getReferencia()).
+		expedientNumero(anotacio.getExpedientNumero()).
+		idiomaDescripcio(anotacio.getIdiomaDescripcio()).
+		transportTipusCodi(anotacio.getTransportTipusCodi()).
+		transportTipusDescripcio(anotacio.getTransportTipusDescripcio()).
 		transportNumero(anotacio.getTransportNumero()).
+		usuariCodi(anotacio.getUsuariCodi()).
+		usuariNom(anotacio.getUsuariNom()).
 		usuariContacte(anotacio.getUsuariContacte()).
 		aplicacioCodi(anotacio.getAplicacioCodi()).
-		documentacioFisica(RegistreDocumentacioFisicaTipusEnumDto.valorAsEnum(anotacio.getDocumentacioFisica())).
 		aplicacioVersio(anotacio.getAplicacioVersio()).
+		documentacioFisicaCodi(anotacio.getDocumentacioFisicaCodi()).
+		documentacioFisicaDescripcio(anotacio.getDocumentacioFisicaDescripcio()).
 		observacions(anotacio.getObservacions()).
 		exposa(anotacio.getExposa()).
 		solicita(anotacio.getSolicita()).
@@ -220,13 +230,13 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 	private RegistreInteressatEntity toInteressatEntity(
 			RegistreInteressat registreInteressat,
 			RegistreEntity registre) {
-		RegistreInteressatTipusEnumDto interessatTipus = RegistreInteressatTipusEnumDto.valorAsEnum(registreInteressat.getTipus());
+		RegistreInteressatTipusEnum interessatTipus = RegistreInteressatTipusEnum.valorAsEnum(registreInteressat.getTipus());
 		RegistreInteressatEntity.Builder interessatBuilder;
 		switch (interessatTipus) {
 		case PERSONA_FIS:
 			interessatBuilder = RegistreInteressatEntity.getBuilder(
 					interessatTipus,
-					RegistreInteressatDocumentTipusEnumDto.valorAsEnum(registreInteressat.getDocumentTipus()),
+					RegistreInteressatDocumentTipusEnum.valorAsEnum(registreInteressat.getDocumentTipus()),
 					registreInteressat.getDocumentNum(),
 					registreInteressat.getNom(),
 					registreInteressat.getLlinatge1(),
@@ -236,7 +246,7 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 		default: // PERSONA_JUR o ADMINISTRACIO
 			interessatBuilder = RegistreInteressatEntity.getBuilder(
 					interessatTipus,
-					RegistreInteressatDocumentTipusEnumDto.valorAsEnum(registreInteressat.getDocumentTipus()),
+					RegistreInteressatDocumentTipusEnum.valorAsEnum(registreInteressat.getDocumentTipus()),
 					registreInteressat.getDocumentNum(),
 					registreInteressat.getRaoSocial(),
 					registre);
@@ -252,15 +262,15 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 		telefon(registreInteressat.getTelefon()).
 		emailHabilitat(registreInteressat.getEmailHabilitat()).
 		canalPreferent(
-				RegistreInteressatCanalEnumDto.valorAsEnum(
+				RegistreInteressatCanalEnum.valorAsEnum(
 						registreInteressat.getCanalPreferent())).
 		observacions(registreInteressat.getObservacions()).
 		build();
 		if (registreInteressat.getRepresentant() != null) {
 			RegistreInteressat representant = registreInteressat.getRepresentant();
 			interessatEntity.updateRepresentant(
-					RegistreInteressatTipusEnumDto.valorAsEnum(representant.getTipus()),
-					RegistreInteressatDocumentTipusEnumDto.valorAsEnum(representant.getDocumentTipus()),
+					RegistreInteressatTipusEnum.valorAsEnum(representant.getTipus()),
+					RegistreInteressatDocumentTipusEnum.valorAsEnum(representant.getDocumentTipus()),
 					representant.getDocumentNum(),
 					representant.getNom(),
 					representant.getLlinatge1(),
@@ -274,7 +284,7 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 					representant.getEmail(),
 					representant.getTelefon(),
 					representant.getEmailHabilitat(),
-					RegistreInteressatCanalEnumDto.valorAsEnum(representant.getCanalPreferent()));
+					RegistreInteressatCanalEnum.valorAsEnum(representant.getCanalPreferent()));
 		}
 		return interessatEntity;
 	}
@@ -286,15 +296,17 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 				registreAnnex.getTitol(),
 				registreAnnex.getFitxerNom(),
 				(registreAnnex.getFitxerContingut() != null) ? registreAnnex.getFitxerContingut().length : -1,
-				registreAnnex.getNtiTipoDocumental(),
-				RegistreDocumentTipusEnumDto.valorAsEnum(registreAnnex.getTipus()),
-				RegistreAnnexOrigenEnumDto.valorAsEnum(registreAnnex.getOrigen()),
+				registreAnnex.getFitxerGestioDocumentalId(),
 				registreAnnex.getDataCaptura(),
+				RegistreAnnexOrigenEnum.valorAsEnum(registreAnnex.getOrigenCiutadaAdmin()),
+				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getNtiTipusDocument()),
+				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(registreAnnex.getSicresTipusDocument()),
 				registre).
 				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
-				validesa(RegistreDocumentValidesaEnumDto.valorAsEnum(registreAnnex.getValidesa())).
+				localitzacio(registreAnnex.getLocalitzacio()).
+				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getNtiElaboracioEstat())).
+				firmaCsv(registreAnnex.getFirmaCsv()).
 				observacions(registreAnnex.getObservacions()).
-				firmaMode(RegistreAnnexFirmaModeEnumDto.valorAsEnum(registreAnnex.getFirmaMode())).
 				build();
 		return annexEntity;
 	}

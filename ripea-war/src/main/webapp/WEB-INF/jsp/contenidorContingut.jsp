@@ -13,11 +13,11 @@ pageContext.setAttribute(
 		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.RegistreAccioEnumDto.class,
 				"registre.anotacio.accio.enum."));
-pageContext.setAttribute(
+/*pageContext.setAttribute(
 		"registreTipusEnumOptions",
 		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.RegistreTipusEnumDto.class,
-				"registre.anotacio.tipus.enum."));
+				"registre.anotacio.tipus.enum."));*/
 %>
 <c:set var="potModificarContingut" value="${false}"/>
 <c:if test="${contenidor.node}"><c:set var="potModificarContingut" value="${empty contenidor.metaNode or contenidor.metaNode.usuariActualWrite}"/></c:if>

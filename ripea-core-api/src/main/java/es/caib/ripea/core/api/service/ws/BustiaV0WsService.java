@@ -5,6 +5,7 @@ package es.caib.ripea.core.api.service.ws;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.bind.annotation.XmlElement;
 
 
 /**
@@ -15,8 +16,6 @@ import javax.jws.WebService;
  */
 @WebService(
 		name = "BustiaV0",
-		serviceName = "BustiaV0Service",
-		portName = "BustiaV0ServicePort",
 		targetNamespace = "http://www.caib.es/ripea/ws/v0/bustia")
 public interface BustiaV0WsService {
 
@@ -38,10 +37,11 @@ public interface BustiaV0WsService {
 	 * @param referencia
 	 *            Referència per a consultar el contingut i posar-lo dins la bústia.
 	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void enviarContingut(
-			@WebParam(name="entitat") String entitat,
-			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
-			@WebParam(name="tipus") BustiaContingutTipus tipus,
-			@WebParam(name="referencia") String referencia);
+			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
+			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
+			@WebParam(name="tipus") @XmlElement(required=true) BustiaContingutTipus tipus,
+			@WebParam(name="referencia") @XmlElement(required=true) String referencia);
 
 }

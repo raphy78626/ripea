@@ -24,9 +24,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.ripea.core.api.dto.RegistreDocumentacioFisicaTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreTipusEnumDto;
-import es.caib.ripea.core.api.dto.RegistreTransportTipusEnumDto;
+import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.audit.RipeaAuditable;
 
 /**
@@ -45,8 +43,8 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 								"unitat_adm",
 								"numero",
 								"data",
-								"oficina",
-								"llibre"})})
+								"oficina_codi",
+								"llibre_codi"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends RipeaAuditable<Long> {
 
@@ -57,31 +55,49 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	@Column(name = "numero", nullable = false)
 	private int numero;
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "data")
+	@Column(name = "data", nullable = false)
 	private Date data;
-	@Column(name = "identificador")
+	@Column(name = "identificador", length = 100, nullable = false)
 	private String identificador;
-	@Column(name = "oficina", length = 21, nullable = false)
-	private String oficina;
-	@Column(name = "llibre", length = 4, nullable = false)
-	private String llibre;
+	@Column(name = "entitat_codi", length = 21, nullable = false)
+	private String entitatCodi;
+	@Column(name = "entitat_desc", length = 100)
+	private String entitatDescripcio;
+	@Column(name = "oficina_codi", length = 21, nullable = false)
+	private String oficinaCodi;
+	@Column(name = "oficina_desc", length = 100)
+	private String oficinaDescripcio;
+	@Column(name = "llibre_codi", length = 4, nullable = false)
+	private String llibreCodi;
+	@Column(name = "llibre_desc", length = 100)
+	private String llibreDescripcio;
 	@Column(name = "extracte", length = 240)
 	private String extracte;
-	@Column(name = "assumpte_tipus", length = 16, nullable = false)
-	private String assumpteTipus;
+	@Column(name = "assumpte_tipus_codi", length = 16, nullable = false)
+	private String assumpteTipusCodi;
+	@Column(name = "assumpte_tipus_desc", length = 100)
+	private String assumpteTipusDescripcio;
 	@Column(name = "assumpte_codi", length = 16)
 	private String assumpteCodi;
-	@Column(name = "assumpte_ref", length = 16)
-	private String assumpteReferencia;
-	@Column(name = "assumpte_numexp", length = 80)
-	private String assumpteNumExpedient;
-	@Column(name = "idioma", length = 2, nullable = false)
-	private String idioma;
-	@Column(name = "transport_tipus", length = 2)
-	private String transportTipus;
+	@Column(name = "assumpte_desc", length = 100)
+	private String assumpteDescripcio;
+	@Column(name = "referencia", length = 16)
+	private String referencia;
+	@Column(name = "expedient_num", length = 80)
+	private String expedientNumero;
+	@Column(name = "idioma_codi", length = 2, nullable = false)
+	private String idiomaCodi;
+	@Column(name = "idioma_desc", length = 100)
+	private String idiomaDescripcio;
+	@Column(name = "transport_tipus_codi", length = 2)
+	private String transportTipusCodi;
+	@Column(name = "transport_tipus_desc", length = 100)
+	private String transportTipusDescripcio;
 	@Column(name = "transport_num", length = 20)
 	private String transportNumero;
-	@Column(name = "usuari_nom", length = 80, nullable = false)
+	@Column(name = "usuari_codi", length = 20)
+	private String usuariCodi;
+	@Column(name = "usuari_nom", length = 80)
 	private String usuariNom;
 	@Column(name = "usuari_contacte", length = 160)
 	private String usuariContacte;
@@ -89,8 +105,10 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	private String aplicacioCodi;
 	@Column(name = "aplicacio_versio", length = 15)
 	private String aplicacioVersio;
-	@Column(name = "documentacio_fis", length = 1)
-	private String documentacioFisica;
+	@Column(name = "docfis_codi", length = 1)
+	private String documentacioFisicaCodi;
+	@Column(name = "docfis_desc", length = 100)
+	private String documentacioFisicaDescripcio;
 	@Column(name = "observacions", length = 50)
 	private String observacions;
 	@Column(name = "exposa", length = 4000)
@@ -123,8 +141,8 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 
 
 
-	public RegistreTipusEnumDto getTipus() {
-		return RegistreTipusEnumDto.valorAsEnum(tipus);
+	public RegistreTipusEnum getTipus() {
+		return RegistreTipusEnum.valorAsEnum(tipus);
 	}
 	public String getUnitatAdministrativa() {
 		return unitatAdministrativa;
@@ -138,32 +156,56 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public String getIdentificador() {
 		return identificador;
 	}
-	public String getOficina() {
-		return oficina;
+	public String getEntitatCodi() {
+		return entitatCodi;
 	}
-	public String getLlibre() {
-		return llibre;
+	public String getEntitatDescripcio() {
+		return entitatDescripcio;
+	}
+	public String getOficinaCodi() {
+		return oficinaCodi;
+	}
+	public String getOficinaDescripcio() {
+		return oficinaDescripcio;
+	}
+	public String getLlibreCodi() {
+		return llibreCodi;
+	}
+	public String getLlibreDescripcio() {
+		return llibreDescripcio;
 	}
 	public String getExtracte() {
 		return extracte;
 	}
-	public String getAssumpteTipus() {
-		return assumpteTipus;
+	public String getAssumpteTipusCodi() {
+		return assumpteTipusCodi;
+	}
+	public String getAssumpteTipusDescripcio() {
+		return assumpteTipusDescripcio;
 	}
 	public String getAssumpteCodi() {
 		return assumpteCodi;
 	}
-	public String getAssumpteReferencia() {
-		return assumpteReferencia;
+	public String getAssumpteDescripcio() {
+		return assumpteDescripcio;
 	}
-	public String getAssumpteNumExpedient() {
-		return assumpteNumExpedient;
+	public String getReferencia() {
+		return referencia;
 	}
-	public String getIdioma() {
-		return idioma;
+	public String getExpedientNumero() {
+		return expedientNumero;
 	}
-	public RegistreTransportTipusEnumDto getTransportTipus() {
-		return RegistreTransportTipusEnumDto.valorAsEnum(transportTipus);
+	public String getIdiomaCodi() {
+		return idiomaCodi;
+	}
+	public String getIdiomaDescripcio() {
+		return idiomaDescripcio;
+	}
+	public String getTransportTipusCodi() {
+		return transportTipusCodi;
+	}
+	public String getTransportTipusDescripcio() {
+		return transportTipusDescripcio;
 	}
 	public String getTransportNumero() {
 		return transportNumero;
@@ -180,8 +222,11 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public String getAplicacioVersio() {
 		return aplicacioVersio;
 	}
-	public RegistreDocumentacioFisicaTipusEnumDto getDocumentacioFisica() {
-		return RegistreDocumentacioFisicaTipusEnumDto.valorAsEnum(documentacioFisica);
+	public String getDocumentacioFisicaCodi() {
+		return documentacioFisicaCodi;
+	}
+	public String getDocumentacioFisicaDescripcio() {
+		return documentacioFisicaDescripcio;
 	}
 	public String getObservacions() {
 		return observacions;
@@ -207,7 +252,6 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public ContenidorEntity getContenidor() {
 		return contenidor;
 	}
-
 	public void updateContenidor(ContenidorEntity contenidor) {
 		this.contenidor = contenidor;
 	}
@@ -216,16 +260,15 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	}
 
 	public static Builder getBuilder(
-			RegistreTipusEnumDto tipus,
+			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			int numero,
 			Date data,
 			String identificador,
-			String oficina,
-			String llibre,
-			String assumpteTipus,
-			String idioma,
-			String usuariNom,
+			String oficinaCodi,
+			String llibreCodi,
+			String assumpteTipusCodi,
+			String idiomaCodi,
 			ContenidorEntity contenidor) {
 		return new Builder(
 				tipus,
@@ -233,11 +276,10 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				numero,
 				data,
 				identificador,
-				oficina,
-				llibre,
-				assumpteTipus,
-				idioma,
-				usuariNom,
+				oficinaCodi,
+				llibreCodi,
+				assumpteTipusCodi,
+				idiomaCodi,
 				contenidor);
 	}
 
@@ -249,16 +291,15 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public static class Builder {
 		RegistreEntity built;
 		Builder(
-				RegistreTipusEnumDto tipus,
+				RegistreTipusEnum tipus,
 				String unitatAdministrativa,
 				int numero,
 				Date data,
 				String identificador,
-				String oficina,
-				String llibre,
-				String assumpteTipus,
-				String idioma,
-				String usuariNom,
+				String oficinaCodi,
+				String llibreCodi,
+				String assumpteTipusCodi,
+				String idiomaCodi,
 				ContenidorEntity contenidor) {
 			built = new RegistreEntity();
 			built.tipus = tipus.getValor();
@@ -266,36 +307,74 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			built.numero = numero;
 			built.data = data;
 			built.identificador = identificador;
-			built.oficina = oficina;
-			built.llibre = llibre;
-			built.assumpteTipus = assumpteTipus;
-			built.idioma = idioma;
-			built.usuariNom = usuariNom;
+			built.oficinaCodi = oficinaCodi;
+			built.llibreCodi = llibreCodi;
+			built.assumpteTipusCodi = assumpteTipusCodi;
+			built.idiomaCodi = idiomaCodi;
 			built.contenidor = contenidor;
+		}
+		public Builder entitatCodi(String entitatCodi) {
+			built.entitatCodi = entitatCodi;
+			return this;
+		}
+		public Builder entitatDescripcio(String entitatDescripcio) {
+			built.entitatDescripcio = entitatDescripcio;
+			return this;
+		}
+		public Builder oficinaDescripcio(String oficinaDescripcio) {
+			built.oficinaDescripcio = oficinaDescripcio;
+			return this;
+		}
+		public Builder llibreDescripcio(String llibreDescripcio) {
+			built.llibreDescripcio = llibreDescripcio;
+			return this;
 		}
 		public Builder extracte(String extracte) {
 			built.extracte = extracte;
+			return this;
+		}
+		public Builder assumpteTipusDescripcio(String assumpteTipusDescripcio) {
+			built.assumpteTipusDescripcio = assumpteTipusDescripcio;
 			return this;
 		}
 		public Builder assumpteCodi(String assumpteCodi) {
 			built.assumpteCodi = assumpteCodi;
 			return this;
 		}
-		public Builder assumpteReferencia(String assumpteReferencia) {
-			built.assumpteReferencia = assumpteReferencia;
+		public Builder assumpteDescripcio(String assumpteDescripcio) {
+			built.assumpteDescripcio = assumpteDescripcio;
 			return this;
 		}
-		public Builder assumpteNumExpedient(String assumpteNumExpedient) {
-			built.assumpteNumExpedient = assumpteNumExpedient;
+		public Builder referencia(String referencia) {
+			built.referencia = referencia;
 			return this;
 		}
-		public Builder transportTipus(RegistreTransportTipusEnumDto transportTipus) {
-			if (transportTipus != null)
-				built.transportTipus = transportTipus.getValor();
+		public Builder expedientNumero(String expedientNumero) {
+			built.expedientNumero = expedientNumero;
+			return this;
+		}
+		public Builder idiomaDescripcio(String idiomaDescripcio) {
+			built.idiomaDescripcio = idiomaDescripcio;
+			return this;
+		}
+		public Builder transportTipusCodi(String transportTipusCodi) {
+			built.transportTipusCodi = transportTipusCodi;
+			return this;
+		}
+		public Builder transportTipusDescripcio(String transportTipusDescripcio) {
+			built.transportTipusDescripcio = transportTipusDescripcio;
 			return this;
 		}
 		public Builder transportNumero(String transportNumero) {
 			built.transportNumero = transportNumero;
+			return this;
+		}
+		public Builder usuariCodi(String usuariCodi) {
+			built.usuariCodi = usuariCodi;
+			return this;
+		}
+		public Builder usuariNom(String usuariNom) {
+			built.usuariNom = usuariNom;
 			return this;
 		}
 		public Builder usuariContacte(String usuariContacte) {
@@ -310,9 +389,12 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			built.aplicacioVersio = aplicacioVersio;
 			return this;
 		}
-		public Builder documentacioFisica(RegistreDocumentacioFisicaTipusEnumDto documentacioFisica) {
-			if (documentacioFisica != null)
-				built.documentacioFisica = documentacioFisica.getValor();
+		public Builder documentacioFisicaCodi(String documentacioFisicaCodi) {
+			built.documentacioFisicaCodi = documentacioFisicaCodi;
+			return this;
+		}
+		public Builder documentacioFisicaDescripcio(String documentacioFisicaDescripcio) {
+			built.documentacioFisicaDescripcio = documentacioFisicaDescripcio;
 			return this;
 		}
 		public Builder observacions(String observacions) {
@@ -346,8 +428,8 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 		int result = super.hashCode();
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
 		result = prime * result + ((identificador == null) ? 0 : identificador.hashCode());
-		result = prime * result + ((llibre == null) ? 0 : llibre.hashCode());
-		result = prime * result + ((oficina == null) ? 0 : oficina.hashCode());
+		result = prime * result + ((llibreCodi == null) ? 0 : llibreCodi.hashCode());
+		result = prime * result + ((oficinaCodi == null) ? 0 : oficinaCodi.hashCode());
 		result = prime * result + ((tipus == null) ? 0 : tipus.hashCode());
 		return result;
 	}
@@ -370,15 +452,15 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				return false;
 		} else if (!identificador.equals(other.identificador))
 			return false;
-		if (llibre == null) {
-			if (other.llibre != null)
+		if (llibreCodi == null) {
+			if (other.llibreCodi != null)
 				return false;
-		} else if (!llibre.equals(other.llibre))
+		} else if (!llibreCodi.equals(other.llibreCodi))
 			return false;
-		if (oficina == null) {
-			if (other.oficina != null)
+		if (oficinaCodi == null) {
+			if (other.oficinaCodi != null)
 				return false;
-		} else if (!oficina.equals(other.oficina))
+		} else if (!oficinaCodi.equals(other.oficinaCodi))
 			return false;
 		if (tipus == null) {
 			if (other.tipus != null)

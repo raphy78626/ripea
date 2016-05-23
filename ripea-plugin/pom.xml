@@ -8,6 +8,11 @@
 	</parent>
 	<artifactId>ripea-plugin</artifactId>
 	<dependencies>
+		<dependency>
+			<groupId>es.caib</groupId>
+			<artifactId>ripea-core-api</artifactId>
+			<version>${ripea.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
