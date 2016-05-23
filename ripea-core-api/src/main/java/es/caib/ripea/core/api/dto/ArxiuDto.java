@@ -3,8 +3,6 @@
  */
 package es.caib.ripea.core.api.dto;
 
-import java.util.List;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 
@@ -18,7 +16,6 @@ public class ArxiuDto extends ContenidorDto {
 	private String unitatCodi;
 	private boolean actiu;
 
-	private List<PermisDto> permisos;
 	private boolean usuariActualRead;
 	private int expedientsCount;
 	private UnitatOrganitzativaDto unitat;
@@ -35,12 +32,6 @@ public class ArxiuDto extends ContenidorDto {
 	}
 	public void setActiu(boolean actiu) {
 		this.actiu = actiu;
-	}
-	public List<PermisDto> getPermisos() {
-		return permisos;
-	}
-	public void setPermisos(List<PermisDto> permisos) {
-		this.permisos = permisos;
 	}
 	public boolean isUsuariActualRead() {
 		return usuariActualRead;
@@ -59,13 +50,6 @@ public class ArxiuDto extends ContenidorDto {
 	}
 	public void setUnitat(UnitatOrganitzativaDto unitat) {
 		this.unitat = unitat;
-	}
-
-	public int getPermisosCount() {
-		if  (permisos == null)
-			return 0;
-		else
-			return permisos.size();
 	}
 	public int getMetaExpedientsCount() {
 		return metaExpedientsCount;

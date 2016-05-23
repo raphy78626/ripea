@@ -1006,11 +1006,18 @@ public class ExpedientServiceImpl implements ExpedientService {
 		}
 		if (comprovarAcces) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			boolean granted = permisosHelper.isGrantedAll(
-					arxiu.getId(),
-					ArxiuEntity.class,
-					new Permission[] {ExtendedPermission.READ},
-					auth);
+			boolean granted = false;
+			// Comprova l'accés als meta-expedients
+			for(MetaExpedientEntity metaExpedient : arxiu.getMetaExpedients()) {
+				if(permisosHelper.isGrantedAll(
+						metaExpedient.getId(),
+						MetaNodeEntity.class,
+						new Permission[] {ExtendedPermission.READ},
+						auth)) {
+					granted = true;
+					break;
+				}
+			}
 			if (!granted) {
 				logger.error("No es tenen permisos per a accedir a l'arxiu (id=" + id + ")");
 				throw new PermissionDeniedException(

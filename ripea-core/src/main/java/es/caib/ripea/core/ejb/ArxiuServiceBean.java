@@ -15,7 +15,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
-import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
@@ -97,24 +96,6 @@ public class ArxiuServiceBean implements ArxiuService {
 	public List<ArxiuDto> findPermesosPerUsuari(
 			Long entitatId) {
 		return delegate.findPermesosPerUsuari(entitatId);
-	}
-
-	@Override
-	@RolesAllowed("IPA_ADMIN")
-	public void updatePermis(
-			Long entitatId,
-			Long id,
-			PermisDto permis) {
-		delegate.updatePermis(entitatId, id, permis);
-	}
-
-	@Override
-	@RolesAllowed("IPA_ADMIN")
-	public void deletePermis(
-			Long entitatId,
-			Long id,
-			Long permisId) {
-		delegate.deletePermis(entitatId, id, permisId);
 	}
 
 	@Override

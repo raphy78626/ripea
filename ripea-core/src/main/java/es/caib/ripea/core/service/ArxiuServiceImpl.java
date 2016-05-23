@@ -24,7 +24,6 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
-import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
@@ -212,10 +211,6 @@ public class ArxiuServiceImpl implements ArxiuService {
 				break;
 			}
 		}
-		// Ompl els permisos
-		List<ArxiuDto> llista = new ArrayList<ArxiuDto>();
-		llista.add(resposta);
-		omplirPermisosPerArxius(llista, true);
 		
 		resposta.setMetaExpedientsCount(arxiu.getMetaExpedients().size());
 		return resposta;
@@ -250,10 +245,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 					break;
 				}
 			}
-		}
-		// Ompl els permisos
-		omplirPermisosPerArxius(resposta, true);
-		
+		}		
 		// Omple els comptador de meta-expedients 
 		List<Object[]> countMetaExpedients = arxiuRepository.countMetaExpedients(
 				entitat); 
@@ -285,22 +277,28 @@ public class ArxiuServiceImpl implements ArxiuService {
 				true,
 				false,
 				false);
-		List<ArxiuDto> resposta = toArxiuDto(
-				arxiuRepository.findByEntitatAndUnitatCodiAndPareNotNull(
-						entitat,
-						unitatCodi));
-		// Filtra la llista d'arxius segons els permisos
-		permisosHelper.filterGrantedAll(
-				resposta,
-				new ObjectIdentifierExtractor<ArxiuDto>() {
-					@Override
-					public Long getObjectIdentifier(ArxiuDto arxiu) {
-						return arxiu.getId();
-					}
-				},
-				ArxiuEntity.class,
-				new Permission[] {ExtendedPermission.READ},
-				auth);
+		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
+		List<ArxiuEntity> arxius = arxiuRepository.findByEntitatAndUnitatCodiAndPareNotNull(
+				entitat,
+				unitatCodi);
+		List<MetaExpedientEntity> metaExpedients;
+		for(ArxiuEntity arxiu : arxius) {
+			metaExpedients = arxiu.getMetaExpedients();
+			// Filtra la llista de meta expedients segons els permisos
+			permisosHelper.filterGrantedAll(
+					metaExpedients,
+					new ObjectIdentifierExtractor<MetaExpedientEntity>() {
+						@Override
+						public Long getObjectIdentifier(MetaExpedientEntity metaExpedient) {
+							return metaExpedient.getId();
+						}
+					},
+					MetaNodeEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth);
+			if(!metaExpedients.isEmpty())
+				resposta.add(toArxiuDto(arxiu));
+		}
 		// Ompl els contadors d'expedients
 		List<Object[]> countExpedients = countExpedientsPermesosAgrupatsPerArxiu(entitat);
 		for (ArxiuDto arxiu: resposta) {
@@ -317,8 +315,6 @@ public class ArxiuServiceImpl implements ArxiuService {
 			}
 			arxiu.setExpedientsCount(expedientsCount);
 		}
-		// Ompl els permisos
-		omplirPermisosPerArxius(resposta, true);
 		return resposta;
 	}
 
@@ -337,22 +333,27 @@ public class ArxiuServiceImpl implements ArxiuService {
 				false);
 		List<ArxiuEntity> arxius = arxiuRepository.findByEntitatAndPareNotNull(
 				entitat);
-		// Filtra la llista d'arxius segons els permisos
-		permisosHelper.filterGrantedAll(
-				arxius,
-				new ObjectIdentifierExtractor<ArxiuEntity>() {
-					@Override
-					public Long getObjectIdentifier(ArxiuEntity arxiu) {
-						return arxiu.getId();
-					}
-				},
-				ArxiuEntity.class,
-				new Permission[] {ExtendedPermission.READ},
-				auth);
-		// Converteix a DTO
-		List<ArxiuDto> resposta = toArxiuDto(arxius);
-		// Ompl els permisos
-		omplirPermisosPerArxius(resposta, true);
+		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
+		// Filtra els arxius segons els permisos dels meta-expedients associats
+		List<MetaExpedientEntity> metaExpedients;
+		for(ArxiuEntity arxiu : arxius) {
+			metaExpedients = arxiu.getMetaExpedients();
+			// Filtra la llista d'arxius segons els permisos
+			permisosHelper.filterGrantedAll(
+					metaExpedients,
+					new ObjectIdentifierExtractor<ArxiuEntity>() {
+						@Override
+						public Long getObjectIdentifier(ArxiuEntity arxiu) {
+							return arxiu.getId();
+						}
+					},
+					MetaNodeEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth);
+			// Converteix a DTO
+			if(!metaExpedients.isEmpty())
+				resposta.add(toArxiuDto(arxiu));
+		}
 		// Ompl les unitats
 		List<UnitatOrganitzativaDto> unitats = cacheHelper.findUnitatsOrganitzativesPerEntitat(
 				entitat.getCodi()).toDadesList();
@@ -365,54 +366,6 @@ public class ArxiuServiceImpl implements ArxiuService {
 			}
 		}
 		return resposta;
-	}
-
-	@Override
-	@Transactional
-	public void updatePermis(
-			Long entitatId,
-			Long id,
-			PermisDto permis) throws NotFoundException {
-		logger.debug("Actualitzant permis per a l'arxiu ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "permis=" + permis + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		entityComprovarHelper.comprovarArxiu(
-				entitat,
-				id);
-		permisosHelper.updatePermis(
-				id,
-				ArxiuEntity.class,
-				permis);
-	}
-
-	@Override
-	@Transactional
-	public void deletePermis(
-			Long entitatId,
-			Long id,
-			Long permisId) throws NotFoundException {
-		logger.debug("Esborrant permis per a l'arxiu ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "permisId=" + permisId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		entityComprovarHelper.comprovarArxiu(
-				entitat,
-				id);
-		permisosHelper.deletePermis(
-				id,
-				ArxiuEntity.class,
-				permisId);
 	}
 
 	@Transactional(readOnly = true)
@@ -465,40 +418,6 @@ public class ArxiuServiceImpl implements ArxiuService {
 		return resposta;
 	}
 
-	private void omplirPermisosPerArxius(
-			List<? extends ArxiuDto> arxius,
-			boolean ambLlistaPermisos) {
-		// Filtra les entitats per saber els permisos per a l'usuari actual
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		List<ArxiuDto> arxiusRead = new ArrayList<ArxiuDto>();
-		arxiusRead.addAll(arxius);
-		permisosHelper.filterGrantedAll(
-				arxiusRead,
-				new ObjectIdentifierExtractor<ArxiuDto>() {
-					public Long getObjectIdentifier(ArxiuDto arxiu) {
-						return arxiu.getId();
-					}
-				},
-				ArxiuEntity.class,
-				new Permission[] {ExtendedPermission.READ},
-				auth);
-		for (ArxiuDto arxiu: arxius) {
-			arxiu.setUsuariActualRead(
-					arxiusRead.contains(arxiu));
-		}
-		// Obté els permisos per a tots els arxius només amb una consulta
-		if (ambLlistaPermisos) {
-			List<Long> ids = new ArrayList<Long>();
-			for (ArxiuDto arxiu: arxius)
-				ids.add(arxiu.getId());
-			Map<Long, List<PermisDto>> permisos = permisosHelper.findPermisos(
-					ids,
-					ArxiuEntity.class);
-			for (ArxiuDto arxiu: arxius)
-				arxiu.setPermisos(permisos.get(arxiu.getId()));
-		}
-	}
-
 	private ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			EntitatEntity entitat,
 			boolean nomesAmbArxiusPermesos,
@@ -507,20 +426,26 @@ public class ArxiuServiceImpl implements ArxiuService {
 		Set<String> arxiuUnitatCodis = null;
 		if (nomesAmbArxiusPermesos) {
 			arxiuUnitatCodis = new HashSet<String>();
+			// Filtra els meta-expedients dels arxius en el que l'usuari tingui permisos de lectura
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			permisosHelper.filterGrantedAll(
-					arxius,
-					new ObjectIdentifierExtractor<ArxiuEntity>() {
-						@Override
-						public Long getObjectIdentifier(ArxiuEntity arxiu) {
-							return arxiu.getId();
-						}
-					},
-					ArxiuEntity.class,
-					new Permission[] {ExtendedPermission.READ},
-					auth);
-			for (ArxiuEntity arxiu: arxius)
-				arxiuUnitatCodis.add(arxiu.getUnitatCodi());
+			// Afegeix les unitats dels arxius que estiguin relacionats amb algun meta-expedient amb permisos
+			for (ArxiuEntity arxiu: arxius) {
+				// Crea la llista dels metaExpedients dels arxius
+				List<MetaExpedientEntity> metaExpedients = arxiu.getMetaExpedients();
+				permisosHelper.filterGrantedAll(
+						metaExpedients,
+						new ObjectIdentifierExtractor<MetaExpedientEntity>() {
+							@Override
+							public Long getObjectIdentifier(MetaExpedientEntity metaExpedient) {
+								return metaExpedient.getId();
+							}
+						},
+						MetaNodeEntity.class,
+						new Permission[] {ExtendedPermission.READ},
+						auth);
+				if(!metaExpedients.isEmpty())
+					arxiuUnitatCodis.add(arxiu.getUnitatCodi());
+			}
 		}
 		// Consulta l'arbre
 		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findUnitatsOrganitzativesPerEntitatAmbPermesos(

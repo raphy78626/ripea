@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
-import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
@@ -149,42 +148,6 @@ public interface ArxiuService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<ArxiuDto> findPermesosPerUsuari(
 			Long entitatId) throws NotFoundException;
-
-	/**
-	 * Modifica els permisos d'un usuari o d'un rol per a accedir a un arxiu.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param id
-	 *            Atribut id de l'arxiu del qual es modificar el permís.
-	 * @param permis
-	 *            El permís que es vol modificar.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public void updatePermis(
-			Long entitatId,
-			Long id,
-			PermisDto permis) throws NotFoundException;
-
-	/**
-	 * Esborra els permisos d'un usuari o d'un rol per a accedir a un arxiu.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param id
-	 *            Atribut id de l'arxiu del qual es vol modificar el permís.
-	 * @param permisId
-	 *            Atribut id del permís que es vol esborrar.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public void deletePermis(
-			Long entitatId,
-			Long id,
-			Long permisId) throws NotFoundException;
 
 	/**
 	 * Consulta l'arbre de les unitats organitzatives per a mostrar els

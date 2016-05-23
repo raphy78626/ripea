@@ -48,6 +48,7 @@ import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
@@ -394,11 +395,17 @@ public class ContenidorHelper {
 		} else if (contenidor instanceof ArxiuEntity) {
 			ArxiuEntity arxiu = (ArxiuEntity)contenidor;
 			if (arxiu.getPare() != null && comprovarPermisRead) {
-				boolean granted = permisosHelper.isGrantedAll(
-						arxiu.getId(),
-						ArxiuEntity.class,
-						new Permission[] {ExtendedPermission.READ},
-						auth);
+				// Comprova que algun dels seus meta-expedients associants tingui el permís de lectura
+				boolean granted = false;
+				for(MetaExpedientEntity metaExpedient : arxiu.getMetaExpedients()) {
+					granted = permisosHelper.isGrantedAll(
+							metaExpedient.getId(),
+							MetaNodeEntity.class,
+							new Permission[] {ExtendedPermission.READ},
+							auth);
+					if(granted)
+						break;
+				}
 				if (!granted) {
 					logger.debug("Sense permisos per a accedir a l'arxiu ("
 							+ "id=" + arxiu.getId() + ", "
