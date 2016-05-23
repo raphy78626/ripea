@@ -32,8 +32,8 @@ pageContext.setAttribute(
 
 	$(document).ready(function() {
 		$("#modal-botons button[type='submit']").on('click', function() {
-			$("form#arxiuMetaExpedientCommand *:disabled").attr('readonly', 'readonly');
-			$("form#arxiuMetaExpedientCommand *:disabled").removeAttr('disabled');
+			$("form#metaExpedientArxiuCommand *:disabled").attr('readonly', 'readonly');
+			$("form#metaExpedientArxiuCommand *:disabled").removeAttr('disabled');
 		});		
 	});
 
@@ -42,12 +42,13 @@ pageContext.setAttribute(
 		$('#arxiuId').select2('val', '', true);
 		$('#arxiuId option[value!=""]').remove();
 		// Obté la llista d'arxius per a aquell node contenidor
-		var baseUrl = '../../${metaExpedient.id}/unitat/' + data.node.id + '/arxiu/findAll';
+		var baseUrl = "<c:url value="/metaExpedient/${metaExpedient.id}/unitat/"/>" + data.node.id + "/arxiu/findAll";
 		$.get(baseUrl)
 			.done(function(data) {
 				for (var i = 0; i < data.length; i++) {
 					$('#arxiuId').append('<option value="' + data[i].id + '">' + data[i].nom + '</option>');
-				}			
+				}	
+				$('#arxiuId').change();
 			})
 			.fail(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");

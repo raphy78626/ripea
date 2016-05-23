@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -29,12 +30,16 @@ public interface ArxiuRepository extends JpaRepository<ArxiuEntity, Long> {
 			EntitatEntity entitat,
 			String unitatCodi);
 	
+	/** Compta el número de meta expedients per a cada arxiu de la entitat. */
 	@Query(	"select " +
 			"    id, " +
 			"    size(metaExpedients) " +
 			"from " +
 			"    ArxiuEntity " +
+			"where " +
+			"    entitat = :entitat " +
 			"group by id ")
-	List<Object[]> countExpedients();
+	List<Object[]> countMetaExpedients(
+			@Param("entitat") EntitatEntity entitat);
 
 }

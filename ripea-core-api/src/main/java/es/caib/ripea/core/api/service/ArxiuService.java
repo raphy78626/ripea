@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
+import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -251,5 +252,15 @@ public interface ArxiuService {
 			Long entitatId,
 			Long id,
 			Long metaExpedientId) throws NotFoundException;
+
+	/** Consulta la llista d'arxius del meta expedient. 
+	 * 
+	 * @param entitatId
+	 * @param arxiuId
+	 * @return
+	 */
+	public List<MetaExpedientDto> getMetaExpedientsArxiu(
+			Long entitatId, 
+			Long arxiuId);
 
 }

@@ -63,9 +63,10 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 			@PathVariable Long metaExpedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<ArxiuDto> arxius = metaExpedientService.findArxiusMetaExpedient(entitatActual.getId(), metaExpedientId);
 		return PaginacioHelper.getPaginaPerDatatables(
 				request,
-				metaExpedientService.findById(entitatActual.getId(), metaExpedientId).getArxius());
+				arxius);
 	}
 
 	/** Mètode Ajax per obtenir tots els arxius per a un node. */
@@ -129,13 +130,14 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 					"arbreUnitatsOrganitzatives",
 					arxiuService.findArbreUnitatsOrganitzativesAdmin(
 							entitatActual.getId(),
-							true));
+							true));			
 			
-			return "arxiuAdminMetaExpedientForm";
+			return "metaExpedientArxiuForm";
 		}
 		// Comprova si la relació ja existia
 		ArxiuDto arxiu = arxiuService.findById(entitatActual.getId(), command.getArxiuId());
-		if(metaExpedient.getArxius().contains(arxiu)) {
+		List<ArxiuDto> arxius = metaExpedientService.findArxiusMetaExpedient(entitatActual.getId(), metaExpedientId);
+		if(arxius.contains(arxiu)) {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../metaExpedient/" + metaExpedientId + "/arxiu",

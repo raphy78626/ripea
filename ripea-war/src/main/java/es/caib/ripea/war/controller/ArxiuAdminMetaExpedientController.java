@@ -63,9 +63,12 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 			@PathVariable Long arxiuId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<MetaExpedientDto> metaExpedients = arxiuService.getMetaExpedientsArxiu(entitatActual.getId(), arxiuId);
 		return PaginacioHelper.getPaginaPerDatatables(
 				request,
-				arxiuService.findById(entitatActual.getId(), arxiuId).getMetaExpedients());
+				metaExpedients);
+
+	
 	}
 
 	@RequestMapping(value = "/{arxiuId}/metaExpedient/new", method = RequestMethod.GET)
@@ -111,7 +114,8 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 		}
 		// Comprova si la relació ja existeix
 		MetaExpedientDto metaExpedient = metaExpedientService.findById(entitatActual.getId(), command.getMetaExpedientId());
-		if(arxiu.getMetaExpedients().contains(metaExpedient)) {
+		List<MetaExpedientDto> metaExpedients = arxiuService.getMetaExpedientsArxiu(entitatActual.getId(), arxiuId);
+		if(metaExpedients.contains(metaExpedient)) {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../arxiuAdmin/" + arxiuId + "/metaExpedient",

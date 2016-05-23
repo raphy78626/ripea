@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaExpedientMetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
@@ -481,5 +482,15 @@ public interface MetaExpedientService {
 			Long entitatId,
 			Long metaExpedientId,
 			Long arxiuId) throws NotFoundException;
+	/**
+	 * Consulta la llista d'arxius del meta-expedient.
+	 * @param entitatId
+	 * @param metaExpedientId
+	 * @return
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public List<ArxiuDto> findArxiusMetaExpedient(
+			Long entitatId, 
+			Long metaExpedientId);
 
 }

@@ -56,9 +56,7 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			joinColumns = {@JoinColumn(name = "metaexpedient_id")},
 			inverseJoinColumns = {@JoinColumn(name = "arxiu_id")})
 	protected List<ArxiuEntity> arxius;
-
-
-
+	
 	public String getClassificacio() {
 		return classificacio;
 	}

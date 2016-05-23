@@ -216,13 +216,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 		List<ArxiuDto> llista = new ArrayList<ArxiuDto>();
 		llista.add(resposta);
 		omplirPermisosPerArxius(llista, true);
-		// Ompl la llista de meta-expedients
-		for(MetaExpedientEntity metaExpedient : arxiu.getMetaExpedients()) {
-			resposta.getMetaExpedients().add( conversioTipusHelper.convertir(
-					metaExpedient,
-					MetaExpedientDto.class));
-		}
-		resposta.setMetaExpedientsCount(resposta.getMetaExpedients().size());
+		
+		resposta.setMetaExpedientsCount(arxiu.getMetaExpedients().size());
 		return resposta;
 	}
 
@@ -260,7 +255,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 		omplirPermisosPerArxius(resposta, true);
 		
 		// Omple els comptador de meta-expedients 
-		List<Object[]> countMetaExpedients = arxiuRepository.countExpedients(); 
+		List<Object[]> countMetaExpedients = arxiuRepository.countMetaExpedients(
+				entitat); 
 		for (ArxiuDto arxiuViu: resposta) {
 			for (Object[] reg: countMetaExpedients) {
 				Long arxiuId = (Long)reg[0];
@@ -647,6 +643,31 @@ public class ArxiuServiceImpl implements ArxiuService {
 		// Esborra la relació i guarda
 		arxiu.getMetaExpedients().remove(metaExpedient);
 		arxiuRepository.saveAndFlush(arxiu);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<MetaExpedientDto> getMetaExpedientsArxiu(
+			Long entitatId,
+			Long id) throws NotFoundException {
+		logger.debug("Consultant la llista de meta-expedients per l'arxiu ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				id);
+		// Ompl la llista de meta-expedients
+		List<MetaExpedientDto> resposta = new ArrayList<MetaExpedientDto>();
+		for(MetaExpedientEntity metaExpedient : arxiu.getMetaExpedients()) {
+			resposta.add( conversioTipusHelper.convertir(
+					metaExpedient,
+					MetaExpedientDto.class));
+		}
+		return resposta;
 	}	
-
 }

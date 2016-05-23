@@ -14,8 +14,10 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
+import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
 
 /**
@@ -116,13 +118,6 @@ public class ArxiuServiceBean implements ArxiuService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
-	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
-			Long entitatId) {
-		return delegate.findArbreUnitatsOrganitzativesAdmin(entitatId);
-	}
-
-	@Override
 	@RolesAllowed("tothom")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesUser(
 			Long entitatId) {
@@ -145,6 +140,20 @@ public class ArxiuServiceBean implements ArxiuService {
 			Long id, 
 			Long metaExpedientId) {
 		delegate.removeMetaExpedient(entitatId, id, metaExpedientId);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
+			Long entitatId,
+			boolean nomesAmbArxiusPermesos) throws NotFoundException {
+		return delegate.findArbreUnitatsOrganitzativesAdmin(entitatId, nomesAmbArxiusPermesos);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public List<MetaExpedientDto> getMetaExpedientsArxiu(Long entitatId, Long arxiuId) {
+		return delegate.getMetaExpedientsArxiu(entitatId, arxiuId);
 	}
 
 }

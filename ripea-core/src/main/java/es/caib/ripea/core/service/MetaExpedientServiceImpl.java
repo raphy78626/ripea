@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaExpedientMetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
@@ -213,6 +214,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 					metaExpedient,
 					resposta);
 		}
+		resposta.setArxiusCount(metaExpedient.getArxius().size());
 		return resposta;
 	}
 
@@ -275,6 +277,20 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 		metaNodeHelper.omplirPermisosPerMetaNodes(
 				resposta.getContingut(),
 				true);
+		// Omple els comptador d'arxius 
+		List<Object[]> countArxius = metaExpedientRepository.countArxius(
+				entitat); 
+		for (MetaExpedientDto metaExpedient: resposta) {
+			for (Object[] reg: countArxius) {
+				Long metaExpedientId = (Long)reg[0];
+				if (metaExpedientId.equals(metaExpedient.getId())) {
+					Integer count = (Integer)reg[1];
+					metaExpedient.setArxiusCount(count.intValue());
+					break;
+				}
+			}
+		}
+		
 		return resposta;
 	}
 
@@ -835,5 +851,29 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 		// Esborra la relació i guarda
 		metaExpedient.getArxius().remove(arxiu);
 		metaExpedientRepository.saveAndFlush(metaExpedient);
+	}
+
+	@Override
+	@Transactional
+	public List<ArxiuDto> findArxiusMetaExpedient(
+			Long entitatId, 
+			Long id) {
+		logger.debug("Consulta dels arxius del meta-expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(entitat, id);
+		// Ompl la llista d'arxius
+		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
+		for(ArxiuEntity arxiu : metaExpedient.getArxius()) {
+			resposta.add( conversioTipusHelper.convertir(
+					arxiu,
+					ArxiuDto.class));
+		}
+		return resposta;
 	}
 }
