@@ -170,5 +170,20 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 				"redirect:../../../../metaExpedient/" + arxiuId + "/arxiu",
 				"metaexpedient.controller.arxiu.esborrat.ok");
 	}
+	
+	
+	/** Mètode Ajax per obtenir tots els arxius per a un meta expedient. Serveix per omplir el control
+	 * desplegable de selecció d'arxiu durant la creació d'un expedient quan se selecciona el meta-expedient. */
+	@RequestMapping(value = "/{metaExpedientId}/arxiu/findAll", method = RequestMethod.GET)
+	@ResponseBody
+	public List<ArxiuDto> findAllArxius(
+			HttpServletRequest request,
+			@PathVariable Long metaExpedientId,
+			Model model) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<ArxiuDto> arxius = metaExpedientService.findArxiusMetaExpedient(entitatActual.getId(), metaExpedientId);
+		return arxius;
+	}
 
 }

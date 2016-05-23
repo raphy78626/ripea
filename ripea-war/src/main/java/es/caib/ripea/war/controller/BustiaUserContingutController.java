@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
@@ -102,6 +104,7 @@ public class BustiaUserContingutController extends BaseUserController {
 		model.addAttribute(command);
 		omplirModelPerNouExpedient(
 				entitatActual,
+				command.getMetaNodeId(),
 				model);
 		return "bustiaPendentContingutNouexp";
 	}
@@ -117,6 +120,7 @@ public class BustiaUserContingutController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			omplirModelPerNouExpedient(
 					entitatActual,
+					command.getMetaNodeId(),
 					model);
 			return "bustiaPendentContingutNouexp";
 		}
@@ -223,13 +227,22 @@ public class BustiaUserContingutController extends BaseUserController {
 
 	private void omplirModelPerNouExpedient(
 			EntitatDto entitatActual,
+			Long metaExpedientId,
 			Model model) {
 		model.addAttribute(
 				"metaExpedients",
 				metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
-		model.addAttribute(
-				"arxius",
-				arxiuService.findPermesosPerUsuari(entitatActual.getId()));
+		if(metaExpedientId != null) {
+			model.addAttribute(
+					"arxius",
+					arxiuService.findPermesosPerUsuariIMetaExpedient(
+							entitatActual.getId(),
+							metaExpedientId));
+		} else {
+			model.addAttribute(
+					"arxius",
+					new ArrayList<ArxiuDto>());
+		}
 	}
 
 	private void omplirModelPerAfegirAExpedient(

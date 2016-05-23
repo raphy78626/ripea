@@ -93,9 +93,9 @@ public class ArxiuServiceBean implements ArxiuService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<ArxiuDto> findPermesosPerUsuari(
-			Long entitatId) {
-		return delegate.findPermesosPerUsuari(entitatId);
+	public List<ArxiuDto> findPermesosPerUsuariIMetaExpedient(Long entitatId, Long metaExpedientId)
+			throws NotFoundException {
+		return delegate.findPermesosPerUsuariIMetaExpedient(entitatId, metaExpedientId);
 	}
 
 	@Override
@@ -136,5 +136,4 @@ public class ArxiuServiceBean implements ArxiuService {
 	public List<MetaExpedientDto> getMetaExpedientsArxiu(Long entitatId, Long arxiuId) {
 		return delegate.getMetaExpedientsArxiu(entitatId, arxiuId);
 	}
-
 }

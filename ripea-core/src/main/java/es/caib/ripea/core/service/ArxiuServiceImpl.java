@@ -317,56 +317,29 @@ public class ArxiuServiceImpl implements ArxiuService {
 		}
 		return resposta;
 	}
-
+	
 	@Override
 	@Transactional
-	public List<ArxiuDto> findPermesosPerUsuari(
-			Long entitatId) throws NotFoundException {
+	public List<ArxiuDto> findPermesosPerUsuariIMetaExpedient(
+			Long entitatId,
+			Long metaExpedientId) throws NotFoundException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Cercan arxius permesos per a l'usuari ("
+		logger.debug("Cercan arxius permesos per a l'usuari i el meta-expedient ("
 				+ "entitatId=" + entitatId + ", "
+				+ "metaExpedientId=" + entitatId + ", "
 				+ "usuariCodi=" + auth.getName() + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		List<ArxiuEntity> arxius = arxiuRepository.findByEntitatAndPareNotNull(
-				entitat);
-		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
-		// Filtra els arxius segons els permisos dels meta-expedients associats
-		List<MetaExpedientEntity> metaExpedients;
-		for(ArxiuEntity arxiu : arxius) {
-			metaExpedients = arxiu.getMetaExpedients();
-			// Filtra la llista d'arxius segons els permisos
-			permisosHelper.filterGrantedAll(
-					metaExpedients,
-					new ObjectIdentifierExtractor<ArxiuEntity>() {
-						@Override
-						public Long getObjectIdentifier(ArxiuEntity arxiu) {
-							return arxiu.getId();
-						}
-					},
-					MetaNodeEntity.class,
-					new Permission[] {ExtendedPermission.READ},
-					auth);
-			// Converteix a DTO
-			if(!metaExpedients.isEmpty())
-				resposta.add(toArxiuDto(arxiu));
-		}
-		// Ompl les unitats
-		List<UnitatOrganitzativaDto> unitats = cacheHelper.findUnitatsOrganitzativesPerEntitat(
-				entitat.getCodi()).toDadesList();
-		for (ArxiuDto arxiu: resposta) {
-			for (UnitatOrganitzativaDto unitat: unitats) {
-				if (unitat.getCodi().equals(arxiu.getUnitatCodi())) {
-					arxiu.setUnitat(unitat);
-					break;
-				}
-			}
-		}
-		return resposta;
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat, 
+				metaExpedientId);
+		
+		return toArxiuDto(metaExpedient.getArxius());		
 	}
+
 
 	@Transactional(readOnly = true)
 	@Override
