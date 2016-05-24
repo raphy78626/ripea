@@ -3,6 +3,9 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -10,18 +13,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
+import es.caib.ripea.core.api.dto.RegistreMovimentDto;
+import es.caib.ripea.core.api.dto.UsuariDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.core.entity.BustiaEntity;
+import es.caib.ripea.core.entity.ContenidorEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.entity.RegistreMovimentEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
-import es.caib.ripea.core.helper.CacheHelper;
-import es.caib.ripea.core.helper.EmailHelper;
+import es.caib.ripea.core.helper.ContenidorHelper;
+import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
-import es.caib.ripea.core.helper.PermisosHelper;
-import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.RegistreMovimentRepository;
@@ -46,46 +52,93 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreMovimentRepository registreMovimentRepository;
 
 	@Resource
-	private PermisosHelper permisosHelper;
+	private ContenidorHelper contenidorHelper;
 	@Resource
-	private EmailHelper emailHelper;
-	@Resource
-	private CacheHelper cacheHelper;
-	@Resource
-	private BustiaHelper bustiaHelper;
+	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
-	private UsuariHelper usuariHelper;
+	private BustiaHelper bustiaHelper;
 
 
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
-	public void afegirAExpedient(
+	public RegistreAnotacioDto findOne(
 			Long entitatId,
-			Long expedientId,
-			Long registreId) {
-		logger.debug("Afegir anotació de registre a l'expedient ("
+			Long contenidorId,
+			Long registreId) throws NotFoundException {
+		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
-				+ "expedientId=" + expedientId + ", "
+				+ "contenidorId=" + contenidorId + ", "
 				+ "registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
+		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
 				entitat,
-				null,
-				expedientId);
+				contenidorId,
+				null);
+		if (contenidor instanceof BustiaEntity) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					contenidorId,
+					true);
+		} else {
+			// Comprova l'accés al path del contenidor pare
+			contenidorHelper.comprovarPermisosPathContenidor(
+					contenidor,
+					true,
+					false,
+					false,
+					true);
+		}
+		return conversioTipusHelper.convertir(
+				registreRepository.findByContenidorAndId(
+						contenidor,
+						registreId),
+				RegistreAnotacioDto.class);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<RegistreMovimentDto> findMoviments(
+			Long entitatId,
+			Long registreId) {
+		logger.debug("Obtenint moviments d'una anotació de registre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "registreId=" + registreId + ")");
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
 		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(
 				registreId,
 				null);
-		bustiaHelper.evictElementsPendentsBustiaPerRegistre(
-				entitat,
+		List<RegistreMovimentEntity> moviments = registreMovimentRepository.findByRegistreOrderByDataAsc(
 				registre);
-		registre.updateContenidor(expedient);
+		List<RegistreMovimentDto> dtos = new ArrayList<RegistreMovimentDto>();
+		for (RegistreMovimentEntity moviment: moviments) {
+			RegistreMovimentDto dto = new RegistreMovimentDto();
+			dto.setId(moviment.getId());
+			dto.setData(moviment.getData());
+			dto.setComentari(moviment.getComentari());
+			dto.setRemitent(
+					conversioTipusHelper.convertir(
+							moviment.getRemitent(),
+							UsuariDto.class));
+			dto.setOrigen(
+					contenidorHelper.toContenidorDto(
+							moviment.getOrigen()));
+			dto.setDesti(
+					contenidorHelper.toContenidorDto(
+							moviment.getDesti()));
+			dtos.add(dto);
+		}
+		return dtos;
 	}
 
 	@Transactional
@@ -126,25 +179,6 @@ public class RegistreServiceImpl implements RegistreService {
 				entitat,
 				bustia);
 	}
-
-
-
-	/*private BustiaEntity comprovarBustiaByUnitatCodiAndPerDefecteTrue(
-			EntitatEntity entitat,
-			String unitatCodi) {
-		BustiaEntity bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
-				entitat,
-				unitatCodi);
-		if (bustia == null) {
-			logger.error("No s'ha trobat la bústia per defecte (" +
-					"entitatId=" + entitat.getId() + ", " + 
-					"unitatCodi=" + unitatCodi + ")");
-			throw new NotFoundException(
-					"(entitatId=" + entitat.getId() + ", unitatCodi=" + unitatCodi + ")",
-					BustiaEntity.class);
-		}
-		return bustia;
-	}*/
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 

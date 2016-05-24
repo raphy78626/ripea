@@ -37,7 +37,6 @@ import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ContenidorService;
-import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContenidorEntity;
 import es.caib.ripea.core.entity.ContenidorMovimentEntity;
@@ -51,7 +50,6 @@ import es.caib.ripea.core.entity.MetaDadaEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
-import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
@@ -72,6 +70,7 @@ import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
 import es.caib.ripea.core.repository.MetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
+import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
@@ -102,6 +101,8 @@ public class ContenidorServiceImpl implements ContenidorService {
 	private DocumentVersioRepository documentVersioRepository;
 	@Resource
 	private BustiaRepository bustiaRepository;
+	@Resource
+	private RegistreRepository registreRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -119,8 +120,6 @@ public class ContenidorServiceImpl implements ContenidorService {
 	private ContenidorLogHelper contenidorLogHelper;
 	@Resource
 	private EmailHelper emailHelper;
-	@Resource
-	private BustiaHelper bustiaHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
 	@Resource
@@ -894,157 +893,6 @@ public class ContenidorServiceImpl implements ContenidorService {
 				null,
 				true,
 				true);
-		return contenidorHelper.toContenidorDto(
-				contenidorOrigen,
-				true,
-				false,
-				false,
-				false,
-				false,
-				false);
-	}
-
-	@Transactional
-	@Override
-	public ContenidorDto send(
-			Long entitatId,
-			Long contenidorId,
-			Long bustiaId,
-			String comentari) {
-		logger.debug("Enviant contenidor a bústia ("
-				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ", "
-				+ "bustiaId=" + bustiaId + ","
-				+ "comentari=" + comentari + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
-				entitat,
-				contenidorId,
-				null);
-		// Comprova que el contenidorOrigen arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
-				entitat,
-				contenidor);
-		// Comprova que aquest contenidor no pertanyi a cap expedient
-		ExpedientEntity expedientActual = contenidorHelper.getExpedientSuperior(
-				contenidor,
-				true);
-		if (expedientActual != null) {
-			logger.error("No es pot enviar un node que pertany a un expedient");
-			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"No es pot enviar un node que pertany a un expedient");
-		}
-		// Comprova l'accés al path del contenidorOrigen
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
-				true,
-				false,
-				false,
-				true);
-		// Comprova la bústia
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
-		// Fa l'enviament
-		ContenidorMovimentEntity contenidorMoviment = contenidorHelper.ferIEnregistrarMovimentContenidor(
-				contenidor,
-				bustia,
-				comentari);
-		// Registra al log l'enviament del contenidor
-		contenidorLogHelper.log(
-				contenidor,
-				LogTipusEnumDto.ENVIAMENT,
-				null,
-				contenidorMoviment,
-				true,
-				true);
-		// Avisam per correu als responsables de la bústia de destí
-		emailHelper.emailBustiaPendentContenidor(
-				bustia,
-				contenidor,
-				contenidorMoviment);
-		// Refrescam cache usuaris bústia de destí
-		bustiaHelper.evictElementsPendentsBustia(
-				entitat,
-				bustia);
-		return contenidorHelper.toContenidorDto(
-				contenidor,
-				true,
-				false,
-				false,
-				false,
-				false,
-				false);
-	}
-
-	@Override
-	@Transactional
-	public ContenidorDto receive(
-			Long entitatId,
-			Long bustiaId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId) {
-		logger.debug("Processant contenidor pendent ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
-				+ "contenidorOrigenId=" + contenidorOrigenId + ", "
-				+ "contenidorDestiId=" + contenidorDestiId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		// Comprova la bústia
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
-		// Comprova el contenidor origen
-		ContenidorEntity contenidorOrigen = entityComprovarHelper.comprovarContenidor(
-				entitat,
-				contenidorOrigenId,
-				null);
-		if (!bustia.equals(contenidorOrigen.getPare())) {
-			logger.error("El contenidor no és fill de la bústia especificada ("
-					+ "bustiaId=" + bustiaId + ", "
-					+ "contenidorOrigenId=" + contenidorOrigenId + ")");
-			throw new ValidationException(
-					contenidorOrigenId,
-					ContenidorEntity.class,
-					"El contenidor no és fill de la bústia especificada (bustiaId=" + bustiaId + ")");
-		}
-		// Comprova el contenidor destí
-		ContenidorEntity contenidorDesti = entityComprovarHelper.comprovarContenidor(
-				entitat,
-				contenidorDestiId,
-				null);
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
-				entitat,
-				contenidorDesti);
-		// Reb el contingut pendent movent-lo a l'escriptori de l'usuari actual
-		ContenidorMovimentEntity contenidorMoviment = contenidorHelper.ferIEnregistrarMovimentContenidor(
-				contenidorOrigen,
-				contenidorDesti,
-				null);
-		// Registra al log el processament del contenidor
-		contenidorLogHelper.log(
-				contenidorOrigen,
-				LogTipusEnumDto.PROCESSAMENT,
-				null,
-				contenidorMoviment,
-				true,
-				true);
-		// Refrescam cache usuaris bústia
-		bustiaHelper.evictElementsPendentsBustia(
-				entitat,
-				bustia);
 		return contenidorHelper.toContenidorDto(
 				contenidorOrigen,
 				true,

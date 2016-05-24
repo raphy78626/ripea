@@ -93,7 +93,6 @@ public interface AplicacioService {
 	 * @param exception
 	 *             L'excepció a emmagatzemar.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public void excepcioSave(Throwable exception);
 
 	/**

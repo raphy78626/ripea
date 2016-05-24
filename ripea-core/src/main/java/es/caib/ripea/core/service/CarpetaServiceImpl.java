@@ -36,8 +36,6 @@ import es.caib.ripea.core.repository.EntitatRepository;
 @Service
 public class CarpetaServiceImpl implements CarpetaService {
 
-	public static final String CARPETA_NOUVINGUTS_NOM = ".nouvinguts";
-
 	@Resource
 	private EntitatRepository entitatRepository;
 	@Resource
@@ -75,9 +73,6 @@ public class CarpetaServiceImpl implements CarpetaService {
 				true,
 				false,
 				false);
-		if (CarpetaTipusEnumDto.NOUVINGUT.equals(tipus)) {
-			throw new ValidationException("No es pot crear una carpeta de nouvinguts");
-		}
 		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
 				entitat,
 				contenidorId,
@@ -148,13 +143,6 @@ public class CarpetaServiceImpl implements CarpetaService {
 		CarpetaEntity carpeta = entityComprovarHelper.comprovarCarpeta(
 				entitat,
 				id);
-		if (CarpetaTipusEnumDto.NOUVINGUT.equals(carpeta.getTipus())) {
-			logger.error("No es pot modificar la carpeta de nouvinguts (id=" + id + ")");
-			throw new ValidationException(
-					id,
-					CarpetaEntity.class,
-					"No es pot modificar la carpeta de nouvinguts");
-		}
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
 				entitat,
@@ -214,13 +202,6 @@ public class CarpetaServiceImpl implements CarpetaService {
 		CarpetaEntity carpeta = entityComprovarHelper.comprovarCarpeta(
 				entitat,
 				id);
-		if (CarpetaTipusEnumDto.NOUVINGUT.equals(carpeta.getTipus())) {
-			logger.error("No es pot esborrar la carpeta de nouvinguts (id=" + id + ")");
-			throw new ValidationException(
-					id,
-					CarpetaEntity.class,
-					"No es pot esborrar la carpeta de nouvinguts");
-		}
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
 				entitat,

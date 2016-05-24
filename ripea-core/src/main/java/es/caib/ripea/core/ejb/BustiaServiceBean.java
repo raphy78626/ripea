@@ -13,11 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
+import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
+import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
+import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.BustiaService;
 
 /**
@@ -116,44 +120,103 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<ContenidorDto> findContingutPendent(
+	public ContenidorDto enviarContenidor(
 			Long entitatId,
-			Long id) {
-		return delegate.findContingutPendent(entitatId, id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public List<RegistreAnotacio> findRegistrePendent(
-			Long entitatId,
-			Long id) {
-		return delegate.findRegistrePendent(entitatId, id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public RegistreAnotacio findOneRegistrePendent(
-			Long entitatId,
-			Long id,
-			Long registreId) {
-		return delegate.findOneRegistrePendent(
+			Long bustiaId,
+			Long contenidorId,
+			String comentari) {
+		return delegate.enviarContenidor(
 				entitatId,
-				id,
-				registreId);
+				bustiaId,
+				contenidorId,
+				comentari);
+	}
+
+	@Override
+	@RolesAllowed("IPA_BSTWS")
+	public void registreAnotacioCrear(
+			String entitatCodi,
+			RegistreTipusEnum tipus,
+			String unitatAdministrativa,
+			RegistreAnotacio anotacio) {
+		delegate.registreAnotacioCrear(
+				entitatCodi,
+				tipus,
+				unitatAdministrativa,
+				anotacio);
+	}
+
+	@Override
+	@RolesAllowed("IPA_BSTWS")
+	public void registreAnotacioCrear(
+			String entitatCodi,
+			String referencia) {
+		delegate.registreAnotacioCrear(
+				entitatCodi,
+				referencia);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public long countElementsPendentsBustiesAll(
-			Long entitatId) {
-		return delegate.countElementsPendentsBustiesAll(entitatId);
+	public List<BustiaContingutPendentDto> contingutPendentFindByBustiaId(
+			Long entitatId,
+			Long bustiaId) {
+		return delegate.contingutPendentFindByBustiaId(
+				entitatId,
+				bustiaId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public void refreshCountElementsPendentsBustiesAll(
+	public BustiaContingutPendentDto contingutPendentFindOne(
+			Long entitatId,
+			Long bustiaId,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId) {
+		return delegate.contingutPendentFindOne(
+				entitatId,
+				bustiaId,
+				contingutTipus,
+				contingutId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public long contingutPendentBustiesAllCount(
 			Long entitatId) {
-		delegate.refreshCountElementsPendentsBustiesAll(entitatId);
+		return delegate.contingutPendentBustiesAllCount(entitatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void contingutPendentReenviar(
+			Long entitatId,
+			Long bustiaOrigenId,
+			Long bustiaDestiId,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId,
+			String comentari) throws NotFoundException {
+		delegate.contingutPendentReenviar(
+				entitatId,
+				bustiaOrigenId,
+				bustiaDestiId,
+				contingutTipus,
+				contingutId,
+				comentari);
+	}
+
+	@Override
+	@RolesAllowed({"IPA_ADMIN", "tothom"})
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
+			Long entitatId,
+			boolean nomesBusties,
+			boolean nomesBustiesPermeses,
+			boolean comptarElementsPendents) {
+		return delegate.findArbreUnitatsOrganitzatives(
+				entitatId,
+				nomesBusties,
+				nomesBustiesPermeses,
+				comptarElementsPendents);
 	}
 
 	@Override
@@ -172,50 +235,6 @@ public class BustiaServiceBean implements BustiaService {
 			Long id,
 			Long permisId) {
 		delegate.deletePermis(entitatId, id, permisId);
-	}
-
-	@Override
-	@RolesAllowed({"IPA_ADMIN", "tothom"})
-	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
-			Long entitatId,
-			boolean nomesBustiesPermeses,
-			boolean comptarElementsPendents) {
-		return delegate.findArbreUnitatsOrganitzatives(
-				entitatId,
-				nomesBustiesPermeses,
-				comptarElementsPendents);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public void forwardContenidor(
-			Long entitatId,
-			Long id,
-			Long contenidorId,
-			Long bustiaDestiId,
-			String comentari) {
-		delegate.forwardContenidor(
-				entitatId,
-				id,
-				contenidorId,
-				bustiaDestiId,
-				comentari);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public void forwardRegistre(
-			Long entitatId,
-			Long id,
-			Long registreId,
-			Long bustiaDestiId,
-			String comentari) {
-		delegate.forwardRegistre(
-				entitatId,
-				id,
-				registreId,
-				bustiaDestiId,
-				comentari);
 	}
 
 }

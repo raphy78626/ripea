@@ -98,9 +98,9 @@ public class CacheHelper {
 
 
 
-	@Cacheable("entitatsUsuari")
-	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuari) {
-		logger.debug("Consulta entitats accessibles (usuari=" + usuari + ")");
+	@Cacheable(value = "entitatsUsuari", key="#usuariCodi")
+	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuariCodi) {
+		logger.debug("Consulta entitats accessibles (usuariCodi=" + usuariCodi + ")");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<EntitatEntity> entitats = entitatRepository.findByActiva(true);
 		permisosHelper.filterGrantedAny(
@@ -123,8 +123,8 @@ public class CacheHelper {
 				false);
 		return resposta;
 	}
-	@CacheEvict(value = "entitatsUsuari")
-	public void evictEntitatsAccessiblesUsuari(String usuari) {
+	@CacheEvict(value = "entitatsUsuari", key="#usuariCodi")
+	public void evictEntitatsAccessiblesUsuari(String usuariCodi) {
 	}
 
 	@Cacheable(value = "errorsValidacioNode", key = "#node.id")
@@ -225,26 +225,26 @@ public class CacheHelper {
 			NodeEntity node) {
 	}
 
-	@Cacheable(value = "usuariAmbCodi")
+	@Cacheable(value = "usuariAmbCodi", key="#usuariCodi")
 	public DadesUsuari findUsuariAmbCodi(
 			String usuariCodi) {
 		return pluginHelper.dadesUsuariConsultarAmbCodi(
 				usuariCodi);
 	}
 
-	@Cacheable(value = "unitatsOrganitzatives")
+	@Cacheable(value = "unitatsOrganitzatives", key="#entitatCodi")
 	public ArbreDto<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitat(
 			String entitatCodi) {
 		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
 		return pluginHelper.unitatsOrganitzativesFindArbreByPare(
 				entitat.getUnitatArrel());
 	}
-	@CacheEvict(value = "unitatsOrganitzatives")
+	@CacheEvict(value = "unitatsOrganitzatives", key="#entitatCodi")
 	public void evictUnitatsOrganitzativesPerEntitat(
 			String entitatCodi) {
 	}
 
-	@Cacheable(value = "elementsPendentsBustiesUsuari")
+	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
 	public long countElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
 			String usuariCodi) {
@@ -284,7 +284,7 @@ public class CacheHelper {
 				usuariCodi);
 		return count;
 	}
-	@CacheEvict(value = "elementsPendentsBustiesUsuari")
+	@CacheEvict(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
 	public void evictElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
 			String usuariCodi) {

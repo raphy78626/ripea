@@ -25,7 +25,7 @@ public class ElementsPendentsBustiaHelper {
 			BustiaService bustiaService) {
 		if (!RequestHelper.isError(request) && bustiaService != null && RolHelper.isUsuariActualUsuari(request)) {
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);
-			long count = bustiaService.countElementsPendentsBustiesAll(
+			long count = bustiaService.contingutPendentBustiesAllCount(
 					entitat.getId());
 			request.setAttribute(REQUEST_PARAMETER_COUNT, new Long(count));
 		}

@@ -10,11 +10,6 @@ java.util.List<es.caib.ripea.war.helper.HtmlSelectOptionHelper.HtmlOption> optio
 		es.caib.ripea.core.api.dto.CarpetaTipusEnumDto.class,
 		"carpeta.tipus.enum.");
 java.util.Iterator<es.caib.ripea.war.helper.HtmlSelectOptionHelper.HtmlOption> it = options.iterator();
-while (it.hasNext()) {
-	es.caib.ripea.war.helper.HtmlSelectOptionHelper.HtmlOption option = it.next();
-	if (option.getValue().equals("NOUVINGUT"))
-		it.remove();
-}
 pageContext.setAttribute(
 		"carpetaTipusEnumOptions",
 		options);

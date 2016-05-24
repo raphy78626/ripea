@@ -56,6 +56,7 @@ public class BustiaAdminController extends BaseAdminController {
 				bustiaService.findArbreUnitatsOrganitzatives(
 						entitatActual.getId(),
 						false,
+						false,
 						false));
 		model.addAttribute("unitatCodi", unitatCodi);
 		return "bustiaAdminList";

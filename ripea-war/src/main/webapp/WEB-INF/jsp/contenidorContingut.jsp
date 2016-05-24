@@ -9,15 +9,10 @@ pageContext.setAttribute(
 		"edicioOnlineActiva",
 		new Boolean(false));
 pageContext.setAttribute(
-		"registreAccioEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.dto.RegistreAccioEnumDto.class,
-				"registre.anotacio.accio.enum."));
-/*pageContext.setAttribute(
 		"registreTipusEnumOptions",
 		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.dto.RegistreTipusEnumDto.class,
-				"registre.anotacio.tipus.enum."));*/
+				es.caib.ripea.core.api.registre.RegistreTipusEnum.class,
+				"registre.anotacio.tipus.enum."));
 %>
 <c:set var="potModificarContingut" value="${false}"/>
 <c:if test="${contenidor.node}"><c:set var="potModificarContingut" value="${empty contenidor.metaNode or contenidor.metaNode.usuariActualWrite}"/></c:if>
@@ -177,10 +172,6 @@ $(document).ready(function() {
 </script>
 </c:if>
 <script>
-var registreAccioText = new Array();
-<c:forEach var="option" items="${registreAccioEnumOptions}">
-registreAccioText["${option.value}"] = "<spring:message code="${option.text}"/>";
-</c:forEach>
 var registreTipusText = new Array();
 <c:forEach var="option" items="${registreTipusEnumOptions}">
 registreTipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
@@ -437,9 +428,6 @@ $(document).ready(function() {
 					<li>
 						<a href="#registres" data-toggle="tab"><spring:message code="contenidor.contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contenidor.registresCount}</span></a>
 					</li>
-					<li>
-						<a href="#nouvinguts" data-toggle="tab"><spring:message code="contenidor.contingut.tab.nouvinguts"/>&nbsp;<span class="badge" id="nouvinguts-count">${fn:length(nouvinguts)}</span></a>
-					</li>
 				</c:if>
 			</ul>
 			<%--           --%>
@@ -658,15 +646,6 @@ $(document).ready(function() {
 					</div>
 				</c:if>
 				<c:if test="${contenidor.expedient}">
-					<div class="tab-pane" id="nouvinguts">
-						<%--                    --%>
-						<%-- Pipella nouvinguts --%>
-						<%--                    --%>
-						
-						<%--                     --%>
-						<%-- /Pipella nouvinguts --%>
-						<%--                     --%>
-					</div>
 					<div class="tab-pane" id="registres">
 						<%--                   --%>
 						<%-- Pipella registres --%>
@@ -675,27 +654,21 @@ $(document).ready(function() {
 							<thead>
 								<tr>
 									<th data-rdt-property="id" data-rdt-visible="false">#</th>
-									<th data-rdt-property="accio" data-rdt-template="cellAccioTemplate" data-rdt-sortable="false" width="10%">
-										<spring:message code="bustia.pendent.registre.columna.accio"/>
-										<script id="cellAccioTemplate" type="text/x-jsrender">
-											{{:~eval('registreAccioText["' + accio + '"]')}}
-										</script>
-									</th>
 									<th data-rdt-property="tipus" data-rdt-template="cellTipusTemplate" data-rdt-sortable="false" width="10%">
-										<spring:message code="bustia.pendent.registre.columna.tipus"/>
+										<spring:message code="contenidor.contingut.registre.columna.tipus"/>
 										<script id="cellTipusTemplate" type="text/x-jsrender">
 											{{:~eval('registreTipusText["' + tipus + '"]')}}
 										</script>
 									</th>
-									<th data-rdt-property="numero" data-rdt-sortable="false" width="10%"><spring:message code="bustia.pendent.registre.columna.numero"/></th>
-									<th data-rdt-property="data" data-rdt-type="datetime" data-rdt-sortable="false" width="20%"><spring:message code="bustia.pendent.registre.columna.data"/></th>
-									<th data-rdt-property="assumpteResum" data-rdt-sortable="false" width="40%"><spring:message code="bustia.pendent.registre.columna.assumpte"/></th>
+									<th data-rdt-property="identificador" data-rdt-sortable="false" width="10%"><spring:message code="contenidor.contingut.registre.columna.identificador"/></th>
+									<th data-rdt-property="data" data-rdt-type="datetime" data-rdt-sortable="false" width="20%"><spring:message code="contenidor.contingut.registre.columna.data"/></th>
+									<th data-rdt-property="extracte" data-rdt-sortable="false" width="40%"><spring:message code="contenidor.contingut.registre.columna.extracte"/></th>
 									<th data-rdt-property="id" data-rdt-sortable="false" data-rdt-template="cellAccionsRegistreTemplate" width="10%">
 										<script id="cellAccionsRegistreTemplate" type="text/x-jsrender">
 											<div class="dropdown">
 												<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 												<ul class="dropdown-menu">
-													<li><a href="../contenidor/${contenidor.id}/registre/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
+													<li><a href="../contenidor/${contenidor.id}/registre/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
 													<li><a href="../contenidor/${contenidor.id}/registre/{{:id}}/log" data-rdt-link-modal="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 												</ul>
 											</div>

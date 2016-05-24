@@ -252,6 +252,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public ContenidorEntity getContenidor() {
 		return contenidor;
 	}
+
 	public void updateContenidor(ContenidorEntity contenidor) {
 		this.contenidor = contenidor;
 	}

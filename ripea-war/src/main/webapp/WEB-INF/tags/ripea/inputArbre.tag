@@ -21,7 +21,7 @@
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
 	<label class="control-label col-xs-4" for="${campPath}">${campLabelText}</label>
 	<div class="col-xs-8">
-		<div class="input-group">
+		<div class="input-group" style="width:100%">
 			<spring:bind path="${campPath}">
 				<input type="hidden" id="${campPath}" name="${campPath}"/>
 				<rip:arbre id="arbreUnitats_${campPath}" seleccionatId="${status.value}" arbre="${arbre}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback_${campPath}" fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" isArbreSeleccionable="${isArbreSeleccionable}" isFullesSeleccionable="${isFullesSeleccionable}" isOcultarCounts="${isOcultarCounts}" isError="${not empty campErrors}"/>

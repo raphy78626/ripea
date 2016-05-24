@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
@@ -32,8 +31,6 @@ import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
 
 /**
  * Controlador per a gentionar el contingut pendent a les bústies.
@@ -57,20 +54,7 @@ public class BustiaUserContingutController extends BaseUserController {
 
 
 
-	@RequestMapping(value = "/{bustiaId}/pendent/contingut/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesPagina<ContenidorDto> pendentContingutDatatable(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return PaginacioHelper.getPaginaPerDatatables(
-				request,
-				bustiaService.findContingutPendent(
-						entitatActual.getId(),
-						bustiaId));
-	}
-
-	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contenidorId}/agafar", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contenidorId}/agafar", method = RequestMethod.GET)
 	public String pendentAfegirEscriptori(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
@@ -87,7 +71,7 @@ public class BustiaUserContingutController extends BaseUserController {
 				request,
 				"redirect:../../pendent",
 				"bustia.controller.pendent.contingut.agafat");
-	}
+	}*/
 
 	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contingutId}/nouexp", method = RequestMethod.GET)
 	public String registrePendentNouexpGet(
@@ -100,7 +84,6 @@ public class BustiaUserContingutController extends BaseUserController {
 		ExpedientCommand command = new ExpedientCommand();
 		command.setEntitatId(entitatActual.getId());
 		command.setPareId(escriptori.getId());
-		command.setContingutId(contingutId);
 		model.addAttribute(command);
 		omplirModelPerNouExpedient(
 				entitatActual,
@@ -132,8 +115,8 @@ public class BustiaUserContingutController extends BaseUserController {
 				command.getArxiuId(),
 				null,
 				command.getNom(),
-				command.getContingutId(),
-				command.getRegistreId());
+				null,
+				null);
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
@@ -169,11 +152,11 @@ public class BustiaUserContingutController extends BaseUserController {
 					contingutId);
 			return "bustiaPendentContingutAddexp";
 		}
-		contenidorService.receive(
+		/*contenidorService.receive(
 				entitatActual.getId(),
 				bustiaId,
 				command.getContenidorOrigenId(),
-				command.getContenidorDestiId());
+				command.getContenidorDestiId());*/
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
@@ -212,11 +195,11 @@ public class BustiaUserContingutController extends BaseUserController {
 					model);
 			return "bustiaPendentContingutReenviar";
 		}
-		contenidorService.send(
+		/*contenidorService.send(
 				entitatActual.getId(),
 				contingutId,
 				command.getContenidorDestiId(),
-				command.getComentariEnviar());
+				command.getComentariEnviar());*/
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
@@ -277,6 +260,7 @@ public class BustiaUserContingutController extends BaseUserController {
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(
 						entitatActual.getId(),
+						true,
 						false,
 						true));
 	}

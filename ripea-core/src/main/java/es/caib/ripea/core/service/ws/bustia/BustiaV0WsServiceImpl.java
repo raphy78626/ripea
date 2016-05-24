@@ -10,31 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.registre.RegistreAnnex;
-import es.caib.ripea.core.api.registre.RegistreAnnexElaboracioEstatEnum;
-import es.caib.ripea.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
-import es.caib.ripea.core.api.registre.RegistreAnnexOrigenEnum;
-import es.caib.ripea.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
-import es.caib.ripea.core.api.registre.RegistreAnotacio;
-import es.caib.ripea.core.api.registre.RegistreInteressat;
-import es.caib.ripea.core.api.registre.RegistreInteressatCanalEnum;
-import es.caib.ripea.core.api.registre.RegistreInteressatDocumentTipusEnum;
-import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
-import es.caib.ripea.core.api.registre.RegistreTipusEnum;
+import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ws.BustiaV0WsService;
-import es.caib.ripea.core.entity.BustiaEntity;
-import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.RegistreAnnexEntity;
-import es.caib.ripea.core.entity.RegistreEntity;
-import es.caib.ripea.core.entity.RegistreInteressatEntity;
-import es.caib.ripea.core.helper.PluginHelper;
-import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
-import es.caib.ripea.core.repository.BustiaRepository;
-import es.caib.ripea.core.repository.EntitatRepository;
-import es.caib.ripea.core.repository.RegistreRepository;
-import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 
 /**
  * Implementació dels mètodes per al servei de bústia de RIPEA.
@@ -51,6 +29,9 @@ import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 
 	@Resource
+	private BustiaService bustiaService;
+
+	/*@Resource
 	private EntitatRepository entitatRepository;
 	@Resource
 	private RegistreRepository registreRepository;
@@ -60,7 +41,9 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 	@Resource
 	private PluginHelper pluginHelper;
 	@Resource
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	private CacheHelper cacheHelper;
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;*/
 
 
 
@@ -82,7 +65,10 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 			throw new ValidationException(
 					"Els enviaments de tipus DOCUMENT encara no estan suportats");
 		} else if (BustiaContingutTipus.REGISTRE_ENTRADA.equals(tipus)) {
-			EntitatEntity entitatEntity = entitatRepository.findByCodi(entitat);
+			bustiaService.registreAnotacioCrear(
+					entitat,
+					referencia);
+			/*EntitatEntity entitatEntity = entitatRepository.findByCodi(entitat);
 			if (entitatEntity == null) {
 				throw new ValidationException(
 						"No existeix cap entitat amb el codi especificat (" +
@@ -127,13 +113,13 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 					resposta,
 					findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
 							entitatEntity,
-							unitat));
+							unitat));*/
 		}
 	}
 
 
 
-	private BustiaEntity findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
+	/*private BustiaEntity findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
 			EntitatEntity entitat,
 			UnitatOrganitzativaDto unitat) {
 		String unitatOrganitzativaCodi = unitat.getCodi();
@@ -224,6 +210,9 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 			}
 		}
 		RegistreEntity saved = registreRepository.save(entity);
+		cacheHelper.evictElementsPendentsBustia(
+				bustia.getEntitat(),
+				bustia);
 		return saved;
 	}
 
@@ -309,7 +298,7 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 				observacions(registreAnnex.getObservacions()).
 				build();
 		return annexEntity;
-	}
+	}*/
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaV0WsServiceImpl.class);
 

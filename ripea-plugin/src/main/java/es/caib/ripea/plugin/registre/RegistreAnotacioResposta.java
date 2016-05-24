@@ -4,6 +4,7 @@
 package es.caib.ripea.plugin.registre;
 
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
+import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 
 
 /**
@@ -12,11 +13,6 @@ import es.caib.ripea.core.api.registre.RegistreAnotacio;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class RegistreAnotacioResposta {
-
-	public enum RegistreTipusEnum {
-		ENTRADA,
-		SORTIDA
-	}
 
 	private RegistreTipusEnum tipus;
 	private String unitatAdministrativa;

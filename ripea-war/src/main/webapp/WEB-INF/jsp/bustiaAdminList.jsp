@@ -34,10 +34,10 @@ function changedCallback(e, data) {
 </head>
 <body>
 	<div class="row">
-		<div class="col-md-6">
+		<div class="col-md-5">
 			<rip:arbre id="arbreUnitats" arbre="${arbreUnitatsOrganitzatives}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback" seleccionatId="${unitatCodi}"/>
 		</div>
-		<div id="taulaLlistat" class="col-md-6"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
+		<div id="taulaLlistat" class="col-md-7"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
 			<table id="busties" data-toggle="datatable" data-url="<c:url value="/bustiaAdmin/unitat/${unitatCodiPerUrl}/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-striped table-bordered" style="width:100%">
 				<thead>
 					<tr>
