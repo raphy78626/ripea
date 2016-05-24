@@ -4,11 +4,8 @@
 package es.caib.ripea.core.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
-import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
@@ -57,7 +53,6 @@ import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
-import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
@@ -66,11 +61,9 @@ import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
-import es.caib.ripea.core.repository.ContenidorRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.RegistreMovimentRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
-import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
 import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 
@@ -87,16 +80,10 @@ public class BustiaServiceImpl implements BustiaService {
 	@Resource
 	private EntitatRepository entitatRepository;
 	@Resource
-	private ContenidorRepository contenidorRepository;
-	@Resource
 	private RegistreRepository registreRepository;
-	@Resource
-	private UsuariRepository usuariRepository;
 	@Resource
 	private RegistreMovimentRepository registreMovimentRepository;
 
-	@Resource
-	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
@@ -551,7 +538,7 @@ public class BustiaServiceImpl implements BustiaService {
 					unitatAdministrativa,
 					UnitatOrganitzativaDto.class);
 		}
-		BustiaEntity bustia = findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
+		BustiaEntity bustia = bustiaHelper.findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
 				entitat,
 				unitat);
 		RegistreEntity registreRepetit = registreRepository.findByTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaCodiAndLlibreCodi(
@@ -796,7 +783,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				true);
-		return findArbreUnitatsOrganitzatives(
+		return bustiaHelper.findArbreUnitatsOrganitzatives(
 				entitat,
 				nomesBusties,
 				nomesBustiesPermeses,
@@ -908,73 +895,6 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 	}
 
-	private ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
-			EntitatEntity entitat,
-			boolean nomesAmbBusties,
-			boolean nomesAmbBustiesPermeses,
-			boolean ambContadorElementsPendents) {
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
-		Set<String> bustiaUnitatCodis = null;
-		if (nomesAmbBusties) {
-			bustiaUnitatCodis = new HashSet<String>();
-			if (nomesAmbBustiesPermeses) {
-				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-				permisosHelper.filterGrantedAll(
-						busties,
-						new ObjectIdentifierExtractor<BustiaEntity>() {
-							@Override
-							public Long getObjectIdentifier(BustiaEntity bustia) {
-								return bustia.getId();
-							}
-						},
-						BustiaEntity.class,
-						new Permission[] {ExtendedPermission.READ},
-						auth);
-			}
-			for (BustiaEntity bustia: busties)
-				bustiaUnitatCodis.add(bustia.getUnitatCodi());
-		}
-		// Consulta l'arbre
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findUnitatsOrganitzativesPerEntitatAmbPermesos(
-				entitat.getCodi(),
-				bustiaUnitatCodis);
-		if (ambContadorElementsPendents && !busties.isEmpty()) {
-			// Consulta els contadors d'elements pendents per a totes les bústies
-			long[] countFills = contenidorHelper.countFillsAmbPermisReadByContenidors(
-					entitat,
-					busties,
-					nomesAmbBustiesPermeses);
-			long[] countRegistres = contenidorHelper.countRegistresByContenidors(
-					entitat,
-					busties);
-			// Calcula els acumulats de pendents per a cada unitat
-			Map<String, Long> acumulats = new HashMap<String, Long>();
-			for (int i = 0; i < busties.size(); i++) {
-				BustiaEntity bustia = busties.get(i);
-				Long acumulat = acumulats.get(bustia.getUnitatCodi());
-				if (acumulat == null) {
-					acumulats.put(
-							bustia.getUnitatCodi(),
-							countFills[i] + countRegistres[i]);
-				} else {
-					acumulats.put(
-							bustia.getUnitatCodi(),
-							acumulat + countFills[i] + countRegistres[i]);
-				}
-			}
-			// Recorr l'arbre actualitzant els contadors de pendents
-			for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
-				String unitatCodi = node.getDades().getCodi();
-				Long acumulat = acumulats.get(unitatCodi);
-				if (acumulat == null)
-					node.setCount(new Long(0));
-				else
-					node.setCount(acumulat);
-			}
-		}
-		return arbre;
-	}
-
 	private BustiaContingutPendentDto toContingutPendentDto(
 			ContenidorDto contenidor) {
 		BustiaContingutPendentDto pendent = new BustiaContingutPendentDto();
@@ -1002,40 +922,6 @@ public class BustiaServiceImpl implements BustiaService {
 		pendent.setRemitent("REGWEB");
 		pendent.setTipus(BustiaContingutPendentTipusEnumDto.REGISTRE_ENTRADA);
 		return pendent;
-	}
-
-	private BustiaEntity findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
-			EntitatEntity entitat,
-			UnitatOrganitzativaDto unitat) {
-		String unitatOrganitzativaCodi = unitat.getCodi();
-		BustiaEntity bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
-				entitat,
-				unitatOrganitzativaCodi);
-		// Si la bústia no existeix la crea
-		if (bustia == null) {
-			// Cerca la bústia superior
-			BustiaEntity bustiaPare = bustiaRepository.findByEntitatAndUnitatCodiAndPareNull(
-					entitat,
-					unitatOrganitzativaCodi);
-			// Si la bústia superior no existeix la crea
-			if (bustiaPare == null) {
-				bustiaPare = bustiaRepository.save(
-						BustiaEntity.getBuilder(
-								entitat,
-								unitat.getDenominacio(),
-								unitatOrganitzativaCodi,
-								null).build());
-			}
-			// Crea la nova bústia
-			BustiaEntity entity = BustiaEntity.getBuilder(
-					entitat,
-					unitat.getDenominacio() + " (default)",
-					unitatOrganitzativaCodi,
-					bustiaPare).build();
-			entity.updatePerDefecte(true);
-			bustia = bustiaRepository.save(entity);
-		}
-		return bustia;
 	}
 
 	private RegistreEntity toRegistreEntity(
