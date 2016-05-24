@@ -281,22 +281,21 @@ public class ArxiuServiceImpl implements ArxiuService {
 		List<ArxiuEntity> arxius = arxiuRepository.findByEntitatAndUnitatCodiAndPareNotNull(
 				entitat,
 				unitatCodi);
-		List<MetaExpedientEntity> metaExpedients;
+		boolean granted;
 		for(ArxiuEntity arxiu : arxius) {
-			metaExpedients = arxiu.getMetaExpedients();
-			// Filtra la llista de meta expedients segons els permisos
-			permisosHelper.filterGrantedAll(
-					metaExpedients,
-					new ObjectIdentifierExtractor<MetaExpedientEntity>() {
-						@Override
-						public Long getObjectIdentifier(MetaExpedientEntity metaExpedient) {
-							return metaExpedient.getId();
-						}
-					},
-					MetaNodeEntity.class,
-					new Permission[] {ExtendedPermission.READ},
-					auth);
-			if(!metaExpedients.isEmpty())
+			// Comprova l'accés als meta-expedients
+			granted = false;
+			for (MetaExpedientEntity metaExpedient: arxiu.getMetaExpedients()) {
+				if (permisosHelper.isGrantedAll(
+						metaExpedient.getId(),
+						MetaNodeEntity.class,
+						new Permission[] {ExtendedPermission.READ},
+						auth)) {
+					granted = true;
+					break;
+				}
+			}
+			if (granted) 
 				resposta.add(toArxiuDto(arxiu));
 		}
 		// Ompl els contadors d'expedients
@@ -403,20 +402,19 @@ public class ArxiuServiceImpl implements ArxiuService {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			// Afegeix les unitats dels arxius que estiguin relacionats amb algun meta-expedient amb permisos
 			for (ArxiuEntity arxiu: arxius) {
-				// Crea la llista dels metaExpedients dels arxius
-				List<MetaExpedientEntity> metaExpedients = arxiu.getMetaExpedients();
-				permisosHelper.filterGrantedAll(
-						metaExpedients,
-						new ObjectIdentifierExtractor<MetaExpedientEntity>() {
-							@Override
-							public Long getObjectIdentifier(MetaExpedientEntity metaExpedient) {
-								return metaExpedient.getId();
-							}
-						},
-						MetaNodeEntity.class,
-						new Permission[] {ExtendedPermission.READ},
-						auth);
-				if(!metaExpedients.isEmpty())
+				boolean granted = false;
+				// Comprova l'accés als meta-expedients
+				for (MetaExpedientEntity metaExpedient: arxiu.getMetaExpedients()) {
+					if (permisosHelper.isGrantedAll(
+							metaExpedient.getId(),
+							MetaNodeEntity.class,
+							new Permission[] {ExtendedPermission.READ},
+							auth)) {
+						granted = true;
+						break;
+					}
+				}
+				if (granted)
 					arxiuUnitatCodis.add(arxiu.getUnitatCodi());
 			}
 		}

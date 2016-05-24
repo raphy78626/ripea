@@ -47,14 +47,14 @@ $(document).ready(function() {
 				</th>			
 				<th data-rdt-property="id" data-rdt-template="cellAccionsTemplate" data-rdt-sortable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<a class="btn btn-default" href="../../arxiuAdmin/${arxiu.id}/metaExpedient/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="arxiu.metaexpedient.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a>
+						<a class="btn btn-default" href="../../arxiuAdmin/${arxiu.id}/metaExpedient/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="arxiu.metaexpedient.confirmacio.deslligar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.deslligar"/></a>
 					</script>
 				</th>
 			</tr>
 		</thead>
 	</table>
 	<script id="tableButtonsTemplate" type="text/x-jsrender">
-		<p style="text-align:right"><a class="btn btn-default" href="../../arxiuAdmin/${arxiu.id}/metaExpedient/new" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="arxiu.metaexpedient.boto.nou.metaexpedient"/></a></p>
+		<p style="text-align:right"><a class="btn btn-default" href="../../arxiuAdmin/${arxiu.id}/metaExpedient/new" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="arxiu.metaexpedient.boto.nova.relacio.metaexpedient"/></a></p>
 	</script>
 	<a href="<c:url value="/arxiuAdmin/unitat/${arxiu.unitatCodi}"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span>&nbsp;<spring:message code="comu.boto.tornar"/></a>
 	<div class="clearfix"></div>

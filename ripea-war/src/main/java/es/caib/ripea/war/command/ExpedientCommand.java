@@ -79,6 +79,8 @@ public class ExpedientCommand extends ContenidorCommand {
 			command.setPareId(dto.getPare().getId());
 		if (dto.getMetaNode() != null)
 			command.setMetaNodeId(dto.getMetaNode().getId());
+		if (dto.getArxiu() != null)
+			command.setArxiuId(dto.getArxiu().getId());
 		return command;
 	}
 	public static ExpedientDto asDto(ExpedientCommand command) {

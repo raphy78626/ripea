@@ -1008,8 +1008,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			boolean granted = false;
 			// Comprova l'accés als meta-expedients
-			for(MetaExpedientEntity metaExpedient : arxiu.getMetaExpedients()) {
-				if(permisosHelper.isGrantedAll(
+			for (MetaExpedientEntity metaExpedient: arxiu.getMetaExpedients()) {
+				if (permisosHelper.isGrantedAll(
 						metaExpedient.getId(),
 						MetaNodeEntity.class,
 						new Permission[] {ExtendedPermission.READ},
