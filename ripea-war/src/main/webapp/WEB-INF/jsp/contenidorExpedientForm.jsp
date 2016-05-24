@@ -40,7 +40,8 @@
 				$('#arxiuId').change();
 			}
 		})
-		$("#metaNodeId").change();
+		if ($("#id").val() == "" )
+			$("#metaNodeId").change();
 	});
 </script>
 </head>
