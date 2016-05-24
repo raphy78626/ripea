@@ -138,30 +138,6 @@ public class ContenidorServiceBean implements ContenidorService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto send(
-			Long entitatId,
-			Long contenidorId,
-			Long bustiaId,
-			String comentari) {
-		return delegate.send(entitatId, contenidorId, bustiaId, comentari);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public ContenidorDto receive(
-			Long entitatId,
-			Long bustiaId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId) {
-		return delegate.receive(
-				entitatId,
-				bustiaId,
-				contenidorOrigenId,
-				contenidorDestiId);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public EscriptoriDto getEscriptoriPerUsuariActual(
 			Long entitatId) {
 		return delegate.getEscriptoriPerUsuariActual(entitatId);

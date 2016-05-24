@@ -3,11 +3,9 @@
  */
 package es.caib.ripea.core.api.service;
 
-import java.util.List;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -38,10 +36,10 @@ public interface ExpedientService {
 	 *            a dins l'any actual.
 	 * @param nom
 	 *            Nom de l'expedient que es vol crear.
+	 * @param contingutTipus
+	 *            Tipus de contingut que es vol associar amb l'expedient.
 	 * @param contingutId
 	 *            Atribut id del contingut que es vol associar amb l'expedient.
-	 * @param registreId
-	 *            Atribut id de l'anotació de registre que es vol associar amb l'expedient.
 	 * @return L'expedient creat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -56,8 +54,8 @@ public interface ExpedientService {
 			Long arxiuId,
 			Integer any,
 			String nom,
-			Long contingutId,
-			Long registreId) throws NotFoundException, ValidationException;
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId) throws NotFoundException, ValidationException;
 
 	/**
 	 * Modifica un expedient.
@@ -159,22 +157,6 @@ public interface ExpedientService {
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
-
-	/**
-	 * Consulta el contingut de la carpeta de nouvinguts de l'expedient.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany l'expedient.
-	 * @param id
-	 *            Atribut id de l'expedient.
-	 * @return El contingut de la carpeta nouvinguts.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public List<ContenidorDto> getContingutCarpetaNouvinguts(
-			Long entitatId,
-			Long id) throws NotFoundException;
 
 	/**
 	 * Posa un expedient a l'escriptori de l'usuari actual.
@@ -281,5 +263,28 @@ public interface ExpedientService {
 			Long entitatId,
 			Long id,
 			Long acumulatId) throws NotFoundException;
+
+	/**
+	 * Afegeix un contingut d'una bústia a un expedient.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany l'expedient.
+	 * @param id
+	 *            Atribut id de l'expedient destí de l'acumulació.
+	 * @param bustiaId
+	 *            Atribut id de la bústia a on es troba el contingut.
+	 * @param contingutTipus
+	 *            Tipus de contingut que es vol associar amb l'expedient.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol associar amb l'expedient.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	public void afegirContingutBustia(
+			Long entitatId,
+			Long id,
+			Long bustiaId,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId) throws NotFoundException;
 
 }

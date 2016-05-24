@@ -233,28 +233,6 @@ public interface ContenidorService {
 			boolean recursiu) throws NotFoundException, ValidationException;
 
 	/**
-	 * Envia un contenidor a la bústia especificada.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor que es vol enviar.
-	 * @param bustiaId
-	 *            Atribut id de la bústia destinatària.
-	 * @param comentari
-	 *            Comentari per a l'enviament.
-	 * @return El contenidor enviat.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto send(
-			Long entitatId,
-			Long contenidorId,
-			Long bustiaId,
-			String comentari) throws NotFoundException;
-
-	/**
 	 * Reb un contenidor situat a la bústia especificada.
 	 * 
 	 * @param entitatId
@@ -269,12 +247,12 @@ public interface ContenidorService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto receive(
+	/*@PreAuthorize("hasRole('tothom')")
+	public ContenidorDto receivea(
 			Long entitatId,
 			Long bustiaId,
 			Long contenidorOrigenId,
-			Long contenidorDestiId) throws NotFoundException;
+			Long contenidorDestiId) throws NotFoundException;*/
 
 	/**
 	 * Obté el contingut de l'escriptori de l'usuari actual.

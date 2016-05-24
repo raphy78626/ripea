@@ -139,7 +139,7 @@ public class EmailHelper {
 					"\tBústia: " + bustia.getNom() + "\n\n" +
 					"Dades de l'anotació: \n" +
 					"\tTipus: " + registre.getTipus() + "\n" +
-					"\tNúmero: " + registre.getNumero() + "\n" +
+					"\tNúmero: " + registre.getIdentificador() + "\n" +
 					"\tData: " + registre.getData() + "\n" +
 					"\tExtracte: " + registre.getExtracte() + "\n");
 			mailSender.send(missatge);

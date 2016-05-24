@@ -19,12 +19,12 @@
 <c:if test="${empty isArbreSeleccionable and empty isFullesSeleccionable}"><c:set var="isArbreSeleccionable" value="${true}"/><c:set var="isFullesSeleccionable" value="${true}"/></c:if>
 <c:if test="${empty isOcultarCounts}"><c:set var="isOcultarCounts" value="${false}"/></c:if>
 <c:if test="${empty isError}"><c:set var="isError" value="${false}"/></c:if>
-<div id="${id}" class="well" style="overflow: auto;<c:if test="${isError}">margin-bottom:10px; border-color: #A94442</c:if>">
+<div id="${id}" class="well" style="width: 100%; overflow: auto;<c:if test="${isError}">margin-bottom:10px; border-color: #A94442</c:if>">
 	<c:if test="${not empty arbre and not empty arbre.arrel}">
 		<c:set var="arrel" value="${arbre.arrel}"/>
 		<ul>
 			<li id="${arbre.arrel.dades[atributId]}" class="jstree-open" data-jstree='{"icon":"fa fa-home fa-lg"<c:if test="${not empty seleccionatId and arbre.arrel.dades[atributId] == seleccionatId}">, "selected": true</c:if>}'>
-				${arbre.arrel.dades[atributNom]}
+				<small>${arbre.arrel.dades[atributNom]}</small>
 				<rip:arbreFills pare="${arbre.arrel}" fills="${arbre.arrel.fills}" atributId="${atributId}" atributNom="${atributNom}" seleccionatId="${seleccionatId}" fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" isOcultarCounts="${isOcultarCounts}"/>
 			</li>
 		</ul>
@@ -81,11 +81,8 @@
 		iframe.height(height + 'px');
 	})<c:if test="${not empty changedCallback}">
 	.on('changed.jstree', function (e, data) {
-		//console.log('>>> changed.jstree');
 		return ${changedCallback}(e, data);
 	})</c:if><c:if test="${not empty deselectAllCallback}">
 	.on('deselect_all.jstree', function (e, data) {
-		//console.log('>>> deselect_all.jstree');
-		//return ${changedCallback}(e, data);
 	})</c:if>;	
 </script>

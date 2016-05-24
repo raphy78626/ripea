@@ -33,15 +33,15 @@ import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
-import es.caib.ripea.core.api.registre.RegistreAnotacio;
+import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContenidorService;
 import es.caib.ripea.core.api.service.DocumentService;
-import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
+import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.DadaCommand;
 import es.caib.ripea.war.command.DadaCommand.DadaTipusBoolea;
@@ -73,8 +73,6 @@ public class ContenidorController extends BaseUserController {
 	@Autowired
 	private MetaDocumentService metaDocumentService;
 	@Autowired
-	private ExpedientService expedientService;
-	@Autowired
 	private DocumentService documentService;
 	@Autowired
 	private InteressatService interessatService;
@@ -82,6 +80,8 @@ public class ContenidorController extends BaseUserController {
 	private MetaDadaService metaDadaService;
 	@Autowired
 	private BustiaService bustiaService;
+	@Autowired
+	private RegistreService registreService;
 
 	@Autowired(required = true)
 	private javax.validation.Validator validator;
@@ -454,10 +454,10 @@ public class ContenidorController extends BaseUserController {
 					model);
 			return "contenidorEnviarForm";
 		}
-		contenidorService.send(
+		bustiaService.enviarContenidor(
 				entitatActual.getId(),
-				contenidorOrigenId,
 				command.getContenidorDestiId(),
+				contenidorOrigenId,
 				command.getComentariEnviar());
 		return getModalControllerReturnValueSuccess(
 				request,
@@ -486,12 +486,12 @@ public class ContenidorController extends BaseUserController {
 
 	@RequestMapping(value = "/contenidor/{contenidorId}/registre/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<RegistreAnotacio> registreDatatable(
+	public DatatablesPagina<RegistreAnotacioDto> registreDatatable(
 			HttpServletRequest request,
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<RegistreAnotacio> registres = null;
+		List<RegistreAnotacioDto> registres = null;
 		ContenidorDto contenidor = contenidorService.getContenidorAmbContingut(
 				entitatActual.getId(),
 				contenidorId);
@@ -499,28 +499,49 @@ public class ContenidorController extends BaseUserController {
 			ExpedientDto expedient = (ExpedientDto)contenidor;
 			registres = expedient.getRegistres();
 		} else {
-			registres = new ArrayList<RegistreAnotacio>();
+			registres = new ArrayList<RegistreAnotacioDto>();
 		}
 		return PaginacioHelper.getPaginaPerDatatables(request, registres);
 	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreIdentificador}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreId}", method = RequestMethod.GET)
 	public String registreInfo(
 			HttpServletRequest request,
 			@PathVariable Long contenidorId,
-			@PathVariable String registreIdentificador,
+			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContenidorDto contenidor = contenidorService.getContenidorAmbContingut(
-				entitatActual.getId(),
-				contenidorId);
-		for (RegistreAnotacio registre: contenidor.getRegistres()) {
-			if (registreIdentificador.equals(registre.getIdentificador())) {
-				model.addAttribute("registre", registre);
-				break;
-			}
-		}
-		model.addAttribute("contenidor", contenidor);
-		return "contenidorRegistre";
+		model.addAttribute(
+				"registre",
+				registreService.findOne(
+						entitatActual.getId(),
+						contenidorId,
+						registreId));
+		return "registreDetall";
+	}
+	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreId}/log", method = RequestMethod.GET)
+	public String registreLog(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		model.addAttribute(
+				"contenidor",
+				contenidorService.getContenidorAmbContingut(
+						entitatActual.getId(),
+						contenidorId));
+		model.addAttribute(
+				"registre",
+				registreService.findOne(
+						entitatActual.getId(),
+						contenidorId,
+						registreId));
+		model.addAttribute(
+				"moviments",
+				registreService.findMoviments(
+						entitatActual.getId(),
+						registreId));
+		return "registreLog";
 	}
 
 	@RequestMapping(value = "/contenidor/{contenidorId}/log", method = RequestMethod.GET)
@@ -594,11 +615,6 @@ public class ContenidorController extends BaseUserController {
 					interessatService.findByExpedient(
 							entitatActual.getId(),
 							contenidor.getId()));
-			model.addAttribute(
-					"nouvinguts",
-					expedientService.getContingutCarpetaNouvinguts(
-							entitatActual.getId(),
-							contenidor.getId()));
 		}
 		if (contenidor instanceof DocumentDto) {
 			model.addAttribute(
@@ -649,6 +665,7 @@ public class ContenidorController extends BaseUserController {
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(
 						entitatActual.getId(),
+						true,
 						false,
 						true));
 	}

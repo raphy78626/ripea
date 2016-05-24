@@ -133,8 +133,8 @@ public class ContenidorExpedientController extends BaseUserController {
 					command.getArxiuId(),
 					command.getAny(),
 					command.getNom(),
-					command.getContingutId(),
-					command.getRegistreId());
+					null,
+					null);
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../contenidor/" + contenidorId,

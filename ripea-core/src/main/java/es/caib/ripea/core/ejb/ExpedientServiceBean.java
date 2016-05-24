@@ -3,8 +3,6 @@
  */
 package es.caib.ripea.core.ejb;
 
-import java.util.List;
-
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -12,7 +10,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -43,8 +41,8 @@ public class ExpedientServiceBean implements ExpedientService {
 			Long arxiuId,
 			Integer any,
 			String nom,
-			Long contingutId,
-			Long registreId) {
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId) {
 		return delegate.create(
 				entitatId,
 				contenidorId,
@@ -52,8 +50,8 @@ public class ExpedientServiceBean implements ExpedientService {
 				arxiuId,
 				any,
 				nom,
-				contingutId,
-				registreId);
+				contingutTipus,
+				contingutId);
 	}
 
 	@Override
@@ -108,16 +106,6 @@ public class ExpedientServiceBean implements ExpedientService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<ContenidorDto> getContingutCarpetaNouvinguts(
-			Long entitatId,
-			Long id) {
-		return delegate.getContingutCarpetaNouvinguts(
-				entitatId,
-				id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public void agafarUser(
 			Long entitatId,
 			Long arxiuId,
@@ -167,6 +155,22 @@ public class ExpedientServiceBean implements ExpedientService {
 			Long id,
 			Long acumulatId) {
 		delegate.acumular(entitatId, id, acumulatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void afegirContingutBustia(
+			Long entitatId,
+			Long id,
+			Long bustiaId,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId) {
+		afegirContingutBustia(
+				entitatId,
+				id,
+				bustiaId,
+				contingutTipus,
+				contingutId);
 	}
 
 }

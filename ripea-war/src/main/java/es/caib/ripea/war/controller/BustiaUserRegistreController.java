@@ -16,12 +16,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
-import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContenidorService;
@@ -32,8 +30,6 @@ import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.command.RegistreRebutjarCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
 
 /**
  * Controlador per al manteniment de registres a les bústies.
@@ -59,20 +55,7 @@ public class BustiaUserRegistreController extends BaseUserController {
 
 
 
-	@RequestMapping(value = "/{bustiaId}/pendent/registre/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesPagina<RegistreAnotacio> pendentRegistreDatatable(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return PaginacioHelper.getPaginaPerDatatables(
-				request,
-				bustiaService.findRegistrePendent(
-						entitatActual.getId(),
-						bustiaId));
-	}
-
-	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}", method = RequestMethod.GET)
 	public String registrePendentObrir(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
@@ -86,7 +69,7 @@ public class BustiaUserRegistreController extends BaseUserController {
 						bustiaId,
 						registreId));
 		return "bustiaPendentRegistre";
-	}
+	}*/
 
 	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/nouexp", method = RequestMethod.GET)
 	public String registrePendentNouexpGet(
@@ -99,7 +82,6 @@ public class BustiaUserRegistreController extends BaseUserController {
 		ExpedientCommand command = new ExpedientCommand();
 		command.setEntitatId(entitatActual.getId());
 		command.setPareId(escriptori.getId());
-		command.setRegistreId(registreId);
 		model.addAttribute(command);
 		omplirModelPerNouExpedient(
 				entitatActual,
@@ -129,8 +111,8 @@ public class BustiaUserRegistreController extends BaseUserController {
 				command.getArxiuId(),
 				null,
 				command.getNom(),
-				command.getContingutId(),
-				command.getRegistreId());
+				null,
+				null);
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
@@ -167,10 +149,10 @@ public class BustiaUserRegistreController extends BaseUserController {
 			model.addAttribute("contenidorOrigen", escriptori);
 			return "bustiaPendentRegistreAddexp";
 		}
-		registreService.afegirAExpedient(
+		/*registreService.afegirAExpedient(
 				entitatActual.getId(),
 				command.getContenidorDestiId(),
-				registreId);
+				registreId);*/
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
@@ -209,12 +191,12 @@ public class BustiaUserRegistreController extends BaseUserController {
 					bustiaId);
 			return "bustiaPendentRegistreReenviar";
 		}
-		bustiaService.forwardRegistre(
+		/*bustiaService.forwardRegistre(
 				entitatActual.getId(),
 				bustiaId,
 				registreId,
 				command.getContenidorDestiId(),
-				command.getComentariEnviar());
+				command.getComentariEnviar());*/
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
@@ -290,6 +272,7 @@ public class BustiaUserRegistreController extends BaseUserController {
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(
 						entitatActual.getId(),
+						true,
 						false,
 						true));
 	}

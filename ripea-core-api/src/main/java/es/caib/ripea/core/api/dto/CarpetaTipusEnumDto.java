@@ -11,6 +11,5 @@ package es.caib.ripea.core.api.dto;
  */
 public enum CarpetaTipusEnumDto {
 	ESBORRANY,
-	DEFINITIU,
-	NOUVINGUT
+	DEFINITIU
 }

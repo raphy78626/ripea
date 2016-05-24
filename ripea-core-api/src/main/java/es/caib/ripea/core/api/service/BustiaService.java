@@ -8,12 +8,15 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
+import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
+import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
+import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 
 /**
  * Declaració dels mètodes per a gestionar bústies.
@@ -179,55 +182,102 @@ public interface BustiaService {
 			Long entitatId) throws NotFoundException;
 
 	/**
+	 * Envia un contenidor a una bústia.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param bustiaId
+	 *            Atribut id de la bústia de destí.
+	 * @param contenidorId
+	 *            Atribut id del contenidor que s'envia.
+	 * @param comentari
+	 *            Comentari per l'enviament.
+	 * @return el contenidor enviat
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public ContenidorDto enviarContenidor(
+			Long entitatId,
+			Long bustiaId,
+			Long contenidorId,
+			String comentari) throws NotFoundException;
+
+	/**
+	 * Envia una anotació de registre a una bústia.
+	 * 
+	 * @param entitatCodi
+	 *            El codi de l'entitat.
+	 * @param tipus
+	 *            El tipus d'anotació (ENTRADA o SORTIDA).
+	 * @param unitatAdministrativa
+	 *            La unitat administrativa destinatària.
+	 * @param anotacio
+	 *            Les dades de l'anotació de registre.
+	 * @return el contenidor enviat
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	public void registreAnotacioCrear(
+			String entitatCodi,
+			RegistreTipusEnum tipus,
+			String unitatAdministrativa,
+			RegistreAnotacio anotacio) throws NotFoundException;
+
+	/**
+	 * Envia una anotació de registre a una bústia.
+	 * 
+	 * @param entitatCodi
+	 *            El codi de l'entitat.
+	 * @param referencia
+	 *            La referència per a consultar l'anotació de registre.
+	 * @return el contenidor enviat
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	public void registreAnotacioCrear(
+			String entitatCodi,
+			String referencia) throws NotFoundException;
+
+	/**
 	 * Consulta el contingut pendent d'una bústia.
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
-	 * @param id
+	 * @param bustiaId
 	 *            Atribut id de la bústia que es vol consultar.
 	 * @return El contingut pendent.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<ContenidorDto> findContingutPendent(
+	public List<BustiaContingutPendentDto> contingutPendentFindByBustiaId(
 			Long entitatId,
-			Long id) throws NotFoundException;
+			Long bustiaId) throws NotFoundException;
 
 	/**
-	 * Consulta les anotacions de registre pendents d'una bústia.
+	 * Obté la informació d'un contingut pendent d'una bústia.
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
-	 * @param id
+	 * @param bustiaId
 	 *            Atribut id de la bústia que es vol consultar.
-	 * @return Les anotacions de registre pendents.
+	 * @param contingutTipus
+	 *            El tipus del contingut que es vol consultar.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol consultar.
+	 * @return la informació del contingut pendent.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<RegistreAnotacio> findRegistrePendent(
+	public BustiaContingutPendentDto contingutPendentFindOne(
 			Long entitatId,
-			Long id) throws NotFoundException;
-
-	/**
-	 * Consulta una anotació de registre pendent a una bústia.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param id
-	 *            Atribut id de la bústia que es vol consultar.
-	 * @param registreId
-	 *            Atribut id del registre que es vol obtenir.
-	 * @return L'anotació de registre pendent o null si no s'ha trobada.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnotacio findOneRegistrePendent(
-			Long entitatId,
-			Long id,
-			Long registreId) throws NotFoundException;
+			Long bustiaId,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId) throws NotFoundException;
 
 	/**
 	 * Consulta el nombre d'elements pendents (tant contenidors com registres)
@@ -240,21 +290,58 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public long countElementsPendentsBustiesAll(
+	public long contingutPendentBustiesAllCount(
 			Long entitatId) throws NotFoundException;
 
 	/**
-	 * Refresca el comptador d'elements pendents (tant contenidors com
-	 * registres) a dins totes les bústies accessibles per l'usuari.
+	 * Reenvia un contingut pendent de la bústia.
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
+	 * @param bustiaOrigenId
+	 *            Atribut id de la bústia d'origen.
+	 * @param bustiaDestiId
+	 *            Atribut id de la bústia de destí.
+	 * @param contingutTipus
+	 *            El tipus del contingut que es vol consultar.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol consultar.
+	 * @param comentari
+	 *            Comentari pel reenviament.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public void refreshCountElementsPendentsBustiesAll(
-			Long entitatId) throws NotFoundException;
+	public void contingutPendentReenviar(
+			Long entitatId,
+			Long bustiaOrigenId,
+			Long bustiaDestiId,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId,
+			String comentari) throws NotFoundException;
+
+	/**
+	 * Consulta l'arbre de les unitats organitzatives per a mostrar les
+	 * bústies.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param nomesBusties
+	 *            Indica si només han d'aparèixer les únitats que contenen bústies.
+	 * @param nomesBustiesPermeses
+	 *            Indica si només han d'aparèixer les bústies a les que es tengui permisos d'accés.
+	 * @param comptarElementsPendents
+	 *            Indica si s'ha de comptar els elements pendets a cada unitat.
+	 * @return L'arbre de les unitats organitzatives.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
+			Long entitatId,
+			boolean nomesBusties,
+			boolean nomesBustiesPermeses,
+			boolean comptarElementsPendents) throws NotFoundException;
 
 	/**
 	 * Modifica els permisos d'un usuari o d'un rol per a accedir a una bústia.
@@ -291,73 +378,5 @@ public interface BustiaService {
 			Long entitatId,
 			Long id,
 			Long permisId) throws NotFoundException;
-
-	/**
-	 * Consulta l'arbre de les unitats organitzatives per a mostrar les
-	 * bústies.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param nomesBustiesPermeses
-	 *            Indica si només han d'aparèixer les bústies a les que s'hi tengui permisos d'accés.
-	 * @param comptarElementsPendents
-	 *            Indica si s'ha de comptar els elements pendets a cada unitat.
-	 * @return L'arbre de les unitats organitzatives.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
-	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
-			Long entitatId,
-			boolean nomesBustiesPermeses,
-			boolean comptarElementsPendents) throws NotFoundException;
-
-	/**
-	 * Reenvia un contenidor a una altra bústia.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param id
-	 *            Id de la bústia orígen.
-	 * @param contenidorId
-	 *            Id del contenidor a reenviar.
-	 * @param bustiaDestiId
-	 *            Id de la bústia destí.
-	 * @param comentari
-	 *            Comentari per al reenviament.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public void forwardContenidor(
-			Long entitatId,
-			Long id,
-			Long contenidorId,
-			Long bustiaDestiId,
-			String comentari) throws NotFoundException;
-
-	/**
-	 * Reenvia un registre a una altra bústia.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param id
-	 *            Id de la bústia orígen.
-	 * @param registreId
-	 *            Id del registre a reenviar.
-	 * @param bustiaDestiId
-	 *            Id de la bústia destí.
-	 * @param comentari
-	 *            Comentari del reenviament.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public void forwardRegistre(
-			Long entitatId,
-			Long id,
-			Long registreId,
-			Long bustiaDestiId,
-			String comentari) throws NotFoundException;
 
 }

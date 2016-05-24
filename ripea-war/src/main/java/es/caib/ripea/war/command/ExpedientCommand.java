@@ -21,8 +21,6 @@ public class ExpedientCommand extends ContenidorCommand {
 	protected Long metaNodeId;
 	@NotNull(groups = {Create.class, Update.class})
 	protected Long arxiuId;
-	protected Long contingutId;
-	protected Long registreId;
 	private String tancatMotiu;
 	private int any;
 	private long sequencia;
@@ -39,18 +37,6 @@ public class ExpedientCommand extends ContenidorCommand {
 	}
 	public void setArxiuId(Long arxiuId) {
 		this.arxiuId = arxiuId;
-	}
-	public Long getContingutId() {
-		return contingutId;
-	}
-	public void setContingutId(Long contingutId) {
-		this.contingutId = contingutId;
-	}
-	public Long getRegistreId() {
-		return registreId;
-	}
-	public void setRegistreId(Long registreId) {
-		this.registreId = registreId;
 	}
 	public String getTancatMotiu() {
 		return tancatMotiu;

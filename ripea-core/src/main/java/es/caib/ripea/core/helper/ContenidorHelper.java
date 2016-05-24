@@ -36,9 +36,9 @@ import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaNodeDto;
 import es.caib.ripea.core.api.dto.NodeDto;
 import es.caib.ripea.core.api.dto.PermisDto;
+import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
-import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
@@ -284,8 +284,7 @@ public class ContenidorHelper {
 							false));
 				}
 				for (ContenidorEntity fill: fills) {
-					boolean esCarpetaNouvinguts = fill instanceof CarpetaEntity && CarpetaTipusEnumDto.NOUVINGUT.equals(((CarpetaEntity)fill).getTipus());
-					if (fill.getEsborrat() == 0 && !esCarpetaNouvinguts) {
+					if (fill.getEsborrat() == 0) {
 						ContenidorDto fillDto = toContenidorDto(
 								fill,
 								ambPermisos,
@@ -305,7 +304,7 @@ public class ContenidorHelper {
 						conversioTipusHelper.convertirList(
 								registreRepository.findByContenidorAndMotiuRebuigNullOrderByDataAsc(
 										contenidor),
-								RegistreAnotacio.class));
+								RegistreAnotacioDto.class));
 			}
 			if (ambDades) {
 				// Omple les dades

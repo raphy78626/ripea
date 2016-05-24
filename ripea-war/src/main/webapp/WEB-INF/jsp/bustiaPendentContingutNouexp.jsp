@@ -18,7 +18,6 @@
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="expedientCommand">
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
-		<form:hidden path="contingutId"/>
 		<rip:inputSelect name="metaNodeId" textKey="contenidor.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" disabled="${not empty expedientCommand.id}"/>
 		<rip:inputSelect name="arxiuId" textKey="contenidor.expedient.form.camp.arxiu" required="true" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nomAmbUnitat"/>
 		<rip:inputText name="nom" textKey="contenidor.expedient.form.camp.nom" required="true"/>

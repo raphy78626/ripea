@@ -77,7 +77,6 @@ public class AplicacioServiceBean implements AplicacioService {
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
 	public void excepcioSave(Throwable exception) {
 		delegate.excepcioSave(exception);
 	}

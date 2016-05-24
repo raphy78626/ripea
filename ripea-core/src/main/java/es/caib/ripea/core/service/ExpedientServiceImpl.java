@@ -3,7 +3,6 @@
  */
 package es.caib.ripea.core.service;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -12,15 +11,13 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -32,7 +29,6 @@ import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
-import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContenidorEntity;
 import es.caib.ripea.core.entity.ContenidorLogEntity;
 import es.caib.ripea.core.entity.ContenidorMovimentEntity;
@@ -43,6 +39,7 @@ import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientSequenciaEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.entity.RegistreMovimentEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
@@ -64,6 +61,7 @@ import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.MetaExpedientRepository;
 import es.caib.ripea.core.repository.MetaExpedientSequenciaRepository;
+import es.caib.ripea.core.repository.RegistreMovimentRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
@@ -96,6 +94,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private BustiaRepository bustiaRepository;
 	@Resource
 	private MetaExpedientSequenciaRepository metaExpedientSequenciaRepository;
+	@Resource
+	private RegistreMovimentRepository registreMovimentRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -129,8 +129,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 			Long arxiuId,
 			Integer any,
 			String nom,
-			Long contingutId,
-			Long registreId) {
+			BustiaContingutPendentTipusEnumDto contingutPendentTipus,
+			Long contingutPendentId) {
 		logger.debug("Creant nou expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contenidorId=" + contenidorId + ", "
@@ -138,8 +138,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 				+ "arxiuId=" + arxiuId + ", "
 				+ "any=" + any + ", "
 				+ "nom=" + nom + ", "
-				+ "contingutId=" + contingutId + ", "
-				+ "registreId=" + registreId + ")");
+				+ "contingutPendentTipus=" + contingutPendentTipus + ", "
+				+ "contingutPendentId=" + contingutPendentId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -206,29 +206,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 				contenidor,
 				entitat).build();
 		expedientRepository.save(expedient);
-		// Lliga el contingut al nou contenidor
-		if (contingutId != null) {
-			ContenidorEntity contingut = comprovarContenidor(
+		// Lliga el contingut al nou expedient
+		if (contingutPendentId != null) {
+			moureContingutPendentDeBustiaAExpedient(
 					entitat,
-					contingutId);
-			BustiaEntity bustia = bustiaRepository.findOne(contingut.getPare().getId());
-			if (bustia != null) {
-				bustiaHelper.evictElementsPendentsBustia(entitat, bustia);
-			}
-			contenidorHelper.ferIEnregistrarMovimentContenidor(
-					contenidor,
 					expedient,
-					null);
-		}
-		// Lliga l'anotació de registre al nou contenidor
-		if (registreId != null) {
-			RegistreEntity registre = entityComprovarHelper.comprovarRegistre(
-					registreId,
-					null);
-			bustiaHelper.evictElementsPendentsBustiaPerRegistre(
-					entitat,
-					registre);
-			registre.updateContenidor(expedient);
+					contingutPendentTipus,
+					contingutPendentId);
 		}
 		// Obté la seqüència de l'expedient
 		int anyExpedient;
@@ -250,13 +234,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 		expedient.updateAnySequencia(
 				anyExpedient,
 				sequenciaExpedient);
-		// Crear carpeta de nouvinguts
-		CarpetaEntity nouvinguts = CarpetaEntity.getBuilder(
-				CarpetaServiceImpl.CARPETA_NOUVINGUTS_NOM,
-				CarpetaTipusEnumDto.NOUVINGUT,
-				expedient,
-				entitat).build();
-		carpetaRepository.save(nouvinguts);
 		// Registra al log la creació de l'expedient
 		contenidorLogHelper.log(
 				expedient,
@@ -485,52 +462,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 				paginacioParams,
 				false,
 				true);
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public List<ContenidorDto> getContingutCarpetaNouvinguts(
-			Long entitatId,
-			Long id) {
-		logger.debug("Consultant el contingut de la carpeta nouvinguts de l'expedient ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = comprovarExpedient(
-				entitat,
-				null,
-				id);
-		// Per a consultes no es comprova el contenidor arrel
-		// Comprova l'accés al path de l'expedient
-		contenidorHelper.comprovarPermisosPathContenidor(
-				expedient,
-				true,
-				false,
-				false,
-				true);
-		List<ContenidorEntity> fills = contenidorRepository.findByPareAndEsborrat(
-				expedient,
-				0,
-				new Sort("createdDate"));
-		for (ContenidorEntity fill: fills) {
-			// Si es la carpeta de nouvinguts
-			if (fill instanceof CarpetaEntity && CarpetaTipusEnumDto.NOUVINGUT.equals(((CarpetaEntity)fill).getTipus())) {
-				ContenidorDto fillDto = contenidorHelper.toContenidorDto(
-						fill,
-						true,
-						false,
-						false,
-						false,
-						false,
-						false);
-				return fillDto.getFills();
-			}
-		}
-		return new ArrayList<ContenidorDto>();
 	}
 
 	@Transactional
@@ -801,7 +732,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 				entitat,
 				null,
 				acumulatId);
-		CarpetaEntity carpetaNouvinguts = findCarpetaNouvinguts(expedientDesti);
 		// Registra al log l'acumulació
 		ContenidorLogEntity contenidorLog = contenidorLogHelper.log(
 				expedientDesti,
@@ -813,7 +743,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		for (ContenidorEntity contenidor: expedientOrigen.getFills()) {
 			ContenidorMovimentEntity contenidorMoviment = contenidorHelper.ferIEnregistrarMovimentContenidor(
 					contenidor,
-					carpetaNouvinguts,
+					expedientDesti,
 					null);
 			// Registra al log el moviment del node
 			contenidorLogHelper.log(
@@ -824,6 +754,36 @@ public class ExpedientServiceImpl implements ExpedientService {
 					true,
 					true);
 		}
+	}
+
+	@Transactional
+	@Override
+	public void afegirContingutBustia(
+			Long entitatId,
+			Long id,
+			Long bustiaId,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId) throws NotFoundException {
+		logger.debug("Afegint contingut de la bústia a l'expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "bustiaId=" + bustiaId + ", "
+				+ "contingutTipus=" + contingutTipus + ", "
+				+ "contingutId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedient = comprovarExpedient(
+				entitat,
+				null,
+				id);
+		moureContingutPendentDeBustiaAExpedient(
+				entitat,
+				expedient,
+				contingutTipus,
+				contingutId);
 	}
 
 
@@ -1054,11 +1014,41 @@ public class ExpedientServiceImpl implements ExpedientService {
 		return expedient;
 	}
 
-	private CarpetaEntity findCarpetaNouvinguts(ExpedientEntity expedient) {
-		return (CarpetaEntity)contenidorRepository.findByPareAndNomAndEsborrat(
-				expedient,
-				CarpetaServiceImpl.CARPETA_NOUVINGUTS_NOM,
-				0);
+	private void moureContingutPendentDeBustiaAExpedient(
+			EntitatEntity entitat,
+			ExpedientEntity expedient,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId) {
+		Long bustiaId;
+		if (contingutTipus == BustiaContingutPendentTipusEnumDto.REGISTRE_ENTRADA) {
+			RegistreEntity registre = entityComprovarHelper.comprovarRegistre(
+					contingutId,
+					null);
+			ContenidorEntity contenidorOrigen = registre.getContenidor();
+			bustiaId = registre.getContenidor().getId();
+			registre.updateContenidor(expedient);
+			RegistreMovimentEntity registreMoviment = RegistreMovimentEntity.getBuilder(
+					registre,
+					contenidorOrigen,
+					expedient,
+					usuariHelper.getUsuariAutenticat(),
+					null).build();
+			registreMovimentRepository.save(registreMoviment);
+		} else {
+			ContenidorEntity contingut = comprovarContenidor(
+					entitat,
+					contingutId);
+			bustiaId = contingut.getPare().getId();
+			contenidorHelper.ferIEnregistrarMovimentContenidor(
+					contingut,
+					expedient,
+					null);
+		}
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				true);
+		bustiaHelper.evictElementsPendentsBustia(entitat, bustia);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ExpedientServiceImpl.class);

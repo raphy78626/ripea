@@ -21,7 +21,11 @@ public class PermissionDeniedException extends RuntimeException {
 			Class<?> objectClass,
 			String userName,
 			String permissionName) {
-		super();
+		super(getExceptionMessage(
+				objectId,
+				objectClass,
+				userName,
+				permissionName));
 		this.objectId = objectId;
 		this.objectClass = objectClass;
 		this.userName = userName;
@@ -41,10 +45,14 @@ public class PermissionDeniedException extends RuntimeException {
 		return permissionName;
 	}
 
-	public String getObjectInfo() {
+	public static String getExceptionMessage(
+			Object objectId,
+			Class<?> objectClass,
+			String userName,
+			String permissionName) {
 		StringBuilder sb = new StringBuilder();
 		if (objectClass != null)
-			sb.append(objectClass.getClass().getName());
+			sb.append(objectClass.getName());
 		else
 			sb.append("null");
 		sb.append("#");
@@ -52,6 +60,10 @@ public class PermissionDeniedException extends RuntimeException {
 			sb.append(objectId.toString());
 		else
 			sb.append("null");
+		sb.append(", ");
+		sb.append(userName);
+		sb.append(", ");
+		sb.append(permissionName);
 		return sb.toString();
 	}
 

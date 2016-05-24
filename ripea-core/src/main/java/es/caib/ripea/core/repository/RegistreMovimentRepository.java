@@ -19,6 +19,6 @@ import es.caib.ripea.core.entity.RegistreMovimentEntity;
 public interface RegistreMovimentRepository extends JpaRepository<RegistreMovimentEntity, Long> {
 
 	List<RegistreMovimentEntity> findByRegistreOrderByDataAsc(
-			RegistreEntity contenidor);
+			RegistreEntity registre);
 
 }

@@ -36,9 +36,9 @@ import es.caib.regweb3.ws.api.v3.RegistroSalidaResponseWs;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.registre.RegistreInteressat;
+import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
-import es.caib.ripea.plugin.registre.RegistreAnotacioResposta.RegistreTipusEnum;
 import es.caib.ripea.plugin.registre.RegistrePlugin;
 import es.caib.ripea.plugin.utils.PropertiesHelper;
 

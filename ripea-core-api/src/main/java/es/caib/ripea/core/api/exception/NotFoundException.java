@@ -17,7 +17,7 @@ public class NotFoundException extends RuntimeException {
 	public NotFoundException(
 			Object objectId,
 			Class<?> objectClass) {
-		super();
+		super(getExceptionMessage(objectId, objectClass));
 		this.objectId = objectId;
 		this.objectClass = objectClass;
 	}
@@ -30,10 +30,12 @@ public class NotFoundException extends RuntimeException {
 		return objectClass;
 	}
 
-	public String getObjectInfo() {
+	public static String getExceptionMessage(
+			Object objectId,
+			Class<?> objectClass) {
 		StringBuilder sb = new StringBuilder();
 		if (objectClass != null)
-			sb.append(objectClass.getClass().getName());
+			sb.append(objectClass.getName());
 		else
 			sb.append("null");
 		sb.append("#");

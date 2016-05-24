@@ -52,8 +52,7 @@ public interface ContenidorRepository extends JpaRepository<ContenidorEntity, Lo
 			"and (:esNullNom = true or lower(c.nom) like :nom) " +
 			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
-			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) " +
-			"and nom not like '.%'") // Descarta la carpeta .nouvinguts
+			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
 	public Page<ContenidorEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("tipusExpedient") boolean tipusExpedient,

@@ -18,9 +18,10 @@
 		<form:hidden path="contenidorOrigenId"/>
 		<rip:inputFixed textKey="contenidor.enviar.camp.origen">
 			<c:choose>
-				<c:when test="${contenidorOrigen.expedient}"><span class="fa fa-briefcase"></span></c:when>
-				<c:when test="${contenidorOrigen.carpeta}"><rip:blocIconaCarpeta carpeta="${contenidorOrigen}" petita="${true}"/></c:when>
-				<c:when test="${contenidorOrigen.document}"><span class="fa fa-file"></span></c:when>
+				<c:when test="${contingutPendent.tipus == EXPEDIENT}"><span class="fa fa-briefcase"></span></c:when>
+				<c:when test="${contingutPendent.tipus == CARPETA}"><rip:blocIconaCarpeta carpeta="${contenidorOrigen}" petita="${true}"/></c:when>
+				<c:when test="${contingutPendent.tipus == DOCUMENT}"><span class="fa fa-file"></span></c:when>
+				<c:when test="${contingutPendent.tipus == REGISTRE_ENTRADA}"><span class="fa fa-file"></span></c:when>
 			</c:choose>
 			${contenidorOrigen.nom}
 		</rip:inputFixed>
