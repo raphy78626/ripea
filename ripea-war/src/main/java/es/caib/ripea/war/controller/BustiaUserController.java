@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
@@ -53,9 +54,6 @@ public class BustiaUserController extends BaseUserController {
 	private ExpedientService expedientService;
 	@Autowired
 	private MetaExpedientService metaExpedientService;
-	@Autowired
-	private ArxiuService arxiuService;
-
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -302,7 +300,7 @@ public class BustiaUserController extends BaseUserController {
 				metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
 		model.addAttribute(
 				"arxius",
-				arxiuService.findPermesosPerUsuari(entitatActual.getId()));
+				new ArrayList<ArxiuDto>());
 	}
 
 	private void omplirModelPerAfegirAExpedient(
