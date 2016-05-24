@@ -20,7 +20,7 @@
 <c:if test="${empty isArbreSeleccionable and empty isFullesSeleccionable}"><c:set var="isArbreSeleccionable" value="${true}"/><c:set var="isFullesSeleccionable" value="${true}"/></c:if>
 <c:if test="${empty isOcultarCounts}"><c:set var="isOcultarCounts" value="${false}"/></c:if>
 <c:if test="${empty isError}"><c:set var="isError" value="${false}"/></c:if>
-<div id="${id}" class="well" style="overflow: auto; <c:if test="${not empty height}">height: ${height}; </c:if><c:if test="${isError}">margin-bottom:10px; border-color: #A94442</c:if>">
+<div id="${id}" class="well" style="width: 100%; overflow: auto; <c:if test="${not empty height}">height: ${height}; </c:if><c:if test="${isError}">margin-bottom:10px; border-color: #A94442</c:if>">
 	<c:if test="${not empty arbre and not empty arbre.arrel}">
 		<c:set var="arrel" value="${arbre.arrel}"/>
 		<ul>
