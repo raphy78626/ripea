@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -79,49 +78,10 @@ public class PassarelaFirmaHelper {
 		return CONTEXTWEB + "/selectsignmodule/" + signaturesSetId;
 	}
 
-
-
 	public List<PassarelaFirmaPlugin> getAllPlugins(
 			HttpServletRequest request,
-			String signaturesSetID) throws Exception {
-		PassarelaFirmaSignaturesSet signaturesSet = getSignaturesSet(request, signaturesSetID);
-		// Miram si alguna signatura requerix de rubrica o segellat de temps
-		// i el SignatureSet no ofereix el generadors. Ens servirà per més
-		// endavant
-		// elegir un plugin que internament ofereixi generadors de rubrica o
-		// segell de temps
-		boolean anySignatureRequireRubric = false;
-		boolean anySignatureRequireRubricAndNotProvidesGenerator = false;
-		boolean anySignatureRequireTimeStamp = false;
-		boolean anySignatureRequireTimeStampAndNotProvidesGenerator = false;
-		boolean anySignatureRequireCSVStamp = false;
-		boolean anySignatureRequireCSVStampAndNotProvidesGenerator = false;
-		Set<String> requiredBarCodeTypes = new HashSet<String>();
-		for (FileInfoSignature fis : signaturesSet.getFileInfoSignatureArray()) {
-			if (fis.isUserRequiresTimeStamp()) {
-				anySignatureRequireTimeStamp = true;
-				if (fis.getTimeStampGenerator() == null) {
-					anySignatureRequireTimeStampAndNotProvidesGenerator = true;
-				}
-			}
-			if (fis.getSignaturesTableLocation() != FileInfoSignature.SIGNATURESTABLELOCATION_WITHOUT) {
-				anySignatureRequireRubric = true;
-				if (fis.getPdfVisibleSignature() == null || fis.getPdfVisibleSignature().getRubricGenerator() == null) {
-					anySignatureRequireRubricAndNotProvidesGenerator = true;
-				}
-			}
-			SecureVerificationCodeStampInfo csvStamp = fis.getSecureVerificationCodeStampInfo();
-			// TODO IGNORAM POSICIO CODI DE BARRES només tenim en compte la
-			// posicio del Missatge
-			if (csvStamp != null && csvStamp.getMessagePosition() != SecureVerificationCodeStampInfo.POSITION_NONE) {
-				anySignatureRequireCSVStamp = true;
-				if (csvStamp.getSecureVerificationCodeStamper() == null) {
-					anySignatureRequireCSVStampAndNotProvidesGenerator = true;
-				}
-				requiredBarCodeTypes.add(csvStamp.getBarCodeType());
-			}
-		}
-		// TODO CHECK signature Set
+			String signaturesSetId) throws Exception {
+		PassarelaFirmaSignaturesSet signaturesSet = getSignaturesSet(request, signaturesSetId);
 		List<PassarelaFirmaPlugin> plugins = getAllPluginsFromProperties();
 		if (plugins == null || plugins.size() == 0) {
 			String msg = "S'ha produit un error llegint els plugins o no se n'han definit.";
@@ -129,85 +89,16 @@ public class PassarelaFirmaHelper {
 		}
 		List<PassarelaFirmaPlugin> pluginsFiltered = new ArrayList<PassarelaFirmaPlugin>();
 		ISignatureWebPlugin signaturePlugin;
-		for (PassarelaFirmaPlugin pluginDeFirma : plugins) {
+		for (PassarelaFirmaPlugin pluginDeFirma: plugins) {
 			// 1.- Es pot instanciar el plugin ?
 			signaturePlugin = getInstanceByPluginId(pluginDeFirma.getPluginId());
 			if (signaturePlugin == null) {
-				throw new Exception("No s'ha pogut instanciar Plugin amb id " + pluginDeFirma.getPluginId());
+				throw new Exception("No s'ha pogut instanciar el plugin amb id " + pluginDeFirma.getPluginId());
 			}
-			// 2.- Hem de comprovar que el plugin ofereixi internament generació
-			// de imatges per la
-			// firma visible PDF, ja que el FileInfoSignature no conté el
-			// generador
-			if (anySignatureRequireRubric) {
-				if ((anySignatureRequireRubricAndNotProvidesGenerator && !signaturePlugin.providesRubricGenerator())
-						|| (!anySignatureRequireRubricAndNotProvidesGenerator
-								&& !signaturePlugin.acceptExternalRubricGenerator())) {
-					// Exclude Plugin
-					log.debug("Exclos plugin [" + pluginDeFirma.getNom() + "]: NO TE GENERADOR DE RUBRIQUES ");
-					continue;
-				}
-			}
-			// 3.- Hem de comprovar que el plugin ofereixi internament gestió de
-			// segellat de temps
-			// ja que el FileInfoSignature no conté el generador
-			if (anySignatureRequireTimeStamp) {
-				if (
-				// Cas 1: alguna firma no conte generador i plugin no té
-				// generador intern
-				(anySignatureRequireTimeStampAndNotProvidesGenerator && !signaturePlugin.providesTimeStampGenerator())
-						// Cas 2: totes les firmes proveeixen generador i plugin
-						// no suporta generadors externs
-						|| (!anySignatureRequireTimeStampAndNotProvidesGenerator
-								&& !signaturePlugin.acceptExternalTimeStampGenerator())) {
-					// Exclude Plugin
-					log.debug("Exclos plugin [" + pluginDeFirma.getNom() + "]: NO TE GENERADOR SEGELLAT DE TEMPS ");
-					continue;
-				}
-			}
-			// 4.- Suporta Estampacio de Codi Segur de Verificació i els tipus
-			// de Codi de Barres
-			if (anySignatureRequireCSVStamp) {
-				// 4.1.- Proveidors
-				if (
-				// Cas 1: alguna firma no conte generador i plugin no té
-				// generador intern
-				(anySignatureRequireCSVStampAndNotProvidesGenerator
-						&& !signaturePlugin.providesSecureVerificationCodeStamper())
-						// Cas 2: totes les firmes proveeixen generador i plugin
-						// no suporta generadors externs
-						|| (!anySignatureRequireCSVStampAndNotProvidesGenerator
-								&& !signaturePlugin.acceptExternalSecureVerificationCodeStamper())) {
-					// Exclude Plugin
-					log.debug("Exclos plugin [" + pluginDeFirma.getNom() + "]: NO TE GENERADOR ESTAMPACIO CSV ");
-					continue;
-				}
-				// 4.2.- Els tipus de codi de barres són suportats
-				List<String> supportedBarCodeTypes = signaturePlugin.getSupportedBarCodeTypes();
-				if (supportedBarCodeTypes == null) {
-					// Exclude Plugin
-					log.debug("Exclos plugin [" + pluginDeFirma.getNom()
-							+ "]: ESTAMPADOR CSV NO SUPORTA CODI DE BARRES 1111");
-					continue;
-				} else {
-					Set<String> intersection = new HashSet<String>(supportedBarCodeTypes); // use
-																							// the
-																							// copy
-																							// constructor
-					intersection.retainAll(requiredBarCodeTypes);
-					if (intersection.size() != requiredBarCodeTypes.size()) {
-						// Exclude Plugin
-						log.debug("Exclos plugin [" + pluginDeFirma.getNom()
-								+ "]: ESTAMPADOR CSV NO SUPORTA CODI DE BARRES 222222");
-						continue;
-					}
-				}
-			}
-			// 5.- Passa el filtre ...
+			// 2.- Passa el filtre ...
 			if (signaturePlugin.filter(request, signaturesSet)) {
 				pluginsFiltered.add(pluginDeFirma);
 			} else {
-				// Exclude Plugin
 				log.debug("Exclos plugin [" + pluginDeFirma.getNom() + "]: NO PASSA FILTRE");
 			}
 		}
@@ -216,11 +107,11 @@ public class PassarelaFirmaHelper {
 
 	public PassarelaFirmaSignaturesSet finalitzarProcesDeFirma(
 			HttpServletRequest request,
-			String signaturesSetID) {
-		PassarelaFirmaSignaturesSet pss = getSignaturesSet(request, signaturesSetID);
+			String signaturesSetId) {
+		PassarelaFirmaSignaturesSet pss = getSignaturesSet(request, signaturesSetId);
 		// Check pss is null
 		if (pss == null) {
-			String msg = "moduldefirma.caducat: " + signaturesSetID;
+			String msg = "moduldefirma.caducat: " + signaturesSetId;
 			throw new RuntimeException(msg);
 		}
 		StatusSignaturesSet sss = pss.getStatusSignaturesSet();
@@ -272,16 +163,16 @@ public class PassarelaFirmaHelper {
 			String query,
 			Map<String, IUploadedFile> uploadedFiles) throws Exception {
 		PassarelaFirmaSignaturesSet ss = getSignaturesSet(request, signaturesSetId);
-		long pluginID = ss.getPluginId();
+		long pluginId = ss.getPluginId();
 		ISignatureWebPlugin signaturePlugin;
 		try {
-			signaturePlugin = getInstanceByPluginId(pluginID);
+			signaturePlugin = getInstanceByPluginId(pluginId);
 		} catch (Exception e) {
-			String msg = "plugin.signatureweb.noexist: " + String.valueOf(pluginID);
+			String msg = "plugin.signatureweb.noexist: " + String.valueOf(pluginId);
 			throw new Exception(msg);
 		}
 		if (signaturePlugin == null) {
-			String msg = "plugin.signatureweb.noexist: " + String.valueOf(pluginID);
+			String msg = "plugin.signatureweb.noexist: " + String.valueOf(pluginId);
 			throw new Exception(msg);
 		}
 		String absoluteRequestPluginBasePath = getRequestPluginBasePath(
@@ -322,12 +213,12 @@ public class PassarelaFirmaHelper {
 	/**
 	 * Fa neteja
 	 * 
-	 * @param signaturesSetID
+	 * @param signaturesSetId
 	 * @return
 	 */
 	public PassarelaFirmaSignaturesSet getSignaturesSet(
 			HttpServletRequest request,
-			String signaturesSetID) {
+			String signaturesSetId) {
 		// Fer net peticions caducades SignaturesSet.getExpiryDate()
 		// Check si existeix algun proces de firma caducat s'ha d'esborrar
 		// Com a mínim cada minut es revisa si hi ha caducats
@@ -342,7 +233,7 @@ public class PassarelaFirmaHelper {
 				if (now > ss.getExpiryDate().getTime()) {
 					keysToDelete.add(ss);
 					SimpleDateFormat sdf = new SimpleDateFormat();
-					log.debug("Tancant Signature SET amb ID = " + id + " a causa de que està caducat " + "( ARA: "
+					log.debug("Tancant Signature SET amb id = " + id + " a causa de que està caducat " + "( ARA: "
 							+ sdf.format(new Date(now)) + " | CADUCITAT: " + sdf.format(ss.getExpiryDate()) + ")");
 				}
 			}
@@ -355,7 +246,7 @@ public class PassarelaFirmaHelper {
 				}
 			}
 		}
-		return signaturesSetsMap.get(signaturesSetID);
+		return signaturesSetsMap.get(signaturesSetId);
 	}
 
 	// -------------------------------------------------------------------------
@@ -363,18 +254,6 @@ public class PassarelaFirmaHelper {
 	// ----------------------------- U T I L I T A T S ----------------------
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
-
-	/*public void closeSignaturesSeta(HttpServletRequest request, String signaturesSetID) {
-
-		PassarelaFirmaSignaturesSet pss = getSignaturesSet(request, signaturesSetID);
-
-		if (pss == null) {
-			log.warn("NO Existeix signaturesSetID igual a " + signaturesSetID);
-			return;
-		}
-
-		closeSignaturesSet(request, pss);
-	}*/
 
 	private PassarelaFirmaSignaturesSet getSignaturesSetFirmaPassarela(
 			HttpServletRequest request,
@@ -386,7 +265,7 @@ public class PassarelaFirmaHelper {
 			String idiomaCodi,
 			String urlFinal,
 			boolean navegadorSuportaJava) throws IOException {
-		long signaturaId = generateUniqueSignaturesSetID();
+		long signaturaId = generateUniqueSignaturesSetId();
 		String signaturesSetId = new Long(signaturaId).toString();
 		Calendar caducitat = Calendar.getInstance();
 		caducitat.add(Calendar.MINUTE, 40);
@@ -436,12 +315,12 @@ public class PassarelaFirmaHelper {
 
 	private void startSignatureProcess(PassarelaFirmaSignaturesSet signaturesSet) {
 		synchronized (signaturesSetsMap) {
-			final String signaturesSetID = signaturesSet.getSignaturesSetID();
-			signaturesSetsMap.put(signaturesSetID, signaturesSet);
+			final String signaturesSetId = signaturesSet.getSignaturesSetID();
+			signaturesSetsMap.put(signaturesSetId, signaturesSet);
 		}
 	}
 
-	private long generateUniqueSignaturesSetID() {
+	private long generateUniqueSignaturesSetId() {
 		long id;
 		synchronized (PassarelaFirmaHelper.CONTEXTWEB) {
 			id = (System.currentTimeMillis() * 1000000L) + System.nanoTime() % 1000000L;
@@ -469,11 +348,11 @@ public class PassarelaFirmaHelper {
 	}
 
 	private FileInfoSignature getFileInfoSignature(
-			String signatureID,
+			String signatureId,
 			File fileToSign,
 			String mimeType,
 			String idname,
-			int locationSignTableID,
+			int locationSignTableId,
 			SignaturesTableHeader signaturesTableHeader,
 			String reason,
 			String location,
@@ -492,7 +371,7 @@ public class PassarelaFirmaHelper {
 		if (FileInfoSignature.SIGN_TYPE_PADES.equals(signType)) {
 			// PDF Visible
 			pdfInfoSignature = new PdfVisibleSignature();
-			if (locationSignTableID != FileInfoSignature.SIGNATURESTABLELOCATION_WITHOUT) {
+			if (locationSignTableId != FileInfoSignature.SIGNATURESTABLELOCATION_WITHOUT) {
 				// No tenim generadors en aquest APP
 				pdfInfoSignature.setRubricGenerator(null);
 				pdfInfoSignature.setPdfRubricRectangle(null);
@@ -513,7 +392,7 @@ public class PassarelaFirmaHelper {
 			throw new RuntimeException("Tipus d'algorisme no suportat " + signAlgorithm);
 		}
 		FileInfoSignature fis = new FileInfoSignature(
-				signatureID,
+				signatureId,
 				fileToSign,
 				mimeType,
 				idname,
@@ -525,7 +404,7 @@ public class PassarelaFirmaHelper {
 				signType,
 				signAlgorithm,
 				signMode,
-				locationSignTableID,
+				locationSignTableId,
 				signaturesTableHeader,
 				pdfInfoSignature,
 				csvStampInfo,
@@ -535,28 +414,28 @@ public class PassarelaFirmaHelper {
 	}
 
 	private void closeSignaturesSet(HttpServletRequest request, PassarelaFirmaSignaturesSet pss) {
-		Long pluginID = pss.getPluginId();
-		final String signaturesSetID = pss.getSignaturesSetID();
-		if (pluginID == null) {
+		Long pluginId = pss.getPluginId();
+		final String signaturesSetId = pss.getSignaturesSetID();
+		if (pluginId == null) {
 			// Encara no s'ha asignat plugin al signatureset
 		} else {
 			ISignatureWebPlugin signaturePlugin = null;
 			try {
-				signaturePlugin = getInstanceByPluginId(pluginID);
+				signaturePlugin = getInstanceByPluginId(pluginId);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 				return;
 			}
 			if (signaturePlugin == null) {
-				log.error("plugin.signatureweb.noexist: " + String.valueOf(pluginID));
+				log.error("plugin.signatureweb.noexist: " + String.valueOf(pluginId));
 			}
 			try {
-				signaturePlugin.closeSignaturesSet(request, signaturesSetID);
+				signaturePlugin.closeSignaturesSet(request, signaturesSetId);
 			} catch (Exception e) {
-				log.error("Error borrant dades d'un SignaturesSet " + signaturesSetID + ": " + e.getMessage(), e);
+				log.error("Error borrant dades d'un SignaturesSet " + signaturesSetId + ": " + e.getMessage(), e);
 			}
 		}
-		signaturesSetsMap.remove(signaturesSetID);
+		signaturesSetsMap.remove(signaturesSetId);
 	}
 
 	private List<PassarelaFirmaPlugin> plugins;

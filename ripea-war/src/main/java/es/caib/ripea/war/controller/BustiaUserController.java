@@ -25,7 +25,6 @@ import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
-import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContenidorService;
 import es.caib.ripea.core.api.service.ExpedientService;
