@@ -25,14 +25,14 @@
 		<slf4j.version>1.5.11</slf4j.version>
 	</properties>
 	<modules>
-		<module>ripea-core</module>
-		<!--module>ripea-war</module-->
+		<!--module>ripea-core</module>
+		<module>ripea-war</module>
 		<module>ripea-core-api</module>
 		<module>ripea-plugin</module>
 		<module>ripea-plugin-impl</module>
-		<!--module>ripea-ear</module>
-		<module>ripea-applet</module-->
-		<module>ripea-lib-common</module>
+		<module>ripea-ear</module>
+		<module>ripea-applet</module>
+		<module>ripea-lib-common</module-->
 		<module>ripea-ws-client</module>
 	</modules>
 	<build>
