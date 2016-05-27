@@ -259,12 +259,15 @@ CREATE TABLE IPA_DADA
 
 CREATE TABLE IPA_EXPEDIENT
 (
-  ID            NUMBER(19)                      NOT NULL,
-  OBERT         NUMBER(1),
-  TANCAT_MOTIU  VARCHAR2(1024),
-  ANIO          NUMBER (10),
-  SEQUENCIA     NUMBER (19),
-  ARXIU_ID      NUMBER(19)                      NOT NULL
+  ID                 NUMBER(19)                 NOT NULL,
+  OBERT              NUMBER(1),
+  TANCAT_MOTIU       VARCHAR2(1024),
+  ANIO               NUMBER (10),
+  SEQUENCIA          NUMBER (19),
+  ARXIU_ID           NUMBER(19)                 NOT NULL,
+  SISTRA_CLAU        VARCHAR2(100),
+  SISTRA_PUBLICAT    NUMBER(1),
+  SISTRA_UNITAT_ADM  NUMBER(10)
 );
 
 

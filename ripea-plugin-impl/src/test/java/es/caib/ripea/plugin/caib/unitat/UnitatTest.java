@@ -12,9 +12,9 @@ import javax.xml.ws.BindingProvider;
 
 import org.junit.Test;
 
-import es.caib.dir3caib.ws.unidad.Dir3CaibObtenerUnidadesWs;
-import es.caib.dir3caib.ws.unidad.Dir3CaibObtenerUnidadesWsService;
-import es.caib.dir3caib.ws.unidad.UnidadTF;
+import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWs;
+import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWsService;
+import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 
 /**
  * Client de test per al servei bustia de RIPEA.

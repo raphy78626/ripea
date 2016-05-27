@@ -16,7 +16,6 @@ public class RegistreAnnex {
 	private String titol;
 	private String fitxerNom;
 	private int fitxerTamany;
-	private byte[] fitxerContingut;
 	private String fitxerTipusMime;
 	private String fitxerGestioDocumentalId;
 	private Date dataCaptura;
@@ -30,7 +29,6 @@ public class RegistreAnnex {
 	private String firmaFitxerNom;
 	private int firmaFitxerTamany;
 	private String firmaFitxerTipusMime;
-	private byte[] firmaFitxerContingut;
 	private String firmaFitxerGestioDocumentalId;
 	private String firmaCsv;
 	private String timestamp;
@@ -55,12 +53,6 @@ public class RegistreAnnex {
 	}
 	public void setFitxerTamany(int fitxerTamany) {
 		this.fitxerTamany = fitxerTamany;
-	}
-	public byte[] getFitxerContingut() {
-		return fitxerContingut;
-	}
-	public void setFitxerContingut(byte[] fitxerContingut) {
-		this.fitxerContingut = fitxerContingut;
 	}
 	public String getFitxerTipusMime() {
 		return fitxerTipusMime;
@@ -133,12 +125,6 @@ public class RegistreAnnex {
 	}
 	public void setFirmaFitxerTamany(int firmaFitxerTamany) {
 		this.firmaFitxerTamany = firmaFitxerTamany;
-	}
-	public byte[] getFirmaFitxerContingut() {
-		return firmaFitxerContingut;
-	}
-	public void setFirmaFitxerContingut(byte[] firmaFitxerContingut) {
-		this.firmaFitxerContingut = firmaFitxerContingut;
 	}
 	public String getFirmaFitxerTipusMime() {
 		return firmaFitxerTipusMime;

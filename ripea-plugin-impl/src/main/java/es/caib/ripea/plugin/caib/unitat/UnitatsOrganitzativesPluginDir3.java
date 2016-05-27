@@ -14,9 +14,9 @@ import javax.xml.ws.BindingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.dir3caib.ws.unidad.Dir3CaibObtenerUnidadesWs;
-import es.caib.dir3caib.ws.unidad.Dir3CaibObtenerUnidadesWsService;
-import es.caib.dir3caib.ws.unidad.UnidadTF;
+import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWs;
+import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWsService;
+import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
@@ -46,7 +46,7 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 								unidad.getCodigo(),
 								unidad.getDenominacion(),
 								unidad.getCodigo(), // CifNif
-								unidad.getFechaAltaOficial() != null ? unidad.getFechaAltaOficial().toGregorianCalendar().getTime() : null,
+								unidad.getFechaAltaOficial(),
 								unidad.getCodigoEstadoEntidad(),
 								unidad.getCodUnidadSuperior(),
 								unidad.getCodUnidadRaiz());
@@ -80,7 +80,7 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 						unidad.getCodigo(),
 						unidad.getDenominacion(),
 						unidad.getCodigo(), // CifNif
-						unidad.getFechaAltaOficial() != null ? unidad.getFechaAltaOficial().toGregorianCalendar().getTime() : null,
+						unidad.getFechaAltaOficial(),
 						unidad.getCodigoEstadoEntidad(),
 						unidad.getCodUnidadSuperior(),
 						unidad.getCodUnidadRaiz());

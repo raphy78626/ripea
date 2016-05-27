@@ -29,7 +29,8 @@
 						</goals>
 						<configuration>
 							<wsdlUrls>
-								<wsdlUrl>${basedir}/../doc/wsdl/bustia.wsdl</wsdlUrl>
+								<wsdlUrl>${basedir}/../doc/wsdl/bustiav0.wsdl</wsdlUrl>
+								<wsdlUrl>${basedir}/../doc/wsdl/bustiav1.wsdl</wsdlUrl>
 							</wsdlUrls>
 							<verbose>true</verbose>
 							<sourceDestDir>${basedir}/src/main/java</sourceDestDir>

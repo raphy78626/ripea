@@ -13,9 +13,9 @@ import javax.xml.ws.handler.Handler;
 
 import org.junit.Test;
 
-import es.caib.ripea.ws.bustia.Bustia;
-import es.caib.ripea.ws.bustia.BustiaEnviamentTipus;
-import es.caib.ripea.ws.bustia.BustiaService;
+import es.caib.ripea.ws.v0.bustia.BustiaContingutTipus;
+import es.caib.ripea.ws.v0.bustia.BustiaV0;
+import es.caib.ripea.ws.v0.bustia.BustiaV0Service;
 
 /**
  * Client de test per al servei bustia de RIPEA.
@@ -31,20 +31,18 @@ public class BustiaTest {
 
 	@Test
 	public void test() throws MalformedURLException {
-		getBustiaServicePort().enviarUnitatAdministrativa(
-				new Long(1),
+		getBustiaServicePort().enviarContingut(
+				"entitatCodi",
 				"unitatCodi",
-				BustiaEnviamentTipus.EXPEDIENT,
-				"expedientRef",
-				"documentRef",
-				null);
+				BustiaContingutTipus.EXPEDIENT,
+				"ref");
 	}
 
 
 
-	private Bustia getBustiaServicePort() throws MalformedURLException {
+	private BustiaV0 getBustiaServicePort() throws MalformedURLException {
 		URL url = new URL(ENDPOINT_ADDRESS + "?wsdl");
-		Bustia bustia = new BustiaService(url).getBustiaServicePort();
+		BustiaV0 bustia = new BustiaV0Service(url).getBustiaV0ServicePort();
 		@SuppressWarnings("rawtypes")
 		List<Handler> handlerChain = new ArrayList<Handler>();
 		handlerChain.add(new LogMessageHandler());

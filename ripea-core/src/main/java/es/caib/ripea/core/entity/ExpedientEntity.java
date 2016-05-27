@@ -57,7 +57,7 @@ public class ExpedientEntity extends NodeEntity {
 	protected boolean sistraPublicat;
 	@Column(name = "sistra_unitat_adm")
 	protected Integer sistraUnitatAdministrativa;
-	@Column(name = "sistra_clau")
+	@Column(name = "sistra_clau", length = 100)
 	protected String sistraClau;
 
 

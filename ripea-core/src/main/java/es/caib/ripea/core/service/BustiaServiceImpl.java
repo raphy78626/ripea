@@ -1050,7 +1050,7 @@ public class BustiaServiceImpl implements BustiaService {
 		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
 				registreAnnex.getTitol(),
 				registreAnnex.getFitxerNom(),
-				(registreAnnex.getFitxerContingut() != null) ? registreAnnex.getFitxerContingut().length : -1,
+				registreAnnex.getFitxerTamany(),
 				registreAnnex.getFitxerGestioDocumentalId(),
 				registreAnnex.getDataCaptura(),
 				RegistreAnnexOrigenEnum.valorAsEnum(registreAnnex.getOrigenCiutadaAdmin()),

@@ -161,7 +161,6 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 				RegistreAnnex annex = new RegistreAnnex();
 				annex.setTitol(anexo.getTitulo());
 				annex.setFitxerNom(anexo.getNombreFicheroAnexado());
-				annex.setFitxerContingut(anexo.getFicheroAnexado());
 				annex.setFitxerTipusMime(anexo.getTipoMIMEFicheroAnexado());
 				annex.setNtiTipusDocument(anexo.getTipoDocumental());
 				annex.setNtiElaboracioEstat(anexo.getValidezDocumento());
@@ -172,7 +171,6 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 				annex.setDataCaptura(anexo.getFechaCaptura());
 				annex.setFirmaMode(anexo.getModoFirma());
 				annex.setFirmaFitxerNom(anexo.getNombreFirmaAnexada());
-				annex.setFirmaFitxerContingut(anexo.getFirmaAnexada());
 				annex.setFirmaFitxerTipusMime(anexo.getTipoMIMEFirmaAnexada());
 				annex.setFirmaCsv(anexo.getFirmacsv());
 				annexos.add(annex);

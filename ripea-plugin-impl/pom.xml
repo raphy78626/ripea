@@ -87,6 +87,11 @@
 			<version>3.0.5</version>
 		</dependency>
   		<dependency>
+			<groupId>es.caib.dir3caib</groupId>
+			<artifactId>dir3caib-ws-api</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+  		<dependency>
 			<groupId>es.caib</groupId>
 			<artifactId>valcert-sar-axis</artifactId>
 			<version>1.5</version>
@@ -152,7 +157,7 @@
 						<configuration>
 							<wsdlUrls>
 								<wsdlUrl>${basedir}/wsdl/cws/CWS.wsdl</wsdlUrl>
-								<wsdlUrl>${basedir}/wsdl/dir3caib/Dir3CaibObtenerUnidades.wsdl</wsdlUrl>
+								<!--wsdlUrl>${basedir}/wsdl/dir3caib/Dir3CaibObtenerUnidades.wsdl</wsdlUrl-->
 								<wsdlUrl>${basedir}/wsdl/sistra-zonaper/BackofficeFacade.wsdl</wsdlUrl>
 								<wsdlUrl>${basedir}/wsdl/sistra-regtel/BackofficeFacade.wsdl</wsdlUrl>
 							</wsdlUrls>
@@ -190,6 +195,11 @@
 			<name>Regweb Maven repository</name>
 			<id>es.caib.regweb</id>
 			<url>https://github.com/GovernIB/registre/raw/gh-pages/maven</url>
+		</repository>
+		<repository>
+			<name>Dir3caib Maven repository</name>
+			<id>es.caib.dir3caib</id>
+			<url>https://github.com/GovernIB/dir3caib/raw/gh-pages/maven</url>
 		</repository>
 		<repository>
 			<name>Local Maven repository</name>

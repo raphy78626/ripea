@@ -245,6 +245,9 @@
         <dependent-module archiveName="regweb3-ws-api-3.0.5.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/regweb3/regweb3-ws-api/3.0.5/regweb3-ws-api-3.0.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="dir3caib-ws-api-1.0.3.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/dir3caib/dir3caib-ws-api/1.0.3/dir3caib-ws-api-1.0.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="valcert-sar-axis-1.5.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/valcert-sar-axis/1.5/valcert-sar-axis-1.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
