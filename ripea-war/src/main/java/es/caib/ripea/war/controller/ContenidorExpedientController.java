@@ -89,7 +89,7 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(
 				"metaExpedients",
 				metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
-		if(command.getMetaNodeId() != null) {				
+		if (command.getMetaNodeId() != null) {	
 			model.addAttribute(
 					"arxius",
 					arxiuService.findPermesosPerUsuariIMetaExpedient(
@@ -97,8 +97,7 @@ public class ContenidorExpedientController extends BaseUserController {
 							command.getMetaNodeId()));
 		} else {
 			model.addAttribute("arxius", new ArrayList<ArxiuDto>());
-		}		
-
+		}
 		return "contenidorExpedientForm";
 	}
 	@RequestMapping(value = "/{contenidorId}/expedient/new", method = RequestMethod.POST)

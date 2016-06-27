@@ -13,6 +13,31 @@
 	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/js/select2.min.js"/>"></script>
+<script>
+	$(document).ready(function() {
+		$("#metaNodeId").change(function() {
+			$('#arxiuId').select2('val', '', true);
+			$('#arxiuId option[value!=""]').remove();
+			var metaExpedientId = $(this).val();
+			if(metaExpedientId != null) {
+				var baseUrl = "<c:url value="/userajax/metaExpedient/"/>" + metaExpedientId + "/arxius";
+				$.get(baseUrl)
+					.done(function(data) {
+						for (var i = 0; i < data.length; i++) {
+							$('#arxiuId').append('<option value="' + data[i].id + '">' + data[i].nom + '</option>');
+						}	
+						$('#arxiuId').change();
+					})
+					.fail(function() {
+						alert("<spring:message code="error.jquery.ajax"/>");
+					});
+			} else {
+				$('#arxiuId').change();
+			}
+		});
+		$("#metaNodeId").trigger('change');
+	});
+</script>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="expedientCommand">

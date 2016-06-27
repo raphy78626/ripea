@@ -14,7 +14,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
-import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
@@ -133,7 +132,22 @@ public class ArxiuServiceBean implements ArxiuService {
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public List<MetaExpedientDto> getMetaExpedientsArxiu(Long entitatId, Long arxiuId) {
-		return delegate.getMetaExpedientsArxiu(entitatId, arxiuId);
+	public List<ArxiuDto> findAmbMetaExpedient(
+			Long entitatId,
+			Long metaExpedientId) throws NotFoundException {
+		return delegate.findAmbMetaExpedient(
+				entitatId,
+				metaExpedientId);
 	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<ArxiuDto> findAmbMetaExpedientPerCreacio(
+			Long entitatId, 
+			Long metaExpedientId) {
+		return delegate.findAmbMetaExpedientPerCreacio(
+				entitatId,
+				metaExpedientId);
+	}
+
 }

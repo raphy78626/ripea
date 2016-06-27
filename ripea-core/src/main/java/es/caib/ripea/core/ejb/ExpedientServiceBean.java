@@ -30,8 +30,6 @@ public class ExpedientServiceBean implements ExpedientService {
 	@Autowired
 	ExpedientService delegate;
 
-
-
 	@Override
 	@RolesAllowed("tothom")
 	public ExpedientDto create(
@@ -154,7 +152,10 @@ public class ExpedientServiceBean implements ExpedientService {
 			Long entitatId,
 			Long id,
 			Long acumulatId) {
-		delegate.acumular(entitatId, id, acumulatId);
+		delegate.acumular(
+				entitatId,
+				id,
+				acumulatId);
 	}
 
 	@Override

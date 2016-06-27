@@ -194,7 +194,8 @@ public class EntityComprovarHelper {
 
 	public MetaExpedientEntity comprovarMetaExpedient(
 			EntitatEntity entitat,
-			Long id) {
+			Long id,
+			boolean comprovarPermisCreate) {
 		MetaExpedientEntity metaExpedient = metaExpedientRepository.findOne(
 				id);
 		if (metaExpedient == null) {
@@ -207,6 +208,21 @@ public class EntityComprovarHelper {
 					id,
 					MetaExpedientEntity.class,
 					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat del meta-expedient");
+		}
+		if (comprovarPermisCreate) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			boolean granted = permisosHelper.isGrantedAll(
+					metaExpedient.getId(),
+					MetaNodeEntity.class,
+					new Permission[] {ExtendedPermission.CREATE},
+					auth);
+			if (!granted) {
+				throw new PermissionDeniedException(
+						id,
+						MetaDocumentEntity.class,
+						auth.getName(),
+						"CREATE");
+			}
 		}
 		return metaExpedient;
 	}

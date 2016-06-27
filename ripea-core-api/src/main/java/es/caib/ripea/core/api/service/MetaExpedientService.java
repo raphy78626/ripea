@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaExpedientMetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
@@ -420,6 +419,19 @@ public interface MetaExpedientService {
 			Long permisId) throws NotFoundException;
 
 	/**
+	 * Consulta els meta-expedients actius per una entitat pels usuaris admins.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @return La llista de meta-expedients actius per l'entitat especificada.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public List<MetaExpedientDto> findActiveByEntitatPerAdmin(
+			Long entitatId) throws NotFoundException;
+
+	/**
 	 * Consulta els meta-expedients actius per una entitat amb el permis CREATE per
 	 * a l'usuari actual.
 	 * 
@@ -482,15 +494,18 @@ public interface MetaExpedientService {
 			Long entitatId,
 			Long metaExpedientId,
 			Long arxiuId) throws NotFoundException;
-	/**
-	 * Consulta la llista d'arxius del meta-expedient.
+
+	/** 
+	 * Consulta la llista de meta-expedients associats amb un arxiu. 
+	 * 
 	 * @param entitatId
-	 * @param metaExpedientId
-	 * @return
+	 *            Atribut id de l'entitat.
+	 * @param arxiuId
+	 *            Atribut id de l'arxiu
+	 * @return la llista de meta-expedients.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public List<ArxiuDto> findArxiusMetaExpedient(
+	public List<MetaExpedientDto> findAmbArxiu(
 			Long entitatId, 
-			Long metaExpedientId);
+			Long arxiuId);
 
 }

@@ -215,7 +215,7 @@ public class BustiaUserContingutController extends BaseUserController {
 		model.addAttribute(
 				"metaExpedients",
 				metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
-		if(metaExpedientId != null) {
+		if (metaExpedientId != null) {
 			model.addAttribute(
 					"arxius",
 					arxiuService.findPermesosPerUsuariIMetaExpedient(

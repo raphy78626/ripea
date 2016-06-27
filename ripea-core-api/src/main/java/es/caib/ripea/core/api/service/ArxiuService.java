@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
-import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
@@ -178,9 +177,7 @@ public interface ArxiuService {
 	@PreAuthorize("hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesUser(
 			Long entitatId) throws NotFoundException;
-	
-	
-	
+
 	/**
 	 * Afegeix el meta-expedient en la relació amb l'arxiu si aquest no existia.
 	 * 
@@ -203,7 +200,7 @@ public interface ArxiuService {
 	 * Esborra la relació de l'arxiu amb el meta-expedient.
 	 * 
 	 * @param entitatId
-	 *            Id de l'entitat.
+	 *            Atribut id de l'entitat.
 	 * @param id
 	 *            Atribut id de l'arxiu del qual es vol esborrar la relació amb el meta-expedient.
 	 * @param metaExpedientId
@@ -217,14 +214,36 @@ public interface ArxiuService {
 			Long id,
 			Long metaExpedientId) throws NotFoundException;
 
-	/** Consulta la llista d'arxius del meta expedient. 
+	/**
+	 * Consulta la llista d'arxius del meta-expedient.
 	 * 
 	 * @param entitatId
-	 * @param arxiuId
-	 * @return
+	 *            Atribut id de l'entitat.
+	 * @param id
+	 *            Atribut id de l'arxiu.
+	 * @return la llista d'arxius.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	public List<MetaExpedientDto> getMetaExpedientsArxiu(
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public List<ArxiuDto> findAmbMetaExpedient(
 			Long entitatId, 
-			Long arxiuId);
+			Long metaExpedientId) throws NotFoundException;
+
+	/**
+	 * Consulta la llista d'arxius del meta-expedient per a la creació d'expedients.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param id
+	 *            Atribut id de l'arxiu.
+	 * @return la llista d'arxius.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<ArxiuDto> findAmbMetaExpedientPerCreacio(
+			Long entitatId, 
+			Long metaExpedientId) throws NotFoundException;
 
 }

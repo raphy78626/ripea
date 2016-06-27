@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.ripea.core.api.dto.ArxiuDto;
+import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.service.AplicacioService;
+import es.caib.ripea.core.api.service.ArxiuService;
 
 /**
  * Controlador per a les consultes ajax dels usuaris normals.
@@ -25,10 +28,12 @@ import es.caib.ripea.core.api.service.AplicacioService;
  */
 @Controller
 @RequestMapping("/userajax") // No podem posar "/ajaxuser" per mor del AjaxInterceptor
-public class AjaxUserController {
+public class AjaxUserController extends BaseUserController {
 
 	@Autowired
-	AplicacioService aplicacioService;
+	private AplicacioService aplicacioService;
+	@Autowired
+	private ArxiuService arxiuService;
 
 
 
@@ -48,6 +53,18 @@ public class AjaxUserController {
 			@PathVariable String text,
 			Model model) {
 		return aplicacioService.findUsuariAmbText(text);
+	}
+
+	@RequestMapping(value = "/metaExpedient/{metaExpedientId}/arxius", method = RequestMethod.GET)
+	@ResponseBody
+	public List<ArxiuDto> arxiusAmbMetaExpedient(
+			HttpServletRequest request,
+			@PathVariable Long metaExpedientId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return arxiuService.findAmbMetaExpedientPerCreacio(
+				entitatActual.getId(),
+				metaExpedientId);
 	}
 
 }

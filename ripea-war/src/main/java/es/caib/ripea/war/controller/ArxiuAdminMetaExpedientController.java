@@ -63,7 +63,9 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 			@PathVariable Long arxiuId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<MetaExpedientDto> metaExpedients = arxiuService.getMetaExpedientsArxiu(entitatActual.getId(), arxiuId);
+		List<MetaExpedientDto> metaExpedients = metaExpedientService.findAmbArxiu(
+				entitatActual.getId(),
+				arxiuId);
 		return PaginacioHelper.getPaginaPerDatatables(
 				request,
 				metaExpedients);
@@ -77,17 +79,15 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 			@PathVariable Long arxiuId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		
 		ArxiuDto arxiu = arxiuService.findById(entitatActual.getId(), arxiuId);
 		model.addAttribute("arxiu", arxiu);
 		// Consulta els meta-expedients en els que té permisos
-		List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId());
+		List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiveByEntitatPerAdmin(
+				entitatActual.getId());
 		model.addAttribute(
 				"metaExpedients",
-				metaExpedients
-				);
+				metaExpedients);
 		model.addAttribute(new ArxiuMetaExpedientCommand());
-
 		return "arxiuAdminMetaExpedientForm";
 	}
 
@@ -105,7 +105,8 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 					"arxiu",
 					arxiu);
 			// Consulta els meta-expedients en els que té permisos
-			List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId());
+			List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiveByEntitatPerAdmin(
+					entitatActual.getId());
 			model.addAttribute(
 					"metaExpedients",
 					metaExpedients
@@ -114,7 +115,9 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 		}
 		// Comprova si la relació ja existeix
 		MetaExpedientDto metaExpedient = metaExpedientService.findById(entitatActual.getId(), command.getMetaExpedientId());
-		List<MetaExpedientDto> metaExpedients = arxiuService.getMetaExpedientsArxiu(entitatActual.getId(), arxiuId);
+		List<MetaExpedientDto> metaExpedients = metaExpedientService.findAmbArxiu(
+				entitatActual.getId(),
+				arxiuId);
 		if(metaExpedients.contains(metaExpedient)) {
 			return getModalControllerReturnValueSuccess(
 					request,

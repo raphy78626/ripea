@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
-import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
@@ -33,7 +32,6 @@ import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContenidorHelper;
-import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
@@ -71,8 +69,6 @@ public class ArxiuServiceImpl implements ArxiuService {
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-	@Resource
-	private ConversioTipusHelper conversioTipusHelper;
 
 
 
@@ -316,7 +312,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 		}
 		return resposta;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<ArxiuDto> findPermesosPerUsuariIMetaExpedient(
@@ -333,12 +329,11 @@ public class ArxiuServiceImpl implements ArxiuService {
 				false,
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
-				entitat, 
-				metaExpedientId);
-		
-		return toArxiuDto(metaExpedient.getArxius());		
+				entitat,
+				metaExpedientId,
+				false);
+		return toArxiuDto(metaExpedient.getArxius());
 	}
-
 
 	@Transactional(readOnly = true)
 	@Override
@@ -373,6 +368,108 @@ public class ArxiuServiceImpl implements ArxiuService {
 				entitat,
 				true,
 				true);
+	}
+
+	@Override
+	@Transactional
+	public void addMetaExpedient(
+			Long entitatId, 
+			Long id, 
+			Long metaExpedientId) throws NotFoundException {
+		logger.debug("Afegint la relació amb meta-expedient per a l'arxiu ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "metaExpedientId=" + metaExpedientId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				id);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat, 
+				metaExpedientId,
+				false);
+		if (!arxiu.getMetaExpedients().contains(metaExpedient)) {
+			arxiu.getMetaExpedients().add(metaExpedient);
+			arxiuRepository.saveAndFlush(arxiu);	
+		}
+	}
+
+	@Override
+	@Transactional
+	public void removeMetaExpedient(
+			Long entitatId, 
+			Long id, 
+			Long metaExpedientId) throws NotFoundException {
+		logger.debug("Esborrant relació amb meta-expedient per a l'arxiu ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "metaExpedientId=" + metaExpedientId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				id);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat, 
+				metaExpedientId,
+				false);
+		arxiu.getMetaExpedients().remove(metaExpedient);
+		arxiuRepository.saveAndFlush(arxiu);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ArxiuDto> findAmbMetaExpedient(
+			Long entitatId, 
+			Long id) {
+		logger.debug("Consulta els arxius del meta-expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat,
+				id,
+				false);
+		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
+		for (ArxiuEntity arxiu: metaExpedient.getArxius()) {
+			resposta.add(toArxiuDto(arxiu));
+		}
+		return resposta;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ArxiuDto> findAmbMetaExpedientPerCreacio(
+			Long entitatId, 
+			Long id) {
+		logger.debug("Consulta els arxius del meta-expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat,
+				id,
+				true);
+		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
+		for (ArxiuEntity arxiu: metaExpedient.getArxius()) {
+			resposta.add(toArxiuDto(arxiu));
+		}
+		return resposta;
 	}
 
 
@@ -483,87 +580,4 @@ public class ArxiuServiceImpl implements ArxiuService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ArxiuServiceImpl.class);
 
-
-
-	@Override
-	@Transactional
-	public void addMetaExpedient(
-			Long entitatId, 
-			Long id, 
-			Long metaExpedientId) throws NotFoundException {
-		logger.debug("Afegint la relació amb meta-expedient per a l'arxiu ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "metaExpedientId=" + metaExpedientId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
-				entitat,
-				id);
-		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
-				entitat, 
-				metaExpedientId);
-		
-		// Si no està relacionat afegeix la relació i guarda
-		if(!arxiu.getMetaExpedients().contains(metaExpedient)) {
-			arxiu.getMetaExpedients().add(metaExpedient);
-			arxiuRepository.saveAndFlush(arxiu);	
-		}
-	}
-
-	@Override
-	@Transactional
-	public void removeMetaExpedient(
-			Long entitatId, 
-			Long id, 
-			Long metaExpedientId) throws NotFoundException {
-		logger.debug("Esborrant relació amb meta-expedient per a l'arxiu ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "metaExpedientId=" + metaExpedientId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
-				entitat,
-				id);
-		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
-				entitat, 
-				metaExpedientId);
-		
-		// Esborra la relació i guarda
-		arxiu.getMetaExpedients().remove(metaExpedient);
-		arxiuRepository.saveAndFlush(arxiu);
-	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	public List<MetaExpedientDto> getMetaExpedientsArxiu(
-			Long entitatId,
-			Long id) throws NotFoundException {
-		logger.debug("Consultant la llista de meta-expedients per l'arxiu ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				false,
-				true);
-		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
-				entitat,
-				id);
-		// Ompl la llista de meta-expedients
-		List<MetaExpedientDto> resposta = new ArrayList<MetaExpedientDto>();
-		for(MetaExpedientEntity metaExpedient : arxiu.getMetaExpedients()) {
-			resposta.add( conversioTipusHelper.convertir(
-					metaExpedient,
-					MetaExpedientDto.class));
-		}
-		return resposta;
-	}	
 }

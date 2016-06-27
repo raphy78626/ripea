@@ -19,29 +19,29 @@
 <script>
 	$(document).ready(function() {
 		$("#metaNodeId").change(function() {
-			// Buida les opcions del select2
-			$('#arxiuId').select2('val', '', true);
+			$('#arxiuId').select2(
+					'val',
+					'',
+					true);
 			$('#arxiuId option[value!=""]').remove();
 			var metaExpedientId = $(this).val();
-			if(metaExpedientId != null) {
-				// Obté la llista d'arxius per a aquell node contenidor
-				var baseUrl = "<c:url value="/metaExpedient/"/>" + metaExpedientId + "/arxiu/findAll";
-				$.get(baseUrl)
-					.done(function(data) {
+			if (metaExpedientId != null) {
+				var baseUrl = "<c:url value="/userajax/metaExpedient/"/>" + metaExpedientId + "/arxius";
+				$.get(baseUrl).
+					done(function(data) {
 						for (var i = 0; i < data.length; i++) {
 							$('#arxiuId').append('<option value="' + data[i].id + '">' + data[i].nom + '</option>');
-						}	
+						}
 						$('#arxiuId').change();
-					})
-					.fail(function() {
+					}).
+					fail(function() {
 						alert("<spring:message code="error.jquery.ajax"/>");
 					});
 			} else {
 				$('#arxiuId').change();
 			}
 		})
-		if ($("#id").val() == "" )
-			$("#metaNodeId").change();
+		$("#metaNodeId").trigger('change');
 	});
 </script>
 </head>

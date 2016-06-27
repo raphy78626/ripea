@@ -12,7 +12,6 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaExpedientMetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
@@ -223,6 +222,13 @@ public class MetaExpedientServiceBean implements MetaExpedientService {
 	}
 
 	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public List<MetaExpedientDto> findActiveByEntitatPerAdmin(
+			Long entitatId) {
+		return delegate.findActiveByEntitatPerAdmin(entitatId);
+	}
+
+	@Override
 	@RolesAllowed("tothom")
 	public List<MetaExpedientDto> findActiveByEntitatPerCreacio(
 			Long entitatId) {
@@ -239,8 +245,8 @@ public class MetaExpedientServiceBean implements MetaExpedientService {
 	@Override
 	@RolesAllowed("IPA_ADMIN")
 	public void addArxiu(
-			Long entitatId, 
-			Long id, 
+			Long entitatId,
+			Long id,
 			Long arxiuId) throws NotFoundException {
 		delegate.addArxiu(entitatId, id, arxiuId);
 	}
@@ -248,17 +254,20 @@ public class MetaExpedientServiceBean implements MetaExpedientService {
 	@Override
 	@RolesAllowed("IPA_ADMIN")
 	public void removeArxiu(
-			Long entitatId, 
-			Long metaExpedientId, 
+			Long entitatId,
+			Long metaExpedientId,
 			Long arxiuId) throws NotFoundException {
 		delegate.removeArxiu(entitatId, metaExpedientId, arxiuId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public List<ArxiuDto> findArxiusMetaExpedient(
-			Long entitatId, 
-			Long metaExpedientId) {
-		return delegate.findArxiusMetaExpedient(entitatId, metaExpedientId);
+	public List<MetaExpedientDto> findAmbArxiu(
+			Long entitatId,
+			Long arxiuId) throws NotFoundException {
+		return delegate.findAmbArxiu(
+				entitatId,
+				arxiuId);
 	}
+
 }

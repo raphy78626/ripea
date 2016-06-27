@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaExpedientMetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
@@ -99,7 +98,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 		if (metaExpedient.getPareId() != null) {
 			metaExpedientPare = entityComprovarHelper.comprovarMetaExpedient(
 					entitat,
-					metaExpedient.getPareId());
+					metaExpedient.getPareId(),
+					false);
 		}
 		MetaExpedientEntity entity = MetaExpedientEntity.getBuilder(
 				metaExpedient.getCodi(),
@@ -128,12 +128,14 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedientEntitiy = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				metaExpedient.getId());
+				metaExpedient.getId(),
+				false);
 		MetaExpedientEntity metaExpedientPare = null;
 		if (metaExpedient.getPareId() != null) {
 			metaExpedientPare = entityComprovarHelper.comprovarMetaExpedient(
 					entitat,
-					metaExpedient.getPareId());
+					metaExpedient.getPareId(),
+					false);
 		}
 		metaExpedientEntitiy.update(
 				metaExpedient.getCodi(),
@@ -163,7 +165,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		metaExpedient.updateActiu(actiu);
 		return conversioTipusHelper.convertir(
 				metaExpedient,
@@ -183,7 +186,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		metaExpedientRepository.delete(metaExpedient);
 		return conversioTipusHelper.convertir(
 				metaExpedient,
@@ -203,7 +207,10 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(entitat, id);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat,
+				id,
+				false);
 		MetaExpedientDto resposta = conversioTipusHelper.convertir(
 				metaExpedient,
 				MetaExpedientDto.class);
@@ -315,7 +322,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaDadaEntity metaDada = entityComprovarHelper.comprovarMetaDada(
 				entitat,
 				metaDadaId);
@@ -346,7 +354,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaNodeMetaDadaEntity metaNodeMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
 				entitat,
 				metaExpedient,
@@ -373,7 +382,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaNodeMetaDadaEntity metaExpedientMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
 				entitat,
 				metaExpedient,
@@ -401,7 +411,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaNodeMetaDadaEntity metaExpedientMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
 				entitat,
 				metaExpedient,
@@ -429,7 +440,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaNodeMetaDadaEntity metaNodeMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
 				entitat,
 				metaExpedient,
@@ -460,7 +472,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaDocumentEntity metaDocument = entityComprovarHelper.comprovarMetaDocument(
 				entitat,
 				metaDocumentId,
@@ -492,7 +505,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = entityComprovarHelper.comprovarMetaExpedientMetaDocument(
 				entitat,
 				metaExpedient,
@@ -519,7 +533,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = entityComprovarHelper.comprovarMetaExpedientMetaDocument(
 				entitat,
 				metaExpedient,
@@ -547,7 +562,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = entityComprovarHelper.comprovarMetaExpedientMetaDocument(
 				entitat,
 				metaExpedient,
@@ -575,7 +591,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		MetaExpedientMetaDocumentEntity metaExpedientMetaDocument = entityComprovarHelper.comprovarMetaExpedientMetaDocument(
 				entitat,
 				metaExpedient,
@@ -600,7 +617,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		return permisosHelper.findPermisos(
 				id,
 				MetaNodeEntity.class);
@@ -623,7 +641,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		permisosHelper.updatePermis(
 				id,
 				MetaNodeEntity.class,
@@ -647,7 +666,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false);
 		entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
-				id);
+				id,
+				false);
 		permisosHelper.deletePermis(
 				id,
 				MetaNodeEntity.class,
@@ -668,6 +688,22 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 		List<MetaExpedientEntity> metaExpedients = metaExpedientRepository.findByEntitatOrderByNomAsc(entitat);
 		return conversioTipusHelper.convertirList(
 				metaExpedients,
+				MetaExpedientDto.class);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<MetaExpedientDto> findActiveByEntitatPerAdmin(
+			Long entitatId) {
+		logger.debug("Consulta de meta-expedients actius de l'entitat per admins ("
+				+ "entitatId=" + entitatId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		return conversioTipusHelper.convertirList(
+				metaExpedientRepository.findByEntitatAndActiuTrueOrderByNomAsc(entitat),
 				MetaExpedientDto.class);
 	}
 
@@ -725,6 +761,89 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 		return conversioTipusHelper.convertirList(
 				metaExpedients,
 				MetaExpedientDto.class);
+	}
+
+	@Override
+	@Transactional
+	public void addArxiu(
+			Long entitatId, 
+			Long id, 
+			Long arxiuId) throws NotFoundException {
+		logger.debug("Afegint la relació amb arxiu pel meta-expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "arxiuId=" + arxiuId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat, 
+				id,
+				false);
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				arxiuId);
+		
+		// Si no està relacionat afegeix la relació i guarda
+		if(!metaExpedient.getArxius().contains(arxiu)) {
+			metaExpedient.getArxius().add(arxiu);
+			metaExpedientRepository.saveAndFlush(metaExpedient);	
+		}
+	}
+
+	@Override
+	@Transactional
+	public void removeArxiu(
+			Long entitatId, 
+			Long id, 
+			Long arxiuId) throws NotFoundException {
+		logger.debug("Esborrant relació amb arxiu pel meta-expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "metaExpedientId=" + arxiuId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat, 
+				id,
+				false);
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				arxiuId);
+		// Esborra la relació i guarda
+		metaExpedient.getArxius().remove(arxiu);
+		metaExpedientRepository.saveAndFlush(metaExpedient);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<MetaExpedientDto> findAmbArxiu(
+			Long entitatId,
+			Long arxiuId) throws NotFoundException {
+		logger.debug("Consultant la llista de meta-expedients associats a l'arxiu ("
+				+ "entitatId=" + entitatId + ", "
+				+ "arxiuId=" + arxiuId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				arxiuId);
+		// Ompl la llista de meta-expedients
+		List<MetaExpedientDto> resposta = new ArrayList<MetaExpedientDto>();
+		for(MetaExpedientEntity metaExpedient : arxiu.getMetaExpedients()) {
+			resposta.add( conversioTipusHelper.convertir(
+					metaExpedient,
+					MetaExpedientDto.class));
+		}
+		return resposta;
 	}
 
 
@@ -795,85 +914,4 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MetaExpedientServiceImpl.class);
 
-
-
-	@Override
-	@Transactional
-	public void addArxiu(
-			Long entitatId, 
-			Long id, 
-			Long arxiuId) throws NotFoundException {
-		logger.debug("Afegint la relació amb arxiu pel meta-expedient ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "arxiuId=" + arxiuId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
-				entitat, 
-				id);
-		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
-				entitat,
-				arxiuId);
-		
-		// Si no està relacionat afegeix la relació i guarda
-		if(!metaExpedient.getArxius().contains(arxiu)) {
-			metaExpedient.getArxius().add(arxiu);
-			metaExpedientRepository.saveAndFlush(metaExpedient);	
-		}
-	}
-
-	@Override
-	@Transactional
-	public void removeArxiu(
-			Long entitatId, 
-			Long id, 
-			Long arxiuId) throws NotFoundException {
-		logger.debug("Esborrant relació amb arxiu pel meta-expedient ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "metaExpedientId=" + arxiuId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
-				entitat, 
-				id);
-		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
-				entitat,
-				arxiuId);
-		
-		// Esborra la relació i guarda
-		metaExpedient.getArxius().remove(arxiu);
-		metaExpedientRepository.saveAndFlush(metaExpedient);
-	}
-
-	@Override
-	@Transactional
-	public List<ArxiuDto> findArxiusMetaExpedient(
-			Long entitatId, 
-			Long id) {
-		logger.debug("Consulta dels arxius del meta-expedient ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(entitat, id);
-		// Ompl la llista d'arxius
-		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
-		for(ArxiuEntity arxiu : metaExpedient.getArxius()) {
-			resposta.add( conversioTipusHelper.convertir(
-					arxiu,
-					ArxiuDto.class));
-		}
-		return resposta;
-	}
 }

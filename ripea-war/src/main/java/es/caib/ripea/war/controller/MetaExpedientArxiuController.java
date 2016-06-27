@@ -63,7 +63,9 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 			@PathVariable Long metaExpedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<ArxiuDto> arxius = metaExpedientService.findArxiusMetaExpedient(entitatActual.getId(), metaExpedientId);
+		List<ArxiuDto> arxius = arxiuService.findAmbMetaExpedient(
+				entitatActual.getId(),
+				metaExpedientId);
 		return PaginacioHelper.getPaginaPerDatatables(
 				request,
 				arxius);
@@ -136,7 +138,9 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 		}
 		// Comprova si la relació ja existia
 		ArxiuDto arxiu = arxiuService.findById(entitatActual.getId(), command.getArxiuId());
-		List<ArxiuDto> arxius = metaExpedientService.findArxiusMetaExpedient(entitatActual.getId(), metaExpedientId);
+		List<ArxiuDto> arxius = arxiuService.findAmbMetaExpedient(
+				entitatActual.getId(),
+				metaExpedientId);
 		if(arxius.contains(arxiu)) {
 			return getModalControllerReturnValueSuccess(
 					request,
@@ -170,8 +174,7 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 				"redirect:../../../../metaExpedient/" + arxiuId + "/arxiu",
 				"metaexpedient.controller.arxiu.esborrat.ok");
 	}
-	
-	
+
 	/** Mètode Ajax per obtenir tots els arxius per a un meta expedient. Serveix per omplir el control
 	 * desplegable de selecció d'arxiu durant la creació d'un expedient quan se selecciona el meta-expedient. */
 	@RequestMapping(value = "/{metaExpedientId}/arxiu/findAll", method = RequestMethod.GET)
@@ -180,9 +183,10 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long metaExpedientId,
 			Model model) {
-		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<ArxiuDto> arxius = metaExpedientService.findArxiusMetaExpedient(entitatActual.getId(), metaExpedientId);
+		List<ArxiuDto> arxius = arxiuService.findAmbMetaExpedient(
+				entitatActual.getId(),
+				metaExpedientId);
 		return arxius;
 	}
 
