@@ -165,7 +165,7 @@ public class ExpedientServiceBean implements ExpedientService {
 			Long bustiaId,
 			BustiaContingutPendentTipusEnumDto contingutTipus,
 			Long contingutId) {
-		afegirContingutBustia(
+		delegate.afegirContingutBustia(
 				entitatId,
 				id,
 				bustiaId,
