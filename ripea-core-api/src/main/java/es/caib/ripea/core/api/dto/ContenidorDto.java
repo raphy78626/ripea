@@ -259,9 +259,6 @@ public abstract class ContenidorDto extends AuditoriaDto {
 	public boolean isCrearExpedients() {
 		return isEscriptori();
 	}
-	public boolean isCrearDocumentsGenerics() {
-		return getExpedientPare() == null;
-	}
 
 	public boolean isExpedient() {
 		return this instanceof ExpedientDto;

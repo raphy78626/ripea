@@ -593,9 +593,7 @@ $(document).ready(function() {
 										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contenidor.contingut.boto.crear.contingut"/>&nbsp;<span class="caret"></span></button>
 										<ul class="dropdown-menu text-left" role="menu">
 											<li><a href="../contenidor/${contenidor.id}/carpeta/new" data-rdt-link-modal="true"><span class="fa fa-folder"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.boto.crear.carpeta"/>...</a></li>
-											<c:if test="${contenidor.crearDocumentsGenerics or not empty metaDocuments}">
-												<li><a href="../contenidor/${contenidor.id}/document/new" data-rdt-link-modal="true"><span class="fa fa-file"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.boto.crear.document"/>...</a></li>
-											</c:if>
+											<li><a href="../contenidor/${contenidor.id}/document/new" data-rdt-link-modal="true"><span class="fa fa-file"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.boto.crear.document"/>...</a></li>
 											<c:if test="${contenidor.crearExpedients and not empty metaExpedients}">
 												<li><a href="../contenidor/${contenidor.id}/expedient/new" data-rdt-link-modal="true"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="contenidor.contingut.boto.crear.expedient"/>...</a></li>
 											</c:if>
