@@ -107,6 +107,7 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 				"arbreUnitatsOrganitzatives",
 				arxiuService.findArbreUnitatsOrganitzativesAdmin(
 						entitatActual.getId(),
+						false,
 						true));
 		model.addAttribute(new MetaExpedientArxiuCommand());
 
@@ -132,6 +133,7 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 					"arbreUnitatsOrganitzatives",
 					arxiuService.findArbreUnitatsOrganitzativesAdmin(
 							entitatActual.getId(),
+							false,
 							true));			
 			
 			return "metaExpedientArxiuForm";

@@ -126,8 +126,9 @@ public class ArxiuServiceBean implements ArxiuService {
 	@RolesAllowed("IPA_ADMIN")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
 			Long entitatId,
-			boolean nomesAmbArxiusPermesos) throws NotFoundException {
-		return delegate.findArbreUnitatsOrganitzativesAdmin(entitatId, nomesAmbArxiusPermesos);
+			boolean nomesAmbArxiusPermesos,
+			boolean nomesQueContinguinArxius) throws NotFoundException {
+		return delegate.findArbreUnitatsOrganitzativesAdmin(entitatId, nomesAmbArxiusPermesos,nomesQueContinguinArxius);
 	}
 
 	@Override

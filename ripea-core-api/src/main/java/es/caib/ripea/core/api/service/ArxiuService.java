@@ -162,7 +162,8 @@ public interface ArxiuService {
 	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
 			Long entitatId,
-			boolean nomesAmbArxiusPermesos) throws NotFoundException;
+			boolean nomesAmbArxiusPermesos,
+			boolean nomesQueContinguinArxius) throws NotFoundException;
 
 	/**
 	 * Consulta l'arbre de les unitats organitzatives per a mostrar els

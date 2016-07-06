@@ -42,6 +42,7 @@ pageContext.setAttribute(
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/arxiuAdmin/${arxiu.id}/metaExpedient"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
+		<div style="height: 300px;"></div>
 	</form:form>
 
 </body>

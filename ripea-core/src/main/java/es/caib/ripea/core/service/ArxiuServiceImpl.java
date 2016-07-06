@@ -339,7 +339,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 	@Override
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAdmin(
 			Long entitatId,
-			boolean nomesAmbArxiusPermesos) throws NotFoundException {
+			boolean nomesAmbArxiusPermesos,
+			boolean nomesQueContinguinArxius) throws NotFoundException {
 		logger.debug("Consulta de l'arbre d'unitats organitzatives per administrador ("
 				+ "entitatId=" + entitatId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -350,6 +351,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 		return findArbreUnitatsOrganitzatives(
 				entitat,
 				nomesAmbArxiusPermesos,
+				nomesQueContinguinArxius,
 				false);
 	}
 
@@ -367,6 +369,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 		return findArbreUnitatsOrganitzatives(
 				entitat,
 				true,
+				false,
 				true);
 	}
 
@@ -490,10 +493,11 @@ public class ArxiuServiceImpl implements ArxiuService {
 	private ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			EntitatEntity entitat,
 			boolean nomesAmbArxiusPermesos,
+			boolean nomesQueContinguinArxius,
 			boolean ambContadorExpedientsPendents) {
 		List<ArxiuEntity> arxius = arxiuRepository.findByEntitatAndPareNotNull(entitat);
 		Set<String> arxiuUnitatCodis = null;
-		if (nomesAmbArxiusPermesos) {
+		if (nomesAmbArxiusPermesos ) {
 			arxiuUnitatCodis = new HashSet<String>();
 			// Filtra els meta-expedients dels arxius en el que l'usuari tingui permisos de lectura
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -513,6 +517,11 @@ public class ArxiuServiceImpl implements ArxiuService {
 				}
 				if (granted)
 					arxiuUnitatCodis.add(arxiu.getUnitatCodi());
+			}
+		} else if (nomesQueContinguinArxius) {
+			arxiuUnitatCodis = new HashSet<String>();
+			for (ArxiuEntity arxiu: arxius) {
+				arxiuUnitatCodis.add(arxiu.getUnitatCodi());
 			}
 		}
 		// Consulta l'arbre
