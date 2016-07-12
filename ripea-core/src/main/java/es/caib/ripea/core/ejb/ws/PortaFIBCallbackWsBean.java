@@ -11,10 +11,10 @@ import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.service.ws.callback.CallbackRequest;
-import es.caib.ripea.core.service.ws.callback.CallbackResponse;
-import es.caib.ripea.core.service.ws.callback.MCGDws;
-import es.caib.ripea.core.service.ws.callback.MCGDwsImpl;
+import es.caib.ripea.core.service.ws.callbackportafib.CallBackException;
+import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWs;
+import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWsImpl;
+import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBEvent;
 
 /**
  * Implementació dels mètodes per al servei de recepció de
@@ -35,14 +35,19 @@ import es.caib.ripea.core.service.ws.callback.MCGDwsImpl;
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
 @Interceptors(SpringBeanAutowiringInterceptor.class)
-public class PortaFIBCallbackWsBean implements MCGDws {
+public class PortaFIBCallbackWsBean implements PortaFIBCallBackWs {
 
 	@Autowired
-	private MCGDwsImpl delegate;
+	private PortaFIBCallBackWsImpl delegate;
 
 	@Override
-	public CallbackResponse callback(CallbackRequest callbackRequest) {
-		return delegate.callback(callbackRequest);
+	public int getVersionWs() {
+		return delegate.getVersionWs();
+	}
+
+	@Override
+	public void event(PortaFIBEvent event) throws CallBackException {
+		delegate.event(event);
 	}
 
 }
