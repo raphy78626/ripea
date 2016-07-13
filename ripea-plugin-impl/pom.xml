@@ -79,17 +79,17 @@
   		<dependency>
 			<groupId>es.caib.portafib</groupId>
 			<artifactId>portafib-ws-api</artifactId>
-			<version>1.1.0</version>
+			<version>${portafib.version}</version>
 		</dependency>
   		<dependency>
 			<groupId>es.caib.regweb3</groupId>
 			<artifactId>regweb3-ws-api</artifactId>
-			<version>3.0.5</version>
+			<version>${regweb.version}</version>
 		</dependency>
   		<dependency>
 			<groupId>es.caib.dir3caib</groupId>
 			<artifactId>dir3caib-ws-api</artifactId>
-			<version>1.0.3</version>
+			<version>${dir3caib.version}</version>
 		</dependency>
   		<dependency>
 			<groupId>es.caib</groupId>

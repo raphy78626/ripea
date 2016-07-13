@@ -13,6 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import es.caib.portafib.ws.callback.api.v1.CallBackException;
+import es.caib.portafib.ws.callback.api.v1.CallBackFault;
+import es.caib.portafib.ws.callback.api.v1.PortaFIBCallBackWs;
+import es.caib.portafib.ws.callback.api.v1.PortaFIBEvent;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.DocumentService.PortafirmesCallbackEstatEnum;
@@ -36,6 +40,7 @@ public class PortaFIBCallBackWsImpl implements PortaFIBCallBackWs {
 	private DocumentService documentService;
 	@Resource
 	private IntegracioHelper integracioHelper;
+
 
 
 	@Override

@@ -25,9 +25,10 @@ public class WsClientHelper<T> {
 			URL wsdlResourceUrl,
 			String endpoint,
 			QName qname,
-			String userName,
+			String username,
 			String password,
-			Class<T> clazz) throws MalformedURLException {
+			Class<T> clazz,
+			Handler<?>... handlers) throws MalformedURLException {
 		URL url = wsdlResourceUrl;
 		if (url == null) {
 			if (!endpoint.endsWith("?wsdl"))
@@ -37,22 +38,31 @@ public class WsClientHelper<T> {
 		}
 		Service service = Service.create(url, qname);
 		T bustiaWs = service.getPort(clazz);
-		BindingProvider bp = (BindingProvider)bustiaWs;
+		BindingProvider bindingProvider = (BindingProvider)bustiaWs;
 		// Configura l'adreça del servei
 		String endpointAddress;
 		if (!endpoint.endsWith("?wsdl"))
 			endpointAddress = endpoint;
 		else
 			endpointAddress = endpoint.substring(0, endpoint.length() - "?wsdl".length());
-		bp.getRequestContext().put(
+		bindingProvider.getRequestContext().put(
 				BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
 				endpointAddress);
 		// Configura l'autenticació si és necessària
-		if (userName != null && !userName.isEmpty()) {
-			bp.getRequestContext().put(
+		if (username != null && !username.isEmpty()) {
+			/*ControladorSesion controlador = new ControladorSesion();
+			controlador.autenticar(username, password);
+			AuthorizationToken token = controlador.getToken();
+			bindingProvider.getRequestContext().put(
 					BindingProvider.USERNAME_PROPERTY,
-					userName);
-			bp.getRequestContext().put(
+					token.getUser());
+			bindingProvider.getRequestContext().put(
+					BindingProvider.PASSWORD_PROPERTY,
+					token.getPassword());*/
+			bindingProvider.getRequestContext().put(
+					BindingProvider.USERNAME_PROPERTY,
+					username);
+			bindingProvider.getRequestContext().put(
 					BindingProvider.PASSWORD_PROPERTY,
 					password);
 		}
@@ -60,21 +70,27 @@ public class WsClientHelper<T> {
 		@SuppressWarnings("rawtypes")
 		List<Handler> handlerChain = new ArrayList<Handler>();
 		handlerChain.add(new SoapLoggingHandler());
-		bp.getBinding().setHandlerChain(handlerChain);
+		// Configura handlers addicionals
+		for (int i = 0; i < handlers.length; i++) {
+			if (handlers[i] != null)
+				handlerChain.add(handlers[i]);
+		}
+		bindingProvider.getBinding().setHandlerChain(handlerChain);
 		return bustiaWs;
 	}
 
 	public T generarClientWs(
 			String endpoint,
 			QName qname,
-			String userName,
+			String username,
 			String password,
-			Class<T> clazz) throws MalformedURLException {
+			Class<T> clazz,
+			Handler<?>... handlers) throws MalformedURLException {
 		return this.generarClientWs(
 				null,
 				endpoint,
 				qname,
-				userName,
+				username,
 				password,
 				clazz);
 	}

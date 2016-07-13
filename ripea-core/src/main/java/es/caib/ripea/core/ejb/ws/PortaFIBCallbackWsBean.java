@@ -11,10 +11,10 @@ import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.service.ws.callbackportafib.CallBackException;
-import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWs;
+import es.caib.portafib.ws.callback.api.v1.CallBackException;
+import es.caib.portafib.ws.callback.api.v1.PortaFIBCallBackWs;
+import es.caib.portafib.ws.callback.api.v1.PortaFIBEvent;
 import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWsImpl;
-import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBEvent;
 
 /**
  * Implementació dels mètodes per al servei de recepció de
