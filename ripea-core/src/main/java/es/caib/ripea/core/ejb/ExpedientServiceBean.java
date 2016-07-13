@@ -139,11 +139,11 @@ public class ExpedientServiceBean implements ExpedientService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void finalitzar(
+	public void tancar(
 			Long entitatId,
 			Long id,
 			String motiu) {
-		delegate.finalitzar(entitatId, id, motiu);
+		delegate.tancar(entitatId, id, motiu);
 	}
 
 	@Override

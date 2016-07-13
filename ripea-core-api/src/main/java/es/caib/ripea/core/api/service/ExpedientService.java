@@ -228,7 +228,7 @@ public interface ExpedientService {
 			Long id) throws NotFoundException;
 
 	/**
-	 * Finalitza un expedient.
+	 * Tanca la tramitació d'un expedient.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany l'expedient.
@@ -240,7 +240,7 @@ public interface ExpedientService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public void finalitzar(
+	public void tancar(
 			Long entitatId,
 			Long id,
 			String motiu) throws NotFoundException;

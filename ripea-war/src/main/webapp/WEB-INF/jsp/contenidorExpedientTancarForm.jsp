@@ -5,17 +5,17 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<c:set var="titol"><spring:message code="contenidor.expedient.finalitzar.form.titol"/></c:set>
+<c:set var="titol"><spring:message code="contenidor.expedient.tancar.form.titol"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
 	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="form-horizontal" commandName="expedientFinalitzarCommand">
+	<form:form action="" method="post" cssClass="form-horizontal" commandName="expedientTancarCommand">
 		<form:hidden path="id"/>
-		<rip:inputFixed textKey="contenidor.expedient.finalitzar.form.camp.expedient">${expedient.nom }</rip:inputFixed>
-		<rip:inputTextarea name="motiu" textKey="contenidor.expedient.finalitzar.form.camp.motiu" required="true"/>
+		<rip:inputFixed textKey="contenidor.expedient.tancar.form.camp.expedient">${expedient.nom }</rip:inputFixed>
+		<rip:inputTextarea name="motiu" textKey="contenidor.expedient.tancar.form.camp.motiu" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/contenidor/${expedient.pare.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>

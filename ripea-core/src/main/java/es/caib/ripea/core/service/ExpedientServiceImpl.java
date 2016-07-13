@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
+import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -667,11 +668,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 
 	@Transactional
 	@Override
-	public void finalitzar(
+	public void tancar(
 			Long entitatId,
 			Long id,
 			String motiu) {
-		logger.debug("Finalitzant l'expedient ("
+		logger.debug("Tancant l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ","
 				+ "mootiu=" + motiu + ")");
@@ -700,10 +701,12 @@ public class ExpedientServiceImpl implements ExpedientService {
 				expedient.getArxiu(),
 				null);
 		// Finalitza l'expedient
-		expedient.updateFinalitzar(motiu);
+		expedient.updateEstat(
+				ExpedientEstatEnumDto.TANCAT,
+				motiu);
 		contenidorLogHelper.log(
 				expedient,
-				LogTipusEnumDto.FINALITZACIO,
+				LogTipusEnumDto.TANCAMENT,
 				null,
 				null,
 				false,

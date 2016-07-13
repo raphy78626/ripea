@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.entity;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -17,9 +18,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 
 /**
  * Classe del model de dades que representa un expedient.
@@ -45,8 +50,11 @@ public class ExpedientEntity extends NodeEntity {
 			joinColumns = {@JoinColumn(name = "expedient_id")},
 			inverseJoinColumns = {@JoinColumn(name = "interessat_id")})
 	protected Set<InteressatEntity> interessats = new HashSet<InteressatEntity>();
-	@Column(name = "obert")
-	protected boolean obert;
+	@Column(name = "estat")
+	protected ExpedientEstatEnumDto estat;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "tancat_data")
+	protected Date tancatData;
 	@Column(name = "tancat_motiu", length = 1024)
 	protected String tancatMotiu;
 	@Column(name = "anio")
@@ -68,8 +76,11 @@ public class ExpedientEntity extends NodeEntity {
 	public Set<InteressatEntity> getInteressats() {
 		return interessats;
 	}
-	public boolean isObert() {
-		return obert;
+	public ExpedientEstatEnumDto getEstat() {
+		return estat;
+	}
+	public Date getTancatData() {
+		return tancatData;
 	}
 	public String getTancatMotiu() {
 		return tancatMotiu;
@@ -79,6 +90,15 @@ public class ExpedientEntity extends NodeEntity {
 	}
 	public long getSequencia() {
 		return sequencia;
+	}
+	public boolean isSistraPublicat() {
+		return sistraPublicat;
+	}
+	public Integer getSistraUnitatAdministrativa() {
+		return sistraUnitatAdministrativa;
+	}
+	public String getSistraClau() {
+		return sistraClau;
 	}
 	public MetaExpedientEntity getMetaExpedient() {
 		return (MetaExpedientEntity)getMetaNode();
@@ -98,10 +118,13 @@ public class ExpedientEntity extends NodeEntity {
 		this.any = any;
 		this.sequencia = sequencia;
 	}
-	public void updateFinalitzar(
+	public void updateEstat(
+			ExpedientEstatEnumDto estat,
 			String tancatMotiu) {
+		this.estat = estat;
 		this.tancatMotiu = tancatMotiu;
-		this.obert = false;
+		if (ExpedientEstatEnumDto.TANCAT.equals(estat))
+			this.tancatData = new Date();
 	}
 
 	public void addInteressat(InteressatEntity interessat) {
@@ -164,7 +187,7 @@ public class ExpedientEntity extends NodeEntity {
 			built.arxiu = arxiu;
 			built.pare = pare;
 			built.entitat = entitat;
-			built.obert = true;
+			built.estat = ExpedientEstatEnumDto.OBERT;
 			built.tipusContenidor = ContenidorTipusEnum.CONTINGUT;
 		}
 		public ExpedientEntity build() {

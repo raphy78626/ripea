@@ -9,11 +9,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
- * Command per a l'acció de finalitzar expedients.
+ * Command per a l'acció de tancar expedients.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ExpedientFinalitzarCommand extends ContenidorCommand {
+public class ExpedientTancarCommand extends ContenidorCommand {
 
 	protected Long id;
 	@NotEmpty @Size(max=1024)

@@ -36,7 +36,7 @@ import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorCommand.Update;
 import es.caib.ripea.war.command.ExpedientAcumularCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
-import es.caib.ripea.war.command.ExpedientFinalitzarCommand;
+import es.caib.ripea.war.command.ExpedientTancarCommand;
 
 /**
  * Controlador per al manteniment d'expedients dels contenidors.
@@ -181,14 +181,14 @@ public class ContenidorExpedientController extends BaseUserController {
 				"expedient.controller.alliberat.ok");
 	}
 
-	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/finalitzar", method = RequestMethod.GET)
-	public String expedientFinalitzarGet(
+	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/tancar", method = RequestMethod.GET)
+	public String expedientTancarGet(
 			HttpServletRequest request,
 			@PathVariable Long contenidorId,
 			@PathVariable Long expedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ExpedientFinalitzarCommand command = new ExpedientFinalitzarCommand();
+		ExpedientTancarCommand command = new ExpedientTancarCommand();
 		command.setId(expedientId);
 		model.addAttribute(command);
 		model.addAttribute(
@@ -196,14 +196,14 @@ public class ContenidorExpedientController extends BaseUserController {
 				contenidorService.getContenidorAmbContingut(
 						entitatActual.getId(),
 						expedientId));
-		return "contenidorExpedientFinalitzarForm";
+		return "contenidorExpedientTancarForm";
 	}
-	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/finalitzar", method = RequestMethod.POST)
-	public String expedientFinalitzarPost(
+	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/tancar", method = RequestMethod.POST)
+	public String expedientTancarPost(
 			HttpServletRequest request,
 			@PathVariable Long contenidorId,
 			@PathVariable Long expedientId,
-			@Valid ExpedientFinalitzarCommand command,
+			@Valid ExpedientTancarCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -213,16 +213,16 @@ public class ContenidorExpedientController extends BaseUserController {
 					contenidorService.getContenidorAmbContingut(
 							entitatActual.getId(),
 							expedientId));
-			return "contenidorExpedientFinalitzarForm";
+			return "contenidorExpedientTancarForm";
 		}
-		expedientService.finalitzar(
+		expedientService.tancar(
 				entitatActual.getId(),
 				expedientId,
 				command.getMotiu());
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../../contenidor/" + contenidorId,
-				"expedient.controller.finalitzat.ok");
+				"expedient.controller.tancar.ok");
 	}
 
 	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/acumular", method = RequestMethod.GET)

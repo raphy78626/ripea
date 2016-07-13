@@ -349,12 +349,7 @@ $(document).ready(function() {
 							<dt><spring:message code="contenidor.contingut.info.arxiu"/></dt>
 							<dd>${contenidor.arxiu.nom}</dd>
 							<dt><spring:message code="contenidor.contingut.info.estat"/></dt>
-							<dd>
-								<c:choose>
-									<c:when test="${contenidor.obert}"><spring:message code="contenidor.contingut.info.estat.obert"/></c:when>
-									<c:otherwise><spring:message code="contenidor.contingut.info.estat.tancat"/></c:otherwise>
-								</c:choose>
-							</dd>
+							<dd><spring:message code="expedient.estat.enum.${contenidor.estat}"/></dd>
 						</c:if>
 						<c:if test="${contenidor.document}">
 							<dt><spring:message code="contenidor.contingut.info.data"/></dt>

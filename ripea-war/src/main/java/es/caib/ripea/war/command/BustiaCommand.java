@@ -12,7 +12,7 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 
 /**
- * Command per al manteniment be bústies.
+ * Command per al manteniment de bústies.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */

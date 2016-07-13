@@ -4,6 +4,7 @@
 package es.caib.ripea.core.api.dto;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 
@@ -15,24 +16,33 @@ import java.text.SimpleDateFormat;
 public class ExpedientDto extends NodeDto {
 
 	public ArxiuDto arxiu;
-	public boolean obert;
-	private String tancatMotiu;
-	private int any;
-	private long sequencia;
-
-
-
+	protected ExpedientEstatEnumDto estat;
+	protected Date tancatData;
+	protected String tancatMotiu;
+	protected int any;
+	protected long sequencia;
+	protected boolean sistraPublicat;
+	protected Integer sistraUnitatAdministrativa;
+	protected String sistraClau;
+	
+	
 	public ArxiuDto getArxiu() {
 		return arxiu;
 	}
 	public void setArxiu(ArxiuDto arxiu) {
 		this.arxiu = arxiu;
 	}
-	public boolean isObert() {
-		return obert;
+	public ExpedientEstatEnumDto getEstat() {
+		return estat;
 	}
-	public void setObert(boolean obert) {
-		this.obert = obert;
+	public void setEstat(ExpedientEstatEnumDto estat) {
+		this.estat = estat;
+	}
+	public Date getTancatData() {
+		return tancatData;
+	}
+	public void setTancatData(Date tancatData) {
+		this.tancatData = tancatData;
 	}
 	public String getTancatMotiu() {
 		return tancatMotiu;
@@ -51,6 +61,24 @@ public class ExpedientDto extends NodeDto {
 	}
 	public void setSequencia(long sequencia) {
 		this.sequencia = sequencia;
+	}
+	public boolean isSistraPublicat() {
+		return sistraPublicat;
+	}
+	public void setSistraPublicat(boolean sistraPublicat) {
+		this.sistraPublicat = sistraPublicat;
+	}
+	public Integer getSistraUnitatAdministrativa() {
+		return sistraUnitatAdministrativa;
+	}
+	public void setSistraUnitatAdministrativa(Integer sistraUnitatAdministrativa) {
+		this.sistraUnitatAdministrativa = sistraUnitatAdministrativa;
+	}
+	public String getSistraClau() {
+		return sistraClau;
+	}
+	public void setSistraClau(String sistraClau) {
+		this.sistraClau = sistraClau;
 	}
 
 	public MetaExpedientDto getMetaExpedient() {
@@ -90,7 +118,7 @@ public class ExpedientDto extends NodeDto {
 		}
 	}
 	public String getNtiEstado() {
-		return obert ? "Abierto" : "Cerrado";
+		return ExpedientEstatEnumDto.OBERT.equals(estat) ? "Abierto" : "Cerrado";
 	}
 
 	protected ExpedientDto copiarContenidor(ContenidorDto original) {

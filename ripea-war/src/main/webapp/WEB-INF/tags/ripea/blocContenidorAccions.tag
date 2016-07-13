@@ -15,8 +15,15 @@
 			<c:if test="${contenidor.expedient}">
 				<c:if test="${contenidor.metaNode.usuariActualWrite or empty contenidor.metaNode}"><li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li></c:if>
 				<li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}/alliberar"><span class="fa fa-unlock"></span>&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
-				<c:if test="${contenidor.obert and contenidor.valid}">
-					<li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}/finalitzar" data-rdt-link-modal="true"><span class="fa fa-thumbs-o-up"></span>&nbsp;<spring:message code="comu.boto.finalitzar"/>...</a></li>
+				<c:if test="${contenidor.estat == 'OBERT'}">
+					<c:choose>
+						<c:when test="${contenidor.valid}">
+							<li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}/tancar" data-rdt-link-modal="true"><span class="fa fa-check"></span>&nbsp;<spring:message code="comu.boto.tancar"/>...</a></li>
+						</c:when>
+						<c:otherwise>
+							<li><a href="#" onclick="alert('<spring:message code="contenidor.expedient.tancar.error.no.valid"/>');return false;"><span class="fa fa-check"></span>&nbsp;<spring:message code="comu.boto.tancar"/>...</a></li>
+						</c:otherwise>
+					</c:choose>
 				</c:if>
 				<c:if test="${contenidor.metaNode.usuariActualWrite or empty contenidor.metaNode}">
 					<li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}/acumular" data-rdt-link-modal="true"><span class="fa fa-sign-in"></span>&nbsp;<spring:message code="comu.boto.acumular"/>...</a></li>

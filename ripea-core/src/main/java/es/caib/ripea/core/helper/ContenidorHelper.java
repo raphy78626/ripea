@@ -150,10 +150,14 @@ public class ContenidorHelper {
 		} else if (deproxied instanceof ExpedientEntity) {
 			ExpedientEntity expedient = (ExpedientEntity)deproxied;
 			ExpedientDto dto = new ExpedientDto();
-			dto.setObert(expedient.isObert());
+			dto.setEstat(expedient.getEstat());
+			dto.setTancatData(expedient.getTancatData());
 			dto.setTancatMotiu(expedient.getTancatMotiu());
 			dto.setAny(expedient.getAny());
 			dto.setSequencia(expedient.getSequencia());
+			dto.setSistraPublicat(expedient.isSistraPublicat());
+			dto.setSistraUnitatAdministrativa(expedient.getSistraUnitatAdministrativa());
+			dto.setSistraClau(expedient.getSistraClau());
 			dto.setArxiu((ArxiuDto)toContenidorDto(expedient.getArxiu()));
 			metaNode = conversioTipusHelper.convertir(
 					expedient.getMetaNode(),
