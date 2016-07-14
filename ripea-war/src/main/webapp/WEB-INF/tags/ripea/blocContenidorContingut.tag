@@ -65,7 +65,7 @@
 							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.arxiu"/></dt>' +
 									'<dd>${fn:escapeXml(fill.arxiu.nom)}</dd>' +
 									'<dt><spring:message code="contenidor.contingut.info.estat"/></dt>' +
-									'<dd><c:choose><c:when test="${fill.obert}"><spring:message code="contenidor.contingut.info.estat.obert"/></c:when><c:otherwise><spring:message code="contenidor.contingut.info.estat.tancat"/></c:otherwise></c:choose></dd>';
+									'<dd><spring:message code="expedient.estat.enum.${fill.estat}"/></dd>';
 							</c:if>
 							<c:if test="${fill.document}">
 							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.data"/></dt>' +
@@ -162,7 +162,7 @@
 						tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.arxiu"/></dt>' +
 								'<dd>${fn:escapeXml(fill.arxiu.nom)}</dd>' +
 								'<dt><spring:message code="contenidor.contingut.info.estat"/></dt>' +
-								'<dd><c:choose><c:when test="${fill.obert}"><spring:message code="contenidor.contingut.info.estat.obert"/></c:when><c:otherwise><spring:message code="contenidor.contingut.info.estat.tancat"/></c:otherwise></c:choose></dd>';
+								'<dd><spring:message code="expedient.estat.enum.${fill.estat}"/></dd>';
 						</c:if>
 						<c:if test="${fill.document}">
 						tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.data"/></dt>' +
