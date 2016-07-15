@@ -30,10 +30,8 @@ import es.caib.ripea.core.helper.IntegracioHelper;
 @Component
 @WebService(
 		name = "PortaFIBCallBackWs",
-		serviceName = "PortaFIBCallBackWsService",
-		portName = "PortaFIBCallBackWsServicePort",
-		endpointInterface = "es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWs",
-		targetNamespace = "http://v1.server.callback.ws.portafib.caib.es/")
+		targetNamespace = "http://v1.server.callback.ws.portafib.caib.es/",
+		endpointInterface = "es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWs")
 public class PortaFIBCallBackWsImpl implements PortaFIBCallBackWs {
 
 	@Resource
