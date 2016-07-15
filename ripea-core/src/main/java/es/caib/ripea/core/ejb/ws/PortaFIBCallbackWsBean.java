@@ -25,6 +25,8 @@ import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWsImpl;
 @Stateless
 @WebService(
 		name = "PortaFIBCallBackWs",
+		serviceName = "PortaFIBCallBackWsService",
+		portName = "PortaFIBCallBackWs",
 		targetNamespace = "http://v1.server.callback.ws.portafib.caib.es/")
 @WebContext(
 		contextRoot = "/ripea/ws",
