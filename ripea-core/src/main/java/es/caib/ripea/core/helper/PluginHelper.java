@@ -30,7 +30,11 @@ import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
+import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
+import es.caib.ripea.plugin.ciutada.CiutadaPersona;
+import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.custodia.CustodiaPlugin;
@@ -64,7 +68,7 @@ public class PluginHelper {
 	private ConversioPlugin conversioPlugin;
 	private CustodiaPlugin custodiaPlugin;
 	private RegistrePlugin registrePlugin;
-	// private CiutadaPlugin ciutadaPlugin;
+	private CiutadaPlugin ciutadaPlugin;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -840,7 +844,7 @@ public class PluginHelper {
 		}
 	}
 
-	/*public void sistraExpedientCrear(
+	public void ciutadaExpedientCrear(
 			ExpedientEntity expedient,
 			long unitatAdministrativa,
 			String idioma,
@@ -849,10 +853,20 @@ public class PluginHelper {
 			InteressatEntity representat,
 			String bantelNumeroEntrada,
 			boolean avisosHabilitats,
-			String avisosEmail,
-			String avisosMobil) {
+			String avisText,
+			String avisTextMobil) {
 		String accioDescripcio = "Creació d'un expedient a la zona personal del ciutadà";
 		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientId", expedient.getId().toString());
+		accioParams.put("unitatAdministrativa", new Long(unitatAdministrativa).toString());
+		accioParams.put("idioma", idioma);
+		accioParams.put("descripcio", descripcio);
+		accioParams.put("destinatari", representat.getNom());
+		accioParams.put("representat", representat.getNom());
+		accioParams.put("bantelNumeroEntrada", bantelNumeroEntrada);
+		accioParams.put("avisosHabilitats", new Boolean(avisosHabilitats).toString());
+		accioParams.put("avisText", avisText);
+		accioParams.put("avisTextMobil", avisTextMobil);
 		try {
 			CiutadaPersona personaDestinatari = new CiutadaPersona();
 			personaDestinatari.setNif(destinatari.getNom());
@@ -876,28 +890,70 @@ public class PluginHelper {
 					personaRepresentat,
 					bantelNumeroEntrada,
 					avisosHabilitats,
-					avisosEmail,
-					avisosMobil);
+					avisText,
+					avisTextMobil);
 			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_SISTRA,
+					IntegracioHelper.INTCODI_CIUTADA,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin d'interacció amb el ciutadà";
+			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
 			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_SISTRA,
+					IntegracioHelper.INTCODI_CIUTADA,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					errorDescripcio,
 					ex);
 			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_SISTRA,
+					IntegracioHelper.INTCODI_CIUTADA,
 					errorDescripcio,
 					ex);
 		}
-	}*/
+	}
+
+	public void ciutadaAvisCrear(
+			ExpedientEntity expedient,
+			long unitatAdministrativa,
+			String titol,
+			String text,
+			String textMobil) {
+		String accioDescripcio = "Creació d'un avis a la zona personal del ciutadà";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientId", expedient.getId().toString());
+		accioParams.put("unitatAdministrativa", new Long(unitatAdministrativa).toString());
+		accioParams.put("titol", titol);
+		accioParams.put("text", text);
+		accioParams.put("textMobil", textMobil);
+		try {
+			getCiutadaPlugin().avisCrear(
+					expedient.getId().toString(),
+					unitatAdministrativa,
+					titol,
+					text,
+					textMobil,
+					null);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_CIUTADA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_CIUTADA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CIUTADA,
+					errorDescripcio,
+					ex);
+		}
+	}
 
 
 
@@ -923,8 +979,6 @@ public class PluginHelper {
 		}
 		return resposta;
 	}
-
-
 
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
 		if (dadesUsuariPlugin == null) {
@@ -1054,7 +1108,7 @@ public class PluginHelper {
 		}
 		return registrePlugin;
 	}
-	/*private CiutadaPlugin getCiutadaPlugin() {
+	private CiutadaPlugin getCiutadaPlugin() {
 		if (ciutadaPlugin == null) {
 			String pluginClass = getPropertyPluginCiutada();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -1063,14 +1117,14 @@ public class PluginHelper {
 					ciutadaPlugin = (CiutadaPlugin)clazz.newInstance();
 				} catch (Exception ex) {
 					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_SISTRA,
-							"Error al crear la instància del plugin d'interacció amb el ciutadà",
+							IntegracioHelper.INTCODI_CIUTADA,
+							"Error al crear la instància del plugin de comunicació amb el ciutadà",
 							ex);
 				}
 			}
 		}
 		return ciutadaPlugin;
-	}*/
+	}
 
 	private String getPropertyPluginDadesUsuari() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.dades.usuari.class");
@@ -1093,8 +1147,8 @@ public class PluginHelper {
 	private String getPropertyPluginRegistre() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.registre.class");
 	}
-	/*private String getPropertyPluginCiutada() {
+	private String getPropertyPluginCiutada() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.ciutada.class");
-	}*/
+	}
 
 }

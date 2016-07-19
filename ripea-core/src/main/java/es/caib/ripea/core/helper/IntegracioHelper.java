@@ -30,7 +30,7 @@ public class IntegracioHelper {
 
 	public static final String INTCODI_USUARIS = "USUARIS";
 	public static final String INTCODI_UNITATS = "UNITATS";
-	public static final String INTCODI_SISTRA = "SISTRA";
+	public static final String INTCODI_CIUTADA = "CIUTADA";
 	public static final String INTCODI_PFIRMA = "PFIRMA";
 	public static final String INTCODI_CUSTODIA = "CUSTODIA";
 	public static final String INTCODI_REGISTRE = "REGISTRE";
@@ -65,7 +65,7 @@ public class IntegracioHelper {
 						INTCODI_GESDOC));
 		integracions.add(
 				novaIntegracio(
-						INTCODI_SISTRA));
+						INTCODI_CIUTADA));
 		integracions.add(
 				novaIntegracio(
 						INTCODI_USUARIS));
@@ -199,8 +199,8 @@ public class IntegracioHelper {
 			integracio.setNom("Usuaris");
 		} else if (INTCODI_UNITATS.equals(codi)) {
 			integracio.setNom("Unitats admin.");
-		} else if (INTCODI_SISTRA.equals(codi)) {
-			integracio.setNom("Tramitació");
+		} else if (INTCODI_CIUTADA.equals(codi)) {
+			integracio.setNom("Com. ciutadà");
 		} else if (INTCODI_CALLBACK.equals(codi)) {
 			integracio.setNom("Callback PF");
 		}
