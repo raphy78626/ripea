@@ -172,7 +172,7 @@ public class DocumentServiceBean implements DocumentService {
 			Long entitatId,
 			Long id,
 			int versio) {
-		return convertirPdfPerFirma(
+		return delegate.convertirPdfPerFirma(
 				entitatId,
 				id,
 				versio);
