@@ -54,6 +54,7 @@ import es.caib.ripea.core.helper.DocumentHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ContenidorRepository;
 import es.caib.ripea.core.repository.DocumentPortafirmesRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
@@ -97,6 +98,8 @@ public class DocumentServiceImpl implements DocumentService {
 	private DocumentHelper documentHelper;
 	@Resource
 	private PluginHelper pluginHelper;
+	@Resource
+	private UsuariHelper usuariHelper;
 	@Resource
 	private CacheHelper cacheHelper;
 	@Resource
@@ -805,6 +808,11 @@ public class DocumentServiceImpl implements DocumentService {
 					"estatActual=" + documentPortafirmes.getPortafirmesEstat() + ", " +
 					"estatRebut=" + estat + ")");
 		}
+		// Establim l'usuari actual com a "portafirmesCallback" per a
+		// que apareixi als logs
+		usuariHelper.generarUsuariAutenticat(
+				"portafirmesCallback",
+				true);
 		switch (estat) {
 		case DOCUMENT_PAUSAT:
 		case DOCUMENT_PENDENT:
