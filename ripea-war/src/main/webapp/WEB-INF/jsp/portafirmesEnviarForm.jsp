@@ -8,7 +8,7 @@
 <%
 pageContext.setAttribute(
 		"portafirmesPrioritatEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto.class,
 				"portafirmes.prioritat.enum."));
 %>

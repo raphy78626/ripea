@@ -52,10 +52,10 @@ $(document).ready(function() {
 				<th data-rdt-property="nom" width="30%"><spring:message code="arxiu.expedient.list.columna.nom"/></th>
 				<th data-rdt-property="metaNode.nom" width="15%"><spring:message code="arxiu.expedient.list.columna.tipus"/></th>
 				<th data-rdt-property="createdDate" data-rdt-type="datetime" data-rdt-sorting="desc" width="15%"><spring:message code="arxiu.expedient.list.columna.createl"/></th>
-				<th data-rdt-property="obert" data-rdt-template="cellEstatTemplate" width="10%">
+				<th data-rdt-property="estat" data-rdt-template="cellEstatTemplate" width="10%">
 					<spring:message code="arxiu.expedient.list.columna.estat"/>
 					<script id="cellEstatTemplate" type="text/x-jsrender">
-						{{if obert}}<span class="fa fa-folder-open" title="Obert"></span>{{else}}<span class="fa fa-folder" title="Tancat">{{/if}}
+						{{if estat == 'OBERT'}}<span class="fa fa-folder-open" title="Obert"></span>{{else}}<span class="fa fa-folder" title="Tancat">{{/if}}
 					</script>
 				</th>
 				<th data-rdt-property="nomPropietariEscriptoriPare" data-sortable="false" width="20%"><spring:message code="arxiu.expedient.list.columna.agafatper"/></th>
@@ -65,7 +65,7 @@ $(document).ready(function() {
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								<li><a href="../../contenidor/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.obrir"/></a></li>
-								{{if obert}}
+								{{if estat == 'OBERT'}}
 									{{if metaNode_usuariActualWrite}}
 										{{if !codiPropietariEscriptoriPare}}
 										<li><a href="../../arxiuUser/${arxiu.id}/expedient/{{:id}}/agafar" data-rdt-link-ajax="true"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
