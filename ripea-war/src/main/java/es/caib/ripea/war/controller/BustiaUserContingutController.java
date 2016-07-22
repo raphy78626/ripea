@@ -214,7 +214,7 @@ public class BustiaUserContingutController extends BaseUserController {
 			Model model) {
 		model.addAttribute(
 				"metaExpedients",
-				metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
+				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
 		if (metaExpedientId != null) {
 			model.addAttribute(
 					"arxius",
@@ -251,7 +251,7 @@ public class BustiaUserContingutController extends BaseUserController {
 		model.addAttribute(
 				"contenidorOrigen",
 				contenidorOrigen);
-		List<BustiaDto> busties = bustiaService.findByEntitatAndActivaTrue(
+		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());
 		model.addAttribute(
 				"busties",

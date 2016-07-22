@@ -367,17 +367,15 @@ public class ArxiuAdminController extends BaseAdminController {
 				"arxiu.expedient.controller.alliberat.ok");
 	}
 
-	/*@RequestMapping(value = "/arbre", method = RequestMethod.GET)
-	public String arbre(
+	@RequestMapping(value = "/findAmbEntitat", method = RequestMethod.GET)
+	@ResponseBody
+	public List<ArxiuDto> findAmbEntitat(
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"arbreUnitatsOrganitzatives",
-				entitatService.findArbreUnitatsOrganitzatives(
-						entitatActual.getId()));
-		return "arxiuAdminArbre";
-	}*/
+		return arxiuService.findActiusAmbEntitat(
+				entitatActual.getId());
+	}
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {

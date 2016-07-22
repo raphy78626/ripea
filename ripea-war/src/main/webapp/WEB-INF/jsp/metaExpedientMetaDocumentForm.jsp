@@ -12,7 +12,7 @@
 <%
 pageContext.setAttribute(
 		"multiplicitatEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.MultiplicitatEnumDto.class,
 				"multiplicitat.enum."));
 %>

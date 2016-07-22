@@ -223,23 +223,23 @@ public class MetaExpedientServiceBean implements MetaExpedientService {
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public List<MetaExpedientDto> findActiveByEntitatPerAdmin(
+	public List<MetaExpedientDto> findActiusAmbEntitatPerAdmin(
 			Long entitatId) {
-		return delegate.findActiveByEntitatPerAdmin(entitatId);
+		return delegate.findActiusAmbEntitatPerAdmin(entitatId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<MetaExpedientDto> findActiveByEntitatPerCreacio(
+	public List<MetaExpedientDto> findActiusAmbEntitatPerCreacio(
 			Long entitatId) {
-		return delegate.findActiveByEntitatPerCreacio(entitatId);
+		return delegate.findActiusAmbEntitatPerCreacio(entitatId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<MetaExpedientDto> findByEntitatPerLectura(
+	public List<MetaExpedientDto> findAmbEntitatPerLectura(
 			Long entitatId) {
-		return delegate.findByEntitatPerLectura(entitatId);
+		return delegate.findAmbEntitatPerLectura(entitatId);
 	}
 
 	@Override

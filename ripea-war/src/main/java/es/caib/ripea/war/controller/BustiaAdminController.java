@@ -89,7 +89,7 @@ public class BustiaAdminController extends BaseAdminController {
 			@PathVariable String unitatCodi) {
 		if (!"null".equalsIgnoreCase(unitatCodi)) {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			List<BustiaDto> busties = bustiaService.findByUnitatCodiAdmin(
+			List<BustiaDto> busties = bustiaService.findAmbUnitatCodiAdmin(
 					entitatActual.getId(),
 					unitatCodi);
 			return DatatablesHelper.getDatatableResponse(
@@ -228,6 +228,16 @@ public class BustiaAdminController extends BaseAdminController {
 				request,
 				"redirect:../../bustiaAdmin",
 				"bustia.controller.esborrat.ok");
+	}
+
+	@RequestMapping(value = "/findAmbEntitat", method = RequestMethod.GET)
+	@ResponseBody
+	public List<BustiaDto> findAmbEntitat(
+			HttpServletRequest request,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return bustiaService.findActivesAmbEntitat(
+				entitatActual.getId());
 	}
 
 }

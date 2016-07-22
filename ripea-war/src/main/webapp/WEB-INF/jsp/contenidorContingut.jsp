@@ -10,7 +10,7 @@ pageContext.setAttribute(
 		new Boolean(false));
 pageContext.setAttribute(
 		"registreTipusEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.registre.RegistreTipusEnum.class,
 				"registre.anotacio.tipus.enum."));
 %>

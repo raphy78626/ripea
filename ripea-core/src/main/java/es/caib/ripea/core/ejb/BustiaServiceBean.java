@@ -90,25 +90,25 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public List<BustiaDto> findByUnitatCodiAdmin(
+	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) {
-		return delegate.findByUnitatCodiAdmin(entitatId, unitatCodi);
+		return delegate.findAmbUnitatCodiAdmin(entitatId, unitatCodi);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<BustiaDto> findByUnitatCodiUsuari(
+	public List<BustiaDto> findAmbUnitatCodiUsuari(
 			Long entitatId,
 			String unitatCodi) {
-		return delegate.findByUnitatCodiUsuari(entitatId, unitatCodi);
+		return delegate.findAmbUnitatCodiUsuari(entitatId, unitatCodi);
 	}
 
 	@Override
-	@RolesAllowed("tothom")
-	public List<BustiaDto> findByEntitatAndActivaTrue(
+	@RolesAllowed({"IPA_ADMIN", "tothom"})
+	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) {
-		return delegate.findByEntitatAndActivaTrue(entitatId);
+		return delegate.findActivesAmbEntitat(entitatId);
 	}
 
 	@Override

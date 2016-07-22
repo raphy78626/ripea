@@ -151,7 +151,7 @@ body {
 							<c:when test="${isRolActualSuperusuari}">
 								<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>
 								<div class="btn-group">
-									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.monitoritzacio"/>&nbsp;<span class="caret caret-white"></span></button>
+									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.monitoritzar"/>&nbsp;<span class="caret caret-white"></span></button>
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/integracio"/>"><spring:message code="decorator.menu.integracions"/></a></li>
 										<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
@@ -160,23 +160,30 @@ body {
 							</c:when>
 							<c:when test="${isRolActualAdministrador}">
 								<div class="btn-group">
-									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.administrar"/>&nbsp;<span class="caret caret-white"></span></button>
+									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.configurar"/>&nbsp;<span class="caret caret-white"></span></button>
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/metaExpedient"/>"><spring:message code="decorator.menu.metaexpedients"/></a></li>
 										<li><a href="<c:url value="/metaDocument"/>"><spring:message code="decorator.menu.metadocuments"/></a></li>
 										<li><a href="<c:url value="/metaDada"/>"><spring:message code="decorator.menu.metadades"/></a></li>
 										<li class="divider"></li>
+										<li><a href="<c:url value="/arxiuAdmin"/>"><spring:message code="decorator.menu.arxius"/></a></li>
+										<li><a href="<c:url value="/bustiaAdmin"/>"><spring:message code="decorator.menu.busties"/></a></li>
+										<li class="divider"></li>
+										<li><a href="<c:url value="/regla"/>"><spring:message code="decorator.menu.regles"/></a></li>
+									</ul>
+								</div>
+								<div class="btn-group">
+									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
+									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/contenidorAdmin"/>"><spring:message code="decorator.menu.contenidors"/></a></li>
 									</ul>
 								</div>
-								<a href="<c:url value="/arxiuAdmin"/>" class="btn btn-primary"><spring:message code="decorator.menu.arxius"/></a>
-								<a href="<c:url value="/bustiaAdmin"/>" class="btn btn-primary"><spring:message code="decorator.menu.busties"/></a>
 								<a href="<c:url value="/permis"/>" class="btn btn-primary"><spring:message code="decorator.menu.permisos"/></a>
 							</c:when>
 							<c:when test="${isRolActualUsuari}">
 								<a href="<c:url value="/escriptori"/>" class="btn btn-primary"><spring:message code="decorator.menu.escriptori"/></a>
-								<a href="<c:url value="/arxiuUser"/>" class="btn btn-primary"><spring:message code="decorator.menu.arxius"/></a>
-								<a href="<c:url value="/bustiaUser"/>" class="btn btn-primary">
+								<a href="<c:url value="/arxiuUser"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
+								<a href="<c:url value="/bustia"/>" class="btn btn-primary">
 									<spring:message code="decorator.menu.busties"/>
 									<span id="bustia-pendent-count" class="badge small">${countElementsPendentsBusties}</span>
 								</a>

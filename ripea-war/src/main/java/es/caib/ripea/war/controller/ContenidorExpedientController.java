@@ -88,7 +88,7 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(command);
 		model.addAttribute(
 				"metaExpedients",
-				metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
+				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
 		if (command.getMetaNodeId() != null) {	
 			model.addAttribute(
 					"arxius",
@@ -125,7 +125,7 @@ public class ContenidorExpedientController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"metaExpedients",
-					metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
+					metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
 			if(command.getMetaNodeId() != null) {				
 				model.addAttribute(
 						"arxius",

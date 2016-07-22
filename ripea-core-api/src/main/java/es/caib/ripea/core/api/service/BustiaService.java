@@ -135,7 +135,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public List<BustiaDto> findByUnitatCodiAdmin(
+	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
 
@@ -151,7 +151,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<BustiaDto> findByUnitatCodiUsuari(
+	public List<BustiaDto> findAmbUnitatCodiUsuari(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
 
@@ -164,8 +164,8 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
-	public List<BustiaDto> findByEntitatAndActivaTrue(
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) throws NotFoundException;
 
 	/**

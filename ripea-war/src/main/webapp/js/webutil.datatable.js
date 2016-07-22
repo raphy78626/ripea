@@ -659,7 +659,7 @@
 						renderHtml =  'enum(' + enumClass + ', ' + data + ')';
 						if (!renderEnums[enumClass]) {
 							$.ajax({
-								url: '/select2/enum/' + enumClass,
+								url: webutilContextPath() + '/userajax/enum/' + enumClass,
 								async: false,
 								success: function(resposta) {
 									renderEnums[enumClass] = resposta;
@@ -668,7 +668,7 @@
 						}
 						for (var i = 0; i < renderEnums[enumClass].length; i++) {
 							var enumItem = renderEnums[enumClass][i];
-							if (enumItem['id'] == data) {
+							if (enumItem['value'] == data) {
 								renderHtml = enumItem['text'];
 								break;
 							}

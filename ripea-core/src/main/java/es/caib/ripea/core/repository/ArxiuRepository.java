@@ -20,6 +20,7 @@ import es.caib.ripea.core.entity.EntitatEntity;
  */
 public interface ArxiuRepository extends JpaRepository<ArxiuEntity, Long> {
 
+	List<ArxiuEntity> findByEntitatAndActiuTrue(EntitatEntity entitat);
 	List<ArxiuEntity> findByEntitatAndPareNotNull(EntitatEntity entitat);
 
 	List<ArxiuEntity> findByEntitatAndUnitatCodiAndPareNotNull(

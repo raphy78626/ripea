@@ -468,11 +468,21 @@ public class ArxiuServiceImpl implements ArxiuService {
 				entitat,
 				id,
 				true);
-		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
-		for (ArxiuEntity arxiu: metaExpedient.getArxius()) {
-			resposta.add(toArxiuDto(arxiu));
-		}
-		return resposta;
+		return toArxiuDto(metaExpedient.getArxius());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ArxiuDto> findActiusAmbEntitat(
+			Long entitatId) {
+		logger.debug("Consulta els arxius actius de l'entitat ("
+				+ "entitatId=" + entitatId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		return toArxiuDto(arxiuRepository.findByEntitatAndActiuTrue(entitat));
 	}
 
 

@@ -8,12 +8,12 @@
 <%
 pageContext.setAttribute(
 		"contenidorTipusEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.ContenidorTipusEnumDto.class,
 				"contenidor.tipus.enum."));
 pageContext.setAttribute(
 		"contenidorAdminOpcionsEsborratEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.war.command.ContenidorFiltreCommand.ContenidorFiltreOpcionsEsborratEnum.class,
 				"contenidor.admin.opcions.esborrat.enum."));
 %>

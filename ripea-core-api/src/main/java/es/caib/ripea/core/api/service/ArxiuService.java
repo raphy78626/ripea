@@ -247,4 +247,17 @@ public interface ArxiuService {
 			Long entitatId, 
 			Long metaExpedientId) throws NotFoundException;
 
+	/**
+	 * Consulta la llista d'arxius de l'entitat.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @return la llista d'arxius.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public List<ArxiuDto> findActiusAmbEntitat(
+			Long entitatId) throws NotFoundException;
+
 }

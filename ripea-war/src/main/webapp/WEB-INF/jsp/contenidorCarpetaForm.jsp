@@ -6,10 +6,10 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%
-java.util.List<es.caib.ripea.war.helper.HtmlSelectOptionHelper.HtmlOption> options = es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
+java.util.List<es.caib.ripea.war.helper.EnumHelper.HtmlOption> options = es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 		es.caib.ripea.core.api.dto.CarpetaTipusEnumDto.class,
 		"carpeta.tipus.enum.");
-java.util.Iterator<es.caib.ripea.war.helper.HtmlSelectOptionHelper.HtmlOption> it = options.iterator();
+java.util.Iterator<es.caib.ripea.war.helper.EnumHelper.HtmlOption> it = options.iterator();
 pageContext.setAttribute(
 		"carpetaTipusEnumOptions",
 		options);

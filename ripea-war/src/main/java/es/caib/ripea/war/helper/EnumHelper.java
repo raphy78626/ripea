@@ -10,11 +10,11 @@ import java.util.List;
 
 /**
  * Utilitat per a facilitar la generació de options dels camps
- * select a les pàgines JSP.
+ * select procedents d'enumeracions a les pàgines JSP.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class HtmlSelectOptionHelper {
+public class EnumHelper {
 
 	public static List<HtmlOption> getOptionsForEnum(
 			Class<?> enumeracio) {
@@ -31,7 +31,6 @@ public class HtmlSelectOptionHelper {
 						(textKeyPrefix != null) ? textKeyPrefix + ((Enum<?>)e).name() : ((Enum<?>)e).name()));
 			}
 		}
-		
 		return resposta;
 	}
 	public static List<HtmlOption> getOptionsForArray(

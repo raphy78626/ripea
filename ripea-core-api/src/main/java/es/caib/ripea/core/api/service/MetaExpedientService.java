@@ -428,7 +428,7 @@ public interface MetaExpedientService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public List<MetaExpedientDto> findActiveByEntitatPerAdmin(
+	public List<MetaExpedientDto> findActiusAmbEntitatPerAdmin(
 			Long entitatId) throws NotFoundException;
 
 	/**
@@ -442,7 +442,7 @@ public interface MetaExpedientService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<MetaExpedientDto> findActiveByEntitatPerCreacio(
+	public List<MetaExpedientDto> findActiusAmbEntitatPerCreacio(
 			Long entitatId) throws NotFoundException;
 
 	/**
@@ -456,7 +456,7 @@ public interface MetaExpedientService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<MetaExpedientDto> findByEntitatPerLectura(
+	public List<MetaExpedientDto> findAmbEntitatPerLectura(
 			Long entitatId) throws NotFoundException;
 
 	/**

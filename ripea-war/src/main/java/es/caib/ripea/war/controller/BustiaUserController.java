@@ -85,7 +85,7 @@ public class BustiaUserController extends BaseUserController {
 			Model model) {
 		if (!"null".equalsIgnoreCase(unitatCodi)) {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			List<BustiaDto> busties = bustiaService.findByUnitatCodiUsuari(
+			List<BustiaDto> busties = bustiaService.findAmbUnitatCodiUsuari(
 					entitatActual.getId(),
 					unitatCodi);
 			return PaginacioHelper.getPaginaPerDatatables(
@@ -296,7 +296,7 @@ public class BustiaUserController extends BaseUserController {
 			Model model) {
 		model.addAttribute(
 				"metaExpedients",
-				metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
+				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
 		model.addAttribute(
 				"arxius",
 				new ArrayList<ArxiuDto>());
@@ -328,7 +328,7 @@ public class BustiaUserController extends BaseUserController {
 						bustiaId,
 						contingutTipus,
 						contingutId));
-		List<BustiaDto> busties = bustiaService.findByEntitatAndActivaTrue(
+		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());
 		model.addAttribute(
 				"busties",

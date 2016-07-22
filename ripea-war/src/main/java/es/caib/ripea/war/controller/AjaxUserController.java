@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.ArxiuService;
+import es.caib.ripea.war.helper.EnumHelper.HtmlOption;
 
 /**
  * Controlador per a les consultes ajax dels usuaris normals.
@@ -65,6 +67,27 @@ public class AjaxUserController extends BaseUserController {
 		return arxiuService.findAmbMetaExpedientPerCreacio(
 				entitatActual.getId(),
 				metaExpedientId);
+	}
+
+	@RequestMapping(value = "/enum/{enumClass}", method = RequestMethod.GET)
+	@ResponseBody
+	public List<HtmlOption> enumValorsAmbText(
+			HttpServletRequest request,
+			@PathVariable String enumClass) throws ClassNotFoundException {
+		Class<?> enumeracio = Class.forName("es.caib.ripea.core.api.dto." + enumClass);
+		String textKeyPrefix = "regla.tipus.enum.";
+		List<HtmlOption> resposta = new ArrayList<HtmlOption>();
+		if (enumeracio.isEnum()) {
+			for (Object e: enumeracio.getEnumConstants()) {
+				resposta.add(new HtmlOption(
+						((Enum<?>)e).name(),
+						getMessage(
+								request,
+								textKeyPrefix + ((Enum<?>)e).name(),
+								null)));
+			}
+		}
+		return resposta;
 	}
 
 }

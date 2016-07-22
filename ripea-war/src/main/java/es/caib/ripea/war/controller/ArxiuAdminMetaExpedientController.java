@@ -82,7 +82,7 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 		ArxiuDto arxiu = arxiuService.findById(entitatActual.getId(), arxiuId);
 		model.addAttribute("arxiu", arxiu);
 		// Consulta els meta-expedients en els que té permisos
-		List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiveByEntitatPerAdmin(
+		List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiusAmbEntitatPerAdmin(
 				entitatActual.getId());
 		model.addAttribute(
 				"metaExpedients",
@@ -105,7 +105,7 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 					"arxiu",
 					arxiu);
 			// Consulta els meta-expedients en els que té permisos
-			List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiveByEntitatPerAdmin(
+			List<MetaExpedientDto> metaExpedients = metaExpedientService.findActiusAmbEntitatPerAdmin(
 					entitatActual.getId());
 			model.addAttribute(
 					"metaExpedients",

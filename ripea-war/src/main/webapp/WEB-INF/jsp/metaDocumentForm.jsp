@@ -11,12 +11,12 @@ pageContext.setAttribute(
 		org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage());
 pageContext.setAttribute(
 		"multiplicitatEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.MultiplicitatEnumDto.class,
 				"multiplicitat.enum."));
 pageContext.setAttribute(
 		"metadocumentFluxtipEnumOptions",
-		es.caib.ripea.war.helper.HtmlSelectOptionHelper.getOptionsForEnum(
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto.class,
 				"metadocument.fluxtip.enum."));
 %>

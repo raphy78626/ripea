@@ -151,4 +151,11 @@ public class ArxiuServiceBean implements ArxiuService {
 				metaExpedientId);
 	}
 
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public List<ArxiuDto> findActiusAmbEntitat(
+			Long entitatId) throws NotFoundException {
+		return delegate.findActiusAmbEntitat(entitatId);
+	}
+
 }

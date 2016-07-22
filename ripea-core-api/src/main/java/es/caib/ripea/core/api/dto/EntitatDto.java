@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Informació d'un MetaNode.
+ * Informació d'una entitat.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */

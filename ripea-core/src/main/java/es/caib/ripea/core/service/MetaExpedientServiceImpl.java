@@ -693,7 +693,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<MetaExpedientDto> findActiveByEntitatPerAdmin(
+	public List<MetaExpedientDto> findActiusAmbEntitatPerAdmin(
 			Long entitatId) {
 		logger.debug("Consulta de meta-expedients actius de l'entitat per admins ("
 				+ "entitatId=" + entitatId +  ")");
@@ -709,7 +709,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<MetaExpedientDto> findActiveByEntitatPerCreacio(
+	public List<MetaExpedientDto> findActiusAmbEntitatPerCreacio(
 			Long entitatId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Consulta de meta-expedients actius de l'entitat amb el permis CREATE ("
@@ -737,7 +737,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<MetaExpedientDto> findByEntitatPerLectura(
+	public List<MetaExpedientDto> findAmbEntitatPerLectura(
 			Long entitatId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Consulta de meta-expedients de l'entitat amb el permis READ ("

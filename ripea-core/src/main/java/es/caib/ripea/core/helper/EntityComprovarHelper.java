@@ -33,6 +33,7 @@ import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.entity.ReglaEntity;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
@@ -49,6 +50,7 @@ import es.caib.ripea.core.repository.MetaExpedientRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.NodeRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
+import es.caib.ripea.core.repository.ReglaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
 
 
@@ -90,6 +92,8 @@ public class EntityComprovarHelper {
 	private ArxiuRepository arxiuRepository;
 	@Resource
 	private RegistreRepository registreRepository;
+	@Resource
+	private ReglaRepository reglaRepository;
 	@Resource
 	private InteressatRepository interessatRepository;
 
@@ -534,6 +538,24 @@ public class EntityComprovarHelper {
 			}
 		}
 		return registre;
+	}
+
+	public ReglaEntity comprovarRegla(
+			EntitatEntity entitat,
+			Long reglaId) {
+		ReglaEntity regla = reglaRepository.findOne(reglaId);
+		if (regla == null) {
+			throw new NotFoundException(
+					reglaId,
+					ReglaEntity.class);
+		}
+		if (!regla.getEntitat().equals(entitat)) {
+			throw new ValidationException(
+					reglaId,
+					ReglaEntity.class,
+					"La regla especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de la regla");
+		}
+		return regla;
 	}
 
 	public InteressatEntity comprovarInteressat(

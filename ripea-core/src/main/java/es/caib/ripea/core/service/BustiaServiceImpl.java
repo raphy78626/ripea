@@ -285,7 +285,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<BustiaDto> findByUnitatCodiAdmin(
+	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) {
 		logger.debug("Cercant les bústies de la unitat per admins ("
@@ -316,7 +316,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<BustiaDto> findByUnitatCodiUsuari(
+	public List<BustiaDto> findAmbUnitatCodiUsuari(
 			Long entitatId,
 			String unitatCodi) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -367,7 +367,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Override
 	@Transactional
-	public List<BustiaDto> findByEntitatAndActivaTrue(
+	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercant bústies actives de l'entitat ("
@@ -375,7 +375,7 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "usuariCodi=" + auth.getName() + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
-				true,
+				false,
 				false,
 				false);
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);

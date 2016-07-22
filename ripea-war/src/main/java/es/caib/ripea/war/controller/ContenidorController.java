@@ -603,7 +603,7 @@ public class ContenidorController extends BaseUserController {
 		model.addAttribute("contenidor", contenidor);
 		model.addAttribute(
 				"metaExpedients",
-				metaExpedientService.findActiveByEntitatPerCreacio(entitatActual.getId()));
+				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
 		model.addAttribute(
 				"metaDocuments",
 				metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
@@ -656,7 +656,7 @@ public class ContenidorController extends BaseUserController {
 		model.addAttribute(
 				"contenidorOrigen",
 				contenidorOrigen);
-		List<BustiaDto> busties = bustiaService.findByEntitatAndActivaTrue(
+		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());
 		model.addAttribute(
 				"busties",
