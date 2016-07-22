@@ -260,7 +260,8 @@ CREATE TABLE IPA_DADA
 CREATE TABLE IPA_EXPEDIENT
 (
   ID                 NUMBER(19)                 NOT NULL,
-  OBERT              NUMBER(1),
+  ESTAT              NUMBER(10)                 NOT NULL,
+  TANCAT_DATA        TIMESTAMP(6),
   TANCAT_MOTIU       VARCHAR2(1024),
   ANIO               NUMBER (10),
   SEQUENCIA          NUMBER (19),
@@ -462,6 +463,32 @@ CREATE TABLE IPA_REGISTRE_MOV
    ORIGEN_ID             NUMBER(19),
    REGISTRE_ID           NUMBER(19)             NOT NULL,
    REMITENT_ID           VARCHAR2 (64)
+);
+
+
+CREATE TABLE IPA_REGLA
+(
+  ID                   NUMBER(19)               NOT NULL,
+  CREATEDDATE          TIMESTAMP(6),
+  LASTMODIFIEDDATE     TIMESTAMP(6),
+  ACTIVA               NUMBER(1),
+  ASSUMPTE_CODI        VARCHAR2(16)             NOT NULL,
+  DESCRIPCIO           VARCHAR2(1024),
+  NOM                  VARCHAR2(256)            NOT NULL,
+  ORDRE                NUMBER(10)               NOT NULL,
+  TIPUS                VARCHAR2(32)             NOT NULL,
+  UNITAT_CODI          VARCHAR2(9),
+  VERSION              NUMBER(19)               NOT NULL,
+  CREATEDBY_CODI       VARCHAR2(256),
+  LASTMODIFIEDBY_CODI  VARCHAR2(256),
+  ENTITAT_ID           NUMBER(19)               NOT NULL,
+  CONTRASENYA          VARCHAR2(64),
+  REINTENTS            NUMBER(10),
+  URL                  VARCHAR2(256),
+  USUARI               VARCHAR2(64),
+  ARXIU_ID             NUMBER(19),
+  BUSTIA_ID            NUMBER(19),
+  METAEXPEDIENT_ID     NUMBER(19)
 );
 
 
