@@ -54,15 +54,15 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	protected String unitatCodi;
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "metaexpedient_id")
-	@ForeignKey(name = "ipa_regla_metaexpedient_fk")
+	@ForeignKey(name = "ipa_metaexpedient_regla_fk")
 	protected MetaExpedientEntity metaExpedient;
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "arxiu_id")
-	@ForeignKey(name = "ipa_regla_arxiu_fk")
+	@ForeignKey(name = "ipa_arxiu_regla_fk")
 	protected ArxiuEntity arxiu;
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "bustia_id")
-	@ForeignKey(name = "ipa_regla_bustia_fk")
+	@ForeignKey(name = "ipa_bustia_regla_fk")
 	protected BustiaEntity bustia;
 	@Column(name = "url", length = 256)
 	protected String backofficeUrl;
@@ -78,7 +78,7 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	protected boolean activa = true;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "entitat_id")
-	@ForeignKey(name = "ipa_entitat_metanode_fk")
+	@ForeignKey(name = "ipa_entitat_regla_fk")
 	protected EntitatEntity entitat;
 	@Version
 	private long version = 0;
