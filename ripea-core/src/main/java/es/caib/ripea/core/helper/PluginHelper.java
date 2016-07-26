@@ -451,6 +451,7 @@ public class PluginHelper {
 					boolean[] obligatorietats = new boolean[responsables.length];
 					Arrays.fill(obligatorietats, true);
 					bloc.setObligatorietats(obligatorietats);
+					flux.add(bloc);
 				}
 				try {
 					Calendar dataCaducitatCal = Calendar.getInstance();
