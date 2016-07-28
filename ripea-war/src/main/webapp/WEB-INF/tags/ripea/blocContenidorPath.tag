@@ -21,8 +21,8 @@
 							</c:when>
 							<c:when test="${contenidorPath.bustia}">
 								<c:choose>
-									<c:when test="${status.first}"><a href="<c:url value="/bustiaUser/unitat/${contenidorPath.unitatCodi}"/>"><span class="fa fa-sitemap" title="<spring:message code="contenidor.contingut.icona.unitat"/>"></span> ${contenidorPath.nom}</a></c:when>
-									<c:otherwise><a href="<c:url value="/bustiaUser/${contenidorPath.id}/pendent"/>"><span class="fa fa-inbox" title="<spring:message code="contenidor.contingut.icona.bustia"/>"></span> ${contenidorPath.nom}</a></c:otherwise>
+									<c:when test="${status.first}"><span class="fa fa-sitemap" title="<spring:message code="contenidor.contingut.icona.unitat"/>"></span> ${contenidorPath.nom}</c:when>
+									<c:otherwise><span class="fa fa-inbox" title="<spring:message code="contenidor.contingut.icona.bustia"/>"></span> ${contenidorPath.nom}</c:otherwise>
 								</c:choose>
 							</c:when>
 						</c:choose>

@@ -12,6 +12,8 @@ import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.PaginaDto;
+import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -385,4 +387,17 @@ public interface BustiaService {
 	 */
 	public void registreReglaAplicarPendents();
 
+	/**
+	 * Llistat paginat de les bústies d'una entitat.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param paginacioParams
+	 *            Paràmetres per a dur a terme la paginació del resultats.
+	 * @return La pàgina de regles.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public PaginaDto<BustiaDto> findAmbEntitatPaginat(
+			Long entitatId, 
+			PaginacioParamsDto paginacioParams);
 }

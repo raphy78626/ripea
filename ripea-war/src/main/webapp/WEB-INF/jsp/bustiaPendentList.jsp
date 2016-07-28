@@ -79,6 +79,6 @@ $(document).ready(function() {
 			</tr>
 		</thead>
 	</table>
-	<a href="<c:url value="/bustiaUser/unitat/${bustia.unitatCodi}"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span>&nbsp;<spring:message code="comu.boto.tornar"/></a>
+	<a href="<c:url value="/bustiaUser"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span>&nbsp;<spring:message code="comu.boto.tornar"/></a>
 </body>
 </html>

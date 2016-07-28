@@ -3,61 +3,43 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<c:set var="unitatCodiUrlPrefix" value=""/>
-<c:choose>
-	<c:when test="${not empty unitatCodi}">
-		<c:set var="unitatCodiPerUrl" value="${unitatCodi}"/>
-		<c:set var="unitatCodiUrlPrefix" value="../../"/>
-	</c:when>
-	<c:otherwise><c:set var="unitatCodiPerUrl" value="null"/></c:otherwise>
-</c:choose>
+<c:set var="idioma"><%=org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage()%></c:set>
 <html>
 <head>
 	<title><spring:message code="bustia.user.list.titol"/></title>
-	<link href="<c:url value="/css/jstree.min.css"/>" rel="stylesheet">
-	<script src="<c:url value="/js/jstree.min.js"/>"></script>
-	<link href="<c:url value="/css/DT_bootstrap.css"/>" rel="stylesheet">
-	<script src="<c:url value="/js/jquery.dataTables.js"/>"></script>
-	<script src="<c:url value="/js/DT_bootstrap.js"/>"></script>
-	<script src="<c:url value="/js/jsrender.min.js"/>"></script>
-	<script src="<c:url value="/js/ripea.datatable.js"/>"></script>
-	<script src="<c:url value="/js/ripea.modal.js"/>"></script>
-	<script src="<c:url value="/js/jquery.dataTables.fnReloadAjax.js"/>"></script>
+	<script src="<c:url value="/webjars/datatables.net/1.10.11/js/jquery.dataTables.min.js"/>"></script>
+	<script src="<c:url value="/webjars/datatables.net-bs/1.10.11/js/dataTables.bootstrap.min.js"/>"></script>
+	<link href="<c:url value="/webjars/datatables.net-bs/1.10.11/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
+	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
+	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 <script>
 $(document).ready(function() {
-	$("#taulaDades").ripeaDataTable({
-		ajaxSourceUrl: "<c:url value="/bustiaUser/unitat/${unitatCodiPerUrl}/datatable"/>",
-		localeUrl: "<c:url value="/js/dataTables-locales/dataTables_locale_ca.txt"/>",
-		alertesRefreshUrl: "<c:url value="/nodeco/util/alertes"/>"
-	});
 });
-function changedCallback(e, data) {
-	var baseUrl = '${unitatCodiUrlPrefix}bustiaUser/unitat/' + data.node.id;
-	$('#taulaDades').dataTable().fnReloadAjax(baseUrl  + '/datatable');
-	$('#taulaLlistat').css('visibility', '');
-}
 </script>
 </head>
 <body>
-	<div class="row">
-		<div class="col-md-4">
-			<rip:arbre id="arbreUnitats" arbre="${arbreUnitatsOrganitzatives}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback" seleccionatId="${unitatCodi}"/>
-		</div>
-		<div id="taulaLlistat" class="col-md-8"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
-			<table id="taulaDades" class="table table-striped table-bordered" data-rdt-paginable="false">
-				<thead>
-					<tr>
-						<th data-rdt-property="id" width="4%" data-rdt-visible="false">#</th>
-						<th data-rdt-property="nom" data-rdt-sorting="desc"><spring:message code="bustia.list.columna.nom"/></th>
-						<th data-rdt-property="pendentCount" data-rdt-template="cellFillsCountTemplate" data-rdt-sortable="false" width="10%">
-							<script id="cellFillsCountTemplate" type="text/x-jsrender">
-								<a href="${unitatCodiUrlPrefix}bustiaUser/{{:id}}/pendent" class="btn btn-default"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="bustia.user.list.pendent"/>&nbsp;<span class="badge">{{:pendentCount}}</span></a>
-							</script>
-						</th>
-					</tr>
-				</thead>
-			</table>
-		</div>
-	</div>
+	<table id="taulaDades" 
+			data-toggle="datatable" 
+			data-url="<c:url value="/bustiaUser/datatable"/>" 
+			class="table table-bordered table-striped" 
+			data-info-type="search" 
+			data-default-order="1" 
+			data-default-dir="asc" 
+			style="width:100%">
+		<thead>
+			<tr>
+				<th data-col-name="id" data-visible="false">Id</th>
+				<th data-col-name="nom"><spring:message code="bustia.list.columna.nom"/></th>
+				<th data-col-name="pareNom"><spring:message code="bustia.list.columna.unitat"/></th>
+				<th data-col-name="pendentCount" data-template="#cellFillsCountTemplate" data-orderable="false" width="10%">
+					<script id="cellFillsCountTemplate" type="text/x-jsrender">
+						<a href="${unitatCodiUrlPrefix}bustiaUser/{{:id}}/pendent" class="btn btn-default"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="bustia.user.list.pendent"/>&nbsp;<span class="badge">{{:pendentCount}}</span></a>
+					</script>
+				</th>
+			</tr>
+		</thead>
+	</table>
 </body>
 </html>

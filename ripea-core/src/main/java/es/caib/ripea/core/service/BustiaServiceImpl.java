@@ -5,6 +5,7 @@ package es.caib.ripea.core.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.domain.Page;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +29,8 @@ import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.dto.PaginaDto;
+import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
@@ -62,6 +66,8 @@ import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.PaginacioHelper;
+import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.PluginHelper;
@@ -114,6 +120,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	@Resource
+	private PaginacioHelper paginacioHelper;
 
 
 
@@ -1155,6 +1163,84 @@ public class BustiaServiceImpl implements BustiaService {
 				build();
 		return annexEntity;
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public PaginaDto<BustiaDto> findAmbEntitatPaginat(
+			Long entitatId,
+			PaginacioParamsDto paginacioParams) {
+		logger.debug("Consulta de busties amb paginació ("
+				+ "entitatId=" + entitatId + ", "
+				+ "paginacioParams=" + paginacioParams + ")");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		// Obté la llista d'id's amb permisos per a l'usuari
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+		// Filtra la llista de bústies segons els permisos
+		permisosHelper.filterGrantedAll(
+				busties,
+				new ObjectIdentifierExtractor<BustiaEntity>() {
+					@Override
+					public Long getObjectIdentifier(BustiaEntity bustia) {
+						return bustia.getId();
+					}
+				},
+				BustiaEntity.class,
+				new Permission[] {ExtendedPermission.READ},
+				auth);
+		List<Long> bustiaIds = new ArrayList<Long>();
+		for (BustiaEntity bustia : busties) {
+			bustiaIds.add(bustia.getId());
+		}
+		// Realitza la consulta
+		Map<String, String> mapeigPropietatsOrdenacio = new HashMap<String, String>();
+		mapeigPropietatsOrdenacio.put("pareNom", "pare.nom");
+		Page<BustiaEntity> pagina = bustiaRepository.findByEntitatAndIdsAndFiltrePaginat(
+				entitat,
+				bustiaIds,
+				paginacioParams.getFiltre() == null,
+				paginacioParams.getFiltre(),
+				paginacioHelper.toSpringDataPageable(
+						paginacioParams,
+						mapeigPropietatsOrdenacio));
+		// Ompl el comptador de continguts
+		busties = pagina.getContent();
+		PaginaDto<BustiaDto> paginaDto = paginacioHelper.toPaginaDto(
+				pagina,
+				BustiaDto.class,
+				new Converter<BustiaEntity, BustiaDto>() {
+					@Override
+					public BustiaDto convert(BustiaEntity source) {
+						BustiaDto dto = new BustiaDto();
+						dto.setId(source.getId());
+						dto.setNom(source.getNom());
+						if (source.getPare() != null)
+							dto.setPareNom(source.getPare().getNom());
+						return dto;
+					}
+				});
+		List<BustiaDto> resposta = paginaDto.getContingut();
+		if (!busties.isEmpty()) {
+			// Ompl els contadors de fills i registres
+			long[] countFills = contenidorHelper.countFillsAmbPermisReadByContenidors(
+					entitat,
+					busties,
+					true);
+			long[] countRegistres = contenidorHelper.countRegistresByContenidors(
+					entitat,
+					busties);
+			for (int i = 0; i < resposta.size(); i++) {
+				BustiaDto bustia = resposta.get(i);
+				bustia.setFillsCount(new Long(countFills[i]).intValue());
+				bustia.setRegistresCount(new Long(countRegistres[i]).intValue());
+			}
+		}						
+		return paginaDto;
+	}	
 
 	private ReglaEntity findReglaAplicable(
 			EntitatEntity entitat,

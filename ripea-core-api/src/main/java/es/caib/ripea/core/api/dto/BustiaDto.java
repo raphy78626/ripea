@@ -25,6 +25,7 @@ public class BustiaDto extends ContenidorDto {
 	private int fillsCount;
 	private int registresCount;
 	private UnitatOrganitzativaDto unitat;
+	private String pareNom;
 
 
 
@@ -83,6 +84,12 @@ public class BustiaDto extends ContenidorDto {
 		this.unitat = unitat;
 	}
 
+	public String getPareNom() {
+		return pareNom;
+	}
+	public void setPareNom(String pareNom) {
+		this.pareNom = pareNom;
+	}
 	public int getPermisosCount() {
 		if  (permisos == null)
 			return 0;

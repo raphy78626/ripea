@@ -17,6 +17,8 @@ import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.PaginaDto;
+import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -240,6 +242,16 @@ public class BustiaServiceBean implements BustiaService {
 	@Override
 	public void registreReglaAplicarPendents() {
 		delegate.registreReglaAplicarPendents();
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public PaginaDto<BustiaDto> findAmbEntitatPaginat(
+			Long entitatId,
+			PaginacioParamsDto paginacioParams) {
+		return delegate.findAmbEntitatPaginat(
+				entitatId,
+				paginacioParams);
 	}
 
 }
