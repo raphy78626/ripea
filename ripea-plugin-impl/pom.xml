@@ -166,6 +166,9 @@
 								<wsdlUrl>${basedir}/wsdl/sistra-zonaper/BackofficeFacade.wsdl</wsdlUrl>
 								<wsdlUrl>${basedir}/wsdl/sistra-regtel/BackofficeFacade.wsdl</wsdlUrl>
 							</wsdlUrls>
+							<vmArgs>
+								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+							</vmArgs>
 							<verbose>true</verbose>
 							<sourceDestDir>${basedir}/src/main/java</sourceDestDir>
 						</configuration>
