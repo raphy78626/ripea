@@ -11,6 +11,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,6 +26,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.audit.RipeaAuditable;
 
@@ -47,6 +50,8 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 								"llibre_codi"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends RipeaAuditable<Long> {
+
+	private static final int ERROR_MAX_LENGTH = 1024;
 
 	@Column(name = "tipus", length = 1, nullable = false)
 	private String tipus;
@@ -115,11 +120,18 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	private String exposa;
 	@Column(name = "solicita", length = 4000)
 	private String solicita;
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "data_processat")
-	private Date dataProcessat;
 	@Column(name = "motiu_rebuig", length = 1024)
 	private String motiuRebuig;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "proces_data")
+	private Date procesData;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "proces_estat", length = 16, nullable = false)
+	private RegistreProcesEstatEnum procesEstat;
+	@Column(name = "proces_error", length = ERROR_MAX_LENGTH)
+	private String procesError;
+	@Column(name = "proces_intents")
+	private Integer procesIntents;
 	@OneToMany(
 			mappedBy = "registre",
 			fetch = FetchType.LAZY,
@@ -132,6 +144,10 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreAnnexEntity> annexos = new ArrayList<RegistreAnnexEntity>();
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "regla_id")
+	@ForeignKey(name = "ipa_regla_registre_fk")
+	private ReglaEntity regla;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "contenidor_id")
 	@ForeignKey(name = "ipa_contenidor_registre_fk")
@@ -237,11 +253,20 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public String getSolicita() {
 		return solicita;
 	}
-	public Date getDataProcessat() {
-		return dataProcessat;
-	}
 	public String getMotiuRebuig() {
 		return motiuRebuig;
+	}
+	public String getUsuariCodi() {
+		return usuariCodi;
+	}
+	public Date getProcesData() {
+		return procesData;
+	}
+	public RegistreProcesEstatEnum getProcesEstat() {
+		return procesEstat;
+	}
+	public Integer getProcesIntents() {
+		return procesIntents;
 	}
 	public List<RegistreInteressatEntity> getInteressats() {
 		return interessats;
@@ -249,15 +274,37 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public List<RegistreAnnexEntity> getAnnexos() {
 		return annexos;
 	}
+	public ReglaEntity getRegla() {
+		return regla;
+	}
 	public ContenidorEntity getContenidor() {
 		return contenidor;
 	}
 
-	public void updateContenidor(ContenidorEntity contenidor) {
+	public void updateContenidor(
+			ContenidorEntity contenidor) {
 		this.contenidor = contenidor;
 	}
-	public void updateMotiuRebuig(String motiuRebuig) {
+	public void updateRebuig(
+			String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
+	}
+	public void updateProces(
+			Date procesData,
+			RegistreProcesEstatEnum procesEstat,
+			String procesError) {
+		this.procesData = procesData;
+		this.procesEstat = procesEstat;
+		if (procesIntents == null) {
+			procesIntents = new Integer(1);
+		} else {
+			procesIntents = new Integer(procesIntents.intValue() + 1);
+		}
+		if (procesError != null) {
+			this.procesError = procesError.substring(0, ERROR_MAX_LENGTH);	
+		} else {
+			this.procesError = null;
+		}
 	}
 
 	public static Builder getBuilder(
@@ -270,6 +317,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			String llibreCodi,
 			String assumpteTipusCodi,
 			String idiomaCodi,
+			RegistreProcesEstatEnum procesEstat,
 			ContenidorEntity contenidor) {
 		return new Builder(
 				tipus,
@@ -281,6 +329,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				llibreCodi,
 				assumpteTipusCodi,
 				idiomaCodi,
+				procesEstat,
 				contenidor);
 	}
 
@@ -301,6 +350,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				String llibreCodi,
 				String assumpteTipusCodi,
 				String idiomaCodi,
+				RegistreProcesEstatEnum procesEstat,
 				ContenidorEntity contenidor) {
 			built = new RegistreEntity();
 			built.tipus = tipus.getValor();
@@ -312,6 +362,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			built.llibreCodi = llibreCodi;
 			built.assumpteTipusCodi = assumpteTipusCodi;
 			built.idiomaCodi = idiomaCodi;
+			built.procesEstat = procesEstat;
 			built.contenidor = contenidor;
 		}
 		public Builder entitatCodi(String entitatCodi) {
@@ -410,12 +461,17 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			built.solicita = solicita;
 			return this;
 		}
-		public Builder dataProcessat(Date dataProcessat) {
-			built.dataProcessat = dataProcessat;
-			return this;
-		}
 		public Builder motiuRebuig(String motiuRebuig) {
 			built.motiuRebuig = motiuRebuig;
+			return this;
+		}
+		public Builder procesData(Date procesData) {
+			built.procesData = procesData;
+			return this;
+		}
+		public Builder regla(ReglaEntity regla) {
+			built.regla = regla;
+			built.procesIntents = new Integer(0);
 			return this;
 		}
 		public RegistreEntity build() {

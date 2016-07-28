@@ -183,7 +183,7 @@ body {
 							<c:when test="${isRolActualUsuari}">
 								<a href="<c:url value="/escriptori"/>" class="btn btn-primary"><spring:message code="decorator.menu.escriptori"/></a>
 								<a href="<c:url value="/arxiuUser"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
-								<a href="<c:url value="/bustia"/>" class="btn btn-primary">
+								<a href="<c:url value="/bustiaUser"/>" class="btn btn-primary">
 									<spring:message code="decorator.menu.busties"/>
 									<span id="bustia-pendent-count" class="badge small">${countElementsPendentsBusties}</span>
 								</a>

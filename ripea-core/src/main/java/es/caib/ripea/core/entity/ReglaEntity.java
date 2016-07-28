@@ -70,8 +70,8 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	protected String backofficeUsuari;
 	@Column(name = "contrasenya", length = 64)
 	protected String backofficeContrasenya;
-	@Column(name = "reintents")
-	protected Integer backofficeReintents;
+	@Column(name = "intents")
+	protected Integer backofficeIntents;
 	@Column(name = "ordre", nullable = false)
 	protected int ordre;
 	@Column(name = "activa")
@@ -118,8 +118,8 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	public String getBackofficeContrasenya() {
 		return backofficeContrasenya;
 	}
-	public Integer getBackofficeReintents() {
-		return backofficeReintents;
+	public Integer getBackofficeIntents() {
+		return backofficeIntents;
 	}
 	public int getOrdre() {
 		return ordre;
@@ -157,11 +157,11 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 			String backofficeUrl,
 			String backofficeUsuari,
 			String backofficeContrasenya,
-			Integer backofficeReintents) {
+			Integer backofficeIntents) {
 		this.backofficeUrl = backofficeUrl;
 		this.backofficeUsuari = backofficeUsuari;
 		this.backofficeContrasenya = backofficeContrasenya;
-		this.backofficeReintents = backofficeReintents;
+		this.backofficeIntents = backofficeIntents;
 	}
 	public void updateOrdre(
 			int ordre) {

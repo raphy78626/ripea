@@ -237,4 +237,9 @@ public class BustiaServiceBean implements BustiaService {
 		delegate.deletePermis(entitatId, id, permisId);
 	}
 
+	@Override
+	public void registreReglaAplicarPendents() {
+		delegate.registreReglaAplicarPendents();
+	}
+
 }

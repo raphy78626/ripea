@@ -379,4 +379,10 @@ public interface BustiaService {
 			Long id,
 			Long permisId) throws NotFoundException;
 
+	/**
+	 * Processa periòdicament les regles pendents d'aplicar a les anotacions
+	 * de registre.
+	 */
+	public void registreReglaAplicarPendents();
+
 }

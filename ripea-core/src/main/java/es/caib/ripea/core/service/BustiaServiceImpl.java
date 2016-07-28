@@ -4,13 +4,17 @@
 package es.caib.ripea.core.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +29,7 @@ import es.caib.ripea.core.api.dto.ContenidorDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
+import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -38,6 +43,7 @@ import es.caib.ripea.core.api.registre.RegistreInteressat;
 import es.caib.ripea.core.api.registre.RegistreInteressatCanalEnum;
 import es.caib.ripea.core.api.registre.RegistreInteressatDocumentTipusEnum;
 import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.entity.BustiaEntity;
@@ -49,6 +55,7 @@ import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.RegistreInteressatEntity;
 import es.caib.ripea.core.entity.RegistreMovimentEntity;
+import es.caib.ripea.core.entity.ReglaEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContenidorHelper;
@@ -64,6 +71,7 @@ import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.RegistreMovimentRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
+import es.caib.ripea.core.repository.ReglaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
 import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 
@@ -83,6 +91,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private RegistreRepository registreRepository;
 	@Resource
 	private RegistreMovimentRepository registreMovimentRepository;
+	@Resource
+	private ReglaRepository reglaRepository;
 
 	@Resource
 	private PermisosHelper permisosHelper;
@@ -558,11 +568,16 @@ public class BustiaServiceImpl implements BustiaService {
 					"oficina=" + anotacio.getOficinaCodi() + ", " +
 					"llibre=" + anotacio.getLlibreCodi() + ")");
 		}
+		ReglaEntity reglaAplicable = findReglaAplicable(
+				entitat,
+				unitatAdministrativa,
+				anotacio);
 		RegistreEntity anotacioEntity = toRegistreEntity(
 				tipus,
 				unitatAdministrativa,
 				anotacio,
-				bustia);
+				bustia,
+				reglaAplicable);
 		registreRepository.save(anotacioEntity);
 		bustiaHelper.evictElementsPendentsBustia(
 				bustia.getEntitat(),
@@ -846,6 +861,78 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia);
 	}
 
+	@Override
+	@Transactional
+	@Async
+	@Scheduled(fixedRate=10000)
+	public void registreReglaAplicarPendents() {
+		logger.debug("Aplicant regles a les anotacions pendents");
+		List<RegistreEntity> pendents = registreRepository.findByReglaNotNullAndProcesEstatOrderByCreatedDateAsc(
+				RegistreProcesEstatEnum.PENDENT);
+		if (!pendents.isEmpty()) {
+			logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
+			//System.out.println("Aplicant regles a " + pendents.size() + " registres pendents");
+			for (RegistreEntity pendent: pendents) {
+				ReglaEntity regla = pendent.getRegla();
+				try {
+					String error = null;
+					switch (regla.getTipus()) {
+					case BACKOFFICE:
+						// TODO processar amb backoffice
+						break;
+					case BUSTIA:
+						// TODO enviar a bústia
+						break;
+					case EXP_CREAR:
+						// TODO crear expedient
+						break;
+					case EXP_AFEGIR:
+						// TODO afegir a expedient existent
+						break;
+					default:
+						error = "Tipus de regla desconegut (" + regla.getTipus() + ")";
+						break;
+					}
+					pendent.updateProces(
+							new Date(),
+							RegistreProcesEstatEnum.PROCESSAT,
+							error);
+				} catch (Exception ex) {
+					String trace = ExceptionUtils.getStackTrace(ex);
+					if (ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
+						Integer intentsRegla = regla.getBackofficeIntents();
+						if (intentsRegla == null) {
+							pendent.updateProces(
+									null,
+									RegistreProcesEstatEnum.ERROR,
+									trace);
+						} else {
+							Integer intentsPendent = pendent.getProcesIntents();
+							if (intentsPendent != null && intentsPendent.intValue() >= intentsRegla.intValue() - 1) {
+								pendent.updateProces(
+										null,
+										RegistreProcesEstatEnum.ERROR,
+										trace);
+							} else {
+								pendent.updateProces(
+										null,
+										RegistreProcesEstatEnum.PENDENT,
+										trace);
+							}
+						}
+					} else {
+						pendent.updateProces(
+								null,
+								RegistreProcesEstatEnum.ERROR,
+								trace);
+					}
+				}
+			}
+		} else {
+			logger.debug("No hi ha registres pendents de processar");
+		}
+	}
+
 
 
 	private BustiaDto toBustiaDto(
@@ -928,7 +1015,8 @@ public class BustiaServiceImpl implements BustiaService {
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio,
-			BustiaEntity bustia) {
+			BustiaEntity bustia,
+			ReglaEntity regla) {
 		RegistreEntity entity = RegistreEntity.getBuilder(
 				tipus,
 				unitatAdministrativa,
@@ -939,6 +1027,7 @@ public class BustiaServiceImpl implements BustiaService {
 				anotacio.getLlibreCodi(),
 				anotacio.getAssumpteTipusCodi(),
 				anotacio.getIdiomaCodi(),
+				(regla != null) ? RegistreProcesEstatEnum.PENDENT : RegistreProcesEstatEnum.NO_PROCES,
 				bustia).
 		entitatCodi(anotacio.getEntitatCodi()).
 		entitatDescripcio(anotacio.getEntitatDescripcio()).
@@ -964,6 +1053,7 @@ public class BustiaServiceImpl implements BustiaService {
 		observacions(anotacio.getObservacions()).
 		exposa(anotacio.getExposa()).
 		solicita(anotacio.getSolicita()).
+		regla(regla).
 		build();
 		if (anotacio.getInteressats() != null) {
 			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
@@ -1064,6 +1154,23 @@ public class BustiaServiceImpl implements BustiaService {
 				observacions(registreAnnex.getObservacions()).
 				build();
 		return annexEntity;
+	}
+
+	private ReglaEntity findReglaAplicable(
+			EntitatEntity entitat,
+			String unitatAdministrativa,
+			RegistreAnotacio anotacio) {
+		List<ReglaEntity> regles = reglaRepository.findByEntitatAndActivaTrueOrderByOrdreAsc(entitat);
+		ReglaEntity reglaAplicable = null;
+		for (ReglaEntity regla: regles) {
+			if (regla.getUnitatCodi() == null || regla.getUnitatCodi().equals(unitatAdministrativa)) {
+				if (anotacio.getAssumpteTipusCodi() != null && anotacio.getAssumpteTipusCodi().equals(regla.getAssumpteCodi())) {
+					reglaAplicable = regla;
+					break;
+				}
+			}
+		}
+		return reglaAplicable;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);

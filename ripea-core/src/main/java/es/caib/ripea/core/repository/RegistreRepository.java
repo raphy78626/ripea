@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.entity.ContenidorEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 
@@ -20,6 +21,9 @@ import es.caib.ripea.core.entity.RegistreEntity;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> {
+
+	List<RegistreEntity> findByReglaNotNullAndProcesEstatOrderByCreatedDateAsc(
+			RegistreProcesEstatEnum procesEstat);
 
 	RegistreEntity findByContenidorAndId(
 			ContenidorEntity contenidor,

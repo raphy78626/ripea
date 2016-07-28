@@ -173,7 +173,7 @@ public class RegistreServiceImpl implements RegistreService {
 					RegistreEntity.class,
 					"La bústia especificada (id=" + bustiaId + ") no coincideix amb la bústia de l'anotació de registre");
 		}
-		registre.updateMotiuRebuig(motiu);
+		registre.updateRebuig(motiu);
 		// Refrescam cache usuaris bústia
 		bustiaHelper.evictElementsPendentsBustia(
 				entitat,

@@ -23,6 +23,7 @@ import es.caib.ripea.core.entity.ReglaEntity;
 public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 
 	List<ReglaEntity> findByEntitatOrderByOrdreAsc(EntitatEntity entitat);
+	List<ReglaEntity> findByEntitatAndActivaTrueOrderByOrdreAsc(EntitatEntity entitat);
 
 	@Query(	"from " +
 			"    ReglaEntity reg " +
