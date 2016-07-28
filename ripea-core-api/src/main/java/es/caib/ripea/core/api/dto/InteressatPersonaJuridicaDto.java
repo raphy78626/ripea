@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class InteressatCiutadaDto extends InteressatDto {
+public class InteressatPersonaJuridicaDto extends InteressatDto {
 
 	private String llinatges;
 	private String nif;

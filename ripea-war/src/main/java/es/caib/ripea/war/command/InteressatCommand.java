@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
 import es.caib.ripea.war.command.InteressatCommand.Ciutada;
@@ -114,10 +114,10 @@ public class InteressatCommand  {
 				InteressatCommand.class);
 		return command;
 	}
-	public static InteressatCiutadaDto asCiutadaDto(InteressatCommand command) {
+	public static InteressatPersonaFisicaDto asCiutadaDto(InteressatCommand command) {
 		return ConversioTipusHelper.convertir(
 				command,
-				InteressatCiutadaDto.class);
+				InteressatPersonaFisicaDto.class);
 	}
 	public static InteressatAdministracioDto asAdministracioDto(InteressatCommand command) {
 		return ConversioTipusHelper.convertir(

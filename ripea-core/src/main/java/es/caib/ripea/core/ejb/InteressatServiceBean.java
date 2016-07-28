@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.service.InteressatService;
 
@@ -76,7 +76,7 @@ public class InteressatServiceBean implements InteressatService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<InteressatCiutadaDto> findByFiltreCiutada(
+	public List<InteressatPersonaFisicaDto> findByFiltreCiutada(
 			Long entitatId,
 			String nom,
 			String nif,

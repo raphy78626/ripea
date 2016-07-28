@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -23,7 +23,7 @@ import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
-import es.caib.ripea.core.entity.InteressatCiutadaEntity;
+import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
@@ -105,9 +105,9 @@ public class InteressatServiceImpl implements InteressatService {
 				true,
 				false);
 		InteressatEntity interessatEntity = null;
-		if (interessat instanceof InteressatCiutadaDto) {
-			InteressatCiutadaDto interessatCiutadaDto = (InteressatCiutadaDto)interessat;
-			interessatEntity = InteressatCiutadaEntity.getBuilder(
+		if (interessat instanceof InteressatPersonaFisicaDto) {
+			InteressatPersonaFisicaDto interessatCiutadaDto = (InteressatPersonaFisicaDto)interessat;
+			interessatEntity = InteressatPersonaFisicaEntity.getBuilder(
 					interessatCiutadaDto.getNom(),
 					interessatCiutadaDto.getLlinatges(),
 					interessatCiutadaDto.getNif(),
@@ -134,10 +134,10 @@ public class InteressatServiceImpl implements InteressatService {
 				null,
 				false,
 				false);
-		if (interessat instanceof InteressatCiutadaDto) {
+		if (interessat instanceof InteressatPersonaFisicaDto) {
 			return conversioTipusHelper.convertir(
 					interessatRepository.save(interessatEntity),
-					InteressatCiutadaDto.class);
+					InteressatPersonaFisicaDto.class);
 		} else {
 			return conversioTipusHelper.convertir(
 					interessatRepository.save(interessatEntity),
@@ -317,10 +317,10 @@ public class InteressatServiceImpl implements InteressatService {
 				expedient);
 		List<InteressatDto> resposta = new ArrayList<InteressatDto>();
 		for (InteressatEntity interessat: interessats) {
-			if (interessat instanceof InteressatCiutadaEntity)
+			if (interessat instanceof InteressatPersonaFisicaEntity)
 				resposta.add(conversioTipusHelper.convertir(
 						interessat,
-						InteressatCiutadaDto.class));
+						InteressatPersonaFisicaDto.class));
 			else if (interessat instanceof InteressatAdministracioEntity)
 				resposta.add(conversioTipusHelper.convertir(
 						interessat,
@@ -331,7 +331,7 @@ public class InteressatServiceImpl implements InteressatService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<InteressatCiutadaDto> findByFiltreCiutada(
+	public List<InteressatPersonaFisicaDto> findByFiltreCiutada(
 			Long entitatId,
 			String nom,
 			String nif,
@@ -355,7 +355,7 @@ public class InteressatServiceImpl implements InteressatService {
 						nif,
 						llinatges == null,
 						llinatges),
-				InteressatCiutadaDto.class);
+				InteressatPersonaFisicaDto.class);
 	}
 
 	@Transactional(readOnly = true)

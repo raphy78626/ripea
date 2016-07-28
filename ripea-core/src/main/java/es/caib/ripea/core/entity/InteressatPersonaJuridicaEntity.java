@@ -17,8 +17,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class InteressatCiutadaEntity extends InteressatEntity {
+public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 
+//	raoSocial: 				nom de l’empresa en cas de persona jurídica.
+	
 	@Column(name = "llinatges", length = 256)
 	protected String llinatges;
 	@Column(name = "nif", length = 9)
@@ -73,19 +75,19 @@ public class InteressatCiutadaEntity extends InteressatEntity {
 	 * @author Limit Tecnologies <limit@limit.es>
 	 */
 	public static class Builder {
-		InteressatCiutadaEntity built;
+		InteressatPersonaJuridicaEntity built;
 		Builder(
 				String nom,
 				String llinatges,
 				String nif,
 				EntitatEntity entitat) {
-			built = new InteressatCiutadaEntity();
+			built = new InteressatPersonaJuridicaEntity();
 			built.nom = nom;
 			built.llinatges = llinatges;
 			built.nif = nif;
 			built.entitat = entitat;
 		}
-		public InteressatCiutadaEntity build() {
+		public InteressatPersonaJuridicaEntity build() {
 			return built;
 		}
 	}
@@ -110,7 +112,7 @@ public class InteressatCiutadaEntity extends InteressatEntity {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		InteressatCiutadaEntity other = (InteressatCiutadaEntity) obj;
+		InteressatPersonaJuridicaEntity other = (InteressatPersonaJuridicaEntity) obj;
 		if (entitat == null) {
 			if (other.entitat != null)
 				return false;

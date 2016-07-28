@@ -39,7 +39,7 @@ public abstract class InteressatDto implements Serializable {
 	}
 
 	public boolean isCiutada() {
-		return this instanceof InteressatCiutadaDto;
+		return this instanceof InteressatPersonaFisicaDto;
 	}
 	public boolean isAdministracio() {
 		return this instanceof InteressatAdministracioDto;

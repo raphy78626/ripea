@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.war.command.InteressatCommand;
 
@@ -64,7 +64,7 @@ public class InteressatNoRepetitValidator implements ConstraintValidator<Interes
 			final String tipus = BeanUtils.getSimpleProperty(value, campTipus);
 			boolean existeix;
 			if (InteressatCommand.TIPUS_CIUTADA.equals(tipus)) {
-				List<InteressatCiutadaDto> interessats = interessatService.findByFiltreCiutada(
+				List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltreCiutada(
 						entitatId,
 						nom,
 						nif,

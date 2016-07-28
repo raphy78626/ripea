@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
-import es.caib.ripea.core.entity.InteressatCiutadaEntity;
+import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 
 /**
@@ -49,7 +49,7 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "and (:esNullLlinatges = true or inter.llinatges = :llinatges) "
 			+ "order by "
 			+ "    inter.nom desc")
-	List<InteressatCiutadaEntity> findByFiltreCiutada(
+	List<InteressatPersonaFisicaEntity> findByFiltreCiutada(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullNom") boolean esNullNom,
 			@Param("nom") String nom,

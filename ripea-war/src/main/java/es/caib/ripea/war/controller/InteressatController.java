@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.war.command.InteressatCommand;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
@@ -70,7 +70,7 @@ public class InteressatController extends BaseUserController {
 		model.addAttribute("emptyCommand", emptyCommand);
 		model.addAttribute("expedientId", expedientId);
 		if (!bindingResult.hasErrors()) {
-			List<InteressatCiutadaDto> interessats = interessatService.findByFiltreCiutada(
+			List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltreCiutada(
 					entitatActual.getId(),
 					null,
 					command.getNif(),
@@ -131,7 +131,7 @@ public class InteressatController extends BaseUserController {
 			model.addAttribute("emptyCommand", emptyCommand);
 			model.addAttribute("expedientId", expedientId);
 			if (command.isComprovat()) {
-				List<InteressatCiutadaDto> interessats = interessatService.findByFiltreCiutada(
+				List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltreCiutada(
 						entitatActual.getId(),
 						null,
 						command.getNif(),
