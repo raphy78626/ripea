@@ -14,8 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -23,8 +24,9 @@ import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
-import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
+import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
+import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
 import es.caib.ripea.core.helper.ContenidorHelper;
 import es.caib.ripea.core.helper.ContenidorLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
@@ -105,18 +107,64 @@ public class InteressatServiceImpl implements InteressatService {
 				true,
 				false);
 		InteressatEntity interessatEntity = null;
-		if (interessat instanceof InteressatPersonaFisicaDto) {
-			InteressatPersonaFisicaDto interessatCiutadaDto = (InteressatPersonaFisicaDto)interessat;
+		if (interessat.isPersonaFisica()) {
+			InteressatPersonaFisicaDto interessatPersonaFisicaDto = (InteressatPersonaFisicaDto)interessat;
 			interessatEntity = InteressatPersonaFisicaEntity.getBuilder(
-					interessatCiutadaDto.getNom(),
-					interessatCiutadaDto.getLlinatges(),
-					interessatCiutadaDto.getNif(),
+					interessatPersonaFisicaDto.getNom(),
+					interessatPersonaFisicaDto.getLlinatge1(),
+					interessatPersonaFisicaDto.getLlinatge2(),
+					interessatPersonaFisicaDto.getDocumentTipus(),
+					interessatPersonaFisicaDto.getDocumentNum(),
+					interessatPersonaFisicaDto.getPais(),
+					interessatPersonaFisicaDto.getProvincia(),
+					interessatPersonaFisicaDto.getMunicipi(),
+					interessatPersonaFisicaDto.getAdresa(),
+					interessatPersonaFisicaDto.getCodiPostal(),
+					interessatPersonaFisicaDto.getEmail(),
+					interessatPersonaFisicaDto.getTelefon(),
+					interessatPersonaFisicaDto.getObservacions(),
+					interessatPersonaFisicaDto.getNotificacioIdioma(),
+					interessatPersonaFisicaDto.getNotificacioAutoritzat(),
+					expedient,
+					null,
+					entitat).build();
+		} else if (interessat.isPersonaJuridica()) {
+			InteressatPersonaJuridicaDto interessatPersonaJuridicaDto = (InteressatPersonaJuridicaDto)interessat;
+			interessatEntity = InteressatPersonaJuridicaEntity.getBuilder(
+					interessatPersonaJuridicaDto.getRaoSocial(),
+					interessatPersonaJuridicaDto.getDocumentTipus(),
+					interessatPersonaJuridicaDto.getDocumentNum(),
+					interessatPersonaJuridicaDto.getPais(),
+					interessatPersonaJuridicaDto.getProvincia(),
+					interessatPersonaJuridicaDto.getMunicipi(),
+					interessatPersonaJuridicaDto.getAdresa(),
+					interessatPersonaJuridicaDto.getCodiPostal(),
+					interessatPersonaJuridicaDto.getEmail(),
+					interessatPersonaJuridicaDto.getTelefon(),
+					interessatPersonaJuridicaDto.getObservacions(),
+					interessatPersonaJuridicaDto.getNotificacioIdioma(),
+					interessatPersonaJuridicaDto.getNotificacioAutoritzat(),
+					expedient,
+					null,
 					entitat).build();
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
 			interessatEntity = InteressatAdministracioEntity.getBuilder(
-					interessatAdministracioDto.getNom(),
-					interessatAdministracioDto.getIdentificador(),
+					interessatAdministracioDto.getOrganCodi(),
+					interessatAdministracioDto.getDocumentTipus(),
+					interessatAdministracioDto.getDocumentNum(),
+					interessatAdministracioDto.getPais(),
+					interessatAdministracioDto.getProvincia(),
+					interessatAdministracioDto.getMunicipi(),
+					interessatAdministracioDto.getAdresa(),
+					interessatAdministracioDto.getCodiPostal(),
+					interessatAdministracioDto.getEmail(),
+					interessatAdministracioDto.getTelefon(),
+					interessatAdministracioDto.getObservacions(),
+					interessatAdministracioDto.getNotificacioIdioma(),
+					interessatAdministracioDto.getNotificacioAutoritzat(),
+					expedient,
+					null,
 					entitat).build();
 		}
 		interessatEntity = interessatRepository.save(interessatEntity);

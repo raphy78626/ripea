@@ -13,26 +13,31 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class InteressatPersonaFisicaDto extends InteressatDto {
 
-	private String llinatges;
-	private String nif;
+	protected String nom;
+	protected String llinatge1;
+	protected String llinatge2;
 
-
-
-	public String getLlinatges() {
-		return llinatges;
+	public String getNom() {
+		return nom;
 	}
-	public void setLlinatges(String llinatges) {
-		this.llinatges = llinatges;
+	public void setNom(String nom) {
+		this.nom = nom;
 	}
-	public String getNif() {
-		return nif;
+	public String getLlinatge1() {
+		return llinatge1;
 	}
-	public void setNif(String nif) {
-		this.nif = nif;
+	public void setLlinatge1(String llinatge1) {
+		this.llinatge1 = llinatge1;
+	}
+	public String getLlinatge2() {
+		return llinatge2;
+	}
+	public void setLlinatge2(String llinatge2) {
+		this.llinatge2 = llinatge2;
 	}
 
 	public String getLlinatgesComaNom() {
-		return llinatges + ", " + nom;
+		return llinatge1 + (llinatge2 != null ? " " + llinatge2 : "") + ", " + nom;
 	}
 
 	@Override

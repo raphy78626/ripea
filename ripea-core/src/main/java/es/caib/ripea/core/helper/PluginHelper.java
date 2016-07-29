@@ -32,6 +32,7 @@ import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
+import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.plugin.ciutada.CiutadaPersona;
 import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
@@ -862,25 +863,37 @@ public class PluginHelper {
 		accioParams.put("unitatAdministrativa", new Long(unitatAdministrativa).toString());
 		accioParams.put("idioma", idioma);
 		accioParams.put("descripcio", descripcio);
-		accioParams.put("destinatari", representat.getNom());
-		accioParams.put("representat", representat.getNom());
+		accioParams.put("destinatari", representat.getIdentificador());
+		accioParams.put("representat", representat.getIdentificador());
 		accioParams.put("bantelNumeroEntrada", bantelNumeroEntrada);
 		accioParams.put("avisosHabilitats", new Boolean(avisosHabilitats).toString());
 		accioParams.put("avisText", avisText);
 		accioParams.put("avisTextMobil", avisTextMobil);
 		try {
 			CiutadaPersona personaDestinatari = new CiutadaPersona();
-			personaDestinatari.setNif(destinatari.getNom());
-			personaDestinatari.setNom(destinatari.getNom());
-			personaDestinatari.setLlinatge1(destinatari.getNom());
-			personaDestinatari.setLlinatge2(destinatari.getNom());
+			personaDestinatari.setNif(destinatari.getDocumentNum());
+			if (destinatari instanceof InteressatPersonaFisicaEntity) {
+				personaDestinatari.setNom(((InteressatPersonaFisicaEntity)destinatari).getNom());
+				personaDestinatari.setLlinatge1(((InteressatPersonaFisicaEntity)destinatari).getLlinatge1());
+				personaDestinatari.setLlinatge2(((InteressatPersonaFisicaEntity)destinatari).getLlinatge2());
+			} else {
+				personaDestinatari.setNom(destinatari.getIdentificador());
+				personaDestinatari.setLlinatge1("");
+				personaDestinatari.setLlinatge2("");
+			}
 			CiutadaPersona personaRepresentat = null;
 			if (representat != null) {
 				personaRepresentat = new CiutadaPersona();
-				personaDestinatari.setNif(representat.getNom());
-				personaDestinatari.setNom(representat.getNom());
-				personaDestinatari.setLlinatge1(representat.getNom());
-				personaDestinatari.setLlinatge2(representat.getNom());
+				personaDestinatari.setNif(representat.getDocumentNum());
+				if (representat instanceof InteressatPersonaFisicaEntity) {
+					personaDestinatari.setNom(((InteressatPersonaFisicaEntity)representat).getNom());
+					personaDestinatari.setLlinatge1(((InteressatPersonaFisicaEntity)representat).getLlinatge1());
+					personaDestinatari.setLlinatge2(((InteressatPersonaFisicaEntity)representat).getLlinatge2());
+				} else {
+					personaDestinatari.setNom(representat.getIdentificador());
+					personaDestinatari.setLlinatge1("");
+					personaDestinatari.setLlinatge2("");
+				}
 			}
 			getCiutadaPlugin().expedientCrear(
 					expedient.getId().toString(),

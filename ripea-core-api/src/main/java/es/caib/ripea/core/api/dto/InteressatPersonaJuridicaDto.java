@@ -13,26 +13,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class InteressatPersonaJuridicaDto extends InteressatDto {
 
-	private String llinatges;
-	private String nif;
+	protected String raoSocial;
 
-
-
-	public String getLlinatges() {
-		return llinatges;
+	public String getRaoSocial() {
+		return raoSocial;
 	}
-	public void setLlinatges(String llinatges) {
-		this.llinatges = llinatges;
-	}
-	public String getNif() {
-		return nif;
-	}
-	public void setNif(String nif) {
-		this.nif = nif;
-	}
-
-	public String getLlinatgesComaNom() {
-		return llinatges + ", " + nom;
+	public void setRaoSocial(String raoSocial) {
+		this.raoSocial = raoSocial;
 	}
 
 	@Override

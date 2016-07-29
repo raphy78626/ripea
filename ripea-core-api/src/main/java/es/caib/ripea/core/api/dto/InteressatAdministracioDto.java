@@ -13,15 +13,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class InteressatAdministracioDto extends InteressatDto {
 
-	private String identificador;
+	protected String organCodi;
 
-
-
-	public String getIdentificador() {
-		return identificador;
+	public String getOrganCodi() {
+		return organCodi;
 	}
-	public void setIdentificador(String identificador) {
-		this.identificador = identificador;
+	public void setOrganCodi(String organCodi) {
+		this.organCodi = organCodi;
 	}
 
 	@Override

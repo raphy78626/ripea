@@ -9,9 +9,11 @@ import javax.persistence.EntityListeners;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.IndiomaEnumDto;
+import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
+
 /**
- * Classe del model de dades que representa un interessat de tipus
- * ciutadà.
+ * Classe del model de dades que representa un interessat de tipus persona física.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -19,57 +21,143 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class InteressatPersonaFisicaEntity extends InteressatEntity {
 	
-//	nom: 					nom de l’interessat.
-//	llinatge1: 				primer llinatge de l’interessat.
-//	llinatge2: 				segon llinatge de l’interessat.
+//	CAMP					TIPUS INTERESSAT	DESCRIPCIÓ
+//	------------------------------------------------------------------------------------------------------------------------------------
+//	nom: 					FÍSICA				nom de l’interessat.
+//	llinatge1: 				FÍSICA				primer llinatge de l’interessat.
+//	llinatge2: 				FÍSICA				segon llinatge de l’interessat.
 
-	@Column(name = "nom", length = 40)
+
+	@Column(name = "nom", length = 30)
 	protected String nom;
-	@Column(name = "llinatges", length = 256)
-	protected String llinatges;
-	@Column(name = "nif", length = 9)
-	protected String nif;
+	@Column(name = "llinatge1", length = 30)
+	protected String llinatge1;
+	@Column(name = "llinatge2", length = 30)
+	protected String llinatge2;
 
-
-
-	public String getLlinatges() {
-		return llinatges;
+	public String getNom() {
+		return nom;
 	}
-	public String getNif() {
-		return nif;
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getLlinatge1() {
+		return llinatge1;
+	}
+	public void setLlinatge1(String llinatge1) {
+		this.llinatge1 = llinatge1;
+	}
+
+	public String getLlinatge2() {
+		return llinatge2;
+	}
+	public void setLlinatge2(String llinatge2) {
+		this.llinatge2 = llinatge2;
+	}
+	
+	@Override
+	public String getIdentificador() {
+		return 	this.nom + 
+				(this.llinatge1 != null ? " " + this.llinatge1 : "") + 
+				(this.llinatge2 != null ? " " + this.llinatge2 : "");
 	}
 
 	public void update(
 			String nom,
-			String llinatges,
-			String nif) {
+			String llinatge1,
+			String llinatge2,
+			InteressatDocumentTipusEnumDto documentTipus,
+			String documentNum,
+			String pais,
+			String provincia,
+			String municipi,
+			String adresa,
+			String codiPostal,
+			String email,
+			String telefon,
+			String observacions,
+			IndiomaEnumDto notificacioIdioma,
+			Boolean notificacioAutoritzat,
+			InteressatEntity representant) {
 		this.nom = nom;
-		this.llinatges = llinatges;
-		this.nif = nif;
+		this.llinatge1 = llinatge1;
+		this.llinatge2 = llinatge2;
+		this.documentTipus = documentTipus;
+		this.documentNum = documentNum;
+		this.pais = pais;
+		this.provincia =  provincia;
+		this.municipi =  municipi;
+		this.adresa =  adresa;
+		this.codiPostal =  codiPostal;
+		this.email =  email;
+		this.telefon =  telefon;
+		this.observacions =  observacions;
+		this.notificacioIdioma =  notificacioIdioma;
+		this.notificacioAutoritzat =  notificacioAutoritzat;
+		this.representant =  representant;
 	}
 
 	/**
-	 * Obté el Builder per a crear objectes de tipus interessat-ciutada.
+	 * Obté el Builder per a crear objectes de tipus interessat-persona física.
 	 * 
-	 * @param nom
-	 *             El valor de l'atribut nom.
-	 * @param llinatges
-	 *            El valor de l'atribut llinatges.
-	 * @param nif
-	 *            El valor de l'atribut nif.
-	 * @param entitat
-	 *            L'entitat a la qual pertany aquest interessat.
-	 * @return Una nova instància del Builder.
+	 * @param nom El nom de l'interessat.
+	 * @param llinatge1	El primer llinatge de l'interessat.
+	 * @param llinatge2	El segon llinatge de l'interessat.
+	 * @param documentTipus	El tipus de document de l'interessat.
+	 * @param documentNum	El número de document de l'interessat.
+	 * @param pais	El país de residència de l'interessat.
+	 * @param provincia	La província de residència de l'interessat.
+	 * @param municipi	El municipi de residència de l'interessat.
+	 * @param adresa	L'adreça de residència de l'interessat.
+	 * @param codiPostal	El codi postal de la residència de l'interessat.
+	 * @param email	El correu electrònic de l'interessat.
+	 * @param telefon	El telèfon de l'interessat.
+	 * @param observacions	Camp per introduir observacions sobre l'interessat.
+	 * @param notificacioIdioma	Idioma en que l'interessat desitja rebre les notificacions.
+	 * @param notificacioAutoritzat	Camp per indicar si l'interessat ha autoritzat la recepció de notificacions en format electrònic.
+	 * @param expedient	Expedient on està vinculat l'interessat.
+	 * @param representant	Representant de l'interessat.
+	 * @param entitat	Entitat a la qual pertany aquest interessat.
+	 * @return
 	 */
 	public static Builder getBuilder(
 			String nom,
-			String llinatges,
-			String nif,
+			String llinatge1,
+			String llinatge2,
+			InteressatDocumentTipusEnumDto documentTipus,
+			String documentNum,
+			String pais,
+			String provincia,
+			String municipi,
+			String adresa,
+			String codiPostal,
+			String email,
+			String telefon,
+			String observacions,
+			IndiomaEnumDto notificacioIdioma,
+			Boolean notificacioAutoritzat,
+			ExpedientEntity expedient,
+			InteressatEntity representant,
 			EntitatEntity entitat) {
 		return new Builder(
 				nom,
-				llinatges,
-				nif,
+				llinatge1,
+				llinatge2,
+				documentTipus,
+				documentNum,
+				pais,
+				provincia,
+				municipi,
+				adresa,
+				codiPostal,
+				email,
+				telefon,
+				observacions,
+				notificacioIdioma,
+				notificacioAutoritzat,
+				expedient,
+				representant,
 				entitat);
 	}
 
@@ -82,13 +170,41 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 		InteressatPersonaFisicaEntity built;
 		Builder(
 				String nom,
-				String llinatges,
-				String nif,
+				String llinatge1,
+				String llinatge2,
+				InteressatDocumentTipusEnumDto documentTipus,
+				String documentNum,
+				String pais,
+				String provincia,
+				String municipi,
+				String adresa,
+				String codiPostal,
+				String email,
+				String telefon,
+				String observacions,
+				IndiomaEnumDto notificacioIdioma,
+				Boolean notificacioAutoritzat,
+				ExpedientEntity expedient,
+				InteressatEntity representant,
 				EntitatEntity entitat) {
 			built = new InteressatPersonaFisicaEntity();
 			built.nom = nom;
-			built.llinatges = llinatges;
-			built.nif = nif;
+			built.llinatge1 = llinatge1;
+			built.llinatge2 = llinatge2;
+			built.documentTipus = documentTipus;
+			built.documentNum = documentNum;
+			built.pais = pais;
+			built.provincia =  provincia;
+			built.municipi =  municipi;
+			built.adresa =  adresa;
+			built.codiPostal =  codiPostal;
+			built.email =  email;
+			built.telefon =  telefon;
+			built.observacions =  observacions;
+			built.notificacioIdioma =  notificacioIdioma;
+			built.notificacioAutoritzat =  notificacioAutoritzat;
+			built.expedient =  expedient;
+			built.representant =  representant;
 			built.entitat = entitat;
 		}
 		public InteressatPersonaFisicaEntity build() {
@@ -100,11 +216,11 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((entitat == null) ? 0 : entitat.hashCode());
-		result = prime * result
-				+ ((llinatges == null) ? 0 : llinatges.hashCode());
-		result = prime * result + ((nif == null) ? 0 : nif.hashCode());
+		result = prime * result + ((documentNum == null) ? 0 : documentNum.hashCode());
+		result = prime * result + ((documentTipus == null) ? 0 : documentTipus.hashCode());
+		result = prime * result + ((expedient == null) ? 0 : expedient.hashCode());
+		result = prime * result + ((llinatge1 == null) ? 0 : llinatge1.hashCode());
+		result = prime * result + ((llinatge2 == null) ? 0 : llinatge2.hashCode());
 		result = prime * result + ((nom == null) ? 0 : nom.hashCode());
 		return result;
 	}
@@ -117,20 +233,27 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		InteressatPersonaFisicaEntity other = (InteressatPersonaFisicaEntity) obj;
-		if (entitat == null) {
-			if (other.entitat != null)
+		if (documentNum == null) {
+			if (other.documentNum != null)
 				return false;
-		} else if (!entitat.equals(other.entitat))
+		} else if (!documentNum.equals(other.documentNum))
 			return false;
-		if (llinatges == null) {
-			if (other.llinatges != null)
-				return false;
-		} else if (!llinatges.equals(other.llinatges))
+		if (documentTipus != other.documentTipus)
 			return false;
-		if (nif == null) {
-			if (other.nif != null)
+		if (expedient == null) {
+			if (other.expedient != null)
 				return false;
-		} else if (!nif.equals(other.nif))
+		} else if (!expedient.equals(other.expedient))
+			return false;
+		if (llinatge1 == null) {
+			if (other.llinatge1 != null)
+				return false;
+		} else if (!llinatge1.equals(other.llinatge1))
+			return false;
+		if (llinatge2 == null) {
+			if (other.llinatge2 != null)
+				return false;
+		} else if (!llinatge2.equals(other.llinatge2))
 			return false;
 		if (nom == null) {
 			if (other.nom != null)
