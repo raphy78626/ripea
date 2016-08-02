@@ -24,7 +24,7 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.RegistreService;
@@ -45,7 +45,7 @@ public class BustiaUserRegistreController extends BaseUserController {
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
-	private ContenidorService contenidorService;
+	private ContingutService contenidorService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired

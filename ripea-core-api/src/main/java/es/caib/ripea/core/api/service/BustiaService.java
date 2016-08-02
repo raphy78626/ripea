@@ -11,7 +11,7 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
@@ -142,22 +142,6 @@ public interface BustiaService {
 			String unitatCodi) throws NotFoundException;
 
 	/**
-	 * Consulta les bústies donat el codi de la seva unitat.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param unitatCodi
-	 *            Atribut unitatCodi de les bústies a trobar.
-	 * @return Les bústies amb la unitat especificada.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public List<BustiaDto> findAmbUnitatCodiUsuari(
-			Long entitatId,
-			String unitatCodi) throws NotFoundException;
-
-	/**
 	 * Retorna una llista de les bústies actives de l'entitat.
 	 * 
 	 * @param entitatId
@@ -169,6 +153,20 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) throws NotFoundException;
+
+	/**
+	 * Llistat paginat de les bústies d'una entitat.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param paginacioParams
+	 *            Paràmetres per a dur a terme la paginació del resultats.
+	 * @return La pàgina de regles.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public PaginaDto<BustiaDto> findAmbEntitatPaginat(
+			Long entitatId, 
+			PaginacioParamsDto paginacioParams);
 
 	/**
 	 * Consulta les bústies d'una entitat a les quals l'usuari te accés.
@@ -184,14 +182,14 @@ public interface BustiaService {
 			Long entitatId) throws NotFoundException;
 
 	/**
-	 * Envia un contenidor a una bústia.
+	 * Envia contingut a una bústia.
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
 	 * @param bustiaId
 	 *            Atribut id de la bústia de destí.
-	 * @param contenidorId
-	 *            Atribut id del contenidor que s'envia.
+	 * @param contingutId
+	 *            Atribut id del contingut que s'envia.
 	 * @param comentari
 	 *            Comentari per l'enviament.
 	 * @return el contenidor enviat
@@ -199,10 +197,10 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto enviarContenidor(
+	public ContingutDto enviarContingut(
 			Long entitatId,
 			Long bustiaId,
-			Long contenidorId,
+			Long contingutId,
 			String comentari) throws NotFoundException;
 
 	/**
@@ -387,17 +385,4 @@ public interface BustiaService {
 	 */
 	public void registreReglaAplicarPendents();
 
-	/**
-	 * Llistat paginat de les bústies d'una entitat.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat.
-	 * @param paginacioParams
-	 *            Paràmetres per a dur a terme la paginació del resultats.
-	 * @return La pàgina de regles.
-	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public PaginaDto<BustiaDto> findAmbEntitatPaginat(
-			Long entitatId, 
-			PaginacioParamsDto paginacioParams);
 }

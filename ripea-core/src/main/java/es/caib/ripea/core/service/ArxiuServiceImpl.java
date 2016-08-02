@@ -31,7 +31,7 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.helper.CacheHelper;
-import es.caib.ripea.core.helper.ContenidorHelper;
+import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
@@ -60,7 +60,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 	private MetaExpedientRepository metaExpedientRepository;
 
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contenidorHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
@@ -489,14 +489,14 @@ public class ArxiuServiceImpl implements ArxiuService {
 
 	private ArxiuDto toArxiuDto(
 			ArxiuEntity arxiu) {
-		return (ArxiuDto)contenidorHelper.toContenidorDto(arxiu);
+		return (ArxiuDto)contenidorHelper.toContingutDto(arxiu);
 	}
 	private List<ArxiuDto> toArxiuDto(
 			List<ArxiuEntity> arxius) {
 		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
 		for (ArxiuEntity arxiu: arxius)
 			resposta.add(
-					(ArxiuDto)contenidorHelper.toContenidorDto(arxiu));
+					(ArxiuDto)contenidorHelper.toContingutDto(arxiu));
 		return resposta;
 	}
 

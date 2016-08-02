@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuDto extends ContenidorDto {
+public class ArxiuDto extends ContingutDto {
 
 	private String unitatCodi;
 	private boolean actiu;
@@ -71,7 +71,7 @@ public class ArxiuDto extends ContenidorDto {
 		}
 	}
 
-	protected CarpetaDto copiarContenidor(ContenidorDto original) {
+	protected CarpetaDto copiarContenidor(ContingutDto original) {
 		CarpetaDto copia = new CarpetaDto();
 		copia.setId(original.getId());
 		copia.setNom(original.getNom());

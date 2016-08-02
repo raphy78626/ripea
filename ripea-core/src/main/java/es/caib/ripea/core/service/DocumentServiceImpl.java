@@ -38,7 +38,7 @@ import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.DocumentService;
-import es.caib.ripea.core.entity.ContenidorEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
@@ -47,15 +47,14 @@ import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientMetaDocumentEntity;
 import es.caib.ripea.core.helper.CacheHelper;
-import es.caib.ripea.core.helper.ContenidorHelper;
-import es.caib.ripea.core.helper.ContenidorLogHelper;
+import es.caib.ripea.core.helper.ContingutHelper;
+import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.DocumentHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
-import es.caib.ripea.core.repository.ContenidorRepository;
 import es.caib.ripea.core.repository.DocumentPortafirmesRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
 import es.caib.ripea.core.repository.DocumentVersioRepository;
@@ -76,8 +75,6 @@ public class DocumentServiceImpl implements DocumentService {
 	@Resource
 	private EntitatRepository entitatRepository;
 	@Resource
-	private ContenidorRepository contenidorRepository;
-	@Resource
 	private MetaDocumentRepository metaDocumentRepository;
 	@Resource
 	private DocumentRepository documentRepository;
@@ -93,7 +90,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contenidorHelper;
 	@Resource
 	private DocumentHelper documentHelper;
 	@Resource
@@ -105,7 +102,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
-	private ContenidorLogHelper contenidorLogHelper;
+	private ContingutLogHelper contenidorLogHelper;
 
 
 
@@ -113,7 +110,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public DocumentDto create(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long metaDocumentId,
 			String nom,
 			Date data,
@@ -122,7 +119,7 @@ public class DocumentServiceImpl implements DocumentService {
 			byte[] arxiuContingut) {
 		logger.debug("Creant nou document (" +
 				"entitatId=" + entitatId + ", " +
-				"contenidorId=" + contenidorId + ", " +
+				"contingutId=" + contingutId + ", " +
 				"metaDocumentId=" + metaDocumentId + ", " +
 				"nom=" + nom + ", " +
 				"data=" + data + ", " +
@@ -134,9 +131,9 @@ public class DocumentServiceImpl implements DocumentService {
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
 		// Comprova el meta-document
 		MetaDocumentEntity metaDocument = null;
@@ -147,12 +144,12 @@ public class DocumentServiceImpl implements DocumentService {
 					true);
 		}
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidor);
+				contingut);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+		contenidorHelper.comprovarPermisosPathContingut(
+				contingut,
 				true,
 				false,
 				false,
@@ -166,10 +163,10 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-				contenidor,
+				contingut,
 				true);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contenidorHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
@@ -180,7 +177,7 @@ public class DocumentServiceImpl implements DocumentService {
 					Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 					logger.error("No es pot crear un document amb un meta-document desactivat ("
 							+ "entitatId=" + entitatId + ", "
-							+ "contenidorId=" + contenidorId + ", "
+							+ "contingutId=" + contingutId + ", "
 							+ "metaDocumentId=" + metaDocumentId + ", "
 							+ "usuari=" + auth.getName() + ")");
 					throw new SecurityException("No es pot crear un document amb un meta-document desactivat");
@@ -195,7 +192,7 @@ public class DocumentServiceImpl implements DocumentService {
 						Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 						logger.error("La multiplicitat especificada per al meta-document no permet crear nous documents ("
 								+ "entitatId=" + entitatId + ", "
-								+ "contenidorId=" + contenidorId + ", "
+								+ "contingutId=" + contingutId + ", "
 								+ "metaDocumentId=" + metaDocumentId + ", "
 								+ "usuari=" + auth.getName() + ")");
 						throw new SecurityException("La multiplicitat especificada per al meta-document no permet crear nous documents");
@@ -209,7 +206,7 @@ public class DocumentServiceImpl implements DocumentService {
 						Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 						logger.error("No es pot crear un document amb un meta-document no disponible ("
 								+ "entitatId=" + entitatId + ", "
-								+ "contenidorId=" + contenidorId + ", "
+								+ "contingutId=" + contingutId + ", "
 								+ "metaDocumentId=" + metaDocumentId + ", "
 								+ "usuari=" + auth.getName() + ")");
 						throw new SecurityException("No es pot crear un document amb un meta-document no disponible");
@@ -223,7 +220,7 @@ public class DocumentServiceImpl implements DocumentService {
 						Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 						logger.error("La multiplicitat especificada per al meta-document no permet crear nous documents ("
 								+ "entitatId=" + entitatId + ", "
-								+ "contenidorId=" + contenidorId + ", "
+								+ "contingutId=" + contingutId + ", "
 								+ "metaDocumentId=" + metaDocumentId + ", "
 								+ "usuari=" + auth.getName() + ")");
 						throw new SecurityException("La multiplicitat especificada per al meta-document no permet crear nous documents");
@@ -235,7 +232,7 @@ public class DocumentServiceImpl implements DocumentService {
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				logger.error("No es pot crear un document amb meta-document fora d'un expedient ("
 						+ "entitatId=" + entitatId + ", "
-						+ "contenidorId=" + contenidorId + ", "
+						+ "contingutId=" + contingutId + ", "
 						+ "usuari=" + auth.getName() + ")");
 				throw new SecurityException("No es pot crear un document amb meta-document fora d'un expedient");
 			}
@@ -245,7 +242,7 @@ public class DocumentServiceImpl implements DocumentService {
 				data,
 				expedientSuperior,
 				metaDocument,
-				contenidor,
+				contingut,
 				entitat).build();
 		documentRepository.save(document);
 		int versio = 1;
@@ -298,11 +295,11 @@ public class DocumentServiceImpl implements DocumentService {
 				true,
 				false);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				document);
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -320,14 +317,14 @@ public class DocumentServiceImpl implements DocumentService {
 				document,
 				true);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contenidorHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
 					false);
 		}
 		// Comprova el permís de modificació del document
-		contenidorHelper.comprovarPermisosContenidor(
+		contenidorHelper.comprovarPermisosContingut(
 				document,
 				false,
 				true,
@@ -389,11 +386,11 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				true);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				document);
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -404,14 +401,14 @@ public class DocumentServiceImpl implements DocumentService {
 				document,
 				false);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contenidorHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
 					false);
 		}
 		// Comprova el permís d'esborrar del document actual
-		contenidorHelper.comprovarPermisosContenidor(
+		contenidorHelper.comprovarPermisosContingut(
 				document,
 				false,
 				false,
@@ -457,7 +454,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -487,7 +484,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -535,7 +532,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -576,7 +573,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -624,7 +621,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -711,7 +708,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -879,7 +876,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -925,7 +922,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -996,7 +993,7 @@ public class DocumentServiceImpl implements DocumentService {
 					false);
 			// Per a consultes no es comprova el contenidor arrel
 			// Comprova l'accés al path del document
-			contenidorHelper.comprovarPermisosPathContenidor(
+			contenidorHelper.comprovarPermisosPathContingut(
 					document,
 					true,
 					false,
@@ -1074,7 +1071,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -1156,7 +1153,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -1184,7 +1181,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	private DocumentDto toDocumentDto(
 			DocumentEntity document) {
-		return (DocumentDto)contenidorHelper.toContenidorDto(
+		return (DocumentDto)contenidorHelper.toContingutDto(
 				document,
 				false,
 				false,

@@ -74,10 +74,6 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	private String canalPreferent;
 	@Column(name = "observacions", length = 160)
 	private String observacions;
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "registre_id")
-	@ForeignKey(name = "ipa_interessat_registre_fk")
-	protected RegistreEntity registre;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "representant_id")
 	@ForeignKey(name = "ipa_interessat_representant_fk")
@@ -86,6 +82,10 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	@JoinColumn(name = "representat_id")
 	@ForeignKey(name = "ipa_interessat_representat_fk")
 	protected RegistreInteressatEntity representat;
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "registre_id")
+	@ForeignKey(name = "ipa_interessat_registre_fk")
+	protected RegistreEntity registre;
 	@Version
 	private long version = 0;
 
@@ -141,6 +141,15 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	}
 	public String getObservacions() {
 		return observacions;
+	}
+	public RegistreInteressatEntity getRepresentant() {
+		return representant;
+	}
+	public RegistreInteressatEntity getRepresentat() {
+		return representat;
+	}
+	public RegistreEntity getRegistre() {
+		return registre;
 	}
 
 	public void updateRepresentant(

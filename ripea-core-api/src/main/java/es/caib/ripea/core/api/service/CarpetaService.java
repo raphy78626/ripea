@@ -22,8 +22,8 @@ public interface CarpetaService {
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor dins el qual es vol crear la carpeta.
+	 * @param contingutId
+	 *            Atribut id del pare dins el qual es vol crear la carpeta.
 	 * @param nom
 	 *            Nom de la carpeta que es vol crear.
 	 * @param tipus
@@ -37,7 +37,7 @@ public interface CarpetaService {
 	@PreAuthorize("hasRole('tothom')")
 	public CarpetaDto create(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			String nom,
 			CarpetaTipusEnumDto tipus) throws NotFoundException, ValidationException;
 

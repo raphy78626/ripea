@@ -21,14 +21,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
-import es.caib.ripea.core.audit.RipeaAuditable;
 
 /**
  * Classe del model de dades que representa una anotació al
@@ -49,12 +48,12 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 								"oficina_codi",
 								"llibre_codi"})})
 @EntityListeners(AuditingEntityListener.class)
-public class RegistreEntity extends RipeaAuditable<Long> {
+public class RegistreEntity extends ContingutEntity {
 
 	private static final int ERROR_MAX_LENGTH = 1024;
 
 	@Column(name = "tipus", length = 1, nullable = false)
-	private String tipus;
+	private String registreTipus;
 	@Column(name = "unitat_adm", length = 21, nullable = false)
 	private String unitatAdministrativa;
 	@Column(name = "numero", nullable = false)
@@ -148,17 +147,11 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	@JoinColumn(name = "regla_id")
 	@ForeignKey(name = "ipa_regla_registre_fk")
 	private ReglaEntity regla;
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contenidor_id")
-	@ForeignKey(name = "ipa_contenidor_registre_fk")
-	private ContenidorEntity contenidor;
-	@Version
-	private long version = 0;
 
 
 
-	public RegistreTipusEnum getTipus() {
-		return RegistreTipusEnum.valorAsEnum(tipus);
+	public RegistreTipusEnum getRegistreTipus() {
+		return RegistreTipusEnum.valorAsEnum(registreTipus);
 	}
 	public String getUnitatAdministrativa() {
 		return unitatAdministrativa;
@@ -277,14 +270,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public ReglaEntity getRegla() {
 		return regla;
 	}
-	public ContenidorEntity getContenidor() {
-		return contenidor;
-	}
 
-	public void updateContenidor(
-			ContenidorEntity contenidor) {
-		this.contenidor = contenidor;
-	}
 	public void updateRebuig(
 			String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
@@ -318,7 +304,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			String assumpteTipusCodi,
 			String idiomaCodi,
 			RegistreProcesEstatEnum procesEstat,
-			ContenidorEntity contenidor) {
+			ContingutEntity pare) {
 		return new Builder(
 				tipus,
 				unitatAdministrativa,
@@ -330,7 +316,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				assumpteTipusCodi,
 				idiomaCodi,
 				procesEstat,
-				contenidor);
+				pare);
 	}
 
 	/**
@@ -341,7 +327,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 	public static class Builder {
 		RegistreEntity built;
 		Builder(
-				RegistreTipusEnum tipus,
+				RegistreTipusEnum registreTipus,
 				String unitatAdministrativa,
 				int numero,
 				Date data,
@@ -351,9 +337,12 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 				String assumpteTipusCodi,
 				String idiomaCodi,
 				RegistreProcesEstatEnum procesEstat,
-				ContenidorEntity contenidor) {
+				ContingutEntity pare) {
 			built = new RegistreEntity();
-			built.tipus = tipus.getValor();
+			built.nom = registreTipus.name() + " (" + identificador + ")";
+			built.tipus = ContingutTipusEnumDto.REGISTRE;
+			built.entitat = pare.getEntitat();
+			built.registreTipus = registreTipus.getValor();
 			built.unitatAdministrativa = unitatAdministrativa;
 			built.numero = numero;
 			built.data = data;
@@ -363,7 +352,7 @@ public class RegistreEntity extends RipeaAuditable<Long> {
 			built.assumpteTipusCodi = assumpteTipusCodi;
 			built.idiomaCodi = idiomaCodi;
 			built.procesEstat = procesEstat;
-			built.contenidor = contenidor;
+			built.pare = pare;
 		}
 		public Builder entitatCodi(String entitatCodi) {
 			built.entitatCodi = entitatCodi;

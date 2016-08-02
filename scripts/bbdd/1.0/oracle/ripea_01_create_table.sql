@@ -139,55 +139,56 @@ CREATE TABLE IPA_ARXIU
 );
 
 
-CREATE TABLE IPA_CONTENIDOR
+CREATE TABLE IPA_CONTINGUT
 (
   ID                   NUMBER(19)               NOT NULL,
-  CREATEDDATE          TIMESTAMP(6),
-  LASTMODIFIEDDATE     TIMESTAMP(6),
+  NOM                  VARCHAR2(1024)           NOT NULL,
+  TIPUS                NUMBER(10)               NOT NULL,
+  PARE_ID              NUMBER(19),
   ESBORRAT             NUMBER(10),
-  NOM                  VARCHAR2(256)            NOT NULL,
-  TIPUS_CONT           NUMBER(10)               NOT NULL,
-  VERSION              NUMBER(19)               NOT NULL,
-  CREATEDBY_CODI       VARCHAR2(64),
-  LASTMODIFIEDBY_CODI  VARCHAR2(64),
   CONTMOV_ID           NUMBER(19),
   ENTITAT_ID           NUMBER(19)               NOT NULL,
-  PARE_ID              NUMBER(19)
+  CREATEDDATE          TIMESTAMP(6),
+  LASTMODIFIEDDATE     TIMESTAMP(6),
+  CREATEDBY_CODI       VARCHAR2(64),
+  LASTMODIFIEDBY_CODI  VARCHAR2(64),
+  VERSION              NUMBER(19)               NOT NULL
 );
 
 
 CREATE TABLE IPA_CONT_MOV
 (
   ID                   NUMBER(19)               NOT NULL,
-  CREATEDDATE          TIMESTAMP(6),
-  LASTMODIFIEDDATE     TIMESTAMP(6),
-  COMENTARI            VARCHAR2(256),
-  DATA                 TIMESTAMP(6),
-  VERSION              NUMBER(19)               NOT NULL,
-  CREATEDBY_CODI       VARCHAR2(64),
-  LASTMODIFIEDBY_CODI  VARCHAR2(64),
-  CONTENIDOR_ID        NUMBER(19)               NOT NULL,
+  CONTINGUT_ID         NUMBER(19)               NOT NULL,
   ORIGEN_ID            NUMBER(19),
   DESTI_ID             NUMBER(19)               NOT NULL,
-  REMITENT_ID          VARCHAR2(64)
+  REMITENT_CODI        VARCHAR2(64),
+  COMENTARI            VARCHAR2(256),
+  VERSION              NUMBER(19)               NOT NULL,
+  CREATEDDATE          TIMESTAMP(6),
+  LASTMODIFIEDDATE     TIMESTAMP(6),
+  CREATEDBY_CODI       VARCHAR2(64),
+  LASTMODIFIEDBY_CODI  VARCHAR2(64)
 );
 
 
 CREATE TABLE IPA_CONT_LOG
 (
-  ID                   NUMBER(19)                     NOT NULL,
-  CONTENIDOR_ID        NUMBER(19)                     NOT NULL,
-  DATA                 TIMESTAMP(6)                   NOT NULL,
-  USUARI_ID            VARCHAR2 (255)                 NOT NULL,
-  PARE_ID              NUMBER (19),
-  CONTENIDOR_MOV_ID    NUMBER (19),
-  OBJECTE_ID           NUMBER (19),
-  OBJECTE_LOG_TIPUS    NUMBER (10),
-  OBJECTE_TIPUS        NUMBER (10),
-  PARAM1               VARCHAR2 (256),
-  PARAM2               VARCHAR2 (256),
-  TIPUS                NUMBER (10),
-  VERSION              NUMBER (19)
+  ID                   NUMBER(19)               NOT NULL,
+  TIPUS                NUMBER(10)               NOT NULL,
+  CONTINGUT_ID         NUMBER(19)               NOT NULL,
+  PARE_ID              NUMBER(19),
+  CONTMOV_ID           NUMBER(19),
+  OBJECTE_ID           NUMBER(19),
+  OBJECTE_LOG_TIPUS    NUMBER(10),
+  OBJECTE_TIPUS        NUMBER(10),
+  PARAM1               VARCHAR2(256),
+  PARAM2               VARCHAR2(256),
+  VERSION              NUMBER(19)               NOT NULL,
+  CREATEDDATE          TIMESTAMP(6),
+  LASTMODIFIEDDATE     TIMESTAMP(6),
+  CREATEDBY_CODI       VARCHAR2(64),
+  LASTMODIFIEDBY_CODI  VARCHAR2(64)
 );
 
 
@@ -381,7 +382,6 @@ CREATE TABLE IPA_REGISTRE
   PROCES_REINTENTS     NUMBER(10),
   PROCES_ERROR         VARCHAR2(1024),
   REGLA_ID             NUMBER(19),
-  CONTENIDOR_ID        NUMBER(19)               NOT NULL,
   VERSION              NUMBER(19)               NOT NULL,
   CREATEDDATE          TIMESTAMP(6),
   CREATEDBY_CODI       VARCHAR2(256),
@@ -450,23 +450,6 @@ CREATE TABLE IPA_REGISTRE_INTER
   REGISTRE_ID          NUMBER(19)               NOT NULL,
   REPRESENTANT_ID      NUMBER(19),
   REPRESENTAT_ID       NUMBER(19)
-);
-
-
-CREATE TABLE IPA_REGISTRE_MOV
-(
-   ID                    NUMBER(19)             NOT NULL,
-   CREATEDDATE           TIMESTAMP(6),
-   LASTMODIFIEDDATE      TIMESTAMP(6),
-   COMENTARI             VARCHAR2(256),
-   DATA                  TIMESTAMP(6)           NOT NULL,
-   VERSION               NUMBER(19),
-   CREATEDBY_CODI        VARCHAR2(64),
-   LASTMODIFIEDBY_CODI   VARCHAR2(64),
-   DESTI_ID              NUMBER(19)             NOT NULL,
-   ORIGEN_ID             NUMBER(19),
-   REGISTRE_ID           NUMBER(19)             NOT NULL,
-   REMITENT_ID           VARCHAR2 (64)
 );
 
 

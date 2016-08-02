@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.ripea.core.entity.ContenidorEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 
 /**
@@ -25,28 +25,28 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<RegistreEntity> findByReglaNotNullAndProcesEstatOrderByCreatedDateAsc(
 			RegistreProcesEstatEnum procesEstat);
 
-	RegistreEntity findByContenidorAndId(
-			ContenidorEntity contenidor,
+	RegistreEntity findByPareAndId(
+			ContingutEntity pare,
 			Long id);
 
-	List<RegistreEntity> findByContenidorAndMotiuRebuigNullOrderByDataAsc(
-			ContenidorEntity contenidor);
+	/*List<RegistreEntity> findByPareAndMotiuRebuigNullOrderByDataAsc(
+			ContingutEntity pare);*/
 
 	@Query(	"select " +
-			"    contenidor.id, " +
+			"    pare.id, " +
 			"    count(*) " +
 			"from " +
 			"    RegistreEntity " +
 			"where " +
 			"    motiuRebuig is null " +
-			"and (contenidor is not null and contenidor in (:contenidors)) " +
+			"and (pare is not null and pare in (:pares)) " +
 			"group by " +
-			"    contenidor.id")
-	List<Object[]> countByContenidorsAndNotRebutjat(
-			@Param("contenidors") List<? extends ContenidorEntity> contenidors);
+			"    pare.id")
+	List<Object[]> countByParesAndNotRebutjat(
+			@Param("pares") List<? extends ContingutEntity> pares);
 
-	RegistreEntity findByTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaCodiAndLlibreCodi(
-			String tipus,
+	RegistreEntity findByRegistreTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaCodiAndLlibreCodi(
+			String registreTipus,
 			String unitatAdministrativa,
 			int numero,
 			Date data,

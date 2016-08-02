@@ -5,7 +5,6 @@ package es.caib.ripea.core.service;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -20,13 +19,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.ripea.core.api.dto.ContenidorDto;
-import es.caib.ripea.core.api.dto.ContenidorFiltreDto;
-import es.caib.ripea.core.api.dto.ContenidorLogDto;
-import es.caib.ripea.core.api.dto.ContenidorMovimentDto;
-import es.caib.ripea.core.api.dto.ContenidorTipusEnumDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
+import es.caib.ripea.core.api.dto.ContingutFiltreDto;
+import es.caib.ripea.core.api.dto.ContingutLogDto;
+import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
@@ -36,10 +35,10 @@ import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.entity.CarpetaEntity;
-import es.caib.ripea.core.entity.ContenidorEntity;
-import es.caib.ripea.core.entity.ContenidorMovimentEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
+import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
@@ -51,9 +50,10 @@ import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.CacheHelper;
-import es.caib.ripea.core.helper.ContenidorHelper;
-import es.caib.ripea.core.helper.ContenidorLogHelper;
+import es.caib.ripea.core.helper.ContingutHelper;
+import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
+import es.caib.ripea.core.helper.DocumentHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.MetaNodeHelper;
@@ -62,8 +62,8 @@ import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
-import es.caib.ripea.core.repository.ContenidorLogRepository;
-import es.caib.ripea.core.repository.ContenidorRepository;
+import es.caib.ripea.core.repository.ContingutLogRepository;
+import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
@@ -74,12 +74,12 @@ import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
- * Implementació dels mètodes per a gestionar contenidors.
+ * Implementació dels mètodes per a gestionar continguts.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Service
-public class ContenidorServiceImpl implements ContenidorService {
+public class ContingutServiceImpl implements ContingutService {
 
 	@Resource
 	private EntitatRepository entitatRepository;
@@ -88,9 +88,9 @@ public class ContenidorServiceImpl implements ContenidorService {
 	@Resource
 	private EscriptoriRepository escriptoriRepository;
 	@Resource
-	private ContenidorRepository contenidorRepository;
+	private ContingutRepository contingutRepository;
 	@Resource
-	private ContenidorLogRepository contenidorLogRepository;
+	private ContingutLogRepository contingutLogRepository;
 	@Resource
 	private MetaDadaRepository metaDadaRepository;
 	@Resource
@@ -115,9 +115,11 @@ public class ContenidorServiceImpl implements ContenidorService {
 	@Resource
 	private MetaNodeHelper metaNodeHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contingutHelper;
 	@Resource
-	private ContenidorLogHelper contenidorLogHelper;
+	private DocumentHelper documentHelper;
+	@Resource
+	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private EmailHelper emailHelper;
 	@Resource
@@ -129,57 +131,57 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional
 	@Override
-	public ContenidorDto rename(
+	public ContingutDto rename(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			String nom) {
-		logger.debug("Renombrant contenidor ("
+		logger.debug("Renombrant contingut ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ", "
+				+ "contingutId=" + contingutId + ", "
 				+ "nom=" + nom + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		// Comprova que el contingut arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidor);
-		// Comprova l'accés al path del contenidor
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+				contingut);
+		// Comprova l'accés al path del contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				false,
 				false,
 				true,
 				true);
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-				contenidor,
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+				contingut,
 				true);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
 					false);
 		}
-		if (!contenidorHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(nom)) {
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"El nom del contenidor no és vàlid (no pot començar amb \".\")");
+					contingutId,
+					ContingutEntity.class,
+					"El nom del contingut no és vàlid (no pot començar amb \".\")");
 		}
-		// Canvia el nom del contenidor
-		String nomAnterior = contenidor.getNom();
-		contenidor.update(nom);
-		// Registra al log la modificació del contenidor
-		contenidorLogHelper.log(
-				contenidor,
+		// Canvia el nom del contingut
+		String nomAnterior = contingut.getNom();
+		contingut.update(nom);
+		// Registra al log la modificació del contingut
+		contingutLogHelper.log(
+				contingut,
 				LogTipusEnumDto.MODIFICACIO,
 				null,
 				null,
@@ -187,8 +189,8 @@ public class ContenidorServiceImpl implements ContenidorService {
 				nomAnterior,
 				true,
 				true);
-		return contenidorHelper.toContenidorDto(
-				contenidor,
+		return contingutHelper.toContingutDto(
+				contingut,
 				true,
 				true,
 				true,
@@ -199,15 +201,15 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional
 	@Override
-	@CacheEvict(value = "errorsValidacioNode", key = "#contenidorId")
+	@CacheEvict(value = "errorsValidacioNode", key = "#contingutId")
 	public DadaDto dadaCreate(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long metaDadaId,
 			Object valor) {
 		logger.debug("Creant nova dada ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ", "
+				+ "contingutId=" + contingutId + ", "
 				+ "metaDadaId=" + metaDadaId + ", "
 				+ "valor=" + valor + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -215,34 +217,34 @@ public class ContenidorServiceImpl implements ContenidorService {
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		if (contenidor instanceof NodeEntity) {
-			// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-			contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		if (contingut instanceof NodeEntity) {
+			// Comprova que el contingut arrel és l'escriptori de l'usuari actual
+			contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 					entitat,
-					contenidor);
-			// Comprova l'accés al path del contenidor pare
-			contenidorHelper.comprovarPermisosPathContenidor(
-					contenidor,
+					contingut);
+			// Comprova l'accés al path del contingut pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
 					true,
 					false,
 					false,
 					true);
 			// Comprova el permís de modificació de l'expedient superior
-			ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-					contenidor,
+			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+					contingut,
 					true);
 			if (expedientSuperior != null) {
-				contenidorHelper.comprovarPermisosContenidor(
+				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
 						false,
 						true,
 						false);
 			}
-			NodeEntity node = (NodeEntity)contenidor;
+			NodeEntity node = (NodeEntity)contingut;
 			MetaDadaEntity metaDada = entityComprovarHelper.comprovarMetaDada(
 					entitat,
 					metaDadaId);
@@ -258,8 +260,8 @@ public class ContenidorServiceImpl implements ContenidorService {
 				// Comprova que no s'afegeixin més dades de les permeses
 				if (dades.size() > 0 && (metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_1))) {
 					throw new ValidationException(
-							contenidorId,
-							ContenidorEntity.class,
+							contingutId,
+							ContingutEntity.class,
 							"La multiplicitat del meta-node no permet afegir més dades d'aquest tipus (" +
 							"metaNodeId=" + metaNodeMetaDada.getMetaNode().getId() + ", " +
 							"metaNodeCodi=" + metaNodeMetaDada.getMetaNode().getCodi() + ", " +
@@ -271,8 +273,8 @@ public class ContenidorServiceImpl implements ContenidorService {
 			} else {
 				if (dades.size() > 0 && (metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_1))) {
 					throw new ValidationException(
-							contenidorId,
-							ContenidorEntity.class,
+							contingutId,
+							ContingutEntity.class,
 							"La multiplicitat global no permet afegir més dades d'aquest tipus (" +
 							"metaDadaId=" + metaDada.getId() + ", " +
 							"metaDadaCodi=" + metaDada.getCodi() + ", " +
@@ -291,8 +293,8 @@ public class ContenidorServiceImpl implements ContenidorService {
 			// Refresca la validesa del node
 			cacheHelper.evictErrorsValidacioPerNode(node);
 			// Registra al log la creació de la dada
-			contenidorLogHelper.log(
-					contenidor,
+			contingutLogHelper.log(
+					contingut,
 					LogTipusEnumDto.MODIFICACIO,
 					null,
 					null,
@@ -307,11 +309,11 @@ public class ContenidorServiceImpl implements ContenidorService {
 					dada,
 					DadaDto.class);
 		} else {
-			logger.error("El contenidor no és un node (contenidorId=" + contenidorId + ")");
+			logger.error("El contingut no és un node (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"El contenidor no és un node");
+					contingutId,
+					ContingutEntity.class,
+					"El contingut no és un node");
 		}
 	}
 
@@ -319,12 +321,12 @@ public class ContenidorServiceImpl implements ContenidorService {
 	@Override
 	public DadaDto dadaUpdate(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId,
 			Object valor) {
 		logger.debug("Modificant dada ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ", "
+				+ "contingutId=" + contingutId + ", "
 				+ "dadaId=" + dadaId + ", "
 				+ "valor=" + valor + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -332,34 +334,34 @@ public class ContenidorServiceImpl implements ContenidorService {
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		if (contenidor instanceof NodeEntity) {
-			// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-			contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		if (contingut instanceof NodeEntity) {
+			// Comprova que el contingut arrel és l'escriptori de l'usuari actual
+			contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 					entitat,
-					contenidor);
-			// Comprova l'accés al path del contenidor pare
-			contenidorHelper.comprovarPermisosPathContenidor(
-					contenidor,
+					contingut);
+			// Comprova l'accés al path del contingut pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
 					true,
 					false,
 					false,
 					true);
 			// Comprova el permís de modificació de l'expedient superior
-			ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-					contenidor,
+			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+					contingut,
 					true);
 			if (expedientSuperior != null) {
-				contenidorHelper.comprovarPermisosContenidor(
+				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
 						false,
 						true,
 						false);
 			}
-			NodeEntity node = (NodeEntity)contenidor;
+			NodeEntity node = (NodeEntity)contingut;
 			DadaEntity dada = entityComprovarHelper.comprovarDada(
 					node,
 					dadaId);
@@ -368,8 +370,8 @@ public class ContenidorServiceImpl implements ContenidorService {
 							dada.getMetaDada(),
 							valor));
 			// Registra al log la modificació de la dada
-			contenidorLogHelper.log(
-					contenidor,
+			contingutLogHelper.log(
+					contingut,
 					LogTipusEnumDto.MODIFICACIO,
 					null,
 					null,
@@ -384,58 +386,58 @@ public class ContenidorServiceImpl implements ContenidorService {
 					dada,
 					DadaDto.class);
 		} else {
-			logger.error("El contenidor no és un node (contenidorId=" + contenidorId + ")");
+			logger.error("El contingut no és un node (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"El contenidor no és un node");
+					contingutId,
+					ContingutEntity.class,
+					"El contingut no és un node");
 		}
 	}
 
 	@Transactional
 	@Override
-	@CacheEvict(value = "errorsValidacioNode", key = "#contenidorId")
+	@CacheEvict(value = "errorsValidacioNode", key = "#contingutId")
 	public DadaDto dadaDelete(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId) {
 		logger.debug("Esborrant la dada ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ", "
+				+ "contingutId=" + contingutId + ", "
 				+ "dadaId=" + dadaId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		if (contenidor instanceof NodeEntity) {
-			// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-			contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		if (contingut instanceof NodeEntity) {
+			// Comprova que el contingut arrel és l'escriptori de l'usuari actual
+			contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 					entitat,
-					contenidor);
-			// Comprova l'accés al path del contenidor pare
-			contenidorHelper.comprovarPermisosPathContenidor(
-					contenidor,
+					contingut);
+			// Comprova l'accés al path del contingut pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
 					true,
 					false,
 					false,
 					true);
 			// Comprova el permís de modificació de l'expedient superior
-			ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-					contenidor,
+			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+					contingut,
 					true);
 			if (expedientSuperior != null) {
-				contenidorHelper.comprovarPermisosContenidor(
+				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
 						false,
 						true,
 						false);
 			}
-			NodeEntity node = (NodeEntity)contenidor;
+			NodeEntity node = (NodeEntity)contingut;
 			DadaEntity dada = entityComprovarHelper.comprovarDada(
 					node,
 					dadaId);
@@ -443,8 +445,8 @@ public class ContenidorServiceImpl implements ContenidorService {
 			// Refresca la validesa del node
 			cacheHelper.evictErrorsValidacioPerNode(node);
 			// Registra al log la eliminació de la dada
-			contenidorLogHelper.log(
-					contenidor,
+			contingutLogHelper.log(
+					contingut,
 					LogTipusEnumDto.MODIFICACIO,
 					null,
 					null,
@@ -459,11 +461,11 @@ public class ContenidorServiceImpl implements ContenidorService {
 					dada,
 					DadaDto.class);
 		} else {
-			logger.error("El contenidor no és un node (contenidorId=" + contenidorId + ")");
+			logger.error("El contingut no és un node (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"El contenidor no és un node");
+					contingutId,
+					ContingutEntity.class,
+					"El contingut no és un node");
 		}
 	}
 
@@ -471,31 +473,31 @@ public class ContenidorServiceImpl implements ContenidorService {
 	@Override
 	public DadaDto dadaFindById(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId) {
 		logger.debug("Obtenint la dada ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ", "
+				+ "contingutId=" + contingutId + ", "
 				+ "dadaId=" + dadaId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		if (contenidor instanceof NodeEntity) {
-			// Per a consultes no es comprova el contenidor arrel
-			// Comprova l'accés al path del contenidor pare
-			contenidorHelper.comprovarPermisosPathContenidor(
-					contenidor,
+		if (contingut instanceof NodeEntity) {
+			// Per a consultes no es comprova el contingut arrel
+			// Comprova l'accés al path del contingut pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
 					true,
 					false,
 					false,
 					true);
-			NodeEntity node = (NodeEntity)contenidor;
+			NodeEntity node = (NodeEntity)contingut;
 			DadaEntity dada = entityComprovarHelper.comprovarDada(
 					node,
 					dadaId);
@@ -503,81 +505,81 @@ public class ContenidorServiceImpl implements ContenidorService {
 					dada,
 					DadaDto.class);
 		} else {
-			logger.error("El contenidor no és un node (contenidorId=" + contenidorId + ")");
+			logger.error("El contingut no és un node (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"El contenidor no és un node");
+					contingutId,
+					ContingutEntity.class,
+					"El contingut no és un node");
 		}
 	}
 
 	@Transactional
 	@Override
-	public ContenidorDto deleteReversible(
+	public ContingutDto deleteReversible(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Esborrant el contenidor ("
+			Long contingutId) {
+		logger.debug("Esborrant el contingut ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ")");
+				+ "contingutId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		// Comprova que el contingut arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidor);
-		// Comprova l'accés al path del contenidor
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+				contingut);
+		// Comprova l'accés al path del contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-				contenidor,
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+				contingut,
 				false);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
 					false);
 		}
-		// Comprova el permís d'esborrar del contenidor
-		contenidorHelper.comprovarPermisosContenidor(
-				contenidor,
+		// Comprova el permís d'esborrar del contingut
+		contingutHelper.comprovarPermisosContingut(
+				contingut,
 				false,
 				false,
 				true);
-		ContenidorDto dto = contenidorHelper.toContenidorDto(
-				contenidor,
+		ContingutDto dto = contingutHelper.toContingutDto(
+				contingut,
 				true,
 				false,
 				false,
 				false,
 				false,
 				false);
-		// Comprova que el contenidor no estigui esborrat
-		if (contenidor.getEsborrat() > 0) {
-			logger.error("Aquest contenidor ja està esborrat (contenidorId=" + contenidorId + ")");
+		// Comprova que el contingut no estigui esborrat
+		if (contingut.getEsborrat() > 0) {
+			logger.error("Aquest contingut ja està esborrat (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"Aquest contenidor ja està esborrat");
+					contingutId,
+					ContingutEntity.class,
+					"Aquest contingut ja està esborrat");
 		}
-		// Marca el contenidor com a esborrat
-		List<ContenidorEntity> contenidors = contenidorRepository.findByPareAndNomOrderByEsborratAsc(
-				contenidor.getPare(),
-				contenidor.getNom());
+		// Marca el contingut com a esborrat
+		List<ContingutEntity> continguts = contingutRepository.findByPareAndNomOrderByEsborratAsc(
+				contingut.getPare(),
+				contingut.getNom());
 		int index = 1;
-		for (ContenidorEntity c: contenidors) {
+		for (ContingutEntity c: continguts) {
 			if (c.getEsborrat() > 0) {
 				if (index < c.getEsborrat()) {
 					break;
@@ -585,10 +587,10 @@ public class ContenidorServiceImpl implements ContenidorService {
 				index++;
 			}
 		}
-		contenidor.updateEsborrat(contenidors.size() + 1);
-		// Registra al log l'eliminació del contenidor
-		contenidorLogHelper.log(
-				contenidor,
+		contingut.updateEsborrat(continguts.size() + 1);
+		// Registra al log l'eliminació del contingut
+		contingutLogHelper.log(
+				contingut,
 				LogTipusEnumDto.ELIMINACIO,
 				null,
 				null,
@@ -599,45 +601,45 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional
 	@Override
-	@CacheEvict(value = "errorsValidacioNode", key = "#contenidorId")
-	public ContenidorDto deleteDefinitiu(
+	@CacheEvict(value = "errorsValidacioNode", key = "#contingutId")
+	public ContingutDto deleteDefinitiu(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Esborrant el contenidor ("
+			Long contingutId) {
+		logger.debug("Esborrant el contingut ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ")");
+				+ "contingutId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		// Comprova que el contenidor estigui esborrat
-		if (contenidor.getEsborrat() == 0) {
-			logger.error("Aquest contenidor no està esborrat (contenidorId=" + contenidorId + ")");
+		// Comprova que el contingut estigui esborrat
+		if (contingut.getEsborrat() == 0) {
+			logger.error("Aquest contingut no està esborrat (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"Aquest contenidor no està esborrat");
+					contingutId,
+					ContingutEntity.class,
+					"Aquest contingut no està esborrat");
 		}
-		// Esborra definitivament el contenidor
-		ContenidorDto dto = contenidorHelper.toContenidorDto(
-				contenidor,
+		// Esborra definitivament el contingut
+		ContingutDto dto = contingutHelper.toContingutDto(
+				contingut,
 				true,
 				false,
 				false,
 				false,
 				false,
 				false);
-		if (contenidor.getPare() != null) {
-			contenidor.getPare().getFills().remove(contenidor);
+		if (contingut.getPare() != null) {
+			contingut.getPare().getFills().remove(contingut);
 		}
-		// Registra al log l'eliminació definitiva del contenidor
-		contenidorLogHelper.log(
-				contenidor,
+		// Registra al log l'eliminació definitiva del contingut
+		contingutLogHelper.log(
+				contingut,
 				LogTipusEnumDto.ELIMINACIODEF,
 				null,
 				null,
@@ -648,57 +650,57 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional
 	@Override
-	public ContenidorDto undelete(
+	public ContingutDto undelete(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Recuperant el contenidor ("
+			Long contingutId) {
+		logger.debug("Recuperant el contingut ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ")");
+				+ "contingutId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
 		// No es comproven permisos perquè això només ho pot fer l'administrador
-		if (contenidor.getEsborrat() == 0) {
-			logger.error("Aquest contenidor no està esborrat (contenidorId=" + contenidorId + ")");
+		if (contingut.getEsborrat() == 0) {
+			logger.error("Aquest contingut no està esborrat (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"Aquest contenidor no està esborrat");
+					contingutId,
+					ContingutEntity.class,
+					"Aquest contingut no està esborrat");
 		}
-		if (contenidor.getPare() == null) {
-			logger.error("Aquest contenidor no te pare (contenidorId=" + contenidorId + ")");
+		if (contingut.getPare() == null) {
+			logger.error("Aquest contingut no te pare (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"Aquest contenidor no te pare");
+					contingutId,
+					ContingutEntity.class,
+					"Aquest contingut no te pare");
 		}
-		boolean nomDuplicat = contenidorRepository.findByPareAndNomAndEsborrat(
-				contenidor.getPare(),
-				contenidor.getNom(),
+		boolean nomDuplicat = contingutRepository.findByPareAndNomAndEsborrat(
+				contingut.getPare(),
+				contingut.getNom(),
 				0) != null;
 		if (nomDuplicat) {
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"Ja existeix un altre contenidor amb el mateix nom dins el mateix pare");
+					contingutId,
+					ContingutEntity.class,
+					"Ja existeix un altre contingut amb el mateix nom dins el mateix pare");
 		}
-		contenidor.updateEsborrat(0);
-		// Registra al log la recuperació del contenidor
-		contenidorLogHelper.log(
-				contenidor,
+		contingut.updateEsborrat(0);
+		// Registra al log la recuperació del contingut
+		contingutLogHelper.log(
+				contingut,
 				LogTipusEnumDto.RECUPERACIO,
 				null,
 				null,
 				true,
 				true);
-		return contenidorHelper.toContenidorDto(
-				contenidor,
+		return contingutHelper.toContingutDto(
+				contingut,
 				true,
 				false,
 				false,
@@ -709,84 +711,84 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional
 	@Override
-	public ContenidorDto move(
+	public ContingutDto move(
 			Long entitatId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId) {
-		logger.debug("Movent el contenidor ("
+			Long contingutOrigenId,
+			Long contingutDestiId) {
+		logger.debug("Movent el contingut ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorOrigenId=" + contenidorOrigenId + ", "
-				+ "contenidorDestiId=" + contenidorDestiId + ")");
+				+ "contingutOrigenId=" + contingutOrigenId + ", "
+				+ "contingutDestiId=" + contingutDestiId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContenidorEntity contenidorOrigen = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingutOrigen = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorOrigenId,
+				contingutOrigenId,
 				null);
-		if (contenidorOrigen instanceof ExpedientEntity) {
+		if (contingutOrigen instanceof ExpedientEntity) {
 			logger.error("Els expedients no es poden moure ("
 					+ "entitatId=" + entitatId + ", "
-					+ "expedientId=" + contenidorOrigenId + ")");
+					+ "expedientId=" + contingutOrigenId + ")");
 			throw new ValidationException(
-					contenidorOrigenId,
+					contingutOrigenId,
 					ExpedientEntity.class,
 					"Els expedients no es poden moure");
 		}
-		// Comprova que el contenidorOrigen arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		// Comprova que el contingutOrigen arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidorOrigen);
-		// Comprova l'accés al path del contenidorOrigen
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidorOrigen,
+				contingutOrigen);
+		// Comprova l'accés al path del contingutOrigen
+		contingutHelper.comprovarPermisosPathContingut(
+				contingutOrigen,
 				true,
 				false,
 				false,
 				true);
-		ContenidorEntity contenidorDesti = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingutDesti = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorDestiId,
+				contingutDestiId,
 				null);
-		// Comprova que el contenidorDesti arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		// Comprova que el contingutDesti arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidorDesti);
-		// Comprova l'accés al path del contenidorDesti
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidorDesti,
+				contingutDesti);
+		// Comprova l'accés al path del contingutDesti
+		contingutHelper.comprovarPermisosPathContingut(
+				contingutDesti,
 				true,
 				false,
 				false,
 				true);
 		// Comprova que el nom no sigui duplicat
-		boolean nomDuplicat = contenidorRepository.findByPareAndNomAndEsborrat(
-				contenidorDesti,
-				contenidorOrigen.getNom(),
+		boolean nomDuplicat = contingutRepository.findByPareAndNomAndEsborrat(
+				contingutDesti,
+				contingutOrigen.getNom(),
 				0) != null;
 		if (nomDuplicat) {
 			throw new ValidationException(
-					contenidorOrigenId,
-					ContenidorEntity.class,
-					"Ja existeix un altre contenidor amb el mateix nom dins el contenidor destí ("
-							+ "contenidorDestiId=" + contenidorDestiId + ")");
+					contingutOrigenId,
+					ContingutEntity.class,
+					"Ja existeix un altre contingut amb el mateix nom dins el contingut destí ("
+							+ "contingutDestiId=" + contingutDestiId + ")");
 		}
-		ContenidorMovimentEntity contenidorMoviment = contenidorHelper.ferIEnregistrarMovimentContenidor(
-				contenidorOrigen,
-				contenidorDesti,
+		ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
+				contingutOrigen,
+				contingutDesti,
 				null);
 		// Registra al log el moviment del node
-		contenidorLogHelper.log(
-				contenidorOrigen,
+		contingutLogHelper.log(
+				contingutOrigen,
 				LogTipusEnumDto.MOVIMENT,
 				null,
-				contenidorMoviment,
+				contingutMoviment,
 				true,
 				true);
-		return contenidorHelper.toContenidorDto(
-				contenidorOrigen,
+		return contingutHelper.toContingutDto(
+				contingutOrigen,
 				true,
 				false,
 				false,
@@ -797,104 +799,104 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional
 	@Override
-	public ContenidorDto copy(
+	public ContingutDto copy(
 			Long entitatId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId,
+			Long contingutOrigenId,
+			Long contingutDestiId,
 			boolean recursiu) {
-		logger.debug("Copiant el contenidor ("
+		logger.debug("Copiant el contingut ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorOrigenId=" + contenidorOrigenId + ", "
-				+ "contenidorDestiId=" + contenidorDestiId + ", "
+				+ "contingutOrigenId=" + contingutOrigenId + ", "
+				+ "contingutDestiId=" + contingutDestiId + ", "
 				+ "recursiu=" + recursiu + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContenidorEntity contenidorOrigen = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingutOrigen = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorOrigenId,
+				contingutOrigenId,
 				null);
-		if (contenidorOrigen instanceof ExpedientEntity) {
+		if (contingutOrigen instanceof ExpedientEntity) {
 			logger.error("Els expedients no es poden copiar ("
 					+ "entitatId=" + entitatId + ", "
-					+ "expedientId=" + contenidorOrigenId + ")");
+					+ "expedientId=" + contingutOrigenId + ")");
 			throw new ValidationException(
-					contenidorOrigenId,
+					contingutOrigenId,
 					ExpedientEntity.class,
 					"Els expedients no es poden copiar");
 		}
-		// Comprova que el contenidorOrigen arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		// Comprova que el contingutOrigen arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidorOrigen);
-		// Comprova l'accés al path del contenidorOrigen
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidorOrigen,
+				contingutOrigen);
+		// Comprova l'accés al path del contingutOrigen
+		contingutHelper.comprovarPermisosPathContingut(
+				contingutOrigen,
 				true,
 				false,
 				false,
 				true);
-		ContenidorEntity contenidorDesti = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingutDesti = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorDestiId,
+				contingutDestiId,
 				null);
-		// Comprova que el contenidorDesti arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		// Comprova que el contingutDesti arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidorDesti);
-		// Comprova l'accés al path del contenidorDesti
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidorDesti,
+				contingutDesti);
+		// Comprova l'accés al path del contingutDesti
+		contingutHelper.comprovarPermisosPathContingut(
+				contingutDesti,
 				true,
 				false,
 				false,
 				true);
 		// Comprova si pertanyen al mateix expedient o si no pertanyen a cap
-		ExpedientEntity expedientSuperiorOrigen = contenidorHelper.getExpedientSuperior(
-				contenidorOrigen,
+		ExpedientEntity expedientSuperiorOrigen = contingutHelper.getExpedientSuperior(
+				contingutOrigen,
 				true);
-		ExpedientEntity expedientSuperiorDesti = contenidorHelper.getExpedientSuperior(
-				contenidorDesti,
+		ExpedientEntity expedientSuperiorDesti = contingutHelper.getExpedientSuperior(
+				contingutDesti,
 				true);
 		if (	(expedientSuperiorOrigen != null && expedientSuperiorDesti == null) ||
 				(expedientSuperiorOrigen == null && expedientSuperiorDesti != null)) {
-			logger.error("Els contenidors origen i destí no pertanyen al mateix expedient ("
-					+ "contenidorOrigenId=" + contenidorOrigenId + ", "
-					+ "contenidorDestiId=" + contenidorDestiId + ")");
-			throw new SecurityException("Els contenidors origen i destí no pertanyen al mateix expedient ("
-					+ "contenidorOrigenId=" + contenidorOrigenId + ", "
-					+ "contenidorDestiId=" + contenidorDestiId + ")");
+			logger.error("Els continguts origen i destí no pertanyen al mateix expedient ("
+					+ "contingutOrigenId=" + contingutOrigenId + ", "
+					+ "contingutDestiId=" + contingutDestiId + ")");
+			throw new SecurityException("Els continguts origen i destí no pertanyen al mateix expedient ("
+					+ "contingutOrigenId=" + contingutOrigenId + ", "
+					+ "contingutDestiId=" + contingutDestiId + ")");
 		}
 		// Comprova que el nom no sigui duplicat
-		boolean nomDuplicat = contenidorRepository.findByPareAndNomAndEsborrat(
-				contenidorDesti,
-				contenidorOrigen.getNom(),
+		boolean nomDuplicat = contingutRepository.findByPareAndNomAndEsborrat(
+				contingutDesti,
+				contingutOrigen.getNom(),
 				0) != null;
 		if (nomDuplicat) {
 			throw new ValidationException(
-					contenidorOrigenId,
-					ContenidorEntity.class,
-					"Ja existeix un altre contenidor amb el mateix nom dins el contenidor destí ("
-							+ "contenidorDestiId=" + contenidorDestiId + ")");
+					contingutOrigenId,
+					ContingutEntity.class,
+					"Ja existeix un altre contingut amb el mateix nom dins el contingut destí ("
+							+ "contingutDestiId=" + contingutDestiId + ")");
 		}
-		// Fa la còpia del contenidor
-		ContenidorEntity contenidorCopia = copiarContenidor(
+		// Fa la còpia del contingut
+		ContingutEntity contingutCopia = copiarContingut(
 				entitat,
-				contenidorOrigen,
-				contenidorDesti,
+				contingutOrigen,
+				contingutDesti,
 				recursiu);
 		// Registra al log la còpia del node
-		contenidorLogHelper.log(
-				contenidorCopia,
+		contingutLogHelper.log(
+				contingutCopia,
 				LogTipusEnumDto.COPIA,
 				null,
 				null,
 				true,
 				true);
-		return contenidorHelper.toContenidorDto(
-				contenidorOrigen,
+		return contingutHelper.toContingutDto(
+				contingutOrigen,
 				true,
 				false,
 				false,
@@ -916,10 +918,10 @@ public class ContenidorServiceImpl implements ContenidorService {
 				true,
 				false,
 				false);
-		EscriptoriEntity escriptori = contenidorHelper.getEscriptoriPerUsuari(
+		EscriptoriEntity escriptori = contingutHelper.getEscriptoriPerUsuari(
 				entitat,
 				usuariHelper.getUsuariAutenticat());
-		return (EscriptoriDto)contenidorHelper.toContenidorDto(
+		return (EscriptoriDto)contingutHelper.toContingutDto(
 				escriptori,
 				true,
 				false,
@@ -931,29 +933,29 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public ContenidorDto getContenidorSenseContingut(
+	public ContingutDto getContingutSenseFills(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Obtenint contenidor sense contingut ("
+			Long contingutId) {
+		logger.debug("Obtenint contingut sense fills ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ")");
+				+ "contingutId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				true,
 				false,
 				false,
 				true);
-		return contenidorHelper.toContenidorDto(
-				contenidor,
+		return contingutHelper.toContingutDto(
+				contingut,
 				true,
 				false,
 				false,
@@ -964,29 +966,29 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public ContenidorDto getContenidorAmbContingut(
+	public ContingutDto getContingutAmbFills(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Obtenint contingut del contenidor ("
+			Long contingutId) {
+		logger.debug("Obtenint contingut amb fills ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ")");
+				+ "contingutId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				true,
 				false,
 				false,
 				true);
-		return contenidorHelper.toContenidorDto(
-				contenidor,
+		return contingutHelper.toContingutDto(
+				contingut,
 				true,
 				true,
 				true,
@@ -997,11 +999,11 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public ContenidorDto getContenidorAmbContingutPerPath(
+	public ContingutDto getContingutAmbFillsPerPath(
 			Long entitatId,
 			String path) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Obtenint contingut del contenidor ("
+		logger.debug("Obtenint contingut amb fills donat el seu path ("
 				+ "entitatId=" + entitatId + ", "
 				+ "path=" + path + ", "
 				+ "usuariCodi=" + auth.getName() + ")");
@@ -1013,7 +1015,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 		EscriptoriEntity escriptori = escriptoriRepository.findByEntitatAndUsuari(
 				entitat,
 				usuariHelper.getUsuariAutenticat());
-		ContenidorEntity contenidorActual = escriptori;
+		ContingutEntity contingutActual = escriptori;
 		if (!path.isEmpty() && !path.equals("/")) {
 			String[] pathParts;
 			if (path.startsWith("/")) {
@@ -1022,37 +1024,37 @@ public class ContenidorServiceImpl implements ContenidorService {
 				pathParts = path.split("/");
 			}
 			for (String pathPart: pathParts) {
-				Long idActual = contenidorActual.getId();
-				contenidorActual = contenidorRepository.findByPareAndNomAndEsborrat(
-						contenidorActual,
+				Long idActual = contingutActual.getId();
+				contingutActual = contingutRepository.findByPareAndNomAndEsborrat(
+						contingutActual,
 						pathPart,
 						0);
-				if (contenidorActual == null) {
-					logger.error("No s'ha trobat el contenidor (pareId=" + idActual + ", nom=" + pathPart + ")");
+				if (contingutActual == null) {
+					logger.error("No s'ha trobat el contingut (pareId=" + idActual + ", nom=" + pathPart + ")");
 					throw new NotFoundException(
 							"(pareId=" + idActual + ", nom=" + pathPart + ")",
-							ContenidorEntity.class);
+							ContingutEntity.class);
 				}
-				// Si el contenidor actual és un document ens aturam
+				// Si el contingut actual és un document ens aturam
 				// perquè el següent element del path serà la darrera
-				// versió i no la trobaría com a contenidor.
-				if (contenidorActual instanceof DocumentEntity)
+				// versió i no la trobaría com a contingut.
+				if (contingutActual instanceof DocumentEntity)
 					break;
 			}
 		}
-		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		// Comprova que el contingut arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidorActual);
-		// Comprova l'accés al path del contenidor
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidorActual,
+				contingutActual);
+		// Comprova l'accés al path del contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingutActual,
 				true,
 				false,
 				false,
 				true);
-		return contenidorHelper.toContenidorDto(
-				contenidorActual,
+		return contingutHelper.toContingutDto(
+				contingutActual,
 				true,
 				true,
 				true,
@@ -1065,139 +1067,139 @@ public class ContenidorServiceImpl implements ContenidorService {
 	@Override
 	public List<ValidacioErrorDto> findErrorsValidacio(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Obtenint errors de validació del contenidor ("
+			Long contingutId) {
+		logger.debug("Obtenint errors de validació del contingut ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ")");
+				+ "contingutId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		// Comprova l'accés al path del contenidor
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+		// Comprova l'accés al path del contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				true,
 				false,
 				false,
 				true);
-		if (contenidor instanceof NodeEntity) {
-			NodeEntity node = (NodeEntity)contenidor;
+		if (contingut instanceof NodeEntity) {
+			NodeEntity node = (NodeEntity)contingut;
 			return cacheHelper.findErrorsValidacioPerNode(node);
 		} else {
-			logger.error("El contenidor no és cap node (contenidorId=" + contenidorId + ")");
+			logger.error("El contingut no és cap node (contingutId=" + contingutId + ")");
 			throw new ValidationException(
-					contenidorId,
-					ContenidorEntity.class,
-					"El contenidor no és un node");
+					contingutId,
+					ContingutEntity.class,
+					"El contingut no és un node");
 		}
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ContenidorLogDto> findLogsPerContenidorAdmin(
+	public List<ContingutLogDto> findLogsPerContingutAdmin(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Obtenint registre d'accions pel contenidor usuari admin ("
+			Long contingutId) {
+		logger.debug("Obtenint registre d'accions pel contingut usuari admin ("
 				+ "entitatId=" + entitatId + ", "
-				+ "nodeId=" + contenidorId + ")");
+				+ "nodeId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		return contenidorLogHelper.findLogsContenidor(contenidor);
+		return contingutLogHelper.findLogsContingut(contingut);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ContenidorLogDto> findLogsPerContenidorUser(
+	public List<ContingutLogDto> findLogsPerContingutUser(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Obtenint registre d'accions pel contenidor usuari normal ("
+			Long contingutId) {
+		logger.debug("Obtenint registre d'accions pel contingut usuari normal ("
 				+ "entitatId=" + entitatId + ", "
-				+ "nodeId=" + contenidorId + ")");
+				+ "nodeId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		// Comprova que l'usuari tengui accés al contenidor
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+		// Comprova que l'usuari tengui accés al contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				false,
 				false,
 				false,
 				true);
-		return contenidorLogHelper.findLogsContenidor(contenidor);
+		return contingutLogHelper.findLogsContingut(contingut);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ContenidorMovimentDto> findMovimentsPerContenidorAdmin(
+	public List<ContingutMovimentDto> findMovimentsPerContingutAdmin(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Obtenint registre de moviments pel contenidor usuari admin ("
+			Long contingutId) {
+		logger.debug("Obtenint registre de moviments pel contingut usuari admin ("
 				+ "entitatId=" + entitatId + ", "
-				+ "nodeId=" + contenidorId + ")");
+				+ "nodeId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		return contenidorLogHelper.findMovimentsContenidor(contenidor);
+		return contingutLogHelper.findMovimentsContingut(contingut);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ContenidorMovimentDto> findMovimentsPerContenidorUser(
+	public List<ContingutMovimentDto> findMovimentsPerContingutUser(
 			Long entitatId,
-			Long contenidorId) {
-		logger.debug("Obtenint registre de moviments pel contenidor usuari normal ("
+			Long contingutId) {
+		logger.debug("Obtenint registre de moviments pel contingut usuari normal ("
 				+ "entitatId=" + entitatId + ", "
-				+ "nodeId=" + contenidorId + ")");
+				+ "nodeId=" + contingutId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
-		// Comprova que l'usuari tengui accés al contenidor
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+		// Comprova que l'usuari tengui accés al contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				false,
 				false,
 				false,
 				true);
-		return contenidorLogHelper.findMovimentsContenidor(contenidor);
+		return contingutLogHelper.findMovimentsContingut(contingut);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<ContenidorDto> findAdmin(
+	public PaginaDto<ContingutDto> findAdmin(
 			Long entitatId,
-			ContenidorFiltreDto filtre,
+			ContingutFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Condulta de contenidors per usuari admin ("
+		logger.debug("Consulta de continguts per usuari admin ("
 				+ "entitatId=" + entitatId + ", "
 				+ "filtre=" + filtre + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -1205,24 +1207,53 @@ public class ContenidorServiceImpl implements ContenidorService {
 				false,
 				true,
 				false);
-		List<Class<?>> tipusPermesos = new ArrayList<Class<?>>();
-		if (filtre.getTipus() == null) {
-			tipusPermesos.add(ExpedientEntity.class);
-			tipusPermesos.add(DocumentEntity.class);
-			tipusPermesos.add(CarpetaEntity.class);
-		} else if (filtre.getTipus().equals(ContenidorTipusEnumDto.EXPEDIENT)) {
-			tipusPermesos.add(ExpedientEntity.class);
-		} else if (filtre.getTipus().equals(ContenidorTipusEnumDto.DOCUMENT)) {
-			tipusPermesos.add(DocumentEntity.class);
-		} else if (filtre.getTipus().equals(ContenidorTipusEnumDto.CARPETA)) {
-			tipusPermesos.add(CarpetaEntity.class);
+		boolean tipusArxiu = true;
+		boolean tipusBustia = true;
+		boolean tipusCarpeta = true;
+		boolean tipusDocument = true;
+		boolean tipusEscriptori = false;
+		boolean tipusExpedient = true;
+		boolean tipusRegistre = true;
+		if (filtre.getTipus() != null) {
+			tipusArxiu = false;
+			tipusBustia = false;
+			tipusCarpeta = false;
+			tipusDocument = false;
+			tipusExpedient = false;
+			tipusRegistre = false;
+			switch (filtre.getTipus()) {
+			case ARXIU:
+				tipusArxiu = true;
+				break;
+			case BUSTIA:
+				tipusBustia = true;
+				break;
+			case CARPETA:
+				tipusCarpeta = true;
+				break;
+			case DOCUMENT:
+				tipusDocument = true;
+				break;
+			case ESCRIPTORI:
+				break;
+			case EXPEDIENT:
+				tipusExpedient = true;
+				break;
+			case REGISTRE:
+				tipusRegistre = true;
+				break;
+			}
 		}
 		return paginacioHelper.toPaginaDto(
-				contenidorRepository.findByFiltrePaginat(
+				contingutRepository.findByFiltrePaginat(
 						entitat,
-						(filtre.getTipus() == null || filtre.getTipus().equals(ContenidorTipusEnumDto.EXPEDIENT)),
-						(filtre.getTipus() == null || filtre.getTipus().equals(ContenidorTipusEnumDto.DOCUMENT)),
-						(filtre.getTipus() == null || filtre.getTipus().equals(ContenidorTipusEnumDto.CARPETA)),
+						tipusArxiu,
+						tipusBustia,
+						tipusCarpeta,
+						tipusDocument,
+						tipusEscriptori,
+						tipusExpedient,
+						tipusRegistre,
 						(filtre.getNom() == null),
 						(filtre.getNom() != null) ? '%' + filtre.getNom() + '%' : null,
 						(filtre.getDataCreacioInici() == null),
@@ -1232,11 +1263,11 @@ public class ContenidorServiceImpl implements ContenidorService {
 						filtre.isMostrarEsborrats(),
 						filtre.isMostrarNoEsborrats(),
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
-				ContenidorDto.class,
-				new Converter<ContenidorEntity, ContenidorDto>() {
+				ContingutDto.class,
+				new Converter<ContingutEntity, ContingutDto>() {
 					@Override
-					public ContenidorDto convert(ContenidorEntity source) {
-						return contenidorHelper.toContenidorDto(
+					public ContingutDto convert(ContingutEntity source) {
+						return contingutHelper.toContingutDto(
 								source,
 								false,
 								false,
@@ -1250,7 +1281,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<ContenidorDto> findEsborrats(
+	public PaginaDto<ContingutDto> findEsborrats(
 			Long entitatId,
 			String nom,
 			String usuariCodi,
@@ -1297,7 +1328,7 @@ public class ContenidorServiceImpl implements ContenidorService {
 			dataFi = cal.getTime();
 		}
 		return paginacioHelper.toPaginaDto(
-				contenidorRepository.findEsborratsByFiltrePaginat(
+				contingutRepository.findEsborratsByFiltrePaginat(
 						entitat,
 						(nom == null),
 						(nom != null) ? '%' + nom + '%' : nom,
@@ -1308,11 +1339,11 @@ public class ContenidorServiceImpl implements ContenidorService {
 						(dataFi == null),
 						dataFi,
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
-				ContenidorDto.class,
-				new Converter<ContenidorEntity, ContenidorDto>() {
+				ContingutDto.class,
+				new Converter<ContingutEntity, ContingutDto>() {
 					@Override
-					public ContenidorDto convert(ContenidorEntity source) {
-						return contenidorHelper.toContenidorDto(
+					public ContingutDto convert(ContingutEntity source) {
+						return contingutHelper.toContingutDto(
 								source,
 								false,
 								false,
@@ -1326,55 +1357,57 @@ public class ContenidorServiceImpl implements ContenidorService {
 
 
 
-	private ContenidorEntity copiarContenidor(
+	private ContingutEntity copiarContingut(
 			EntitatEntity entitat,
-			ContenidorEntity contenidorOrigen,
-			ContenidorEntity contenidorDesti,
+			ContingutEntity contingutOrigen,
+			ContingutEntity contingutDesti,
 			boolean recursiu) {
-		ContenidorEntity creat = null;
-		if (contenidorOrigen instanceof CarpetaEntity) {
-			CarpetaEntity carpetaOrigen = (CarpetaEntity)contenidorOrigen;
+		ContingutEntity creat = null;
+		if (contingutOrigen instanceof CarpetaEntity) {
+			CarpetaEntity carpetaOrigen = (CarpetaEntity)contingutOrigen;
 			CarpetaEntity carpetaNova = CarpetaEntity.getBuilder(
 					carpetaOrigen.getNom(),
-					carpetaOrigen.getTipus(),
-					contenidorDesti,
+					carpetaOrigen.getCarpetaTipus(),
+					contingutDesti,
 					entitat).build();
-			creat = contenidorRepository.save(carpetaNova);
-		} else if (contenidorOrigen instanceof DocumentEntity) {
-			DocumentEntity documentOrigen = (DocumentEntity)contenidorOrigen;
+			creat = contingutRepository.save(carpetaNova);
+		} else if (contingutOrigen instanceof DocumentEntity) {
+			DocumentEntity documentOrigen = (DocumentEntity)contingutOrigen;
 			DocumentEntity documentNou = DocumentEntity.getBuilder(
 					documentOrigen.getNom(),
 					documentOrigen.getData(),
 					documentOrigen.getExpedient(),
 					documentOrigen.getMetaDocument(),
-					contenidorDesti,
+					contingutDesti,
 					entitat).build();
-			creat = contenidorRepository.save(documentNou);
+			creat = contingutRepository.save(documentNou);
 			DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
 					documentOrigen,
 					documentOrigen.getDarreraVersio());
+			FitxerDto fitxer = documentHelper.getFitxerAssociat(
+					documentVersio);
 			int versio = 1;
-			DocumentVersioEntity documentVersioNova = DocumentVersioEntity.getBuilder(
+			DocumentVersioEntity documentVersioNova = documentHelper.crearVersioAmbFitxerAssociat(
 					documentNou,
 					versio,
-					documentVersio.getArxiuNom(),
-					documentVersio.getArxiuContentType(),
-					documentVersio.getArxiuContingut()).build();
+					fitxer.getNom(),
+					fitxer.getContentType(),
+					fitxer.getContingut());
 			documentVersioRepository.save(documentVersioNova);
 			documentNou.updateDarreraVersio(versio);
-		} else if (contenidorOrigen instanceof ExpedientEntity) {
-			ExpedientEntity expedientOrigen = (ExpedientEntity)contenidorOrigen;
+		} else if (contingutOrigen instanceof ExpedientEntity) {
+			ExpedientEntity expedientOrigen = (ExpedientEntity)contingutOrigen;
 			ExpedientEntity expedientNou = ExpedientEntity.getBuilder(
 					expedientOrigen.getNom(),
 					expedientOrigen.getMetaExpedient(),
 					expedientOrigen.getArxiu(),
-					contenidorDesti,
+					contingutDesti,
 					entitat).build();
-			creat = contenidorRepository.save(expedientNou);
+			creat = contingutRepository.save(expedientNou);
 		}
 		if (creat != null) {
 			if (creat instanceof NodeEntity) {
-				NodeEntity nodeOrigen = (NodeEntity)contenidorOrigen;
+				NodeEntity nodeOrigen = (NodeEntity)contingutOrigen;
 				NodeEntity nodeDesti = (NodeEntity)creat;
 				for (DadaEntity dada: dadaRepository.findByNode(nodeOrigen)) {
 					DadaEntity dadaNova = DadaEntity.getBuilder(
@@ -1436,6 +1469,6 @@ public class ContenidorServiceImpl implements ContenidorService {
 		throw new RuntimeException();
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(ContenidorServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);
 
 }

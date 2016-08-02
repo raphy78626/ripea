@@ -10,14 +10,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 
 /**
- * Informació del filtre de contenidors.
+ * Informació del filtre de continguts.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ContenidorFiltreDto implements Serializable {
+public class ContingutFiltreDto implements Serializable {
 
 	private String nom;
-	private ContenidorTipusEnumDto tipus;
+	private ContingutTipusEnumDto tipus;
 	private Long metaExpedientId;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
@@ -26,10 +26,10 @@ public class ContenidorFiltreDto implements Serializable {
 
 
 
-	public ContenidorTipusEnumDto getTipus() {
+	public ContingutTipusEnumDto getTipus() {
 		return tipus;
 	}
-	public void setTipus(ContenidorTipusEnumDto tipus) {
+	public void setTipus(ContingutTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
 	public String getNom() {

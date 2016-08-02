@@ -40,7 +40,6 @@ import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.repository.BustiaRepository;
-import es.caib.ripea.core.repository.ContenidorRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
@@ -78,13 +77,11 @@ public class CacheHelper {
 	private MetaExpedientMetaDocumentRepository metaExpedientMetaDocumentRepository;
 	@Resource
 	private BustiaRepository bustiaRepository;
-	@Resource
-	private ContenidorRepository contenidorRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contenidorHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
@@ -266,17 +263,17 @@ public class CacheHelper {
 		long count = 0;
 		if (!busties.isEmpty()) {
 			// Ompl els contadors de fills i registres
-			long[] countFills = contenidorHelper.countFillsAmbPermisReadByContenidors(
+			long[] countFills = contenidorHelper.countFillsAmbPermisReadByContinguts(
 					entitat,
 					busties,
 					true);
 			for (long c: countFills)
 				count += c;
-			long[] countRegistres = contenidorHelper.countRegistresByContenidors(
+			/*long[] countRegistres = contenidorHelper.countRegistresByContinguts(
 					entitat,
 					busties);
 			for (long c: countRegistres)
-				count += c;
+				count += c;*/
 		}
 		// Afegeix l'usuari a l'entitat
 		afegirUsuariElementsPendentsPerEntitat(

@@ -410,7 +410,7 @@ $(document).ready(function() {
 					</c:when>
 					<c:otherwise>
 						<li class="active"><a href="#contingut" data-toggle="tab">
-							<spring:message code="contenidor.contingut.tab.contingut"/>&nbsp;<span class="badge">${contenidor.fillsCount}</span></a>
+							<spring:message code="contenidor.contingut.tab.contingut"/>&nbsp;<span class="badge">${contenidor.fillsNoRegistresCount}</span></a>
 						</li>
 					</c:otherwise>
 				</c:choose>
@@ -421,7 +421,7 @@ $(document).ready(function() {
 				</c:if>
 				<c:if test="${contenidor.expedient}">
 					<li>
-						<a href="#registres" data-toggle="tab"><spring:message code="contenidor.contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contenidor.registresCount}</span></a>
+						<a href="#registres" data-toggle="tab"><spring:message code="contenidor.contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contenidor.fillsRegistresCount}</span></a>
 					</li>
 				</c:if>
 			</ul>
@@ -662,7 +662,7 @@ $(document).ready(function() {
 												<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 												<ul class="dropdown-menu">
 													<li><a href="../contenidor/${contenidor.id}/registre/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
-													<li><a href="../contenidor/${contenidor.id}/registre/{{:id}}/log" data-rdt-link-modal="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+													<li><a href="../contenidor/{{:id}}/log" data-rdt-link-modal="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 												</ul>
 											</div>
 										</script>

@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.service.ContenidorService;
-import es.caib.ripea.war.command.ContenidorFiltreCommand;
-import es.caib.ripea.war.command.ContenidorFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
+import es.caib.ripea.core.api.service.ContingutService;
+import es.caib.ripea.war.command.ContingutFiltreCommand;
+import es.caib.ripea.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
 import es.caib.ripea.war.datatable.DatatablesPagina;
 import es.caib.ripea.war.helper.PaginacioHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
@@ -43,7 +43,7 @@ public class ContenidorAdminController extends BaseAdminController {
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ContenidorAdminController.session.filtre";
 
 	@Autowired
-	private ContenidorService contenidorService;
+	private ContingutService contenidorService;
 
 
 
@@ -59,7 +59,7 @@ public class ContenidorAdminController extends BaseAdminController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String expedientPost(
 			HttpServletRequest request,
-			@Valid ContenidorFiltreCommand filtreCommand,
+			@Valid ContingutFiltreCommand filtreCommand,
 			BindingResult bindingResult,
 			Model model) {
 		if (!bindingResult.hasErrors()) {
@@ -72,15 +72,15 @@ public class ContenidorAdminController extends BaseAdminController {
 	}
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<ContenidorDto> datatable(
+	public DatatablesPagina<ContingutDto> datatable(
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContenidorFiltreCommand filtreCommand = getFiltreCommand(request);
+		ContingutFiltreCommand filtreCommand = getFiltreCommand(request);
 		return PaginacioHelper.getPaginaPerDatatables(
 				request,
 				contenidorService.findAdmin(
 						entitatActual.getId(),
-						ContenidorFiltreCommand.asDto(filtreCommand),
+						ContingutFiltreCommand.asDto(filtreCommand),
 						PaginacioHelper.getPaginacioDtoFromDatatable(
 								request,
 								null)));
@@ -134,13 +134,13 @@ public class ContenidorAdminController extends BaseAdminController {
 
 
 
-	private ContenidorFiltreCommand getFiltreCommand(
+	private ContingutFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
-		ContenidorFiltreCommand filtreCommand = (ContenidorFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
+		ContingutFiltreCommand filtreCommand = (ContingutFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
-			filtreCommand = new ContenidorFiltreCommand();
+			filtreCommand = new ContingutFiltreCommand();
 			filtreCommand.setOpcionsEsborrat(ContenidorFiltreOpcionsEsborratEnum.NOMES_NO_ESBORRATS);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,

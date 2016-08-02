@@ -3,18 +3,14 @@
  */
 package es.caib.ripea.core.ejb;
 
-import java.util.List;
-
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
-import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
-import es.caib.ripea.core.api.dto.RegistreMovimentDto;
 import es.caib.ripea.core.api.service.RegistreService;
 
 /**
@@ -42,14 +38,6 @@ public class RegistreServiceBean implements RegistreService {
 				entitatId,
 				contenidorId,
 				registreId);
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public List<RegistreMovimentDto> findMoviments(
-			Long entitatId,
-			Long registreId) {
-		return delegate.findMoviments(entitatId, registreId);
 	}
 
 	@Override

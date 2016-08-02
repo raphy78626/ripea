@@ -16,7 +16,7 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
@@ -99,18 +99,20 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("tothom")
-	public List<BustiaDto> findAmbUnitatCodiUsuari(
-			Long entitatId,
-			String unitatCodi) {
-		return delegate.findAmbUnitatCodiUsuari(entitatId, unitatCodi);
-	}
-
-	@Override
 	@RolesAllowed({"IPA_ADMIN", "tothom"})
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) {
 		return delegate.findActivesAmbEntitat(entitatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<BustiaDto> findAmbEntitatPaginat(
+			Long entitatId,
+			PaginacioParamsDto paginacioParams) {
+		return delegate.findAmbEntitatPaginat(
+				entitatId,
+				paginacioParams);
 	}
 
 	@Override
@@ -122,15 +124,15 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto enviarContenidor(
+	public ContingutDto enviarContingut(
 			Long entitatId,
 			Long bustiaId,
-			Long contenidorId,
+			Long contingutId,
 			String comentari) {
-		return delegate.enviarContenidor(
+		return delegate.enviarContingut(
 				entitatId,
 				bustiaId,
-				contenidorId,
+				contingutId,
 				comentari);
 	}
 
@@ -242,16 +244,6 @@ public class BustiaServiceBean implements BustiaService {
 	@Override
 	public void registreReglaAplicarPendents() {
 		delegate.registreReglaAplicarPendents();
-	}
-
-	@Override
-	@RolesAllowed("IPA_ADMIN")
-	public PaginaDto<BustiaDto> findAmbEntitatPaginat(
-			Long entitatId,
-			PaginacioParamsDto paginacioParams) {
-		return delegate.findAmbEntitatPaginat(
-				entitatId,
-				paginacioParams);
 	}
 
 }

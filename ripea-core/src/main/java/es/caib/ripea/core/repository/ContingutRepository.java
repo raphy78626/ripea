@@ -13,51 +13,59 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.ripea.core.entity.ContenidorEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
- * de dades del tipus contenidor.
+ * de dades del tipus contingut.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface ContenidorRepository extends JpaRepository<ContenidorEntity, Long> {
+public interface ContingutRepository extends JpaRepository<ContingutEntity, Long> {
 
-	List<ContenidorEntity> findByPareAndEsborrat(
-			ContenidorEntity pare,
+	List<ContingutEntity> findByPareAndEsborrat(
+			ContingutEntity pare,
 			int esborrat,
 			Sort sort);
 
-	List<ContenidorEntity> findByPareAndNomOrderByEsborratAsc(
-			ContenidorEntity pare,
+	List<ContingutEntity> findByPareAndNomOrderByEsborratAsc(
+			ContingutEntity pare,
 			String nom);
 
-	ContenidorEntity findByPareAndNomAndEsborrat(
-			ContenidorEntity pare,
+	ContingutEntity findByPareAndNomAndEsborrat(
+			ContingutEntity pare,
 			String nom,
 			int esborrat);
 
 	@Query(	"select " +
 			"    c " +
 			"from " +
-			"    ContenidorEntity c " +
+			"    ContingutEntity c " +
 			"where " +
 			"    c.entitat = :entitat " +
-			"and (type(c) = es.caib.ripea.core.entity.ExpedientEntity or type(c) = es.caib.ripea.core.entity.DocumentEntity or type(c) = es.caib.ripea.core.entity.CarpetaEntity)" +
-			"and (:tipusExpedient = true or type(c) <> es.caib.ripea.core.entity.ExpedientEntity) " +
-			"and (:tipusDocument = true or type(c) <> es.caib.ripea.core.entity.DocumentEntity) " +
+			"and (c.pare is not null or (type(c) <> es.caib.ripea.core.entity.ArxiuEntity and type(c) <> es.caib.ripea.core.entity.BustiaEntity)) " +
+			"and (:tipusArxiu = true or type(c) <> es.caib.ripea.core.entity.ArxiuEntity) " +
+			"and (:tipusBustia = true or type(c) <> es.caib.ripea.core.entity.BustiaEntity) " +
 			"and (:tipusCarpeta = true or type(c) <> es.caib.ripea.core.entity.CarpetaEntity) " +
+			"and (:tipusDocument = true or type(c) <> es.caib.ripea.core.entity.DocumentEntity) " +
+			"and (:tipusEscriptori = true or type(c) <> es.caib.ripea.core.entity.EscriptoriEntity) " +
+			"and (:tipusExpedient = true or type(c) <> es.caib.ripea.core.entity.ExpedientEntity) " +
+			"and (:tipusRegistre = true or type(c) <> es.caib.ripea.core.entity.RegistreEntity) " +
 			"and (:esNullNom = true or lower(c.nom) like :nom) " +
 			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
 			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
-	public Page<ContenidorEntity> findByFiltrePaginat(
+	public Page<ContingutEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
-			@Param("tipusExpedient") boolean tipusExpedient,
-			@Param("tipusDocument") boolean tipusDocument,
+			@Param("tipusArxiu") boolean tipusArxiu,
+			@Param("tipusBustia") boolean tipusBustia,
 			@Param("tipusCarpeta") boolean tipusCarpeta,
+			@Param("tipusDocument") boolean tipusDocument,
+			@Param("tipusEscriptori") boolean tipusEscriptori,
+			@Param("tipusExpedient") boolean tipusExpedient,
+			@Param("tipusRegistre") boolean tipusRegistre,
 			@Param("esNullNom") boolean esNullNom,
 			@Param("nom") String nom,
 			@Param("esNullDataInici") boolean esNullDataInici,
@@ -71,7 +79,7 @@ public interface ContenidorRepository extends JpaRepository<ContenidorEntity, Lo
 	@Query(	"select " +
 			"    c " +
 			"from " +
-			"    ContenidorEntity c " +
+			"    ContingutEntity c " +
 			"where " +
 			"    c.entitat = :entitat " +
 			"and (:esNullNom = true or lower(c.nom) like :nom) " +
@@ -79,7 +87,7 @@ public interface ContenidorRepository extends JpaRepository<ContenidorEntity, Lo
 			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
 			"and esborrat > 0")
-	public Page<ContenidorEntity> findEsborratsByFiltrePaginat(
+	public Page<ContingutEntity> findEsborratsByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullNom") boolean esNullNom,
 			@Param("nom") String nom,
@@ -95,7 +103,7 @@ public interface ContenidorRepository extends JpaRepository<ContenidorEntity, Lo
 			"    pare.id, " +
 			"    count(*) " +
 			"from " +
-			"    ContenidorEntity " +
+			"    ContingutEntity " +
 			"where " +
 			"    entitat = :entitat " +
 			"and pare in (:pares) " +
@@ -104,6 +112,6 @@ public interface ContenidorRepository extends JpaRepository<ContenidorEntity, Lo
 			"    pare")
 	List<Object[]> countByPares(
 			@Param("entitat") EntitatEntity entitat,
-			@Param("pares") List<? extends ContenidorEntity> pares);
+			@Param("pares") List<? extends ContingutEntity> pares);
 
 }

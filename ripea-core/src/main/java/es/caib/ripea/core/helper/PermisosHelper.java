@@ -318,7 +318,7 @@ public class PermisosHelper {
 					}
 				} else if (ace.getSid() instanceof GrantedAuthoritySid) {
 					String grantedAuthority = ((GrantedAuthoritySid)ace.getSid()).getGrantedAuthority();
-					permis = permisosUsuari.get(grantedAuthority);
+					permis = permisosRol.get(grantedAuthority);
 					if (permis == null) {
 						permis = new PermisDto();
 						permis.setId((Long)ace.getId());

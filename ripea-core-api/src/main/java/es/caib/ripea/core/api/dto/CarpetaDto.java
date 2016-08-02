@@ -9,7 +9,7 @@ package es.caib.ripea.core.api.dto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class CarpetaDto extends ContenidorDto {
+public class CarpetaDto extends ContingutDto {
 
 	private CarpetaTipusEnumDto tipus;
 
@@ -26,7 +26,7 @@ public class CarpetaDto extends ContenidorDto {
 		return null;
 	}
 
-	protected CarpetaDto copiarContenidor(ContenidorDto original) {
+	protected CarpetaDto copiarContenidor(ContingutDto original) {
 		CarpetaDto copia = new CarpetaDto();
 		copia.setId(original.getId());
 		copia.setNom(original.getNom());

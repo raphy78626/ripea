@@ -32,13 +32,13 @@
 	<div class="tab-content">
 		<div class="tab-pane active in" id="informacio">
 			<dl class="dl-horizontal">
-				<dt><spring:message code="registre.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${registre.tipus}"/></dd>
+				<dt><spring:message code="registre.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></dd>
 				<dt><spring:message code="registre.camp.numero"/></dt><dd>${registre.identificador}</dd>
 				<dt><spring:message code="registre.camp.data"/></dt><dd><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-				<c:if test="${registre.tipus == 'ENTRADA'}">
+				<c:if test="${registre.registreTipus == 'ENTRADA'}">
 					<dt><spring:message code="registre.camp.desti"/></dt><dd>${registre.unitatAdministrativa}</dd>				
 				</c:if>
-				<c:if test="${registre.tipus == 'SORTIDA'}">
+				<c:if test="${registre.registreTipus == 'SORTIDA'}">
 					<dt><spring:message code="registre.camp.origen"/></dt><dd>${registre.unitatAdministrativa}</dd>
 				</c:if>
 				<dt><spring:message code="registre.camp.entitat"/></dt><dd>${registre.entitatDescripcio} (${registre.entitatCodi})</dd>

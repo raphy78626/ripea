@@ -25,8 +25,8 @@ public interface ExpedientService {
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany l'expedient.
-	 * @param contenidorId
-	 *            Atribut id del contenidor dins el qual es vol crear l'expedient.
+	 * @param pareId
+	 *            Atribut id del contenidor a dins el qual es vol crear l'expedient.
 	 * @param metaExpedientId
 	 *            Atribut id del meta-expedient a partir del qual es vol crear l'expedient.
 	 * @param arxiuId
@@ -49,7 +49,7 @@ public interface ExpedientService {
 	@PreAuthorize("hasRole('tothom')")
 	public ExpedientDto create(
 			Long entitatId,
-			Long contenidorId,
+			Long pareId,
 			Long metaExpedientId,
 			Long arxiuId,
 			Integer any,

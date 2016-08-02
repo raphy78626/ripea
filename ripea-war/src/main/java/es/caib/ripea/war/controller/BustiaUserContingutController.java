@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
@@ -44,7 +44,7 @@ public class BustiaUserContingutController extends BaseUserController {
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
-	private ContenidorService contenidorService;
+	private ContingutService contenidorService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -245,12 +245,12 @@ public class BustiaUserContingutController extends BaseUserController {
 			EntitatDto entitatActual,
 			Long contenidorOrigenId,
 			Model model) {
-		ContenidorDto contenidorOrigen = contenidorService.getContenidorAmbContingut(
+		ContingutDto contingutOrigen = contenidorService.getContingutAmbFills(
 				entitatActual.getId(),
 				contenidorOrigenId);
 		model.addAttribute(
-				"contenidorOrigen",
-				contenidorOrigen);
+				"contingutOrigen",
+				contingutOrigen);
 		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());
 		model.addAttribute(

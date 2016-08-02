@@ -14,13 +14,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ContenidorLogDto implements Serializable {
+public class ContingutLogDto implements Serializable {
 
 	private Long id;
 	private Date data;
 	private LogTipusEnumDto tipus;
 	private UsuariDto usuari;
-	private ContenidorMovimentDto contenidorMoviment;
+	private ContingutMovimentDto contingutMoviment;
 	private Long objecteId;
 	private LogObjecteTipusEnumDto objecteTipus;
 	private LogTipusEnumDto objecteLogTipus;
@@ -54,11 +54,11 @@ public class ContenidorLogDto implements Serializable {
 	public void setUsuari(UsuariDto usuari) {
 		this.usuari = usuari;
 	}
-	public ContenidorMovimentDto getContenidorMoviment() {
-		return contenidorMoviment;
+	public ContingutMovimentDto getContenidorMoviment() {
+		return contingutMoviment;
 	}
-	public void setContenidorMoviment(ContenidorMovimentDto contenidorMoviment) {
-		this.contenidorMoviment = contenidorMoviment;
+	public void setContenidorMoviment(ContingutMovimentDto contingutMoviment) {
+		this.contingutMoviment = contingutMoviment;
 	}
 	public Long getObjecteId() {
 		return objecteId;

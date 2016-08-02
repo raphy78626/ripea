@@ -121,7 +121,7 @@ public class ExpedientDto extends NodeDto {
 		return ExpedientEstatEnumDto.OBERT.equals(estat) ? "Abierto" : "Cerrado";
 	}
 
-	protected ExpedientDto copiarContenidor(ContenidorDto original) {
+	protected ExpedientDto copiarContenidor(ContingutDto original) {
 		ExpedientDto copia = new ExpedientDto();
 		copia.setId(original.getId());
 		copia.setNom(original.getNom());

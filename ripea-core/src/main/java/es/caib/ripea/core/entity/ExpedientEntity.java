@@ -24,6 +24,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 
 /**
@@ -50,7 +51,7 @@ public class ExpedientEntity extends NodeEntity {
 			joinColumns = {@JoinColumn(name = "expedient_id")},
 			inverseJoinColumns = {@JoinColumn(name = "interessat_id")})
 	protected Set<InteressatEntity> interessats = new HashSet<InteressatEntity>();
-	@Column(name = "estat")
+	@Column(name = "estat", nullable = false)
 	protected ExpedientEstatEnumDto estat;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "tancat_data")
@@ -139,47 +140,27 @@ public class ExpedientEntity extends NodeEntity {
 		}
 	}
 
-	/**
-	 * Obté el Builder per a crear objectes de tipus expedient.
-	 * 
-	 * @param nom
-	 *            El valor de l'atribut nom.
-	 * @param metaNode
-	 *            arxiu meta-node al qual pertany aquest expedient.
-	 * @param arxiu
-	 *            L'arxiu al qual pertany aquest expedient.
-	 * @param contenidor
-	 *            El contenidor al qual pertany aquest expedient.
-	 * @param entitat
-	 *            L'entitat a la qual pertany aquest expedient.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
 			String nom,
 			MetaNodeEntity metaNode,
 			ArxiuEntity arxiu,
-			ContenidorEntity contenidor,
+			ContingutEntity pare,
 			EntitatEntity entitat) {
 		return new Builder(
 				nom,
 				metaNode,
 				arxiu,
-				contenidor,
+				pare,
 				entitat);
 	}
 
-	/**
-	 * Builder per a crear noves instàncies d'aquesta classe.
-	 * 
-	 * @author Limit Tecnologies <limit@limit.es>
-	 */
 	public static class Builder {
 		ExpedientEntity built;
 		Builder(
 				String nom,
 				MetaNodeEntity metaNode,
 				ArxiuEntity arxiu,
-				ContenidorEntity pare,
+				ContingutEntity pare,
 				EntitatEntity entitat) {
 			built = new ExpedientEntity();
 			built.nom = nom;
@@ -188,7 +169,7 @@ public class ExpedientEntity extends NodeEntity {
 			built.pare = pare;
 			built.entitat = entitat;
 			built.estat = ExpedientEstatEnumDto.OBERT;
-			built.tipusContenidor = ContenidorTipusEnum.CONTINGUT;
+			built.tipus = ContingutTipusEnumDto.EXPEDIENT;
 		}
 		public ExpedientEntity build() {
 			return built;

@@ -30,22 +30,20 @@ import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
-import es.caib.ripea.core.entity.ContenidorEntity;
-import es.caib.ripea.core.entity.ContenidorLogEntity;
-import es.caib.ripea.core.entity.ContenidorMovimentEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
+import es.caib.ripea.core.entity.ContingutLogEntity;
+import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientSequenciaEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
-import es.caib.ripea.core.entity.RegistreEntity;
-import es.caib.ripea.core.entity.RegistreMovimentEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
-import es.caib.ripea.core.helper.ContenidorHelper;
-import es.caib.ripea.core.helper.ContenidorLogHelper;
+import es.caib.ripea.core.helper.ContingutHelper;
+import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
@@ -57,12 +55,10 @@ import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
-import es.caib.ripea.core.repository.ContenidorRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.MetaExpedientRepository;
 import es.caib.ripea.core.repository.MetaExpedientSequenciaRepository;
-import es.caib.ripea.core.repository.RegistreMovimentRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
@@ -77,8 +73,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 
 	@Resource
 	private EntitatRepository entitatRepository;
-	@Resource
-	private ContenidorRepository contenidorRepository;
 	@Resource
 	private MetaExpedientRepository metaExpedientRepository;
 	@Resource
@@ -95,15 +89,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private BustiaRepository bustiaRepository;
 	@Resource
 	private MetaExpedientSequenciaRepository metaExpedientSequenciaRepository;
-	@Resource
-	private RegistreMovimentRepository registreMovimentRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contingutHelper;
 	@Resource
 	private PaginacioHelper paginacioHelper;
 	@Resource
@@ -115,7 +107,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Resource
 	private EmailHelper emailHelper;
 	@Resource
-	private ContenidorLogHelper contenidorLogHelper;
+	private ContingutLogHelper contenidorLogHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 
@@ -125,7 +117,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Override
 	public ExpedientDto create(
 			Long entitatId,
-			Long contenidorId,
+			Long pareId,
 			Long metaExpedientId,
 			Long arxiuId,
 			Integer any,
@@ -134,7 +126,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 			Long contingutPendentId) {
 		logger.debug("Creant nou expedient ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ", "
+				+ "pareId=" + pareId + ", "
 				+ "metaExpedientId=" + metaExpedientId + ", "
 				+ "arxiuId=" + arxiuId + ", "
 				+ "any=" + any + ", "
@@ -164,33 +156,34 @@ public class ExpedientServiceImpl implements ExpedientService {
 				entitat,
 				arxiuId,
 				true);
-		ContenidorEntity contenidor = comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId);
+				pareId,
+				null);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidor);
+				contingut);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				true,
 				false,
 				false,
 				true);
 		// Comprova que el nom sigui vàlid
-		if (!contenidorHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(nom)) {
 			throw new ValidationException(
 					"<creacio>",
 					ExpedientEntity.class,
 					"El nom de l'expedient no és vàlid (no pot començar amb \".\")");
 		}
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-				contenidor,
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+				contingut,
 				true);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
@@ -204,7 +197,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				nom,
 				metaExpedient,
 				arxiu,
-				contenidor,
+				contingut,
 				entitat).build();
 		expedientRepository.save(expedient);
 		// Lliga el contingut al nou expedient
@@ -275,18 +268,18 @@ public class ExpedientServiceImpl implements ExpedientService {
 				arxiuId,
 				true);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path de l'expedient
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contingutHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient
-		contenidorHelper.comprovarPermisosContenidor(
+		contingutHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
@@ -307,7 +300,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 					"No es pot actualitzar un expedient sense un meta-expedient associat");			
 		}
 		// Comprova que el nom sigui vàlid
-		if (!contenidorHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(nom)) {
 			throw new ValidationException(
 					id,
 					ExpedientEntity.class,
@@ -350,29 +343,29 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				id);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path de l'expedient
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contingutHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
 				false);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
 					false);
 		}
 		// Comprova el permís d'esborrar de l'expedient actual
-		contenidorHelper.comprovarPermisosContenidor(
+		contingutHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				false,
@@ -410,7 +403,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				id);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path de l'expedient
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contingutHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
@@ -490,7 +483,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				arxiu,
 				id);
 		// No s'ha de poder agafar un expedient no arrel
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
 				false);
 		if (expedientSuperior != null) {
@@ -501,26 +494,26 @@ public class ExpedientServiceImpl implements ExpedientService {
 					"No es pot agafar un expedient no arrel");
 		}
 		// Comprova que es pugui modificar l'expedient a agafar
-		contenidorHelper.comprovarPermisosContenidor(
+		contingutHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
 				false);
 		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
-		ContenidorEntity arrel = contenidorHelper.findContenidorArrel(expedient);
+		ContingutEntity arrel = contingutHelper.findContingutArrel(expedient);
 		UsuariEntity usuariOriginal = null;
 		if (arrel instanceof EscriptoriEntity)
 			usuariOriginal = ((EscriptoriEntity)arrel).getUsuari();
-		EscriptoriEntity escriptori = contenidorHelper.getEscriptoriPerUsuari(
+		EscriptoriEntity escriptori = contingutHelper.getEscriptoriPerUsuari(
 				entitat,
 				usuariHelper.getUsuariAutenticat());
-		contenidorHelper.ferIEnregistrarMovimentContenidor(
+		contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				escriptori,
 				null);
 		// Avisa a l'usuari que li han pres
 		if (usuariOriginal != null) {
-			emailHelper.emailUsuariContenidorAgafatSensePermis(
+			emailHelper.emailUsuariContingutAgafatSensePermis(
 					expedient,
 					usuariOriginal);
 		}
@@ -560,7 +553,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				arxiu,
 				id);
 		// No s'ha de poder agafar un expedient no arrel
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
 				false);
 		if (expedientSuperior != null) {
@@ -571,19 +564,19 @@ public class ExpedientServiceImpl implements ExpedientService {
 					"No es pot agafar un expedient no arrel");
 		}
 		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
-		ContenidorEntity arrel = contenidorHelper.findContenidorArrel(expedient);
+		ContingutEntity arrel = contingutHelper.findContingutArrel(expedient);
 		UsuariEntity usuariOriginal = null;
 		if (arrel instanceof EscriptoriEntity)
 			usuariOriginal = ((EscriptoriEntity)arrel).getUsuari();
-		EscriptoriEntity escriptori = contenidorHelper.getEscriptoriPerUsuari(
+		EscriptoriEntity escriptori = contingutHelper.getEscriptoriPerUsuari(
 				entitat,
 				usuariRepository.findOne(usuariCodi));
-		contenidorHelper.ferIEnregistrarMovimentContenidor(
+		contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				escriptori,
 				null);
 		// Avisa a l'usuari que li han pres
-		emailHelper.emailUsuariContenidorAgafatSensePermis(
+		emailHelper.emailUsuariContingutAgafatSensePermis(
 				expedient,
 				usuariOriginal);
 		// Registra al log l'apropiacio de l'expedient
@@ -616,10 +609,10 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				id);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
-		contenidorHelper.ferIEnregistrarMovimentContenidor(
+		contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				expedient.getArxiu(),
 				null);
@@ -652,7 +645,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				entitat,
 				null,
 				id);
-		contenidorHelper.ferIEnregistrarMovimentContenidor(
+		contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				expedient.getArxiu(),
 				null);
@@ -686,17 +679,17 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				id);
 		// Comprova que l'usuari tengui permisos d'escriptura a damunt l'expedient
-		contenidorHelper.comprovarPermisosContenidor(
+		contingutHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
 				false);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Allibera l'expedient
-		contenidorHelper.ferIEnregistrarMovimentContenidor(
+		contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				expedient.getArxiu(),
 				null);
@@ -736,21 +729,21 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				acumulatId);
 		// Registra al log l'acumulació
-		ContenidorLogEntity contenidorLog = contenidorLogHelper.log(
+		ContingutLogEntity contenidorLog = contenidorLogHelper.log(
 				expedientDesti,
 				LogTipusEnumDto.ACUMULACIO,
 				null,
 				null,
 				false,
 				false);
-		for (ContenidorEntity contenidor: expedientOrigen.getFills()) {
-			ContenidorMovimentEntity contenidorMoviment = contenidorHelper.ferIEnregistrarMovimentContenidor(
-					contenidor,
+		for (ContingutEntity contingut: expedientOrigen.getFills()) {
+			ContingutMovimentEntity contenidorMoviment = contingutHelper.ferIEnregistrarMoviment(
+					contingut,
 					expedientDesti,
 					null);
 			// Registra al log el moviment del node
 			contenidorLogHelper.log(
-					contenidor,
+					contingut,
 					LogTipusEnumDto.MOVIMENT,
 					contenidorLog,
 					contenidorMoviment,
@@ -849,6 +842,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 					new Converter<ExpedientEntity, ExpedientDto>() {
 						@Override
 						public ExpedientDto convert(ExpedientEntity source) {
+							System.out.println(">>> Converting EXP: " + source.getNom());
 							return toExpedientDto(
 									source,
 									true);
@@ -863,7 +857,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private ExpedientDto toExpedientDto(
 			ExpedientEntity expedient,
 			boolean ambPathIPermisos) {
-		return (ExpedientDto)contenidorHelper.toContenidorDto(
+		return (ExpedientDto)contingutHelper.toContingutDto(
 				expedient,
 				ambPathIPermisos,
 				false,
@@ -871,27 +865,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 				false,
 				ambPathIPermisos,
 				false);
-	}
-
-	private ContenidorEntity comprovarContenidor(
-			EntitatEntity entitat,
-			Long id) {
-		ContenidorEntity contenidor = contenidorRepository.findOne(id);
-		if (contenidor == null) {
-			logger.error("No s'ha trobat el contenidor (contenidorId=" + id + ")");
-			throw new NotFoundException(
-					id,
-					ContenidorEntity.class);
-		}
-		if (!contenidor.getEntitat().equals(entitat)) {
-			logger.error("L'entitat del contenidor no coincideix ("
-					+ "entitatId1=" + entitat.getId() + ", "
-					+ "entitatId2=" + contenidor.getEntitat().getId() + ")");
-			throw new NotFoundException(
-					id,
-					ContenidorEntity.class);
-		}
-		return contenidor;
 	}
 	private MetaExpedientEntity comprovarMetaExpedient(
 			EntitatEntity entitat,
@@ -1029,31 +1002,15 @@ public class ExpedientServiceImpl implements ExpedientService {
 			ExpedientEntity expedient,
 			BustiaContingutPendentTipusEnumDto contingutTipus,
 			Long contingutId) {
-		Long bustiaId;
-		if (contingutTipus == BustiaContingutPendentTipusEnumDto.REGISTRE_ENTRADA) {
-			RegistreEntity registre = entityComprovarHelper.comprovarRegistre(
-					contingutId,
-					null);
-			ContenidorEntity contenidorOrigen = registre.getContenidor();
-			bustiaId = registre.getContenidor().getId();
-			registre.updateContenidor(expedient);
-			RegistreMovimentEntity registreMoviment = RegistreMovimentEntity.getBuilder(
-					registre,
-					contenidorOrigen,
-					expedient,
-					usuariHelper.getUsuariAutenticat(),
-					null).build();
-			registreMovimentRepository.save(registreMoviment);
-		} else {
-			ContenidorEntity contingut = comprovarContenidor(
-					entitat,
-					contingutId);
-			bustiaId = contingut.getPare().getId();
-			contenidorHelper.ferIEnregistrarMovimentContenidor(
-					contingut,
-					expedient,
-					null);
-		}
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		Long bustiaId = contingut.getPare().getId();
+		contingutHelper.ferIEnregistrarMoviment(
+				contingut,
+				expedient,
+				null);
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaId,

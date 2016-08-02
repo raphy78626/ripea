@@ -39,7 +39,7 @@ public class BustiaHelper {
 	@Resource
 	private CacheHelper cacheHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contenidorHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
@@ -79,13 +79,10 @@ public class BustiaHelper {
 				bustiaUnitatCodis);
 		if (ambContadorElementsPendents && !busties.isEmpty()) {
 			// Consulta els contadors d'elements pendents per a totes les bústies
-			long[] countContenidors = contenidorHelper.countFillsAmbPermisReadByContenidors(
+			long[] countContenidors = contenidorHelper.countFillsAmbPermisReadByContinguts(
 					entitat,
 					busties,
 					nomesAmbBustiesPermeses);
-			long[] countRegistres = contenidorHelper.countRegistresByContenidors(
-					entitat,
-					busties);
 			// Calcula els acumulats de pendents per a cada unitat
 			Map<String, Long> acumulats = new HashMap<String, Long>();
 			for (int i = 0; i < busties.size(); i++) {
@@ -94,11 +91,11 @@ public class BustiaHelper {
 				if (acumulat == null) {
 					acumulats.put(
 							bustia.getUnitatCodi(),
-							countContenidors[i] + countRegistres[i]);
+							countContenidors[i]);
 				} else {
 					acumulats.put(
 							bustia.getUnitatCodi(),
-							acumulat + countContenidors[i] + countRegistres[i]);
+							acumulat + countContenidors[i]);
 				}
 			}
 			// Calcula el nombre de nivells de l'arbre

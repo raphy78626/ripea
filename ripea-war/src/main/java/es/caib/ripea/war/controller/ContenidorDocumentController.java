@@ -32,14 +32,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.service.AplicacioService;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
@@ -64,7 +64,7 @@ public class ContenidorDocumentController extends BaseUserController {
 	@Autowired
 	private AplicacioService aplicacioService;
 	@Autowired
-	private ContenidorService contenidorService;
+	private ContingutService contenidorService;
 	@Autowired
 	private DocumentService documentService;
 	@Autowired
@@ -206,7 +206,7 @@ public class ContenidorDocumentController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			@PathVariable Long documentId) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContenidorDto contenidor = contenidorService.getContenidorAmbContingut(
+		ContingutDto contenidor = contenidorService.getContingutAmbFills(
 				entitatActual.getId(),
 				documentId);
 		if (contenidor instanceof DocumentDto) {

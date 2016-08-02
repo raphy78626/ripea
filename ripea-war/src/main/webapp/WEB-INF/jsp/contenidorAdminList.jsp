@@ -9,12 +9,12 @@
 pageContext.setAttribute(
 		"contenidorTipusEnumOptions",
 		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.dto.ContenidorTipusEnumDto.class,
-				"contenidor.tipus.enum."));
+				es.caib.ripea.core.api.dto.ContingutTipusEnumDto.class,
+				"contingut.tipus.enum."));
 pageContext.setAttribute(
 		"contenidorAdminOpcionsEsborratEnumOptions",
 		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.war.command.ContenidorFiltreCommand.ContenidorFiltreOpcionsEsborratEnum.class,
+				es.caib.ripea.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum.class,
 				"contenidor.admin.opcions.esborrat.enum."));
 %>
 <html>
@@ -68,7 +68,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="well" commandName="contenidorFiltreCommand">
+	<form:form action="" method="post" cssClass="well" commandName="contingutFiltreCommand">
 		<div class="row">
 			<div class="col-md-7">
 				<rip:inputText name="nom" inline="true" placeholderKey="contenidor.admin.filtre.nom"/>
@@ -118,7 +118,7 @@ $(document).ready(function() {
 						{{if esborrat}}<span class="fa fa-trash-o pull-right" title="<spring:message code="contenidor.admin.columna.esborrat"/>"></span>{{/if}}
 					</script>
 				</th>
-				<th data-rdt-property="metaNode.nom" width="15%"><spring:message code="contenidor.admin.columna.metanode"/></th>
+				<%--th data-rdt-property="metaNode.nom" width="15%"><spring:message code="contenidor.admin.columna.metanode"/></th--%>
 				<th data-rdt-property="createdBy.nom" width="10%"><spring:message code="contenidor.admin.columna.creat.per"/></th>
 				<th data-rdt-property="createdDate" data-rdt-type="datetime" data-rdt-sorting="desc" width="10%"><spring:message code="contenidor.admin.columna.creat.el"/></th>
 				<th data-rdt-property="path" data-rdt-template="cellPathTemplate" data-rdt-sortable="false" width="30%">

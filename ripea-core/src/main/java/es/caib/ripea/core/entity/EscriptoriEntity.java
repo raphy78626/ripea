@@ -13,6 +13,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
+
 /**
  * Classe del model de dades que representa un escriptori.
  * 
@@ -21,7 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "ipa_escriptori")
 @EntityListeners(AuditingEntityListener.class)
-public class EscriptoriEntity extends ContenidorEntity {
+public class EscriptoriEntity extends ContingutEntity {
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name="usuari_id")
@@ -34,15 +36,6 @@ public class EscriptoriEntity extends ContenidorEntity {
 		return usuari;
 	}
 
-	/**
-	 * Obté el Builder per a crear objectes de tipus escriptori.
-	 * 
-	 * @param usuari
-	 *            L'usuari al qual pertany aquest escriptori.
-	 * @param entitat
-	 *            L'entitat a la qual pertany aquest escriptori.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
 			UsuariEntity usuari,
 			EntitatEntity entitat) {
@@ -51,11 +44,6 @@ public class EscriptoriEntity extends ContenidorEntity {
 				entitat);
 	}
 
-	/**
-	 * Builder per a crear noves instàncies d'aquesta classe.
-	 * 
-	 * @author Limit Tecnologies <limit@limit.es>
-	 */
 	public static class Builder {
 		EscriptoriEntity built;
 		Builder(
@@ -65,7 +53,7 @@ public class EscriptoriEntity extends ContenidorEntity {
 			built.usuari = usuari;
 			built.entitat = entitat;
 			built.nom = "[" + entitat.getCodi() + "]" + usuari.getCodi();
-			built.tipusContenidor = ContenidorTipusEnum.ESCRIPTORI;
+			built.tipus = ContingutTipusEnumDto.ESCRIPTORI;
 		}
 		public EscriptoriEntity build() {
 			return built;

@@ -16,16 +16,15 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.CarpetaService;
 import es.caib.ripea.core.entity.CarpetaEntity;
-import es.caib.ripea.core.entity.ContenidorEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.helper.ContenidorHelper;
-import es.caib.ripea.core.helper.ContenidorLogHelper;
+import es.caib.ripea.core.helper.ContingutHelper;
+import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.repository.CarpetaRepository;
-import es.caib.ripea.core.repository.ContenidorRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 
 /**
@@ -39,8 +38,6 @@ public class CarpetaServiceImpl implements CarpetaService {
 	@Resource
 	private EntitatRepository entitatRepository;
 	@Resource
-	private ContenidorRepository contenidorRepository;
-	@Resource
 	private CarpetaRepository carpetaRepository;
 
 	@Resource
@@ -48,11 +45,11 @@ public class CarpetaServiceImpl implements CarpetaService {
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contingutHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
-	private ContenidorLogHelper contenidorLogHelper;
+	private ContingutLogHelper contenidorLogHelper;
 
 
 
@@ -60,12 +57,12 @@ public class CarpetaServiceImpl implements CarpetaService {
 	@Override
 	public CarpetaDto create(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			String nom,
 			CarpetaTipusEnumDto tipus) {
 		logger.debug("Creant nova carpeta ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contenidorId=" + contenidorId + ", "
+				+ "contingutId=" + contingutId + ", "
 				+ "nom=" + nom + ", "
 				+ "tipus=" + tipus + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -73,34 +70,34 @@ public class CarpetaServiceImpl implements CarpetaService {
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contenidorId,
+				contingutId,
 				null);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				contenidor);
+				contingut);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContenidor(
-				contenidor,
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
 				true,
 				false,
 				false,
 				true);
 		// Comprova que el nom sigui vàlid
-		if (!contenidorHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(nom)) {
 			throw new ValidationException(
 					"<creacio>",
 					CarpetaEntity.class,
 					"El nom de la carpeta no és vàlid (no pot començar amb \".\")");
 		}
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-				contenidor,
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+				contingut,
 				true);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
@@ -109,7 +106,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 		CarpetaEntity carpeta = CarpetaEntity.getBuilder(
 				nom,
 				tipus,
-				contenidor,
+				contingut,
 				entitat).build();
 		carpeta = carpetaRepository.save(carpeta);
 		// Registra al log la creació de la carpeta
@@ -144,29 +141,29 @@ public class CarpetaServiceImpl implements CarpetaService {
 				entitat,
 				id);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				carpeta);
 		// Comprova l'accés al path de la carpeta
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contingutHelper.comprovarPermisosPathContingut(
 				carpeta,
 				true,
 				false,
 				false,
 				true);
 		// Comprova que el nom sigui vàlid
-		if (!contenidorHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(nom)) {
 			throw new ValidationException(
 					id,
 					CarpetaEntity.class,
 					"El nom de la carpeta no és vàlid (no pot començar amb \".\")");
 		}
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				carpeta,
 				true);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
@@ -203,22 +200,22 @@ public class CarpetaServiceImpl implements CarpetaService {
 				entitat,
 				id);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				carpeta);
 		// Comprova l'accés al path de la carpeta
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contingutHelper.comprovarPermisosPathContingut(
 				carpeta,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				carpeta,
 				false);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContenidor(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
@@ -254,7 +251,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 				id);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path de la carpeta
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contingutHelper.comprovarPermisosPathContingut(
 				carpeta,
 				true,
 				false,
@@ -267,7 +264,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 
 	private CarpetaDto toCarpetaDto(
 			CarpetaEntity carpeta) {
-		return (CarpetaDto)contenidorHelper.toContenidorDto(
+		return (CarpetaDto)contingutHelper.toContingutDto(
 				carpeta,
 				false,
 				false,

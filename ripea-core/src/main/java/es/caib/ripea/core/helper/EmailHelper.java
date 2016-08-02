@@ -21,8 +21,8 @@ import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
-import es.caib.ripea.core.entity.ContenidorEntity;
-import es.caib.ripea.core.entity.ContenidorMovimentEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
+import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
@@ -48,44 +48,44 @@ public class EmailHelper {
 	@Resource
 	private PluginHelper pluginHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contenidorHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 
 
 
-	public void emailUsuariContenidorAgafatSensePermis(
-			ContenidorEntity contenidor,
+	public void emailUsuariContingutAgafatSensePermis(
+			ContingutEntity contingut,
 			UsuariEntity usuari) {
-		logger.debug("Enviament emails contenidor agafat sense permis (" +
-				"contenidorId=" + contenidor.getId() + ")");
+		logger.debug("Enviament emails contingut agafat sense permis (" +
+				"contingutId=" + contingut.getId() + ")");
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setFrom(getRemitent());
 		String tipus = "desconegut";
-		if (contenidor instanceof ExpedientEntity) {
+		if (contingut instanceof ExpedientEntity) {
 			tipus = "expedient";
-		} else if (contenidor instanceof DocumentEntity) {
+		} else if (contingut instanceof DocumentEntity) {
 			tipus = "document";
-		} else if (contenidor instanceof CarpetaEntity) {
+		} else if (contingut instanceof CarpetaEntity) {
 			tipus = "carpeta";
 		}
-		missatge.setSubject(PREFIX_RIPEA + " Element de l'escriptori agafat per un altre usuari: (" + tipus + ") " + contenidor.getNom());
+		missatge.setSubject(PREFIX_RIPEA + " Element de l'escriptori agafat per un altre usuari: (" + tipus + ") " + contingut.getNom());
 		missatge.setText(
 				"Informació de l'element de l'escriptori:\n" +
-				"\tEntitat: " + contenidor.getEntitat().getNom() + "\n" +
+				"\tEntitat: " + contingut.getEntitat().getNom() + "\n" +
 				"\tTipus: " + tipus + "\n" +
-				"\tNom: " + contenidor.getNom() + "\n\n" + 
+				"\tNom: " + contingut.getNom() + "\n\n" + 
 				"\tPersona que ho ha agafat: " + usuari.getNom() + "(" + usuari.getCodi() + ").");
 		mailSender.send(missatge);
 	}
 
-	public void emailBustiaPendentContenidor(
+	public void emailBustiaPendentContingut(
 			BustiaEntity bustia,
-			ContenidorEntity contenidor,
-			ContenidorMovimentEntity contenidorMoviment) {
+			ContingutEntity contingut,
+			ContingutMovimentEntity contenidorMoviment) {
 		logger.debug("Enviament emails nou contenidor a la bústia (" +
 				"bustiaId=" + bustia.getId() + ")" +
-				"contenidorId=" + contenidor.getId() + ")");
+				"contingutId=" + contingut.getId() + ")");
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		if (emplenarDestinataris(
 				missatge,
@@ -96,11 +96,11 @@ public class EmailHelper {
 					bustia.getUnitatCodi());
 			missatge.setSubject(PREFIX_RIPEA + " Nou element rebut a la bústia: " + bustia.getNom());
 			String tipus = "desconegut";
-			if (contenidor instanceof ExpedientEntity) {
+			if (contingut instanceof ExpedientEntity) {
 				tipus = "expedient";
-			} else if (contenidor instanceof DocumentEntity) {
+			} else if (contingut instanceof DocumentEntity) {
 				tipus = "document";
-			} else if (contenidor instanceof CarpetaEntity) {
+			} else if (contingut instanceof CarpetaEntity) {
 				tipus = "carpeta";
 			}
 			missatge.setText(
@@ -110,7 +110,7 @@ public class EmailHelper {
 					"\tBústia: " + bustia.getNom() + "\n\n" +
 					"Dades de l'element: \n" +
 					"\tTipus: " + tipus + "\n" +
-					"\tNom: " + contenidor.getNom() + "\n" +
+					"\tNom: " + contingut.getNom() + "\n" +
 					"\tRemitent: " + contenidorMoviment.getRemitent().getNom() + "\n" +
 					"\tComentari: " + contenidorMoviment.getComentari() + "\n");
 			mailSender.send(missatge);

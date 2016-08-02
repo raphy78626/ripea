@@ -7,17 +7,17 @@ import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.ripea.core.api.dto.ContenidorFiltreDto;
-import es.caib.ripea.core.api.dto.ContenidorTipusEnumDto;
+import es.caib.ripea.core.api.dto.ContingutFiltreDto;
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 
 /**
- * Command per al filtre de la consulta de contenidors
+ * Command per al filtre del localitzador de continguts
  * dels usuaris administradors.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ContenidorFiltreCommand {
+public class ContingutFiltreCommand {
 
 	public enum ContenidorFiltreOpcionsEsborratEnum {
 		NOMES_NO_ESBORRATS,
@@ -26,7 +26,7 @@ public class ContenidorFiltreCommand {
 	};
 
 	private String nom;
-	private ContenidorTipusEnumDto tipus;
+	private ContingutTipusEnumDto tipus;
 	private Long metaNodeId;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
@@ -41,10 +41,10 @@ public class ContenidorFiltreCommand {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	public ContenidorTipusEnumDto getTipus() {
+	public ContingutTipusEnumDto getTipus() {
 		return tipus;
 	}
-	public void setTipus(ContenidorTipusEnumDto tipus) {
+	public void setTipus(ContingutTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
 	public Long getMetaNodeId() {
@@ -79,16 +79,16 @@ public class ContenidorFiltreCommand {
 		this.opcionsEsborrat = opcionsEsborrat;
 	}
 
-	public static ContenidorFiltreCommand asCommand(ContenidorFiltreDto dto) {
-		ContenidorFiltreCommand command = ConversioTipusHelper.convertir(
+	public static ContingutFiltreCommand asCommand(ContingutFiltreDto dto) {
+		ContingutFiltreCommand command = ConversioTipusHelper.convertir(
 				dto,
-				ContenidorFiltreCommand.class);
+				ContingutFiltreCommand.class);
 		return command;
 	}
-	public static ContenidorFiltreDto asDto(ContenidorFiltreCommand command) {
-		ContenidorFiltreDto dto = ConversioTipusHelper.convertir(
+	public static ContingutFiltreDto asDto(ContingutFiltreCommand command) {
+		ContingutFiltreDto dto = ConversioTipusHelper.convertir(
 				command,
-				ContenidorFiltreDto.class);
+				ContingutFiltreDto.class);
 		dto.setMostrarEsborrats(
 				ContenidorFiltreOpcionsEsborratEnum.ESBORRATS_I_NO_ESBORRATS.equals(command.getOpcionsEsborrat()) ||
 				ContenidorFiltreOpcionsEsborratEnum.NOMES_ESBORRATS.equals(command.getOpcionsEsborrat()));

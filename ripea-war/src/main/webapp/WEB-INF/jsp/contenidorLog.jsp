@@ -74,22 +74,22 @@
 								<td>${moviment.remitent.nom}</td>
 								<td>
 									<c:choose>
-										<c:when test="${moviment.origen.expedient}"><spring:message code="contenidor.tipus.enum.EXPEDIENT"/></c:when>
-										<c:when test="${moviment.origen.carpeta}"><spring:message code="contenidor.tipus.enum.CARPETA"/></c:when>
-										<c:when test="${moviment.origen.document}"><spring:message code="contenidor.tipus.enum.DOCUMENT"/></c:when>
-										<c:when test="${moviment.origen.escriptori}"><spring:message code="contenidor.tipus.enum.ESCRIPTORI"/></c:when>
-										<c:when test="${moviment.origen.arxiv}"><spring:message code="contenidor.tipus.enum.ARXIU"/></c:when>
-										<c:when test="${moviment.origen.bustia}"><spring:message code="contenidor.tipus.enum.BUSTIA"/></c:when>
+										<c:when test="${moviment.origen.expedient}"><spring:message code="contingut.tipus.enum.EXPEDIENT"/></c:when>
+										<c:when test="${moviment.origen.carpeta}"><spring:message code="contingut.tipus.enum.CARPETA"/></c:when>
+										<c:when test="${moviment.origen.document}"><spring:message code="contingut.tipus.enum.DOCUMENT"/></c:when>
+										<c:when test="${moviment.origen.escriptori}"><spring:message code="contingut.tipus.enum.ESCRIPTORI"/></c:when>
+										<c:when test="${moviment.origen.arxiv}"><spring:message code="contingut.tipus.enum.ARXIU"/></c:when>
+										<c:when test="${moviment.origen.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
 									</c:choose>#${moviment.origen.id}
 								</td>
 								<td>
 									<c:choose>
-										<c:when test="${moviment.desti.expedient}"><spring:message code="contenidor.tipus.enum.EXPEDIENT"/></c:when>
-										<c:when test="${moviment.desti.carpeta}"><spring:message code="contenidor.tipus.enum.CARPETA"/></c:when>
-										<c:when test="${moviment.desti.document}"><spring:message code="contenidor.tipus.enum.DOCUMENT"/></c:when>
-										<c:when test="${moviment.desti.escriptori}"><spring:message code="contenidor.tipus.enum.ESCRIPTORI"/></c:when>
-										<c:when test="${moviment.desti.arxiv}"><spring:message code="contenidor.tipus.enum.ARXIU"/></c:when>
-										<c:when test="${moviment.desti.bustia}"><spring:message code="contenidor.tipus.enum.BUSTIA"/></c:when>
+										<c:when test="${moviment.desti.expedient}"><spring:message code="contingut.tipus.enum.EXPEDIENT"/></c:when>
+										<c:when test="${moviment.desti.carpeta}"><spring:message code="contingut.tipus.enum.CARPETA"/></c:when>
+										<c:when test="${moviment.desti.document}"><spring:message code="contingut.tipus.enum.DOCUMENT"/></c:when>
+										<c:when test="${moviment.desti.escriptori}"><spring:message code="contingut.tipus.enum.ESCRIPTORI"/></c:when>
+										<c:when test="${moviment.desti.arxiv}"><spring:message code="contingut.tipus.enum.ARXIU"/></c:when>
+										<c:when test="${moviment.desti.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
 									</c:choose>#${moviment.desti.id}
 								</td>
 							</tr>

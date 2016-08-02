@@ -25,13 +25,11 @@ import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatCiutadaEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
-import es.caib.ripea.core.helper.ContenidorHelper;
-import es.caib.ripea.core.helper.ContenidorLogHelper;
+import es.caib.ripea.core.helper.ContingutHelper;
+import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
-import es.caib.ripea.core.repository.ContenidorLogRepository;
-import es.caib.ripea.core.repository.ContenidorRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.InteressatRepository;
@@ -47,20 +45,16 @@ public class InteressatServiceImpl implements InteressatService {
 	@Resource
 	private EntitatRepository entitatRepository;
 	@Resource
-	private ContenidorRepository contenidorRepository;
-	@Resource
 	private ExpedientRepository expedientRepository;
 	@Resource
 	private InteressatRepository interessatRepository;
-	@Resource
-	private ContenidorLogRepository contenidorLogRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contenidorHelper;
 	@Resource
-	private ContenidorLogHelper contenidorLogHelper;
+	private ContingutLogHelper contenidorLogHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
@@ -88,18 +82,18 @@ public class InteressatServiceImpl implements InteressatService {
 				null,
 				expedientId);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient
-		contenidorHelper.comprovarPermisosContenidor(
+		contenidorHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
@@ -165,18 +159,18 @@ public class InteressatServiceImpl implements InteressatService {
 				null,
 				expedientId);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient
-		contenidorHelper.comprovarPermisosContenidor(
+		contenidorHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
@@ -219,18 +213,18 @@ public class InteressatServiceImpl implements InteressatService {
 				null,
 				expedientId);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContenidorArrelEsEscriptoriUsuariActual(
+		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContenidor(
+		contenidorHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient
-		contenidorHelper.comprovarPermisosContenidor(
+		contenidorHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,

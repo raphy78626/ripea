@@ -13,16 +13,16 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.api.dto.ContenidorDto;
-import es.caib.ripea.core.api.dto.ContenidorFiltreDto;
-import es.caib.ripea.core.api.dto.ContenidorLogDto;
-import es.caib.ripea.core.api.dto.ContenidorMovimentDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
+import es.caib.ripea.core.api.dto.ContingutFiltreDto;
+import es.caib.ripea.core.api.dto.ContingutLogDto;
+import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 
 /**
  * Implementació de ContenidorService com a EJB que empra una clase
@@ -32,22 +32,22 @@ import es.caib.ripea.core.api.service.ContenidorService;
  */
 @Stateless
 @Interceptors(SpringBeanAutowiringInterceptor.class)
-public class ContenidorServiceBean implements ContenidorService {
+public class ContingutServiceBean implements ContingutService {
 
 	@Autowired
-	ContenidorService delegate;
+	ContingutService delegate;
 
 
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto rename(
+	public ContingutDto rename(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			String nom) {
 		return delegate.rename(
 				entitatId,
-				contenidorId,
+				contingutId,
 				nom);
 	}
 
@@ -55,12 +55,12 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public DadaDto dadaCreate(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long metaDadaId,
 			Object valor) {
 		return delegate.dadaCreate(
 				entitatId,
-				contenidorId,
+				contingutId,
 				metaDadaId,
 				valor);
 	}
@@ -69,71 +69,71 @@ public class ContenidorServiceBean implements ContenidorService {
 	@RolesAllowed("tothom")
 	public DadaDto dadaUpdate(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId,
 			Object valor) {
-		return delegate.dadaUpdate(entitatId, contenidorId, dadaId, valor);
+		return delegate.dadaUpdate(entitatId, contingutId, dadaId, valor);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public DadaDto dadaDelete(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId) {
-		return delegate.dadaDelete(entitatId, contenidorId, dadaId);
+		return delegate.dadaDelete(entitatId, contingutId, dadaId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public DadaDto dadaFindById(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId) {
-		return delegate.dadaFindById(entitatId, contenidorId, dadaId);
+		return delegate.dadaFindById(entitatId, contingutId, dadaId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto deleteReversible(
+	public ContingutDto deleteReversible(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.deleteReversible(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.deleteReversible(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public ContenidorDto deleteDefinitiu(
+	public ContingutDto deleteDefinitiu(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.deleteDefinitiu(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.deleteDefinitiu(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public ContenidorDto undelete(
+	public ContingutDto undelete(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.undelete(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.undelete(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto move(
+	public ContingutDto move(
 			Long entitatId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId) {
-		return delegate.move(entitatId, contenidorOrigenId, contenidorDestiId);
+			Long contingutOrigenId,
+			Long contingutDestiId) {
+		return delegate.move(entitatId, contingutOrigenId, contingutDestiId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto copy(
+	public ContingutDto copy(
 			Long entitatId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId,
+			Long contingutOrigenId,
+			Long contingutDestiId,
 			boolean recursiu) {
-		return delegate.copy(entitatId, contenidorOrigenId, contenidorDestiId, recursiu);
+		return delegate.copy(entitatId, contingutOrigenId, contingutDestiId, recursiu);
 	}
 
 	@Override
@@ -145,73 +145,73 @@ public class ContenidorServiceBean implements ContenidorService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto getContenidorSenseContingut(
+	public ContingutDto getContingutSenseFills(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.getContenidorSenseContingut(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.getContingutSenseFills(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto getContenidorAmbContingut(
+	public ContingutDto getContingutAmbFills(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.getContenidorAmbContingut(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.getContingutAmbFills(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContenidorDto getContenidorAmbContingutPerPath(
+	public ContingutDto getContingutAmbFillsPerPath(
 			Long entitatId,
 			String path) {
-		return delegate.getContenidorAmbContingutPerPath(entitatId, path);
+		return delegate.getContingutAmbFillsPerPath(entitatId, path);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public List<ValidacioErrorDto> findErrorsValidacio(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.findErrorsValidacio(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.findErrorsValidacio(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public List<ContenidorLogDto> findLogsPerContenidorAdmin(
+	public List<ContingutLogDto> findLogsPerContingutAdmin(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.findLogsPerContenidorAdmin(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.findLogsPerContingutAdmin(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<ContenidorLogDto> findLogsPerContenidorUser(
+	public List<ContingutLogDto> findLogsPerContingutUser(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.findLogsPerContenidorUser(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.findLogsPerContingutUser(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public List<ContenidorMovimentDto> findMovimentsPerContenidorAdmin(
+	public List<ContingutMovimentDto> findMovimentsPerContingutAdmin(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.findMovimentsPerContenidorAdmin(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.findMovimentsPerContingutAdmin(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<ContenidorMovimentDto> findMovimentsPerContenidorUser(
+	public List<ContingutMovimentDto> findMovimentsPerContingutUser(
 			Long entitatId,
-			Long contenidorId) {
-		return delegate.findMovimentsPerContenidorUser(entitatId, contenidorId);
+			Long contingutId) {
+		return delegate.findMovimentsPerContingutUser(entitatId, contingutId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public PaginaDto<ContenidorDto> findAdmin(
+	public PaginaDto<ContingutDto> findAdmin(
 			Long entitatId,
-			ContenidorFiltreDto filtre,
+			ContingutFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
 		return delegate.findAdmin(
 				entitatId,
@@ -221,7 +221,7 @@ public class ContenidorServiceBean implements ContenidorService {
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public PaginaDto<ContenidorDto> findEsborrats(
+	public PaginaDto<ContingutDto> findEsborrats(
 			Long entitatId,
 			String nom,
 			String usuariCodi,

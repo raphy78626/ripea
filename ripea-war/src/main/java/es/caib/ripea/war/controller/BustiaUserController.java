@@ -26,7 +26,7 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
@@ -50,7 +50,7 @@ public class BustiaUserController extends BaseUserController {
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
-	private ContenidorService contenidorService;
+	private ContingutService contenidorService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -101,7 +101,7 @@ public class BustiaUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"bustia",
-				contenidorService.getContenidorSenseContingut(entitatActual.getId(), bustiaId));
+				contenidorService.getContingutSenseFills(entitatActual.getId(), bustiaId));
 		return "bustiaPendentList";
 	}
 

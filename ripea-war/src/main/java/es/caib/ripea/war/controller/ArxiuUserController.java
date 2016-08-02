@@ -27,7 +27,7 @@ import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.service.ArxiuService;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
@@ -49,7 +49,7 @@ public class ArxiuUserController extends BaseUserController {
 	@Autowired
 	private ArxiuService arxiuService;
 	@Autowired
-	private ContenidorService contenidorService;
+	private ContingutService contenidorService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -105,7 +105,7 @@ public class ArxiuUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"arxiu",
-				contenidorService.getContenidorSenseContingut(
+				contenidorService.getContingutSenseFills(
 						entitatActual.getId(),
 						arxiuId));
 		model.addAttribute(

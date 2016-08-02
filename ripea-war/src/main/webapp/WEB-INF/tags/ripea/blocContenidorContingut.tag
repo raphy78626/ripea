@@ -7,7 +7,7 @@
 <%@ attribute name="mostrarExpedients" required="true" rtexprvalue="true" type="java.lang.Boolean"%>
 <%@ attribute name="mostrarNoExpedients" required="true" rtexprvalue="true" type="java.lang.Boolean"%>
 <c:choose>
-	<c:when test="${mostrarExpedients and mostrarNoExpedients}"><c:set var="fills" value="${contenidor.fills}"/></c:when>
+	<c:when test="${mostrarExpedients and mostrarNoExpedients}"><c:set var="fills" value="${contenidor.fillsNoRegistres}"/></c:when>
 	<c:when test="${mostrarExpedients and not mostrarNoExpedients}"><c:set var="fills" value="${contenidor.fillsExpedients}"/></c:when>
 	<c:when test="${not mostrarExpedients and mostrarNoExpedients}"><c:set var="fills" value="${contenidor.fillsNoExpedients}"/></c:when>
 </c:choose>
@@ -71,7 +71,7 @@
 							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.data"/></dt>' +
 									'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
 									'<dt><spring:message code="contenidor.contingut.info.versio"/></dt>' +
-									'<dd>${fill.darreraVersio}</dd>';
+									'<dd>${fill.darreraVersio.versio}</dd>';
 							</c:if>
 							tooltipTitle += '</dl>';
 							$('#info-fill-${fill.id}').tooltip({
@@ -168,7 +168,7 @@
 						tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.data"/></dt>' +
 								'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
 								'<dt><spring:message code="contenidor.contingut.info.versio"/></dt>' +
-								'<dd>${fill.darreraVersio}</dd>';
+								'<dd>${fill.darreraVersio.versio}</dd>';
 						</c:if>
 						tooltipTitle += '</dl>';
 						$('#info-fill-${fill.id} > td:not(:last-child)').tooltip({

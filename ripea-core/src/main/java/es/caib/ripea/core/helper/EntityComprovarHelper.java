@@ -19,7 +19,7 @@ import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
-import es.caib.ripea.core.entity.ContenidorEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -37,7 +37,7 @@ import es.caib.ripea.core.entity.ReglaEntity;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
-import es.caib.ripea.core.repository.ContenidorRepository;
+import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
@@ -77,7 +77,7 @@ public class EntityComprovarHelper {
 	@Resource
 	private NodeRepository nodeRepository;
 	@Resource
-	private ContenidorRepository contenidorRepository;
+	private ContingutRepository contingutRepository;
 	@Resource
 	private CarpetaRepository carpetaRepository;
 	@Resource
@@ -302,33 +302,33 @@ public class EntityComprovarHelper {
 		return metaNodeMetaDada;
 	}
 
-	public ContenidorEntity comprovarContenidor(
+	public ContingutEntity comprovarContingut(
 			EntitatEntity entitat,
 			Long id,
 			BustiaEntity bustiaPare) {
-		ContenidorEntity contenidor = contenidorRepository.findOne(id);
-		if (contenidor == null) {
+		ContingutEntity contingut = contingutRepository.findOne(id);
+		if (contingut == null) {
 			throw new NotFoundException(
 					id,
-					ContenidorEntity.class);
+					ContingutEntity.class);
 		}
-		if (!contenidor.getEntitat().equals(entitat)) {
+		if (!contingut.getEntitat().equals(entitat)) {
 			throw new ValidationException(
 					id,
-					ContenidorEntity.class,
-					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat del contenidor");
+					ContingutEntity.class,
+					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat del contingut");
 		}
 		if (bustiaPare != null) {
-			if (contenidor.getPare() != null) {
-				if (!contenidor.getPare().getId().equals(bustiaPare.getId())) {
+			if (contingut.getPare() != null) {
+				if (!contingut.getPare().getId().equals(bustiaPare.getId())) {
 					throw new ValidationException(
 							id,
-							ContenidorEntity.class,
-							"La bústia especificada (id=" + bustiaPare.getId() + ") no coincideix amb la bústia del contenidor");
+							ContingutEntity.class,
+							"La bústia especificada (id=" + bustiaPare.getId() + ") no coincideix amb la bústia del contingut");
 				}
 			}
 		}
-		return contenidor;
+		return contingut;
 	}
 
 	public NodeEntity comprovarNode(
@@ -528,8 +528,8 @@ public class EntityComprovarHelper {
 					RegistreEntity.class);
 		}
 		if (bustiaPare != null) {
-			if (registre.getContenidor() != null) {
-				if (!registre.getContenidor().getId().equals(bustiaPare.getId())) {
+			if (registre.getPare() != null) {
+				if (!registre.getPare().getId().equals(bustiaPare.getId())) {
 					throw new ValidationException(
 							id,
 							RegistreEntity.class,

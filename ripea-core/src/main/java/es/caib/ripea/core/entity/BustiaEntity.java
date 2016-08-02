@@ -12,6 +12,8 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
+
 /**
  * Classe del model de dades que representa un arxiu.
  * 
@@ -21,7 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "ipa_bustia")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners(AuditingEntityListener.class)
-public class BustiaEntity extends ContenidorEntity {
+public class BustiaEntity extends ContingutEntity {
 
 	@Column(name = "unitat_codi", length = 9, nullable = false)
 	protected String unitatCodi;
@@ -49,21 +51,6 @@ public class BustiaEntity extends ContenidorEntity {
 		this.activa = activa;
 	}
 
-	/**
-	 * Obté el Builder per a crear objectes de tipus bústia.
-	 * 
-	 * @param entitat
-	 *            El valor de l'atribut entitat.
-	 * @param nom
-	 *            El valor de l'atribut nom.
-	 * @param unitatCodi
-	 *            El codi de l'unitat a la qual pertany l'arxiu.
-	 * @param pare
-	 *            La bústia pare.
-	 * @param entitat
-	 *            L'entitat a la qual pertany aquesta bústia.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
 			EntitatEntity entitat,
 			String nom,
@@ -75,12 +62,6 @@ public class BustiaEntity extends ContenidorEntity {
 				unitatCodi,
 				pare);
 	}
-
-	/**
-	 * Builder per a crear noves instàncies d'aquesta classe.
-	 * 
-	 * @author Limit Tecnologies <limit@limit.es>
-	 */
 	public static class Builder {
 		BustiaEntity built;
 		Builder(
@@ -94,7 +75,7 @@ public class BustiaEntity extends ContenidorEntity {
 			built.unitatCodi = unitatCodi;
 			built.pare = pare;
 			built.activa = true;
-			built.tipusContenidor = ContenidorTipusEnum.BUSTIA;
+			built.tipus = ContingutTipusEnumDto.BUSTIA;
 		}
 		public BustiaEntity build() {
 			return built;

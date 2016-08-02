@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 
 /**
  * Classe del model de dades que representa una carpeta.
@@ -22,44 +23,29 @@ import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 @Entity
 @Table(name = "ipa_carpeta")
 @EntityListeners(AuditingEntityListener.class)
-public class CarpetaEntity extends ContenidorEntity {
+public class CarpetaEntity extends ContingutEntity {
 
 	@Column(name = "tipus", nullable = false)
 	@Enumerated(EnumType.STRING)
-	protected CarpetaTipusEnumDto tipus;
+	private CarpetaTipusEnumDto carpetaTipus;
 
 
 
-	public CarpetaTipusEnumDto getTipus() {
-		return tipus;
+	public CarpetaTipusEnumDto getCarpetaTipus() {
+		return carpetaTipus;
 	}
 
 	public void update(
 			String nom,
-			CarpetaTipusEnumDto tipus) {
+			CarpetaTipusEnumDto carpetaTipus) {
 		this.nom = nom;
-		this.tipus = tipus;
+		this.carpetaTipus = carpetaTipus;
 	}
 
-	/**
-	 * Obté el Builder per a crear objectes de tipus carpeta.
-	 * 
-	 * @param nom
-	 *            El valor de l'atribut nom.
-	 * @param nom
-	 *            El valor de l'atribut tipus.
-	 * @param metaNode
-	 *            El meta-node al qual pertany aquesta carpeta.
-	 * @param pare
-	 *            El contenidor al qual pertany aquesta carpeta.
-	 * @param entitat
-	 *            L'entitat a la qual pertany aquesta carpeta.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
 			String nom,
 			CarpetaTipusEnumDto tipus,
-			ContenidorEntity pare,
+			ContingutEntity pare,
 			EntitatEntity entitat) {
 		return new Builder(
 				nom,
@@ -67,25 +53,19 @@ public class CarpetaEntity extends ContenidorEntity {
 				pare,
 				entitat);
 	}
-
-	/**
-	 * Builder per a crear noves instàncies d'aquesta classe.
-	 * 
-	 * @author Limit Tecnologies <limit@limit.es>
-	 */
 	public static class Builder {
 		CarpetaEntity built;
 		Builder(
 				String nom,
-				CarpetaTipusEnumDto tipus,
-				ContenidorEntity pare,
+				CarpetaTipusEnumDto carpetaTipus,
+				ContingutEntity pare,
 				EntitatEntity entitat) {
 			built = new CarpetaEntity();
 			built.nom = nom;
-			built.tipus = tipus;
+			built.carpetaTipus = carpetaTipus;
 			built.pare = pare;
 			built.entitat = entitat;
-			built.tipusContenidor = ContenidorTipusEnum.CONTINGUT;
+			built.tipus = ContingutTipusEnumDto.CARPETA;
 		}
 		public CarpetaEntity build() {
 			return built;

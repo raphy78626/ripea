@@ -19,6 +19,8 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
+
 /**
  * Classe del model de dades que representa un arxiu.
  * 
@@ -28,7 +30,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "ipa_arxiu")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners(AuditingEntityListener.class)
-public class ArxiuEntity extends ContenidorEntity {
+public class ArxiuEntity extends ContingutEntity {
 
 	@Column(name = "unitat_codi", length = 9, nullable = false)
 	protected String unitatCodi;
@@ -108,7 +110,7 @@ public class ArxiuEntity extends ContenidorEntity {
 			built.unitatCodi = unitatCodi;
 			built.pare = pare;
 			built.actiu = true;
-			built.tipusContenidor = ContenidorTipusEnum.ARXIU;
+			built.tipus = ContingutTipusEnumDto.ARXIU;
 		}
 		public ArxiuEntity build() {
 			return built;

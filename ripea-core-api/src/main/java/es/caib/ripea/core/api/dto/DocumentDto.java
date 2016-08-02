@@ -32,7 +32,7 @@ public class DocumentDto extends NodeDto {
 		return (MetaDocumentDto)getMetaNode();
 	}
 
-	protected DocumentDto copiarContenidor(ContenidorDto original) {
+	protected DocumentDto copiarContenidor(ContingutDto original) {
 		DocumentDto copia = new DocumentDto();
 		copia.setId(original.getId());
 		copia.setNom(original.getNom());

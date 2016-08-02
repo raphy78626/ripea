@@ -11,17 +11,16 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Informació d'un contenidor.
+ * Informació d'un contingut.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public abstract class ContenidorDto extends AuditoriaDto {
+public abstract class ContingutDto extends AuditoriaDto {
 
 	protected Long id;
 	protected String nom;
-	protected List<ContenidorDto> fills;
-	protected List<ContenidorDto> path;
-	protected List<RegistreAnotacioDto> registres;
+	protected List<ContingutDto> fills;
+	protected List<ContingutDto> path;
 	protected EntitatDto entitat;
 	protected int esborrat;
 	protected Date darrerMovimentData;
@@ -44,23 +43,17 @@ public abstract class ContenidorDto extends AuditoriaDto {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	public List<ContenidorDto> getFills() {
+	public List<ContingutDto> getFills() {
 		return fills;
 	}
-	public void setFills(List<ContenidorDto> fills) {
+	public void setFills(List<ContingutDto> fills) {
 		this.fills = fills;
 	}
-	public List<ContenidorDto> getPath() {
+	public List<ContingutDto> getPath() {
 		return path;
 	}
-	public void setPath(List<ContenidorDto> path) {
+	public void setPath(List<ContingutDto> path) {
 		this.path = path;
-	}
-	public List<RegistreAnotacioDto> getRegistres() {
-		return registres;
-	}
-	public void setRegistres(List<RegistreAnotacioDto> registres) {
-		this.registres = registres;
 	}
 	public EntitatDto getEntitat() {
 		return entitat;
@@ -98,13 +91,13 @@ public abstract class ContenidorDto extends AuditoriaDto {
 	public void setPerConvertirJson(boolean perConvertirJson) {
 		this.perConvertirJson = perConvertirJson;
 		if (fills != null) {
-			for (ContenidorDto fill: fills) {
+			for (ContingutDto fill: fills) {
 				fill.setPerConvertirJson(perConvertirJson);
 			}
 		}
 	}
 
-	public ContenidorDto getPare() {
+	public ContingutDto getPare() {
 		if (getPath() != null && !getPath().isEmpty())
 			return getPath().get(getPath().size() - 1);
 		else
@@ -115,7 +108,7 @@ public abstract class ContenidorDto extends AuditoriaDto {
 		if (getPath() == null)
 			return null;
 		StringBuilder pathString = new StringBuilder();
-		for (ContenidorDto pathElement: getPath()) {
+		for (ContingutDto pathElement: getPath()) {
 			pathString.append("/");
 			if (pathElement instanceof EscriptoriDto) {
 				if (entitat != null)
@@ -142,7 +135,7 @@ public abstract class ContenidorDto extends AuditoriaDto {
 				return (ExpedientDto)this;
 		}
 		for (int i = getPath().size() - 1; i >= 0; i--) {
-			ContenidorDto contenidor = getPath().get(i);
+			ContingutDto contenidor = getPath().get(i);
 			if (contenidor instanceof ExpedientDto) {
 				return (ExpedientDto)contenidor;
 			}
@@ -160,7 +153,7 @@ public abstract class ContenidorDto extends AuditoriaDto {
 				return (EscriptoriDto)this;
 		}
 		for (int i = getPath().size() - 1; i >= 0; i--) {
-			ContenidorDto contenidor = getPath().get(i);
+			ContingutDto contenidor = getPath().get(i);
 			if (contenidor instanceof EscriptoriDto) {
 				return (EscriptoriDto)contenidor;
 			}
@@ -184,27 +177,48 @@ public abstract class ContenidorDto extends AuditoriaDto {
 		}
 	}
 
-	public List<ContenidorDto> getFillsExpedients() {
-		List<ContenidorDto> expedients = new ArrayList<ContenidorDto>();
+	public List<ExpedientDto> getFillsExpedients() {
+		List<ExpedientDto> expedients = new ArrayList<ExpedientDto>();
 		if (fills != null) {
-			for (ContenidorDto contenidor: fills) {
+			for (ContingutDto contenidor: fills) {
 				if (contenidor instanceof ExpedientDto)
-					expedients.add(contenidor);
+					expedients.add((ExpedientDto)contenidor);
 			}
 		}
 		return expedients;
 	}
-	public List<ContenidorDto> getFillsNoExpedients() {
-		List<ContenidorDto> noExpedients = new ArrayList<ContenidorDto>();
+	public List<ContingutDto> getFillsNoExpedients() {
+		List<ContingutDto> noExpedients = new ArrayList<ContingutDto>();
 		if (fills != null) {
-			for (ContenidorDto contenidor: fills) {
+			for (ContingutDto contenidor: fills) {
 				if (!(contenidor instanceof ExpedientDto))
 					noExpedients.add(contenidor);
 			}
 		}
 		return noExpedients;
 	}
-	
+
+	public List<RegistreAnotacioDto> getFillsRegistres() {
+		List<RegistreAnotacioDto> registres = new ArrayList<RegistreAnotacioDto>();
+		if (fills != null) {
+			for (ContingutDto contenidor: fills) {
+				if (contenidor instanceof RegistreAnotacioDto)
+					registres.add((RegistreAnotacioDto)contenidor);
+			}
+		}
+		return registres;
+	}
+	public List<ContingutDto> getFillsNoRegistres() {
+		List<ContingutDto> noRegistres = new ArrayList<ContingutDto>();
+		if (fills != null) {
+			for (ContingutDto contenidor: fills) {
+				if (!(contenidor instanceof RegistreAnotacioDto))
+					noRegistres.add(contenidor);
+			}
+		}
+		return noRegistres;
+	}
+
 	public int getFillsCount() {
 		return (fills == null) ? 0 : fills.size();
 	}
@@ -213,7 +227,7 @@ public abstract class ContenidorDto extends AuditoriaDto {
 			return 0;
 		} else {
 			int count = 0;
-			for (ContenidorDto contenidor: fills) {
+			for (ContingutDto contenidor: fills) {
 				if (contenidor instanceof ExpedientDto)
 					count++;
 			}
@@ -225,25 +239,45 @@ public abstract class ContenidorDto extends AuditoriaDto {
 			return 0;
 		} else {
 			int count = 0;
-			for (ContenidorDto contenidor: fills) {
+			for (ContingutDto contenidor: fills) {
 				if (!(contenidor instanceof ExpedientDto))
 					count++;
 			}
 			return count;
 		}
 	}
-
-	public int getRegistresCount() {
-		return (registres == null) ? 0 : registres.size();
+	public int getFillsRegistresCount() {
+		if  (fills == null) {
+			return 0;
+		} else {
+			int count = 0;
+			for (ContingutDto contenidor: fills) {
+				if (contenidor instanceof RegistreAnotacioDto)
+					count++;
+			}
+			return count;
+		}
+	}
+	public int getFillsNoRegistresCount() {
+		if  (fills == null) {
+			return 0;
+		} else {
+			int count = 0;
+			for (ContingutDto contenidor: fills) {
+				if (!(contenidor instanceof RegistreAnotacioDto))
+					count++;
+			}
+			return count;
+		}
 	}
 
 	public void setContenidorArrelIdPerPath(Long contenidorArrelId) {
 		if (path != null) {
 			if (!id.equals(contenidorArrelId)) {
-				Iterator<ContenidorDto> it = path.iterator();
+				Iterator<ContingutDto> it = path.iterator();
 				boolean trobat = false;
 				while (it.hasNext()) {
-					ContenidorDto pathElement = it.next();
+					ContingutDto pathElement = it.next();
 					if (pathElement.getId().equals(contenidorArrelId))
 						trobat = true;
 					if (!trobat) {
@@ -281,13 +315,16 @@ public abstract class ContenidorDto extends AuditoriaDto {
 	public boolean isBustia() {
 		return this instanceof BustiaDto;
 	}
+	public boolean isRegistre() {
+		return this instanceof RegistreAnotacioDto;
+	}
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
 
-	protected abstract ContenidorDto copiarContenidor(ContenidorDto original);
+	protected abstract ContingutDto copiarContenidor(ContingutDto original);
 
 	private static final long serialVersionUID = -139254994389509932L;
 

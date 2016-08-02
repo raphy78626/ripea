@@ -3,19 +3,6 @@
  */
 package es.caib.ripea.war.webdav;
 
-import io.milton.http.Auth;
-import io.milton.http.Range;
-import io.milton.http.Request;
-import io.milton.http.Request.Method;
-import io.milton.http.XmlWriter;
-import io.milton.http.exceptions.BadRequestException;
-import io.milton.http.exceptions.ConflictException;
-import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.exceptions.NotFoundException;
-import io.milton.resource.CollectionResource;
-import io.milton.resource.FolderResource;
-import io.milton.resource.Resource;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,13 +21,25 @@ import org.springframework.web.util.UriUtils;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.service.CarpetaService;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
+import io.milton.http.Auth;
+import io.milton.http.Range;
+import io.milton.http.Request;
+import io.milton.http.Request.Method;
+import io.milton.http.XmlWriter;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
+import io.milton.resource.CollectionResource;
+import io.milton.resource.FolderResource;
+import io.milton.resource.Resource;
 
 /**
  * Resource que representa una carpeta.
@@ -50,7 +49,7 @@ import es.caib.ripea.core.api.service.DocumentService;
 public class RipeaFolderResource implements FolderResource {
 
 	private EntitatDto entitat;
-	private ContenidorDto contenidor;
+	private ContingutDto contingut;
 	private ServiceHolder serviceHolder;
 	private boolean contenidorEntitat;
 	private boolean contenidorEscriptori;
@@ -61,23 +60,23 @@ public class RipeaFolderResource implements FolderResource {
 
 	public RipeaFolderResource(
 			EntitatDto entitat,
-			ContenidorDto contenidor,
+			ContingutDto contingut,
 			ServiceHolder serviceHolder) {
 		this.entitat = entitat;
-		this.contenidor = contenidor;
+		this.contingut = contingut;
 		this.serviceHolder = serviceHolder;
 	}
 
 	@Override
 	public String getUniqueId() {
 		//logger.debug("[C] getUniqueId " + getIdentificadorPerLog() + ": " + contenidor.getId().toString());
-		return contenidor.getId().toString();
+		return contingut.getId().toString();
 	}
 
 	@Override
 	public String getName() {
 		//logger.debug("[C] getName " + getIdentificadorPerLog() + ": " + contenidor.getNom());
-		return contenidor.getNom();
+		return contingut.getNom();
 	}
 
 	@Override
@@ -101,7 +100,7 @@ public class RipeaFolderResource implements FolderResource {
 	@Override
 	public Date getModifiedDate() {
 		//logger.debug("[C] getModifiedDate " + getIdentificadorPerLog() + ": " + contenidor.getLastModifiedDate());
-		return contenidor.getLastModifiedDate();
+		return contingut.getLastModifiedDate();
 	}
 
 	@Override
@@ -114,7 +113,7 @@ public class RipeaFolderResource implements FolderResource {
 	@Override
 	public Date getCreateDate() {
 		//logger.debug("[C] getCreateDate " + getIdentificadorPerLog() + ": " + contenidor.getCreatedDate());
-		return contenidor.getCreatedDate();
+		return contingut.getCreatedDate();
 	}
 
 	@Override
@@ -154,20 +153,20 @@ public class RipeaFolderResource implements FolderResource {
 	@Override
 	public Resource child(String childName) throws NotAuthorizedException, BadRequestException {
 		logger.debug("[C] child " + getIdentificadorPerLog() + "");
-		if (contenidor instanceof DocumentDto) {
-			DocumentDto document = (DocumentDto)contenidor;
+		if (contingut instanceof DocumentDto) {
+			DocumentDto document = (DocumentDto)contingut;
 			if (childName.equals(document.getDarreraVersio().getArxiuNom()))
 			return new RipeaFileResource(
 					entitat,
 					document,
 					serviceHolder);
-		} else if (contenidor.getFills() != null) {
-			for (ContenidorDto c: contenidor.getFills()) {
+		} else if (contingut.getFills() != null) {
+			for (ContingutDto c: contingut.getFills()) {
 				if (c.getNom().equals(childName)) {
-					ContenidorDto contenidor = getContenidorService().getContenidorAmbContingut(
+					ContingutDto contingut = getContenidorService().getContingutAmbFills(
 							entitat.getId(),
 							c.getId());
-					return contenidorToResource(contenidor);
+					return contenidorToResource(contingut);
 				}
 			}
 		}
@@ -177,16 +176,16 @@ public class RipeaFolderResource implements FolderResource {
 	@Override
 	public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
 		List<Resource> children = new ArrayList<Resource>();
-		if (contenidor instanceof DocumentDto) {
-			DocumentDto document = (DocumentDto)contenidor;
+		if (contingut instanceof DocumentDto) {
+			DocumentDto document = (DocumentDto)contingut;
 			children.add(
 					new RipeaFileResource(
 							entitat,
 							document,
 							serviceHolder));
 		} else {
-			if (contenidor.getFillsCount() > 0) {
-				for (ContenidorDto c: contenidor.getFills()) {
+			if (contingut.getFillsCount() > 0) {
+				for (ContingutDto c: contingut.getFills()) {
 					Resource resource = contenidorToResource(c);
 					if (resource != null)
 						children.add(resource);
@@ -210,8 +209,8 @@ public class RipeaFolderResource implements FolderResource {
 			mimeType = mimeTypesMap.getContentType(newName);
 		}
 		DocumentDto document = getDocumentService().create(
-				contenidor.getEntitat().getId(),
-				contenidor.getId(),
+				contingut.getEntitat().getId(),
+				contingut.getId(),
 				null,
 				newName,
 				new Date(),
@@ -227,8 +226,8 @@ public class RipeaFolderResource implements FolderResource {
 			String name) throws NotAuthorizedException, BadRequestException, ConflictException {
 		logger.debug("[C] copyTo " + getIdentificadorPerLog() + "");
 		getContenidorService().copy(
-				contenidor.getEntitat().getId(),
-				contenidor.getId(),
+				contingut.getEntitat().getId(),
+				contingut.getId(),
 				new Long(toCollection.getUniqueId()),
 				true);
 	}
@@ -241,16 +240,16 @@ public class RipeaFolderResource implements FolderResource {
 		// Si ha canviat el nom el modifica
 		if (!name.equals(getName())) {
 			getContenidorService().rename(
-					contenidor.getEntitat().getId(),
-					contenidor.getId(),
+					contingut.getEntitat().getId(),
+					contingut.getId(),
 					name);
 		}
 		// Comprova si el destí és aquesta mateixa carpeta abans
 		// de moure-lo
 		if (rDest.getUniqueId().equals(getUniqueId())) {
 			getContenidorService().move(
-					contenidor.getEntitat().getId(),
-					contenidor.getId(),
+					contingut.getEntitat().getId(),
+					contingut.getId(),
 					new Long(rDest.getUniqueId()));
 		}
 	}
@@ -259,8 +258,8 @@ public class RipeaFolderResource implements FolderResource {
 	public void delete() throws NotAuthorizedException, ConflictException, BadRequestException {
 		logger.debug("[C] delete " + getIdentificadorPerLog() + "");
 		getContenidorService().deleteReversible(
-				contenidor.getEntitat().getId(),
-				contenidor.getId());
+				contingut.getEntitat().getId(),
+				contingut.getId());
 	}
 
 	@Override
@@ -268,8 +267,8 @@ public class RipeaFolderResource implements FolderResource {
 			String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
 		logger.debug("[C] createCollection " + getIdentificadorPerLog() + "");
 		CarpetaDto carpeta = getCarpetaService().create(
-				contenidor.getEntitat().getId(),
-				contenidor.getId(),
+				contingut.getEntitat().getId(),
+				contingut.getId(),
 				newName,
 				CarpetaTipusEnumDto.ESBORRANY);
 		return contenidorToResource(carpeta);
@@ -290,21 +289,21 @@ public class RipeaFolderResource implements FolderResource {
 
 
 
-	private FolderResource contenidorToResource(ContenidorDto contenidor) {
-		if (contenidor instanceof ExpedientDto) {
-			ExpedientDto expedient = (ExpedientDto)contenidor;
+	private FolderResource contenidorToResource(ContingutDto contingut) {
+		if (contingut instanceof ExpedientDto) {
+			ExpedientDto expedient = (ExpedientDto)contingut;
 			return new RipeaFolderResource(
 					entitat,
 					expedient,
 					serviceHolder); 
-		} else if (contenidor instanceof CarpetaDto) {
-			CarpetaDto carpeta = (CarpetaDto)contenidor;
+		} else if (contingut instanceof CarpetaDto) {
+			CarpetaDto carpeta = (CarpetaDto)contingut;
 			return new RipeaFolderResource(
 					entitat,
 					carpeta,
 					serviceHolder);
-		} else if (contenidor instanceof DocumentDto) {
-			DocumentDto document = (DocumentDto)contenidor;
+		} else if (contingut instanceof DocumentDto) {
+			DocumentDto document = (DocumentDto)contingut;
 			return new RipeaFolderResource(
 					entitat,
 					document,
@@ -320,10 +319,10 @@ public class RipeaFolderResource implements FolderResource {
 			path.append("/");
 			path.append(UriUtils.encodePath(entitat.getNom(), "UTF-8"));
 		}
-		if (contenidor.getPath() != null) {
+		if (contingut.getPath() != null) {
 			// El primer és l'Escriptori i s'ha d'esborrar
 			boolean primer = true;
-			for (ContenidorDto pathElement: contenidor.getPath()) {
+			for (ContingutDto pathElement: contingut.getPath()) {
 				if (!primer) {
 					path.append("/");
 					path.append(UriUtils.encodePath(pathElement.getNom(), "UTF-8"));
@@ -339,9 +338,9 @@ public class RipeaFolderResource implements FolderResource {
 			Resource resource) throws IOException {
 		StringBuilder uri = new StringBuilder();
 		uri.append(basePath);
-		if (contenidor.getPath() != null && contenidor.getPath().size() > 0) {
+		if (contingut.getPath() != null && contingut.getPath().size() > 0) {
 			uri.append("/");
-			uri.append(UriUtils.encodePath(contenidor.getNom(), "UTF-8"));
+			uri.append(UriUtils.encodePath(contingut.getNom(), "UTF-8"));
 		}
 		if (resource != null) {
 			uri.append("/");
@@ -391,7 +390,7 @@ public class RipeaFolderResource implements FolderResource {
 		return "(id=" + getUniqueId() + ", name=" + getName() + ")";
 	}
 
-	private ContenidorService getContenidorService() {
+	private ContingutService getContenidorService() {
 		return serviceHolder.getContenidorService();
 	}
 	private DocumentService getDocumentService() {

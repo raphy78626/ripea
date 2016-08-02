@@ -33,9 +33,9 @@ $(document).ready(function() {
 				<th data-col-name="id" data-visible="false">Id</th>
 				<th data-col-name="nom"><spring:message code="bustia.list.columna.nom"/></th>
 				<th data-col-name="pareNom"><spring:message code="bustia.list.columna.unitat"/></th>
-				<th data-col-name="pendentCount" data-template="#cellFillsCountTemplate" data-orderable="false" width="10%">
+				<th data-col-name="fillsCount" data-template="#cellFillsCountTemplate" data-orderable="false" width="10%">
 					<script id="cellFillsCountTemplate" type="text/x-jsrender">
-						<a href="${unitatCodiUrlPrefix}bustiaUser/{{:id}}/pendent" class="btn btn-default"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="bustia.user.list.pendent"/>&nbsp;<span class="badge">{{:pendentCount}}</span></a>
+						<a href="${unitatCodiUrlPrefix}bustiaUser/{{:id}}/pendent" class="btn btn-default"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="bustia.user.list.pendent"/>&nbsp;<span class="badge">{{:fillsCount}}</span></a>
 					</script>
 				</th>
 			</tr>

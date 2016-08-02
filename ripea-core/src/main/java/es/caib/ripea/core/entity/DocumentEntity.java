@@ -17,6 +17,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
+
 /**
  * Classe del model de dades que representa un document.
  * 
@@ -65,44 +67,21 @@ public class DocumentEntity extends NodeEntity {
 		this.darreraVersio = darreraVersio;
 	}
 
-	/**
-	 * Obté el Builder per a crear objectes de tipus document.
-	 * 
-	 * @param nom
-	 *            El valor de l'atribut nom.
-	 * @param data
-	 *            El valor de l'atribut data.
-	 * @param expedient
-	 *            El valor de l'atribut expedient.
-	 * @param metaNode
-	 *            El meta-node al qual pertany aquest document.
-	 * @param contenidor
-	 *            El contenidor al qual pertany aquest document.
-	 * @param entitat
-	 *            L'entitat a la qual pertany aquest document.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
 			String nom,
 			Date data,
 			ExpedientEntity expedient,
 			MetaNodeEntity metaNode,
-			ContenidorEntity contenidor,
+			ContingutEntity pare,
 			EntitatEntity entitat) {
 		return new Builder(
 				nom,
 				data,
 				expedient,
 				metaNode,
-				contenidor,
+				pare,
 				entitat);
 	}
-
-	/**
-	 * Builder per a crear noves instàncies d'aquesta classe.
-	 * 
-	 * @author Limit Tecnologies <limit@limit.es>
-	 */
 	public static class Builder {
 		DocumentEntity built;
 		Builder(
@@ -110,7 +89,7 @@ public class DocumentEntity extends NodeEntity {
 				Date data,
 				ExpedientEntity expedient,
 				MetaNodeEntity metaNode,
-				ContenidorEntity pare,
+				ContingutEntity pare,
 				EntitatEntity entitat) {
 			built = new DocumentEntity();
 			built.nom = nom;
@@ -120,7 +99,7 @@ public class DocumentEntity extends NodeEntity {
 			built.pare = pare;
 			built.entitat = entitat;
 			built.darreraVersio = 0;
-			built.tipusContenidor = ContenidorTipusEnum.CONTINGUT;
+			built.tipus = ContingutTipusEnumDto.DOCUMENT;
 		}
 		public DocumentEntity build() {
 			return built;

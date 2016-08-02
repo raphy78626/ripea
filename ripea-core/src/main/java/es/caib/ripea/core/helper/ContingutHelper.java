@@ -24,7 +24,7 @@ import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
-import es.caib.ripea.core.api.dto.ContenidorDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
@@ -42,8 +42,8 @@ import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
-import es.caib.ripea.core.entity.ContenidorEntity;
-import es.caib.ripea.core.entity.ContenidorMovimentEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
+import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
@@ -51,10 +51,11 @@ import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.NodeEntity;
+import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
-import es.caib.ripea.core.repository.ContenidorMovimentRepository;
-import es.caib.ripea.core.repository.ContenidorRepository;
+import es.caib.ripea.core.repository.ContingutMovimentRepository;
+import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
 import es.caib.ripea.core.repository.DocumentVersioRepository;
@@ -75,10 +76,10 @@ import es.caib.ripea.plugin.usuari.DadesUsuari;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Component
-public class ContenidorHelper {
+public class ContingutHelper {
 
 	@Resource
-	private ContenidorRepository contenidorRepository;
+	private ContingutRepository contingutRepository;
 	@Resource
 	private EscriptoriRepository escriptoriRepository;
 	@Resource
@@ -102,7 +103,7 @@ public class ContenidorHelper {
 	@Resource
 	private RegistreRepository registreRepository;
 	@Resource
-	private ContenidorMovimentRepository contenidorMovimentRepository;
+	private ContingutMovimentRepository contenidorMovimentRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -121,10 +122,10 @@ public class ContenidorHelper {
 
 
 
-	public ContenidorDto toContenidorDto(
-			ContenidorEntity contenidor) {
-		return toContenidorDto(
-				contenidor,
+	public ContingutDto toContingutDto(
+			ContingutEntity contingut) {
+		return toContingutDto(
+				contingut,
 				false,
 				false,
 				false,
@@ -132,18 +133,18 @@ public class ContenidorHelper {
 				false,
 				false);
 	}
-	public ContenidorDto toContenidorDto(
-			ContenidorEntity contenidor,
+	public ContingutDto toContingutDto(
+			ContingutEntity contingut,
 			boolean ambPermisos,
 			boolean ambFills,
 			boolean filtrarFillsSegonsPermisRead,
 			boolean ambDades,
 			boolean ambPath,
 			boolean pathNomesFinsExpedientArrel) {
-		ContenidorDto resposta = null;
+		ContingutDto resposta = null;
 		MetaNodeDto metaNode = null;
 		// Crea el contenidor del tipus correcte
-		Object deproxied = HibernateHelper.deproxy(contenidor);
+		Object deproxied = HibernateHelper.deproxy(contingut);
 		if (deproxied instanceof EscriptoriEntity) {
 			EscriptoriDto dto = new EscriptoriDto();
 			resposta = dto;
@@ -158,7 +159,7 @@ public class ContenidorHelper {
 			dto.setSistraPublicat(expedient.isSistraPublicat());
 			dto.setSistraUnitatAdministrativa(expedient.getSistraUnitatAdministrativa());
 			dto.setSistraClau(expedient.getSistraClau());
-			dto.setArxiu((ArxiuDto)toContenidorDto(expedient.getArxiu()));
+			dto.setArxiu((ArxiuDto)toContingutDto(expedient.getArxiu()));
 			metaNode = conversioTipusHelper.convertir(
 					expedient.getMetaNode(),
 					MetaExpedientDto.class);
@@ -169,7 +170,7 @@ public class ContenidorHelper {
 		} else if (deproxied instanceof CarpetaEntity) {
 			CarpetaEntity carpeta = (CarpetaEntity)deproxied;
 			CarpetaDto dto = new CarpetaDto();
-			dto.setTipus(CarpetaTipusEnumDto.valueOf(carpeta.getTipus().name()));
+			dto.setTipus(CarpetaTipusEnumDto.valueOf(carpeta.getCarpetaTipus().name()));
 			resposta = dto;
 		} else if (deproxied instanceof DocumentEntity) {
 			DocumentEntity document = (DocumentEntity)deproxied;
@@ -206,21 +207,27 @@ public class ContenidorHelper {
 			if (unitatConselleria != null)
 				dto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
 			resposta = dto;
+		} else if (deproxied instanceof RegistreEntity) {
+			RegistreEntity registre = (RegistreEntity)deproxied;
+			RegistreAnotacioDto dto = conversioTipusHelper.convertir(
+					registre,
+					RegistreAnotacioDto.class);
+			resposta = dto;
 		}
-		resposta.setId(contenidor.getId());
-		resposta.setNom(contenidor.getNom());
-		resposta.setEsborrat(contenidor.getEsborrat());
+		resposta.setId(contingut.getId());
+		resposta.setNom(contingut.getNom());
+		resposta.setEsborrat(contingut.getEsborrat());
 		resposta.setEntitat(
 				conversioTipusHelper.convertir(
-							contenidor.getEntitat(),
+						contingut.getEntitat(),
 							EntitatDto.class));
-		if (contenidor.getDarrerMoviment() != null) {
-			ContenidorMovimentEntity darrerMoviment = contenidor.getDarrerMoviment();
+		if (contingut.getDarrerMoviment() != null) {
+			ContingutMovimentEntity darrerMoviment = contingut.getDarrerMoviment();
 			resposta.setDarrerMovimentUsuari(
 					conversioTipusHelper.convertir(
 							darrerMoviment.getRemitent(),
 							UsuariDto.class));
-			resposta.setDarrerMovimentData(darrerMoviment.getData());
+			resposta.setDarrerMovimentData(darrerMoviment.getCreatedDate().toDate());
 			resposta.setDarrerMovimentComentari(darrerMoviment.getComentari());
 		}
 		if (ambPermisos && metaNode != null) {
@@ -231,37 +238,37 @@ public class ContenidorHelper {
 			// Omple la informació d'auditoria
 			resposta.setCreatedBy(
 					conversioTipusHelper.convertir(
-							contenidor.getCreatedBy(),
+							contingut.getCreatedBy(),
 							UsuariDto.class));
-			resposta.setCreatedDate(contenidor.getCreatedDate().toDate());
+			resposta.setCreatedDate(contingut.getCreatedDate().toDate());
 			resposta.setLastModifiedBy(
 					conversioTipusHelper.convertir(
-							contenidor.getLastModifiedBy(),
+							contingut.getLastModifiedBy(),
 							UsuariDto.class));
-			resposta.setLastModifiedDate(contenidor.getLastModifiedDate().toDate());
+			resposta.setLastModifiedDate(contingut.getLastModifiedDate().toDate());
 		}
 		if (resposta != null) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			if (ambPath) {
 				// Calcula el path
-				List<ContenidorDto> path = getPathContenidorComDto(
-						contenidor,
+				List<ContingutDto> path = getPathContingutComDto(
+						contingut,
 						ambPermisos,
 						pathNomesFinsExpedientArrel);
 				resposta.setPath(path);
 			}
 			if (ambFills) {
 				// Cerca els nodes fills
-				List<ContenidorDto> contenidorDtos = new ArrayList<ContenidorDto>();
-				List<ContenidorEntity> fills = contenidorRepository.findByPareAndEsborrat(
-						contenidor,
+				List<ContingutDto> contenidorDtos = new ArrayList<ContingutDto>();
+				List<ContingutEntity> fills = contingutRepository.findByPareAndEsborrat(
+						contingut,
 						0,
 						new Sort("createdDate"));
 				if (filtrarFillsSegonsPermisRead) {
 					// Filtra els fills que no tenen permis de lectura
-					Iterator<ContenidorEntity> it = fills.iterator();
+					Iterator<ContingutEntity> it = fills.iterator();
 					while (it.hasNext()) {
-						ContenidorEntity c = it.next();
+						ContingutEntity c = it.next();
 						if (c instanceof NodeEntity) {
 							NodeEntity n = (NodeEntity)c;
 							if (n.getMetaNode() != null && !permisosHelper.isGrantedAll(
@@ -274,13 +281,13 @@ public class ContenidorHelper {
 						}
 					}
 				}
-				List<ContenidorDto> fillPath = null;
+				List<ContingutDto> fillPath = null;
 				if (ambPath) {
-					fillPath = new ArrayList<ContenidorDto>();
+					fillPath = new ArrayList<ContingutDto>();
 					if (resposta.getPath() != null)
 						fillPath.addAll(resposta.getPath());
-					fillPath.add(toContenidorDto(
-							contenidor,
+					fillPath.add(toContingutDto(
+							contingut,
 							false,
 							false,
 							false,
@@ -288,9 +295,9 @@ public class ContenidorHelper {
 							false,
 							false));
 				}
-				for (ContenidorEntity fill: fills) {
+				for (ContingutEntity fill: fills) {
 					if (fill.getEsborrat() == 0) {
-						ContenidorDto fillDto = toContenidorDto(
+						ContingutDto fillDto = toContingutDto(
 								fill,
 								ambPermisos,
 								false,
@@ -304,17 +311,11 @@ public class ContenidorHelper {
 					}
 				}
 				resposta.setFills(contenidorDtos);
-				// Incorpora les anotacions de registre
-				resposta.setRegistres(
-						conversioTipusHelper.convertirList(
-								registreRepository.findByContenidorAndMotiuRebuigNullOrderByDataAsc(
-										contenidor),
-								RegistreAnotacioDto.class));
 			}
 			if (ambDades) {
 				// Omple les dades
-				if (contenidor instanceof NodeEntity) {
-					NodeEntity node = (NodeEntity)contenidor;
+				if (contingut instanceof NodeEntity) {
+					NodeEntity node = (NodeEntity)contingut;
 					((NodeDto)resposta).setDades(
 							conversioTipusHelper.convertirList(
 									dadaRepository.findByNode(node),
@@ -325,16 +326,16 @@ public class ContenidorHelper {
 		return resposta;
 	}
 
-	public void comprovarPermisosContenidor(
-			ContenidorEntity contenidor,
+	public void comprovarPermisosContingut(
+			ContingutEntity contingut,
 			boolean comprovarPermisRead,
 			boolean comprovarPermisWrite,
 			boolean comprovarPermisDelete) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		// Comprova els permisos del contenidor actual
-		if (contenidor instanceof NodeEntity) {
+		if (contingut instanceof NodeEntity) {
 			// Si el contenidor és de tipus node
-			NodeEntity node = (NodeEntity)contenidor;
+			NodeEntity node = (NodeEntity)contingut;
 			if (node.getMetaNode() != null) {
 				if (comprovarPermisRead) {
 					boolean granted = permisosHelper.isGrantedAll(
@@ -382,8 +383,8 @@ public class ContenidorHelper {
 					}
 				}
 			}
-		} else if (contenidor instanceof EscriptoriEntity) {
-			EscriptoriEntity escriptori = (EscriptoriEntity)contenidor;
+		} else if (contingut instanceof EscriptoriEntity) {
+			EscriptoriEntity escriptori = (EscriptoriEntity)contingut;
 			if (comprovarPermisRead) {
 				boolean granted = escriptori.getUsuari().getCodi().equals(auth.getName());
 				if (!granted) {
@@ -395,8 +396,8 @@ public class ContenidorHelper {
 							+ "usuari=" + auth.getName() + ")");
 				}
 			}
-		} else if (contenidor instanceof ArxiuEntity) {
-			ArxiuEntity arxiu = (ArxiuEntity)contenidor;
+		} else if (contingut instanceof ArxiuEntity) {
+			ArxiuEntity arxiu = (ArxiuEntity)contingut;
 			if (arxiu.getPare() != null && comprovarPermisRead) {
 				// Comprova que algun dels seus meta-expedients associants tingui el permís de lectura
 				boolean granted = false;
@@ -418,8 +419,8 @@ public class ContenidorHelper {
 							+ "usuari=" + auth.getName() + ")");
 				}
 			}
-		} else if (contenidor instanceof BustiaEntity) {
-			BustiaEntity bustia = (BustiaEntity)contenidor;
+		} else if (contingut instanceof BustiaEntity) {
+			BustiaEntity bustia = (BustiaEntity)contingut;
 			if (bustia.getPare() != null && comprovarPermisRead) {
 				boolean granted = permisosHelper.isGrantedAll(
 						bustia.getId(),
@@ -437,18 +438,18 @@ public class ContenidorHelper {
 			}
 		}
 	}
-	public void comprovarPermisosPathContenidor(
-			ContenidorEntity contenidor,
+	public void comprovarPermisosPathContingut(
+			ContingutEntity contingut,
 			boolean comprovarPermisRead,
 			boolean comprovarPermisWrite,
 			boolean comprovarPermisDelete,
 			boolean incloureActual) {
-		List<ContenidorEntity> path = getPathContenidor(contenidor);
+		List<ContingutEntity> path = getPathContingut(contingut);
 		if (path != null) {
 			// Dels contenidors del path només comprova el permis read
-			for (ContenidorEntity contenidorPath: path) {
-				comprovarPermisosContenidor(
-						contenidorPath,
+			for (ContingutEntity contingutPath: path) {
+				comprovarPermisosContingut(
+						contingutPath,
 						true,
 						false,
 						false);
@@ -456,33 +457,33 @@ public class ContenidorHelper {
 		}
 		if (incloureActual) {
 			// Del contenidor en qüestió comprova tots els permisos
-			comprovarPermisosContenidor(
-					contenidor,
+			comprovarPermisosContingut(
+					contingut,
 					comprovarPermisRead,
 					comprovarPermisWrite,
 					comprovarPermisDelete);
 		}
 	}
 	public void comprovarPermisosFinsExpedientArrel(
-			ContenidorEntity contenidor,
+			ContingutEntity contingut,
 			boolean comprovarPermisRead,
 			boolean comprovarPermisWrite,
 			boolean comprovarPermisDelete,
 			boolean incloureActual) {
-		List<ContenidorEntity> path = getPathContenidor(contenidor);
+		List<ContingutEntity> path = getPathContingut(contingut);
 		if (incloureActual || path != null) {
 			if (incloureActual) {
 				if (path == null)
-					path = new ArrayList<ContenidorEntity>();
-				path.add(contenidor);
+					path = new ArrayList<ContingutEntity>();
+				path.add(contingut);
 			}
 			boolean expedientArrelTrobat = false;
-			for (ContenidorEntity contenidorPath: path) {
-				if (!expedientArrelTrobat && contenidorPath instanceof ExpedientEntity)
+			for (ContingutEntity contingutPath: path) {
+				if (!expedientArrelTrobat && contingutPath instanceof ExpedientEntity)
 					expedientArrelTrobat = true;
 				if (expedientArrelTrobat) {
-					comprovarPermisosContenidor(
-							contenidorPath,
+					comprovarPermisosContingut(
+							contingutPath,
 							comprovarPermisRead,
 							comprovarPermisWrite,
 							comprovarPermisDelete);
@@ -491,18 +492,18 @@ public class ContenidorHelper {
 		}
 	}
 
-	public void comprovarContenidorArrelEsEscriptoriUsuariActual(
+	public void comprovarContingutArrelEsEscriptoriUsuariActual(
 			EntitatEntity entitat,
-			ContenidorEntity contenidor) {
+			ContingutEntity contingut) {
 		// Comprova que el contenidor arrel és un escriptori
 		// i que pertany a l'usuari actual.
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		EscriptoriEntity escriptori = null;
-		Object deproxied = HibernateHelper.deproxy(contenidor);
+		Object deproxied = HibernateHelper.deproxy(contingut);
 		if (deproxied instanceof EscriptoriEntity) {
 			escriptori = (EscriptoriEntity)deproxied;
 		} else {
-			List<ContenidorEntity> path = getPathContenidor(contenidor);
+			List<ContingutEntity> path = getPathContingut(contingut);
 			if (path != null) {
 				deproxied = HibernateHelper.deproxy(path.get(0));
 				if (deproxied instanceof EscriptoriEntity)
@@ -513,26 +514,26 @@ public class ContenidorHelper {
 				escriptori.getUsuari() == null ||
 				!escriptori.getUsuari().getCodi().equals(auth.getName()) ||
 				!escriptori.getEntitat().equals(entitat)) {
-			throw new SecurityException("El contenidor no pertany a l'escriptori ("
-						+ "id=" + contenidor.getId() + ", "
+			throw new SecurityException("El contingut no pertany a l'escriptori ("
+						+ "id=" + contingut.getId() + ", "
 						+ "entitatId=" + entitat.getId() + ", "
 						+ "usuari=" + auth.getName() + ")");
 		}
 	}
 
 	public ExpedientEntity getExpedientSuperior(
-			ContenidorEntity contenidor,
+			ContingutEntity contingut,
 			boolean incloureActual) {
 		ExpedientEntity expedientSuperior = null;
-		if (incloureActual && contenidor instanceof ExpedientEntity) {
-			expedientSuperior = (ExpedientEntity)contenidor;
+		if (incloureActual && contingut instanceof ExpedientEntity) {
+			expedientSuperior = (ExpedientEntity)contingut;
 		} else {
-			List<ContenidorEntity> path = getPathContenidor(contenidor);
+			List<ContingutEntity> path = getPathContingut(contingut);
 			// Si el contenidor és arrel el path retorna null i s'ha de comprovar
 			if (path != null) {
-				List<ContenidorEntity> pathInvers = new ArrayList<ContenidorEntity>(path);
+				List<ContingutEntity> pathInvers = new ArrayList<ContingutEntity>(path);
 				Collections.reverse(pathInvers);
-				for (ContenidorEntity contenidorPath: pathInvers) {
+				for (ContingutEntity contenidorPath: pathInvers) {
 					if (contenidorPath instanceof ExpedientEntity) {
 						expedientSuperior = (ExpedientEntity)contenidorPath;
 						break;
@@ -559,18 +560,18 @@ public class ContenidorHelper {
 		return escriptori;
 	}
 
-	public long[] countFillsAmbPermisReadByContenidors(
+	public long[] countFillsAmbPermisReadByContinguts(
 			EntitatEntity entitat,
-			List<? extends ContenidorEntity> contenidors,
+			List<? extends ContingutEntity> continguts,
 			boolean comprovarPermisos) {
-		long[] resposta = new long[contenidors.size()];
-		if (!contenidors.isEmpty()) {
-			List<Object[]> countFillsTotals = contenidorRepository.countByPares(
+		long[] resposta = new long[continguts.size()];
+		if (!continguts.isEmpty()) {
+			List<Object[]> countFillsTotals = contingutRepository.countByPares(
 					entitat,
-					contenidors);
+					continguts);
 			List<Object[]> countNodesTotals = nodeRepository.countByPares(
 					entitat,
-					contenidors);
+					continguts);
 			List<Object[]> countNodesByPares;
 			if (comprovarPermisos) {
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -588,7 +589,7 @@ public class ContenidorHelper {
 				if (!metaNodesPermesos.isEmpty()) {
 					countNodesByPares = nodeRepository.countAmbPermisReadByPares(
 							entitat,
-							contenidors,
+							continguts,
 							metaNodesPermesos);
 				} else {
 					countNodesByPares = new ArrayList<Object[]>();
@@ -596,18 +597,18 @@ public class ContenidorHelper {
 			} else {
 				countNodesByPares = nodeRepository.countByPares(
 						entitat,
-						contenidors);
+						continguts);
 			}
-			for (int i = 0; i < contenidors.size(); i++) {
-				ContenidorEntity contenidor = contenidors.get(i);
-				Long total = getCountByContenidor(
-						contenidor,
+			for (int i = 0; i < continguts.size(); i++) {
+				ContingutEntity contingut = continguts.get(i);
+				Long total = getCountByContingut(
+						contingut,
 						countFillsTotals);
-				Long totalNodes = getCountByContenidor(
-						contenidor,
+				Long totalNodes = getCountByContingut(
+						contingut,
 						countNodesTotals);
-				Long totalNodesPermisRead = getCountByContenidor(
-						contenidor,
+				Long totalNodesPermisRead = getCountByContingut(
+						contingut,
 						countNodesByPares);
 				resposta[i] = total - totalNodes + totalNodesPermisRead;
 				
@@ -616,30 +617,15 @@ public class ContenidorHelper {
 		return resposta;
 	}
 
-	public long[] countRegistresByContenidors(
-			EntitatEntity entitat,
-			List<? extends ContenidorEntity> contenidors) {
-		List<Object[]> countRegistres = registreRepository.countByContenidorsAndNotRebutjat(
-				contenidors);
-		long[] resposta = new long[contenidors.size()];
-		for (int i = 0; i < contenidors.size(); i++) {
-			ContenidorEntity contenidor = contenidors.get(i);
-			resposta[i] = getCountByContenidor(
-					contenidor,
-					countRegistres);
-		}
-		return resposta;
-	}
-
 	public Set<String> findUsuarisAmbPermisReadPerContenidor(
-			ContenidorEntity contenidor) {
+			ContingutEntity contingut) {
 		List<PermisDto> permisos = null;
-		if (contenidor instanceof BustiaEntity) {
+		if (contingut instanceof BustiaEntity) {
 			permisos = permisosHelper.findPermisos(
-					contenidor.getId(),
+					contingut.getId(),
 					BustiaEntity.class);
-		} else if (contenidor instanceof NodeEntity) {
-			NodeEntity node = (NodeEntity)contenidor;
+		} else if (contingut instanceof NodeEntity) {
+			NodeEntity node = (NodeEntity)contingut;
 			permisos = permisosHelper.findPermisos(
 					node.getMetaNode().getId(),
 					BustiaEntity.class);
@@ -664,29 +650,29 @@ public class ContenidorHelper {
 		return usuaris;
 	}
 
-	public ContenidorMovimentEntity ferIEnregistrarMovimentContenidor(
-			ContenidorEntity contenidor,
-			ContenidorEntity desti,
+	public ContingutMovimentEntity ferIEnregistrarMoviment(
+			ContingutEntity contingut,
+			ContingutEntity desti,
 			String comentari) {
-		ContenidorMovimentEntity contenidorMoviment = ContenidorMovimentEntity.getBuilder(
-				contenidor,
-				contenidor.getPare(),
+		ContingutMovimentEntity contenidorMoviment = ContingutMovimentEntity.getBuilder(
+				contingut,
+				contingut.getPare(),
 				desti,
 				usuariHelper.getUsuariAutenticat(),
 				comentari).build();
-		contenidor.updateDarrerMoviment(
+		contingut.updateDarrerMoviment(
 				contenidorMovimentRepository.save(contenidorMoviment));
-		contenidor.updatePare(desti);
+		contingut.updatePare(desti);
 		return contenidorMoviment;
 	}
 
-	public ContenidorEntity findContenidorArrel(
-			ContenidorEntity contenidor) {
-		ContenidorEntity contenidorActual = contenidor;
-		while (contenidorActual != null && contenidorActual.getPare() != null) {
-			contenidorActual = contenidorActual.getPare();
+	public ContingutEntity findContingutArrel(
+			ContingutEntity contingut) {
+		ContingutEntity contingutActual = contingut;
+		while (contingutActual != null && contingutActual.getPare() != null) {
+			contingutActual = contingutActual.getPare();
 		}
-		return contenidorRepository.findOne(contenidorActual.getId());
+		return contingutRepository.findOne(contingutActual.getId());
 	}
 
 	public boolean isNomValid(String nom) {
@@ -695,16 +681,16 @@ public class ContenidorHelper {
 
 
 
-	private List<ContenidorEntity> getPathContenidor(
-			ContenidorEntity contenidor) {
-		List<ContenidorEntity> path = null;
-		ContenidorEntity contenidorActual = contenidor;
-		while (contenidorActual != null && contenidorActual.getPare() != null) {
+	private List<ContingutEntity> getPathContingut(
+			ContingutEntity contingut) {
+		List<ContingutEntity> path = null;
+		ContingutEntity contingutActual = contingut;
+		while (contingutActual != null && contingutActual.getPare() != null) {
 			if (path == null)
-				path = new ArrayList<ContenidorEntity>();
-			ContenidorEntity c = contenidorRepository.findOne(contenidorActual.getPare().getId());
+				path = new ArrayList<ContingutEntity>();
+			ContingutEntity c = contingutRepository.findOne(contingutActual.getPare().getId());
 			path.add(c);
-			contenidorActual = c;
+			contingutActual = c;
 		}
 		if (path != null) {
 			Collections.reverse(path);
@@ -712,22 +698,22 @@ public class ContenidorHelper {
 		return path;
 	}
 
-	private List<ContenidorDto> getPathContenidorComDto(
-			ContenidorEntity contenidor,
+	private List<ContingutDto> getPathContingutComDto(
+			ContingutEntity contingut,
 			boolean ambPermisos,
 			boolean nomesFinsExpedientArrel) {
-		List<ContenidorEntity> path = getPathContenidor(contenidor);
-		List<ContenidorDto> pathDto = null;
+		List<ContingutEntity> path = getPathContingut(contingut);
+		List<ContingutDto> pathDto = null;
 		if (path != null) {
-			pathDto = new ArrayList<ContenidorDto>();
+			pathDto = new ArrayList<ContingutDto>();
 			boolean expedientArrelTrobat = !nomesFinsExpedientArrel;
-			for (ContenidorEntity contenidorPath: path) {
-				if (!expedientArrelTrobat && contenidorPath instanceof ExpedientEntity)
+			for (ContingutEntity contingutPath: path) {
+				if (!expedientArrelTrobat && contingutPath instanceof ExpedientEntity)
 					expedientArrelTrobat = true;
 				if (expedientArrelTrobat) {
 					pathDto.add(
-						toContenidorDto(
-								contenidorPath,
+						toContingutDto(
+								contingutPath,
 								ambPermisos,
 								false,
 								false,
@@ -740,18 +726,18 @@ public class ContenidorHelper {
 		return pathDto;
 	}
 
-	private Long getCountByContenidor(
-			ContenidorEntity contenidor,
+	private Long getCountByContingut(
+			ContingutEntity contingut,
 			List<Object[]> counts) {
 		for (Object[] count: counts) {
-			Long contenidorId = (Long)count[0];
-			if (contenidorId.equals(contenidor.getId())) {
+			Long contingutId = (Long)count[0];
+			if (contingutId.equals(contingut.getId())) {
 				return (Long)count[1];
 			}
 		}
 		return new Long(0);
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(ContenidorHelper.class);
+	private static final Logger logger = LoggerFactory.getLogger(ContingutHelper.class);
 
 }

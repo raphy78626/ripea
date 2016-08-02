@@ -23,6 +23,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 
 /**
@@ -31,44 +32,48 @@ import es.caib.ripea.core.audit.RipeaAuditable;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "ipa_contenidor",
+@Table(	name = "ipa_contingut",
 		uniqueConstraints = {
 				@UniqueConstraint(
-						name = "ipa_contenidor_mult_uk",
+						name = "ipa_contingut_mult_uk",
 						columnNames = {
-								"entitat_id",
 								"nom",
+								"tipus",
 								"pare_id",
-								"tipus_cont",
+								"entitat_id",
 								"esborrat"})})
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
-public abstract class ContenidorEntity extends RipeaAuditable<Long> {
+public abstract class ContingutEntity extends RipeaAuditable<Long> {
 
 	@Column(name = "nom", length = 256, nullable = false)
 	protected String nom;
-	@Column(name = "tipus_cont", nullable = false)
-	protected ContenidorTipusEnum tipusContenidor;
+	@Column(name = "tipus", nullable = false)
+	protected ContingutTipusEnumDto tipus;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "pare_id")
-	@ForeignKey(name = "ipa_pare_contenidor_fk")
-	protected ContenidorEntity pare;
+	@ForeignKey(name = "ipa_pare_contingut_fk")
+	protected ContingutEntity pare;
 	@OneToMany(
 			mappedBy = "pare",
 			fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
-	protected Set<ContenidorEntity> fills = new HashSet<ContenidorEntity>();
+	protected Set<ContingutEntity> fills = new HashSet<ContingutEntity>();
+	/*
+	 * Per a que hi pugui haver el mateix contenidor esborrat
+	 * i sense esborrar.
+	 */
 	@Column(name = "esborrat")
 	protected int esborrat = 0;
-	@ManyToOne(optional = true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "contmov_id")
-	@ForeignKey(name = "ipa_contmov_contenidor_fk")
-	protected ContenidorMovimentEntity darrerMoviment;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "entitat_id")
-	@ForeignKey(name = "ipa_entitat_contenidor_fk")
+	@ForeignKey(name = "ipa_entitat_contingut_fk")
 	protected EntitatEntity entitat;
+	@ManyToOne(optional = true, fetch = FetchType.EAGER)
+	@JoinColumn(name = "contmov_id")
+	@ForeignKey(name = "ipa_contmov_contingut_fk")
+	protected ContingutMovimentEntity darrerMoviment;
 	@Version
 	private long version = 0;
 
@@ -77,35 +82,35 @@ public abstract class ContenidorEntity extends RipeaAuditable<Long> {
 	public String getNom() {
 		return nom;
 	}
-	public ContenidorTipusEnum getTipusContenidor() {
-		return tipusContenidor;
+	public ContingutTipusEnumDto getTipus() {
+		return tipus;
 	}
-	public EntitatEntity getEntitat() {
-		return entitat;
-	}
-	public ContenidorEntity getPare() {
+	public ContingutEntity getPare() {
 		return pare;
 	}
-	public Set<ContenidorEntity> getFills() {
+	public Set<ContingutEntity> getFills() {
 		return fills;
 	}
 	public int getEsborrat() {
 		return esborrat;
 	}
-	public ContenidorMovimentEntity getDarrerMoviment() {
+	public EntitatEntity getEntitat() {
+		return entitat;
+	}
+	public ContingutMovimentEntity getDarrerMoviment() {
 		return darrerMoviment;
 	}
 
 	public void update(String nom) {
 		this.nom = nom;
 	}
-	public void updatePare(ContenidorEntity pare) {
+	public void updatePare(ContingutEntity pare) {
 		this.pare = pare;
 	}
 	public void updateEsborrat(int esborrat) {
 		this.esborrat = esborrat;
 	}
-	public void updateDarrerMoviment(ContenidorMovimentEntity darrerMoviment) {
+	public void updateDarrerMoviment(ContingutMovimentEntity darrerMoviment) {
 		this.darrerMoviment = darrerMoviment;
 	}
 
@@ -114,8 +119,9 @@ public abstract class ContenidorEntity extends RipeaAuditable<Long> {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + esborrat;
-		result = prime * result + ((nom == null) ? 0 : nom.hashCode());
 		result = prime * result + ((pare == null) ? 0 : pare.hashCode());
+		result = prime * result + ((tipus == null) ? 0 : tipus.hashCode());
+		result = prime * result + ((nom == null) ? 0 : nom.hashCode());
 		return result;
 	}
 	@Override
@@ -126,18 +132,20 @@ public abstract class ContenidorEntity extends RipeaAuditable<Long> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ContenidorEntity other = (ContenidorEntity) obj;
+		ContingutEntity other = (ContingutEntity) obj;
 		if (esborrat != other.esborrat)
-			return false;
-		if (nom == null) {
-			if (other.nom != null)
-				return false;
-		} else if (!nom.equals(other.nom))
 			return false;
 		if (pare == null) {
 			if (other.pare != null)
 				return false;
 		} else if (!pare.equals(other.pare))
+			return false;
+		if (tipus != other.tipus)
+			return false;
+		if (nom == null) {
+			if (other.nom != null)
+				return false;
+		} else if (!nom.equals(other.nom))
 			return false;
 		return true;
 	}

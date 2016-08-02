@@ -13,12 +13,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ContenidorMovimentDto implements Serializable {
+public class ContingutMovimentDto implements Serializable {
 
 	private Long id;
-	private ContenidorDto contenidor;
-	private ContenidorDto origen;
-	private ContenidorDto desti;
+	private ContingutDto contingut;
+	private ContingutDto origen;
+	private ContingutDto desti;
 	private Date data;
 	private UsuariDto remitent;
 	private String comentari;
@@ -31,22 +31,22 @@ public class ContenidorMovimentDto implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public ContenidorDto getContenidor() {
-		return contenidor;
+	public ContingutDto getContingut() {
+		return contingut;
 	}
-	public void setContenidor(ContenidorDto contenidor) {
-		this.contenidor = contenidor;
+	public void setContingut(ContingutDto contingut) {
+		this.contingut = contingut;
 	}
-	public ContenidorDto getOrigen() {
+	public ContingutDto getOrigen() {
 		return origen;
 	}
-	public void setOrigen(ContenidorDto origen) {
+	public void setOrigen(ContingutDto origen) {
 		this.origen = origen;
 	}
-	public ContenidorDto getDesti() {
+	public ContingutDto getDesti() {
 		return desti;
 	}
-	public void setDesti(ContenidorDto desti) {
+	public void setDesti(ContingutDto desti) {
 		this.desti = desti;
 	}
 	public Date getData() {

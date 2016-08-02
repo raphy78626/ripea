@@ -25,7 +25,7 @@ import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
 import es.caib.ripea.core.api.service.MetaDocumentService;
-import es.caib.ripea.core.entity.ContenidorEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
@@ -34,7 +34,7 @@ import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientMetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
-import es.caib.ripea.core.helper.ContenidorHelper;
+import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.MetaNodeHelper;
@@ -42,7 +42,6 @@ import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.PluginHelper;
-import es.caib.ripea.core.repository.ContenidorRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.MetaDadaRepository;
@@ -68,8 +67,6 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 	@Resource
 	private MetaNodeMetaDadaRepository metaNodeMetaDadaRepository;
 	@Resource
-	private ContenidorRepository contenidorRepository;
-	@Resource
 	private MetaExpedientMetaDocumentRepository metaExpedientMetaDocumentRepository;
 	@Resource
 	private DocumentRepository documentRepository;
@@ -79,7 +76,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 	@Resource
 	private MetaNodeHelper metaNodeHelper;
 	@Resource
-	private ContenidorHelper contenidorHelper;
+	private ContingutHelper contenidorHelper;
 	@Resource
 	private PaginacioHelper paginacioHelper;
 	@Resource
@@ -603,12 +600,12 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				true,
 				false,
 				false);
-		ContenidorEntity contenidor = entityComprovarHelper.comprovarContenidor(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
 				contenidorId,
 				null);
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
-				contenidor,
+				contingut,
 				true);
 		List<MetaDocumentEntity> metaDocuments = findMetaDocumentsDisponiblesPerCreacio(
 				entitat,

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 
 /**
  * Controlador per a l'escriptori.
@@ -24,7 +24,7 @@ import es.caib.ripea.core.api.service.ContenidorService;
 public class EscriptoriController extends BaseUserController {
 	
 	@Autowired
-	ContenidorService contenidorService;
+	ContingutService contenidorService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(

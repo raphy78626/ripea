@@ -12,7 +12,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public abstract class NodeDto extends ContenidorDto {
+public abstract class NodeDto extends ContingutDto {
 
 	private MetaNodeDto metaNode;
 	private List<DadaDto> dades;

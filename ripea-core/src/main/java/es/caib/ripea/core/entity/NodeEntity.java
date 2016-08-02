@@ -24,7 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(	name = "ipa_node")
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
-public abstract class NodeEntity extends ContenidorEntity {
+public abstract class NodeEntity extends ContingutEntity {
 
 	@ManyToOne(
 			optional = true,
@@ -35,9 +35,6 @@ public abstract class NodeEntity extends ContenidorEntity {
 
 
 
-	public String getNom() {
-		return nom;
-	}
 	public MetaNodeEntity getMetaNode() {
 		return metaNode;
 	}

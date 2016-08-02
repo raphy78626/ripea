@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.ripea.core.api.dto.ContenidorDto;
-import es.caib.ripea.core.api.dto.ContenidorFiltreDto;
-import es.caib.ripea.core.api.dto.ContenidorLogDto;
-import es.caib.ripea.core.api.dto.ContenidorMovimentDto;
+import es.caib.ripea.core.api.dto.ContingutFiltreDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
+import es.caib.ripea.core.api.dto.ContingutLogDto;
+import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -21,38 +21,38 @@ import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 
 /**
- * Declaració dels mètodes per a gestionar contenidors.
+ * Declaració dels mètodes per a gestionar continguts.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface ContenidorService {
+public interface ContingutService {
 
 	/**
-	 * Canvia el nom del contenidor.
+	 * Canvia el nom del contingut.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el contingut.
 	 * @param nom
-	 *            El nom que es vol posar al contenidor.
-	 * @return El contenidor modificat.
+	 *            El nom que es vol posar al contingut.
+	 * @return El contingut modificat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto rename(
+	public ContingutDto rename(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			String nom) throws NotFoundException;
 
 	/**
 	 * Crea una nova dada a dins el node.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el contingut.
 	 * @param metaDadaId
 	 *            Atribut id de la meta-dada a partir del qual es vol crear aquesta dada.
 	 * @param valor
@@ -66,7 +66,7 @@ public interface ContenidorService {
 	@PreAuthorize("hasRole('tothom')")
 	public DadaDto dadaCreate(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long metaDadaId,
 			Object valor) throws NotFoundException, ValidationException;
 
@@ -74,9 +74,9 @@ public interface ContenidorService {
 	 * Modifica una dada a dins el node.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el contingut.
 	 * @param dadaId
 	 *            Atribut id de la meta-dada a partir del qual es vol crear aquesta dada.
 	 * @param valor
@@ -88,7 +88,7 @@ public interface ContenidorService {
 	@PreAuthorize("hasRole('tothom')")
 	public DadaDto dadaUpdate(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId,
 			Object valor) throws NotFoundException;
 
@@ -96,9 +96,9 @@ public interface ContenidorService {
 	 * Esborra una dada a dins el node.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el contingut.
 	 * @param dadaId
 	 *            Atribut id de la meta-dada a partir del qual es vol crear aquesta dada.
 	 * @return La dada esborrada.
@@ -108,16 +108,16 @@ public interface ContenidorService {
 	@PreAuthorize("hasRole('tothom')")
 	public DadaDto dadaDelete(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId) throws NotFoundException;
 
 	/**
 	 * Obté una dada de dins el node.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el contingut.
 	 * @param dadaId
 	 *            Atribut id de la meta-dada a partir del qual es vol crear aquesta dada.
 	 * @return La dada esborrada.
@@ -127,138 +127,138 @@ public interface ContenidorService {
 	@PreAuthorize("hasRole('tothom')")
 	public DadaDto dadaFindById(
 			Long entitatId,
-			Long contenidorId,
+			Long contingutId,
 			Long dadaId) throws NotFoundException;
 
 	/**
-	 * Marca un contenidor com a esborrat. Posteriorment un administrador
+	 * Marca un contingut com a esborrat. Posteriorment un administrador
 	 * el podria recuperar.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor que es vol esborrar.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol esborrar.
 	 * @param nomesMarcarEsborrat
-	 *            Posar a true si es vol esborrar el contenidor definitivament
+	 *            Posar a true si es vol esborrar el contingut definitivament
 	 *            o false si només es vol marcar com a esborrat.
-	 * @return El contenidor esborrat.
+	 * @return El contingut esborrat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto deleteReversible(
+	public ContingutDto deleteReversible(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Esborra un contenidor sense possibilitat de recuperar-lo.
+	 * Esborra un contingut sense possibilitat de recuperar-lo.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor que es vol esborrar.
-	 * @return El contenidor esborrat.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol esborrar.
+	 * @return El contingut esborrat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public ContenidorDto deleteDefinitiu(
+	public ContingutDto deleteDefinitiu(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Recupera un contenidor marcat com a esborrat.
+	 * Recupera un contingut marcat com a esborrat.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor que es vol esborrar.
-	 * @return El contenidor recuperat.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol esborrar.
+	 * @return El contingut recuperat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws ValidationException
-	 *             Si ja existeix un altre contenidor amb el mateix nom
+	 *             Si ja existeix un altre contingut amb el mateix nom
 	 *             a dins el mateix pare.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public ContenidorDto undelete(
+	public ContingutDto undelete(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException, ValidationException;
+			Long contingutId) throws NotFoundException, ValidationException;
 
 	/**
-	 * Mou un contenidor al destí especificat.
+	 * Mou un contingut al destí especificat.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorOrigenId
-	 *            Atribut id del contenidor que es vol moure.
-	 * @param contenidorDestiId
-	 *            Atribut id del contenidor a on es vol moure l'origen.
-	 * @return El contenidor mogut.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutOrigenId
+	 *            Atribut id del contingut que es vol moure.
+	 * @param contingutDestiId
+	 *            Atribut id del contingut a on es vol moure l'origen.
+	 * @return El contingut mogut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws ValidationException
-	 *             Si ja existeix un altre contenidor amb el mateix nom
+	 *             Si ja existeix un altre contingut amb el mateix nom
 	 *             a dins el destí.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto move(
+	public ContingutDto move(
 			Long entitatId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId) throws NotFoundException, ValidationException;
+			Long contingutOrigenId,
+			Long contingutDestiId) throws NotFoundException, ValidationException;
 
 	/**
-	 * Copia un contenidor al destí especificat.
+	 * Copia un contingut al destí especificat.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorOrigenId
-	 *            Atribut id del contenidor que es vol copiar.
-	 * @param contenidorDestiId
-	 *            Atribut id del contenidor a on es vol posar la còpia.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutOrigenId
+	 *            Atribut id del contingut que es vol copiar.
+	 * @param contingutDestiId
+	 *            Atribut id del contingut a on es vol posar la còpia.
 	 * @param recursiu
 	 *            Amb el valor 'true' indica que .
-	 * @return El contenidor creat amb la còpia.
+	 * @return El contingut creat amb la còpia.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws ValidationException
-	 *             Si ja existeix un altre contenidor amb el mateix nom
+	 *             Si ja existeix un altre contingut amb el mateix nom
 	 *             a dins el destí.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto copy(
+	public ContingutDto copy(
 			Long entitatId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId,
+			Long contingutOrigenId,
+			Long contingutDestiId,
 			boolean recursiu) throws NotFoundException, ValidationException;
 
 	/**
-	 * Reb un contenidor situat a la bústia especificada.
+	 * Reb un contingut situat a la bústia especificada.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
 	 * @param bustiaId
 	 *            Atribut id de la bústia destinatària.
-	 * @param contenidorOrigenId
-	 *            Atribut id del contenidor que es vol rebre.
-	 * @param contenidorDestiId
-	 *            Atribut id del contenidor a on es vol situar el contingut rebut.
-	 * @return El contenidor rebut.
+	 * @param contingutOrigenId
+	 *            Atribut id del contingut que es vol rebre.
+	 * @param contingutDestiId
+	 *            Atribut id del contingut a on es vol situar el contingut rebut.
+	 * @return El contingut rebut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	/*@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto receivea(
+	public ContingutDto receivea(
 			Long entitatId,
 			Long bustiaId,
-			Long contenidorOrigenId,
-			Long contenidorDestiId) throws NotFoundException;*/
+			Long contingutOrigenId,
+			Long contingutDestiId) throws NotFoundException;*/
 
 	/**
 	 * Obté el contingut de l'escriptori de l'usuari actual.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
 	 * @return l'objecte que representa l'escriptori.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -268,135 +268,135 @@ public interface ContenidorService {
 			Long entitatId) throws NotFoundException;
 
 	/**
-	 * Obté la informació del contenidor especificat sense el seu contingut.
+	 * Obté la informació del contingut especificat sense el seu contingut.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
-	 * @return El contenidor sense el seu contingut.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el contingut.
+	 * @return El contingut sense el seu contingut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto getContenidorSenseContingut(
+	public ContingutDto getContingutSenseFills(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Obté la informació del contenidor especificat juntament amb el seu contingut.
+	 * Obté la informació del contingut especificat juntament amb el seu contingut.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
-	 * @return El contenidor i el seu contingut.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el contingut.
+	 * @return El contingut i el seu contingut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto getContenidorAmbContingut(
+	public ContingutDto getContingutAmbFills(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Obté la informació s'un contenidor juntament el seu contingut donat el path.
+	 * Obté la informació s'un contingut juntament el seu contingut donat el path.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
 	 * @param path
-	 *            Path del contenidor dins l'entitat.
-	 * @return El contenidor i el seu contingut.
+	 *            Path del contingut dins l'entitat.
+	 * @return El contingut i el seu contingut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContenidorDto getContenidorAmbContingutPerPath(
+	public ContingutDto getContingutAmbFillsPerPath(
 			Long entitatId,
 			String path) throws NotFoundException;
 
 	/**
-	 * Obté els errors de validació d'un contenidor.
+	 * Obté els errors de validació d'un contingut.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
-	 * @return Els errors de validació del contenidor.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el contingut.
+	 * @return Els errors de validació del contingut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public List<ValidacioErrorDto> findErrorsValidacio(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Obté el registre d'accions realitzades damunt un contenidor.
+	 * Obté el registre d'accions realitzades damunt un contingut.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el registre.
-	 * @return La llista d'accions realitzades damunt el contenidor.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el registre.
+	 * @return La llista d'accions realitzades damunt el contingut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public List<ContenidorLogDto> findLogsPerContenidorAdmin(
+	public List<ContingutLogDto> findLogsPerContingutAdmin(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Obté el registre d'accions realitzades damunt un contenidor.
+	 * Obté el registre d'accions realitzades damunt un contingut.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el registre.
-	 * @return La llista d'accions realitzades damunt el contenidor.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el registre.
+	 * @return La llista d'accions realitzades damunt el contingut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<ContenidorLogDto> findLogsPerContenidorUser(
+	public List<ContingutLogDto> findLogsPerContingutUser(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Obté el registre d'accions realitzades damunt un contenidor.
+	 * Obté el registre d'accions realitzades damunt un contingut.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el registre.
-	 * @return La llista de moviments realitzats damunt el contenidor.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el registre.
+	 * @return La llista de moviments realitzats damunt el contingut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<ContenidorMovimentDto> findMovimentsPerContenidorAdmin(
+	public List<ContingutMovimentDto> findMovimentsPerContingutAdmin(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Obté el registre d'accions realitzades damunt un contenidor.
+	 * Obté el registre d'accions realitzades damunt un contingut.
 	 * 
 	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el registre.
-	 * @return La llista de moviments realitzats damunt el contenidor.
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el registre.
+	 * @return La llista de moviments realitzats damunt el contingut.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<ContenidorMovimentDto> findMovimentsPerContenidorUser(
+	public List<ContingutMovimentDto> findMovimentsPerContingutUser(
 			Long entitatId,
-			Long contenidorId) throws NotFoundException;
+			Long contingutId) throws NotFoundException;
 
 	/**
-	 * Obté una llista dels contenidors esborrats permetent especificar dades
+	 * Obté una llista dels continguts esborrats permetent especificar dades
 	 * per al seu filtratge.
 	 * 
 	 * @param entitatId
@@ -405,18 +405,18 @@ public interface ContenidorService {
 	 *            El filtre de la consulta.
 	 * @param paginacioParams
 	 *            Paràmetres per a dur a terme la paginació del resultats.
-	 * @return Una pàgina amb els contenidors trobats.
+	 * @return Una pàgina amb els continguts trobats.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public PaginaDto<ContenidorDto> findAdmin(
+	public PaginaDto<ContingutDto> findAdmin(
 			Long entitatId,
-			ContenidorFiltreDto filtre,
+			ContingutFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 
 	/**
-	 * Obté una llista dels contenidors esborrats permetent especificar dades
+	 * Obté una llista dels continguts esborrats permetent especificar dades
 	 * per al seu filtratge.
 	 * 
 	 * @param entitatId
@@ -431,12 +431,12 @@ public interface ContenidorService {
 	 *            Data de fi per a filtrar la llista d'elements esborrats.
 	 * @param paginacioParams
 	 *            Paràmetres per a dur a terme la paginació del resultats.
-	 * @return Una pàgina amb els contenidors trobats.
+	 * @return Una pàgina amb els continguts trobats.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public PaginaDto<ContenidorDto> findEsborrats(
+	public PaginaDto<ContingutDto> findEsborrats(
 			Long entitatId,
 			String nom,
 			String usuariCodi,

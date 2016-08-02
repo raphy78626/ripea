@@ -29,7 +29,7 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.service.ArxiuService;
-import es.caib.ripea.core.api.service.ContenidorService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
@@ -48,7 +48,7 @@ import es.caib.ripea.war.command.ExpedientTancarCommand;
 public class ContenidorExpedientController extends BaseUserController {
 
 	@Autowired
-	private ContenidorService contenidorService;
+	private ContingutService contenidorService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -193,7 +193,7 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(command);
 		model.addAttribute(
 				"expedient",
-				contenidorService.getContenidorAmbContingut(
+				contenidorService.getContingutAmbFills(
 						entitatActual.getId(),
 						expedientId));
 		return "contenidorExpedientTancarForm";
@@ -210,7 +210,7 @@ public class ContenidorExpedientController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"expedient",
-					contenidorService.getContenidorAmbContingut(
+					contenidorService.getContingutAmbFills(
 							entitatActual.getId(),
 							expedientId));
 			return "contenidorExpedientTancarForm";
@@ -237,7 +237,7 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(command);
 		model.addAttribute(
 				"expedient",
-				contenidorService.getContenidorAmbContingut(
+				contenidorService.getContingutAmbFills(
 						entitatActual.getId(),
 						expedientId));
 		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
@@ -259,7 +259,7 @@ public class ContenidorExpedientController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"expedient",
-					contenidorService.getContenidorAmbContingut(
+					contenidorService.getContingutAmbFills(
 							entitatActual.getId(),
 							expedientId));
 			model.addAttribute(

@@ -13,7 +13,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class BustiaDto extends ContenidorDto {
+public class BustiaDto extends ContingutDto {
 
 	private String unitatCodi;
 	private String unitatConselleriaCodi;
@@ -22,8 +22,6 @@ public class BustiaDto extends ContenidorDto {
 
 	private List<PermisDto> permisos;
 	private boolean usuariActualRead;
-	private int fillsCount;
-	private int registresCount;
 	private UnitatOrganitzativaDto unitat;
 	private String pareNom;
 
@@ -65,18 +63,6 @@ public class BustiaDto extends ContenidorDto {
 	public void setUsuariActualRead(boolean usuariActualRead) {
 		this.usuariActualRead = usuariActualRead;
 	}
-	public int getFillsCount() {
-		return fillsCount;
-	}
-	public void setFillsCount(int fillsCount) {
-		this.fillsCount = fillsCount;
-	}
-	public int getRegistresCount() {
-		return registresCount;
-	}
-	public void setRegistresCount(int registresCount) {
-		this.registresCount = registresCount;
-	}
 	public UnitatOrganitzativaDto getUnitat() {
 		return unitat;
 	}
@@ -97,10 +83,6 @@ public class BustiaDto extends ContenidorDto {
 			return permisos.size();
 	}
 
-	public int getPendentCount() {
-		return fillsCount + registresCount;
-	}
-
 	private static final String SEPARADOR_NOM_UNITAT = " / ";
 	public String getNomAmbUnitat() {
 		if (unitat != null) {
@@ -115,7 +97,7 @@ public class BustiaDto extends ContenidorDto {
 		}
 	}
 
-	protected CarpetaDto copiarContenidor(ContenidorDto original) {
+	protected CarpetaDto copiarContenidor(ContingutDto original) {
 		CarpetaDto copia = new CarpetaDto();
 		copia.setId(original.getId());
 		copia.setNom(original.getNom());
