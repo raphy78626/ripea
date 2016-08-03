@@ -29,9 +29,9 @@
 			jndi-name="ripea/CarpetaServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.CarpetaService"/>
 	<jee:local-slsb
-			id="contenidorService"
-			jndi-name="ripea/ContenidorServiceBean/local"
-			business-interface="es.caib.ripea.core.api.service.ContenidorService"/>
+			id="contingutService"
+			jndi-name="ripea/ContingutServiceBean/local"
+			business-interface="es.caib.ripea.core.api.service.ContingutService"/>
 	<jee:local-slsb
 			id="documentService"
 			jndi-name="ripea/DocumentServiceBean/local"
