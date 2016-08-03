@@ -41,12 +41,11 @@ import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 				@UniqueConstraint(
 						name = "ipa_reg_mult_uk",
 						columnNames = {
+								"entitat_codi",
+								"llibre_codi",
 								"tipus",
-								"unitat_adm",
 								"numero",
-								"data",
-								"oficina_codi",
-								"llibre_codi"})})
+								"data"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends ContingutEntity {
 
@@ -257,6 +256,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public RegistreProcesEstatEnum getProcesEstat() {
 		return procesEstat;
+	}
+	public String getProcesError() {
+		return procesError;
 	}
 	public Integer getProcesIntents() {
 		return procesIntents;
@@ -473,10 +475,10 @@ public class RegistreEntity extends ContingutEntity {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
-		result = prime * result + ((identificador == null) ? 0 : identificador.hashCode());
+		result = prime * result + ((entitatCodi == null) ? 0 : entitatCodi.hashCode());
 		result = prime * result + ((llibreCodi == null) ? 0 : llibreCodi.hashCode());
-		result = prime * result + ((oficinaCodi == null) ? 0 : oficinaCodi.hashCode());
-		result = prime * result + ((tipus == null) ? 0 : tipus.hashCode());
+		result = prime * result + numero;
+		result = prime * result + ((registreTipus == null) ? 0 : registreTipus.hashCode());
 		return result;
 	}
 	@Override
@@ -493,25 +495,22 @@ public class RegistreEntity extends ContingutEntity {
 				return false;
 		} else if (!data.equals(other.data))
 			return false;
-		if (identificador == null) {
-			if (other.identificador != null)
+		if (entitatCodi == null) {
+			if (other.entitatCodi != null)
 				return false;
-		} else if (!identificador.equals(other.identificador))
+		} else if (!entitatCodi.equals(other.entitatCodi))
 			return false;
 		if (llibreCodi == null) {
 			if (other.llibreCodi != null)
 				return false;
 		} else if (!llibreCodi.equals(other.llibreCodi))
 			return false;
-		if (oficinaCodi == null) {
-			if (other.oficinaCodi != null)
-				return false;
-		} else if (!oficinaCodi.equals(other.oficinaCodi))
+		if (numero != other.numero)
 			return false;
-		if (tipus == null) {
-			if (other.tipus != null)
+		if (registreTipus == null) {
+			if (other.registreTipus != null)
 				return false;
-		} else if (!tipus.equals(other.tipus))
+		} else if (!registreTipus.equals(other.registreTipus))
 			return false;
 		return true;
 	}

@@ -51,11 +51,19 @@ $(document).ready(function() {
 	<table id="taulaDadesContingut" class="table table-bordered table-striped" data-rdt-paginable="false">
 		<thead>
 			<tr>
-				<th data-rdt-property="id" data-rdt-visible="false">#</th>
-				<th data-rdt-property="tipus" data-rdt-sortable="false" width="15%"><spring:message code="bustia.pendent.columna.tipus"/></th>
+				<th data-rdt-property="id" data-rdt-visible="false"></th>
+				<th data-rdt-property="error" data-rdt-visible="false"></th>
+				<th data-rdt-property="tipus" data-rdt-visible="false"><spring:message code="bustia.pendent.columna.tipus"/></th>
 				<th data-rdt-property="recepcioData" data-rdt-type="datetime" data-rdt-sortable="false" width="15%"><spring:message code="bustia.pendent.columna.recepcio.data"/></th>
+				<th data-rdt-property="descripcio" data-rdt-template="contingutTemplate" data-rdt-sortable="false" width="30%">
+					<spring:message code="bustia.pendent.columna.descripcio"/>
+					<script id="contingutTemplate" type="text/x-jsrender">
+						{{if tipus == 'REGISTRE'}}<span class="fa fa-book" title="<spring:message code="bustia.pendent.tipus.enum.REGISTRE"/>"></span>{{else tipus == 'EXPEDIENT'}}<span class="fa fa-briefcase" title="<spring:message code="bustia.pendent.tipus.enum.EXPEDIENT"/>"></span>{{else tipus == 'DOCUMENT'}}<span class="fa fa-file" title="<spring:message code="bustia.pendent.tipus.enum.DOCUMENT"/>"></span>{{/if}}
+						{{:descripcio}}
+						{{if error}}<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.pendent.registre.estat.error"/>"></span>{{/if}}
+					</script>
+				</th>
 				<th data-rdt-property="numero" data-rdt-sortable="false" width="15%"><spring:message code="bustia.pendent.columna.numero"/></th>
-				<th data-rdt-property="descripcio" data-rdt-sortable="false" width="15%"><spring:message code="bustia.pendent.columna.contingut"/></th>
 				<th data-rdt-property="remitent" data-rdt-sortable="false" width="15%"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-rdt-property="comentari" data-rdt-sortable="false" width="15%"><spring:message code="bustia.pendent.columna.comentari"/></th>
 				<th data-rdt-property="id" data-rdt-sortable="false" data-rdt-template="cellAccionsContingutTemplate" width="10%">
@@ -63,11 +71,12 @@ $(document).ready(function() {
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
-								{{if tipus == 'REGISTRE_ENTRADA'}}
+								{{if tipus == 'REGISTRE'}}
 									<li><a href="../../contenidor/${bustia.id}/registre/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
 								{{else}}
 									<li><a href="../../contenidor/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.obrir"/></a></li>
 								{{/if}}
+								<li><a href="../../contenidor/{{:id}}/log" data-rdt-link-modal="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/nouexp" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.nou.expedient"/>...</a></li>
 								<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/addexp" data-rdt-link-modal="true"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>
 								<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/reenviar" data-rdt-link-modal="true"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>

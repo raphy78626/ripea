@@ -8,6 +8,7 @@ import java.util.List;
 
 import es.caib.ripea.core.api.registre.RegistreAnnex;
 import es.caib.ripea.core.api.registre.RegistreInteressat;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 
 /**
@@ -19,6 +20,10 @@ public class RegistreAnotacioDto extends ContingutDto {
 
 	private RegistreTipusEnum registreTipus;
 	private String unitatAdministrativa;
+	private Date procesData;
+	private RegistreProcesEstatEnum procesEstat;
+	private String procesError;
+	private Integer procesIntents;
 
 	public RegistreTipusEnum getRegistreTipus() {
 		return registreTipus;
@@ -31,6 +36,30 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setUnitatAdministrativa(String unitatAdministrativa) {
 		this.unitatAdministrativa = unitatAdministrativa;
+	}
+	public Date getProcesData() {
+		return procesData;
+	}
+	public void setProcesData(Date procesData) {
+		this.procesData = procesData;
+	}
+	public RegistreProcesEstatEnum getProcesEstat() {
+		return procesEstat;
+	}
+	public void setProcesEstat(RegistreProcesEstatEnum procesEstat) {
+		this.procesEstat = procesEstat;
+	}
+	public String getProcesError() {
+		return procesError;
+	}
+	public void setProcesError(String procesError) {
+		this.procesError = procesError;
+	}
+	public Integer getProcesIntents() {
+		return procesIntents;
+	}
+	public void setProcesIntents(Integer procesIntents) {
+		this.procesIntents = procesIntents;
 	}
 
 	protected RegistreAnotacioDto copiarContenidor(ContingutDto original) {

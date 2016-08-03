@@ -39,9 +39,14 @@
 							</div>
 						</div>
 						<script>
-							var tooltipTitle = '<dl class="text-left" style="min-width:120px">' +
-									'<dt><spring:message code="contenidor.contingut.info.nom"/></dt>' +
-									'<dd>${fn:escapeXml(fill.nom)}</dd>';
+							var tooltipTitle = '<dl class="text-left" style="min-width:120px">';
+							<c:if test="${fill.expedient or fill.document}">
+							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.titol"/></dt>';
+							</c:if>
+							<c:if test="${not fill.expedient and not fill.document}">
+							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.nom"/></dt>';
+							</c:if>
+							tooltipTitle += '<dd>${fn:escapeXml(fill.nom)}</dd>';
 							<c:if test="${fill.expedient}">
 							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.numero"/></dt>';
 							tooltipTitle += '<dd>${fill.sequencia}/${fill.any}</dd>';

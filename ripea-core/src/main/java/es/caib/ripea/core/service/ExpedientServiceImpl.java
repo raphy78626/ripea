@@ -842,7 +842,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 					new Converter<ExpedientEntity, ExpedientDto>() {
 						@Override
 						public ExpedientDto convert(ExpedientEntity source) {
-							System.out.println(">>> Converting EXP: " + source.getNom());
 							return toExpedientDto(
 									source,
 									true);

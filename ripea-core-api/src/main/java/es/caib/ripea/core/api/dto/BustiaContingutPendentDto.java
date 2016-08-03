@@ -23,6 +23,7 @@ public class BustiaContingutPendentDto implements Serializable {
 	private String descripcio;
 	private String remitent;
 	private String comentari;
+	private boolean error;
 
 
 
@@ -67,6 +68,12 @@ public class BustiaContingutPendentDto implements Serializable {
 	}
 	public void setComentari(String comentari) {
 		this.comentari = comentari;
+	}
+	public boolean isError() {
+		return error;
+	}
+	public void setError(boolean error) {
+		this.error = error;
 	}
 
 	@Override

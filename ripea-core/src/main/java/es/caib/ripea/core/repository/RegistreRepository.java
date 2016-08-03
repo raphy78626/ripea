@@ -45,12 +45,11 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<Object[]> countByParesAndNotRebutjat(
 			@Param("pares") List<? extends ContingutEntity> pares);
 
-	RegistreEntity findByRegistreTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaCodiAndLlibreCodi(
+	RegistreEntity findByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndData(
+			String entitatCodi,
+			String llibreCodi,
 			String registreTipus,
-			String unitatAdministrativa,
 			int numero,
-			Date data,
-			String oficinaCodi,
-			String llibreCodi);
+			Date data);
 
 }

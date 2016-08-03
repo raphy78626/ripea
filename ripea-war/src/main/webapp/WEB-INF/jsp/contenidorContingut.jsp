@@ -320,7 +320,7 @@ $(document).ready(function() {
 				<%--                    --%>
 				<div id="contenidor-info" class="well">
 					<h3>
-						<spring:message code="contenidor.contingut.info.titol"/>
+						<spring:message code="contenidor.contingut.info.informacio"/>
 						<c:if test="${contenidor.expedient}">
 							<a href="../contenidor/${contenidor.id}/nti" class="btn btn-info btn-xs" data-rdt-link-modal="true">NTI</a>
 						</c:if>
@@ -647,10 +647,10 @@ $(document).ready(function() {
 							<thead>
 								<tr>
 									<th data-rdt-property="id" data-rdt-visible="false">#</th>
-									<th data-rdt-property="tipus" data-rdt-template="cellTipusTemplate" data-rdt-sortable="false" width="10%">
+									<th data-rdt-property="registreTipus" data-rdt-template="cellTipusTemplate" data-rdt-sortable="false" width="10%">
 										<spring:message code="contenidor.contingut.registre.columna.tipus"/>
 										<script id="cellTipusTemplate" type="text/x-jsrender">
-											{{:~eval('registreTipusText["' + tipus + '"]')}}
+											{{:~eval('registreTipusText["' + registreTipus + '"]')}}
 										</script>
 									</th>
 									<th data-rdt-property="identificador" data-rdt-sortable="false" width="10%"><spring:message code="contenidor.contingut.registre.columna.identificador"/></th>

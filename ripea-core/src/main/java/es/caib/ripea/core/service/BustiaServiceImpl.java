@@ -564,22 +564,20 @@ public class BustiaServiceImpl implements BustiaService {
 		BustiaEntity bustia = bustiaHelper.findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
 				entitat,
 				unitat);
-		RegistreEntity registreRepetit = registreRepository.findByRegistreTipusAndUnitatAdministrativaAndNumeroAndDataAndOficinaCodiAndLlibreCodi(
+		RegistreEntity registreRepetit = registreRepository.findByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndData(
+				anotacio.getEntitatCodi(),
+				anotacio.getLlibreCodi(),
 				RegistreTipusEnum.ENTRADA.getValor(),
-				unitatAdministrativa,
 				anotacio.getNumero(),
-				anotacio.getData(),
-				anotacio.getOficinaCodi(),
-				anotacio.getLlibreCodi());
+				anotacio.getData());
 		if (registreRepetit != null) {
 			throw new ValidationException(
 					"Aquesta anotació ja ha estat donada d'alta a l'aplicació (" +
+					"entitatCodi=" + anotacio.getEntitatCodi() + ", " +
+					"llibreCodi=" + anotacio.getLlibreCodi() + ", " +
 					"tipus=" + RegistreTipusEnum.ENTRADA.getValor() + ", " +
-					"unitatAdministrativa=" + unitatAdministrativa + ", " +
 					"numero=" + anotacio.getNumero() + ", " +
-					"data=" + anotacio.getData() + ", " +
-					"oficina=" + anotacio.getOficinaCodi() + ", " +
-					"llibre=" + anotacio.getLlibreCodi() + ")");
+					"data=" + anotacio.getData() + ")");
 		}
 		ReglaEntity reglaAplicable = findReglaAplicable(
 				entitat,
@@ -640,8 +638,17 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		List<BustiaContingutPendentDto> pendents = new ArrayList<BustiaContingutPendentDto>();
 		for (ContingutDto fill: bustiaDto.getFills()) {
-			pendents.add(
-					toContingutPendentDto(fill));
+			boolean afegir = true;
+			if (fill.isRegistre()) {
+				RegistreAnotacioDto anotacio = (RegistreAnotacioDto)fill;
+				if (!RegistreProcesEstatEnum.NO_PROCES.equals(anotacio.getProcesEstat()) && !RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
+					afegir = false;
+				}
+			}
+			if (afegir) {
+				pendents.add(
+						toContingutPendentDto(fill));
+			}
 		}
 		return pendents;
 	}
@@ -732,7 +739,7 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				bustiaDestiId,
 				false);
-		if (contingutTipus != BustiaContingutPendentTipusEnumDto.REGISTRE_ENTRADA) {
+		if (contingutTipus != BustiaContingutPendentTipusEnumDto.REGISTRE) {
 			ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 					entitat,
 					contingutId,
@@ -1008,27 +1015,31 @@ public class BustiaServiceImpl implements BustiaService {
 			ContingutDto contingut) {
 		BustiaContingutPendentDto pendent = new BustiaContingutPendentDto();
 		pendent.setId(contingut.getId());
-		pendent.setRecepcioData(contingut.getDarrerMovimentData());
 		pendent.setDescripcio(contingut.getNom());
-		pendent.setComentari(contingut.getDarrerMovimentComentari());
-		if (contingut.getDarrerMovimentUsuari() != null) {
-			pendent.setRemitent(contingut.getDarrerMovimentUsuari().getNom());
-		}
-		if (contingut.isExpedient()) {
-			pendent.setTipus(BustiaContingutPendentTipusEnumDto.EXPEDIENT);
-		}
-		if (contingut.isDocument()) {
-			pendent.setTipus(BustiaContingutPendentTipusEnumDto.DOCUMENT);
-		}
 		if (contingut.isRegistre()) {
 			RegistreAnotacioDto anotacio = (RegistreAnotacioDto)contingut;
-			pendent.setRecepcioData(anotacio.getCreatedDate());
+			pendent.setTipus(BustiaContingutPendentTipusEnumDto.REGISTRE);
 			pendent.setNumero(anotacio.getIdentificador());
 			pendent.setDescripcio(anotacio.getExtracte());
-			pendent.setComentari(null);
 			pendent.setRemitent("REGWEB");
-			pendent.setTipus(BustiaContingutPendentTipusEnumDto.REGISTRE_ENTRADA);
+			pendent.setRecepcioData(anotacio.getCreatedDate());
+			if (RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
+				pendent.setError(true);
+			}
+		} else {
+			if (contingut.isExpedient()) {
+				pendent.setTipus(BustiaContingutPendentTipusEnumDto.EXPEDIENT);
+			}
+			if (contingut.isDocument()) {
+				pendent.setTipus(BustiaContingutPendentTipusEnumDto.DOCUMENT);
+			}
 		}
+		if (contingut.getDarrerMovimentUsuari() != null)
+			pendent.setRemitent(contingut.getDarrerMovimentUsuari().getNom());
+		if (contingut.getDarrerMovimentData() != null)
+			pendent.setRecepcioData(contingut.getDarrerMovimentData());
+		if (contingut.getDarrerMovimentComentari() != null)
+			pendent.setComentari(contingut.getDarrerMovimentComentari());
 		return pendent;
 	}
 

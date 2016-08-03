@@ -13,5 +13,5 @@ package es.caib.ripea.core.api.dto;
 public enum BustiaContingutPendentTipusEnumDto {
 	EXPEDIENT,
 	DOCUMENT,
-	REGISTRE_ENTRADA
+	REGISTRE
 }

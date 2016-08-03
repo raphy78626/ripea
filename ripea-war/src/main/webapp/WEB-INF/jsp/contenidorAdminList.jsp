@@ -103,17 +103,17 @@ $(document).ready(function() {
 			<tr>
 				<th data-rdt-property="id" data-rdt-visible="false">#</th>
 				<th data-rdt-property="escriptori" data-rdt-visible="false">#</th>
-				<th data-rdt-property="escriptori" data-rdt-visible="false">#</th>
 				<th data-rdt-property="expedient" data-rdt-visible="false">#</th>
 				<th data-rdt-property="carpeta" data-rdt-visible="false">#</th>
 				<th data-rdt-property="document" data-rdt-visible="false">#</th>
 				<th data-rdt-property="arxiv" data-rdt-visible="false">#</th>
 				<th data-rdt-property="bustia" data-rdt-visible="false">#</th>
+				<th data-rdt-property="registre" data-rdt-visible="false">#</th>
 				<th data-rdt-property="esborrat" data-rdt-visible="false">#</th>
 				<th data-rdt-property="nom" data-rdt-template="cellNomTemplate" width="25%">
 					<spring:message code="contenidor.admin.columna.nom"/>
 					<script id="cellNomTemplate" type="text/x-jsrender">
-						{{if expedient}}<span class="fa fa-briefcase"></span>{{else document}}<span class="fa fa-file"></span>{{else carpeta}}<span class="fa fa-folder"></span>{{/if}}
+						{{if expedient}}<span class="fa fa-briefcase"></span>{{else document}}<span class="fa fa-file"></span>{{else carpeta}}<span class="fa fa-folder"></span>{{else registre}}<span class="fa fa-book"></span>{{else arxiv}}<span class="fa fa-archive"></span>{{else bustia}}<span class="fa fa-inbox"></span>{{/if}}
 						{{:nom}}
 						{{if esborrat}}<span class="fa fa-trash-o pull-right" title="<spring:message code="contenidor.admin.columna.esborrat"/>"></span>{{/if}}
 					</script>
