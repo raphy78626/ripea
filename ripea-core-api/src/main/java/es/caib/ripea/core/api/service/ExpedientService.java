@@ -163,24 +163,6 @@ public interface ExpedientService {
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany l'expedient.
-	 * @param arxiuId
-	 *            Atribut id de l'arxiu al qual pertany l'expedient.
-	 * @param id
-	 *            Atribut id de l'expedient.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public void agafarUser(
-			Long entitatId,
-			Long arxiuId,
-			Long id) throws NotFoundException;
-
-	/**
-	 * Posa un expedient a l'escriptori de l'usuari actual.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany l'expedient.
 	 * @param id
 	 *            Atribut id de l'expedient.
 	 * @throws NotFoundException
