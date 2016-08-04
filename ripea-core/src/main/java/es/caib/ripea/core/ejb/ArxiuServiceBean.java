@@ -99,6 +99,13 @@ public class ArxiuServiceBean implements ArxiuService {
 
 	@Override
 	@RolesAllowed("tothom")
+	public List<ArxiuDto> findPermesosPerUsuari(Long entitatId)
+			throws NotFoundException {
+		return delegate.findPermesosPerUsuari(entitatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesUser(
 			Long entitatId) {
 		return delegate.findArbreUnitatsOrganitzativesUser(entitatId);

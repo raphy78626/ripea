@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
@@ -58,24 +59,40 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			"where " +
 			"    e.esborrat = 0 " +
 			"and e.entitat = :entitat " +
-			"and e.arxiu = :arxiu " +
+			"and (:esNullArxiu = true or e.arxiu = :arxiu) " +
+			"and (:esNullArxiusPermesos = true or e.arxiu in (:arxiusPermesos)) " +
 			"and (e.metaNode is null or e.metaNode in (:metaNodesPermesos)) " +
+			"and (:esNullNumero = true or lower(e.sequencia||'/'||e.any) like lower('%'||:numero||'%')) " +
 			"and (:esNullNom = true or lower(e.nom) like lower('%'||:nom||'%')) " +
 			"and (:esNullMetaNode = true or e.metaNode = :metaNode) " +
 			"and (:esNullCreacioInici = true or e.createdDate >= :creacioInici) " +
-			"and (:esNullCreacioFi = true or e.createdDate <= :creacioFi)")
+			"and (:esNullCreacioFi = true or e.createdDate <= :creacioFi) " +
+			"and (:esNullTancatInici = true or e.createdDate >= :tancatInici) " +
+			"and (:esNullTancatFi = true or e.createdDate <= :tancatFi) " +
+			"and (:esNullEstat = true or e.estat = :estat)")
 	Page<ExpedientEntity> findByEntitatAndArxiuFiltre(
 			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullArxiu") boolean esNullArxiu,
 			@Param("arxiu") ArxiuEntity arxiu,
+			@Param("esNullArxiusPermesos") boolean esNullArxiusPermesos,
+			@Param("arxiusPermesos") List<ArxiuEntity> arxiusPermesos,
 			@Param("metaNodesPermesos") List<? extends MetaNodeEntity> metaNodesPermesos,
 			@Param("esNullMetaNode") boolean esNullMetaNode,
-			@Param("metaNode") MetaNodeEntity metaNode,
+			@Param("metaNode") MetaNodeEntity metaNode,			
+			@Param("esNullNumero") boolean esNullNumero,
+			@Param("numero") String numero,
 			@Param("esNullNom") boolean esNullNom,
 			@Param("nom") String nom,
 			@Param("esNullCreacioInici") boolean esNullCreacioInici,
 			@Param("creacioInici") Date creacioInici,
 			@Param("esNullCreacioFi") boolean esNullCreacioFi,
 			@Param("creacioFi") Date creacioFi,
+			@Param("esNullTancatInici") boolean esNullTancatInici,
+			@Param("tancatInici") Date tancatInici,
+			@Param("esNullTancatFi") boolean esNullTancatFi,
+			@Param("tancatFi") Date tancatFi,
+			@Param("esNullEstat") boolean esNullEstat,
+			@Param("estat") ExpedientEstatEnumDto estat,
 			Pageable pageable);
 
 }

@@ -85,7 +85,7 @@
 						if (plugin.settings.filtre) {
 							data = $.extend(
 									data,
-									$(plugin.settings.filtre).serializeObject());
+									$(plugin.settings.filtre).serialize());
 						}
 					}
 				},
@@ -444,6 +444,8 @@
 					clickedButton = $(this);
 				});
 				filterForm.on('submit', function(event) {
+					if ($(clickedButton).val() === 'netejar')
+						$(this).webutilNetejarInputs();
 					var formData = $(this).serialize() + "&" + $(clickedButton).attr('name') + "=" + $(clickedButton).val();
 					$.ajax({
 						type: $(this).attr('method'),
@@ -453,8 +455,6 @@
 							$taula.DataTable().ajax.reload();
 						}
 					});
-					if ($(clickedButton).val() === 'netejar')
-						$(this).webutilNetejarInputs();
 					return false;
 				});
 			}

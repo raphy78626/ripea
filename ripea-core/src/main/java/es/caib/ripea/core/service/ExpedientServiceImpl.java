@@ -3,8 +3,11 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -119,7 +122,12 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 
-
+	private Map<String, String[]> ordenacioMap;
+	
+	public ExpedientServiceImpl() {
+		this.ordenacioMap = new HashMap<String, String[]>();
+		ordenacioMap.put("sequenciaAny", new String[] {"any", "sequencia"});
+	}
 
 	@Transactional
 	@Override
@@ -536,6 +544,75 @@ public class ExpedientServiceImpl implements ExpedientService {
 
 	@Transactional
 	@Override
+	public void agafarUser(
+			Long entitatId,
+			Long id) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.debug("Agafant l'expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "usuari=" + auth.getName() + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedient = comprovarExpedient(
+				entitat,
+				null,
+				id);
+		if (expedient.getArxiu() != null)
+			comprovarArxiu(
+				entitat,
+				expedient.getArxiu().getId(),
+				true);
+		// No s'ha de poder agafar un expedient no arrel
+		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+				expedient,
+				false);
+		if (expedientSuperior != null) {
+			logger.error("No es pot agafar un expedient no arrel (id=" + id + ")");
+			throw new ValidationException(
+					id,
+					ExpedientEntity.class,
+					"No es pot agafar un expedient no arrel");
+		}
+		// Comprova que es pugui modificar l'expedient a agafar
+		contenidorHelper.comprovarPermisosContenidor(
+				expedient,
+				false,
+				true,
+				false);
+		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
+		ContenidorEntity arrel = contenidorHelper.findContenidorArrel(expedient);
+		UsuariEntity usuariOriginal = null;
+		if (arrel instanceof EscriptoriEntity)
+			usuariOriginal = ((EscriptoriEntity)arrel).getUsuari();
+		EscriptoriEntity escriptori = contenidorHelper.getEscriptoriPerUsuari(
+				entitat,
+				usuariHelper.getUsuariAutenticat());
+		contenidorHelper.ferIEnregistrarMovimentContenidor(
+				expedient,
+				escriptori,
+				null);
+		// Avisa a l'usuari que li han pres
+		if (usuariOriginal != null) {
+			emailHelper.emailUsuariContenidorAgafatSensePermis(
+					expedient,
+					usuariOriginal);
+		}
+		// Registra al log l'apropiació de l'expedient
+		contenidorLogHelper.log(
+				expedient,
+				LogTipusEnumDto.RESERVA,
+				null,
+				null,
+				false,
+				false);
+	}
+	
+	@Transactional
+	@Override
 	public void agafarAdmin(
 			Long entitatId,
 			Long arxiuId,
@@ -802,10 +879,16 @@ public class ExpedientServiceImpl implements ExpedientService {
 				(!accesAdmin),
 				accesAdmin,
 				false);
-		ArxiuEntity arxiu = comprovarArxiu(
+		ArxiuEntity arxiu = null;
+		List<ArxiuEntity> arxiusPermesos = null;
+		if (filtre.getArxiuId() != null)
+			arxiu = comprovarArxiu(
 				entitat,
 				filtre.getArxiuId(),
 				(!accesAdmin));
+		else {
+			arxiusPermesos = this.getArxiusPermesos(entitat);
+		}
 		MetaExpedientEntity metaExpedient = null;
 		if (filtre.getMetaExpedientId() != null) {
 			metaExpedient = comprovarMetaExpedient(
@@ -834,17 +917,30 @@ public class ExpedientServiceImpl implements ExpedientService {
 			return paginacioHelper.toPaginaDto(
 					expedientRepository.findByEntitatAndArxiuFiltre(
 							entitat,
+							arxiu == null,
 							arxiu,
+							arxiusPermesos == null,
+							arxiusPermesos,
 							metaExpedientsPermesos,
 							metaExpedient == null,
 							metaExpedient,
+							filtre.getNumero() == null || "".equals(filtre.getNumero().trim()),
+							filtre.getNumero(),
 							filtre.getNom() == null || filtre.getNom().isEmpty(),
 							filtre.getNom(),
 							filtre.getDataCreacioInici() == null,
 							filtre.getDataCreacioInici(),
 							filtre.getDataCreacioFi() == null,
 							filtre.getDataCreacioFi(),
-							paginacioHelper.toSpringDataPageable(paginacioParams)),
+							filtre.getDataTancatInici() == null,
+							filtre.getDataTancatInici(),
+							filtre.getDataTancatFi() == null,
+							filtre.getDataTancatFi(),
+							filtre.getEstat() == null,
+							filtre.getEstat(),
+							paginacioHelper.toSpringDataPageable(
+									paginacioParams,
+									ordenacioMap)),
 					ExpedientDto.class,
 					new Converter<ExpedientEntity, ExpedientDto>() {
 						@Override
@@ -858,6 +954,32 @@ public class ExpedientServiceImpl implements ExpedientService {
 			return paginacioHelper.getPaginaDtoBuida(
 					ExpedientDto.class);
 		}
+	}
+
+	private List<ArxiuEntity> getArxiusPermesos(EntitatEntity entitat) {
+		List<ArxiuEntity> arxius = arxiuRepository.findByEntitatAndPareNotNull(entitat);
+		List<ArxiuEntity> resultat = new ArrayList<ArxiuEntity>();
+		Permission[] permisos = new Permission[] {ExtendedPermission.READ};
+		// Filtra els meta-expedients dels arxius en el que l'usuari tingui permisos de lectura
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		// Afegeix les unitats dels arxius que estiguin relacionats amb algun meta-expedient amb permisos
+		for (ArxiuEntity arxiu: arxius) {
+			boolean granted = false;
+			// Comprova l'accés als meta-expedients
+			for (MetaExpedientEntity metaExpedient: arxiu.getMetaExpedients()) {
+				if (permisosHelper.isGrantedAll(
+						metaExpedient.getId(),
+						MetaNodeEntity.class,
+						permisos,
+						auth)) {
+					granted = true;
+					break;
+				}
+			}
+			if (granted)
+				resultat.add(arxiu);
+		}
+		return resultat;
 	}
 
 	private ExpedientDto toExpedientDto(

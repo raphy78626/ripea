@@ -42,7 +42,7 @@ public class PaginacioHelper {
 
 	public <T> Pageable toSpringDataPageable(
 			PaginacioParamsDto dto,
-			Map<String, String> mapeigPropietatsOrdenacio) {
+			Map<String, String[]> mapeigPropietatsOrdenacio) {
 		return new PageRequest(
 				dto.getPaginaNum(),
 				dto.getPaginaTamany(),
@@ -56,27 +56,37 @@ public class PaginacioHelper {
 			PaginacioParamsDto dto) {
 		return toSpringDataSort(dto, null);
 	}
-	public <T> Sort toSpringDataSort(
+	public Sort toSpringDataSort(
 			PaginacioParamsDto dto,
-			Map<String, String> mapeigPropietatsOrdenacio) {
+			Map<String, String[]> mapeigPropietatsOrdenacio) {
 		List<Order> orders = new ArrayList<Order>();
 		if (dto.getOrdres() != null) {
 			for (OrdreDto ordre: dto.getOrdres()) {
 				Direction direccio = OrdreDireccioDto.DESCENDENT.equals(ordre.getDireccio()) ? Sort.Direction.DESC : Sort.Direction.ASC;
-				String propietat = ordre.getCamp();
 				if (mapeigPropietatsOrdenacio != null) {
-					String mapeig = mapeigPropietatsOrdenacio.get(ordre.getCamp());
-					if (mapeig != null)
-						propietat = mapeig;
+					String[] mapeig = mapeigPropietatsOrdenacio.get(ordre.getCamp());
+					if (mapeig != null) {
+						for (String prop: mapeig) {
+							orders.add(new Order(
+									direccio,
+									prop));
+						}
+					} else {
+						orders.add(new Order(
+								direccio,
+								ordre.getCamp()));
+					}
 				} else {
-					propietat = ordre.getCamp();
+					orders.add(new Order(
+							direccio,
+							ordre.getCamp()));
 				}
-				orders.add(new Order(
-						direccio,
-						propietat));
 			}
 		}
-		return new Sort(orders);
+		if (!orders.isEmpty())
+			return new Sort(orders);
+		else
+			return null;
 	}
 
 	public <S, T> PaginaDto<T> toPaginaDto(

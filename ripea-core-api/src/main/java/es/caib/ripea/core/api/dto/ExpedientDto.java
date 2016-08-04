@@ -62,6 +62,13 @@ public class ExpedientDto extends NodeDto {
 	public void setSequencia(long sequencia) {
 		this.sequencia = sequencia;
 	}
+	public String getSequenciaAny() {
+		return new StringBuilder()
+				.append(sequencia)
+				.append('/')
+				.append(any)
+				.toString();
+	}
 	public boolean isSistraPublicat() {
 		return sistraPublicat;
 	}
