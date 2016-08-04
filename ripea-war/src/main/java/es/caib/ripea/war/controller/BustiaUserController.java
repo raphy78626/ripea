@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.ArxiuDto;
-import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
@@ -32,11 +31,9 @@ import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
 import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
-import es.caib.ripea.war.helper.PaginacioHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -101,7 +98,10 @@ public class BustiaUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"bustia",
-				contenidorService.getContingutSenseFills(entitatActual.getId(), bustiaId));
+				contenidorService.findAmbIdUser(
+						entitatActual.getId(),
+						bustiaId,
+						false));
 		return "bustiaPendentList";
 	}
 
@@ -129,15 +129,16 @@ public class BustiaUserController extends BaseUserController {
 
 	@RequestMapping(value = "/{bustiaId}/pendent/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<BustiaContingutPendentDto> pendentContingutDatatable(
+	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return PaginacioHelper.getPaginaPerDatatables(
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				bustiaService.contingutPendentFindByBustiaId(
 						entitatActual.getId(),
 						bustiaId));
+		return dtr;
 	}
 
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/nouexp", method = RequestMethod.GET)

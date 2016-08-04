@@ -163,9 +163,10 @@ public class RipeaFolderResource implements FolderResource {
 		} else if (contingut.getFills() != null) {
 			for (ContingutDto c: contingut.getFills()) {
 				if (c.getNom().equals(childName)) {
-					ContingutDto contingut = getContenidorService().getContingutAmbFills(
+					ContingutDto contingut = getContenidorService().findAmbIdUser(
 							entitat.getId(),
-							c.getId());
+							c.getId(),
+							true);
 					return contenidorToResource(contingut);
 				}
 			}

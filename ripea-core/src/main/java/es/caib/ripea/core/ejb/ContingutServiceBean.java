@@ -145,18 +145,26 @@ public class ContingutServiceBean implements ContingutService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public ContingutDto getContingutSenseFills(
+	public ContingutDto findAmbIdUser(
 			Long entitatId,
-			Long contingutId) {
-		return delegate.getContingutSenseFills(entitatId, contingutId);
+			Long contingutId,
+			boolean ambFills) {
+		return delegate.findAmbIdUser(
+				entitatId,
+				contingutId,
+				ambFills);
 	}
 
 	@Override
-	@RolesAllowed("tothom")
-	public ContingutDto getContingutAmbFills(
+	@RolesAllowed("IPA_ADMIN")
+	public ContingutDto findAmbIdAdmin(
 			Long entitatId,
-			Long contingutId) {
-		return delegate.getContingutAmbFills(entitatId, contingutId);
+			Long contingutId,
+			boolean ambFills) {
+		return delegate.findAmbIdAdmin(
+				entitatId,
+				contingutId,
+				ambFills);
 	}
 
 	@Override

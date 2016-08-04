@@ -198,7 +198,7 @@ public class PluginHelper {
 						IntegracioAccioTipusEnumDto.ENVIAMENT);
 				return resposta;
 			} else {
-				String errorMissatge = "No s'ha trobat cap unitat organitzativa arrel";
+				String errorMissatge = "No s'ha trobat la unitat organitzativa arrel (codi=" + pareCodi + ")";
 				integracioHelper.addAccioError(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,

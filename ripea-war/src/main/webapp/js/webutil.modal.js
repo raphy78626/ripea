@@ -145,6 +145,13 @@
 							});
 							modalBotons.hide();
 						}
+						var $pipelles = $('.nav-tabs', $(iframe).contents());
+						if ($pipelles.length) {
+							$('a[data-toggle="tab"]', $(iframe).contents()).on('click', function (e) {
+								setTimeout(
+										function(){console.log('ADJUST!');webutilModalAdjustHeight($(iframe))}, 500);
+							});
+						}
 						// Evaluar URL del formulari
 						var dataForm = $('body', $(iframe).contents()).data('modal-form');
 						var modalForm = (dataForm) ? $(dataForm, $(iframe).contents()) : $(settings.elementForm, $(iframe).contents());

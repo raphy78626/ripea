@@ -9,10 +9,17 @@ function webutilRefreshMissatges() {
 	$('#contingut-missatges').load(webutilContextPath() + "/nodeco/missatges");
 }
 
-function webutilModalAdjustHeight() {
-	$html = $(document.documentElement);
-	if ($(window.frameElement).length) {
-		$iframe = $(window.frameElement);
+function webutilModalAdjustHeight(iframe) {
+	var $iframe;
+	if (!iframe) {
+		if ($(window.frameElement).length) {
+			$iframe = $(window.frameElement);
+		}
+	} else {
+		$iframe = $(iframe);
+	}
+	if ($iframe) {
+		$html = $($iframe[0].contentWindow.document);
 		var modalobj = $iframe.parent().parent().parent();
 		var taraModal = $('.modal-header', modalobj).outerHeight() + $('.modal-footer', modalobj).outerHeight();
 		var maxBodyHeight = $(window.top).height() - taraModal - 62;
@@ -118,7 +125,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 	$.fn.webutilNetejarInputs = function(options) {
 		$(this).find('input:text, input:password, input:file, select, textarea').val('');
 		$(this).find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
-		$(this).find('select.select2-hidden-accessible').val(null).trigger("change");
+		$(this).find('select.select2-hidden-accessible').select2({theme: "bootstrap"}).trigger("change");
 	}
 
 	$.fn.webutilConfirm = function() {
@@ -256,6 +263,52 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		});
 	}
 
+	$.fn.webutilInputSelect2 = function() {
+		$(this).select2({
+		    placeholder: $(this).data('placeholder'),
+		    theme: "bootstrap",
+		    allowClear: $(this).data('placeholder') ? true : false,
+		    minimumResultsForSearch: "-1"
+		});
+		$(this).on('select2-open', function() {
+			webutilModalAdjustHeight();
+		});
+		$(this).on('select2-close', function() {
+			webutilModalAdjustHeight();
+		});
+	}
+	$.fn.webutilInputSelect2Eval = function() {
+		$('[data-toggle="select2"]', $(this)).each(function() {
+			if (!$(this).attr('data-select2-eval')) {
+				$(this).webutilInputSelect2();
+				$(this).attr('data-select2-eval', 'true');
+			}
+		});
+	}
+
+	$.fn.webutilDatepicker = function() {
+		$('[data-toggle="datepicker"]').
+		datepicker({
+			format: 'dd/mm/yyyy',
+			weekStart: 1,
+			autoclose: true,
+			orientation: 'bottom',
+			language: $(this).data('idioma')
+		}).on('show', function() {
+			webutilModalAdjustHeight();
+		}).on('hide', function() {
+			webutilModalAdjustHeight();
+		});
+	}
+	$.fn.webutilDatepickerEval = function() {
+		$('[data-toggle="datepicker"]', $(this)).each(function() {
+			if (!$(this).attr('data-datepicker-eval')) {
+				$(this).webutilDatepicker();
+				$(this).attr('data-datepicker-eval', 'true');
+			}
+		});
+	}
+
 	$(document).ready(function() {
 		$('[data-confirm]', $(this)).each(function() {
 			if (!$(this).attr('data-confirm-eval')) {
@@ -279,6 +332,18 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 			if (!$(this).attr('data-botons-titol-eval')) {
 				$(this).webutilBotonsTitol();
 				$(this).attr('data-botons-titol-eval', 'true');
+			}
+		});
+		$('[data-toggle="select2"]', $(this)).each(function() {
+			if (!$(this).attr('data-select2-eval')) {
+				$(this).webutilInputSelect2();
+				$(this).attr('data-select2-eval', 'true');
+			}
+		});
+		$('[data-toggle="datepicker"]', $(this)).each(function() {
+			if (!$(this).attr('data-datepicker-eval')) {
+				$(this).webutilDatepicker();
+				$(this).attr('data-datepicker-eval', 'true');
 			}
 		});
 	});

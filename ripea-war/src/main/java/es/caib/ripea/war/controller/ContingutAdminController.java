@@ -21,14 +21,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.ContingutDto;
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ContingutService;
+import es.caib.ripea.core.api.service.MetaDocumentService;
+import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContingutFiltreCommand;
 import es.caib.ripea.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
@@ -37,13 +39,17 @@ import es.caib.ripea.war.helper.RequestSessionHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/contenidorAdmin")
-public class ContenidorAdminController extends BaseAdminController {
+@RequestMapping("/contingutAdmin")
+public class ContingutAdminController extends BaseAdminController {
 
-	private static final String SESSION_ATTRIBUTE_FILTRE = "ContenidorAdminController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_FILTRE = "ContingutAdminController.session.filtre";
 
 	@Autowired
-	private ContingutService contenidorService;
+	private ContingutService contingutService;
+	@Autowired
+	private MetaExpedientService metaExpedientService;
+	@Autowired
+	private MetaDocumentService metaDocumentService;
 
 
 
@@ -51,10 +57,20 @@ public class ContenidorAdminController extends BaseAdminController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		ContingutFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(
-				getFiltreCommand(request));
-		return "contenidorAdminList";
+				filtreCommand);
+		if (ContingutTipusEnumDto.EXPEDIENT.equals(filtreCommand.getTipus())) {
+			model.addAttribute(
+					"metaNodes",
+					metaExpedientService.findByEntitat(entitatActual.getId()));
+		} else if (ContingutTipusEnumDto.DOCUMENT.equals(filtreCommand.getTipus())) {
+			model.addAttribute(
+					"metaNodes",
+					metaDocumentService.findByEntitat(entitatActual.getId()));
+		}
+		return "contingutAdminList";
 	}
 	@RequestMapping(method = RequestMethod.POST)
 	public String expedientPost(
@@ -68,59 +84,74 @@ public class ContenidorAdminController extends BaseAdminController {
 					SESSION_ATTRIBUTE_FILTRE,
 					filtreCommand);
 		}
-		return "redirect:contenidorAdmin";
+		return "redirect:contingutAdmin";
 	}
+
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<ContingutDto> datatable(
+	public DatatablesResponse datatable(
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ContingutFiltreCommand filtreCommand = getFiltreCommand(request);
-		return PaginacioHelper.getPaginaPerDatatables(
+		return DatatablesHelper.getDatatableResponse(
 				request,
-				contenidorService.findAdmin(
+				contingutService.findAdmin(
 						entitatActual.getId(),
 						ContingutFiltreCommand.asDto(filtreCommand),
-						PaginacioHelper.getPaginacioDtoFromDatatable(
-								request,
-								null)));
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id");
 	}
 
-	@RequestMapping(value = "/{contenidorId}/undelete", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/info", method = RequestMethod.GET)
+	public String info(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		model.addAttribute(
+				"contingut",
+				contingutService.findAmbIdAdmin(
+						entitatActual.getId(),
+						contingutId,
+						true));
+		return "contingutAdminInfo";
+	}
+
+	@RequestMapping(value = "/{contingutId}/undelete", method = RequestMethod.GET)
 	public String undelete(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		try {
-			contenidorService.undelete(
+			contingutService.undelete(
 					entitatActual.getId(),
-					contenidorId);
+					contingutId);
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../esborrat",
-					"contenidor.admin.controller.recuperat.ok");
+					"contingut.admin.controller.recuperat.ok");
 		} catch (ValidationException ex) {
 			return getAjaxControllerReturnValueError(
 					request,
 					"redirect:../../esborrat",
-					"contenidor.admin.controller.recuperat.duplicat");
+					"contingut.admin.controller.recuperat.duplicat");
 		}
 	}
 
-	@RequestMapping(value = "/{contenidorId}/delete", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/delete", method = RequestMethod.GET)
 	public String delete(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		contenidorService.deleteDefinitiu(
+		contingutService.deleteDefinitiu(
 				entitatActual.getId(),
-				contenidorId);
+				contingutId);
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../esborrat",
-				"contenidor.admin.controller.esborrat.definitiu.ok");
+				"contingut.admin.controller.esborrat.definitiu.ok");
 	}
 
 	@InitBinder

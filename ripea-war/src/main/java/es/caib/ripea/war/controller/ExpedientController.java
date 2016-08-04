@@ -105,9 +105,10 @@ public class ExpedientController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"arxiu",
-				contenidorService.getContingutSenseFills(
+				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
-						arxiuId));
+						arxiuId,
+						false));
 		model.addAttribute(
 				"metaExpedients",
 				metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId()));

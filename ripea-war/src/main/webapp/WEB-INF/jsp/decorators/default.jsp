@@ -175,7 +175,7 @@ body {
 								<div class="btn-group">
 									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
 									<ul class="dropdown-menu">
-										<li><a href="<c:url value="/contenidorAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
+										<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
 									</ul>
 								</div>
 								<a href="<c:url value="/permis"/>" class="btn btn-primary"><spring:message code="decorator.menu.permisos"/></a>

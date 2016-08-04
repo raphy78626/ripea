@@ -94,9 +94,10 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contingut = contenidorService.getContingutAmbFills(
+		ContingutDto contingut = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorId);
+				contenidorId,
+				true);
 		omplirModelPerMostrarContingut(
 				request,
 				entitatActual,
@@ -113,9 +114,10 @@ public class ContenidorController extends BaseUserController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<DadaDto> dades = null;
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contenidor = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorId);
+				contenidorId,
+				true);
 		if (contenidor instanceof NodeDto) {
 			NodeDto node = (NodeDto)contenidor;
 			dades = node.getDades();
@@ -143,9 +145,10 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long dadaId,
 			Model model) throws Exception {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contenidor = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorId);
+				contenidorId,
+				true);
 		DadaDto dada = null;
 		if (contenidor instanceof NodeDto) {
 			NodeDto node = (NodeDto)contenidor;
@@ -213,9 +216,10 @@ public class ContenidorController extends BaseUserController {
 				bindingResult,
 				grups.toArray(new Class[grups.size()]));
 		if (bindingResult.hasErrors()) {
-			ContingutDto contenidor = contenidorService.getContingutAmbFills(
+			ContingutDto contenidor = contenidorService.findAmbIdUser(
 					entitatActual.getId(),
-					contenidorId);
+					contenidorId,
+					true);
 			if (contenidor instanceof NodeDto) {
 				NodeDto node = (NodeDto)contenidor;
 				model.addAttribute(
@@ -273,9 +277,10 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contenidor = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorId);
+				contenidorId,
+				true);
 		if (contenidor instanceof NodeDto)
 			return metaDadaService.findByNodePerCreacio(
 					entitatActual.getId(),
@@ -290,9 +295,10 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contenidor = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorId);
+				contenidorId,
+				true);
 		contenidorService.deleteReversible(
 				entitatActual.getId(),
 				contenidorId);
@@ -371,9 +377,10 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long contenidorDestiId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidorOrigen = contenidorService.getContingutAmbFills(
+		ContingutDto contenidorOrigen = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorOrigenId);
+				contenidorOrigenId,
+				true);
 		contenidorService.move(
 				entitatActual.getId(),
 				contenidorOrigenId,
@@ -473,9 +480,10 @@ public class ContenidorController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contenidor",
-				contenidorService.getContingutAmbFills(
+				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
-						contenidorId));
+						contenidorId,
+						true));
 		model.addAttribute(
 				"errors",
 				contenidorService.findErrorsValidacio(
@@ -492,9 +500,10 @@ public class ContenidorController extends BaseUserController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<RegistreAnotacioDto> registres = null;
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contenidor = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorId);
+				contenidorId,
+				true);
 		if (contenidor instanceof ExpedientDto) {
 			ExpedientDto expedient = (ExpedientDto)contenidor;
 			registres = expedient.getFillsRegistres();
@@ -527,9 +536,10 @@ public class ContenidorController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contenidor",
-				contenidorService.getContingutAmbFills(
+				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
-						contenidorId));
+						contenidorId,
+						true));
 		model.addAttribute(
 				"registre",
 				registreService.findOne(
@@ -552,9 +562,10 @@ public class ContenidorController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contenidor",
-				contenidorService.getContingutAmbFills(
+				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
-						contenidorId));
+						contenidorId,
+						true));
 		model.addAttribute(
 				"logs",
 				contenidorService.findLogsPerContingutUser(
@@ -576,9 +587,10 @@ public class ContenidorController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contenidor",
-				contenidorService.getContingutAmbFills(
+				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
-						contenidorId));
+						contenidorId,
+						true));
 		return "contenidorNti";
 	}
 
@@ -638,9 +650,10 @@ public class ContenidorController extends BaseUserController {
 			EntitatDto entitatActual,
 			Long contenidorOrigenId,
 			Model model) {
-		ContingutDto contingutOrigen = contenidorService.getContingutAmbFills(
+		ContingutDto contingutOrigen = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorOrigenId);
+				contenidorOrigenId,
+				true);
 		model.addAttribute(
 				"contenidorOrigen",
 				contingutOrigen);
@@ -650,9 +663,10 @@ public class ContenidorController extends BaseUserController {
 			EntitatDto entitatActual,
 			Long contenidorOrigenId,
 			Model model) {
-		ContingutDto contingutOrigen = contenidorService.getContingutAmbFills(
+		ContingutDto contingutOrigen = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorOrigenId);
+				contenidorOrigenId,
+				true);
 		model.addAttribute(
 				"contenidorOrigen",
 				contingutOrigen);

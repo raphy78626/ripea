@@ -18,7 +18,7 @@ public class ContingutFiltreDto implements Serializable {
 
 	private String nom;
 	private ContingutTipusEnumDto tipus;
-	private Long metaExpedientId;
+	private Long metaNodeId;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
 	private boolean mostrarEsborrats;
@@ -38,11 +38,11 @@ public class ContingutFiltreDto implements Serializable {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	public Long getMetaExpedientId() {
-		return metaExpedientId;
+	public Long getMetaNodeId() {
+		return metaNodeId;
 	}
-	public void setMetaExpedientId(Long metaExpedientId) {
-		this.metaExpedientId = metaExpedientId;
+	public void setMetaNodeId(Long metaNodeId) {
+		this.metaNodeId = metaNodeId;
 	}
 	public Date getDataCreacioInici() {
 		return dataCreacioInici;
