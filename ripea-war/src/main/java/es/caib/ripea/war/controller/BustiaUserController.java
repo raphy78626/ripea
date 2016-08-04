@@ -61,25 +61,8 @@ public class BustiaUserController extends BaseUserController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		return get(request, null, model);
-	}
-	@RequestMapping(value = "/unitat/{unitatCodi}", method = RequestMethod.GET)
-	public String get(
-			HttpServletRequest request,
-			@PathVariable String unitatCodi,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"arbreUnitatsOrganitzatives",
-				bustiaService.findArbreUnitatsOrganitzatives(
-						entitatActual.getId(),
-						true,
-						true,
-						true));
-		model.addAttribute("unitatCodi", unitatCodi);
 		return "bustiaUserList";
 	}
-
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(

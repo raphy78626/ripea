@@ -150,6 +150,19 @@ public interface ArxiuService {
 			Long metaExpedientId) throws NotFoundException;
 
 	/**
+	 * Consulta els arxius de l'entitat amb permisos d'accés per a
+	 * l'usuari actual.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @return Els arxius permesos.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<ArxiuDto> findPermesosPerUsuari(Long entitatId);
+
+	/**
 	 * Consulta l'arbre de les unitats organitzatives per a mostrar els
 	 * arxius a un usuari administrador.
 	 * 
@@ -259,5 +272,4 @@ public interface ArxiuService {
 	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public List<ArxiuDto> findActiusAmbEntitat(
 			Long entitatId) throws NotFoundException;
-
 }

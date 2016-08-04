@@ -4,7 +4,6 @@
 package es.caib.ripea.war.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,22 +20,22 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.ExpedientDto;
+import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.service.ArxiuService;
-import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
+import es.caib.ripea.war.command.ExpedientFiltreCommand.ExpedientFiltreOpcionsEstatEnum;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
- * Controlador per a la consulta d'expedients.
+ * Controlador per al llistat d'expedients a la vista del rol Usuari.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -44,12 +43,10 @@ import es.caib.ripea.war.helper.RequestSessionHelper;
 @RequestMapping("/expedient")
 public class ExpedientController extends BaseUserController {
 
-	private static final String SESSION_ATTRIBUTE_FILTRE = "ExpedientController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_FILTRE = "ExpedientUserController.session.filtre";
 
 	@Autowired
 	private ArxiuService arxiuService;
-	@Autowired
-	private ContingutService contenidorService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -61,124 +58,74 @@ public class ExpedientController extends BaseUserController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		return get(request, null, model);
-	}
-	@RequestMapping(value = "/unitat/{unitatCodi}", method = RequestMethod.GET)
-	public String get(
-			HttpServletRequest request,
-			@PathVariable String unitatCodi,
-			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"arbreUnitatsOrganitzatives",
-				arxiuService.findArbreUnitatsOrganitzativesUser(
-						entitatActual.getId()));
-		model.addAttribute("unitatCodi", unitatCodi);
-		return "arxiuUserList";
-	}
-	@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesPagina<ArxiuDto> datatable(
-			HttpServletRequest request,
-			@PathVariable String unitatCodi,
-			Model model) {
-		if (!"null".equalsIgnoreCase(unitatCodi)) {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			List<ArxiuDto> arxius = arxiuService.findByUnitatCodiUsuari(
-					entitatActual.getId(),
-					unitatCodi);
-			return PaginacioHelper.getPaginaPerDatatables(
-					request,
-					arxius);
-		} else {
-			return PaginacioHelper.getPaginaPerDatatables(
-					request,
-					new ArrayList<ArxiuDto>());
-		}
-	}
-
-	@RequestMapping(value = "/{arxiuId}/expedient", method = RequestMethod.GET)
-	public String expedientGet(
-			HttpServletRequest request,
-			@PathVariable Long arxiuId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"arxiu",
-				contenidorService.getContingutSenseFills(
-						entitatActual.getId(),
-						arxiuId));
+		List<MetaExpedientDto> metaExpedients = metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId());
 		model.addAttribute(
 				"metaExpedients",
-				metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId()));
+				metaExpedients);
 		model.addAttribute(
-				getFiltreCommand(request, arxiuId));
-		return "arxiuUserExpedientList";
+				getFiltreCommand(request));		
+		model.addAttribute("arxius",
+							arxiuService.findPermesosPerUsuari(
+												entitatActual.getId()));
+		return "expedientUserList";
 	}
-	@RequestMapping(value = "/{arxiuId}/expedient/datatable", method = RequestMethod.GET)
+	
+	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<ExpedientDto> datatable(
-			HttpServletRequest request,
-			@PathVariable Long arxiuId) {
+	public DatatablesResponse datatable(
+			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ExpedientFiltreCommand filtreCommand = getFiltreCommand(request, arxiuId);
-		return PaginacioHelper.getPaginaPerDatatables(
+		ExpedientFiltreCommand filtreCommand = getFiltreCommand(request);
+		return DatatablesHelper.getDatatableResponse(
 				request,
 				expedientService.findPaginatUser(
-						entitatActual.getId(),
-						ExpedientFiltreCommand.asDto(filtreCommand),
-						PaginacioHelper.getPaginacioDtoFromDatatable(
-								request,
-								null)));
+						entitatActual.getId(), 
+						ExpedientFiltreCommand.asDto(filtreCommand), 
+						DatatablesHelper.getPaginacioDtoFromRequest(request)));		
 	}
 
-	@RequestMapping(value = "/{arxiuId}/expedient", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public String expedientPost(
 			HttpServletRequest request,
-			@PathVariable Long arxiuId,
 			@Valid ExpedientFiltreCommand filtreCommand,
 			BindingResult bindingResult,
-			Model model) {
+			Model model,
+			@RequestParam(value = "accio", required = false) String accio) {
 		getEntitatActualComprovantPermisos(request);
-		if (!bindingResult.hasErrors()) {
-			RequestSessionHelper.actualitzarObjecteSessio(
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
 					request,
-					SESSION_ATTRIBUTE_FILTRE,
-					filtreCommand);
-		}
-		return "redirect:../../arxiuUser/" + arxiuId + "/expedient";
+					SESSION_ATTRIBUTE_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_FILTRE,
+						filtreCommand);
+			}
+		}		
+		return "redirect:expedient";
 	}
 
-	@RequestMapping(value = "/{arxiuId}/expedient/netejar", method = RequestMethod.GET)
-	public String expedientNetejar(
-			HttpServletRequest request,
-			@PathVariable Long arxiuId,
-			Model model) {
-		getEntitatActualComprovantPermisos(request);
-		return "redirect:../expedient";
-	}
-
-	@RequestMapping(value = "/{arxiuId}/expedient/{expedientId}/agafar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{expedientId}/agafar", method = RequestMethod.GET)
 	public String expedientAgafar(
 			HttpServletRequest request,
-			@PathVariable Long arxiuId,
 			@PathVariable Long expedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		expedientService.agafarUser(
 				entitatActual.getId(),
-				arxiuId,
 				expedientId);
 		return getAjaxControllerReturnValueSuccess(
 				request,
-				"redirect:../../expedient",
-				"arxiu.expedient.controller.agafat.ok");
+				"redirect:expedient",
+				"expedient.user.controller.agafat.ok");
 	}
 
-	@RequestMapping(value = "/{arxiuId}/expedient/{expedientId}/alliberar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{expedientId}/alliberar", method = RequestMethod.GET)
 	public String expedientAlliberar(
 			HttpServletRequest request,
-			@PathVariable Long arxiuId,
 			@PathVariable Long expedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -187,8 +134,8 @@ public class ExpedientController extends BaseUserController {
 				expedientId);
 		return getAjaxControllerReturnValueSuccess(
 				request,
-				"redirect:../../expedient",
-				"arxiu.expedient.controller.alliberat.ok");
+				"redirect:expedient",
+				"expedient.user.controller.alliberat.ok");
 	}
 
 	@InitBinder
@@ -203,14 +150,13 @@ public class ExpedientController extends BaseUserController {
 
 
 	private ExpedientFiltreCommand getFiltreCommand(
-			HttpServletRequest request,
-			Long arxiuId) {
+			HttpServletRequest request) {
 		ExpedientFiltreCommand filtreCommand = (ExpedientFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_FILTRE);
-		if (filtreCommand == null || !filtreCommand.getArxiuId().equals(arxiuId)) {
+		if (filtreCommand == null) {
 			filtreCommand = new ExpedientFiltreCommand();
-			filtreCommand.setArxiuId(arxiuId);
+			filtreCommand.setEstatFiltre(ExpedientFiltreOpcionsEstatEnum.OBERTS);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,

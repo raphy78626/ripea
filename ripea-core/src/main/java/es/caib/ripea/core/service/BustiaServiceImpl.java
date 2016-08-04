@@ -122,8 +122,13 @@ public class BustiaServiceImpl implements BustiaService {
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Resource
 	private PaginacioHelper paginacioHelper;
-
-
+	
+	private Map<String, String[]> ordenacioMap;
+	
+	public BustiaServiceImpl() {
+		this.ordenacioMap = new HashMap<String, String[]>();
+		ordenacioMap.put("pareNom", new String[] {"pare.nom"});
+	}
 
 	@Override
 	@Transactional
@@ -374,8 +379,6 @@ public class BustiaServiceImpl implements BustiaService {
 			bustiaIds.add(bustia.getId());
 		}
 		// Realitza la consulta
-		Map<String, String> mapeigPropietatsOrdenacio = new HashMap<String, String>();
-		mapeigPropietatsOrdenacio.put("pareNom", "pare.nom");
 		Page<BustiaEntity> pagina = bustiaRepository.findByEntitatAndIdsAndFiltrePaginat(
 				entitat,
 				bustiaIds,
@@ -383,7 +386,7 @@ public class BustiaServiceImpl implements BustiaService {
 				paginacioParams.getFiltre(),
 				paginacioHelper.toSpringDataPageable(
 						paginacioParams,
-						mapeigPropietatsOrdenacio));
+						ordenacioMap));
 		return paginacioHelper.toPaginaDto(
 				pagina,
 				BustiaDto.class,

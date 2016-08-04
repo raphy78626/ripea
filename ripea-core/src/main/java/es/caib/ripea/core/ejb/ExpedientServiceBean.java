@@ -106,9 +106,8 @@ public class ExpedientServiceBean implements ExpedientService {
 	@RolesAllowed("tothom")
 	public void agafarUser(
 			Long entitatId,
-			Long arxiuId,
 			Long id) {
-		delegate.agafarUser(entitatId, arxiuId, id);
+		delegate.agafarUser(entitatId, id);
 	}
 
 	@Override

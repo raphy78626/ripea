@@ -21,7 +21,12 @@ public class ExpedientFiltreDto implements Serializable {
 	private String nom;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
-
+	/** Formació de la cadena sequencia/any */
+	private String numero;
+	/** Tipus d'expedient */
+	private ExpedientEstatEnumDto estat;
+	private Date dataTancatInici;
+	private Date dataTancatFi;
 
 
 	public Long getArxiuId() {
@@ -55,6 +60,30 @@ public class ExpedientFiltreDto implements Serializable {
 		this.dataCreacioFi = dataCreacioFi;
 	}
 
+	public String getNumero() {
+		return numero;
+	}
+	public void setNumero(String numero) {
+		this.numero = numero;
+	}
+	public ExpedientEstatEnumDto getEstat() {
+		return estat;
+	}
+	public void setEstat(ExpedientEstatEnumDto estat) {
+		this.estat = estat;
+	}
+	public Date getDataTancatInici() {
+		return dataTancatInici;
+	}
+	public void setDataTancatInici(Date dataTancatInici) {
+		this.dataTancatInici = dataTancatInici;
+	}
+	public Date getDataTancatFi() {
+		return dataTancatFi;
+	}
+	public void setDataTancatFi(Date dataTancatFi) {
+		this.dataTancatFi = dataTancatFi;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

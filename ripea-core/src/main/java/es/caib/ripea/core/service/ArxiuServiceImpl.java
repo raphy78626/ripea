@@ -314,7 +314,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ArxiuDto> findPermesosPerUsuariIMetaExpedient(
 			Long entitatId,
 			Long metaExpedientId) throws NotFoundException {
@@ -333,6 +333,38 @@ public class ArxiuServiceImpl implements ArxiuService {
 				metaExpedientId,
 				false);
 		return toArxiuDto(metaExpedient.getArxius());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ArxiuDto> findPermesosPerUsuari(
+			Long entitatId) throws NotFoundException {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.debug("Cercan arxius permesos per a l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "usuariCodi=" + auth.getName() + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		List<ArxiuEntity> arxius = arxiuRepository.findByEntitatAndPareNotNull(entitat);
+		List<ArxiuEntity> arxiusPermesos = new ArrayList<ArxiuEntity>();
+		// Afegeix les unitats dels arxius que estiguin relacionats amb algun meta-expedient amb permisos
+		for (ArxiuEntity arxiu: arxius) {
+			// Comprova l'accés als meta-expedients
+			for (MetaExpedientEntity metaExpedient: arxiu.getMetaExpedients()) {
+				if (permisosHelper.isGrantedAll(
+						metaExpedient.getId(),
+						MetaNodeEntity.class,
+						new Permission[] {ExtendedPermission.READ},
+						auth)) {
+					arxiusPermesos.add(arxiu);
+					break;
+				}
+			}
+		}
+		return toArxiuDto(arxiusPermesos);
 	}
 
 	@Transactional(readOnly = true)
