@@ -8,7 +8,8 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
@@ -122,12 +123,13 @@ public interface InteressatService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<InteressatCiutadaDto> findByFiltreCiutada(
+	public List<InteressatPersonaFisicaDto> findByFiltrePersonaFisica(
 			Long entitatId,
+			String documentNum,
 			String nom,
-			String nif,
-			String llinatges) throws NotFoundException;
-
+			String llinatge1,
+			String llinatge2) throws NotFoundException;
+	
 	/**
 	 * Consulta els interessats per nom i identificador.
 	 * 
@@ -135,8 +137,28 @@ public interface InteressatService {
 	 *            Atribut id de l'entitat a la qual pertany l'interessat.
 	 * @param nom
 	 *            Nom de l'interessat per a la consulta.
-	 * @param identificador
-	 *            Identificador de l'interessat per a la consulta.
+	 * @param nif
+	 *            NIF de l'interessat per a la consulta.
+	 * @param llinatges
+	 *            Llinatges de l'interessat per a la consulta.
+	 * @return La llista d'interessats trobats.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<InteressatPersonaJuridicaDto> findByFiltrePersonaJuridica(
+			Long entitatId,
+			String documentNum,
+			String raoSocial) throws NotFoundException;
+	
+
+	/**
+	 * Consulta els interessats per nom i identificador.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany l'interessat.
+	 * @param organCodi
+	 *            codi de l'organ de l'administració per a la consulta.
 	 * @return La llista d'interessats trobats.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -144,7 +166,6 @@ public interface InteressatService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			Long entitatId,
-			String nom,
-			String identificador) throws NotFoundException;
+			String organCodi) throws NotFoundException;
 
 }

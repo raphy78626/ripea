@@ -9,11 +9,15 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import es.caib.ripea.core.api.dto.IndiomaEnumDto;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
+import es.caib.ripea.core.api.dto.InteressatTipusEnumDto;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
-import es.caib.ripea.war.command.InteressatCommand.Ciutada;
+import es.caib.ripea.war.command.InteressatCommand.PersonaFisica;
+import es.caib.ripea.war.command.InteressatCommand.PersonaJuridica;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 import es.caib.ripea.war.validation.DocumentIdentitat;
 import es.caib.ripea.war.validation.InteressatNoRepetit;
@@ -23,41 +27,59 @@ import es.caib.ripea.war.validation.InteressatNoRepetit;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-@InteressatNoRepetit(
-		groups = {Ciutada.class, Administracio.class},
-		campId = "id",
-		campEntitatId = "entitatId",
-		campNom = "nom",
-		campNif = "nif",
-		campLlinatges = "llinatges",
-		campIdentificador = "identificador",
-		campTipus = "tipus")
+@InteressatNoRepetit(groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+//		campId = "id",
+//		campEntitatId = "entitatId",
+//		campNom = "nom",
+//		campNif = "nif",
+//		campLlinatges = "llinatges",
+//		campIdentificador = "identificador",
+//		campTipus = "tipus")
 public class InteressatCommand  {
 
-	public static final String TIPUS_CIUTADA = "C";
-	public static final String TIPUS_ADMINISTRACIO = "A";
+//	public static final String TIPUS_CIUTADA = "C";
+//	public static final String TIPUS_ADMINISTRACIO = "A";
 
 	protected Long id;
-	@NotNull(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, Ciutada.class, Administracio.class})
+	@NotNull(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
 	protected Long entitatId;
-	@NotEmpty(groups = {Ciutada.class, Administracio.class})
-	@Size(max = 256, groups = {Ciutada.class, Administracio.class})
+	@NotEmpty(groups = {PersonaFisica.class})
+	@Size(max = 30, groups = {PersonaFisica.class})
 	protected String nom;
-	@NotEmpty(groups = {Ciutada.class})
-	@Size(max = 256, groups = {Ciutada.class})
-	protected String llinatges;
-	@NotEmpty(groups = {ComprovarCiutada.class, Ciutada.class})
-	@DocumentIdentitat(groups = {ComprovarCiutada.class, Ciutada.class})
-	@Size(max = 9, groups = {ComprovarCiutada.class, Ciutada.class})
-	protected String nif;
-	@NotEmpty(groups = {ComprovarAdministracio.class, Administracio.class})
-	@Size(max = 9, groups = {ComprovarAdministracio.class, Administracio.class})
-	protected String identificador;
+	@NotEmpty(groups = {PersonaFisica.class})
+	@Size(max = 30, groups = {PersonaFisica.class})
+	protected String llinatge1;
+	@Size(max = 30, groups = {PersonaFisica.class})
+	protected String llinatge2;
+	@NotEmpty(groups = {PersonaJuridica.class})
+	@Size(max = 80, groups = {PersonaJuridica.class})
+	protected String raoSocial;
+	@NotEmpty(groups = {Administracio.class})
+	@Size(max = 9, groups = {Administracio.class})
+	protected String organCodi;
+	@NotEmpty(groups = {ComprovarCiutada.class, PersonaFisica.class, PersonaJuridica.class})
+	@DocumentIdentitat(groups = {ComprovarCiutada.class, PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 9, groups = {ComprovarCiutada.class, PersonaFisica.class, PersonaJuridica.class})
+	protected String documentNum;
+	
+	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	protected String pais;
+	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	protected String provincia;
+	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	protected String municipi;
+	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	protected String adresa;
+	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	protected String codiPostal;
+	protected String email;
+	protected String telefon;
+	protected String observacions;
+	protected IndiomaEnumDto notificacioIdioma;
+	protected Boolean notificacioAutoritzat;
 
-	protected String tipus;
+	protected InteressatTipusEnumDto tipus;
 	protected boolean comprovat = false;
-
-
 
 	public Long getId() {
 		return id;
@@ -77,28 +99,100 @@ public class InteressatCommand  {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	public String getLlinatges() {
-		return llinatges;
+	public String getLlinatge1() {
+		return llinatge1;
 	}
-	public void setLlinatges(String llinatges) {
-		this.llinatges = llinatges;
+	public void setLlinatge1(String llinatge1) {
+		this.llinatge1 = llinatge1;
 	}
-	public String getNif() {
-		return nif;
+	public String getLlinatge2() {
+		return llinatge2;
 	}
-	public void setNif(String nif) {
-		this.nif = nif;
+	public void setLlinatge2(String llinatge2) {
+		this.llinatge2 = llinatge2;
 	}
-	public String getIdentificador() {
-		return identificador;
+	public String getRaoSocial() {
+		return raoSocial;
 	}
-	public void setIdentificador(String identificador) {
-		this.identificador = identificador;
+	public void setRaoSocial(String raoSocial) {
+		this.raoSocial = raoSocial;
 	}
-	public String getTipus() {
+	public String getOrganCodi() {
+		return organCodi;
+	}
+	public void setOrganCodi(String organCodi) {
+		this.organCodi = organCodi;
+	}
+	public String getDocumentNum() {
+		return documentNum;
+	}
+	public void setDocumentNum(String documentNum) {
+		this.documentNum = documentNum;
+	}
+	public String getPais() {
+		return pais;
+	}
+	public void setPais(String pais) {
+		this.pais = pais;
+	}
+	public String getProvincia() {
+		return provincia;
+	}
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
+	}
+	public String getMunicipi() {
+		return municipi;
+	}
+	public void setMunicipi(String municipi) {
+		this.municipi = municipi;
+	}
+	public String getAdresa() {
+		return adresa;
+	}
+	public void setAdresa(String adresa) {
+		this.adresa = adresa;
+	}
+	public String getCodiPostal() {
+		return codiPostal;
+	}
+	public void setCodiPostal(String codiPostal) {
+		this.codiPostal = codiPostal;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getTelefon() {
+		return telefon;
+	}
+	public void setTelefon(String telefon) {
+		this.telefon = telefon;
+	}
+	public String getObservacions() {
+		return observacions;
+	}
+	public void setObservacions(String observacions) {
+		this.observacions = observacions;
+	}
+	public IndiomaEnumDto getNotificacioIdioma() {
+		return notificacioIdioma;
+	}
+	public void setNotificacioIdioma(IndiomaEnumDto notificacioIdioma) {
+		this.notificacioIdioma = notificacioIdioma;
+	}
+	public Boolean getNotificacioAutoritzat() {
+		return notificacioAutoritzat;
+	}
+	public void setNotificacioAutoritzat(Boolean notificacioAutoritzat) {
+		this.notificacioAutoritzat = notificacioAutoritzat;
+	}
+	public InteressatTipusEnumDto getTipus() {
 		return tipus;
 	}
-	public void setTipus(String tipus) {
+	public void setTipus(InteressatTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
 	public boolean isComprovat() {
@@ -114,10 +208,15 @@ public class InteressatCommand  {
 				InteressatCommand.class);
 		return command;
 	}
-	public static InteressatCiutadaDto asCiutadaDto(InteressatCommand command) {
+	public static InteressatPersonaFisicaDto asPersonaFisicaDto(InteressatCommand command) {
 		return ConversioTipusHelper.convertir(
 				command,
-				InteressatCiutadaDto.class);
+				InteressatPersonaFisicaDto.class);
+	}
+	public static InteressatPersonaJuridicaDto asPersonaJuridicaDto(InteressatCommand command) {
+		return ConversioTipusHelper.convertir(
+				command,
+				InteressatPersonaJuridicaDto.class);
 	}
 	public static InteressatAdministracioDto asAdministracioDto(InteressatCommand command) {
 		return ConversioTipusHelper.convertir(
@@ -125,13 +224,16 @@ public class InteressatCommand  {
 				InteressatAdministracioDto.class);
 	}
 
-	public boolean isCiutada() {
+	public boolean isPersonaFisica() {
 		if (tipus == null)
 			return true;
-		return TIPUS_CIUTADA.equals(tipus);
+		return InteressatTipusEnumDto.PERSONA_FISICA.equals(tipus);
+	}
+	public boolean isPersonaJuridica() {
+		return InteressatTipusEnumDto.PERSONA_JURIDICA.equals(tipus);
 	}
 	public boolean isAdministracio() {
-		return TIPUS_ADMINISTRACIO.equals(tipus);
+		return InteressatTipusEnumDto.ADMINISTRACIO.equals(tipus);
 	}
 
 	@Override
@@ -139,7 +241,8 @@ public class InteressatCommand  {
 		return ToStringBuilder.reflectionToString(this);
 	}
 
-	public interface Ciutada {}
+	public interface PersonaFisica {}
+	public interface PersonaJuridica {}
 	public interface Administracio {}
 	public interface ComprovarCiutada {}
 	public interface ComprovarAdministracio {}

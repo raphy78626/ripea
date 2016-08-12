@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.war.command.InteressatCommand;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
-import es.caib.ripea.war.command.InteressatCommand.Ciutada;
+import es.caib.ripea.war.command.InteressatCommand.PersonaFisica;
+import es.caib.ripea.war.command.InteressatCommand.PersonaJuridica;
 import es.caib.ripea.war.command.InteressatCommand.ComprovarAdministracio;
 import es.caib.ripea.war.command.InteressatCommand.ComprovarCiutada;
 import es.caib.ripea.war.helper.MissatgesHelper;
@@ -70,10 +71,11 @@ public class InteressatController extends BaseUserController {
 		model.addAttribute("emptyCommand", emptyCommand);
 		model.addAttribute("expedientId", expedientId);
 		if (!bindingResult.hasErrors()) {
-			List<InteressatCiutadaDto> interessats = interessatService.findByFiltreCiutada(
+			List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltrePersonaFisica(
 					entitatActual.getId(),
+					command.getDocumentNum(),
 					null,
-					command.getNif(),
+					null,
 					null);
 			model.addAttribute("interessats", interessats);
 			command.setComprovat(true);
@@ -102,8 +104,7 @@ public class InteressatController extends BaseUserController {
 		if (!bindingResult.hasErrors()) {
 			List<InteressatAdministracioDto> interessats = interessatService.findByFiltreAdministracio(
 					entitatActual.getId(),
-					null,
-					command.getIdentificador());
+					command.getOrganCodi());
 			command.setComprovat(true);
 			if (!interessats.isEmpty())
 				command.setId(interessats.get(0).getId());
@@ -121,7 +122,7 @@ public class InteressatController extends BaseUserController {
 	public String postCiutada(
 			HttpServletRequest request,
 			@PathVariable Long expedientId,
-			@Validated({Ciutada.class}) InteressatCommand command,
+			@Validated({PersonaFisica.class}) InteressatCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -131,10 +132,11 @@ public class InteressatController extends BaseUserController {
 			model.addAttribute("emptyCommand", emptyCommand);
 			model.addAttribute("expedientId", expedientId);
 			if (command.isComprovat()) {
-				List<InteressatCiutadaDto> interessats = interessatService.findByFiltreCiutada(
+				List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltrePersonaFisica(
 						entitatActual.getId(),
+						command.getDocumentNum(),
 						null,
-						command.getNif(),
+						null,
 						null);
 				model.addAttribute("interessats", interessats);
 			}
@@ -144,7 +146,7 @@ public class InteressatController extends BaseUserController {
 			interessatService.create(
 					entitatActual.getId(),
 					expedientId,
-					InteressatCommand.asCiutadaDto(command));
+					InteressatCommand.asPersonaFisicaDto(command));
 		} else {
 			interessatService.addToExpedient(
 					entitatActual.getId(),
@@ -172,8 +174,7 @@ public class InteressatController extends BaseUserController {
 			if (command.isComprovat()) {
 				List<InteressatAdministracioDto> interessats = interessatService.findByFiltreAdministracio(
 						entitatActual.getId(),
-						null,
-						command.getIdentificador());
+						command.getOrganCodi());
 				model.addAttribute("interessats", interessats);
 			}
 			return "expedientInteressatForm";

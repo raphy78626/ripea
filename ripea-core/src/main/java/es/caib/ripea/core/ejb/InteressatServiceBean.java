@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.service.InteressatService;
 
@@ -76,28 +77,40 @@ public class InteressatServiceBean implements InteressatService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<InteressatCiutadaDto> findByFiltreCiutada(
+	public List<InteressatPersonaFisicaDto> findByFiltrePersonaFisica(
 			Long entitatId,
+			String documentNum,
 			String nom,
-			String nif,
-			String llinatges) {
-		return delegate.findByFiltreCiutada(
+			String llinatge1,
+			String llinatge2) {
+		return delegate.findByFiltrePersonaFisica(
 				entitatId,
+				documentNum,
 				nom,
-				nif,
-				llinatges);
+				llinatge1,
+				llinatge2);
 	}
-
+	
+	@Override
+	@RolesAllowed("tothom")
+	public List<InteressatPersonaJuridicaDto> findByFiltrePersonaJuridica(
+			Long entitatId,
+			String documentNum,
+			String raoSocial) {
+		return delegate.findByFiltrePersonaJuridica(
+				entitatId, 
+				documentNum, 
+				raoSocial);
+	}
+	
 	@Override
 	@RolesAllowed("tothom")
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			Long entitatId,
-			String nom,
-			String identificador) {
+			String organCodi) {
 		return delegate.findByFiltreAdministracio(
 				entitatId,
-				nom,
-				identificador);
+				organCodi);
 	}
 
 }

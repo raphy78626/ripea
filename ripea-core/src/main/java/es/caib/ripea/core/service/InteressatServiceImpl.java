@@ -14,8 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -23,10 +24,11 @@ import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
-import es.caib.ripea.core.entity.InteressatCiutadaEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
+import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
+import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
@@ -99,18 +101,64 @@ public class InteressatServiceImpl implements InteressatService {
 				true,
 				false);
 		InteressatEntity interessatEntity = null;
-		if (interessat instanceof InteressatCiutadaDto) {
-			InteressatCiutadaDto interessatCiutadaDto = (InteressatCiutadaDto)interessat;
-			interessatEntity = InteressatCiutadaEntity.getBuilder(
-					interessatCiutadaDto.getNom(),
-					interessatCiutadaDto.getLlinatges(),
-					interessatCiutadaDto.getNif(),
+		if (interessat.isPersonaFisica()) {
+			InteressatPersonaFisicaDto interessatPersonaFisicaDto = (InteressatPersonaFisicaDto)interessat;
+			interessatEntity = InteressatPersonaFisicaEntity.getBuilder(
+					interessatPersonaFisicaDto.getNom(),
+					interessatPersonaFisicaDto.getLlinatge1(),
+					interessatPersonaFisicaDto.getLlinatge2(),
+					interessatPersonaFisicaDto.getDocumentTipus(),
+					interessatPersonaFisicaDto.getDocumentNum(),
+					interessatPersonaFisicaDto.getPais(),
+					interessatPersonaFisicaDto.getProvincia(),
+					interessatPersonaFisicaDto.getMunicipi(),
+					interessatPersonaFisicaDto.getAdresa(),
+					interessatPersonaFisicaDto.getCodiPostal(),
+					interessatPersonaFisicaDto.getEmail(),
+					interessatPersonaFisicaDto.getTelefon(),
+					interessatPersonaFisicaDto.getObservacions(),
+					interessatPersonaFisicaDto.getNotificacioIdioma(),
+					interessatPersonaFisicaDto.getNotificacioAutoritzat(),
+					expedient,
+					null,
+					entitat).build();
+		} else if (interessat.isPersonaJuridica()) {
+			InteressatPersonaJuridicaDto interessatPersonaJuridicaDto = (InteressatPersonaJuridicaDto)interessat;
+			interessatEntity = InteressatPersonaJuridicaEntity.getBuilder(
+					interessatPersonaJuridicaDto.getRaoSocial(),
+					interessatPersonaJuridicaDto.getDocumentTipus(),
+					interessatPersonaJuridicaDto.getDocumentNum(),
+					interessatPersonaJuridicaDto.getPais(),
+					interessatPersonaJuridicaDto.getProvincia(),
+					interessatPersonaJuridicaDto.getMunicipi(),
+					interessatPersonaJuridicaDto.getAdresa(),
+					interessatPersonaJuridicaDto.getCodiPostal(),
+					interessatPersonaJuridicaDto.getEmail(),
+					interessatPersonaJuridicaDto.getTelefon(),
+					interessatPersonaJuridicaDto.getObservacions(),
+					interessatPersonaJuridicaDto.getNotificacioIdioma(),
+					interessatPersonaJuridicaDto.getNotificacioAutoritzat(),
+					expedient,
+					null,
 					entitat).build();
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
 			interessatEntity = InteressatAdministracioEntity.getBuilder(
-					interessatAdministracioDto.getNom(),
-					interessatAdministracioDto.getIdentificador(),
+					interessatAdministracioDto.getOrganCodi(),
+					interessatAdministracioDto.getDocumentTipus(),
+					interessatAdministracioDto.getDocumentNum(),
+					interessatAdministracioDto.getPais(),
+					interessatAdministracioDto.getProvincia(),
+					interessatAdministracioDto.getMunicipi(),
+					interessatAdministracioDto.getAdresa(),
+					interessatAdministracioDto.getCodiPostal(),
+					interessatAdministracioDto.getEmail(),
+					interessatAdministracioDto.getTelefon(),
+					interessatAdministracioDto.getObservacions(),
+					interessatAdministracioDto.getNotificacioIdioma(),
+					interessatAdministracioDto.getNotificacioAutoritzat(),
+					expedient,
+					null,
 					entitat).build();
 		}
 		interessatEntity = interessatRepository.save(interessatEntity);
@@ -128,10 +176,10 @@ public class InteressatServiceImpl implements InteressatService {
 				null,
 				false,
 				false);
-		if (interessat instanceof InteressatCiutadaDto) {
+		if (interessat instanceof InteressatPersonaFisicaDto) {
 			return conversioTipusHelper.convertir(
 					interessatRepository.save(interessatEntity),
-					InteressatCiutadaDto.class);
+					InteressatPersonaFisicaDto.class);
 		} else {
 			return conversioTipusHelper.convertir(
 					interessatRepository.save(interessatEntity),
@@ -311,10 +359,10 @@ public class InteressatServiceImpl implements InteressatService {
 				expedient);
 		List<InteressatDto> resposta = new ArrayList<InteressatDto>();
 		for (InteressatEntity interessat: interessats) {
-			if (interessat instanceof InteressatCiutadaEntity)
+			if (interessat instanceof InteressatPersonaFisicaEntity)
 				resposta.add(conversioTipusHelper.convertir(
 						interessat,
-						InteressatCiutadaDto.class));
+						InteressatPersonaFisicaDto.class));
 			else if (interessat instanceof InteressatAdministracioEntity)
 				resposta.add(conversioTipusHelper.convertir(
 						interessat,
@@ -325,43 +373,70 @@ public class InteressatServiceImpl implements InteressatService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<InteressatCiutadaDto> findByFiltreCiutada(
+	public List<InteressatPersonaFisicaDto> findByFiltrePersonaFisica(
 			Long entitatId,
+			String documentNum,
 			String nom,
-			String nif,
-			String llinatges) {
+			String llinatge1,
+			String llinatge2) {
 		logger.debug("Consulta interessats de tipus ciutadà ("
 				+ "entitatId=" + entitatId + ", "
 				+ "nom=" + nom + ", "
-				+ "nif=" + nif + ", "
-				+ "llinatges=" + llinatges + ")");
+				+ "documentNum=" + documentNum + ", "
+				+ "llinatge1=" + llinatge1 + ", "
+				+ "llinatge2=" + llinatge2 + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
 		return conversioTipusHelper.convertirList(
-				interessatRepository.findByFiltreCiutada(
+				interessatRepository.findByFiltrePersonaFisica(
 						entitat,
 						nom == null,
 						nom,
-						nif == null,
-						nif,
-						llinatges == null,
-						llinatges),
-				InteressatCiutadaDto.class);
+						documentNum == null,
+						documentNum,
+						llinatge1 == null,
+						llinatge1,
+						llinatge2 == null,
+						llinatge2),
+				InteressatPersonaFisicaDto.class);
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<InteressatPersonaJuridicaDto> findByFiltrePersonaJuridica(
+			Long entitatId,
+			String documentNum,
+			String raoSocial) {
+		logger.debug("Consulta interessats de tipus ciutadà ("
+				+ "entitatId=" + entitatId + ", "
+				+ "raoSocial=" + raoSocial + ", "
+				+ "documentNum=" + documentNum + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		return conversioTipusHelper.convertirList(
+				interessatRepository.findByFiltrePersonaJuridica(
+						entitat, 
+						documentNum == null,
+						documentNum,
+						raoSocial == null,
+						raoSocial),
+				InteressatPersonaJuridicaDto.class);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			Long entitatId,
-			String nom,
-			String identificador) {
+			String organCodi) {
 		logger.debug("Consulta interessats de tipus administració ("
 				+ "entitatId=" + entitatId + ", "
-				+ "nom=" + nom + ", "
-				+ "identificador=" + identificador + ")");
+				+ "organCodi=" + organCodi + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -369,10 +444,8 @@ public class InteressatServiceImpl implements InteressatService {
 				false);
 		List<InteressatAdministracioEntity> administracions = interessatRepository.findByFiltreAdministracio(
 				entitat,
-				nom == null,
-				nom,
-				identificador == null,
-				identificador);
+				organCodi == null,
+				organCodi);
 		return conversioTipusHelper.convertirList(
 				administracions,
 				InteressatAdministracioDto.class);

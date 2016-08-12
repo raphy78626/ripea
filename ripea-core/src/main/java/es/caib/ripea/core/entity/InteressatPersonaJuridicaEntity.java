@@ -13,35 +13,36 @@ import es.caib.ripea.core.api.dto.IndiomaEnumDto;
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 
 /**
- * Classe del model de dades que representa un interessat de tipus administració pública.
+ * Classe del model de dades que representa un interessat de tipus persona jurídica.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class InteressatAdministracioEntity extends InteressatEntity {
+public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 
 //	CAMP					TIPUS INTERESSAT	DESCRIPCIÓ
 //	------------------------------------------------------------------------------------------------------------------------------------
-//	organCodi: 				ADMINISTRACIÓ		codi DIR3 de l’òrgan en cas de que l’interessat sigui del tipus administració pública.
+//	raoSocial: 				JURÍDICA			nom de l’empresa en cas de persona jurídica.
+
 	
-	@Column(name = "organ_codi", length = 9)
-	protected String organCodi;
+	@Column(name = "rao_social", length = 80)
+	protected String raoSocial;
 
-	public String getOrganCodi() {
-		return organCodi;
+	public String getRaoSocial() {
+		return raoSocial;
 	}
-	public void setOrganCodi(String organCodi) {
-		this.organCodi = organCodi;
+	public void setRaoSocial(String raoSocial) {
+		this.raoSocial = raoSocial;
 	}
-
+	
 	@Override
 	public void updateIdentificador() {
-		this.identificador = this.organCodi;
+		this.identificador = this.raoSocial;
 	}
-	
+
 	public void update(
-			String organCodi,
+			String raoSocial,
 			InteressatDocumentTipusEnumDto documentTipus,
 			String documentNum,
 			String pais,
@@ -55,7 +56,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			IndiomaEnumDto notificacioIdioma,
 			Boolean notificacioAutoritzat,
 			InteressatEntity representant) {
-		this.organCodi = organCodi;
+		this.raoSocial = raoSocial;
 		this.documentTipus = documentTipus;
 		this.documentNum = documentNum;
 		this.pais = pais;
@@ -72,28 +73,28 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 	}
 
 	/**
-	 * Obté el Builder per a crear objectes de tipus interessat-administració pública.
+	 * Obté el Builder per a crear objectes de tipus interessat-persona jurídica.
 	 * 
-	 * @param organCodi El codi DIR3 de l'òrgan de l'administració pública.
-	 * @param documentTipus	El tipus de document de l'òrgan de l'administració pública.
-	 * @param documentNum	El número de document de l'òrgan de l'administració pública.
-	 * @param pais	El país de residència de l'òrgan de l'administració pública.
-	 * @param provincia	La província de residència de l'òrgan de l'administració pública.
-	 * @param municipi	El municipi de residència de l'òrgan de l'administració pública.
-	 * @param adresa	L'adreça de residència de l'òrgan de l'administració pública.
-	 * @param codiPostal	El codi postal de la residència de l'òrgan de l'administració pública.
-	 * @param email	El correu electrònic de l'òrgan de l'administració pública.
-	 * @param telefon	El telèfon de l'òrgan de l'administració pública.
-	 * @param observacions	Camp per introduir observacions sobre l'òrgan de l'administració pública.
-	 * @param notificacioIdioma	Idioma en que l'òrgan de l'administració pública desitja rebre les notificacions.
-	 * @param notificacioAutoritzat	Camp per indicar si l'òrgan de l'administració pública ha autoritzat la recepció de notificacions en format electrònic.
-	 * @param expedient	Expedient on està vinculat l'òrgan de l'administració pública.
-	 * @param representant	Representant de l'òrgan de l'administració pública.
-	 * @param entitat	Entitat a la qual pertany aquest òrgan de l'administració pública.
+	 * @param raoSocial La raó social de l'interessat.
+	 * @param documentTipus	El tipus de document de l'interessat.
+	 * @param documentNum	El número de document de l'interessat.
+	 * @param pais	El país de residència de l'interessat.
+	 * @param provincia	La província de residència de l'interessat.
+	 * @param municipi	El municipi de residència de l'interessat.
+	 * @param adresa	L'adreça de residència de l'interessat.
+	 * @param codiPostal	El codi postal de la residència de l'interessat.
+	 * @param email	El correu electrònic de l'interessat.
+	 * @param telefon	El telèfon de l'interessat.
+	 * @param observacions	Camp per introduir observacions sobre l'interessat.
+	 * @param notificacioIdioma	Idioma en que l'interessat desitja rebre les notificacions.
+	 * @param notificacioAutoritzat	Camp per indicar si l'interessat ha autoritzat la recepció de notificacions en format electrònic.
+	 * @param expedient	Expedient on està vinculat l'interessat.
+	 * @param representant	Representant de l'interessat.
+	 * @param entitat	Entitat a la qual pertany aquest interessat.
 	 * @return
 	 */
 	public static Builder getBuilder(
-			String organCodi,
+			String raoSocial,
 			InteressatDocumentTipusEnumDto documentTipus,
 			String documentNum,
 			String pais,
@@ -110,7 +111,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			InteressatEntity representant,
 			EntitatEntity entitat) {
 		return new Builder(
-				organCodi,
+				raoSocial,
 				documentTipus,
 				documentNum,
 				pais,
@@ -134,9 +135,9 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 	 * @author Limit Tecnologies <limit@limit.es>
 	 */
 	public static class Builder {
-		InteressatAdministracioEntity built;
+		InteressatPersonaJuridicaEntity built;
 		Builder(
-				String organCodi,
+				String raoSocial,
 				InteressatDocumentTipusEnumDto documentTipus,
 				String documentNum,
 				String pais,
@@ -152,8 +153,8 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				ExpedientEntity expedient,
 				InteressatEntity representant,
 				EntitatEntity entitat) {
-			built = new InteressatAdministracioEntity();
-			built.organCodi = organCodi;
+			built = new InteressatPersonaJuridicaEntity();
+			built.raoSocial = raoSocial;
 			built.documentTipus = documentTipus;
 			built.documentNum = documentNum;
 			built.pais = pais;
@@ -170,7 +171,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			built.representant =  representant;
 			built.entitat = entitat;
 		}
-		public InteressatAdministracioEntity build() {
+		public InteressatPersonaJuridicaEntity build() {
 			return built;
 		}
 	}
@@ -182,7 +183,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 		result = prime * result + ((documentNum == null) ? 0 : documentNum.hashCode());
 		result = prime * result + ((documentTipus == null) ? 0 : documentTipus.hashCode());
 		result = prime * result + ((expedient == null) ? 0 : expedient.hashCode());
-		result = prime * result + ((organCodi == null) ? 0 : organCodi.hashCode());
+		result = prime * result + ((raoSocial == null) ? 0 : raoSocial.hashCode());
 		return result;
 	}
 	@Override
@@ -193,7 +194,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		InteressatAdministracioEntity other = (InteressatAdministracioEntity) obj;
+		InteressatPersonaJuridicaEntity other = (InteressatPersonaJuridicaEntity) obj;
 		if (documentNum == null) {
 			if (other.documentNum != null)
 				return false;
@@ -206,14 +207,14 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				return false;
 		} else if (!expedient.equals(other.expedient))
 			return false;
-		if (organCodi == null) {
-			if (other.organCodi != null)
+		if (raoSocial == null) {
+			if (other.raoSocial != null)
 				return false;
-		} else if (!organCodi.equals(other.organCodi))
+		} else if (!raoSocial.equals(other.raoSocial))
 			return false;
 		return true;
 	}
-
+	
 	private static final long serialVersionUID = -2299453443943600172L;
 
 }
