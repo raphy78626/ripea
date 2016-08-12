@@ -13,6 +13,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -66,10 +68,10 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 //	notificacioIdioma: 		COMÚ				per emmagatzemar l’idioma desitjat per a les notificacions.
 //	NotificacioAutoritzat: 	COMÚ				per indicar si l’interessat ha autoritzat la recepció de notificacions en format electrònic.
 	
-	@Column(name = "document_tipus", length = 256, nullable = false)
+	@Column(name = "document_tipus", length = 40, nullable = false)
 	@Enumerated(EnumType.STRING)
 	protected InteressatDocumentTipusEnumDto documentTipus;
-	@Column(name = "document_num", length = 17)
+	@Column(name = "document_num", length = 17, nullable = false)
 	protected String documentNum;
 	@Column(name = "pais", length = 4)
 	protected String pais;
@@ -92,6 +94,9 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	protected IndiomaEnumDto notificacioIdioma;
 	@Column(name = "not_autoritzat")
 	protected Boolean notificacioAutoritzat;
+	
+	@Column(name = "identificador", length = 80)
+	protected String identificador;
 	
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "entitat_id")
@@ -221,7 +226,18 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		this.version = version;
 	}
 	
-	public abstract String getIdentificador();
+	public String getIdentificador() {
+		return identificador;
+	}
+	
+	@PreUpdate
+	@PrePersist
+	public abstract void updateIdentificador();
+	
+	
+//	public void setIdentificador(InteressatEntity interessat) {
+//		this.updateIdentificador();
+//	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
 

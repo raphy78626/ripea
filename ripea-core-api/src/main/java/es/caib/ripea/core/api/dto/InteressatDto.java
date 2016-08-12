@@ -16,6 +16,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public abstract class InteressatDto implements Serializable {
 
 	protected Long id;
+	protected InteressatTipusEnumDto tipus;
 	protected InteressatDocumentTipusEnumDto documentTipus;
 	protected String documentNum;
 	protected String pais;
@@ -35,6 +36,10 @@ public abstract class InteressatDto implements Serializable {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public abstract InteressatTipusEnumDto getTipus();
+	public void setTipus(InteressatTipusEnumDto tipus) {
+		this.tipus = tipus;
 	}
 	public InteressatDocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;

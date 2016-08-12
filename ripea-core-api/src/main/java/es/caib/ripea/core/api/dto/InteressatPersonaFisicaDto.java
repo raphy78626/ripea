@@ -17,6 +17,11 @@ public class InteressatPersonaFisicaDto extends InteressatDto {
 	protected String llinatge1;
 	protected String llinatge2;
 
+	@Override
+	public InteressatTipusEnumDto getTipus() {
+		return InteressatTipusEnumDto.PERSONA_FISICA;
+	}
+	
 	public String getNom() {
 		return nom;
 	}

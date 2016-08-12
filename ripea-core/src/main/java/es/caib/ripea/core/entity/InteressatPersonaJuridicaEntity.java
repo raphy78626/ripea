@@ -37,8 +37,8 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 	}
 	
 	@Override
-	public String getIdentificador() {
-		return this.raoSocial;
+	public void updateIdentificador() {
+		this.identificador = this.raoSocial;
 	}
 
 	public void update(

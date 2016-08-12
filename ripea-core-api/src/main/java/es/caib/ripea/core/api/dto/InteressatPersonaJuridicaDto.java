@@ -15,6 +15,11 @@ public class InteressatPersonaJuridicaDto extends InteressatDto {
 
 	protected String raoSocial;
 
+	@Override
+	public InteressatTipusEnumDto getTipus() {
+		return InteressatTipusEnumDto.PERSONA_JURIDICA;
+	}
+	
 	public String getRaoSocial() {
 		return raoSocial;
 	}

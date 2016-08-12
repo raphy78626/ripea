@@ -15,6 +15,11 @@ public class InteressatAdministracioDto extends InteressatDto {
 
 	protected String organCodi;
 
+	@Override
+	public InteressatTipusEnumDto getTipus() {
+		return InteressatTipusEnumDto.ADMINISTRACIO;
+	}
+	
 	public String getOrganCodi() {
 		return organCodi;
 	}

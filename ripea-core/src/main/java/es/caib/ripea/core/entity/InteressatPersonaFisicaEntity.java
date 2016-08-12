@@ -57,10 +57,8 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 	}
 	
 	@Override
-	public String getIdentificador() {
-		return 	this.nom + 
-				(this.llinatge1 != null ? " " + this.llinatge1 : "") + 
-				(this.llinatge2 != null ? " " + this.llinatge2 : "");
+	public void updateIdentificador() {
+		this.identificador = this.llinatge1 + (this.llinatge2 != null ? " " + this.llinatge2 : "") + ", " + this.nom;
 	}
 
 	public void update(

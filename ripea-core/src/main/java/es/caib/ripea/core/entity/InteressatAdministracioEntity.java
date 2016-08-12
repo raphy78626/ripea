@@ -36,8 +36,8 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 	}
 
 	@Override
-	public String getIdentificador() {
-		return this.organCodi;
+	public void updateIdentificador() {
+		this.identificador = this.organCodi;
 	}
 	
 	public void update(

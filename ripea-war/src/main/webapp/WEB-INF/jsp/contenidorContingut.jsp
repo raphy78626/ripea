@@ -423,6 +423,9 @@ $(document).ready(function() {
 					<li>
 						<a href="#registres" data-toggle="tab"><spring:message code="contenidor.contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contenidor.registresCount}</span></a>
 					</li>
+					<li>
+						<a href="#interessats" data-toggle="tab"><spring:message code="contenidor.contingut.tab.interessats"/>&nbsp;<span class="badge" id="interessats-count">${contenidor.interessatsCount}</span></a>
+					</li>
 				</c:if>
 			</ul>
 			<%--           --%>
@@ -647,9 +650,9 @@ $(document).ready(function() {
 							<thead>
 								<tr>
 									<th data-rdt-property="id" data-rdt-visible="false">#</th>
-									<th data-rdt-property="tipus" data-rdt-template="cellTipusTemplate" data-rdt-sortable="false" width="10%">
+									<th data-rdt-property="tipus" data-rdt-template="cellTipusRegistreTemplate" data-rdt-sortable="false" width="10%">
 										<spring:message code="contenidor.contingut.registre.columna.tipus"/>
-										<script id="cellTipusTemplate" type="text/x-jsrender">
+										<script id="cellTipusRegistreTemplate" type="text/x-jsrender">
 											{{:~eval('registreTipusText["' + tipus + '"]')}}
 										</script>
 									</th>
@@ -673,6 +676,45 @@ $(document).ready(function() {
 						<%--                    --%>
 						<%-- /Pipella registres --%>
 						<%--                    --%>
+					</div>
+					<div class="tab-pane" id="interessats">
+						<%--                     --%>
+						<%-- Pipella interessats --%>
+						<%--                     --%>
+						<table id="taulaInteressats" class="table table-bordered table-striped" data-rdt-paginable="false">
+							<thead>
+								<tr>
+									<th data-rdt-property="id" data-rdt-visible="false">#</th>
+									<th data-rdt-property="tipus" data-rdt-template="cellTipusInteressatTemplate" data-rdt-sortable="false" width="10%">
+										<spring:message code="contenidor.contingut.registre.columna.tipus"/>
+										<script id="cellTipusInteressatTemplate" type="text/x-jsrender">
+											{{:~eval('interessatTipusText["' + tipus + '"]')}}
+										</script>
+									</th>
+									<th data-rdt-property="documentNum" data-rdt-sortable="false" width="40%"><spring:message code="contenidor.contingut.registre.columna.extracte"/></th>
+									<th data-rdt-property="identificador" data-rdt-sortable="false" width="10%"><spring:message code="contenidor.contingut.registre.columna.identificador"/></th>
+									<th data-rdt-property="id" data-rdt-sortable="false" data-rdt-template="cellAccionsRegistreTemplate" width="10%">
+										<script id="cellAccionsRegistreTemplate" type="text/x-jsrender">
+											<div class="dropdown">
+												<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+												<ul class="dropdown-menu">
+													<li><a href="../contenidor/${contenidor.id}/interessat/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+													<li><a href="../contenidor/${contenidor.id}/interessat/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="contenidor.contingut.confirmacio.esborrar.interessat"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+												</ul>
+											</div>
+										</script>
+									</th>
+								</tr>
+							</thead>
+						</table>
+						<c:if test="${potModificarContingut}">
+							<script id="tableInteressatsButtonsTemplate" type="text/x-jsrender">
+								<p style="text-align:right"><a href="../contenidor/${contenidor.id}/interessat/new" class="btn btn-default" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contenidor.contingut.boto.nova.dada"/></a></p>
+							</script>
+						</c:if>
+						<%--                      --%>
+						<%-- /Pipella interessats --%>
+						<%--                      --%>
 					</div>
 				</c:if>
 			</div>

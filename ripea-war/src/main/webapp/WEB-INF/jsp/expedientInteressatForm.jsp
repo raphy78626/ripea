@@ -65,7 +65,7 @@ $(document).ready(function() {
 			<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="${commandName}">
 				<form:hidden path="entitatId"/>
 				<form:hidden path="comprovat"/>
-				<input type="hidden" name="tipus" value="<%=es.caib.ripea.war.command.InteressatCommand.TIPUS_CIUTADA%>"/>
+				<input type="hidden" name="tipus" value="<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.PERSONA_FISICA%>"/>
 				<rip:inputText name="nif" textKey="interessat.form.camp.nif" required="true"/>
 				<c:choose>
 					<c:when test="${interessatCommand.ciutada and interessatCommand.comprovat}">
@@ -101,7 +101,7 @@ $(document).ready(function() {
 			<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="${commandName}">
 				<form:hidden path="entitatId"/>
 				<form:hidden path="comprovat"/>
-				<input type="hidden" name="tipus" value="<%=es.caib.ripea.war.command.InteressatCommand.TIPUS_ADMINISTRACIO%>"/>
+				<input type="hidden" name="tipus" value="<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.ADMINISTRACIO%>"/>
 				<rip:inputText name="identificador" textKey="interessat.form.camp.identificador" required="true"/>
 				<c:choose>
 					<c:when test="${interessatCommand.administracio and interessatCommand.comprovat}">

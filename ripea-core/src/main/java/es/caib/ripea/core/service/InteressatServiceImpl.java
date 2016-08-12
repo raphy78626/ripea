@@ -379,43 +379,70 @@ public class InteressatServiceImpl implements InteressatService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<InteressatPersonaFisicaDto> findByFiltreCiutada(
+	public List<InteressatPersonaFisicaDto> findByFiltrePersonaFisica(
 			Long entitatId,
+			String documentNum,
 			String nom,
-			String nif,
-			String llinatges) {
+			String llinatge1,
+			String llinatge2) {
 		logger.debug("Consulta interessats de tipus ciutadà ("
 				+ "entitatId=" + entitatId + ", "
 				+ "nom=" + nom + ", "
-				+ "nif=" + nif + ", "
-				+ "llinatges=" + llinatges + ")");
+				+ "documentNum=" + documentNum + ", "
+				+ "llinatge1=" + llinatge1 + ", "
+				+ "llinatge2=" + llinatge2 + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
 		return conversioTipusHelper.convertirList(
-				interessatRepository.findByFiltreCiutada(
+				interessatRepository.findByFiltrePersonaFisica(
 						entitat,
 						nom == null,
 						nom,
-						nif == null,
-						nif,
-						llinatges == null,
-						llinatges),
+						documentNum == null,
+						documentNum,
+						llinatge1 == null,
+						llinatge1,
+						llinatge2 == null,
+						llinatge2),
 				InteressatPersonaFisicaDto.class);
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<InteressatPersonaJuridicaDto> findByFiltrePersonaJuridica(
+			Long entitatId,
+			String documentNum,
+			String raoSocial) {
+		logger.debug("Consulta interessats de tipus ciutadà ("
+				+ "entitatId=" + entitatId + ", "
+				+ "raoSocial=" + raoSocial + ", "
+				+ "documentNum=" + documentNum + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		return conversioTipusHelper.convertirList(
+				interessatRepository.findByFiltrePersonaJuridica(
+						entitat, 
+						documentNum == null,
+						documentNum,
+						raoSocial == null,
+						raoSocial),
+				InteressatPersonaJuridicaDto.class);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			Long entitatId,
-			String nom,
-			String identificador) {
+			String organCodi) {
 		logger.debug("Consulta interessats de tipus administració ("
 				+ "entitatId=" + entitatId + ", "
-				+ "nom=" + nom + ", "
-				+ "identificador=" + identificador + ")");
+				+ "organCodi=" + organCodi + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -423,10 +450,8 @@ public class InteressatServiceImpl implements InteressatService {
 				false);
 		List<InteressatAdministracioEntity> administracions = interessatRepository.findByFiltreAdministracio(
 				entitat,
-				nom == null,
-				nom,
-				identificador == null,
-				identificador);
+				organCodi == null,
+				organCodi);
 		return conversioTipusHelper.convertirList(
 				administracions,
 				InteressatAdministracioDto.class);
