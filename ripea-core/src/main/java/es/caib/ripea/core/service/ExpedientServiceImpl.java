@@ -1143,7 +1143,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				new Comparator<ExpedientEntity>() {
 				    @Override
 				    public int compare(ExpedientEntity e1, ExpedientEntity e2) {
-				        return -e1.getNom().compareTo(e2.getNom());
+				        return e1.getNom().compareTo(e2.getNom());
 				    }
 				});
 		List<ExpedientDto> relacionatsDto = new ArrayList<ExpedientDto>();

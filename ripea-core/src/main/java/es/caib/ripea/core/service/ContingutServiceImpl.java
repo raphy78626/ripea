@@ -637,14 +637,15 @@ public class ContingutServiceImpl implements ContingutService {
 		if (contingut.getPare() != null) {
 			contingut.getPare().getFills().remove(contingut);
 		}
-		// Registra al log l'eliminació definitiva del contingut
-		contingutLogHelper.log(
-				contingut,
-				LogTipusEnumDto.ELIMINACIODEF,
-				null,
-				null,
-				true,
-				true);
+		//TODO: es comenta perquè no es pot afegir contingut amb FK sobre quelcom que ja no existeix
+//		// Registra al log l'eliminació definitiva del contingut
+//		contingutLogHelper.log(
+//				contingut,
+//				LogTipusEnumDto.ELIMINACIODEF,
+//				null,
+//				null,
+//				true,
+//				true);
 		return dto;
 	}
 

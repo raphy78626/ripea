@@ -3,12 +3,16 @@
  */
 package es.caib.ripea.core.entity;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -57,6 +61,13 @@ public class ContingutLogEntity extends RipeaAuditable<Long> {
 	protected ContingutLogEntity pare;
 	@Version
 	private long version = 0;
+	
+	/** Per propagar l'esborrat en els logs.
+	 * TODO: s'ha de repensar per a que els logs es conservin i deixin esobrrar definitivament l'entitat.
+	 */
+	@OneToMany(mappedBy = "pare", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+	protected Set<ContingutLogEntity> fills;
+
 
 
 
