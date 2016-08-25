@@ -5,6 +5,8 @@ package es.caib.ripea.core.service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1070,6 +1072,135 @@ public class ExpedientServiceImpl implements ExpedientService {
 		bustiaHelper.evictElementsPendentsBustia(entitat, bustia);
 	}
 
+	@Transactional
+	@Override
+	public void relacionar(
+			Long entitatId,
+			Long id,
+			Long relacionatId) {
+		logger.debug("Relacionant l'expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "relacionatId=" + relacionatId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedient= comprovarExpedient(
+				entitat,
+				null,
+				id);
+		ExpedientEntity expedientRelacionat = comprovarExpedient(
+				entitat,
+				null,
+				relacionatId);
+		
+		expedient.getExpedientsRelacionatsAmb().add(expedientRelacionat);
+		
+		//TODO: enregistrar la informació en el log
+//		// Registra al log la relació
+//		ContingutLogEntity contenidorLog = contenidorLogHelper.log(
+//				expedient,
+//				LogTipusEnumDto.RELACIO,
+//				null,
+//				null,
+//				false,
+//				false);
+//		contenidorLog = contenidorLogHelper.log(
+//				expedientRelacionat,
+//				LogTipusEnumDto.RELACIO,
+//				contenidorLog,
+//				null,
+//				false,
+//				false);
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(ExpedientServiceImpl.class);
 
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<ExpedientDto> relacioFindAmbExpedient(
+			Long entitatId,
+			Long expedientId) {
+		logger.debug("Obtenint la llista d'expedients relacionats ("
+				+ "entitatId=" + entitatId + ", "
+				+ "expedientId=" + expedientId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedient = comprovarExpedient(
+				entitat,
+				null,
+				expedientId);
+		
+		List<ExpedientEntity> relacionats = expedient.getExpedientsRelacionats();
+		Collections.sort(
+				relacionats, 
+				new Comparator<ExpedientEntity>() {
+				    @Override
+				    public int compare(ExpedientEntity e1, ExpedientEntity e2) {
+				        return -e1.getNom().compareTo(e2.getNom());
+				    }
+				});
+		List<ExpedientDto> relacionatsDto = new ArrayList<ExpedientDto>();
+		for (ExpedientEntity e : relacionats)
+			relacionatsDto.add(toExpedientDto(e, false));		
+		return relacionatsDto;
+	}
+
+	@Transactional
+	@Override
+	public boolean relacioDelete(
+			Long entitatId,
+			Long id,
+			Long relacionatId) {
+		logger.debug("Esborrant la relació de l'expedient amb un altre expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "relacionatId=" + relacionatId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedient= comprovarExpedient(
+				entitat,
+				null,
+				id);
+		ExpedientEntity expedientRelacionat = comprovarExpedient(
+				entitat,
+				null,
+				relacionatId);
+		
+		boolean ret = true;
+		if (expedient.getExpedientsRelacionatsAmb().contains(expedientRelacionat)) {
+			expedient.getExpedientsRelacionatsAmb().remove(expedientRelacionat);
+		} else if (expedientRelacionat.getExpedientsRelacionatsAmb().contains(expedient)) {
+			expedientRelacionat.getExpedientsRelacionatsAmb().remove(expedient);
+		} else
+			ret = false;
+		if (ret) {
+			//TODO: enregistrar la informació en el log
+//			// Registra al log la relació
+//			ContingutLogEntity contenidorLog = contenidorLogHelper.log(
+//					expedient,
+//					LogTipusEnumDto.RELACIO_ESBORRAR,
+//					null,
+//					null,
+//					false,
+//					false);
+//			contenidorLog = contenidorLogHelper.log(
+//					expedientRelacionat,
+//					LogTipusEnumDto.RELACIO_ESBORRAR,
+//					contenidorLog,
+//					null,
+//					false,
+//					false);
+		}
+		return ret;
+	}
 }

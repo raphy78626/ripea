@@ -3,9 +3,11 @@
  */
 package es.caib.ripea.core.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -20,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -68,9 +71,64 @@ public class ExpedientEntity extends NodeEntity {
 	protected Integer sistraUnitatAdministrativa;
 	@Column(name = "sistra_clau", length = 100)
 	protected String sistraClau;
+	
+	/** -> */
+//	@ManyToMany(cascade =
+//					{
+//		                CascadeType.DETACH,
+//		                CascadeType.MERGE,
+//		                CascadeType.REFRESH,
+//		                CascadeType.PERSIST
+//					},
+//				fetch = FetchType.LAZY)
+//	@JoinTable(
+//			name="ipa_expedient_rel",
+//			joinColumns=@JoinColumn(name="expedient_id", referencedColumnName="id"),
+//			inverseJoinColumns=@JoinColumn(name="expedient_rel_id", referencedColumnName="id")
+//	)
+//	@ForeignKey(name="ipa_expedient_rel_exp_fk", inverseName="ipa_expedient_rel_rel_fk")	
+	@ManyToMany(
+			cascade =
+			{
+                CascadeType.DETACH,
+                CascadeType.MERGE,
+                CascadeType.REFRESH,
+                CascadeType.PERSIST
+			},
+			fetch = FetchType.LAZY)
+	@JoinTable(
+			name = "ipa_expedient_rel",
+			joinColumns = {@JoinColumn(name = "expedient_id", referencedColumnName="id")},
+			inverseJoinColumns = {@JoinColumn(name = "expedient_rel_id", referencedColumnName="id")})
+	@ForeignKey(name="ipa_expedient_rel_exp_fk", inverseName="ipa_expedient_rel_rel_fk")	
+	protected List<ExpedientEntity> expedientsRelacionatsAmb;
 
-
-
+	/** <- */
+//	@ManyToMany(mappedBy="expedientsRelacionatsAmb",
+//				cascade =
+//					{
+//			            CascadeType.DETACH,
+//			            CascadeType.MERGE,
+//			            CascadeType.REFRESH,
+//			            CascadeType.PERSIST
+//					},
+//				fetch = FetchType.LAZY)
+	@ManyToMany(
+			cascade =
+				{
+		            CascadeType.DETACH,
+		            CascadeType.MERGE,
+		            CascadeType.REFRESH,
+		            CascadeType.PERSIST
+				},
+			fetch = FetchType.LAZY)
+	@JoinTable(
+			name = "ipa_expedient_rel",
+			joinColumns = {@JoinColumn(name = "expedient_rel_id", referencedColumnName="id")},
+			inverseJoinColumns = {@JoinColumn(name = "expedient_id", referencedColumnName="id")})
+	@ForeignKey(name="ipa_expedient_rel_rel_fk", inverseName="ipa_expedient_rel_exp_fk")	
+	protected List<ExpedientEntity> expedientsRelacionatsPer;
+	
 	public ArxiuEntity getArxiu() {
 		return arxiu;
 	}
@@ -140,6 +198,28 @@ public class ExpedientEntity extends NodeEntity {
 		}
 	}
 
+	public List<ExpedientEntity> getExpedientsRelacionatsAmb() {
+		return expedientsRelacionatsAmb;
+	}
+	public void setExpedientsRelacionatsAmb(List<ExpedientEntity> expedientsRelacionatsAmb) {
+		this.expedientsRelacionatsAmb = expedientsRelacionatsAmb;
+	}
+
+	public List<ExpedientEntity> getExpedientsRelacionatsPer() {
+		return expedientsRelacionatsPer;
+	}
+	public void setExpedientsRelacionatsPer(List<ExpedientEntity> expedientsRelacionatsPer) {
+		this.expedientsRelacionatsPer = expedientsRelacionatsPer;
+	}
+	
+	@Transient
+	public List<ExpedientEntity> getExpedientsRelacionats() {
+		List<ExpedientEntity> relacionats = new ArrayList<ExpedientEntity>();
+		relacionats.addAll(this.getExpedientsRelacionatsAmb());
+		relacionats.addAll(this.getExpedientsRelacionatsPer());
+		return relacionats;
+	}
+	
 	public static Builder getBuilder(
 			String nom,
 			MetaNodeEntity metaNode,

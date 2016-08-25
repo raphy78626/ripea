@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.api.service;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
@@ -283,5 +285,56 @@ public interface ExpedientService {
 			Long bustiaId,
 			BustiaContingutPendentTipusEnumDto contingutTipus,
 			Long contingutId) throws NotFoundException;
+
+	/**
+	 * Relaciona l'expedient amb un altre.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany l'expedient.
+	 * @param expedientId
+	 *            Atribut id de l'expedient al que se li afegirà la relació.
+	 * @param relacionatId
+	 *            Atribut id de l'expedient amb que es relacionarà. A l'hora de consultar
+	 *            les relacions es farà en ambdós sentits.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public void relacionar(
+			Long entitatId,
+			Long expedientId,
+			Long relacionatId) throws NotFoundException;
+
+	/**
+	 * Retorna la llista d'expedients relacionats amb l'expedient
+	 * especificat.
+	 * 
+	 * @param entitatId 
+	 * @param expedientId
+	 *            Atribut id de l'expedient que es vol consultar.
+	 * @return La llista d'expedients.
+	 */
+	public List<ExpedientDto> relacioFindAmbExpedient(
+			Long entitatId, 
+			Long expedientId);
+
+	/**
+	 * Esborra la relació de l'expedient amb un altre.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany l'expedient.
+	 * @param expedientId
+	 *            Atribut id de l'expedient al que se li afegirà la relació.
+	 * @param relacionatId
+	 *            Atribut id de l'expedient amb que es relacionarà. A l'hora de consultar
+	 *            les relacions es farà en ambdós sentits.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public boolean relacioDelete(
+			Long entitatId,
+			Long expedientId,
+			Long relacionatId) throws NotFoundException;
 
 }

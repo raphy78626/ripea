@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.ejb;
 
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -15,6 +17,7 @@ import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ExpedientService;
 
 /**
@@ -171,6 +174,35 @@ public class ExpedientServiceBean implements ExpedientService {
 				bustiaId,
 				contingutTipus,
 				contingutId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void relacionar(
+			Long entitatId,
+			Long id,
+			Long acumulatId) {
+		delegate.relacionar(
+				entitatId,
+				id,
+				acumulatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<ExpedientDto> relacioFindAmbExpedient(
+			Long entitatId, 
+			Long expedientId) {
+		return delegate.relacioFindAmbExpedient(entitatId, expedientId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean relacioDelete(
+			Long entitatId, 
+			Long expedientId, 
+			Long relacionatId) throws NotFoundException {
+		return delegate.relacioDelete(entitatId, expedientId, relacionatId);
 	}
 
 }

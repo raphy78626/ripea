@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
@@ -36,7 +37,14 @@ import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorCommand.Update;
 import es.caib.ripea.war.command.ExpedientAcumularCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
+import es.caib.ripea.war.command.ExpedientFiltreCommand;
+import es.caib.ripea.war.command.ExpedientFiltreCommand.ExpedientFiltreOpcionsEstatEnum;
+import es.caib.ripea.war.command.ExpedientRelacionarCommand;
+import es.caib.ripea.war.command.ExpedientRelacionarCommand.Relacionar;
 import es.caib.ripea.war.command.ExpedientTancarCommand;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.MissatgesHelper;
 
 /**
  * Controlador per al manteniment d'expedients dels contenidors.
@@ -275,6 +283,120 @@ public class ContenidorExpedientController extends BaseUserController {
 				request,
 				"redirect:../../../../contenidor/" + contenidorId,
 				"expedient.controller.acumulat.ok");
+	}
+	
+	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/relacionar", method = RequestMethod.GET)
+	public String expedientRelacionarGet(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			@PathVariable Long expedientId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		ExpedientRelacionarCommand command = new ExpedientRelacionarCommand();
+		command.setEntitatId(entitatActual.getId());
+		command.setExpedientARelacionarId(expedientId);
+		model.addAttribute(command);
+		model.addAttribute(
+				"expedient",
+				contenidorService.getContingutAmbFills(
+						entitatActual.getId(),
+						expedientId));
+		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
+		model.addAttribute(
+				"contenidorOrigen",
+				escriptori);
+
+		// Per la cerca
+		model.addAttribute("contenidorId", contenidorId);
+		model.addAttribute("expedientId", expedientId);
+		ExpedientFiltreCommand filtre = new ExpedientFiltreCommand();
+		filtre.setEstatFiltre(ExpedientFiltreOpcionsEstatEnum.TOTS);
+		model.addAttribute(filtre);
+		model.addAttribute("arxius",
+				arxiuService.findPermesosPerUsuari(
+									entitatActual.getId()));
+		model.addAttribute(
+				"metaExpedients",
+				metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId()));
+		
+		return "contenidorExpedientRelacionarForm";
+	}
+	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/relacionar", method = RequestMethod.POST)
+	public String expedientRelacionarPost(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			@PathVariable Long expedientId,
+			ExpedientFiltreCommand filtre,
+			@Validated(Relacionar.class) ExpedientRelacionarCommand command,
+			BindingResult bindingResult,
+			Model model) throws IOException {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
+		if (bindingResult.hasErrors()) {
+			model.addAttribute(
+					"expedient",
+					contenidorService.getContingutAmbFills(
+							entitatActual.getId(),
+							expedientId));
+			model.addAttribute(
+					"contenidorOrigen",
+					escriptori);
+			
+			model.addAttribute(filtre);
+			
+			return "contenidorExpedientRelacionarForm";
+		}
+		expedientService.relacionar(
+				entitatActual.getId(),
+				command.getExpedientARelacionarId(),
+				command.getExpedientRelacionatId());
+		return getModalControllerReturnValueSuccess(
+				request,
+				"redirect:../../../../contenidor/" + contenidorId,
+				"expedient.controller.relacionat.ok");
+	}	
+	
+	/** Mètode ajax per esborrar una relació existent amb un altre expedient. */
+	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/relacio/{expedientRelacionatId}/delete", method = RequestMethod.GET)
+	public String expedientRelacioDelete(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			@PathVariable Long expedientId,
+			@PathVariable Long expedientRelacionatId) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if( expedientService.relacioDelete(
+				entitatActual.getId(),
+				expedientId,
+				expedientRelacionatId))
+		{
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"expedient.controller.relacio.esborrada.ok"));
+		} else {
+			MissatgesHelper.error(
+					request, 
+					getMessage(
+							request, 
+							"expedient.controller.relacio.esborrada.error"));
+		}
+		return "redirect:/contenidor/" + expedientId;
+	}		
+	
+	
+	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/relacionar/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse datatable(
+			HttpServletRequest request,
+			ExpedientFiltreCommand filtre) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				expedientService.findPaginatUser(
+						entitatActual.getId(), 
+						ExpedientFiltreCommand.asDto(filtre), 
+						DatatablesHelper.getPaginacioDtoFromRequest(request)));		
 	}
 
 	@InitBinder

@@ -13,7 +13,11 @@
 		</c:if>
 		<c:if test="${not empty contenidor.escriptoriPare}">
 			<c:if test="${contenidor.expedient}">
-				<c:if test="${contenidor.metaNode.usuariActualWrite or empty contenidor.metaNode}"><li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li></c:if>
+				<c:if test="${contenidor.metaNode.usuariActualWrite or empty contenidor.metaNode}">
+					<li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li>
+					<li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}/relacionar" data-rdt-link-modal="true"><span class="fa fa-link"></span>&nbsp;<spring:message code="comu.boto.relacionar"/>...</a></li>
+					<li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}/acumular" data-rdt-link-modal="true"><span class="fa fa-sign-in"></span>&nbsp;<spring:message code="comu.boto.acumular"/>...</a></li>
+				</c:if>
 				<li><a href="../contenidor/${contenidor.pare.id}/expedient/${contenidor.id}/alliberar"><span class="fa fa-unlock"></span>&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
 				<c:if test="${contenidor.estat == 'OBERT'}">
 					<c:choose>

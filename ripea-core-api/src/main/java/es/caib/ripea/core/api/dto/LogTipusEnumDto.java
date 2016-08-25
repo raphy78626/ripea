@@ -32,4 +32,7 @@ public enum LogTipusEnumDto {
 	PFIRMA_FIRMA,
 	PFIRMA_REBUIG,
 	CUSTODIA
+//	,
+//	RELACIO,	// Relació d'un expedient amb un altre
+//	RELACIO_ESBORRAR
 }

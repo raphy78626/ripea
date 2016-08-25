@@ -358,6 +358,30 @@ $(document).ready(function() {
 							<dd>${contenidor.darreraVersio.versio}</dd>
 						</c:if>
 					</dl>
+					
+					<c:if test="${not empty relacionats}">
+						<h4 id="expedient-info-relacionats" style="padding-bottom: 0 !important;margin-bottom: 4px !important; border-bottom: 1px solid #e3e3e3">
+							<spring:message code="contenidor.contingut.info.relacionats"/>
+						</h4>
+						<ul class="list-unstyled">
+							<c:forEach var="expedientRelacionat" items="${relacionats}">
+								<c:if test="${!expedientRelacionat.esborrat}">
+									<li>
+										<span class="fa fa-briefcase"></span>
+										<a href="${expedientRelacionat.id}">
+											[${expedientRelacionat.sequencia}/${expedientRelacionat.any}]
+											${expedientRelacionat.nom}
+										</a>
+										<c:if test="${potModificarContingut}">
+											<a href="${contenidor.pare.id}/expedient/${contenidor.id}/relacio/${expedientRelacionat.id}/delete" class="fa fa-trash-o edita" style="float: right;"
+												onclick="return confirm('<spring:message code="contenidor.contingut.info.relacionat.esborrar.confirm"/>')" ></a>
+										</c:if>
+									</li>
+								</c:if>
+							</c:forEach>
+						</ul>
+					</c:if>
+					
 					<c:if test="${contenidor.expedient}">
 						<h4 class="interessats">
 							<spring:message code="contenidor.contingut.info.interessats"/>
@@ -380,7 +404,9 @@ $(document).ready(function() {
 							</ul>
 						</c:if>
 					</c:if>
+					
 					<rip:blocContenidorAccions id="botons-accions-info" contenidor="${contenidor}" modeLlistat="true" mostrarObrir="false"/>
+
 				</div>
 				<%--                     --%>
 				<%-- /Columna informació --%>

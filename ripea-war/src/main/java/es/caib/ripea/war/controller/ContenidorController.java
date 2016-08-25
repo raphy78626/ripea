@@ -37,6 +37,7 @@ import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
+import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
@@ -76,6 +77,8 @@ public class ContenidorController extends BaseUserController {
 	private DocumentService documentService;
 	@Autowired
 	private InteressatService interessatService;
+	@Autowired
+	private ExpedientService expedientService;
 	@Autowired
 	private MetaDadaService metaDadaService;
 	@Autowired
@@ -615,6 +618,9 @@ public class ContenidorController extends BaseUserController {
 					interessatService.findByExpedient(
 							entitatActual.getId(),
 							contingut.getId()));
+			model.addAttribute("relacionats", expedientService.relacioFindAmbExpedient(
+						entitatActual.getId(),
+						contingut.getId()));			
 		}
 		if (contingut instanceof DocumentDto) {
 			model.addAttribute(

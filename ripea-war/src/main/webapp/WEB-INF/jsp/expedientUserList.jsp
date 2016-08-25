@@ -41,7 +41,7 @@ $(document).ready(function() {
 				<rip:inputText name="numero" inline="true" placeholderKey="expedient.list.user.placeholder.numero"/>
 			</div>
 			<div class="col-md-2">
-				<rip:inputText name="nom" inline="true" placeholderKey="expedient.list.user.placeholder.nom"/>
+				<rip:inputText name="nom" inline="true" placeholderKey="expedient.list.user.placeholder.titol"/>
 			</div>
 			<div class="col-md-3">
 				<rip:inputSelect name="metaExpedientId" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="expedient.list.user.placeholder.tipusExpedient" inline="true"/>
@@ -92,7 +92,7 @@ $(document).ready(function() {
 				<th data-col-name="codiPropietariEscriptoriPare" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
 				<th data-col-name="sequenciaAny"><spring:message code="expedient.list.user.columna.numero"/></th>
-				<th data-col-name="nom" width="30%"><spring:message code="expedient.list.user.columna.nom"/></th>
+				<th data-col-name="nom" width="30%"><spring:message code="expedient.list.user.columna.titol"/></th>
 				<th data-col-name="metaNode.nom" width="15%"><spring:message code="expedient.list.user.columna.tipus"/></th>
 				<th data-col-name="arxiu.nom" width="15%"><spring:message code="expedient.list.user.columna.arxiu"/></th>
 				<th data-col-name="createdDate" data-type="datetime" data-converter="datetime" width="15%"><spring:message code="expedient.list.user.columna.createl"/></th>
