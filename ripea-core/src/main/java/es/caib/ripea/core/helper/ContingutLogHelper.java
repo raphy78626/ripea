@@ -28,7 +28,6 @@ import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.repository.ContingutLogRepository;
 import es.caib.ripea.core.repository.ContingutMovimentRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
-import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
  * Utilitat per a gestionar el registre d'accions dels contenidors.
@@ -44,8 +43,6 @@ public class ContingutLogHelper {
 	private ContingutLogRepository contingutLogRepository;
 	@Resource
 	private ContingutMovimentRepository contingutMovimentRepository;
-	@Resource
-	private UsuariRepository usuariRepository;
 
 	@Resource
 	private ContingutHelper contenidorHelper;

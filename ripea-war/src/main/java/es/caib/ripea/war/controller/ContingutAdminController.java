@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.exception.ValidationException;
+import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
@@ -31,6 +32,7 @@ import es.caib.ripea.war.command.ContingutFiltreCommand;
 import es.caib.ripea.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
@@ -46,6 +48,8 @@ public class ContingutAdminController extends BaseAdminController {
 
 	@Autowired
 	private ContingutService contingutService;
+	@Autowired
+	private BustiaService bustiaService;
 	@Autowired
 	private MetaExpedientService metaExpedientService;
 	@Autowired
@@ -117,6 +121,31 @@ public class ContingutAdminController extends BaseAdminController {
 		return "contingutAdminInfo";
 	}
 
+	@RequestMapping(value = "/{contingutId}/log", method = RequestMethod.GET)
+	public String log(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		model.addAttribute(
+				"contingut",
+				contingutService.findAmbIdAdmin(
+						entitatActual.getId(),
+						contingutId,
+						true));
+		model.addAttribute(
+				"logs",
+				contingutService.findLogsPerContingutAdmin(
+						entitatActual.getId(),
+						contingutId));
+		model.addAttribute(
+				"moviments",
+				contingutService.findMovimentsPerContingutAdmin(
+						entitatActual.getId(),
+						contingutId));
+		return "contingutLog";
+	}
+
 	@RequestMapping(value = "/{contingutId}/undelete", method = RequestMethod.GET)
 	public String undelete(
 			HttpServletRequest request,
@@ -152,6 +181,35 @@ public class ContingutAdminController extends BaseAdminController {
 				request,
 				"redirect:../../esborrat",
 				"contingut.admin.controller.esborrat.definitiu.ok");
+	}
+
+	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	public String reintentar(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		boolean processatOk = bustiaService.registreReglaReintentarAdmin(
+				entitatActual.getId(),
+				bustiaId,
+				registreId);
+		if (processatOk) {
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"contingut.admin.controller.registre.reintentat.ok",
+							null));
+		} else {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"contingut.admin.controller.registre.reintentat.error",
+							null));
+		}
+		return "redirect:../../../" + registreId + "/info";
 	}
 
 	@InitBinder

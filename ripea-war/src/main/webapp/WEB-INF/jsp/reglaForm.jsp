@@ -33,8 +33,8 @@ $(document).ready(function() {
 <body>
 	<c:set var="formAction"><rip:modalUrl value="/regla"/></c:set>
 	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a href="#comunes" aria-controls="comunes" role="tab" data-toggle="tab">Dades comunes</a></li>
-		<li role="presentation"><a href="#especifiques" aria-controls="especifiques" role="tab" data-toggle="tab">Dades específiques</a></li>
+		<li role="presentation" class="active"><a href="#comunes" aria-controls="comunes" role="tab" data-toggle="tab"><spring:message code="regla.form.pipella.comunes"/></a></li>
+		<li role="presentation"><a href="#especifiques" aria-controls="especifiques" role="tab" data-toggle="tab"><spring:message code="regla.form.pipella.especifiques"/></a></li>
 	</ul>
 	<br/>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="reglaCommand" role="form">
@@ -53,6 +53,7 @@ $(document).ready(function() {
 					<rip:inputSelect name="arxiuId" textKey="regla.form.camp.arxiu" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>
 				</div>
 				<div id="camps_tipus_EXP_AFEGIR">
+					<rip:inputSelect name="metaExpedientId" textKey="regla.form.camp.metaexpedient" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>
 				</div>
 				<div id="camps_tipus_BUSTIA">
 					<rip:inputSelect name="bustiaId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>

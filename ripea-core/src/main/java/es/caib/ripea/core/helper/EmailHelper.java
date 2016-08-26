@@ -56,7 +56,8 @@ public class EmailHelper {
 
 	public void emailUsuariContingutAgafatSensePermis(
 			ContingutEntity contingut,
-			UsuariEntity usuari) {
+			UsuariEntity usuariOriginal,
+			UsuariEntity usuariNou) {
 		logger.debug("Enviament emails contingut agafat sense permis (" +
 				"contingutId=" + contingut.getId() + ")");
 		SimpleMailMessage missatge = new SimpleMailMessage();
@@ -69,13 +70,14 @@ public class EmailHelper {
 		} else if (contingut instanceof CarpetaEntity) {
 			tipus = "carpeta";
 		}
+		missatge.setTo(usuariOriginal.getEmail());
 		missatge.setSubject(PREFIX_RIPEA + " Element de l'escriptori agafat per un altre usuari: (" + tipus + ") " + contingut.getNom());
 		missatge.setText(
 				"Informació de l'element de l'escriptori:\n" +
 				"\tEntitat: " + contingut.getEntitat().getNom() + "\n" +
 				"\tTipus: " + tipus + "\n" +
 				"\tNom: " + contingut.getNom() + "\n\n" + 
-				"\tPersona que ho ha agafat: " + usuari.getNom() + "(" + usuari.getCodi() + ").");
+				"\tPersona que ho ha agafat: " + usuariNou.getNom() + "(" + usuariNou.getCodi() + ").");
 		mailSender.send(missatge);
 	}
 

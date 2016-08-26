@@ -33,7 +33,6 @@ import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
@@ -41,7 +40,6 @@ import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
-import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.DadaCommand;
 import es.caib.ripea.war.command.DadaCommand.DadaTipusBoolea;
@@ -67,7 +65,7 @@ public class ContenidorController extends BaseUserController {
 	private static final String CONTENIDOR_VISTA_LLISTAT = "llistat";
 
 	@Autowired
-	private ContingutService contenidorService;
+	private ContingutService contingutService;
 	@Autowired
 	private MetaExpedientService metaExpedientService;
 	@Autowired
@@ -80,8 +78,6 @@ public class ContenidorController extends BaseUserController {
 	private MetaDadaService metaDadaService;
 	@Autowired
 	private BustiaService bustiaService;
-	@Autowired
-	private RegistreService registreService;
 
 	@Autowired(required = true)
 	private javax.validation.Validator validator;
@@ -94,7 +90,7 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contingut = contenidorService.findAmbIdUser(
+		ContingutDto contingut = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorId,
 				true);
@@ -114,7 +110,7 @@ public class ContenidorController extends BaseUserController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<DadaDto> dades = null;
-		ContingutDto contenidor = contenidorService.findAmbIdUser(
+		ContingutDto contenidor = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorId,
 				true);
@@ -145,7 +141,7 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long dadaId,
 			Model model) throws Exception {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.findAmbIdUser(
+		ContingutDto contenidor = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorId,
 				true);
@@ -153,7 +149,7 @@ public class ContenidorController extends BaseUserController {
 		if (contenidor instanceof NodeDto) {
 			NodeDto node = (NodeDto)contenidor;
 			if (dadaId != null) {
-				dada = contenidorService.dadaFindById(
+				dada = contingutService.dadaFindById(
 						entitatActual.getId(),
 						contenidorId,
 						dadaId);
@@ -216,7 +212,7 @@ public class ContenidorController extends BaseUserController {
 				bindingResult,
 				grups.toArray(new Class[grups.size()]));
 		if (bindingResult.hasErrors()) {
-			ContingutDto contenidor = contenidorService.findAmbIdUser(
+			ContingutDto contenidor = contingutService.findAmbIdUser(
 					entitatActual.getId(),
 					contenidorId,
 					true);
@@ -231,7 +227,7 @@ public class ContenidorController extends BaseUserController {
 			return "contenidorDadaForm";
 		}
 		if (command.getId() != null) {
-			contenidorService.dadaUpdate(
+			contingutService.dadaUpdate(
 					entitatActual.getId(),
 					contenidorId,
 					command.getId(),
@@ -241,7 +237,7 @@ public class ContenidorController extends BaseUserController {
 					"redirect:../../../contenidor/" + contenidorId,
 					"contenidor.controller.dada.modificada.ok");
 		} else {
-			contenidorService.dadaCreate(
+			contingutService.dadaCreate(
 					entitatActual.getId(),
 					contenidorId,
 					command.getMetaDadaId(),
@@ -260,7 +256,7 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long dadaId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		contenidorService.dadaDelete(
+		contingutService.dadaDelete(
 				entitatActual.getId(),
 				contenidorId,
 				dadaId);
@@ -277,7 +273,7 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.findAmbIdUser(
+		ContingutDto contenidor = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorId,
 				true);
@@ -295,11 +291,11 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.findAmbIdUser(
+		ContingutDto contenidor = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorId,
 				true);
-		contenidorService.deleteReversible(
+		contingutService.deleteReversible(
 				entitatActual.getId(),
 				contenidorId);
 		return getAjaxControllerReturnValueSuccess(
@@ -361,7 +357,7 @@ public class ContenidorController extends BaseUserController {
 					model);
 			return "contenidorMoureForm";
 		}
-		contenidorService.move(
+		contingutService.move(
 				entitatActual.getId(),
 				contenidorOrigenId,
 				command.getContenidorDestiId());
@@ -377,11 +373,11 @@ public class ContenidorController extends BaseUserController {
 			@PathVariable Long contenidorDestiId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidorOrigen = contenidorService.findAmbIdUser(
+		ContingutDto contenidorOrigen = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorOrigenId,
 				true);
-		contenidorService.move(
+		contingutService.move(
 				entitatActual.getId(),
 				contenidorOrigenId,
 				contenidorDestiId);
@@ -421,7 +417,7 @@ public class ContenidorController extends BaseUserController {
 					model);
 			return "contenidorCopiarForm";
 		}
-		ContingutDto contenidorCreat = contenidorService.copy(
+		ContingutDto contenidorCreat = contingutService.copy(
 				entitatActual.getId(),
 				contenidorOrigenId,
 				command.getContenidorDestiId(),
@@ -480,78 +476,16 @@ public class ContenidorController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contenidor",
-				contenidorService.findAmbIdUser(
+				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						contenidorId,
 						true));
 		model.addAttribute(
 				"errors",
-				contenidorService.findErrorsValidacio(
+				contingutService.findErrorsValidacio(
 						entitatActual.getId(),
 						contenidorId));
 		return "contenidorErrors";
-	}
-
-	@RequestMapping(value = "/contenidor/{contenidorId}/registre/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesPagina<RegistreAnotacioDto> registreDatatable(
-			HttpServletRequest request,
-			@PathVariable Long contenidorId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<RegistreAnotacioDto> registres = null;
-		ContingutDto contenidor = contenidorService.findAmbIdUser(
-				entitatActual.getId(),
-				contenidorId,
-				true);
-		if (contenidor instanceof ExpedientDto) {
-			ExpedientDto expedient = (ExpedientDto)contenidor;
-			registres = expedient.getFillsRegistres();
-		} else {
-			registres = new ArrayList<RegistreAnotacioDto>();
-		}
-		return PaginacioHelper.getPaginaPerDatatables(request, registres);
-	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreId}", method = RequestMethod.GET)
-	public String registreInfo(
-			HttpServletRequest request,
-			@PathVariable Long contenidorId,
-			@PathVariable Long registreId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"registre",
-				registreService.findOne(
-						entitatActual.getId(),
-						contenidorId,
-						registreId));
-		return "registreDetall";
-	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreId}/log", method = RequestMethod.GET)
-	public String registreLog(
-			HttpServletRequest request,
-			@PathVariable Long contenidorId,
-			@PathVariable Long registreId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"contenidor",
-				contenidorService.findAmbIdUser(
-						entitatActual.getId(),
-						contenidorId,
-						true));
-		model.addAttribute(
-				"registre",
-				registreService.findOne(
-						entitatActual.getId(),
-						contenidorId,
-						registreId));
-		model.addAttribute(
-				"moviments",
-				contenidorService.findMovimentsPerContingutUser(
-						entitatActual.getId(),
-						registreId));
-		return "registreLog";
 	}
 
 	@RequestMapping(value = "/contenidor/{contenidorId}/log", method = RequestMethod.GET)
@@ -562,21 +496,21 @@ public class ContenidorController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contenidor",
-				contenidorService.findAmbIdUser(
+				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						contenidorId,
 						true));
 		model.addAttribute(
 				"logs",
-				contenidorService.findLogsPerContingutUser(
+				contingutService.findLogsPerContingutUser(
 						entitatActual.getId(),
 						contenidorId));
 		model.addAttribute(
 				"moviments",
-				contenidorService.findMovimentsPerContingutUser(
+				contingutService.findMovimentsPerContingutUser(
 						entitatActual.getId(),
 						contenidorId));
-		return "contenidorLog";
+		return "contingutLog";
 	}
 
 	@RequestMapping(value = "/contenidor/{contenidorId}/nti")
@@ -587,7 +521,7 @@ public class ContenidorController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contenidor",
-				contenidorService.findAmbIdUser(
+				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						contenidorId,
 						true));
@@ -650,7 +584,7 @@ public class ContenidorController extends BaseUserController {
 			EntitatDto entitatActual,
 			Long contenidorOrigenId,
 			Model model) {
-		ContingutDto contingutOrigen = contenidorService.findAmbIdUser(
+		ContingutDto contingutOrigen = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorOrigenId,
 				true);
@@ -663,7 +597,7 @@ public class ContenidorController extends BaseUserController {
 			EntitatDto entitatActual,
 			Long contenidorOrigenId,
 			Model model) {
-		ContingutDto contingutOrigen = contenidorService.findAmbIdUser(
+		ContingutDto contingutOrigen = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorOrigenId,
 				true);

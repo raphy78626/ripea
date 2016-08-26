@@ -104,18 +104,20 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			Pageable pageable);
 
 	@Query(	"select " +
-			"    pare.id, " +
+			"    c.pare.id, " +
 			"    count(*) " +
 			"from " +
-			"    ContingutEntity " +
+			"    ContingutEntity c " +
 			"where " +
-			"    entitat = :entitat " +
-			"and pare in (:pares) " +
-			"and esborrat = 0 " +
+			"    c.entitat = :entitat " +
+			"and c.pare in (:pares) " +
+			"and (:incloureAnotacionsProcessades = true or (type(c) = es.caib.ripea.core.entity.RegistreEntity and (c.procesEstat = 'NO_PROCES' or c.procesEstat = 'ERROR'))) " +
+			"and c.esborrat = 0 " +
 			"group by " +
-			"    pare")
+			"    c.pare")
 	List<Object[]> countByPares(
 			@Param("entitat") EntitatEntity entitat,
-			@Param("pares") List<? extends ContingutEntity> pares);
+			@Param("pares") List<? extends ContingutEntity> pares,
+			@Param("incloureAnotacionsProcessades") boolean incloureAnotacionsProcessades);
 
 }

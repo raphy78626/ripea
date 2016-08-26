@@ -17,7 +17,10 @@ import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ReglaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ReglaService;
+import es.caib.ripea.core.entity.ArxiuEntity;
+import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.ReglaEntity;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
@@ -95,6 +98,37 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getTipus(),
 				regla.getAssumpteCodi(),
 				regla.getUnitatCodi());
+		switch(regla.getTipus()) {
+		case BACKOFFICE:
+			entity.updatePerTipusBackoffice(
+					regla.getBackofficeUrl(),
+					regla.getBackofficeUsuari(),
+					regla.getBackofficeContrasenya(),
+					regla.getBackofficeReintents());
+			break;
+		case BUSTIA:
+			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					regla.getBustiaId(),
+					false);
+			entity.updatePerTipusBustia(
+					bustia);
+			break;
+		case EXP_AFEGIR:
+		case EXP_CREAR:
+			MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+					entitat,
+					regla.getMetaExpedientId(),
+					false,
+					false);
+			ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+					entitat,
+					regla.getArxiuId(),
+					false);
+			entity.updatePerTipusExpedient(
+					metaExpedient,
+					arxiu);
+		}
 		return conversioTipusHelper.convertir(
 				reglaRepository.save(entity),
 				ReglaDto.class);

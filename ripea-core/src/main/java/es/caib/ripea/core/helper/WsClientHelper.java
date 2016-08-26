@@ -142,7 +142,7 @@ public class WsClientHelper<T> {
 		public void close(MessageContext messageContext) {
 		}
 		private void logMessage(SOAPMessageContext smc) {
-			if (LOGGER.isDebugEnabled()) {
+			if (true) {//LOGGER.isDebugEnabled()) {
 				StringBuilder sb = new StringBuilder();
 				Boolean outboundProperty = (Boolean)smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 				if (outboundProperty.booleanValue())
@@ -157,10 +157,11 @@ public class WsClientHelper<T> {
 				} catch (Exception ex) {
 					sb.append("Error al imprimir el missatge XML: " + ex.getMessage());
 				}
+				System.out.println(">>> " + sb.toString());
 				LOGGER.debug(sb.toString());
 			}
 		}
-		private static final Logger LOGGER = LoggerFactory.getLogger(SOAPLoggingHandler.class);
+		private static final Logger LOGGER = LoggerFactory.getLogger(WsClientHelper.class);
 	}
 
 }

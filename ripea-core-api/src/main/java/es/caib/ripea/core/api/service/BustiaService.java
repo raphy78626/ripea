@@ -367,7 +367,7 @@ public interface BustiaService {
 	 * @param entitatId
 	 *            Id de l'entitat.
 	 * @param id
-	 *            Atribut id de l'arxiu del qual es vol modificar el permís.
+	 *            Atribut id de la bústia de la qual es vol modificar el permís.
 	 * @param permisId
 	 *            Atribut id del permís que es vol esborrar.
 	 * @throws NotFoundException
@@ -384,5 +384,51 @@ public interface BustiaService {
 	 * de registre.
 	 */
 	public void registreReglaAplicarPendents();
+
+	/**
+	 * 
+	 * @param entitatId
+	 * @param bustiaId
+	 * @param registreId
+	 * @return
+	 * @throws NotFoundException
+	 */
+	/**
+	 * Torna a processar una anotació de registre pendent o amb error.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param bustiaId
+	 *            Atribut id de la bústia de la qual es vol modificar el permís.
+	 * @param registreId
+	 *            Atribut id de l'anotació de registre que es vol tornar a processar.
+	 * @return true si s'ha processat sense errors o false en cas contrari.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public boolean registreReglaReintentarAdmin(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) throws NotFoundException;
+
+	/**
+	 * Torna a processar una anotació de registre pendent o amb error.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param bustiaId
+	 *            Atribut id de la bústia de la qual es vol modificar el permís.
+	 * @param registreId
+	 *            Atribut id de l'anotació de registre que es vol tornar a processar.
+	 * @return true si s'ha processat sense errors o false en cas contrari.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public boolean registreReglaReintentarUser(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) throws NotFoundException;
 
 }

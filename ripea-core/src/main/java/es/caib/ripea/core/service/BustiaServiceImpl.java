@@ -4,13 +4,11 @@
 package es.caib.ripea.core.service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -34,33 +32,20 @@ import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
-import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.registre.RegistreAnnex;
-import es.caib.ripea.core.api.registre.RegistreAnnexElaboracioEstatEnum;
-import es.caib.ripea.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
-import es.caib.ripea.core.api.registre.RegistreAnnexOrigenEnum;
-import es.caib.ripea.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
-import es.caib.ripea.core.api.registre.RegistreInteressat;
-import es.caib.ripea.core.api.registre.RegistreInteressatCanalEnum;
-import es.caib.ripea.core.api.registre.RegistreInteressatDocumentTipusEnum;
-import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.api.service.ws.RipeaBackofficeResultatProces;
-import es.caib.ripea.core.api.service.ws.RipeaBackofficeWsService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
-import es.caib.ripea.core.entity.RegistreInteressatEntity;
 import es.caib.ripea.core.entity.ReglaEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
@@ -73,11 +58,13 @@ import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.RegistreHelper;
+import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
-import es.caib.ripea.core.helper.WsClientHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
+import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.ReglaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
@@ -99,6 +86,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private RegistreRepository registreRepository;
 	@Resource
 	private ReglaRepository reglaRepository;
+	@Resource
+	private ExpedientRepository expedientRepository;
 
 	@Resource
 	private PermisosHelper permisosHelper;
@@ -116,6 +105,10 @@ public class BustiaServiceImpl implements BustiaService {
 	private EmailHelper emailHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
+	@Resource
+	private ReglaHelper reglaHelper;
+	@Resource
+	private RegistreHelper registreHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
@@ -579,17 +572,24 @@ public class BustiaServiceImpl implements BustiaService {
 					"numero=" + anotacio.getNumero() + ", " +
 					"data=" + anotacio.getData() + ")");
 		}
-		ReglaEntity reglaAplicable = findReglaAplicable(
+		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatAdministrativa,
 				anotacio);
-		RegistreEntity anotacioEntity = toRegistreEntity(
+		RegistreEntity anotacioEntity = registreHelper.toRegistreEntity(
 				tipus,
 				unitatAdministrativa,
 				anotacio,
 				bustia,
 				reglaAplicable);
 		registreRepository.save(anotacioEntity);
+		contingutLogHelper.log(
+				anotacioEntity,
+				LogTipusEnumDto.CREACIO,
+				null,
+				null,
+				false,
+				false);
 		bustiaHelper.evictElementsPendentsBustia(
 				bustia.getEntitat(),
 				bustia);
@@ -869,7 +869,7 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	@Transactional
 	@Async
-	@Scheduled(fixedRate=10000)
+	@Scheduled(fixedRate = 10000)
 	public void registreReglaAplicarPendents() {
 		logger.debug("Aplicant regles a les anotacions pendents");
 		List<RegistreEntity> pendents = registreRepository.findByReglaNotNullAndProcesEstatOrderByCreatedDateAsc(
@@ -877,79 +877,76 @@ public class BustiaServiceImpl implements BustiaService {
 		if (!pendents.isEmpty()) {
 			logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
 			for (RegistreEntity pendent: pendents) {
-				ReglaEntity regla = pendent.getRegla();
-				String error = null;
-				try {
-					switch (regla.getTipus()) {
-					case BACKOFFICE:
-						RipeaBackofficeWsService backofficeClient = new WsClientHelper<RipeaBackofficeWsService>().generarClientWs(
-								regla.getBackofficeUrl(),
-								new QName(
-										"http://www.caib.es/ripea/ws/backoffice",
-										"RipeaBackofficeService"),
-								regla.getBackofficeUsuari(),
-								regla.getBackofficeContrasenya(),
-								null,
-								RipeaBackofficeWsService.class);
-						RipeaBackofficeResultatProces resultat = backofficeClient.processarAnotacio(
-								fromRegistreEntity(pendent));
-						if (resultat.isError()) {
-							error = "[" + resultat.getErrorCodi() + "] " + resultat.getErrorDescripcio();
-						}
-						break;
-					case BUSTIA:
-						// TODO enviar a bústia
-						break;
-					case EXP_CREAR:
-						// TODO crear expedient
-						break;
-					case EXP_AFEGIR:
-						// TODO afegir a expedient existent
-						break;
-					default:
-						error = "Tipus de regla desconegut (" + regla.getTipus() + ")";
-						break;
-					}
-				} catch (Exception ex) {
-					error = ExceptionUtils.getStackTrace(ex);
-				}
-				if (error != null) {
-					if (ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
-						Integer intentsRegla = regla.getBackofficeIntents();
-						if (intentsRegla == null) {
-							pendent.updateProces(
-									null,
-									RegistreProcesEstatEnum.ERROR,
-									error);
-						} else {
-							Integer intentsPendent = pendent.getProcesIntents();
-							if (intentsPendent != null && intentsPendent.intValue() >= intentsRegla.intValue() - 1) {
-								pendent.updateProces(
-										null,
-										RegistreProcesEstatEnum.ERROR,
-										error);
-							} else {
-								pendent.updateProces(
-										null,
-										RegistreProcesEstatEnum.PENDENT,
-										error);
-							}
-						}
-					} else {
-						pendent.updateProces(
-								null,
-								RegistreProcesEstatEnum.ERROR,
-								error);
-					}
-				} else {
-					pendent.updateProces(
-							new Date(),
-							RegistreProcesEstatEnum.PROCESSAT,
-							error);
-				}
+				reglaAplicar(pendent);
 			}
 		} else {
 			logger.debug("No hi ha registres pendents de processar");
+		}
+	}
+
+	@Override
+	@Transactional
+	public boolean registreReglaReintentarAdmin(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) {
+		logger.debug("Reintentant aplicació de regla a anotació pendent (" +
+				"entitatId=" + entitatId + ", " +
+				"bustiaId=" + bustiaId + ", " +
+				"registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				false);
+		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
+				registreId,
+				bustia);
+		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
+				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
+			return reglaAplicar(anotacio);
+		} else {
+			throw new ValidationException(
+					anotacio.getId(),
+					RegistreEntity.class,
+					"L'estat de l'anotació no és PENDENT o ERROR");
+		}
+	}
+
+	@Override
+	@Transactional
+	public boolean registreReglaReintentarUser(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) {
+		logger.debug("Reintentant aplicació de regla a anotació pendent (" +
+				"entitatId=" + entitatId + ", " +
+				"bustiaId=" + bustiaId + ", " +
+				"registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				true);
+		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
+				registreId,
+				bustia);
+		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
+				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
+			return reglaAplicar(anotacio);
+		} else {
+			throw new ValidationException(
+					anotacio.getId(),
+					RegistreEntity.class,
+					"L'estat de l'anotació no és PENDENT o ERROR");
 		}
 	}
 
@@ -1043,281 +1040,31 @@ public class BustiaServiceImpl implements BustiaService {
 		return pendent;
 	}
 
-	private RegistreEntity toRegistreEntity(
-			RegistreTipusEnum tipus,
-			String unitatAdministrativa,
-			RegistreAnotacio anotacio,
-			BustiaEntity bustia,
-			ReglaEntity regla) {
-		RegistreEntity entity = RegistreEntity.getBuilder(
-				tipus,
-				unitatAdministrativa,
-				anotacio.getNumero(),
-				anotacio.getData(),
-				anotacio.getIdentificador(),
-				anotacio.getOficinaCodi(),
-				anotacio.getLlibreCodi(),
-				anotacio.getAssumpteTipusCodi(),
-				anotacio.getIdiomaCodi(),
-				(regla != null) ? RegistreProcesEstatEnum.PENDENT : RegistreProcesEstatEnum.NO_PROCES,
-				bustia).
-		entitatCodi(anotacio.getEntitatCodi()).
-		entitatDescripcio(anotacio.getEntitatDescripcio()).
-		oficinaDescripcio(anotacio.getOficinaDescripcio()).
-		llibreDescripcio(anotacio.getLlibreDescripcio()).
-		extracte(anotacio.getExtracte()).
-		assumpteTipusDescripcio(anotacio.getAssumpteTipusDescripcio()).
-		assumpteCodi(anotacio.getAssumpteCodi()).
-		assumpteDescripcio(anotacio.getAssumpteDescripcio()).
-		referencia(anotacio.getReferencia()).
-		expedientNumero(anotacio.getExpedientNumero()).
-		idiomaDescripcio(anotacio.getIdiomaDescripcio()).
-		transportTipusCodi(anotacio.getTransportTipusCodi()).
-		transportTipusDescripcio(anotacio.getTransportTipusDescripcio()).
-		transportNumero(anotacio.getTransportNumero()).
-		usuariCodi(anotacio.getUsuariCodi()).
-		usuariNom(anotacio.getUsuariNom()).
-		usuariContacte(anotacio.getUsuariContacte()).
-		aplicacioCodi(anotacio.getAplicacioCodi()).
-		aplicacioVersio(anotacio.getAplicacioVersio()).
-		documentacioFisicaCodi(anotacio.getDocumentacioFisicaCodi()).
-		documentacioFisicaDescripcio(anotacio.getDocumentacioFisicaDescripcio()).
-		observacions(anotacio.getObservacions()).
-		exposa(anotacio.getExposa()).
-		solicita(anotacio.getSolicita()).
-		regla(regla).
-		build();
-		if (anotacio.getInteressats() != null) {
-			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
-				entity.getInteressats().add(
-						toInteressatEntity(
-								registreInteressat,
-								entity));
+	private boolean reglaAplicar(
+			RegistreEntity anotacio) {
+		contingutLogHelper.log(
+				anotacio,
+				LogTipusEnumDto.PROCESSAMENT,
+				null,
+				null,
+				false,
+				false);
+		try {
+			reglaHelper.aplicar(anotacio.getId());
+			return true;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			if (ex instanceof ScheduledTaskException) {
+				reglaHelper.actualitzarEstatError(
+						anotacio.getId(),
+						ex.getMessage());
+			} else {
+				reglaHelper.actualitzarEstatError(
+						anotacio.getId(),
+						ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex)));
 			}
+			return false;
 		}
-		if (anotacio.getAnnexos() != null) {
-			for (RegistreAnnex registreAnnex: anotacio.getAnnexos()) {
-				entity.getAnnexos().add(
-						toAnnexEntity(
-								registreAnnex,
-								entity));
-			}
-		}
-		return entity;
-	}
-	private RegistreInteressatEntity toInteressatEntity(
-			RegistreInteressat registreInteressat,
-			RegistreEntity registre) {
-		RegistreInteressatTipusEnum interessatTipus = RegistreInteressatTipusEnum.valorAsEnum(registreInteressat.getTipus());
-		RegistreInteressatEntity.Builder interessatBuilder;
-		switch (interessatTipus) {
-		case PERSONA_FIS:
-			interessatBuilder = RegistreInteressatEntity.getBuilder(
-					interessatTipus,
-					RegistreInteressatDocumentTipusEnum.valorAsEnum(registreInteressat.getDocumentTipus()),
-					registreInteressat.getDocumentNum(),
-					registreInteressat.getNom(),
-					registreInteressat.getLlinatge1(),
-					registreInteressat.getLlinatge2(),
-					registre);
-			break;
-		default: // PERSONA_JUR o ADMINISTRACIO
-			interessatBuilder = RegistreInteressatEntity.getBuilder(
-					interessatTipus,
-					RegistreInteressatDocumentTipusEnum.valorAsEnum(registreInteressat.getDocumentTipus()),
-					registreInteressat.getDocumentNum(),
-					registreInteressat.getRaoSocial(),
-					registre);
-			break;
-		}
-		RegistreInteressatEntity interessatEntity = interessatBuilder.
-		pais(registreInteressat.getPais()).
-		provincia(registreInteressat.getProvincia()).
-		municipi(registreInteressat.getMunicipi()).
-		adresa(registreInteressat.getAdresa()).
-		codiPostal(registreInteressat.getCodiPostal()).
-		email(registreInteressat.getEmail()).
-		telefon(registreInteressat.getTelefon()).
-		emailHabilitat(registreInteressat.getEmailHabilitat()).
-		canalPreferent(
-				RegistreInteressatCanalEnum.valorAsEnum(
-						registreInteressat.getCanalPreferent())).
-		observacions(registreInteressat.getObservacions()).
-		build();
-		if (registreInteressat.getRepresentant() != null) {
-			RegistreInteressat representant = registreInteressat.getRepresentant();
-			interessatEntity.updateRepresentant(
-					RegistreInteressatTipusEnum.valorAsEnum(representant.getTipus()),
-					RegistreInteressatDocumentTipusEnum.valorAsEnum(representant.getDocumentTipus()),
-					representant.getDocumentNum(),
-					representant.getNom(),
-					representant.getLlinatge1(),
-					representant.getLlinatge2(),
-					representant.getRaoSocial(),
-					representant.getPais(),
-					representant.getProvincia(),
-					representant.getMunicipi(),
-					representant.getAdresa(),
-					representant.getCodiPostal(),
-					representant.getEmail(),
-					representant.getTelefon(),
-					representant.getEmailHabilitat(),
-					RegistreInteressatCanalEnum.valorAsEnum(representant.getCanalPreferent()));
-		}
-		return interessatEntity;
-	}
-	private RegistreAnnexEntity toAnnexEntity(
-			RegistreAnnex registreAnnex,
-			RegistreEntity registre) {
-		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
-				registreAnnex.getTitol(),
-				registreAnnex.getFitxerNom(),
-				registreAnnex.getFitxerTamany(),
-				registreAnnex.getFitxerGestioDocumentalId(),
-				registreAnnex.getDataCaptura(),
-				RegistreAnnexOrigenEnum.valorAsEnum(registreAnnex.getOrigenCiutadaAdmin()),
-				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getNtiTipusDocument()),
-				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(registreAnnex.getSicresTipusDocument()),
-				registre).
-				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
-				localitzacio(registreAnnex.getLocalitzacio()).
-				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getNtiElaboracioEstat())).
-				firmaCsv(registreAnnex.getFirmaCsv()).
-				observacions(registreAnnex.getObservacions()).
-				build();
-		return annexEntity;
-	}
-	
-	private RegistreAnotacio fromRegistreEntity(
-			RegistreEntity entity) {
-		RegistreAnotacio anotacio = new RegistreAnotacio();
-		anotacio.setNumero(entity.getNumero());
-		anotacio.setData(entity.getData());
-		anotacio.setIdentificador(entity.getIdentificador());
-		anotacio.setEntitatCodi(entity.getEntitatCodi());
-		anotacio.setEntitatDescripcio(entity.getEntitatDescripcio());
-		anotacio.setOficinaCodi(entity.getOficinaCodi());
-		anotacio.setOficinaDescripcio(entity.getOficinaDescripcio());
-		anotacio.setLlibreCodi(entity.getLlibreCodi());
-		anotacio.setLlibreDescripcio(entity.getLlibreDescripcio());
-		anotacio.setExtracte(entity.getExtracte());
-		anotacio.setAssumpteTipusCodi(entity.getAssumpteTipusCodi());
-		anotacio.setAssumpteTipusDescripcio(entity.getAssumpteTipusDescripcio());
-		anotacio.setAssumpteCodi(entity.getAssumpteCodi());
-		anotacio.setAssumpteDescripcio(entity.getAssumpteDescripcio());
-		anotacio.setReferencia(entity.getReferencia());
-		anotacio.setExpedientNumero(entity.getExpedientNumero());
-		anotacio.setIdiomaCodi(entity.getIdiomaCodi());
-		anotacio.setIdiomaDescripcio(entity.getIdiomaDescripcio());
-		anotacio.setTransportTipusCodi(entity.getTransportTipusCodi());
-		anotacio.setTransportTipusDescripcio(entity.getTransportTipusDescripcio());
-		anotacio.setTransportNumero(entity.getTransportNumero());
-		anotacio.setUsuariCodi(entity.getUsuariCodi());
-		anotacio.setUsuariNom(entity.getUsuariNom());
-		anotacio.setUsuariContacte(entity.getUsuariContacte());
-		anotacio.setAplicacioCodi(entity.getAplicacioCodi());
-		anotacio.setAplicacioVersio(entity.getAplicacioVersio());
-		anotacio.setDocumentacioFisicaCodi(entity.getDocumentacioFisicaCodi());
-		anotacio.setDocumentacioFisicaDescripcio(entity.getDocumentacioFisicaDescripcio());
-		anotacio.setObservacions(entity.getObservacions());
-		anotacio.setExposa(entity.getExposa());
-		anotacio.setSolicita(entity.getSolicita());
-		if (!entity.getInteressats().isEmpty()) {
-			List<RegistreInteressat> interessats = new ArrayList<RegistreInteressat>();
-			for (RegistreInteressatEntity interessat: entity.getInteressats()) {
-				interessats.add(
-						fromInteressatEntity(
-								interessat));
-			}
-			anotacio.setInteressats(interessats);
-		}
-		if (!entity.getAnnexos().isEmpty()) {
-			List<RegistreAnnex> annexos = new ArrayList<RegistreAnnex>();
-			for (RegistreAnnexEntity annex: entity.getAnnexos()) {
-				annexos.add(
-						fromAnnexEntity(
-								annex,
-								anotacio));
-			}
-			anotacio.setAnnexos(annexos);
-		}
-		return anotacio;
-	}
-	private RegistreInteressat fromInteressatEntity(
-			RegistreInteressatEntity interessatEntity) {
-		RegistreInteressat interessat = new RegistreInteressat();
-		if (interessatEntity.getTipus() != null)
-			interessat.setTipus(interessatEntity.getTipus().getValor());
-		if (interessatEntity.getDocumentTipus() != null)
-			interessat.setDocumentTipus(interessatEntity.getDocumentTipus().getValor());
-		interessat.setDocumentNum(interessatEntity.getDocumentNum());
-		interessat.setNom(interessatEntity.getNom());
-		interessat.setLlinatge1(interessatEntity.getLlinatge1());
-		interessat.setLlinatge2(interessatEntity.getLlinatge2());
-		interessat.setRaoSocial(interessatEntity.getRaoSocial());
-		interessat.setPais(interessatEntity.getPais());
-		interessat.setProvincia(interessatEntity.getProvincia());
-		interessat.setMunicipi(interessatEntity.getMunicipi());
-		interessat.setAdresa(interessatEntity.getAdresa());
-		interessat.setCodiPostal(interessatEntity.getCodiPostal());
-		interessat.setEmail(interessatEntity.getEmail());
-		interessat.setTelefon(interessatEntity.getTelefon());
-		interessat.setEmailHabilitat(interessatEntity.getEmailHabilitat());
-		if (interessatEntity.getCanalPreferent() != null)
-			interessat.setCanalPreferent(interessatEntity.getCanalPreferent().getValor());
-		interessat.setObservacions(interessatEntity.getObservacions());
-		if (interessatEntity.getRepresentant() != null) {
-			interessat.setRepresentant(
-					fromInteressatEntity(interessatEntity.getRepresentant()));
-		}
-		return interessat;
-	}
-	private RegistreAnnex fromAnnexEntity(
-			RegistreAnnexEntity annexEntity,
-			RegistreAnotacio registre) {
-		RegistreAnnex annex = new RegistreAnnex();
-		annex.setTitol(annexEntity.getTitol());
-		annex.setFitxerNom(annexEntity.getFitxerNom());
-		annex.setFitxerTamany(annexEntity.getFitxerTamany());
-		annex.setFitxerTipusMime(annexEntity.getFitxerTipusMime());
-		annex.setFirmaFitxerGestioDocumentalId(annexEntity.getFirmaFitxerGestioDocumentalId());
-		annex.setDataCaptura(annexEntity.getDataCaptura());
-		annex.setLocalitzacio(annexEntity.getLocalitzacio());
-		if (annexEntity.getOrigenCiutadaAdmin() != null)
-			annex.setOrigenCiutadaAdmin(annexEntity.getOrigenCiutadaAdmin().getValor());
-		if (annexEntity.getNtiTipusDocument() != null)
-			annex.setNtiTipusDocument(annexEntity.getNtiTipusDocument().getValor());
-		if (annexEntity.getSicresTipusDocument() != null)
-			annex.setSicresTipusDocument(annexEntity.getSicresTipusDocument().getValor());
-		if (annexEntity.getNtiElaboracioEstat() != null)
-			annex.setNtiElaboracioEstat(annexEntity.getNtiElaboracioEstat().getValor());
-		annex.setObservacions(annexEntity.getObservacions());
-		annex.setFirmaMode(annexEntity.getFirmaMode());
-		annex.setFirmaFitxerNom(annexEntity.getFirmaFitxerNom());
-		annex.setFirmaFitxerTamany(annexEntity.getFirmaFitxerTamany());
-		annex.setFirmaFitxerTipusMime(annexEntity.getFitxerTipusMime());
-		annex.setFirmaFitxerGestioDocumentalId(annexEntity.getFitxerGestioDocumentalId());
-		annex.setFirmaCsv(annexEntity.getFirmaCsv());
-		annex.setTimestamp(annexEntity.getTimestamp());
-		annex.setValidacioOCSP(annexEntity.getValidacioOCSP());
-		return annex;
-	}
-
-	private ReglaEntity findReglaAplicable(
-			EntitatEntity entitat,
-			String unitatAdministrativa,
-			RegistreAnotacio anotacio) {
-		List<ReglaEntity> regles = reglaRepository.findByEntitatAndActivaTrueOrderByOrdreAsc(entitat);
-		ReglaEntity reglaAplicable = null;
-		for (ReglaEntity regla: regles) {
-			if (regla.getUnitatCodi() == null || regla.getUnitatCodi().equals(unitatAdministrativa)) {
-				if (anotacio.getAssumpteTipusCodi() != null && anotacio.getAssumpteTipusCodi().equals(regla.getAssumpteCodi())) {
-					reglaAplicable = regla;
-					break;
-				}
-			}
-		}
-		return reglaAplicable;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);

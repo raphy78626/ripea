@@ -266,7 +266,8 @@ public class CacheHelper {
 			long[] countFills = contenidorHelper.countFillsAmbPermisReadByContinguts(
 					entitat,
 					busties,
-					true);
+					true,
+					false);
 			for (long c: countFills)
 				count += c;
 			/*long[] countRegistres = contenidorHelper.countRegistresByContinguts(

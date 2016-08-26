@@ -343,8 +343,6 @@ $(document).ready(function() {
 						</c:if>
 						<dt><spring:message code="contenidor.contingut.info.createl"/></dt>
 						<dd><fmt:formatDate value="${contenidor.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
-						<dt><spring:message code="contenidor.contingut.info.creatper"/></dt>
-						<dd>${contenidor.createdBy.nom}</dd>
 						<c:if test="${contenidor.expedient}">
 							<dt><spring:message code="contenidor.contingut.info.arxiu"/></dt>
 							<dd>${contenidor.arxiu.nom}</dd>

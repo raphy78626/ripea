@@ -82,7 +82,8 @@ public class BustiaHelper {
 			long[] countContenidors = contenidorHelper.countFillsAmbPermisReadByContinguts(
 					entitat,
 					busties,
-					nomesAmbBustiesPermeses);
+					nomesAmbBustiesPermeses,
+					false);
 			// Calcula els acumulats de pendents per a cada unitat
 			Map<String, Long> acumulats = new HashMap<String, Long>();
 			for (int i = 0; i < busties.size(); i++) {

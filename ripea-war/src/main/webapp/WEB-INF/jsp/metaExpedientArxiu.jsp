@@ -46,7 +46,7 @@ $(document).ready(function() {
 				</th>			
 				<th data-rdt-property="id" data-rdt-template="cellAccionsTemplate" data-rdt-sortable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<a class="btn btn-default" href="../../metaExpedient/${metaExpedient.id}/arxiu/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="metaexpedient.arxiu.confirmacio.deslligar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.deslligar"/></a>
+						<a class="btn btn-default" href="../../metaExpedient/${metaExpedient.id}/arxiu/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="metaexpedient.arxiu.confirmacio.deslligar"/>"><span class="fa fa-chain-broken"></span>&nbsp;&nbsp;<spring:message code="comu.boto.deslligar"/></a>
 					</script>
 				</th>
 			</tr>

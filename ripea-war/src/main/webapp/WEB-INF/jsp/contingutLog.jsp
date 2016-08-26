@@ -28,6 +28,12 @@
 				<spring:message code="comu.boto.moviments"/>
 			</a>
 		</li>
+		<li>
+			<a data-toggle="tab" href="#auditoria">
+				<span class="fa fa-eye"></span>
+				<spring:message code="contenidor.log.pipella.auditoria"/>
+			</a>
+		</li>
 	</ul>
 	<br/>
 	<div class="tab-content">
@@ -97,6 +103,18 @@
 					</tbody>
 				</table>
 			</c:if>
+		</div>
+		<div class="tab-pane" id="auditoria">
+			<dl class="dl-horizontal">
+				<dt><spring:message code="contenidor.log.camp.usuari.creacio"/></dt>
+				<dd>${contingut.createdBy.nom}</dd>
+				<dt><spring:message code="contenidor.log.camp.data.creacio"/></dt>
+				<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				<dt><spring:message code="contenidor.log.camp.usuari.modificacio"/></dt>
+				<dd>${contingut.lastModifiedBy.nom}</dd>
+				<dt><spring:message code="contenidor.log.camp.data.modificacio"/></dt>
+				<dd><fmt:formatDate value="${contingut.lastModifiedDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+			</dl>
 		</div>
 	</div>
 	<div id="modal-botons" class="well">

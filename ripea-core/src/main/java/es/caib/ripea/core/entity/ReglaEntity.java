@@ -143,7 +143,7 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 		this.assumpteCodi = assumpteCodi;
 		this.unitatCodi = unitatCodi;
 	}
-	public void updatePerTipusNouExpedient(
+	public void updatePerTipusExpedient(
 			MetaExpedientEntity metaExpedient,
 			ArxiuEntity arxiu) {
 		this.metaExpedient = metaExpedient;

@@ -289,7 +289,10 @@ public class RegistreEntity extends ContingutEntity {
 			procesIntents = new Integer(procesIntents.intValue() + 1);
 		}
 		if (procesError != null) {
-			this.procesError = procesError.substring(0, ERROR_MAX_LENGTH);	
+			if (procesError.length() > ERROR_MAX_LENGTH)
+				this.procesError = procesError.substring(0, ERROR_MAX_LENGTH);	
+			else
+				this.procesError = procesError;
 		} else {
 			this.procesError = null;
 		}
@@ -341,7 +344,7 @@ public class RegistreEntity extends ContingutEntity {
 				RegistreProcesEstatEnum procesEstat,
 				ContingutEntity pare) {
 			built = new RegistreEntity();
-			built.nom = registreTipus.name() + " (" + identificador + ")";
+			built.nom = identificador;
 			built.tipus = ContingutTipusEnumDto.REGISTRE;
 			built.entitat = pare.getEntitat();
 			built.registreTipus = registreTipus.getValor();
