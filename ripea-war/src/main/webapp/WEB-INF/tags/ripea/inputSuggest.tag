@@ -11,8 +11,11 @@
 <%@ attribute name="urlConsultaInicial" required="true" rtexprvalue="true"%>
 <%@ attribute name="inline" required="false" rtexprvalue="true"%>
 <%@ attribute name="disabled" required="false" rtexprvalue="true"%>
+<%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
+<c:set var="campLabelSize"><c:choose><c:when test="${not empty labelSize}">${labelSize}</c:when><c:otherwise>4</c:otherwise></c:choose></c:set>
+<c:set var="campInputSize">${12 - campLabelSize}</c:set>
 <c:choose>
 	<c:when test="${not empty placeholderKey}"><c:set var="placeholderText"><spring:message code="${placeholderKey}"/></c:set></c:when>
 	<c:otherwise><c:set var="placeholderText" value="${placeholder}"/></c:otherwise>
@@ -20,7 +23,7 @@
 <c:choose>
 	<c:when test="${not inline}">
 		<div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
-			<label class="control-label col-xs-4" for="${campPath}">
+			<label class="control-label col-xs-${campLabelSize}" for="${campPath}">
 				<c:choose>
 					<c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when>
 					<c:when test="${not empty text}">${text}</c:when>
@@ -28,7 +31,7 @@
 				</c:choose>
 				<c:if test="${required}">*</c:if>
 			</label>
-			<div class="controls col-xs-8">
+			<div class="controls col-xs-${campInputSize}">
 				<form:input path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" styleClass="width: 100%"/>
 				<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
 			</div>

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
@@ -38,42 +39,79 @@ public interface InteressatService {
 			Long entitatId,
 			Long expedientId,
 			InteressatDto interessat) throws NotFoundException;
-
+	
 	/**
-	 * Associa un interessat existent a un expedient.
+	 * Modifica un interessat associat a un expedient.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany l'expedient.
 	 * @param expedientId
 	 *            Atribut id de l'expedient al qual s'associarà l'interessat.
-	 * @param id
-	 *            Atribut id de l'interessat que es vol afegir.
+	 * @param interessat
+	 *            Dades de l'interessat que es vol modificar.
+	 * @return L'interessat modificat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public void addToExpedient(
+	public InteressatDto update(
 			Long entitatId,
 			Long expedientId,
-			Long id) throws NotFoundException;
+			InteressatDto interessat) throws NotFoundException;
 
+//	/**
+//	 * Associa un interessat existent a un expedient.
+//	 * 
+//	 * @param entitatId
+//	 *            Atribut id de l'entitat a la qual pertany l'expedient.
+//	 * @param expedientId
+//	 *            Atribut id de l'expedient al qual s'associarà l'interessat.
+//	 * @param id
+//	 *            Atribut id de l'interessat que es vol afegir.
+//	 * @throws NotFoundException
+//	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+//	 */
+//	@PreAuthorize("hasRole('tothom')")
+//	public void addToExpedient(
+//			Long entitatId,
+//			Long expedientId,
+//			Long id) throws NotFoundException;
+
+//	/**
+//	 * Deslliga un interessat existent d'un expedient.
+//	 * 
+//	 * @param entitatId
+//	 *            Atribut id de l'entitat a la qual pertany l'expedient.
+//	 * @param expedientId
+//	 *            Atribut id de l'expedient al qual s'associarà l'interessat.
+//	 * @param id
+//	 *            Atribut id de l'interessat que es vol afegir.
+//	 * @throws NotFoundException
+//	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+//	 */
+//	@PreAuthorize("hasRole('tothom')")
+//	public void removeFromExpedient(
+//			Long entitatId,
+//			Long expedientId,
+//			Long id) throws NotFoundException;
+	
 	/**
-	 * Deslliga un interessat existent d'un expedient.
+	 * elimina un interessat existent en un expedient.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany l'expedient.
 	 * @param expedientId
 	 *            Atribut id de l'expedient al qual s'associarà l'interessat.
-	 * @param id
+	 * @param interessatId
 	 *            Atribut id de l'interessat que es vol afegir.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public void removeFromExpedient(
+	public void delete(
 			Long entitatId,
 			Long expedientId,
-			Long id) throws NotFoundException;
+			Long interessatId);
 
 	/**
 	 * Consulta l'interessat donat el seu id.
@@ -104,6 +142,22 @@ public interface InteressatService {
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public List<InteressatDto> findByExpedient(
+			Long entitatId,
+			Long expedientId) throws NotFoundException;
+	
+	/**
+	 * Consulta el nombre d'interessats associats a un expedient.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany l'interessat.
+	 * @param expedientId
+	 *            Atribut id de l'interessat que es vol trobar.
+	 * @return El nombre d'insteressats associats a l'expedient.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public Long countByExpedient(
 			Long entitatId,
 			Long expedientId) throws NotFoundException;
 
@@ -167,5 +221,17 @@ public interface InteressatService {
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			Long entitatId,
 			String organCodi) throws NotFoundException;
+
+	/**
+	 * Consulta les unitats organitzatives de la entitat.
+	 * 
+	 * @param entitatCodi
+	 *            Atribut codi de l'entitat a la qual pertany l'interessat.
+	 * @return La llista d'unitats organitzatives trobades.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByEntitat(String entitatCodi);
 
 }

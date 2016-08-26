@@ -30,6 +30,7 @@ import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
+import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
@@ -543,7 +544,28 @@ public class ContenidorController extends BaseUserController {
 						registreId));
 		return "registreLog";
 	}
-
+	
+	@RequestMapping(value = "/contenidor/{contenidorId}/interessat/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesPagina<InteressatDto> interessatDatatable(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<InteressatDto> interessats = null;
+		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+				entitatActual.getId(),
+				contenidorId);
+		if (contenidor instanceof ExpedientDto) {
+			interessats = interessatService.findByExpedient(
+					entitatActual.getId(),
+					contenidorId);
+		} else {
+			interessats = new ArrayList<InteressatDto>();
+		}
+		return PaginacioHelper.getPaginaPerDatatables(request, interessats);
+	}
+	
 	@RequestMapping(value = "/contenidor/{contenidorId}/log", method = RequestMethod.GET)
 	public String log(
 			HttpServletRequest request,
@@ -594,7 +616,6 @@ public class ContenidorController extends BaseUserController {
 	}
 
 
-
 	private void omplirModelPerMostrarContingut(
 			HttpServletRequest request,
 			EntitatDto entitatActual,
@@ -610,11 +631,13 @@ public class ContenidorController extends BaseUserController {
 						entitatActual.getId(),
 						contingut.getId()));
 		if (contingut instanceof ExpedientDto) {
-			model.addAttribute(
-					"interessats",
-					interessatService.findByExpedient(
-							entitatActual.getId(),
-							contingut.getId()));
+//			List<InteressatDto> interessats = interessatService.findByExpedient(
+//					entitatActual.getId(),
+//					contingut.getId());
+			Long interessatsCount = interessatService.countByExpedient(
+					entitatActual.getId(),
+					contingut.getId());
+			model.addAttribute("interessatsCount", interessatsCount);
 		}
 		if (contingut instanceof DocumentDto) {
 			model.addAttribute(

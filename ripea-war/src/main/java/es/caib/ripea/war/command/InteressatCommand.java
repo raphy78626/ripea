@@ -11,6 +11,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import es.caib.ripea.core.api.dto.IndiomaEnumDto;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
+import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
@@ -41,43 +42,55 @@ public class InteressatCommand  {
 //	public static final String TIPUS_ADMINISTRACIO = "A";
 
 	protected Long id;
-	@NotNull(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	@NotNull(groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class})
 	protected Long entitatId;
 	@NotEmpty(groups = {PersonaFisica.class})
-	@Size(max = 30, groups = {PersonaFisica.class})
+	@Size(max = 30, groups = {PersonaFisica.class}, message = "max.size")
 	protected String nom;
 	@NotEmpty(groups = {PersonaFisica.class})
-	@Size(max = 30, groups = {PersonaFisica.class})
+	@Size(max = 30, groups = {PersonaFisica.class}, message = "max.size")
 	protected String llinatge1;
-	@Size(max = 30, groups = {PersonaFisica.class})
+	@Size(max = 30, groups = {PersonaFisica.class}, message = "max.size")
 	protected String llinatge2;
 	@NotEmpty(groups = {PersonaJuridica.class})
-	@Size(max = 80, groups = {PersonaJuridica.class})
+	@Size(max = 80, groups = {PersonaJuridica.class}, message = "max.size")
 	protected String raoSocial;
 	@NotEmpty(groups = {Administracio.class})
-	@Size(max = 9, groups = {Administracio.class})
+	@Size(max = 9, groups = {Administracio.class}, message = "max.size")
 	protected String organCodi;
-	@NotEmpty(groups = {ComprovarCiutada.class, PersonaFisica.class, PersonaJuridica.class})
-	@DocumentIdentitat(groups = {ComprovarCiutada.class, PersonaFisica.class, PersonaJuridica.class})
-	@Size(max = 9, groups = {ComprovarCiutada.class, PersonaFisica.class, PersonaJuridica.class})
+	
+	@NotNull(groups = {PersonaFisica.class, PersonaJuridica.class})
+	protected InteressatDocumentTipusEnumDto documentTipus;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@DocumentIdentitat(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 9, groups = {PersonaFisica.class, PersonaJuridica.class}, message = "max.size")
 	protected String documentNum;
 	
-	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 4, groups={PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String pais;
-	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 2, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String provincia;
-	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 5, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String municipi;
-	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 160, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String adresa;
-	@NotEmpty(groups = {ComprovarCiutada.class, ComprovarAdministracio.class, PersonaFisica.class, PersonaJuridica.class, Administracio.class})
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 5, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String codiPostal;
+	@Size(max = 160, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String email;
+	@Size(max = 20, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String telefon;
+	@Size(max = 160, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String observacions;
 	protected IndiomaEnumDto notificacioIdioma;
 	protected Boolean notificacioAutoritzat;
 
+	@NotNull
 	protected InteressatTipusEnumDto tipus;
 	protected boolean comprovat = false;
 
@@ -122,6 +135,12 @@ public class InteressatCommand  {
 	}
 	public void setOrganCodi(String organCodi) {
 		this.organCodi = organCodi;
+	}
+	public InteressatDocumentTipusEnumDto getDocumentTipus() {
+		return documentTipus;
+	}
+	public void setDocumentTipus(InteressatDocumentTipusEnumDto documentTipus) {
+		this.documentTipus = documentTipus;
 	}
 	public String getDocumentNum() {
 		return documentNum;
@@ -244,7 +263,5 @@ public class InteressatCommand  {
 	public interface PersonaFisica {}
 	public interface PersonaJuridica {}
 	public interface Administracio {}
-	public interface ComprovarCiutada {}
-	public interface ComprovarAdministracio {}
 
 }

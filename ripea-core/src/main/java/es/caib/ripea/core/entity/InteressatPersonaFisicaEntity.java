@@ -76,8 +76,7 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 			String telefon,
 			String observacions,
 			IndiomaEnumDto notificacioIdioma,
-			Boolean notificacioAutoritzat,
-			InteressatEntity representant) {
+			Boolean notificacioAutoritzat) {
 		this.nom = nom;
 		this.llinatge1 = llinatge1;
 		this.llinatge2 = llinatge2;
@@ -93,7 +92,6 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 		this.observacions =  observacions;
 		this.notificacioIdioma =  notificacioIdioma;
 		this.notificacioAutoritzat =  notificacioAutoritzat;
-		this.representant =  representant;
 	}
 
 	/**

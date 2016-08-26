@@ -26,6 +26,9 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
+import es.caib.ripea.core.api.dto.MunicipiDto;
+import es.caib.ripea.core.api.dto.PaisDto;
+import es.caib.ripea.core.api.dto.ProvinciaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.entity.BustiaEntity;
@@ -90,6 +93,8 @@ public class CacheHelper {
 	private PluginHelper pluginHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
+	@Resource
+	private DadesExternesHelper dadesExternesHelper;
 
 	private Map<String, Set<String>> usuarisElementsPendentsPerEntitat;
 
@@ -241,6 +246,12 @@ public class CacheHelper {
 			String entitatCodi) {
 	}
 
+	@Cacheable(value = "unitatOrganitzativa", key="#organCodi")
+	public UnitatOrganitzativaDto findUnitatOrganitzativaPerCodi(
+			String organCodi) {
+		return pluginHelper.unitatsOrganitzativesFindByCodi(organCodi);
+	}
+	
 	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
 	public long countElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
@@ -286,8 +297,39 @@ public class CacheHelper {
 			EntitatEntity entitat,
 			String usuariCodi) {
 	}
+	
+	@Cacheable(value = "paisos")
+	public List<PaisDto> findPaisos() {
+		return dadesExternesHelper.findPaisos();
+	}
+	
+	@Cacheable(value = "provincies")
+	public List<ProvinciaDto> findProvincies() {
+		return dadesExternesHelper.findProvincies();
+	}
 
-
+	@Cacheable(value = "provinciesPerComunitat", key="#comunitatCodi")
+	public List<ProvinciaDto> findProvinciesPerComunitat(String comunitatCodi) {
+		return dadesExternesHelper.findProvinciesPerComunitat(comunitatCodi);
+	}
+	
+	@Cacheable(value = "municipisPerProvincia", key="#provinciaCodi")
+	public List<MunicipiDto> findMunicipisPerProvincia(String provinciaCodi) {
+		return dadesExternesHelper.findMunicipisPerProvincia(provinciaCodi);
+	}
+	
+	@Cacheable(value = "municipisAmbNom", key="#municipiNom")
+	public MunicipiDto findMunicipiAmbNom(String provinciaCodi, String nom) {
+		MunicipiDto municipi = null;
+		List<MunicipiDto> municipis = findMunicipisPerProvincia(provinciaCodi);
+		for (MunicipiDto mun: municipis) {
+			if (mun.getNom().equals(nom)) { 
+				municipi = mun;
+				break;
+			}
+		}
+		return municipi;
+	}
 
 	private ValidacioErrorDto crearValidacioError(
 			MetaDadaEntity metaDada,

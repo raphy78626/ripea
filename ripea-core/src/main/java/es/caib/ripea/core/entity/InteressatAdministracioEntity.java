@@ -53,8 +53,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			String telefon,
 			String observacions,
 			IndiomaEnumDto notificacioIdioma,
-			Boolean notificacioAutoritzat,
-			InteressatEntity representant) {
+			Boolean notificacioAutoritzat) {
 		this.organCodi = organCodi;
 		this.documentTipus = documentTipus;
 		this.documentNum = documentNum;
@@ -68,7 +67,6 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 		this.observacions =  observacions;
 		this.notificacioIdioma =  notificacioIdioma;
 		this.notificacioAutoritzat =  notificacioAutoritzat;
-		this.representant =  representant;
 	}
 
 	/**

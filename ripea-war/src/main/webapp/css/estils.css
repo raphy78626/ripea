@@ -96,3 +96,6 @@ table.dataTable tr.datatable-dades-carregant div {
 	text-align: center;
 	background-color: white;
 }
+.ocult {
+	display: none;
+}

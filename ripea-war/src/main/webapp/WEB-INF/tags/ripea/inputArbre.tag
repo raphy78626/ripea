@@ -15,12 +15,15 @@
 <%@ attribute name="isArbreSeleccionable" type="java.lang.Boolean"%>
 <%@ attribute name="isFullesSeleccionable" type="java.lang.Boolean"%>
 <%@ attribute name="isOcultarCounts" type="java.lang.Boolean"%>
+<%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="campLabelText"><c:choose><c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when><c:when test="${not empty text}">${text}</c:when><c:otherwise>${campPath}</c:otherwise></c:choose><c:if test="${required}">*</c:if></c:set>
+<c:set var="campLabelSize"><c:choose><c:when test="${not empty labelSize}">${labelSize}</c:when><c:otherwise>4</c:otherwise></c:choose></c:set>
+<c:set var="campInputSize">${12 - campLabelSize}</c:set>
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
-	<label class="control-label col-xs-4" for="${campPath}">${campLabelText}</label>
-	<div class="col-xs-8">
+	<label class="control-label col-xs-${campLabelSize}" for="${campPath}">${campLabelText}</label>
+	<div class="col-xs-${campInputSize}">
 		<div class="input-group" style="width:100%">
 			<spring:bind path="${campPath}">
 				<input type="hidden" id="${campPath}" name="${campPath}"/>

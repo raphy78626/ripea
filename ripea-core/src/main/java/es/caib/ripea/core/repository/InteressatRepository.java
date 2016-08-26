@@ -36,7 +36,23 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 	List<InteressatEntity> findByEntitatAndExpedient(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("expedient") ExpedientEntity expedient);
+	
+	@Query(	  "select "
+			+ "    count(inter) "
+			+ "from "
+			+ "    InteressatEntity inter "
+			+ "where "
+			+ "    inter.entitat = :entitat "
+			+ "and inter.expedient = :expedient")
+	Long countByEntitatAndExpedient(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("expedient") ExpedientEntity expedient);
 
+	@Query(	  "select inter "
+			+ "from InteressatPersonaFisicaEntity inter "
+			+ "where inter.id = :id")
+	InteressatPersonaFisicaEntity findPersonaFisicaById(@Param("id") Long id);
+	
 	@Query(	  "select "
 			+ "    distinct inter "
 			+ "from "
@@ -60,6 +76,11 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			@Param("esNullLlinatge2") boolean esNullLlinatge2,
 			@Param("llinatge2") String llinatge2);
 
+	@Query(	  "select inter "
+			+ "from InteressatPersonaJuridicaEntity inter "
+			+ "where inter.id = :id")
+	InteressatPersonaJuridicaEntity findPersonaJuridicaById(@Param("id") Long id);
+	
 	@Query(	  "select "
 			+ "    distinct inter "
 			+ "from "
@@ -76,6 +97,11 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			@Param("documentNum") String documentNum,
 			@Param("esNullRaoSocial") boolean esNullRaoSocial,
 			@Param("raoSocial") String raoSocial);
+	
+	@Query(	  "select inter "
+			+ "from InteressatAdministracioEntity inter "
+			+ "where inter.id = :id")
+	InteressatAdministracioEntity findAdministracioById(@Param("id") Long id);
 	
 	@Query(	  "select "
 			+ "    distinct inter "

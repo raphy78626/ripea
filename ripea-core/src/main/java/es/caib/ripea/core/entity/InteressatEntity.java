@@ -68,10 +68,10 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 //	notificacioIdioma: 		COMÚ				per emmagatzemar l’idioma desitjat per a les notificacions.
 //	NotificacioAutoritzat: 	COMÚ				per indicar si l’interessat ha autoritzat la recepció de notificacions en format electrònic.
 	
-	@Column(name = "document_tipus", length = 40, nullable = false)
+	@Column(name = "document_tipus", length = 40)
 	@Enumerated(EnumType.STRING)
 	protected InteressatDocumentTipusEnumDto documentTipus;
-	@Column(name = "document_num", length = 17, nullable = false)
+	@Column(name = "document_num", length = 17)
 	protected String documentNum;
 	@Column(name = "pais", length = 4)
 	protected String pais;
@@ -229,7 +229,10 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	public String getIdentificador() {
 		return identificador;
 	}
-	
+	public void setIdentificador(String identificador) {
+		this.identificador = identificador;
+	}
+
 	@PreUpdate
 	@PrePersist
 	public abstract void updateIdentificador();

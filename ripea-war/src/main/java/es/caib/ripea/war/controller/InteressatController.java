@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,22 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
+import es.caib.ripea.core.api.dto.InteressatDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.service.DadesExternesService;
 import es.caib.ripea.core.api.service.InteressatService;
 import es.caib.ripea.war.command.InteressatCommand;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
 import es.caib.ripea.war.command.InteressatCommand.PersonaFisica;
 import es.caib.ripea.war.command.InteressatCommand.PersonaJuridica;
-import es.caib.ripea.war.command.InteressatCommand.ComprovarAdministracio;
-import es.caib.ripea.war.command.InteressatCommand.ComprovarCiutada;
-import es.caib.ripea.war.helper.MissatgesHelper;
+import es.caib.ripea.war.helper.ValidationHelper;
 
 /**
  * Controlador per als interessats dels expedients.
@@ -39,8 +40,11 @@ public class InteressatController extends BaseUserController {
 
 	@Autowired
 	private InteressatService interessatService;
+	@Autowired
+	private DadesExternesService dadesExternesService;
 
-
+	@Autowired(required = true)
+	private javax.validation.Validator validator;
 
 	@RequestMapping(value = "/{expedientId}/interessat/new", method = RequestMethod.GET)
 	public String get(
@@ -48,147 +52,97 @@ public class InteressatController extends BaseUserController {
 			@PathVariable Long expedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		InteressatCommand command = new InteressatCommand();
-		command.setEntitatId(entitatActual.getId());
-		model.addAttribute(command);
-		InteressatCommand emptyCommand = new InteressatCommand();
-		emptyCommand.setEntitatId(entitatActual.getId());
-		model.addAttribute("emptyCommand", emptyCommand);
+		InteressatCommand interessatCommand = new InteressatCommand();
+		interessatCommand.setEntitatId(entitatActual.getId());
+		model.addAttribute("interessatCommand", interessatCommand);
 		model.addAttribute("expedientId", expedientId);
+		model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+		model.addAttribute("paisos", dadesExternesService.findPaisos());
 		return "expedientInteressatForm";
 	}
 
-	@RequestMapping(value="/{expedientId}/interessatComprovarCiutada", method = RequestMethod.POST)
-	public String postComprovarCiutada(
+	@RequestMapping(value = "/{expedientId}/interessat/{interessatId}", method = RequestMethod.GET)
+	public String get(
 			HttpServletRequest request,
 			@PathVariable Long expedientId,
-			@Validated({ComprovarCiutada.class}) InteressatCommand command,
-			BindingResult bindingResult,
+			@PathVariable Long interessatId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		InteressatCommand emptyCommand = new InteressatCommand();
-		emptyCommand.setEntitatId(entitatActual.getId());
-		model.addAttribute("emptyCommand", emptyCommand);
+		InteressatDto interessatDto = interessatService.findById(entitatActual.getId(), interessatId); 
+		InteressatCommand interessatCommand = InteressatCommand.asCommand(interessatDto);
+//		interessatCommand.setEntitatId(entitatActual.getId());
+		model.addAttribute("interessatCommand", interessatCommand);
 		model.addAttribute("expedientId", expedientId);
-		if (!bindingResult.hasErrors()) {
-			List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltrePersonaFisica(
-					entitatActual.getId(),
-					command.getDocumentNum(),
-					null,
-					null,
-					null);
-			model.addAttribute("interessats", interessats);
-			command.setComprovat(true);
-			if (!interessats.isEmpty())
-				command.setId(interessats.get(0).getId());
-			MissatgesHelper.info(
-					request, 
-					getMessage(
-							request, 
-							(interessats.size() > 0) ? "interessat.controller.trobats.ciutada" : "interessat.controller.no.trobats.ciutada"));
+		model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+		model.addAttribute("paisos", dadesExternesService.findPaisos());
+		
+		if (interessatDto.getPais() != null && interessatDto.getPais().equals("724")) {
+			model.addAttribute("provincies", dadesExternesService.findProvincies());
+			if (interessatDto.getProvincia() != null) {
+				model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatDto.getProvincia()));
+			}
 		}
 		return "expedientInteressatForm";
 	}
-	@RequestMapping(value="/{expedientId}/interessatComprovarAdministracio", method = RequestMethod.POST)
-	public String postComprovarAdministracio(
-			HttpServletRequest request,
-			@PathVariable Long expedientId,
-			@Validated({ComprovarAdministracio.class}) InteressatCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		InteressatCommand emptyCommand = new InteressatCommand();
-		emptyCommand.setEntitatId(entitatActual.getId());
-		model.addAttribute("emptyCommand", emptyCommand);
-		model.addAttribute("expedientId", expedientId);
-		if (!bindingResult.hasErrors()) {
-			List<InteressatAdministracioDto> interessats = interessatService.findByFiltreAdministracio(
-					entitatActual.getId(),
-					command.getOrganCodi());
-			command.setComprovat(true);
-			if (!interessats.isEmpty())
-				command.setId(interessats.get(0).getId());
-			model.addAttribute("interessats", interessats);
-			MissatgesHelper.info(
-					request, 
-					getMessage(
-							request, 
-							(interessats.size() > 0) ? "interessat.controller.trobats.administracio" : "interessat.controller.no.trobats.administracio"));
-		}
-		return "expedientInteressatForm";
-	}
-
-	@RequestMapping(value="/{expedientId}/interessatCiutada", method = RequestMethod.POST)
+	
+	@RequestMapping(value="/{expedientId}/interessat", method = RequestMethod.POST)
 	public String postCiutada(
 			HttpServletRequest request,
 			@PathVariable Long expedientId,
-			@Validated({PersonaFisica.class}) InteressatCommand command,
+			@ModelAttribute InteressatCommand interessatCommand,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			InteressatCommand emptyCommand = new InteressatCommand();
-			emptyCommand.setEntitatId(entitatActual.getId());
-			model.addAttribute("emptyCommand", emptyCommand);
-			model.addAttribute("expedientId", expedientId);
-			if (command.isComprovat()) {
-				List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltrePersonaFisica(
-						entitatActual.getId(),
-						command.getDocumentNum(),
-						null,
-						null,
-						null);
-				model.addAttribute("interessats", interessats);
+		
+		List<Class<?>> grups = new ArrayList<Class<?>>();
+		if (interessatCommand.getTipus() != null) {
+			switch (interessatCommand.getTipus()) {
+			case PERSONA_FISICA:
+				grups.add(PersonaFisica.class);
+				break;
+			case PERSONA_JURIDICA:
+				grups.add(PersonaJuridica.class);
+				break;
+			case ADMINISTRACIO:
+				grups.add(Administracio.class);
+				break;
 			}
+		}
+		new ValidationHelper(validator).isValid(
+				interessatCommand,
+				bindingResult,
+				grups.toArray(new Class[grups.size()]));
+		
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("expedientId", expedientId);
+			model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+			model.addAttribute("paisos", dadesExternesService.findPaisos());
 			return "expedientInteressatForm";
 		}
-		if (command.getId() == null) {
+		
+		InteressatDto interessatDto = null;
+		switch (interessatCommand.getTipus()) {
+		case PERSONA_FISICA:
+			interessatDto = InteressatCommand.asPersonaFisicaDto(interessatCommand);
+			break;
+		case PERSONA_JURIDICA:
+			interessatDto = InteressatCommand.asPersonaJuridicaDto(interessatCommand);
+			break;
+		case ADMINISTRACIO:
+			interessatDto = InteressatCommand.asAdministracioDto(interessatCommand);
+			break;
+		}
+		
+		if (interessatCommand.getId() == null) {
 			interessatService.create(
 					entitatActual.getId(),
 					expedientId,
-					InteressatCommand.asPersonaFisicaDto(command));
+					interessatDto);	
 		} else {
-			interessatService.addToExpedient(
+			interessatService.update(
 					entitatActual.getId(),
 					expedientId,
-					command.getId());
-		}
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../contenidor/" + expedientId,
-				"interessat.controller.afegit.ok");
-	}
-	@RequestMapping(value="/{expedientId}/interessatAdministracio", method = RequestMethod.POST)
-	public String postAdministracio(
-			HttpServletRequest request,
-			@PathVariable Long expedientId,
-			@Validated({Administracio.class}) InteressatCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			InteressatCommand emptyCommand = new InteressatCommand();
-			emptyCommand.setEntitatId(entitatActual.getId());
-			model.addAttribute("emptyCommand", emptyCommand);
-			model.addAttribute("expedientId", expedientId);
-			if (command.isComprovat()) {
-				List<InteressatAdministracioDto> interessats = interessatService.findByFiltreAdministracio(
-						entitatActual.getId(),
-						command.getOrganCodi());
-				model.addAttribute("interessats", interessats);
-			}
-			return "expedientInteressatForm";
-		}
-		if (command.getId() == null) {
-			interessatService.create(
-					entitatActual.getId(),
-					expedientId,
-					InteressatCommand.asAdministracioDto(command));
-		} else {
-			interessatService.addToExpedient(
-					entitatActual.getId(),
-					expedientId,
-					command.getId());
+					interessatDto);
 		}
 		return getModalControllerReturnValueSuccess(
 				request,
@@ -203,7 +157,7 @@ public class InteressatController extends BaseUserController {
 			@PathVariable Long interessatId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		interessatService.removeFromExpedient(
+		interessatService.delete(
 				entitatActual.getId(),
 				expedientId,
 				interessatId);
@@ -211,6 +165,15 @@ public class InteressatController extends BaseUserController {
 				request,
 				"redirect:../../../../contenidor/" + expedientId,
 				"interessat.controller.eliminat.ok");
+	}
+	
+	@RequestMapping(value = "/organ/{codi}", method = RequestMethod.GET)
+	@ResponseBody
+	public UnitatOrganitzativaDto getByCodi(
+			HttpServletRequest request,
+			@PathVariable String codi,
+			Model model) {
+		return interessatService.findUnitatsOrganitzativesByCodi(codi);
 	}
 
 }

@@ -15,6 +15,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.service.InteressatService;
 
@@ -44,21 +45,23 @@ public class InteressatServiceBean implements InteressatService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void addToExpedient(
-			Long entitatId,
-			Long expedientId, Long id) {
-		delegate.addToExpedient(entitatId, expedientId, id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public void removeFromExpedient(
+	public InteressatDto update(
 			Long entitatId,
 			Long expedientId,
-			Long id) {
-		delegate.removeFromExpedient(entitatId, expedientId, id);
+			InteressatDto interessat) {
+		return delegate.update(entitatId, expedientId, interessat);
 	}
-
+	
+	@Override
+	@RolesAllowed("tothom")
+	public void delete(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId) {
+		delegate.delete(entitatId, expedientId, interessatId);
+	}
+	
+	
 	@Override
 	@RolesAllowed("tothom")
 	public InteressatDto findById(
@@ -73,6 +76,14 @@ public class InteressatServiceBean implements InteressatService {
 			Long entitatId,
 			Long expedientId) {
 		return delegate.findByExpedient(entitatId, expedientId);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public Long countByExpedient(
+			Long entitatId,
+			Long expedientId) {
+		return delegate.countByExpedient(entitatId, expedientId);
 	}
 
 	@Override
@@ -111,6 +122,12 @@ public class InteressatServiceBean implements InteressatService {
 		return delegate.findByFiltreAdministracio(
 				entitatId,
 				organCodi);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByEntitat(String entitatCodi) {
+		return delegate.findUnitatsOrganitzativesByEntitat(entitatCodi);
 	}
 
 }

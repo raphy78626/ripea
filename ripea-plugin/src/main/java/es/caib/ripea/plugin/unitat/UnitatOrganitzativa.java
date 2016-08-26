@@ -30,6 +30,12 @@ public class UnitatOrganitzativa implements Serializable {
 	private Date dataAnulacio;
 	private String estat; // V: Vigente, E: Extinguido, A: Anulado, T: Transitorio
 
+	private Long codiPais;
+	private Long codiComunitat;
+	private Long codiProvincia;
+	private String codiPostal;
+	private String descripcionLocalidad;
+	private String adressa;
 
 
 	public UnitatOrganitzativa(
@@ -59,6 +65,32 @@ public class UnitatOrganitzativa implements Serializable {
 		this.estat = estat;
 		this.codiUnitatSuperior = codiUnitatSuperior;
 		this.codiUnitatArrel = codiUnitatArrel;
+	}
+	public UnitatOrganitzativa(
+			String codi,
+			String denominacio,
+			String nifCif,
+			Date dataCreacioOficial,
+			String estat,
+			String codiUnitatSuperior,
+			String codiUnitatArrel,
+			Long codiPais,
+			Long codiComunitat,
+			Long codiProvincia,
+			String codiPostal,
+			String descripcionLocalidad,
+			String adressa) {
+		this.codi = codi;
+		this.denominacio = denominacio;
+		this.nifCif = nifCif;
+		this.dataCreacioOficial = dataCreacioOficial;
+		this.estat = estat;
+		this.codiUnitatSuperior = codiUnitatSuperior;
+		this.codiUnitatArrel = codiUnitatArrel;
+		this.codiPais = codiPais;
+		this.codiComunitat = codiComunitat;
+		this.codiProvincia = codiProvincia;
+		this.codiPostal = codiPostal;
 	}
 
 	public String getCodi() {
@@ -156,6 +188,42 @@ public class UnitatOrganitzativa implements Serializable {
 	}
 	public void setDataAnulacio(Date dataAnulacio) {
 		this.dataAnulacio = dataAnulacio;
+	}
+	public Long getCodiPais() {
+		return codiPais;
+	}
+	public void setCodiPais(Long codiPais) {
+		this.codiPais = codiPais;
+	}
+	public Long getCodiComunitat() {
+		return codiComunitat;
+	}
+	public void setCodiComunitat(Long codiComunitat) {
+		this.codiComunitat = codiComunitat;
+	}
+	public Long getCodiProvincia() {
+		return codiProvincia;
+	}
+	public void setCodiProvincia(Long codiProvincia) {
+		this.codiProvincia = codiProvincia;
+	}
+	public String getCodiPostal() {
+		return codiPostal;
+	}
+	public void setCodiPostal(String codiPostal) {
+		this.codiPostal = codiPostal;
+	}
+	public String getDescripcionLocalidad() {
+		return descripcionLocalidad;
+	}
+	public void setDescripcionLocalidad(String descripcionLocalidad) {
+		this.descripcionLocalidad = descripcionLocalidad;
+	}
+	public String getAdressa() {
+		return adressa;
+	}
+	public void setAdressa(String adressa) {
+		this.adressa = adressa;
 	}
 
 	private static final long serialVersionUID = -5602898182576627524L;

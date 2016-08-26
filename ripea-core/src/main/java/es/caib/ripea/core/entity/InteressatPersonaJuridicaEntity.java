@@ -54,8 +54,7 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 			String telefon,
 			String observacions,
 			IndiomaEnumDto notificacioIdioma,
-			Boolean notificacioAutoritzat,
-			InteressatEntity representant) {
+			Boolean notificacioAutoritzat) {
 		this.raoSocial = raoSocial;
 		this.documentTipus = documentTipus;
 		this.documentNum = documentNum;
@@ -69,7 +68,6 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 		this.observacions =  observacions;
 		this.notificacioIdioma =  notificacioIdioma;
 		this.notificacioAutoritzat =  notificacioAutoritzat;
-		this.representant =  representant;
 	}
 
 	/**

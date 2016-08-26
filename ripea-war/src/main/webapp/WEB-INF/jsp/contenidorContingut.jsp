@@ -13,6 +13,11 @@ pageContext.setAttribute(
 		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.registre.RegistreTipusEnum.class,
 				"registre.anotacio.tipus.enum."));
+pageContext.setAttribute(
+		"interessatsTipusEnumOptions",
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
+				es.caib.ripea.core.api.dto.InteressatTipusEnumDto.class,
+				"interessat.tipus.enum."));
 %>
 <c:set var="potModificarContingut" value="${false}"/>
 <c:if test="${contenidor.node}"><c:set var="potModificarContingut" value="${empty contenidor.metaNode or contenidor.metaNode.usuariActualWrite}"/></c:if>
@@ -176,6 +181,10 @@ var registreTipusText = new Array();
 <c:forEach var="option" items="${registreTipusEnumOptions}">
 registreTipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </c:forEach>
+var interessatTipusText = new Array();
+<c:forEach var="option" items="${interessatsTipusEnumOptions}">
+interessatTipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
+</c:forEach>
 $(document).ready(function() {
 	<c:if test="${contenidor.carpeta and contenidor.tipus == 'ESBORRANY'}">
 		$('.container-main .panel-heading h2 span.fa').replaceWith('<rip:blocIconaCarpeta carpeta="${contenidor}" petita="${true}"/>');
@@ -255,6 +264,17 @@ $(document).ready(function() {
 	});
 	$("#taulaRegistres").ripeaDataTable({
 		ajaxSourceUrl: "<c:url value="/contenidor/${contenidor.id}/registre/datatable"/>",
+		localeUrl: "<c:url value="/js/dataTables-locales/dataTables_locale_ca.txt"/>",
+		alertesRefreshUrl: "<c:url value="/nodeco/util/alertes"/>"
+	});
+	$("#taulaInteressats").ripeaDataTable({
+		ajaxSourceUrl: "<c:url value="/contenidor/${contenidor.id}/interessat/datatable"/>",
+		drawCallback: function() {
+			if ($('#taulaInteressats tbody tr td:eq(0)').hasClass('dataTables_empty'))
+				$('#interessats-count').html('0');
+			else
+				$('#interessats-count').html($('#taulaInteressats tbody tr').length);
+		},
 		localeUrl: "<c:url value="/js/dataTables-locales/dataTables_locale_ca.txt"/>",
 		alertesRefreshUrl: "<c:url value="/nodeco/util/alertes"/>"
 	});
@@ -358,6 +378,7 @@ $(document).ready(function() {
 							<dd>${contenidor.darreraVersio.versio}</dd>
 						</c:if>
 					</dl>
+<%--					
 					<c:if test="${contenidor.expedient}">
 						<h4 class="interessats">
 							<spring:message code="contenidor.contingut.info.interessats"/>
@@ -380,6 +401,7 @@ $(document).ready(function() {
 							</ul>
 						</c:if>
 					</c:if>
+--%>					
 					<rip:blocContenidorAccions id="botons-accions-info" contenidor="${contenidor}" modeLlistat="true" mostrarObrir="false"/>
 				</div>
 				<%--                     --%>
@@ -424,7 +446,7 @@ $(document).ready(function() {
 						<a href="#registres" data-toggle="tab"><spring:message code="contenidor.contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contenidor.fillsRegistresCount}</span></a>
 					</li>
 					<li>
-						<a href="#interessats" data-toggle="tab"><spring:message code="contenidor.contingut.tab.interessats"/>&nbsp;<span class="badge" id="interessats-count">${contenidor.interessatsCount}</span></a>
+						<a href="#interessats" data-toggle="tab"><spring:message code="contenidor.contingut.tab.interessats"/>&nbsp;<span class="badge" id="interessats-count">${interessatsCount}</span></a>
 					</li>
 				</c:if>
 			</ul>
@@ -681,25 +703,25 @@ $(document).ready(function() {
 						<%--                     --%>
 						<%-- Pipella interessats --%>
 						<%--                     --%>
-						<table id="taulaInteressats" class="table table-bordered table-striped" data-rdt-paginable="false">
+						<table id="taulaInteressats" class="table table-bordered table-striped" data-rdt-paginable="false" data-rdt-button-template="tableInteressatsButtonsTemplate">
 							<thead>
 								<tr>
 									<th data-rdt-property="id" data-rdt-visible="false">#</th>
-									<th data-rdt-property="tipus" data-rdt-template="cellTipusInteressatTemplate" data-rdt-sortable="false" width="10%">
-										<spring:message code="contenidor.contingut.registre.columna.tipus"/>
+									<th data-rdt-property="tipus" data-rdt-template="cellTipusInteressatTemplate" data-rdt-sortable="false" width="15%">
+										<spring:message code="contenidor.contingut.interessat.columna.tipus"/>
 										<script id="cellTipusInteressatTemplate" type="text/x-jsrender">
 											{{:~eval('interessatTipusText["' + tipus + '"]')}}
 										</script>
 									</th>
-									<th data-rdt-property="documentNum" data-rdt-sortable="false" width="40%"><spring:message code="contenidor.contingut.registre.columna.extracte"/></th>
-									<th data-rdt-property="identificador" data-rdt-sortable="false" width="10%"><spring:message code="contenidor.contingut.registre.columna.identificador"/></th>
-									<th data-rdt-property="id" data-rdt-sortable="false" data-rdt-template="cellAccionsRegistreTemplate" width="10%">
-										<script id="cellAccionsRegistreTemplate" type="text/x-jsrender">
+									<th data-rdt-property="documentNum" data-rdt-sortable="false" width="15%"><spring:message code="contenidor.contingut.interessat.columna.document"/></th>
+									<th data-rdt-property="identificador" data-rdt-sortable="false" width="60%"><spring:message code="contenidor.contingut.interessat.columna.identificador"/></th>
+									<th data-rdt-property="id" data-rdt-sortable="false" data-rdt-template="cellAccionsInteressatTemplate" width="10%">
+										<script id="cellAccionsInteressatTemplate" type="text/x-jsrender">
 											<div class="dropdown">
 												<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 												<ul class="dropdown-menu">
-													<li><a href="../contenidor/${contenidor.id}/interessat/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
-													<li><a href="../contenidor/${contenidor.id}/interessat/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="contenidor.contingut.confirmacio.esborrar.interessat"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+													<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+													<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="contenidor.contingut.confirmacio.esborrar.interessat"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 												</ul>
 											</div>
 										</script>
@@ -707,11 +729,11 @@ $(document).ready(function() {
 								</tr>
 							</thead>
 						</table>
-						<c:if test="${potModificarContingut}">
-							<script id="tableInteressatsButtonsTemplate" type="text/x-jsrender">
-								<p style="text-align:right"><a href="../contenidor/${contenidor.id}/interessat/new" class="btn btn-default" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contenidor.contingut.boto.nova.dada"/></a></p>
-							</script>
-						</c:if>
+						<script id="tableInteressatsButtonsTemplate" type="text/x-jsrender">
+							<c:if test="${potModificarContingut}">
+								<p style="text-align:right"><a href="../expedient/${contenidor.id}/interessat/new" class="btn btn-default" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contenidor.contingut.boto.nou.interessat"/></a></p>
+							</c:if>
+						</script>
 						<%--                      --%>
 						<%-- /Pipella interessats --%>
 						<%--                      --%>

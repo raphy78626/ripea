@@ -24,6 +24,13 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private Date dataAnulacio;
 	private String estat; // V: Vigente, E: Extinguido, A: Anulado, T: Transitorio
 
+	private Long codiPais;
+	private Long codiComunitat;
+	private Long codiProvincia;
+	private String codiPostal;
+	private String descripcionLocalidad;
+	private Long localitat;
+	private String adressa;
 
 
 	public String getCodi() {
@@ -85,6 +92,48 @@ public class UnitatOrganitzativaDto implements Serializable {
 	}
 	public void setDataAnulacio(Date dataAnulacio) {
 		this.dataAnulacio = dataAnulacio;
+	}
+	public Long getCodiPais() {
+		return codiPais;
+	}
+	public void setCodiPais(Long codiPais) {
+		this.codiPais = codiPais;
+	}
+	public Long getCodiComunitat() {
+		return codiComunitat;
+	}
+	public void setCodiComunitat(Long codiComunitat) {
+		this.codiComunitat = codiComunitat;
+	}
+	public Long getCodiProvincia() {
+		return codiProvincia;
+	}
+	public void setCodiProvincia(Long codiProvincia) {
+		this.codiProvincia = codiProvincia;
+	}
+	public String getCodiPostal() {
+		return codiPostal;
+	}
+	public void setCodiPostal(String codiPostal) {
+		this.codiPostal = codiPostal;
+	}
+	public String getDescripcionLocalidad() {
+		return descripcionLocalidad;
+	}
+	public void setDescripcionLocalidad(String descripcionLocalidad) {
+		this.descripcionLocalidad = descripcionLocalidad;
+	}
+	public Long getLocalitat() {
+		return localitat;
+	}
+	public void setLocalitat(Long localitat) {
+		this.localitat = localitat;
+	}
+	public String getAdressa() {
+		return adressa;
+	}
+	public void setAdressa(String adressa) {
+		this.adressa = adressa;
 	}
 
 	private static final long serialVersionUID = -5602898182576627524L;
