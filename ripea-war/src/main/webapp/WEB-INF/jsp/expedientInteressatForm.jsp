@@ -63,6 +63,13 @@ $(document).ready(function() {
 		var lMunicipi = $("label[for='municipi']");
 		var lAdresa = $("label[for='adresa']");
 		var lCodiPostal = $("label[for='codiPostal']");
+
+		if ($('select#pais').val() == '724') {
+			$('select#provincia').prop("readonly", false);
+		} else {
+			$('select#provincia').val("");
+			$('select#provincia').prop("readonly", true);
+		}
 		
  		if (this.value == '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.PERSONA_FISICA%>') {
 			$('input#nom').prop( "disabled", false );
@@ -150,26 +157,37 @@ $(document).ready(function() {
  	$('select#organCodi').change(function() {
  	 	if ($(this).val() != "") {
 	 		$.ajax({
-				type: 'POST',
-				url: <c:url value="/expedient/organ/"/> + $(this).val(),
+				type: 'GET',
+				url: "<c:url value="/expedient/organ/"/>" + $(this).val(),
 				success: function(data) {
 					debugger;
-					$('#provincia').val("");
-					$('#provincia').val("");
-		 	 		$('#municipi').val("");
-		 	 		$('#codiPostal').val("");
-		 	 		$('#adresa').val("");
+					$('#pais').val(data.codiPais);
+					$('#pais').change();
+					$('#provincia').prop("disabled", (data.codiPais != '724'));
+					$('#provincia').val(data.codiProvincia);
+					$('#provincia').change();
+		 	 		$('#municipi').val(data.localitat);
+		 	 		$('#municipi').change();
+		 	 		$('#codiPostal').val(data.codiPostal);
+		 	 		$('#adresa').val(data.adressa);
 				}
 			});
  	 	} else {
  	 		$('#provincia').val("");
+ 	 		$('#provincia').change();
  	 		$('#municipi').val("");
+ 	 		$('#municipi').change();
  	 		$('#codiPostal').val("");
  	 		$('#adresa').val("");
  	 	}
  	});
  	$('select#pais').change(function() {
-
+ 		if ($(this).val() == '724') {
+			$('select#provincia').prop("disabled", false);
+		} else {
+			$('select#provincia').val("");
+			$('select#provincia').prop("disabled", true);
+		}
  	});
  	$('select#provincia').change(function() {
 
@@ -195,7 +213,7 @@ $(document).ready(function() {
 			<div class="col-xs-6"><rip:inputText name="llinatge2" textKey="interessat.form.camp.llinatge2"/></div>
 		</div>	
 		<rip:inputText name="raoSocial" textKey="interessat.form.camp.raoSocial" required="true" labelSize="2"/>
-		<rip:inputSelect name="organCodi" textKey="interessat.form.camp.organCodi" optionItems="${unitatsOrganitzatives}" optionTextAttribute="denominacio" optionValueAttribute="codi" required="true" optionMinimumResultsForSearch="6"/>
+		<rip:inputSelect name="organCodi" textKey="interessat.form.camp.organCodi" optionItems="${unitatsOrganitzatives}" optionTextAttribute="denominacio" optionValueAttribute="codi" emptyOption="true" required="true" optionMinimumResultsForSearch="6" labelSize="2"/>
 		<div class="row">
 			<div class="col-xs-6"><rip:inputSelect name="pais" textKey="interessat.form.camp.pais" optionItems="${paisos}" optionTextAttribute="nom" optionValueAttribute="codi_numeric" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
 			<div class="col-xs-6"><rip:inputSelect name="provincia" textKey="interessat.form.camp.provincia" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>

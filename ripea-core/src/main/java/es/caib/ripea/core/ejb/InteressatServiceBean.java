@@ -130,4 +130,9 @@ public class InteressatServiceBean implements InteressatService {
 		return delegate.findUnitatsOrganitzativesByEntitat(entitatCodi);
 	}
 
+	@Override
+	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
+		return delegate.findUnitatsOrganitzativesByCodi(codi);
+	}
+
 }

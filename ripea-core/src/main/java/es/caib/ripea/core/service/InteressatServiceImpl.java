@@ -681,4 +681,9 @@ public class InteressatServiceImpl implements InteressatService {
 		return cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).toDadesList();
 	}
 
+	@Override
+	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
+		return cacheHelper.findUnitatOrganitzativaPerCodi(codi);
+	}
+
 }

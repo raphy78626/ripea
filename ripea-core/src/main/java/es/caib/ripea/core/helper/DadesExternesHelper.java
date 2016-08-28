@@ -5,6 +5,7 @@ package es.caib.ripea.core.helper;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -87,12 +89,55 @@ public class DadesExternesHelper {
 			
 			ObjectMapper mapper = new ObjectMapper();
 			
-			List<ProvinciaDto> provincies = mapper.readValue(
-					httpConnection.getInputStream(),
-					TypeFactory.defaultInstance().constructCollectionType(
-							List.class,
-							ProvinciaDto.class));
-			Collections.sort(provincies);
+			List<ProvinciaDto> provincies = new ArrayList<ProvinciaDto>();
+			
+			JsonNode node = mapper.readTree(httpConnection.getInputStream());
+			
+			if (node.isArray()) {
+				for(JsonNode prov: node) {
+					provincies.add(mapper.treeToValue(prov, ProvinciaDto.class));
+				}
+			} else {
+				JsonNode jProvincia = node.findValue("provincia");
+				if (jProvincia != null) {
+					ProvinciaDto provincia = mapper.treeToValue(jProvincia, ProvinciaDto.class);
+					provincies.add(provincia);
+				}
+			}
+//			JsonNode jProvincia = node.findValue("provincia");
+//			if (jProvincia != null) {
+//				ProvinciaDto provincia = mapper.treeToValue(jProvincia, ProvinciaDto.class);
+//				provincies.add(provincia);
+//			} else {
+//				provincies = mapper.readV
+//						
+//						.readValue(
+//						jProvincia., 
+//						TypeFactory.defaultInstance().constructCollectionType(
+//								List.class,
+//								ProvinciaDto.class));
+//			}
+//			
+//			// TODO: Si només retorna un resultat aquest serà de la forma:
+//			// {"provincia":{"codi":"07","nom":"Balears, Illes"}}
+//			// i no una llista
+//			List<ProvinciaDto> provincies = null;
+//			try {
+//				provincies = mapper.readValue(
+//						httpConnection.getInputStream(),
+//						TypeFactory.defaultInstance().constructCollectionType(
+//								List.class,
+//								ProvinciaDto.class));
+//				if (provincies != null)
+//					Collections.sort(provincies);
+//			} catch (Exception e) {
+//				JsonNode node = mapper.readTree(httpConnection.getInputStream());
+//				JsonNode jProvincia = node.findValue("provincia");
+//				if (jProvincia != null) {
+//					ProvinciaDto provincia = mapper.treeToValue(jProvincia, ProvinciaDto.class);
+//					provincies.add(provincia);
+//				}
+//			}
 			return provincies;
 			
 		} catch (Exception ex) {

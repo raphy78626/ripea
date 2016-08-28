@@ -249,7 +249,24 @@ public class CacheHelper {
 	@Cacheable(value = "unitatOrganitzativa", key="#organCodi")
 	public UnitatOrganitzativaDto findUnitatOrganitzativaPerCodi(
 			String organCodi) {
-		return pluginHelper.unitatsOrganitzativesFindByCodi(organCodi);
+		UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(organCodi);
+		if (unitat != null) {
+			if ((unitat.getCodiProvincia() == null || "".equals(unitat.getCodiProvincia())) && 
+					unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat())) {
+				List<ProvinciaDto> provincies = findProvinciesPerComunitat(("00" + unitat.getCodiComunitat()).substring(unitat.getCodiComunitat().length()));
+				if (provincies != null && provincies.size() == 1) {
+					unitat.setCodiProvincia(provincies.get(0).getCodi());
+				}		
+			}
+			if (unitat.getCodiProvincia() != null && !"".equals(unitat.getCodiProvincia()) && unitat.getNomLocalitat() != null) {
+				MunicipiDto municipi = findMunicipiAmbNom(
+						unitat.getCodiProvincia(), 
+						unitat.getNomLocalitat());
+				if (municipi != null)
+					unitat.setLocalitat(municipi.getCodi());
+			}
+		}
+		return unitat;
 	}
 	
 	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
@@ -322,10 +339,12 @@ public class CacheHelper {
 	public MunicipiDto findMunicipiAmbNom(String provinciaCodi, String nom) {
 		MunicipiDto municipi = null;
 		List<MunicipiDto> municipis = findMunicipisPerProvincia(provinciaCodi);
-		for (MunicipiDto mun: municipis) {
-			if (mun.getNom().equals(nom)) { 
-				municipi = mun;
-				break;
+		if (municipis != null) {
+			for (MunicipiDto mun: municipis) {
+				if (mun.getNom().equals(nom)) { 
+					municipi = mun;
+					break;
+				}
 			}
 		}
 		return municipi;

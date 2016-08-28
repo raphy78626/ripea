@@ -24,12 +24,12 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private Date dataAnulacio;
 	private String estat; // V: Vigente, E: Extinguido, A: Anulado, T: Transitorio
 
-	private Long codiPais;
-	private Long codiComunitat;
-	private Long codiProvincia;
+	private String codiPais;
+	private String codiComunitat;
+	private String codiProvincia;
 	private String codiPostal;
-	private String descripcionLocalidad;
-	private Long localitat;
+	private String nomLocalitat;
+	private String localitat;
 	private String adressa;
 
 
@@ -93,22 +93,22 @@ public class UnitatOrganitzativaDto implements Serializable {
 	public void setDataAnulacio(Date dataAnulacio) {
 		this.dataAnulacio = dataAnulacio;
 	}
-	public Long getCodiPais() {
+	public String getCodiPais() {
 		return codiPais;
 	}
-	public void setCodiPais(Long codiPais) {
+	public void setCodiPais(String codiPais) {
 		this.codiPais = codiPais;
 	}
-	public Long getCodiComunitat() {
+	public String getCodiComunitat() {
 		return codiComunitat;
 	}
-	public void setCodiComunitat(Long codiComunitat) {
+	public void setCodiComunitat(String codiComunitat) {
 		this.codiComunitat = codiComunitat;
 	}
-	public Long getCodiProvincia() {
+	public String getCodiProvincia() {
 		return codiProvincia;
 	}
-	public void setCodiProvincia(Long codiProvincia) {
+	public void setCodiProvincia(String codiProvincia) {
 		this.codiProvincia = codiProvincia;
 	}
 	public String getCodiPostal() {
@@ -117,16 +117,16 @@ public class UnitatOrganitzativaDto implements Serializable {
 	public void setCodiPostal(String codiPostal) {
 		this.codiPostal = codiPostal;
 	}
-	public String getDescripcionLocalidad() {
-		return descripcionLocalidad;
+	public String getNomLocalitat() {
+		return nomLocalitat;
 	}
-	public void setDescripcionLocalidad(String descripcionLocalidad) {
-		this.descripcionLocalidad = descripcionLocalidad;
+	public void setNomLocalitat(String nomLocalitat) {
+		this.nomLocalitat = nomLocalitat;
 	}
-	public Long getLocalitat() {
+	public String getLocalitat() {
 		return localitat;
 	}
-	public void setLocalitat(Long localitat) {
+	public void setLocalitat(String localitat) {
 		this.localitat = localitat;
 	}
 	public String getAdressa() {

@@ -58,6 +58,7 @@ public class InteressatController extends BaseUserController {
 		model.addAttribute("expedientId", expedientId);
 		model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
 		model.addAttribute("paisos", dadesExternesService.findPaisos());
+		model.addAttribute("provincies", dadesExternesService.findProvincies());
 		return "expedientInteressatForm";
 	}
 
@@ -75,12 +76,10 @@ public class InteressatController extends BaseUserController {
 		model.addAttribute("expedientId", expedientId);
 		model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
 		model.addAttribute("paisos", dadesExternesService.findPaisos());
+		model.addAttribute("provincies", dadesExternesService.findProvincies());
 		
-		if (interessatDto.getPais() != null && interessatDto.getPais().equals("724")) {
-			model.addAttribute("provincies", dadesExternesService.findProvincies());
-			if (interessatDto.getProvincia() != null) {
-				model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatDto.getProvincia()));
-			}
+		if (interessatDto.getProvincia() != null) {
+			model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatDto.getProvincia()));
 		}
 		return "expedientInteressatForm";
 	}

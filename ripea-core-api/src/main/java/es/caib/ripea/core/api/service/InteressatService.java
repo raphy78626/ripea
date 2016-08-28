@@ -234,4 +234,15 @@ public interface InteressatService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByEntitat(String entitatCodi);
 
+	/**
+	 * Consulta una unitat organitzativa per codi.
+	 * 
+	 *            Atribut codi de l'unitat.
+	 * @return La unitats organitzativa trobada.
+	 * @param codi
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi);
+
 }
