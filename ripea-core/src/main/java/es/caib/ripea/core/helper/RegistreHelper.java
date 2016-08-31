@@ -20,7 +20,7 @@ import es.caib.ripea.core.api.registre.RegistreInteressatDocumentTipusEnum;
 import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
-import es.caib.ripea.core.entity.BustiaEntity;
+import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.RegistreInteressatEntity;
@@ -91,28 +91,29 @@ public class RegistreHelper {
 	}
 
 	public RegistreEntity toRegistreEntity(
+			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio,
-			BustiaEntity bustia,
 			ReglaEntity regla) {
 		RegistreEntity entity = RegistreEntity.getBuilder(
+				entitat,
 				tipus,
 				unitatAdministrativa,
 				anotacio.getNumero(),
 				anotacio.getData(),
 				anotacio.getIdentificador(),
+				anotacio.getExtracte(),
 				anotacio.getOficinaCodi(),
 				anotacio.getLlibreCodi(),
 				anotacio.getAssumpteTipusCodi(),
 				anotacio.getIdiomaCodi(),
 				(regla != null) ? RegistreProcesEstatEnum.PENDENT : RegistreProcesEstatEnum.NO_PROCES,
-				bustia).
+				null).
 		entitatCodi(anotacio.getEntitatCodi()).
 		entitatDescripcio(anotacio.getEntitatDescripcio()).
 		oficinaDescripcio(anotacio.getOficinaDescripcio()).
 		llibreDescripcio(anotacio.getLlibreDescripcio()).
-		extracte(anotacio.getExtracte()).
 		assumpteTipusDescripcio(anotacio.getAssumpteTipusDescripcio()).
 		assumpteCodi(anotacio.getAssumpteCodi()).
 		assumpteDescripcio(anotacio.getAssumpteDescripcio()).

@@ -592,14 +592,12 @@ public class ContingutHelper {
 	public long[] countFillsAmbPermisReadByContinguts(
 			EntitatEntity entitat,
 			List<? extends ContingutEntity> continguts,
-			boolean comprovarPermisos,
-			boolean incloureAnotacionsProcessades) {
+			boolean comprovarPermisos) {
 		long[] resposta = new long[continguts.size()];
 		if (!continguts.isEmpty()) {
 			List<Object[]> countFillsTotals = contingutRepository.countByPares(
 					entitat,
-					continguts,
-					incloureAnotacionsProcessades);
+					continguts);
 			List<Object[]> countNodesTotals = nodeRepository.countByPares(
 					entitat,
 					continguts);

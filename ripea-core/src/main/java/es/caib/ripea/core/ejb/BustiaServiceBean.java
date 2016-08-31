@@ -14,7 +14,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
-import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -107,19 +106,12 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public PaginaDto<BustiaDto> findAmbEntitatPaginat(
+	public PaginaDto<BustiaDto> findPermesesPerUsuari(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) {
-		return delegate.findAmbEntitatPaginat(
+		return delegate.findPermesesPerUsuari(
 				entitatId,
 				paginacioParams);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public List<BustiaDto> findPermesesPerUsuari(
-			Long entitatId) {
-		return delegate.findPermesesPerUsuari(entitatId);
 	}
 
 	@Override
@@ -162,12 +154,14 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<BustiaContingutPendentDto> contingutPendentFindByBustiaId(
+	public PaginaDto<BustiaContingutPendentDto> contingutPendentFindByBustiaId(
 			Long entitatId,
-			Long bustiaId) {
+			Long bustiaId,
+			PaginacioParamsDto paginacioParams) {
 		return delegate.contingutPendentFindByBustiaId(
 				entitatId,
-				bustiaId);
+				bustiaId,
+				paginacioParams);
 	}
 
 	@Override
@@ -175,12 +169,10 @@ public class BustiaServiceBean implements BustiaService {
 	public BustiaContingutPendentDto contingutPendentFindOne(
 			Long entitatId,
 			Long bustiaId,
-			BustiaContingutPendentTipusEnumDto contingutTipus,
 			Long contingutId) {
 		return delegate.contingutPendentFindOne(
 				entitatId,
 				bustiaId,
-				contingutTipus,
 				contingutId);
 	}
 
@@ -197,14 +189,12 @@ public class BustiaServiceBean implements BustiaService {
 			Long entitatId,
 			Long bustiaOrigenId,
 			Long bustiaDestiId,
-			BustiaContingutPendentTipusEnumDto contingutTipus,
 			Long contingutId,
 			String comentari) throws NotFoundException {
 		delegate.contingutPendentReenviar(
 				entitatId,
 				bustiaOrigenId,
 				bustiaDestiId,
-				contingutTipus,
 				contingutId,
 				comentari);
 	}

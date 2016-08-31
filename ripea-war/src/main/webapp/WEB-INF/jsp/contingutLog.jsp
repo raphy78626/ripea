@@ -79,14 +79,16 @@
 								<td><fmt:formatDate value="${moviment.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
 								<td>${moviment.remitent.nom}</td>
 								<td>
-									<c:choose>
-										<c:when test="${moviment.origen.expedient}"><spring:message code="contingut.tipus.enum.EXPEDIENT"/></c:when>
-										<c:when test="${moviment.origen.carpeta}"><spring:message code="contingut.tipus.enum.CARPETA"/></c:when>
-										<c:when test="${moviment.origen.document}"><spring:message code="contingut.tipus.enum.DOCUMENT"/></c:when>
-										<c:when test="${moviment.origen.escriptori}"><spring:message code="contingut.tipus.enum.ESCRIPTORI"/></c:when>
-										<c:when test="${moviment.origen.arxiv}"><spring:message code="contingut.tipus.enum.ARXIU"/></c:when>
-										<c:when test="${moviment.origen.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
-									</c:choose>#${moviment.origen.id}
+									<c:if test="${not empty moviment.origen}">
+										<c:choose>
+											<c:when test="${moviment.origen.expedient}"><spring:message code="contingut.tipus.enum.EXPEDIENT"/></c:when>
+											<c:when test="${moviment.origen.carpeta}"><spring:message code="contingut.tipus.enum.CARPETA"/></c:when>
+											<c:when test="${moviment.origen.document}"><spring:message code="contingut.tipus.enum.DOCUMENT"/></c:when>
+											<c:when test="${moviment.origen.escriptori}"><spring:message code="contingut.tipus.enum.ESCRIPTORI"/></c:when>
+											<c:when test="${moviment.origen.arxiv}"><spring:message code="contingut.tipus.enum.ARXIU"/></c:when>
+											<c:when test="${moviment.origen.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
+										</c:choose>#${moviment.origen.id}
+									</c:if>
 								</td>
 								<td>
 									<c:choose>

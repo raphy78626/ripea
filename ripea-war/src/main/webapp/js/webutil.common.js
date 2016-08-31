@@ -245,13 +245,14 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 	}
 
 	$.fn.webutilBotonsTitol = function() {
-		var $heading = $('.panel-heading', $(this).closest('.panel'))
+		var $heading = $('.panel-heading h2', $(this).closest('.panel'))
 		if ($heading) {
-			$(this).css('position', 'relative');
+			$(this).css('position', 'absolute');
 			$(this).css('height', '0');
 			var headingOffset = $heading.offset();
 			var thisOffset = $(this).offset();
-			$(this).css('top', (headingOffset.top - thisOffset.top + 15) + "px");
+			$(this).css('top', (headingOffset.top - 3) + "px");
+			$(this).css('left', (headingOffset.left + $heading.innerWidth() - $(this).outerWidth()) + "px");
 		}
 	}
 	$.fn.webutilBotonsTitolEval = function() {

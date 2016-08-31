@@ -221,9 +221,11 @@ public class ContingutLogHelper {
 					conversioTipusHelper.convertir(
 							moviment.getRemitent(),
 							UsuariDto.class));
-			dto.setOrigen(
-					contenidorHelper.toContingutDto(
-							moviment.getOrigen()));
+			if (moviment.getOrigen() != null) {
+				dto.setOrigen(
+						contenidorHelper.toContingutDto(
+								moviment.getOrigen()));
+			}
 			dto.setDesti(
 					contenidorHelper.toContingutDto(
 							moviment.getDesti()));

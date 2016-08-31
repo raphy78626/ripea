@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
+<c:set var="idioma"><%=org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage()%></c:set>
 <c:choose>
 	<c:when test="${empty reglaCommand.id}"><c:set var="titol"><spring:message code="regla.form.titol.crear"/></c:set></c:when>
 	<c:otherwise><c:set var="titol"><spring:message code="regla.form.titol.modificar"/></c:set></c:otherwise>
@@ -20,11 +20,15 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	$('#tipus').on('change', function () {
+		$('div#camps_tipus_EXP_COMU').css('display', 'none');
 		$('div#camps_tipus_EXP_CREAR').css('display', 'none');
 		$('div#camps_tipus_EXP_AFEGIR').css('display', 'none');
 		$('div#camps_tipus_BUSTIA').css('display', 'none');
 		$('div#camps_tipus_BACKOFFICE').css('display', 'none');
 		$('div#camps_tipus_' + $(this).val()).css('display', '');
+		if ($(this).val().indexOf("EXP_") == 0)
+			$('div#camps_tipus_EXP_COMU').css('display', '');
+		
 	});
 	$('#tipus').trigger('change');
 });
@@ -48,12 +52,13 @@ $(document).ready(function() {
 				<rip:inputText name="unitatCodi" textKey="regla.form.camp.unitat"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="especifiques">
-				<div id="camps_tipus_EXP_CREAR">
+				<div id="camps_tipus_EXP_COMU">
 					<rip:inputSelect name="metaExpedientId" textKey="regla.form.camp.metaexpedient" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>
+				</div>
+				<div id="camps_tipus_EXP_CREAR">
 					<rip:inputSelect name="arxiuId" textKey="regla.form.camp.arxiu" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>
 				</div>
 				<div id="camps_tipus_EXP_AFEGIR">
-					<rip:inputSelect name="metaExpedientId" textKey="regla.form.camp.metaexpedient" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>
 				</div>
 				<div id="camps_tipus_BUSTIA">
 					<rip:inputSelect name="bustiaId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>

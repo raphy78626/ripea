@@ -71,9 +71,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getAssumpteCodi(),
 				regla.getUnitatCodi(),
 				ordre).build();
-		return conversioTipusHelper.convertir(
-				reglaRepository.save(entity),
-				ReglaDto.class);
+		return toReglaDto(reglaRepository.save(entity));
 	}
 
 	@Override
@@ -129,9 +127,7 @@ public class ReglaServiceImpl implements ReglaService {
 					metaExpedient,
 					arxiu);
 		}
-		return conversioTipusHelper.convertir(
-				reglaRepository.save(entity),
-				ReglaDto.class);
+		return toReglaDto(reglaRepository.save(entity));
 	}
 
 	@Override
@@ -153,9 +149,7 @@ public class ReglaServiceImpl implements ReglaService {
 				entitat,
 				reglaId);
 		regla.updateActiva(activa);
-		return conversioTipusHelper.convertir(
-				reglaRepository.save(regla),
-				ReglaDto.class);
+		return toReglaDto(reglaRepository.save(regla));
 	}
 
 	@Override
@@ -175,9 +169,7 @@ public class ReglaServiceImpl implements ReglaService {
 				entitat,
 				reglaId);
 		reglaRepository.delete(regla);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -199,9 +191,7 @@ public class ReglaServiceImpl implements ReglaService {
 		canviPosicio(
 				regla,
 				regla.getOrdre() - 1);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -223,9 +213,7 @@ public class ReglaServiceImpl implements ReglaService {
 		canviPosicio(
 				regla,
 				regla.getOrdre() + 1);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -249,9 +237,7 @@ public class ReglaServiceImpl implements ReglaService {
 		canviPosicio(
 				regla,
 				posicio);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -270,9 +256,7 @@ public class ReglaServiceImpl implements ReglaService {
 		ReglaEntity regla = entityComprovarHelper.comprovarRegla(
 				entitat,
 				reglaId);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -320,6 +304,19 @@ public class ReglaServiceImpl implements ReglaService {
 			}
 			regla.updateOrdre(posicio);
 		}
+	}
+
+	private ReglaDto toReglaDto(ReglaEntity regla) {
+		ReglaDto dto = conversioTipusHelper.convertir(
+				regla,
+				ReglaDto.class);
+		if (regla.getArxiu() != null)
+			dto.setArxiuId(regla.getArxiu().getId());
+		if (regla.getBustia() != null)
+			dto.setBustiaId(regla.getBustia().getId());
+		if (regla.getMetaExpedient() != null)
+			dto.setMetaExpedientId(regla.getMetaExpedient().getId());
+		return dto;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);

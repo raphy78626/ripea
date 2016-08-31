@@ -33,7 +33,6 @@ import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -47,7 +46,7 @@ public class BustiaUserController extends BaseUserController {
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
-	private ContingutService contenidorService;
+	private ContingutService contingutService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -58,9 +57,9 @@ public class BustiaUserController extends BaseUserController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		return get(request, null, model);
+		return "bustiaUserList";
 	}
-	@RequestMapping(value = "/unitat/{unitatCodi}", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/unitat/{unitatCodi}", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
 			@PathVariable String unitatCodi,
@@ -75,7 +74,7 @@ public class BustiaUserController extends BaseUserController {
 						true));
 		model.addAttribute("unitatCodi", unitatCodi);
 		return "bustiaUserList";
-	}
+	}*/
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
@@ -84,7 +83,7 @@ public class BustiaUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				bustiaService.findAmbEntitatPaginat(
+				bustiaService.findPermesesPerUsuari(
 						entitatActual.getId(),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
 				"id");
@@ -98,14 +97,14 @@ public class BustiaUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"bustia",
-				contenidorService.findAmbIdUser(
+				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						bustiaId,
 						false));
 		return "bustiaPendentList";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/count", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/{bustiaId}/pendent/count", method = RequestMethod.GET)
 	@ResponseBody
 	public long pendentCount(
 			HttpServletRequest request,
@@ -125,7 +124,7 @@ public class BustiaUserController extends BaseUserController {
 				request,
 				"redirect:../../../pendent",
 				null);
-	}
+	}*/
 
 	@RequestMapping(value = "/{bustiaId}/pendent/datatable", method = RequestMethod.GET)
 	@ResponseBody
@@ -133,12 +132,12 @@ public class BustiaUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
+		return DatatablesHelper.getDatatableResponse(
 				request,
 				bustiaService.contingutPendentFindByBustiaId(
 						entitatActual.getId(),
-						bustiaId));
-		return dtr;
+						bustiaId,
+						DatatablesHelper.getPaginacioDtoFromRequest(request)));
 	}
 
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/nouexp", method = RequestMethod.GET)
@@ -149,7 +148,7 @@ public class BustiaUserController extends BaseUserController {
 			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
+		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		ExpedientCommand command = new ExpedientCommand();
 		command.setEntitatId(entitatActual.getId());
 		command.setPareId(escriptori.getId());
@@ -175,7 +174,7 @@ public class BustiaUserController extends BaseUserController {
 					model);
 			return "bustiaPendentContingutNouexp";
 		}
-		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
+		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		expedientService.create(
 				entitatActual.getId(),
 				escriptori.getId(),
@@ -234,18 +233,16 @@ public class BustiaUserController extends BaseUserController {
 				"bustia.controller.pendent.contingut.addexp.ok");
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/reenviar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.GET)
 	public String bustiaPendentReenviarGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
 			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		omplirModelPerReenviar(
 				entitatActual,
 				bustiaId,
-				contingutTipus,
 				contingutId,
 				model);
 		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
@@ -253,11 +250,10 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute(command);
 		return "bustiaPendentContingutReenviar";
 	}
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/reenviar", method = RequestMethod.POST)
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.POST)
 	public String bustiaPendentReenviarPost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
 			@PathVariable Long contingutId,
 			@Valid ContenidorMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
@@ -267,7 +263,6 @@ public class BustiaUserController extends BaseUserController {
 			omplirModelPerReenviar(
 					entitatActual,
 					bustiaId,
-					contingutTipus,
 					contingutId,
 					model);
 			return "bustiaPendentContingutReenviar";
@@ -276,7 +271,6 @@ public class BustiaUserController extends BaseUserController {
 				entitatActual.getId(),
 				bustiaId,
 				command.getContenidorDestiId(),
-				contingutTipus,
 				contingutId,
 				command.getComentariEnviar());
 		return getModalControllerReturnValueSuccess(
@@ -302,7 +296,7 @@ public class BustiaUserController extends BaseUserController {
 			EntitatDto entitatActual,
 			Model model,
 			Long contenidorOrigenId) {
-		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
+		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		model.addAttribute(
 				"contenidorDesti",
 				escriptori);
@@ -314,7 +308,6 @@ public class BustiaUserController extends BaseUserController {
 	private void omplirModelPerReenviar(
 			EntitatDto entitatActual,
 			Long bustiaId,
-			BustiaContingutPendentTipusEnumDto contingutTipus,
 			Long contingutId,
 			Model model) {
 		model.addAttribute(
@@ -322,7 +315,6 @@ public class BustiaUserController extends BaseUserController {
 				bustiaService.contingutPendentFindOne(
 						entitatActual.getId(),
 						bustiaId,
-						contingutTipus,
 						contingutId));
 		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());

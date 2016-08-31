@@ -246,7 +246,7 @@ public class CacheHelper {
 			EntitatEntity entitat,
 			String usuariCodi) {
 		// Consulta les bústies de l'usuari a l'entitat
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNull(
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(
 				entitat);
 		// Filtra la llista de bústies segons els permisos
 		permisosHelper.filterGrantedAll(
@@ -266,8 +266,7 @@ public class CacheHelper {
 			long[] countFills = contenidorHelper.countFillsAmbPermisReadByContinguts(
 					entitat,
 					busties,
-					true,
-					false);
+					true);
 			for (long c: countFills)
 				count += c;
 			/*long[] countRegistres = contenidorHelper.countRegistresByContinguts(

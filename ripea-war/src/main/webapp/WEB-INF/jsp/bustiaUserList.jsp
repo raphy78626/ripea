@@ -20,19 +20,17 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<table id="taulaDades" 
-			data-toggle="datatable" 
-			data-url="<c:url value="/bustiaUser/datatable"/>" 
-			class="table table-bordered table-striped" 
-			data-info-type="search" 
-			data-default-order="1" 
-			data-default-dir="asc" 
-			style="width:100%">
+	<table id="taulaDades" class="table table-bordered table-striped" style="width:100%"
+		data-toggle="datatable"
+		data-url="<c:url value="/bustiaUser/datatable"/>"
+		data-info-type="search"
+		data-default-order="1"
+		data-default-dir="asc">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">Id</th>
 				<th data-col-name="nom"><spring:message code="bustia.list.columna.nom"/></th>
-				<th data-col-name="pareNom"><spring:message code="bustia.list.columna.unitat"/></th>
+				<th data-col-name="pare.nom"><spring:message code="bustia.list.columna.unitat"/></th>
 				<th data-col-name="fillsCount" data-template="#cellFillsCountTemplate" data-orderable="false" width="10%">
 					<script id="cellFillsCountTemplate" type="text/x-jsrender">
 						<a href="${unitatCodiUrlPrefix}bustiaUser/{{:id}}/pendent" class="btn btn-default"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="bustia.user.list.pendent"/>&nbsp;<span class="badge">{{:fillsCount}}</span></a>

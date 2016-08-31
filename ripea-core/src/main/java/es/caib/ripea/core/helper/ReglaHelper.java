@@ -89,7 +89,7 @@ public class ReglaHelper {
 		try {
 			switch (regla.getTipus()) {
 			case BACKOFFICE:
-				System.out.println(">>> Processant anotacio de registre amb backoffice (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
+				//System.out.println(">>> Processant anotacio de registre amb backoffice (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
 				RipeaBackofficeWsService backofficeClient = new WsClientHelper<RipeaBackofficeWsService>().generarClientWs(
 						getClass().getResource("/es/caib/ripea/core/service/ws/backoffice/RipeaBackoffice.wsdl"),
 						regla.getBackofficeUrl(),
@@ -107,7 +107,7 @@ public class ReglaHelper {
 				}
 				break;
 			case BUSTIA:
-				System.out.println(">>> Processant anotacio de registre movent a bústia (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
+				//System.out.println(">>> Processant anotacio de registre movent a bústia (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
 				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 						pendent,
 						regla.getBustia(),
@@ -125,7 +125,7 @@ public class ReglaHelper {
 						contingutMoviment);
 				break;
 			case EXP_CREAR:
-				System.out.println(">>> Processant anotacio de registre creant nou expedient (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
+				//System.out.println(">>> Processant anotacio de registre creant nou expedient (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
 				ExpedientEntity expedientCrear = ExpedientEntity.getBuilder(
 						"Creat automàticament amb anotació " + pendent.getIdentificador(),
 						regla.getMetaExpedient(),
@@ -140,22 +140,27 @@ public class ReglaHelper {
 						null);
 				break;
 			case EXP_AFEGIR:
-				System.out.println(">>> Processant anotacio de registre afegint a un expedient existent (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ", expedientNumero=" + pendent.getExpedientNumero() + ")");
+				//System.out.println(">>> Processant anotacio de registre afegint a un expedient existent (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ", expedientNumero=" + pendent.getExpedientNumero() + ")");
 				String expedientNumero = pendent.getExpedientNumero();
-				int any = 0;
-				long sequencia = 0;
-				ExpedientEntity expedientAfegir = expedientRepository.findByEntitatAndArxiuAndAnyAndSequencia(
-						regla.getEntitat(),
-						regla.getArxiu(),
-						any,
-						sequencia);
-				if (expedientAfegir != null) {
-					contingutHelper.ferIEnregistrarMoviment(
-							pendent,
-							expedientAfegir,
-							null);
+				int separadorIndex = expedientNumero.indexOf("/");
+				if (separadorIndex == -1 || separadorIndex == 0 || separadorIndex == expedientNumero.length() - 1) {
+					error = "El número d'expedient de l'anotació de registre \"" + expedientNumero + "\" no te el format correcte \"SEQ/ANY\"";
 				} else {
-					error = "No s'ha trobat l'expedient \"" + expedientNumero + "\"";
+					long sequencia = new Long(expedientNumero.substring(0, separadorIndex)).longValue();
+					int any = new Integer(expedientNumero.substring(separadorIndex + 1)).intValue();
+					ExpedientEntity expedientAfegir = expedientRepository.findByEntitatAndMetaNodeAndAnyAndSequencia(
+							regla.getEntitat(),
+							regla.getMetaExpedient(),
+							any,
+							sequencia);
+					if (expedientAfegir != null) {
+						contingutHelper.ferIEnregistrarMoviment(
+								pendent,
+								expedientAfegir,
+								null);
+					} else {
+						error = "No s'ha trobat l'expedient \"" + expedientNumero + "\"";
+					}
 				}
 				break;
 			default:
@@ -175,11 +180,16 @@ public class ReglaHelper {
 			}
 			pendent.updateProces(
 					new Date(),
-					RegistreProcesEstatEnum.PROCESSAT,
+					RegistreProcesEstatEnum.PROCESSAT, // (ReglaTipusEnumDto.BUSTIA.equals(regla.getTipus())) ? RegistreProcesEstatEnum.PROCESSAT_VISIBLE : RegistreProcesEstatEnum.PROCESSAT_OCULT,
 					error);
+			// Si la regla és del tipus backoffice marca com a esborrat el contingut una vegada processat
+			if (ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
+				pendent.updateEsborrat(1);
+			}
 		}
 	}
 
+	@Transactional
 	public void actualitzarEstatError(
 			Long pendentId,
 			String error) {
