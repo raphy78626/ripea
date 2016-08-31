@@ -179,6 +179,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.webjars.bower</groupId>
+			<artifactId>bootstrap-datepicker</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
 			<artifactId>jsrender</artifactId>
 			<version>1.0.0-rc.70</version>
 		</dependency>
@@ -309,6 +314,7 @@
 								WEB-INF/lib/font-awesome*,
 								WEB-INF/lib/datatables*,
 								WEB-INF/lib/select2*,
+								WEB-INF/lib/bootstrap-datepicker*,
 								WEB-INF/lib/jsrender*,
 								WEB-INF/lib/jstree*
 								WEB-INF/lib/Sortable*
