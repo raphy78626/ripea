@@ -36,6 +36,7 @@ import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
+import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
@@ -860,6 +861,15 @@ public class ExpedientServiceImpl implements ExpedientService {
 				entitat,
 				contingutId,
 				null);
+		if (contingut instanceof RegistreEntity) {
+			RegistreEntity registre = (RegistreEntity)contingut;
+			if (registre.getRegla() != null) {
+				throw new ValidationException(
+						contingutId,
+						ContingutEntity.class,
+						"Aquest contingut pendent no es pot moure perquè te activat el processament automàtic mitjançant una regla (reglaId=" + registre.getRegla().getId() + ")");
+			}
+		}
 		Long bustiaId = contingut.getPare().getId();
 		contingutHelper.ferIEnregistrarMoviment(
 				contingut,

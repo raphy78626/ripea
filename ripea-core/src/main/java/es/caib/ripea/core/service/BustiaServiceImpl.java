@@ -702,6 +702,15 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				contingutId,
 				bustiaOrigen);
+		if (contingut instanceof RegistreEntity) {
+			RegistreEntity registre = (RegistreEntity)contingut;
+			if (registre.getRegla() != null) {
+				throw new ValidationException(
+						contingutId,
+						ContingutEntity.class,
+						"Aquest contingut pendent no es pot moure perquè te activat el processament automàtic mitjançant una regla (reglaId=" + registre.getRegla().getId() + ")");
+			}
+		}
 		ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 				contingut,
 				bustiaDesti,
