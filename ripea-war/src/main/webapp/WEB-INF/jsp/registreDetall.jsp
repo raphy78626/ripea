@@ -111,7 +111,7 @@
 				<div class="alert well-sm alert-danger alert-dismissable">
 					<span class="fa fa-exclamation-triangle"></span>
 					<spring:message code="registre.detalls.info.errors"/>
-					<a href="#" class="btn btn-xs btn-default pull-right" data-rdt-link-modal="true"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
+					<a href="${registre.id}/reintentar" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
 				</div>
 			</c:if>
 			<dl class="dl-horizontal">
@@ -128,7 +128,7 @@
 		</div>
 	</div>
 	<div id="modal-botons" class="well">
-		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
+		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
 </html>

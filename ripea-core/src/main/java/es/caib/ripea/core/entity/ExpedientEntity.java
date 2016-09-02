@@ -61,9 +61,9 @@ public class ExpedientEntity extends NodeEntity {
 	protected Date tancatData;
 	@Column(name = "tancat_motiu", length = 1024)
 	protected String tancatMotiu;
-	@Column(name = "anio")
+	@Column(name = "anio", nullable = false)
 	protected int any;
-	@Column(name = "sequencia")
+	@Column(name = "sequencia", nullable = false)
 	protected long sequencia;
 	@Column(name = "sistra_publicat")
 	protected boolean sistraPublicat;

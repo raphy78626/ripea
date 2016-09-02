@@ -43,7 +43,7 @@ public class RegistreServiceImpl implements RegistreService {
 	private BustiaRepository bustiaRepository;
 
 	@Resource
-	private ContingutHelper contenidorHelper;
+	private ContingutHelper contingutHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
@@ -79,18 +79,18 @@ public class RegistreServiceImpl implements RegistreService {
 					true);
 		} else {
 			// Comprova l'accés al path del contenidor pare
-			contenidorHelper.comprovarPermisosPathContingut(
+			contingutHelper.comprovarPermisosPathContingut(
 					contingut,
 					true,
 					false,
 					false,
 					true);
 		}
-		return conversioTipusHelper.convertir(
-				registreRepository.findByPareAndId(
-						contingut,
-						registreId),
-				RegistreAnotacioDto.class);
+		RegistreEntity registre = registreRepository.findByPareAndId(
+				contingut,
+				registreId);
+		return (RegistreAnotacioDto)contingutHelper.toContingutDto(
+				registre);
 	}
 
 	@Transactional

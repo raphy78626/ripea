@@ -54,6 +54,12 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			@Param("entitat") EntitatEntity entitat,
 			@Param("metaNodes") List<? extends MetaNodeEntity> metanodes);
 
+	ExpedientEntity findByEntitatAndMetaNodeAndAnyAndSequencia(
+			EntitatEntity entitat,
+			MetaNodeEntity metaNode,
+			int any,
+			long sequencia);
+
 	@Query(	"from" +
 			"    ExpedientEntity e " +
 			"where " +

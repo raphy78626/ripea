@@ -4,6 +4,7 @@
 package es.caib.ripea.core.helper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -49,6 +50,7 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
+import es.caib.ripea.core.entity.MetaExpedientSequenciaEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
@@ -63,6 +65,7 @@ import es.caib.ripea.core.repository.EscriptoriRepository;
 import es.caib.ripea.core.repository.MetaDadaRepository;
 import es.caib.ripea.core.repository.MetaDocumentRepository;
 import es.caib.ripea.core.repository.MetaExpedientMetaDocumentRepository;
+import es.caib.ripea.core.repository.MetaExpedientSequenciaRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeRepository;
 import es.caib.ripea.core.repository.NodeRepository;
@@ -104,6 +107,8 @@ public class ContingutHelper {
 	private RegistreRepository registreRepository;
 	@Resource
 	private ContingutMovimentRepository contenidorMovimentRepository;
+	@Resource
+	private MetaExpedientSequenciaRepository metaExpedientSequenciaRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -542,6 +547,30 @@ public class ContingutHelper {
 			}
 		}
 		return expedientSuperior;
+	}
+
+	public void calcularSequenciaExpedient(
+			ExpedientEntity expedient,
+			Integer any) {
+		int anyExpedient;
+		if (any != null)
+			anyExpedient = any.intValue();
+		else
+			anyExpedient = Calendar.getInstance().get(Calendar.YEAR);
+		MetaExpedientSequenciaEntity sequencia = metaExpedientSequenciaRepository.findByMetaExpedientAndAny(
+				expedient.getMetaExpedient(),
+				anyExpedient);
+		if (sequencia == null) {
+			sequencia = MetaExpedientSequenciaEntity.getBuilder(
+					anyExpedient,
+					expedient.getMetaExpedient()).build();
+			metaExpedientSequenciaRepository.save(sequencia);
+		}
+		long sequenciaExpedient = sequencia.getValor();
+		sequencia.incrementar();
+		expedient.updateAnySequencia(
+				anyExpedient,
+				sequenciaExpedient);
 	}
 
 	public EscriptoriEntity getEscriptoriPerUsuari(

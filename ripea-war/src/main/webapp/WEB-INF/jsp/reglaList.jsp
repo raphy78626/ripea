@@ -54,10 +54,10 @@ $(document).ready(function() {
 				<th data-col-name="ordre" data-template="#cellOrdreTemplate" data-orderable="false" width="1%">
 					<script id="cellOrdreTemplate" type="text/x-jsrender"><a class="btn btn-default drag-handle">::</a></script>
 				</th>
+				<th data-col-name="nom" data-orderable="false"><spring:message code="regla.list.columna.nom"/></th>
 				<th data-col-name="tipus" data-orderable="false" data-renderer="enum(ReglaTipusEnumDto)">
 					<spring:message code="regla.list.columna.tipus"/>
 				</th>
-				<th data-col-name="nom" data-orderable="false"><spring:message code="regla.list.columna.nom"/></th>
 				<th data-col-name="assumpteCodi" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
 				<th data-col-name="unitatCodi" data-orderable="false"><spring:message code="regla.list.columna.unitat"/></th>
 				<th data-col-name="activa" data-template="#cellActivaTemplate" data-orderable="false">

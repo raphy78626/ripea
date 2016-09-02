@@ -17,7 +17,10 @@ import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ReglaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ReglaService;
+import es.caib.ripea.core.entity.ArxiuEntity;
+import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.ReglaEntity;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
@@ -68,9 +71,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getAssumpteCodi(),
 				regla.getUnitatCodi(),
 				ordre).build();
-		return conversioTipusHelper.convertir(
-				reglaRepository.save(entity),
-				ReglaDto.class);
+		return toReglaDto(reglaRepository.save(entity));
 	}
 
 	@Override
@@ -95,9 +96,38 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getTipus(),
 				regla.getAssumpteCodi(),
 				regla.getUnitatCodi());
-		return conversioTipusHelper.convertir(
-				reglaRepository.save(entity),
-				ReglaDto.class);
+		switch(regla.getTipus()) {
+		case BACKOFFICE:
+			entity.updatePerTipusBackoffice(
+					regla.getBackofficeUrl(),
+					regla.getBackofficeUsuari(),
+					regla.getBackofficeContrasenya(),
+					regla.getBackofficeReintents());
+			break;
+		case BUSTIA:
+			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					regla.getBustiaId(),
+					false);
+			entity.updatePerTipusBustia(
+					bustia);
+			break;
+		case EXP_AFEGIR:
+		case EXP_CREAR:
+			MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+					entitat,
+					regla.getMetaExpedientId(),
+					false,
+					false);
+			ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
+					entitat,
+					regla.getArxiuId(),
+					false);
+			entity.updatePerTipusExpedient(
+					metaExpedient,
+					arxiu);
+		}
+		return toReglaDto(reglaRepository.save(entity));
 	}
 
 	@Override
@@ -119,9 +149,7 @@ public class ReglaServiceImpl implements ReglaService {
 				entitat,
 				reglaId);
 		regla.updateActiva(activa);
-		return conversioTipusHelper.convertir(
-				reglaRepository.save(regla),
-				ReglaDto.class);
+		return toReglaDto(reglaRepository.save(regla));
 	}
 
 	@Override
@@ -141,9 +169,7 @@ public class ReglaServiceImpl implements ReglaService {
 				entitat,
 				reglaId);
 		reglaRepository.delete(regla);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -165,9 +191,7 @@ public class ReglaServiceImpl implements ReglaService {
 		canviPosicio(
 				regla,
 				regla.getOrdre() - 1);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -189,9 +213,7 @@ public class ReglaServiceImpl implements ReglaService {
 		canviPosicio(
 				regla,
 				regla.getOrdre() + 1);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -215,9 +237,7 @@ public class ReglaServiceImpl implements ReglaService {
 		canviPosicio(
 				regla,
 				posicio);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -236,9 +256,7 @@ public class ReglaServiceImpl implements ReglaService {
 		ReglaEntity regla = entityComprovarHelper.comprovarRegla(
 				entitat,
 				reglaId);
-		return conversioTipusHelper.convertir(
-				regla,
-				ReglaDto.class);
+		return toReglaDto(regla);
 	}
 
 	@Override
@@ -286,6 +304,19 @@ public class ReglaServiceImpl implements ReglaService {
 			}
 			regla.updateOrdre(posicio);
 		}
+	}
+
+	private ReglaDto toReglaDto(ReglaEntity regla) {
+		ReglaDto dto = conversioTipusHelper.convertir(
+				regla,
+				ReglaDto.class);
+		if (regla.getArxiu() != null)
+			dto.setArxiuId(regla.getArxiu().getId());
+		if (regla.getBustia() != null)
+			dto.setBustiaId(regla.getBustia().getId());
+		if (regla.getMetaExpedient() != null)
+			dto.setMetaExpedientId(regla.getMetaExpedient().getId());
+		return dto;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);

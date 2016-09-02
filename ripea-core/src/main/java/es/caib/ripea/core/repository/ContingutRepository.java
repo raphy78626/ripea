@@ -104,16 +104,34 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			Pageable pageable);
 
 	@Query(	"select " +
-			"    pare.id, " +
+			"    c " +
+			"from " +
+			"    ContingutEntity c " +
+			"where " +
+			"    c.pare = :pare " +
+			"and (:esNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.comentari) like lower('%'||:filtre||'%')) " +
+			/*"        (type(c) = es.caib.ripea.core.entity.ExpedientEntity and (lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%'))) or " +
+			"        (type(c) = es.caib.ripea.core.entity.DocumentEntity and (lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%'))) or " +
+			"        (type(c) = es.caib.ripea.core.entity.RegistreEntity and (lower(c.identificador) like lower('%'||:filtre||'%') or lower(c.extracte) like lower('%'||:filtre||'%') or lower('REGWEB') like lower('%'||:filtre||'%'))) " +
+			"    ) " +*/
+			"and esborrat = 0")
+	public Page<ContingutEntity> findBustiaPendentByPareAndFiltre(
+			@Param("pare") ContingutEntity pare,
+			@Param("esNullFiltre") boolean esNullFiltre,
+			@Param("filtre") String filtre,
+			Pageable pageable);
+
+	@Query(	"select " +
+			"    c.pare.id, " +
 			"    count(*) " +
 			"from " +
-			"    ContingutEntity " +
+			"    ContingutEntity c " +
 			"where " +
-			"    entitat = :entitat " +
-			"and pare in (:pares) " +
-			"and esborrat = 0 " +
+			"    c.entitat = :entitat " +
+			"and c.pare in (:pares) " +
+			"and c.esborrat = 0 " +
 			"group by " +
-			"    pare")
+			"    c.pare")
 	List<Object[]> countByPares(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("pares") List<? extends ContingutEntity> pares);

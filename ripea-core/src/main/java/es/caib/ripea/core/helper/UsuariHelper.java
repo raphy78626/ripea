@@ -33,10 +33,6 @@ public class UsuariHelper {
 	private UsuariRepository usuariRepository;
 
 
-	/*public UsuariEntity getUsuariActualitzatAmbFontExterna(
-			String usuariCodi) {
-		
-	}*/
 
 	public Authentication generarUsuariAutenticat(
 			String usuariCodi,
@@ -71,6 +67,8 @@ public class UsuariHelper {
 
 	public UsuariEntity getUsuariAutenticat() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null)
+			return null;
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
 			logger.error("No s'ha trobat l'usuari (codi=" + auth.getName() + ")");

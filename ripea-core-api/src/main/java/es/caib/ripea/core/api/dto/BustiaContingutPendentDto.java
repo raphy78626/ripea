@@ -18,11 +18,11 @@ public class BustiaContingutPendentDto implements Serializable {
 
 	private Long id;
 	private BustiaContingutPendentTipusEnumDto tipus;
-	private Date recepcioData;
-	private String numero;
-	private String descripcio;
+	private String nom;
 	private String remitent;
+	private Date recepcioData;
 	private String comentari;
+	private boolean procesAutomatic;
 	private boolean error;
 
 
@@ -39,23 +39,11 @@ public class BustiaContingutPendentDto implements Serializable {
 	public void setTipus(BustiaContingutPendentTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
-	public Date getRecepcioData() {
-		return recepcioData;
+	public String getNom() {
+		return nom;
 	}
-	public void setRecepcioData(Date recepcioData) {
-		this.recepcioData = recepcioData;
-	}
-	public String getNumero() {
-		return numero;
-	}
-	public void setNumero(String numero) {
-		this.numero = numero;
-	}
-	public String getDescripcio() {
-		return descripcio;
-	}
-	public void setDescripcio(String descripcio) {
-		this.descripcio = descripcio;
+	public void setNom(String nom) {
+		this.nom = nom;
 	}
 	public String getRemitent() {
 		return remitent;
@@ -63,11 +51,23 @@ public class BustiaContingutPendentDto implements Serializable {
 	public void setRemitent(String remitent) {
 		this.remitent = remitent;
 	}
+	public Date getRecepcioData() {
+		return recepcioData;
+	}
+	public void setRecepcioData(Date recepcioData) {
+		this.recepcioData = recepcioData;
+	}
 	public String getComentari() {
 		return comentari;
 	}
 	public void setComentari(String comentari) {
 		this.comentari = comentari;
+	}
+	public boolean isProcesAutomatic() {
+		return procesAutomatic;
+	}
+	public void setProcesAutomatic(boolean procesAutomatic) {
+		this.procesAutomatic = procesAutomatic;
 	}
 	public boolean isError() {
 		return error;

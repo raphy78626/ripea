@@ -131,7 +131,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 				false);
 		ArxiuEntity entity = entityComprovarHelper.comprovarArxiu(
 				entitat,
-				arxiu.getId());
+				arxiu.getId(),
+				false);
 		entity.update(
 				arxiu.getNom());
 		return toArxiuDto(entity);
@@ -154,7 +155,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 				false);
 		ArxiuEntity entity = entityComprovarHelper.comprovarArxiu(
 				entitat,
-				id);
+				id,
+				false);
 		entity.updateActiu(actiu);
 		return toArxiuDto(entity);
 	}
@@ -174,7 +176,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 				false);
 		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
 				entitat,
-				id);
+				id,
+				false);
 		arxiuRepository.delete(arxiu);
 		return toArxiuDto(arxiu);
 	}
@@ -194,7 +197,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 				true);
 		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
 				entitat,
-				id);
+				id,
+				false);
 		ArxiuDto resposta = toArxiuDto(arxiu);
 		// Ompl els contadors d'expedients
 		List<Object[]> countExpedients = expedientRepository.countByArxiu(
@@ -331,6 +335,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				metaExpedientId,
+				false,
 				false);
 		return toArxiuDto(metaExpedient.getArxius());
 	}
@@ -422,10 +427,12 @@ public class ArxiuServiceImpl implements ArxiuService {
 				false);
 		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
 				entitat,
-				id);
+				id,
+				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat, 
 				metaExpedientId,
+				false,
 				false);
 		if (!arxiu.getMetaExpedients().contains(metaExpedient)) {
 			arxiu.getMetaExpedients().add(metaExpedient);
@@ -450,10 +457,12 @@ public class ArxiuServiceImpl implements ArxiuService {
 				false);
 		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
 				entitat,
-				id);
+				id,
+				false);
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat, 
 				metaExpedientId,
+				false,
 				false);
 		arxiu.getMetaExpedients().remove(metaExpedient);
 		arxiuRepository.saveAndFlush(arxiu);
@@ -475,6 +484,7 @@ public class ArxiuServiceImpl implements ArxiuService {
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id,
+				false,
 				false);
 		List<ArxiuDto> resposta = new ArrayList<ArxiuDto>();
 		for (ArxiuEntity arxiu: metaExpedient.getArxius()) {
@@ -499,7 +509,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				id,
-				true);
+				true,
+				false);
 		return toArxiuDto(metaExpedient.getArxius());
 	}
 

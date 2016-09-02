@@ -289,18 +289,23 @@ public class RegistreEntity extends ContingutEntity {
 			procesIntents = new Integer(procesIntents.intValue() + 1);
 		}
 		if (procesError != null) {
-			this.procesError = procesError.substring(0, ERROR_MAX_LENGTH);	
+			if (procesError.length() > ERROR_MAX_LENGTH)
+				this.procesError = procesError.substring(0, ERROR_MAX_LENGTH);	
+			else
+				this.procesError = procesError;
 		} else {
 			this.procesError = null;
 		}
 	}
 
 	public static Builder getBuilder(
+			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			int numero,
 			Date data,
 			String identificador,
+			String extracte,
 			String oficinaCodi,
 			String llibreCodi,
 			String assumpteTipusCodi,
@@ -308,11 +313,13 @@ public class RegistreEntity extends ContingutEntity {
 			RegistreProcesEstatEnum procesEstat,
 			ContingutEntity pare) {
 		return new Builder(
+				entitat,
 				tipus,
 				unitatAdministrativa,
 				numero,
 				data,
 				identificador,
+				extracte,
 				oficinaCodi,
 				llibreCodi,
 				assumpteTipusCodi,
@@ -329,11 +336,13 @@ public class RegistreEntity extends ContingutEntity {
 	public static class Builder {
 		RegistreEntity built;
 		Builder(
-				RegistreTipusEnum registreTipus,
+				EntitatEntity entitat,
+				RegistreTipusEnum tipus,
 				String unitatAdministrativa,
 				int numero,
 				Date data,
 				String identificador,
+				String extracte,
 				String oficinaCodi,
 				String llibreCodi,
 				String assumpteTipusCodi,
@@ -341,14 +350,19 @@ public class RegistreEntity extends ContingutEntity {
 				RegistreProcesEstatEnum procesEstat,
 				ContingutEntity pare) {
 			built = new RegistreEntity();
-			built.nom = registreTipus.name() + " (" + identificador + ")";
+			if (extracte != null) {
+				built.nom = identificador + " - " + extracte;
+			} else {
+				built.nom = identificador;
+			}
 			built.tipus = ContingutTipusEnumDto.REGISTRE;
-			built.entitat = pare.getEntitat();
-			built.registreTipus = registreTipus.getValor();
+			built.entitat = entitat;
+			built.registreTipus = tipus.getValor();
 			built.unitatAdministrativa = unitatAdministrativa;
 			built.numero = numero;
 			built.data = data;
 			built.identificador = identificador;
+			built.extracte = extracte;
 			built.oficinaCodi = oficinaCodi;
 			built.llibreCodi = llibreCodi;
 			built.assumpteTipusCodi = assumpteTipusCodi;
@@ -370,10 +384,6 @@ public class RegistreEntity extends ContingutEntity {
 		}
 		public Builder llibreDescripcio(String llibreDescripcio) {
 			built.llibreDescripcio = llibreDescripcio;
-			return this;
-		}
-		public Builder extracte(String extracte) {
-			built.extracte = extracte;
 			return this;
 		}
 		public Builder assumpteTipusDescripcio(String assumpteTipusDescripcio) {

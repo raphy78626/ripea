@@ -29,44 +29,33 @@ var tipusText = new Array();
 <c:forEach var="option" items="${registreTipusEnumOptions}">
 tipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </c:forEach>
-$(document).ready(function() {
-	/*$("#taulaDadesContingut").ripeaDataTable({
-		ajaxSourceUrl: "<c:url value="/bustiaUser/${bustia.id}/pendent/datatable"/>",
-		drawCallback: function() {
-			if ($('#taulaDadesContingut tbody tr td:eq(0)').hasClass('dataTables_empty'))
-				$('#contingut-count').html('0');
-			else
-				$('#contingut-count').html($('#taulaDadesContingut tbody tr').length);
-			$.get("<c:url value="/bustiaUser/${bustia.id}/pendent/count"/>", function(data) {
-				$('#bustia-pendent-count').html(data);
-			});
-		},
-		localeUrl: "<c:url value="/js/dataTables-locales/dataTables_locale_ca.txt"/>",
-		alertesRefreshUrl: "<c:url value="/nodeco/util/alertes"/>"
-	});*/
-});
 </script>
 </head>
 <body>
 	<rip:blocContenidorPath contenidor="${bustia}"/>
-	<table id="taulaDadesContingut" data-toggle="datatable" data-url="<c:url value="/bustiaUser/${bustia.id}/pendent/datatable"/>" class="table table-bordered table-striped">
+	<table id="taulaDades" class="table table-bordered table-striped" style="width:100%"
+		data-toggle="datatable"
+		data-url="<c:url value="/bustiaUser/${bustia.id}/pendent/datatable"/>"
+		data-info-type="search"
+		data-default-order="6"
+		data-default-dir="desc">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
 				<th data-col-name="error" data-visible="false"></th>
-				<th data-col-name="tipus" data-visible="false"><spring:message code="bustia.pendent.columna.tipus"/></th>
-				<th data-col-name="recepcioData" data-converter="datetime" data-orderable="false" width="15%"><spring:message code="bustia.pendent.columna.recepcio.data"/></th>
-				<th data-col-name="descripcio" data-template="#contingutTemplate" data-orderable="false" width="30%">
-					<spring:message code="bustia.pendent.columna.descripcio"/>
+				<th data-col-name="procesAutomatic" data-visible="false"></th>
+				<th data-col-name="tipus" data-visible="false"></th>
+				<th data-col-name="nom" data-template="#contingutTemplate" width="40%">
+					<spring:message code="bustia.pendent.columna.contingut"/>
 					<script id="contingutTemplate" type="text/x-jsrender">
 						{{if tipus == 'REGISTRE'}}<span class="fa fa-book" title="<spring:message code="bustia.pendent.tipus.enum.REGISTRE"/>"></span>{{else tipus == 'EXPEDIENT'}}<span class="fa fa-briefcase" title="<spring:message code="bustia.pendent.tipus.enum.EXPEDIENT"/>"></span>{{else tipus == 'DOCUMENT'}}<span class="fa fa-file" title="<spring:message code="bustia.pendent.tipus.enum.DOCUMENT"/>"></span>{{/if}}
-						{{:descripcio}}
+						{{:nom}}
 						{{if error}}<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.pendent.registre.estat.error"/>"></span>{{/if}}
 					</script>
 				</th>
-				<th data-col-name="numero" data-orderable="false" width="15%"><spring:message code="bustia.pendent.columna.numero"/></th>
-				<th data-col-name="remitent" data-orderable="false" width="15%"><spring:message code="bustia.pendent.columna.remitent"/></th>
-				<th data-col-name="comentari" data-orderable="false" width="15%"><spring:message code="bustia.pendent.columna.comentari"/></th>
+				<th data-col-name="remitent" width="15%"><spring:message code="bustia.pendent.columna.remitent"/></th>
+				<th data-col-name="recepcioData" data-converter="datetime" width="15%"><spring:message code="bustia.pendent.columna.recepcio.data"/></th>
+				<th data-col-name="comentari" width="20%"><spring:message code="bustia.pendent.columna.comentari"/></th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="10%">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
@@ -78,10 +67,12 @@ $(document).ready(function() {
 									<li><a href="../../contenidor/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.obrir"/></a></li>
 								{{/if}}
 								<li><a href="../../contenidor/{{:id}}/log" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
-								<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/nouexp" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.nou.expedient"/>...</a></li>
-								<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/addexp" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>
-								<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/reenviar" data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
-								<%--li><a href="../../bustiaUser/${bustia.id}/pendent/contingut/{{:id}}/agafar" data-toggle="modal"><span class="fa fa-thumbs-o-up"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.agafar"/></a></li--%>
+								{{if !procesAutomatic}}
+									<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/nouexp" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.nou.expedient"/>...</a></li>
+									<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/addexp" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>
+									<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/reenviar" data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+									<%--li><a href="../../bustiaUser/${bustia.id}/pendent/contingut/{{:id}}/agafar" data-toggle="modal"><span class="fa fa-thumbs-o-up"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.agafar"/></a></li--%>
+								{{/if}}
 							</ul>
 						</div>
 					</script>

@@ -28,7 +28,6 @@ import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.repository.ContingutLogRepository;
 import es.caib.ripea.core.repository.ContingutMovimentRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
-import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
  * Utilitat per a gestionar el registre d'accions dels contenidors.
@@ -44,8 +43,6 @@ public class ContingutLogHelper {
 	private ContingutLogRepository contingutLogRepository;
 	@Resource
 	private ContingutMovimentRepository contingutMovimentRepository;
-	@Resource
-	private UsuariRepository usuariRepository;
 
 	@Resource
 	private ContingutHelper contenidorHelper;
@@ -224,9 +221,11 @@ public class ContingutLogHelper {
 					conversioTipusHelper.convertir(
 							moviment.getRemitent(),
 							UsuariDto.class));
-			dto.setOrigen(
-					contenidorHelper.toContingutDto(
-							moviment.getOrigen()));
+			if (moviment.getOrigen() != null) {
+				dto.setOrigen(
+						contenidorHelper.toContingutDto(
+								moviment.getOrigen()));
+			}
 			dto.setDesti(
 					contenidorHelper.toContingutDto(
 							moviment.getDesti()));

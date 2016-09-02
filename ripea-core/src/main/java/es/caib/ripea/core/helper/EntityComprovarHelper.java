@@ -34,6 +34,7 @@ import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.ReglaEntity;
+import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
@@ -199,7 +200,8 @@ public class EntityComprovarHelper {
 	public MetaExpedientEntity comprovarMetaExpedient(
 			EntitatEntity entitat,
 			Long id,
-			boolean comprovarPermisCreate) {
+			boolean comprovarPermisCreate,
+			boolean comprovarPermisRead) {
 		MetaExpedientEntity metaExpedient = metaExpedientRepository.findOne(
 				id);
 		if (metaExpedient == null) {
@@ -213,8 +215,8 @@ public class EntityComprovarHelper {
 					MetaExpedientEntity.class,
 					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat del meta-expedient");
 		}
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (comprovarPermisCreate) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			boolean granted = permisosHelper.isGrantedAll(
 					metaExpedient.getId(),
 					MetaNodeEntity.class,
@@ -226,6 +228,20 @@ public class EntityComprovarHelper {
 						MetaDocumentEntity.class,
 						auth.getName(),
 						"CREATE");
+			}
+		}
+		if (comprovarPermisRead) {
+			boolean granted = permisosHelper.isGrantedAll(
+					metaExpedient.getId(),
+					MetaNodeEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth);
+			if (!granted) {
+				throw new PermissionDeniedException(
+						id,
+						MetaExpedientEntity.class,
+						auth.getName(),
+						"READ");
 			}
 		}
 		return metaExpedient;
@@ -480,7 +496,7 @@ public class EntityComprovarHelper {
 			throw new ValidationException(
 					bustiaId,
 					BustiaEntity.class,
-					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de la bústia");
+					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de la bústia (id=" + bustia.getEntitat().getId() + ")");
 		}
 		if (comprovarPermisRead) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -502,7 +518,8 @@ public class EntityComprovarHelper {
 
 	public ArxiuEntity comprovarArxiu(
 			EntitatEntity entitat,
-			Long arxiuId) throws NotFoundException {
+			Long arxiuId,
+			boolean comprovarAcces) throws NotFoundException {
 		ArxiuEntity arxiu = arxiuRepository.findOne(arxiuId);
 		if (arxiu == null) {
 			throw new NotFoundException(
@@ -514,6 +531,28 @@ public class EntityComprovarHelper {
 					arxiuId,
 					ArxiuEntity.class,
 					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de l'arxiu");
+		}
+		if (comprovarAcces) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			List<MetaExpedientEntity> metaExpedientsPermesos = new ArrayList<MetaExpedientEntity>();
+			metaExpedientsPermesos.addAll(arxiu.getMetaExpedients());
+			permisosHelper.filterGrantedAny(
+					metaExpedientsPermesos,
+					new ObjectIdentifierExtractor<MetaNodeEntity>() {
+						public Long getObjectIdentifier(MetaNodeEntity obj) {
+							return obj.getId();
+						}
+					},
+					MetaNodeEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth);
+			if (metaExpedientsPermesos.isEmpty()) {
+				throw new PermissionDeniedException(
+						arxiuId,
+						ArxiuEntity.class,
+						auth.getName(),
+						"READ");
+			}
 		}
 		return arxiu;
 	}
