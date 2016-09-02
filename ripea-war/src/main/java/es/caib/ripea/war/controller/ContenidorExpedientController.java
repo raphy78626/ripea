@@ -302,9 +302,10 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(command);
 		model.addAttribute(
 				"expedient",
-				contenidorService.getContingutAmbFills(
+				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
-						expedientId));
+						expedientId,
+						true));
 		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		model.addAttribute(
 				"contenidorOrigen",
@@ -339,9 +340,10 @@ public class ContenidorExpedientController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"expedient",
-					contenidorService.getContingutAmbFills(
+					contenidorService.findAmbIdUser(
 							entitatActual.getId(),
-							expedientId));
+							expedientId,
+							true));
 			model.addAttribute(
 					"contenidorOrigen",
 					escriptori);
