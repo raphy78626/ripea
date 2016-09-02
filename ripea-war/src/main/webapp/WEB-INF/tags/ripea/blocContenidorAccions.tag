@@ -35,7 +35,9 @@
 			</c:if>
 			<c:if test="${contenidor.document}">
 				<li><a href="../contenidor/${contenidor.pare.id}/document/${contenidor.id}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li>
-				<li><a href="../contenidor/${contenidor.pare.id}/document/${contenidor.id}/descarregar"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a></li>
+				<c:if test="${contenidor.documentTipus != 'FISIC'}">
+					<li><a href="../contenidor/${contenidor.pare.id}/document/${contenidor.id}/descarregar"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a></li>
+				</c:if>
 			</c:if>
 			<c:if test="${not contenidor.expedient}">
 				<li><a href="../contenidor/${contenidor.id}/moure" data-rdt-link-modal="true"><span class="fa fa-arrows"></span>&nbsp;<spring:message code="comu.boto.moure"/>...</a></li>

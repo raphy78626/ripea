@@ -83,13 +83,15 @@ $(document).ready(function() {
 		<c:otherwise><c:set var="formAction"><rip:modalUrl value="/contenidor/${documentCommand.pareId}/document/update"/></c:set></c:otherwise>
 	</c:choose>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="documentCommand" enctype="multipart/form-data">
-		<c:if test="${empty documentCommand.id}">
-			<ul class="nav nav-tabs" role="tablist">
+		<ul class="nav nav-tabs" role="tablist">
+			<c:if test="${empty documentCommand.id || documentCommand.documentTipus == 'DIGITAL'}">
 				<li role="presentation"<c:if test="${documentCommand.documentTipus == 'DIGITAL'}"> class="active"</c:if>><a href="#digital" aria-controls="digital" role="tab" data-toggle="tab"><spring:message code="contenidor.document.form.tab.digital"/></a></li>
+			</c:if>
+			<c:if test="${empty documentCommand.id || documentCommand.documentTipus == 'FISIC'}">
 				<li role="presentation"<c:if test="${documentCommand.documentTipus == 'FISIC'}"> class="active"</c:if>><a href="#fisic" aria-controls="fisic" role="tab" data-toggle="tab"><spring:message code="contenidor.document.form.tab.fisic"/></a></li>
-			</ul>
-			<br/>
-		</c:if>
+			</c:if>
+		</ul>
+		<br/>
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
