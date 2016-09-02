@@ -9,10 +9,10 @@
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}"/>
 	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/js/select2.min.js"/>"></script>
+	<rip:modalHead/>
 <script>
 	$(document).ready(function() {
 		$("#metaNodeId").change(function() {
@@ -48,7 +48,7 @@
 		<rip:inputText name="nom" textKey="contenidor.expedient.form.camp.nom" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

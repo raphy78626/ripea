@@ -103,9 +103,7 @@ function refrescarFileChooser(campPath, contenidorId) {
 				refrescarFileChooser(campPath, $(this).attr('href'));
 				return false;
 			});
-			var iframe = $('.modal-body iframe', window.parent.document);
-			var height = $('html').height();
-			iframe.height(height + 'px');
+			webutilModalAdjustHeight();
 		},
 		error: function(xhr, textStatus, errorThrown) {
 			console.log("<spring:message code="peticio.ajax.error"/>: " + xhr.responseText);

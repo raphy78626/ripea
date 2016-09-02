@@ -9,9 +9,9 @@
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}"/>
 	<link href="<c:url value="/css/jstree.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/js/jstree.min.js"/>"></script>
+	<rip:modalHead/>
 </head>
 <body>
 	<form:form action="" class="form-horizontal" commandName="contenidorMoureCopiarEnviarCommand">
@@ -29,7 +29,7 @@
 		<rip:inputTextarea name="comentariEnviar" textKey="contenidor.enviar.camp.comentari"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-envelope"></span> <spring:message code="comu.boto.enviar"/></button>
-			<a href="<c:url value="/contenidor/${contingutOrigen.pare.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/contenidor/${contingutOrigen.pare.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

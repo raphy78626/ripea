@@ -21,7 +21,7 @@
 		<label class="control-label col-xs-4" for="${campPath}">${campLabelText}</label>
 		<div class="col-xs-8">
 			<div class="input-group" style="width:100%">
-				<form:input path="${campPath}" cssClass="form-control datepicker" id="${campPath}" disabled="${disabled}"/>
+				<form:input path="${campPath}" cssClass="form-control datepicker" id="${campPath}" disabled="${disabled}" data-toggle="datepicker" data-idioma="${idioma}"/>
 				<span class="input-group-addon" style="width:1%"><span class="fa fa-calendar"></span></span>
 			</div>
 			<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
@@ -30,27 +30,9 @@
 	<c:otherwise>
 		<label class="sr-only" for="${campPath}">${campLabelText}</label>
 		<div class="input-group">
-			<form:input path="${campPath}" cssClass="form-control datepicker" id="${campPath}" placeholder="${campPlaceholder}" disabled="${disabled}"/>
+			<form:input path="${campPath}" cssClass="form-control datepicker" id="${campPath}" placeholder="${campPlaceholder}" disabled="${disabled}" data-toggle="datepicker" data-idioma="${idioma}"/>
 			<span class="input-group-addon" style="width:auto"><span class="fa fa-calendar"></span></span>
 		</div>
 	</c:otherwise>
 </c:choose>
 </div>
-<script>
-$(document).ready(function() {
-	$('.datepicker').datepicker({
-		format: 'dd/mm/yyyy',
-		weekStart: 1,
-		autoclose: true,
-		language: '${idioma}'
-	}).on('show', function() {
-		var iframe = $('.modal-body iframe', window.parent.document);
-		var height = $('html').height() + 190;
-		iframe.height(height + 'px');
-	}).on('hide', function() {
-		var iframe = $('.modal-body iframe', window.parent.document);
-		var height = $('html').height();
-		iframe.height(height + 'px');
-	});
-});
-</script>

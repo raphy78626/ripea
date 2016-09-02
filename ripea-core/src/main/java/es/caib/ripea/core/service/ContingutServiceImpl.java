@@ -46,6 +46,7 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDadaEntity;
+import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
@@ -70,6 +71,7 @@ import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
 import es.caib.ripea.core.repository.MetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
+import es.caib.ripea.core.repository.MetaNodeRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 
@@ -103,6 +105,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private BustiaRepository bustiaRepository;
 	@Resource
 	private RegistreRepository registreRepository;
+	@Resource
+	private MetaNodeRepository metaNodeRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -934,12 +938,14 @@ public class ContingutServiceImpl implements ContingutService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public ContingutDto getContingutSenseFills(
+	public ContingutDto findAmbIdUser(
 			Long entitatId,
-			Long contingutId) {
-		logger.debug("Obtenint contingut sense fills ("
+			Long contingutId,
+			boolean ambFills) {
+		logger.debug("Obtenint contingut amb id per usuari ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contingutId=" + contingutId + ")");
+				+ "contingutId=" + contingutId + ", "
+				+ "ambFills=" + ambFills + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -958,8 +964,8 @@ public class ContingutServiceImpl implements ContingutService {
 		return contingutHelper.toContingutDto(
 				contingut,
 				true,
-				false,
-				false,
+				ambFills,
+				ambFills,
 				true,
 				true,
 				false);
@@ -967,12 +973,14 @@ public class ContingutServiceImpl implements ContingutService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public ContingutDto getContingutAmbFills(
+	public ContingutDto findAmbIdAdmin(
 			Long entitatId,
-			Long contingutId) {
-		logger.debug("Obtenint contingut amb fills ("
+			Long contingutId,
+			boolean ambFills) {
+		logger.debug("Obtenint contingut amb id per admin ("
 				+ "entitatId=" + entitatId + ", "
-				+ "contingutId=" + contingutId + ")");
+				+ "contingutId=" + contingutId + ", "
+				+ "ambFills=" + ambFills + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -982,17 +990,11 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
-		contingutHelper.comprovarPermisosPathContingut(
-				contingut,
-				true,
-				false,
-				false,
-				true);
 		return contingutHelper.toContingutDto(
 				contingut,
 				true,
-				true,
-				true,
+				ambFills,
+				ambFills,
 				true,
 				true,
 				false);
@@ -1208,6 +1210,15 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				true,
 				false);
+		MetaNodeEntity metaNode = null;
+		if (filtre.getMetaNodeId() != null) {
+			metaNode = metaNodeRepository.findOne(filtre.getMetaNodeId());
+			if (metaNode == null) {
+				throw new NotFoundException(
+						filtre.getMetaNodeId(),
+						MetaNodeEntity.class);
+			}
+		}
 		boolean tipusArxiu = true;
 		boolean tipusBustia = true;
 		boolean tipusCarpeta = true;
@@ -1256,7 +1267,9 @@ public class ContingutServiceImpl implements ContingutService {
 						tipusExpedient,
 						tipusRegistre,
 						(filtre.getNom() == null),
-						(filtre.getNom() != null) ? '%' + filtre.getNom() + '%' : null,
+						filtre.getNom(),
+						(metaNode == null),
+						metaNode,
 						(filtre.getDataCreacioInici() == null),
 						filtre.getDataCreacioInici(),
 						(filtre.getDataCreacioFi() == null),

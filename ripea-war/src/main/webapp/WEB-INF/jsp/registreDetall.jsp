@@ -11,7 +11,7 @@
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<rip:modalHead/>
 <style>
 .tab-content {
     margin-top: 0.8em;
@@ -19,18 +19,18 @@
 </style>
 </head>
 <body>
-	<ul class="nav nav-tabs">
-		<li class="active"><a href="#informacio" data-toggle="tab"><spring:message code="registre.detalls.pipella.informacio"/></a>
+	<ul class="nav nav-tabs" role="tablist">
+		<li class="active" role="presentation"><a href="#informacio" aria-controls="informacio" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.informacio"/></a>
 		</li>
-		<li>
-			<a href="#interessats" data-toggle="tab"><spring:message code="registre.detalls.pipella.interessats"/>&nbsp;<span class="badge">${fn:length(registre.interessats)}</span></a>
+		<li role="presentation">
+			<a href="#interessats" aria-controls="interessats" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.interessats"/>&nbsp;<span class="badge">${fn:length(registre.interessats)}</span></a>
 		</li>
-		<li>
-			<a href="#annexos" data-toggle="tab"><spring:message code="registre.detalls.pipella.annexos"/>&nbsp;<span class="badge">${fn:length(registre.annexos)}</span></a>
+		<li role="presentation">
+			<a href="#annexos" aria-controls="annexos" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.annexos"/>&nbsp;<span class="badge">${fn:length(registre.annexos)}</span></a>
 		</li>
 		<c:if test="${registre.procesEstat != 'NO_PROCES'}">
-			<li>
-				<a href="#proces" data-toggle="tab">
+			<li role="presentation">
+				<a href="#proces" aria-controls="proces" role="tab" data-toggle="tab">
 					<spring:message code="registre.detalls.pipella.proces"/>
 					<c:if test="${registre.procesEstat == 'ERROR'}"><span class="fa fa-warning text-danger"></span></c:if>
 				</a>
@@ -38,7 +38,7 @@
 		</c:if>
 	</ul>
 	<div class="tab-content">
-		<div class="tab-pane active in" id="informacio">
+		<div class="tab-pane active in" id="informacio" role="tabpanel">
 			<dl class="dl-horizontal">
 				<dt><spring:message code="registre.detalls.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></dd>
 				<dt><spring:message code="registre.detalls.camp.numero"/></dt><dd>${registre.identificador}</dd>
@@ -76,7 +76,7 @@
 				<dt><spring:message code="registre.detalls.camp.ripea.alta"/></dt><dd><fmt:formatDate value="${registre.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
 			</dl>
 		</div>
-		<div class="tab-pane" id="interessats">
+		<div class="tab-pane" id="interessats" role="tabpanel">
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -103,10 +103,10 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="tab-pane" id="annexos">
+		<div class="tab-pane" id="annexos" role="tabpanel">
 			
 		</div>
-		<div class="tab-pane" id="proces">
+		<div class="tab-pane" id="proces" role="tabpanel">
 			<c:if test="${registre.procesEstat == 'ERROR'}">
 				<div class="alert well-sm alert-danger alert-dismissable">
 					<span class="fa fa-exclamation-triangle"></span>
@@ -128,7 +128,7 @@
 		</div>
 	</div>
 	<div id="modal-botons" class="well">
-		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.tancar"/></a>
+		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
 </html>

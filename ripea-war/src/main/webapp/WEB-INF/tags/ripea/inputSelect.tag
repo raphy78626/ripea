@@ -30,7 +30,7 @@
 	<c:when test="${not inline}">
 		<label class="control-label col-xs-4" for="${campPath}">${campLabelText}</label>
 		<div class="controls col-xs-8">
-			<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" style="width:100%">
+			<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" style="width:100%" data-toggle="select2" data-placeholder="${campPlaceholder}">
 				<c:if test="${emptyOption == 'true'}">
 					<c:choose>
 						<c:when test="${not empty emptyOptionTextKey}"><option value=""><spring:message code="${emptyOptionTextKey}"/></option></c:when>
@@ -62,7 +62,7 @@
 	</c:when>
 	<c:otherwise>
    		<label class="sr-only" for="${campPath}">${campLabelText}</label>
-		<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}">
+		<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" data-toggle="select2" data-placeholder="${campPlaceholder}">
 			<c:if test="${emptyOption == 'true'}">
 				<c:choose>
 					<c:when test="${not empty emptyOptionTextKey}"><option value=""><spring:message code="${emptyOptionTextKey}"/></option></c:when>
@@ -92,23 +92,3 @@
 	</c:otherwise>
 </c:choose>
 </div>
-<script>
-$(document).ready(function() {
-	$("#${campPath}").select2({
-	    placeholder: "${campPlaceholder}",
-	    theme: "bootstrap",
-	    allowClear: true,
-	    minimumResultsForSearch: "${minimumResultsForSearch}"
-	});
-	$("#${campPath}").on('select2-open', function() {
-		var iframe = $('.modal-body iframe', window.parent.document);
-		var height = $('html').height() + 30;
-		iframe.height(height + 'px');
-	});
-	$("#${campPath}").on('select2-close', function() {
-		var iframe = $('.modal-body iframe', window.parent.document);
-		var height = $('html').height();
-		iframe.height(height + 'px');
-	});
-});
-</script>

@@ -15,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 
 /**
@@ -53,7 +54,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:tipusEscriptori = true or type(c) <> es.caib.ripea.core.entity.EscriptoriEntity) " +
 			"and (:tipusExpedient = true or type(c) <> es.caib.ripea.core.entity.ExpedientEntity) " +
 			"and (:tipusRegistre = true or type(c) <> es.caib.ripea.core.entity.RegistreEntity) " +
-			"and (:esNullNom = true or lower(c.nom) like :nom) " +
+			"and (:esNullMetaNode = true or ((type(c) = es.caib.ripea.core.entity.ExpedientEntity or type(c) = es.caib.ripea.core.entity.DocumentEntity) and c.metaNode = :metaNode)) " +
+			"and (:esNullNom = true or lower(c.nom) like lower('%'||:nom||'%')) " +
 			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
 			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
@@ -68,6 +70,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("tipusRegistre") boolean tipusRegistre,
 			@Param("esNullNom") boolean esNullNom,
 			@Param("nom") String nom,
+			@Param("esNullMetaNode") boolean esNullMetaNode,
+			@Param("metaNode") MetaNodeEntity metaNode,
 			@Param("esNullDataInici") boolean esNullDataInici,
 			@Param("dataInici") Date dataInici,
 			@Param("esNullDataFi") boolean esNullDataFi,

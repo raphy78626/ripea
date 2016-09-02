@@ -233,28 +233,6 @@ public interface ContingutService {
 			boolean recursiu) throws NotFoundException, ValidationException;
 
 	/**
-	 * Reb un contingut situat a la bústia especificada.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contingut.
-	 * @param bustiaId
-	 *            Atribut id de la bústia destinatària.
-	 * @param contingutOrigenId
-	 *            Atribut id del contingut que es vol rebre.
-	 * @param contingutDestiId
-	 *            Atribut id del contingut a on es vol situar el contingut rebut.
-	 * @return El contingut rebut.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	/*@PreAuthorize("hasRole('tothom')")
-	public ContingutDto receivea(
-			Long entitatId,
-			Long bustiaId,
-			Long contingutOrigenId,
-			Long contingutDestiId) throws NotFoundException;*/
-
-	/**
 	 * Obté el contingut de l'escriptori de l'usuari actual.
 	 * 
 	 * @param entitatId
@@ -268,36 +246,42 @@ public interface ContingutService {
 			Long entitatId) throws NotFoundException;
 
 	/**
-	 * Obté la informació del contingut especificat sense el seu contingut.
+	 * Obté la informació del contingut especificat.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contingut.
 	 * @param contingutId
 	 *            Atribut id del contingut del qual es vol consultar el contingut.
-	 * @return El contingut sense el seu contingut.
+	 * @param ambFills
+	 *            Indica si la resposta ha d'incloure els fills del contingut.
+	 * @return El contingut amb l'id especificat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ContingutDto getContingutSenseFills(
+	public ContingutDto findAmbIdUser(
 			Long entitatId,
-			Long contingutId) throws NotFoundException;
+			Long contingutId,
+			boolean ambFills) throws NotFoundException;
 
 	/**
-	 * Obté la informació del contingut especificat juntament amb el seu contingut.
+	 * Obté la informació del contingut especificat.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contingut.
 	 * @param contingutId
 	 *            Atribut id del contingut del qual es vol consultar el contingut.
-	 * @return El contingut i el seu contingut.
+	 * @param ambFills
+	 *            Indica si la resposta ha d'incloure els fills del contingut.
+	 * @return El contingut amb l'id especificat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
-	public ContingutDto getContingutAmbFills(
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public ContingutDto findAmbIdAdmin(
 			Long entitatId,
-			Long contingutId) throws NotFoundException;
+			Long contingutId,
+			boolean ambFills) throws NotFoundException;
 
 	/**
 	 * Obté la informació s'un contingut juntament el seu contingut donat el path.

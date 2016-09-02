@@ -92,6 +92,10 @@ public class ExpedientDto extends NodeDto {
 		return (MetaExpedientDto)getMetaNode();
 	}
 
+	public String getNumero() {
+		return sequencia + "/" + any;
+	}
+
 	public String getNtiVersion() {
 		return "1.0";
 	}

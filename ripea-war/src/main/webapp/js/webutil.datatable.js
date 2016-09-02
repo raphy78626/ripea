@@ -322,6 +322,9 @@
 					$('tbody', $taula).append('<tr class="datatable-dades-carregant"><td colspan="8"><div><span class="fa fa-circle-o-notch fa-spin fa-3x"></span></div></td></tr>');
 				}
 				if (processing) {
+					$('tbody tr', $taula).not(".datatable-dades-carregant").each(function() {
+						$(this).remove();
+					});
 					$('tbody .datatable-dades-carregant', $taula).show();
 				} else {
 					$('tbody .datatable-dades-carregant', $taula).hide();

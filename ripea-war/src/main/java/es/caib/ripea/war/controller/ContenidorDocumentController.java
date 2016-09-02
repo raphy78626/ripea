@@ -206,9 +206,10 @@ public class ContenidorDocumentController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			@PathVariable Long documentId) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contenidor = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				documentId);
+				documentId,
+				true);
 		if (contenidor instanceof DocumentDto) {
 			DocumentDto document = (DocumentDto)contenidor;
 			FitxerDto fitxer = documentService.descarregar(

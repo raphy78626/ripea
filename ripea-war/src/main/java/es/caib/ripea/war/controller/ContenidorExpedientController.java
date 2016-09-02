@@ -201,9 +201,10 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(command);
 		model.addAttribute(
 				"expedient",
-				contenidorService.getContingutAmbFills(
+				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
-						expedientId));
+						expedientId,
+						true));
 		return "contenidorExpedientTancarForm";
 	}
 	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/tancar", method = RequestMethod.POST)
@@ -218,9 +219,10 @@ public class ContenidorExpedientController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"expedient",
-					contenidorService.getContingutAmbFills(
+					contenidorService.findAmbIdUser(
 							entitatActual.getId(),
-							expedientId));
+							expedientId,
+							true));
 			return "contenidorExpedientTancarForm";
 		}
 		expedientService.tancar(
@@ -245,9 +247,10 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(command);
 		model.addAttribute(
 				"expedient",
-				contenidorService.getContingutAmbFills(
+				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
-						expedientId));
+						expedientId,
+						true));
 		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		model.addAttribute(
 				"contenidorOrigen",
@@ -267,9 +270,10 @@ public class ContenidorExpedientController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"expedient",
-					contenidorService.getContingutAmbFills(
+					contenidorService.findAmbIdUser(
 							entitatActual.getId(),
-							expedientId));
+							expedientId,
+							true));
 			model.addAttribute(
 					"contenidorOrigen",
 					escriptori);

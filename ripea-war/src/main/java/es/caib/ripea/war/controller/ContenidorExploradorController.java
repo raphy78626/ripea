@@ -39,9 +39,10 @@ public class ContenidorExploradorController extends BaseUserController {
 			@PathVariable Long contenidorId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contenidor = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorId);
+				contenidorId,
+				true);
 		contenidor.setContenidorArrelIdPerPath(contenidorArrelId);
 		contenidor.setPerConvertirJson(true);
 		return contenidor;
