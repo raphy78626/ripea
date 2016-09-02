@@ -46,6 +46,34 @@ $(document).ready(function() {
 			});
 		}
 	});
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+		var $tab = $($(e.target).attr('href'));
+		if ($tab.attr('id') == 'digital') {
+			$('#documentTipus').val('DIGITAL');
+		} else {
+			$('#documentTipus').val('FISIC');
+		}
+	});
+	$(document).on('submit','form#documentCommand', function() {
+		var action = $(this).attr('action');
+		var lastSlashIndex = action.lastIndexOf('/');
+		var actionProcessed = action.substring(0, lastSlashIndex);
+		if ($('#documentTipus').val() == 'DIGITAL') {
+			if (action.endsWith("new")) {
+				actionProcessed += '/digital/new';
+			} else {
+				actionProcessed += '/digital/update';
+			}
+		} else {
+			if (action.endsWith("new")) {
+				actionProcessed += '/fisic/new';
+			} else {
+				actionProcessed += '/fisic/update';
+			}
+		}
+		$(this).attr('action', actionProcessed);
+		return true;
+	});
 });
 </script>
 </head>
@@ -55,37 +83,36 @@ $(document).ready(function() {
 		<c:otherwise><c:set var="formAction"><rip:modalUrl value="/contenidor/${documentCommand.pareId}/document/update"/></c:set></c:otherwise>
 	</c:choose>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="documentCommand" enctype="multipart/form-data">
+		<c:if test="${empty documentCommand.id}">
+			<ul class="nav nav-tabs" role="tablist">
+				<li role="presentation"<c:if test="${documentCommand.documentTipus == 'DIGITAL'}"> class="active"</c:if>><a href="#digital" aria-controls="digital" role="tab" data-toggle="tab"><spring:message code="contenidor.document.form.tab.digital"/></a></li>
+				<li role="presentation"<c:if test="${documentCommand.documentTipus == 'FISIC'}"> class="active"</c:if>><a href="#fisic" aria-controls="fisic" role="tab" data-toggle="tab"><spring:message code="contenidor.document.form.tab.fisic"/></a></li>
+			</ul>
+			<br/>
+		</c:if>
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
-		<rip:inputSelect name="metaNodeId" textKey="contenidor.document.form.camp.metanode" required="true" optionItems="${metaDocuments}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" emptyOptionTextKey="contenidor.document.form.camp.metanode.buit"/>
-		<rip:inputFixed textKey="contenidor.document.form.camp.plantilla">
-			<div id="plantilla-buida"><spring:message code="contenidor.document.form.camp.plantilla.sense"/></div>
-			<div id="plantilla-descarregar" class="hidden"><a href="#" class="btn btn-info btn-xs"><span class="fa fa-file"></span>&nbsp;Descarregar</a></div>
-		</rip:inputFixed>
+		<form:hidden path="documentTipus"/>
 		<rip:inputText name="nom" textKey="contenidor.document.form.camp.nom" required="true"/>
-		<rip:inputFile name="arxiu" textKey="contenidor.document.form.camp.arxiu" required="${empty documentCommand.id}"/>
 		<rip:inputDate name="data" textKey="contenidor.document.form.camp.data" required="true"/>
+		<rip:inputSelect name="metaNodeId" textKey="contenidor.document.form.camp.metanode" optionItems="${metaDocuments}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" emptyOptionTextKey="contenidor.document.form.camp.metanode.buit"/>
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane<c:if test="${documentCommand.documentTipus == 'DIGITAL'}"> active</c:if>" id="digital">
+				<rip:inputFixed textKey="contenidor.document.form.camp.plantilla">
+					<div id="plantilla-buida"><spring:message code="contenidor.document.form.camp.plantilla.sense"/></div>
+					<div id="plantilla-descarregar" class="hidden"><a href="#" class="btn btn-info btn-xs"><span class="fa fa-file"></span>&nbsp;Descarregar</a></div>
+				</rip:inputFixed>
+				<rip:inputFile name="arxiu" textKey="contenidor.document.form.camp.arxiu" required="${empty documentCommand.id}"/>
+			</div>
+			<div role="tabpanel" class="tab-pane<c:if test="${documentCommand.documentTipus == 'FISIC'}"> active</c:if>" id="fisic">
+				<rip:inputTextarea name="ubicacio" textKey="contenidor.document.form.camp.ubicacio" required="true"/>
+			</div>
+		</div>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/contenidor/${documentCommand.pareId}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
-<%--script>
-	$('input#data').datepicker({
-		format: 'dd/mm/yyyy',
-		weekStart: 1,
-		autoclose: true,
-		language: '${idioma}'
-	}).on('show', function() {
-		var iframe = $('.modal-body iframe', window.parent.document);
-		var height = $('html').height() + 190;
-		iframe.height(height + 'px');
-	}).on('hide', function() {
-		var iframe = $('.modal-body iframe', window.parent.document);
-		var height = $('html').height();
-		iframe.height(height + 'px');
-	});
-</script--%>
 </body>
 </html>

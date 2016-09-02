@@ -3,6 +3,22 @@
  */
 package es.caib.ripea.war.webdav;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
+import es.caib.ripea.core.api.dto.DocumentVersioDto;
+import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
+import es.caib.ripea.core.api.service.DocumentService;
 import io.milton.http.Auth;
 import io.milton.http.FileItem;
 import io.milton.http.Range;
@@ -15,22 +31,6 @@ import io.milton.http.exceptions.NotFoundException;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.FileResource;
 import io.milton.resource.ReplaceableResource;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import es.caib.ripea.core.api.dto.DocumentDto;
-import es.caib.ripea.core.api.dto.DocumentVersioDto;
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.FitxerDto;
-import es.caib.ripea.core.api.service.DocumentService;
 
 /**
  * Resource que representa un arxiu.
@@ -178,12 +178,14 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 			getDocumentService().update(
 					document.getEntitat().getId(),
 					document.getId(),
+					DocumentTipusEnumDto.DIGITAL,
 					document.getMetaDocument().getId(),
 					document.getNom(),
 					document.getData(),
 					darreraVersio.getArxiuNom(),
 					darreraVersio.getArxiuContentType(),
-					IOUtils.toByteArray(in));
+					IOUtils.toByteArray(in),
+					null);
 		} catch (IOException ex) {
 			throw new BadRequestException("Error al llegir les dades de l'arxiu", ex);
 		}

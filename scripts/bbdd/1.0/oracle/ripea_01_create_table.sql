@@ -276,6 +276,8 @@ CREATE TABLE IPA_EXPEDIENT
 CREATE TABLE IPA_DOCUMENT
 (
   ID              NUMBER(19)                    NOT NULL,
+  TIPUS           NUMBER(10)                    NOT NULL,
+  UBICACIO        VARCHAR2(255),
   DARRERA_VERSIO  NUMBER(10)                    NOT NULL,
   DATA            TIMESTAMP(6),
   EXPEDIENT_ID    NUMBER(19)

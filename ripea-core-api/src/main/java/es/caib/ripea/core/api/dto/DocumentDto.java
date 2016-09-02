@@ -12,9 +12,23 @@ import java.util.Date;
  */
 public class DocumentDto extends NodeDto {
 
+	protected DocumentTipusEnumDto documentTipus;
+	protected String ubicacio;
 	private Date data;
 	private DocumentVersioDto darreraVersio;
 
+	public DocumentTipusEnumDto getDocumentTipus() {
+		return documentTipus;
+	}
+	public void setDocumentTipus(DocumentTipusEnumDto documentTipus) {
+		this.documentTipus = documentTipus;
+	}
+	public String getUbicacio() {
+		return ubicacio;
+	}
+	public void setUbicacio(String ubicacio) {
+		this.ubicacio = ubicacio;
+	}
 	public Date getData() {
 		return data;
 	}

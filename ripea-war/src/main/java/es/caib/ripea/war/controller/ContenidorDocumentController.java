@@ -38,13 +38,17 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
-import es.caib.ripea.war.command.ContenidorCommand.Create;
-import es.caib.ripea.war.command.ContenidorCommand.Update;
 import es.caib.ripea.war.command.DocumentCommand;
+import es.caib.ripea.war.command.DocumentCommand.CreateDigital;
+import es.caib.ripea.war.command.DocumentCommand.CreateFisic;
+import es.caib.ripea.war.command.DocumentCommand.UpdateDigital;
+import es.caib.ripea.war.command.DocumentCommand.UpdateFisic;
 import es.caib.ripea.war.command.PassarelaFirmaEnviarCommand;
 import es.caib.ripea.war.command.PortafirmesEnviarCommand;
 import es.caib.ripea.war.helper.MissatgesHelper;
@@ -117,11 +121,11 @@ public class ContenidorDocumentController extends BaseUserController {
 		model.addAttribute(command);
 		return "contenidorDocumentForm";
 	}
-	@RequestMapping(value = "/{contenidorId}/document/new", method = RequestMethod.POST)
-	public String postNew(
+	@RequestMapping(value = "/{contenidorId}/document/digital/new", method = RequestMethod.POST)
+	public String postDigitalNew(
 			HttpServletRequest request,
 			@PathVariable Long contenidorId,
-			@Validated({Create.class}) DocumentCommand command,
+			@Validated({CreateDigital.class}) DocumentCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
 		if (bindingResult.hasErrors()) {
@@ -133,22 +137,22 @@ public class ContenidorDocumentController extends BaseUserController {
 							contenidorId));
 			return "contenidorDocumentForm";
 		}
-		return postUpdate(
+		return createUpdateDocument(
 				request,
 				contenidorId,
 				command,
 				bindingResult,
 				model);
 	}
-	@RequestMapping(value = "/{contenidorId}/document/update", method = RequestMethod.POST)
-	public String postUpdate(
+	@RequestMapping(value = "/{contenidorId}/document/digital/update", method = RequestMethod.POST)
+	public String postDigitalUpdate(
 			HttpServletRequest request,
 			@PathVariable Long contenidorId,
-			@Validated({Update.class}) DocumentCommand command,
+			@Validated({UpdateDigital.class}) DocumentCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			model.addAttribute(
 					"metaDocuments",
 					metaDocumentService.findActiveByEntitatAndContenidorPerModificacio(
@@ -156,47 +160,58 @@ public class ContenidorDocumentController extends BaseUserController {
 							contenidorId));
 			return "contenidorDocumentForm";
 		}
-		if (command.getId() == null) {
-			documentService.create(
-					entitatActual.getId(),
-					contenidorId,
-					command.getMetaNodeId(),
-					command.getNom(),
-					command.getData(),
-					command.getArxiu().getOriginalFilename(),
-					command.getArxiu().getContentType(),
-					command.getArxiu().getBytes());
-			return getModalControllerReturnValueSuccess(
-					request,
-					"redirect:../../../contenidor/" + contenidorId,
-					"document.controller.creat.ok");
-		} else {
-			if (command.getArxiu() == null || command.getArxiu().isEmpty()) {
-				documentService.update(
-						entitatActual.getId(),
-						command.getId(),
-						command.getMetaNodeId(),
-						command.getNom(),
-						command.getData(),
-						null,
-						null,
-						null);
-			} else {
-				documentService.update(
-						entitatActual.getId(),
-						command.getId(),
-						command.getMetaNodeId(),
-						command.getNom(),
-						command.getData(),
-						command.getArxiu().getOriginalFilename(),
-						command.getArxiu().getContentType(),
-						command.getArxiu().getBytes());
-			}
-			return getModalControllerReturnValueSuccess(
-					request,
-					"redirect:../contenidor/" + command.getPareId(),
-					"document.controller.modificat.ok");
+		return createUpdateDocument(
+				request,
+				contenidorId,
+				command,
+				bindingResult,
+				model);
+	}
+	@RequestMapping(value = "/{contenidorId}/document/fisic/new", method = RequestMethod.POST)
+	public String postFisicNew(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			@Validated({CreateFisic.class}) DocumentCommand command,
+			BindingResult bindingResult,
+			Model model) throws IOException {
+		if (bindingResult.hasErrors()) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			model.addAttribute(
+					"metaDocuments",
+					metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
+							entitatActual.getId(),
+							contenidorId));
+			return "contenidorDocumentForm";
 		}
+		return createUpdateDocument(
+				request,
+				contenidorId,
+				command,
+				bindingResult,
+				model);
+	}
+	@RequestMapping(value = "/{contenidorId}/document/fisic/update", method = RequestMethod.POST)
+	public String postFisicUpdate(
+			HttpServletRequest request,
+			@PathVariable Long contenidorId,
+			@Validated({UpdateFisic.class}) DocumentCommand command,
+			BindingResult bindingResult,
+			Model model) throws IOException {
+		if (bindingResult.hasErrors()) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			model.addAttribute(
+					"metaDocuments",
+					metaDocumentService.findActiveByEntitatAndContenidorPerModificacio(
+							entitatActual.getId(),
+							contenidorId));
+			return "contenidorDocumentForm";
+		}
+		return createUpdateDocument(
+				request,
+				contenidorId,
+				command,
+				bindingResult,
+				model);
 	}
 
 	@RequestMapping(value = "/{contenidorId}/document/{documentId}/descarregar", method = RequestMethod.GET)
@@ -575,5 +590,61 @@ public class ContenidorDocumentController extends BaseUserController {
 				versio,
 				model);
 	}
-	
+
+	private String createUpdateDocument(
+			HttpServletRequest request,
+			Long contenidorId,
+			DocumentCommand command,
+			BindingResult bindingResult,
+			Model model) throws NotFoundException, ValidationException, IOException {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (command.getId() == null) {
+			documentService.create(
+					entitatActual.getId(),
+					contenidorId,
+					command.getDocumentTipus(),
+					command.getMetaNodeId(),
+					command.getNom(),
+					command.getData(),
+					command.getArxiu().getOriginalFilename(),
+					command.getArxiu().getContentType(),
+					command.getArxiu().getBytes(),
+					command.getUbicacio());
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../../../contenidor/" + contenidorId,
+					"document.controller.creat.ok");
+		} else {
+			if (command.getArxiu() == null || command.getArxiu().isEmpty()) {
+				documentService.update(
+						entitatActual.getId(),
+						command.getId(),
+						command.getDocumentTipus(),
+						command.getMetaNodeId(),
+						command.getNom(),
+						command.getData(),
+						null,
+						null,
+						null,
+						command.getUbicacio());
+			} else {
+				documentService.update(
+						entitatActual.getId(),
+						command.getId(),
+						command.getDocumentTipus(),
+						command.getMetaNodeId(),
+						command.getNom(),
+						command.getData(),
+						command.getArxiu().getOriginalFilename(),
+						command.getArxiu().getContentType(),
+						command.getArxiu().getBytes(),
+						command.getUbicacio());
+			}
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../contenidor/" + command.getPareId(),
+					"document.controller.modificat.ok");
+		}
+	}
+
 }

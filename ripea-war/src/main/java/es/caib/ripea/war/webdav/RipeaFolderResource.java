@@ -23,6 +23,7 @@ import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.service.CarpetaService;
@@ -211,12 +212,14 @@ public class RipeaFolderResource implements FolderResource {
 		DocumentDto document = getDocumentService().create(
 				contingut.getEntitat().getId(),
 				contingut.getId(),
+				DocumentTipusEnumDto.DIGITAL,
 				null,
 				newName,
 				new Date(),
 				newName,
 				mimeType,
-				IOUtils.toByteArray(inputStream));
+				IOUtils.toByteArray(inputStream),
+				null);
 		return contenidorToResource(document);
 	}
 

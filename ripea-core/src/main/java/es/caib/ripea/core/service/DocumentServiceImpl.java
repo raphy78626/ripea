@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -111,21 +112,25 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentDto create(
 			Long entitatId,
 			Long contingutId,
+			DocumentTipusEnumDto tipus,
 			Long metaDocumentId,
 			String nom,
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) {
+			byte[] arxiuContingut,
+			String ubicacio) {
 		logger.debug("Creant nou document (" +
 				"entitatId=" + entitatId + ", " +
 				"contingutId=" + contingutId + ", " +
+				"tipus=" + tipus + ", " +
 				"metaDocumentId=" + metaDocumentId + ", " +
 				"nom=" + nom + ", " +
 				"data=" + data + ", " +
 				"arxiuNom=" + arxiuNom + ", " +
 				"arxiuContentType=" + arxiuContentType + ", " +
-				"arxiuContingut=" + arxiuContingut + ")");
+				"arxiuContingut=" + arxiuContingut + ", " +
+				"ubicacio=" + ubicacio + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -238,24 +243,30 @@ public class DocumentServiceImpl implements DocumentService {
 			}
 		}
 		DocumentEntity document = DocumentEntity.getBuilder(
+				tipus,
 				nom,
 				data,
 				expedientSuperior,
 				metaDocument,
 				contingut,
-				entitat).build();
+				entitat).
+				ubicacio(ubicacio).
+				build();
 		documentRepository.save(document);
-		int versio = 1;
-		DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
-				document,
-				versio,
-				arxiuNom,
-				arxiuContentType,
-				arxiuContingut);
-		documentVersioRepository.save(documentVersio);
-		document.updateDarreraVersio(versio);
-		if (expedientSuperior != null)
+		if (DocumentTipusEnumDto.DIGITAL.equals(tipus)) {
+			int versio = 1;
+			DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
+					document,
+					versio,
+					arxiuNom,
+					arxiuContentType,
+					arxiuContingut);
+			documentVersioRepository.save(documentVersio);
+			document.updateDarreraVersio(versio);
+		}
+		if (expedientSuperior != null) {
 			cacheHelper.evictErrorsValidacioPerNode(expedientSuperior);
+		}
 		// Registra al log la creació del document
 		contenidorLogHelper.log(
 				document,
@@ -272,17 +283,24 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentDto update(
 			Long entitatId,
 			Long id,
+			DocumentTipusEnumDto tipus,
 			Long metaDocumentId,
 			String nom,
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) {
-		logger.debug("Actualitzant el document ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "nom=" + nom + ", "
-				+ "data=" + data + ")");
+			byte[] arxiuContingut,
+			String ubicacio) {
+		logger.debug("Actualitzant el document (" +
+				"entitatId=" + entitatId + ", " +
+				"id=" + id + ", " +
+				"tipus=" + tipus + ", " +
+				"nom=" + nom + ", " +
+				"data=" + data + ", " +
+				"arxiuNom=" + arxiuNom + ", " +
+				"arxiuContentType=" + arxiuContentType + ", " +
+				"arxiuContingut=" + arxiuContingut + ", " +
+				"ubicacio=" + ubicacio + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -341,8 +359,8 @@ public class DocumentServiceImpl implements DocumentService {
 		document.update(
 				metaDocument,
 				nom,
-				data
-				);
+				data,
+				ubicacio);
 		if (arxiuNom != null && arxiuContingut != null) {
 			int versio = document.getDarreraVersio() + 1;
 			DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
