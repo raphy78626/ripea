@@ -15,7 +15,7 @@
 </head>
 <body>
 	<form:form action="" class="form-horizontal" commandName="contenidorMoureCopiarEnviarCommand">
-		<form:hidden path="contenidorOrigenId"/>
+		<form:hidden path="origenId"/>
 		<rip:inputFixed textKey="contenidor.enviar.camp.origen">
 			<c:choose>
 				<c:when test="${contingutPendent.tipus == EXPEDIENT}"><span class="fa fa-briefcase"></span></c:when>
@@ -25,7 +25,7 @@
 			</c:choose>
 			${contingutOrigen.nom}
 		</rip:inputFixed>
-		<rip:inputArbre name="contenidorDestiId" textKey="contenidor.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
+		<rip:inputArbre name="destiId" textKey="contenidor.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
 		<rip:inputTextarea name="comentariEnviar" textKey="contenidor.enviar.camp.comentari"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-envelope"></span> <spring:message code="comu.boto.enviar"/></button>

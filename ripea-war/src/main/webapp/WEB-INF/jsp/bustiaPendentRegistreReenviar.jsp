@@ -15,8 +15,8 @@
 </head>
 <body>
 	<form:form action="" class="form-horizontal" commandName="contenidorMoureCopiarEnviarCommand">
-		<form:hidden path="contenidorOrigenId"/>
-		<rip:inputArbre name="contenidorDestiId" textKey="contenidor.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
+		<form:hidden path="origenId"/>
+		<rip:inputArbre name="destiId" textKey="contenidor.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
 		<rip:inputTextarea name="comentariEnviar" textKey="contenidor.enviar.camp.comentari"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-envelope"></span> <spring:message code="comu.boto.enviar"/></button>

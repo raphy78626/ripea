@@ -5,6 +5,7 @@
 <html>
 <head>
 	<title>Error ${errorObject.statusCode}</title>
+	<rip:modalHead/>
 </head>
 <body>
 

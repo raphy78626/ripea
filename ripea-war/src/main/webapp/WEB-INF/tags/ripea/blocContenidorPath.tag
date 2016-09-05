@@ -1,28 +1,28 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags/ripea" prefix="rip"%>
-<%@ attribute name="contenidor" required="true" rtexprvalue="true" type="java.lang.Object"%>
-<c:if test="${not contenidor.escriptori}">
+<%@ attribute name="contingut" required="true" rtexprvalue="true" type="java.lang.Object"%>
+<c:if test="${not contingut.escriptori}">
 	<ol class="breadcrumb">
-		<c:forEach var="contenidorPath" items="${contenidor.path}" varStatus="status">
+		<c:forEach var="contingutPath" items="${contingut.path}" varStatus="status">
 			<li>
 				<c:choose>
-					<c:when test="${contenidorPath.escriptori}"><a href="${contenidorPath.id}"><span class="fa fa-desktop"></span> <spring:message code="contenidor.contingut.path.escriptori"/></a></c:when>
+					<c:when test="${contingutPath.escriptori}"><a href="${contingutPath.id}"><span class="fa fa-desktop"></span> <spring:message code="contingut.path.escriptori"/></a></c:when>
 					<c:otherwise>
 						<c:choose>
-							<c:when test="${contenidorPath.expedient}"><a href="<c:url value="/contenidor/${contenidorPath.id}"/>"><span class="fa fa-briefcase" title="<spring:message code="contenidor.contingut.icona.expedient"/>"></span> ${contenidorPath.nom}</a></c:when>
-							<c:when test="${contenidorPath.carpeta}"><a href="<c:url value="/contenidor/${contenidorPath.id}"/>"><rip:blocIconaCarpeta carpeta="${contenidorPath}" petita="${true}"/> ${contenidorPath.nom}</a></c:when>
-							<c:when test="${contenidorPath.document}"><a href="<c:url value="/contenidor/${contenidorPath.id}"/>"><span class="fa fa-file" title="<spring:message code="contenidor.contingut.icona.document"/>"></span> ${contenidorPath.nom}</a></c:when>
-							<c:when test="${contenidorPath.arxiv}">
+							<c:when test="${contingutPath.expedient}"><a href="<c:url value="/contingut/${contingutPath.id}"/>"><span class="fa fa-briefcase" title="<spring:message code="contingut.icona.expedient"/>"></span> ${contingutPath.nom}</a></c:when>
+							<c:when test="${contingutPath.carpeta}"><a href="<c:url value="/contingut/${contingutPath.id}"/>"><rip:blocIconaCarpeta carpeta="${contingutPath}" petita="${true}"/> ${contingutPath.nom}</a></c:when>
+							<c:when test="${contingutPath.document}"><a href="<c:url value="/contingut/${contingutPath.id}"/>"><span class="fa fa-file" title="<spring:message code="contingut.icona.document"/>"></span> ${contingutPath.nom}</a></c:when>
+							<c:when test="${contingutPath.arxiv}">
 								<c:choose>
-									<c:when test="${status.first}"><a href="<c:url value="/arxiuUser/unitat/${contenidorPath.unitatCodi}"/>"><span class="fa fa-sitemap" title="<spring:message code="contenidor.contingut.icona.unitat"/>"></span> ${contenidorPath.nom}</a></c:when>
-									<c:otherwise><a href="<c:url value="/arxiuUser/${contenidorPath.id}/expedient"/>"><span class="fa fa-archive" title="<spring:message code="contenidor.contingut.icona.arxiu"/>"></span> ${contenidorPath.nom}</a></c:otherwise>
+									<c:when test="${status.first}"><a href="<c:url value="/arxiuUser/unitat/${contingutPath.unitatCodi}"/>"><span class="fa fa-sitemap" title="<spring:message code="contingut.icona.unitat"/>"></span> ${contingutPath.nom}</a></c:when>
+									<c:otherwise><a href="<c:url value="/arxiuUser/${contingutPath.id}/expedient"/>"><span class="fa fa-archive" title="<spring:message code="contingut.icona.arxiu"/>"></span> ${contingutPath.nom}</a></c:otherwise>
 								</c:choose>
 							</c:when>
-							<c:when test="${contenidorPath.bustia}">
+							<c:when test="${contingutPath.bustia}">
 								<c:choose>
-									<c:when test="${status.first}"><span class="fa fa-sitemap" title="<spring:message code="contenidor.contingut.icona.unitat"/>"></span> ${contenidorPath.nom}</c:when>
-									<c:otherwise><span class="fa fa-inbox" title="<spring:message code="contenidor.contingut.icona.bustia"/>"></span> ${contenidorPath.nom}</c:otherwise>
+									<c:when test="${status.first}"><span class="fa fa-sitemap" title="<spring:message code="contingut.icona.unitat"/>"></span> ${contingutPath.nom}</c:when>
+									<c:otherwise><span class="fa fa-inbox" title="<spring:message code="contingut.icona.bustia"/>"></span> ${contingutPath.nom}</c:otherwise>
 								</c:choose>
 							</c:when>
 						</c:choose>
@@ -32,13 +32,13 @@
 		</c:forEach>
 		<li class="active">
 			<c:choose>
-				<c:when test="${contenidor.expedient}"><span class="fa fa-briefcase" title="<spring:message code="contenidor.contingut.icona.expedient"/>"></span></c:when>
-				<c:when test="${contenidor.carpeta}"><rip:blocIconaCarpeta carpeta="${contenidor}" petita="${true}"/></c:when>
-				<c:when test="${contenidor.document}"><span class="fa fa-file" title="<spring:message code="contenidor.contingut.icona.document"/>"></span></c:when>
-				<c:when test="${contenidor.arxiv}"><span class="fa fa-archive" title="<spring:message code="contenidor.contingut.icona.arxiu"/>"></span></c:when>
-				<c:when test="${contenidor.bustia}"><span class="fa fa-inbox" title="<spring:message code="contenidor.contingut.icona.bustia"/>"></span></c:when>
+				<c:when test="${contingut.expedient}"><span class="fa fa-briefcase" title="<spring:message code="contingut.icona.expedient"/>"></span></c:when>
+				<c:when test="${contingut.carpeta}"><rip:blocIconaCarpeta carpeta="${contingut}" petita="${true}"/></c:when>
+				<c:when test="${contingut.document}"><span class="fa fa-file" title="<spring:message code="contingut.icona.document"/>"></span></c:when>
+				<c:when test="${contingut.arxiv}"><span class="fa fa-archive" title="<spring:message code="contingut.icona.arxiu"/>"></span></c:when>
+				<c:when test="${contingut.bustia}"><span class="fa fa-inbox" title="<spring:message code="contingut.icona.bustia"/>"></span></c:when>
 			</c:choose>
-			${contenidor.nom}
+			${contingut.nom}
 		</li>
 	</ol>
 </c:if>

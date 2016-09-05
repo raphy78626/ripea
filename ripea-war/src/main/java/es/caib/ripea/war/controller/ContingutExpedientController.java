@@ -39,16 +39,16 @@ import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.command.ExpedientTancarCommand;
 
 /**
- * Controlador per al manteniment d'expedients dels contenidors.
+ * Controlador per al manteniment d'expedients.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/contenidor")
-public class ContenidorExpedientController extends BaseUserController {
+@RequestMapping("/contingut")
+public class ContingutExpedientController extends BaseUserController {
 
 	@Autowired
-	private ContingutService contenidorService;
+	private ContingutService contingutService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -56,17 +56,17 @@ public class ContenidorExpedientController extends BaseUserController {
 	@Autowired
 	private ArxiuService arxiuService;
 
-	@RequestMapping(value = "/{contenidorId}/expedient/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/expedient/new", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
-		return get(request, contenidorId, null, model);
+		return get(request, contingutId, null, model);
 	}
-	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/expedient/{expedientId}", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long expedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -84,7 +84,7 @@ public class ContenidorExpedientController extends BaseUserController {
 			command.setAny(Calendar.getInstance().get(Calendar.YEAR));
 		}
 		command.setEntitatId(entitatActual.getId());
-		command.setPareId(contenidorId);
+		command.setPareId(contingutId);
 		model.addAttribute(command);
 		model.addAttribute(
 				"metaExpedients",
@@ -98,26 +98,26 @@ public class ContenidorExpedientController extends BaseUserController {
 		} else {
 			model.addAttribute("arxius", new ArrayList<ArxiuDto>());
 		}
-		return "contenidorExpedientForm";
+		return "contingutExpedientForm";
 	}
-	@RequestMapping(value = "/{contenidorId}/expedient/new", method = RequestMethod.POST)
+	@RequestMapping(value = "/{contingutId}/expedient/new", method = RequestMethod.POST)
 	public String postNew(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@Validated({Create.class}) ExpedientCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
 		return postUpdate(
 				request,
-				contenidorId,
+				contingutId,
 				command,
 				bindingResult,
 				model);
 	}
-	@RequestMapping(value = "/{contenidorId}/expedient/update", method = RequestMethod.POST)
+	@RequestMapping(value = "/{contingutId}/expedient/update", method = RequestMethod.POST)
 	public String postUpdate(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@Validated({Update.class}) ExpedientCommand command,
 			BindingResult bindingResult,
 			Model model) {
@@ -135,12 +135,12 @@ public class ContenidorExpedientController extends BaseUserController {
 			} else {
 				model.addAttribute("arxius", new ArrayList<ArxiuDto>());
 			}
-			return "contenidorExpedientForm";
+			return "contingutExpedientForm";
 		}
 		if (command.getId() == null) {
 			expedientService.create(
 					entitatActual.getId(),
-					contenidorId,
+					contingutId,
 					command.getMetaNodeId(),
 					command.getArxiuId(),
 					command.getAny(),
@@ -149,7 +149,7 @@ public class ContenidorExpedientController extends BaseUserController {
 					null);
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../contenidor/" + contenidorId,
+					"redirect:../../../contingut/" + contingutId,
 					"expedient.controller.creat.ok");
 		} else {
 			expedientService.update(
@@ -160,15 +160,15 @@ public class ContenidorExpedientController extends BaseUserController {
 					command.getNom());
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../contenidor/" + contenidorId,
+					"redirect:../../../contingut/" + contingutId,
 					"expedient.controller.modificat.ok");
 		}
 	}
 
-	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/alliberar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/expedient/{expedientId}/alliberar", method = RequestMethod.GET)
 	public String expedientAlliberar(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long expedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -177,14 +177,14 @@ public class ContenidorExpedientController extends BaseUserController {
 				expedientId);
 		return getAjaxControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../contenidor/" + contenidorId,
+				"redirect:../../../../contingut/" + contingutId,
 				"expedient.controller.alliberat.ok");
 	}
 
-	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/tancar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/expedient/{expedientId}/tancar", method = RequestMethod.GET)
 	public String expedientTancarGet(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long expedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -193,15 +193,15 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(command);
 		model.addAttribute(
 				"expedient",
-				contenidorService.getContingutAmbFills(
+				contingutService.getContingutAmbFills(
 						entitatActual.getId(),
 						expedientId));
-		return "contenidorExpedientTancarForm";
+		return "contingutExpedientTancarForm";
 	}
-	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/tancar", method = RequestMethod.POST)
+	@RequestMapping(value = "/{contingutId}/expedient/{expedientId}/tancar", method = RequestMethod.POST)
 	public String expedientTancarPost(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long expedientId,
 			@Valid ExpedientTancarCommand command,
 			BindingResult bindingResult,
@@ -210,10 +210,10 @@ public class ContenidorExpedientController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"expedient",
-					contenidorService.getContingutAmbFills(
+					contingutService.getContingutAmbFills(
 							entitatActual.getId(),
 							expedientId));
-			return "contenidorExpedientTancarForm";
+			return "contingutExpedientTancarForm";
 		}
 		expedientService.tancar(
 				entitatActual.getId(),
@@ -221,14 +221,14 @@ public class ContenidorExpedientController extends BaseUserController {
 				command.getMotiu());
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../contenidor/" + contenidorId,
+				"redirect:../../../../contingut/" + contingutId,
 				"expedient.controller.tancar.ok");
 	}
 
-	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/acumular", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/expedient/{expedientId}/acumular", method = RequestMethod.GET)
 	public String expedientAcumularGet(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long expedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -237,35 +237,35 @@ public class ContenidorExpedientController extends BaseUserController {
 		model.addAttribute(command);
 		model.addAttribute(
 				"expedient",
-				contenidorService.getContingutAmbFills(
+				contingutService.getContingutAmbFills(
 						entitatActual.getId(),
 						expedientId));
-		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
+		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		model.addAttribute(
-				"contenidorOrigen",
+				"contingutOrigen",
 				escriptori);
-		return "contenidorExpedientAcumularForm";
+		return "contingutExpedientAcumularForm";
 	}
-	@RequestMapping(value = "/{contenidorId}/expedient/{expedientId}/acumular", method = RequestMethod.POST)
+	@RequestMapping(value = "/{contingutId}/expedient/{expedientId}/acumular", method = RequestMethod.POST)
 	public String expedientAcumularPost(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long expedientId,
 			@Valid ExpedientAcumularCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
+		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"expedient",
-					contenidorService.getContingutAmbFills(
+					contingutService.getContingutAmbFills(
 							entitatActual.getId(),
 							expedientId));
 			model.addAttribute(
-					"contenidorOrigen",
+					"contingutOrigen",
 					escriptori);
-			return "contenidorExpedientAcumularForm";
+			return "contingutExpedientAcumularForm";
 		}
 		expedientService.acumular(
 				entitatActual.getId(),
@@ -273,7 +273,7 @@ public class ContenidorExpedientController extends BaseUserController {
 				command.getExpedientAcumulatId());
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../contenidor/" + contenidorId,
+				"redirect:../../../../contingut/" + contingutId,
 				"expedient.controller.acumulat.ok");
 	}
 

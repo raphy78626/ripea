@@ -42,7 +42,7 @@ import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.RegistreService;
-import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
+import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.DadaCommand;
 import es.caib.ripea.war.command.DadaCommand.DadaTipusBoolea;
 import es.caib.ripea.war.command.DadaCommand.DadaTipusData;
@@ -50,24 +50,24 @@ import es.caib.ripea.war.command.DadaCommand.DadaTipusFlotant;
 import es.caib.ripea.war.command.DadaCommand.DadaTipusImport;
 import es.caib.ripea.war.command.DadaCommand.DadaTipusSencer;
 import es.caib.ripea.war.command.DadaCommand.DadaTipusText;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.SessioHelper;
 import es.caib.ripea.war.helper.ValidationHelper;
 
 /**
- * Controlador per al manteniment de contenidors.
+ * Controlador per al manteniment de continguts.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-public class ContenidorController extends BaseUserController {
+public class ContingutController extends BaseUserController {
 
 	private static final String CONTENIDOR_VISTA_ICONES = "icones";
 	private static final String CONTENIDOR_VISTA_LLISTAT = "llistat";
 
 	@Autowired
-	private ContingutService contenidorService;
+	private ContingutService contingutService;
 	@Autowired
 	private MetaExpedientService metaExpedientService;
 	@Autowired
@@ -88,71 +88,71 @@ public class ContenidorController extends BaseUserController {
 
 
 
-	@RequestMapping(value = "/contenidor/{contenidorId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}", method = RequestMethod.GET)
 	public String contingutGet(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contingut = contenidorService.getContingutAmbFills(
+		ContingutDto contingut = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorId);
+				contingutId);
 		omplirModelPerMostrarContingut(
 				request,
 				entitatActual,
 				contingut,
 				model);
-		return "contenidorContingut";
+		return "contingut";
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/dada/datatable", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/dada/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<DadaDto> dadaDatatable(
+	public DatatablesResponse dadaDatatable(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<DadaDto> dades = null;
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contingut = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorId);
-		if (contenidor instanceof NodeDto) {
-			NodeDto node = (NodeDto)contenidor;
+				contingutId);
+		if (contingut instanceof NodeDto) {
+			NodeDto node = (NodeDto)contingut;
 			dades = node.getDades();
-		} else {
-			dades = new ArrayList<DadaDto>();
 		}
-		return PaginacioHelper.getPaginaPerDatatables(request, dades);
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				dades);
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/dada/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/dada/new", method = RequestMethod.GET)
 	public String dadaNewGet(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) throws Exception {
 		return dadaGet(
 				request,
-				contenidorId,
+				contingutId,
 				null,
 				model);
 	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/dada/{dadaId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/dada/{dadaId}", method = RequestMethod.GET)
 	public String dadaGet(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long dadaId,
 			Model model) throws Exception {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contingut = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorId);
+				contingutId);
 		DadaDto dada = null;
-		if (contenidor instanceof NodeDto) {
-			NodeDto node = (NodeDto)contenidor;
+		if (contingut instanceof NodeDto) {
+			NodeDto node = (NodeDto)contingut;
 			if (dadaId != null) {
-				dada = contenidorService.dadaFindById(
+				dada = contingutService.dadaFindById(
 						entitatActual.getId(),
-						contenidorId,
+						contingutId,
 						dadaId);
 				List<MetaDadaDto> metaDades = new ArrayList<MetaDadaDto>();
 				metaDades.add(dada.getMetaDada());
@@ -173,14 +173,14 @@ public class ContenidorController extends BaseUserController {
 			command.setId(dadaId);
 		}
 		command.setEntitatId(entitatActual.getId());
-		command.setNodeId(contenidorId);
+		command.setNodeId(contingutId);
 		model.addAttribute(command);
-		return "contenidorDadaForm";
+		return "contingutDadaForm";
 	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/dada/new", method = RequestMethod.POST)
+	@RequestMapping(value = "/contingut/{contingutId}/dada/new", method = RequestMethod.POST)
 	public String dadaNewPost(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@ModelAttribute DadaCommand command,
 			BindingResult bindingResult,
 			Model model) {
@@ -189,7 +189,7 @@ public class ContenidorController extends BaseUserController {
 		if (command.getMetaDadaId() != null) {
 			List<MetaDadaDto> metaDades = metaDadaService.findByNodePerCreacio(
 					entitatActual.getId(),
-					contenidorId);
+					contingutId);
 			for (MetaDadaDto metaDada: metaDades) {
 				if (command.getMetaDadaId().equals(metaDada.getId())) {
 					if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.TEXT))
@@ -213,300 +213,300 @@ public class ContenidorController extends BaseUserController {
 				bindingResult,
 				grups.toArray(new Class[grups.size()]));
 		if (bindingResult.hasErrors()) {
-			ContingutDto contenidor = contenidorService.getContingutAmbFills(
+			ContingutDto contingut = contingutService.getContingutAmbFills(
 					entitatActual.getId(),
-					contenidorId);
-			if (contenidor instanceof NodeDto) {
-				NodeDto node = (NodeDto)contenidor;
+					contingutId);
+			if (contingut instanceof NodeDto) {
+				NodeDto node = (NodeDto)contingut;
 				model.addAttribute(
 						"metaDades",
 						metaDadaService.findByNodePerCreacio(
 								entitatActual.getId(),
 								node.getId()));
 			}
-			return "contenidorDadaForm";
+			return "contingutDadaForm";
 		}
 		if (command.getId() != null) {
-			contenidorService.dadaUpdate(
+			contingutService.dadaUpdate(
 					entitatActual.getId(),
-					contenidorId,
+					contingutId,
 					command.getId(),
 					command.getValor());
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../contenidor/" + contenidorId,
-					"contenidor.controller.dada.modificada.ok");
+					"redirect:../../../contingut/" + contingutId,
+					"contingut.controller.dada.modificada.ok");
 		} else {
-			contenidorService.dadaCreate(
+			contingutService.dadaCreate(
 					entitatActual.getId(),
-					contenidorId,
+					contingutId,
 					command.getMetaDadaId(),
 					command.getValor());
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../contenidor/" + contenidorId,
-					"contenidor.controller.dada.creada.ok");
+					"redirect:../../../contingut/" + contingutId,
+					"contingut.controller.dada.creada.ok");
 		}
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/dada/{dadaId}/delete", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/dada/{dadaId}/delete", method = RequestMethod.GET)
 	public String dadaDelete(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long dadaId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		contenidorService.dadaDelete(
+		contingutService.dadaDelete(
 				entitatActual.getId(),
-				contenidorId,
+				contingutId,
 				dadaId);
 		return getAjaxControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../contenidor/" + contenidorId,
-				"contenidor.controller.dada.esborrada.ok");
+				"redirect:../../../../contingut/" + contingutId,
+				"contingut.controller.dada.esborrada.ok");
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/llistaMetaDadesCrear", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/llistaMetaDadesCrear", method = RequestMethod.GET)
 	@ResponseBody
 	public List<MetaDadaDto> llistaMetas(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contingut = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorId);
-		if (contenidor instanceof NodeDto)
+				contingutId);
+		if (contingut instanceof NodeDto)
 			return metaDadaService.findByNodePerCreacio(
 					entitatActual.getId(),
-					contenidorId);
+					contingutId);
 		else
 			return new ArrayList<MetaDadaDto>();
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/delete", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/delete", method = RequestMethod.GET)
 	public String delete(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contingut = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorId);
-		contenidorService.deleteReversible(
+				contingutId);
+		contingutService.deleteReversible(
 				entitatActual.getId(),
-				contenidorId);
+				contingutId);
 		return getAjaxControllerReturnValueSuccess(
 				request,
-				(contenidor.getPare() != null) ? "redirect:../../contenidor/" + contenidor.getPare().getId() : "redirect:../../escriptori",
-				"contenidor.controller.element.esborrat.ok");
+				(contingut.getPare() != null) ? "redirect:../../contingut/" + contingut.getPare().getId() : "redirect:../../escriptori",
+				"contingut.controller.element.esborrat.ok");
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/canviVista/icones", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/canviVista/icones", method = RequestMethod.GET)
 	public String canviVistaLlistat(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
 		SessioHelper.updateContenidorVista(
 				request,
 				CONTENIDOR_VISTA_ICONES);
-		return "redirect:../../" + contenidorId;
+		return "redirect:../../" + contingutId;
 	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/canviVista/llistat", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/canviVista/llistat", method = RequestMethod.GET)
 	public String canviVistaIcones(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
 		SessioHelper.updateContenidorVista(
 				request,
 				CONTENIDOR_VISTA_LLISTAT);
-		return "redirect:../../" + contenidorId;
+		return "redirect:../../" + contingutId;
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorOrigenId}/moure", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutOrigenId}/moure", method = RequestMethod.GET)
 	public String moureForm(
 			HttpServletRequest request,
-			@PathVariable Long contenidorOrigenId,
+			@PathVariable Long contingutOrigenId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		omplirModelPerMoureOCopiar(
 				entitatActual,
-				contenidorOrigenId,
+				contingutOrigenId,
 				model);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(contenidorOrigenId);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(contingutOrigenId);
 		model.addAttribute(command);
-		return "contenidorMoureForm";
+		return "contingutMoureForm";
 	}
-	@RequestMapping(value = "/contenidor/{contenidorOrigenId}/moure", method = RequestMethod.POST)
+	@RequestMapping(value = "/contingut/{contingutOrigenId}/moure", method = RequestMethod.POST)
 	public String moure(
 			HttpServletRequest request,
-			@PathVariable Long contenidorOrigenId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@PathVariable Long contingutOrigenId,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
 			omplirModelPerMoureOCopiar(
 					entitatActual,
-					contenidorOrigenId,
+					contingutOrigenId,
 					model);
-			return "contenidorMoureForm";
+			return "contingutMoureForm";
 		}
-		contenidorService.move(
+		contingutService.move(
 				entitatActual.getId(),
-				contenidorOrigenId,
-				command.getContenidorDestiId());
+				contingutOrigenId,
+				command.getDestiId());
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../" + contenidorOrigenId,
-				"contenidor.controller.element.mogut.ok");
+				"redirect:../../" + contingutOrigenId,
+				"contingut.controller.element.mogut.ok");
 	}
-	@RequestMapping(value = "/contenidor/{contenidorOrigenId}/moure/{contenidorDestiId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutOrigenId}/moure/{contingutDestiId}", method = RequestMethod.GET)
 	public String moureDragDrop(
 			HttpServletRequest request,
-			@PathVariable Long contenidorOrigenId,
-			@PathVariable Long contenidorDestiId,
+			@PathVariable Long contingutOrigenId,
+			@PathVariable Long contingutDestiId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidorOrigen = contenidorService.getContingutAmbFills(
+		ContingutDto contingutOrigen = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorOrigenId);
-		contenidorService.move(
+				contingutOrigenId);
+		contingutService.move(
 				entitatActual.getId(),
-				contenidorOrigenId,
-				contenidorDestiId);
+				contingutOrigenId,
+				contingutDestiId);
 		return getAjaxControllerReturnValueSuccess(
 				request,
-				"redirect:../../" + contenidorOrigen.getPare().getId(),
-				"contenidor.controller.element.mogut.ok");
+				"redirect:../../" + contingutOrigen.getPare().getId(),
+				"contingut.controller.element.mogut.ok");
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorOrigenId}/copiar", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutOrigenId}/copiar", method = RequestMethod.GET)
 	public String copiarForm(
 			HttpServletRequest request,
-			@PathVariable Long contenidorOrigenId,
+			@PathVariable Long contingutOrigenId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		omplirModelPerMoureOCopiar(
 				entitatActual,
-				contenidorOrigenId,
+				contingutOrigenId,
 				model);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(contenidorOrigenId);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(contingutOrigenId);
 		model.addAttribute(command);
-		return "contenidorCopiarForm";
+		return "contingutCopiarForm";
 	}
-	@RequestMapping(value = "/contenidor/{contenidorOrigenId}/copiar", method = RequestMethod.POST)
+	@RequestMapping(value = "/contingut/{contingutOrigenId}/copiar", method = RequestMethod.POST)
 	public String copiar(
 			HttpServletRequest request,
-			@PathVariable Long contenidorOrigenId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@PathVariable Long contingutOrigenId,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
 			omplirModelPerMoureOCopiar(
 					entitatActual,
-					contenidorOrigenId,
+					contingutOrigenId,
 					model);
-			return "contenidorCopiarForm";
+			return "contingutCopiarForm";
 		}
-		ContingutDto contenidorCreat = contenidorService.copy(
+		ContingutDto contingutCreat = contingutService.copy(
 				entitatActual.getId(),
-				contenidorOrigenId,
-				command.getContenidorDestiId(),
+				contingutOrigenId,
+				command.getDestiId(),
 				true);
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../" + contenidorCreat.getId(),
-				"contenidor.controller.element.copiat.ok");
+				"redirect:../../" + contingutCreat.getId(),
+				"contingut.controller.element.copiat.ok");
 	}
-	@RequestMapping(value = "/contenidor/{contenidorOrigenId}/enviar", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutOrigenId}/enviar", method = RequestMethod.GET)
 	public String enviarForm(
 			HttpServletRequest request,
-			@PathVariable Long contenidorOrigenId,
+			@PathVariable Long contingutOrigenId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		omplirModelPerEnviar(
 				entitatActual,
-				contenidorOrigenId,
+				contingutOrigenId,
 				model);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(contenidorOrigenId);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(contingutOrigenId);
 		model.addAttribute(command);
-		return "contenidorEnviarForm";
+		return "contingutEnviarForm";
 	}
-	@RequestMapping(value = "/contenidor/{contenidorOrigenId}/enviar", method = RequestMethod.POST)
+	@RequestMapping(value = "/contingut/{contingutOrigenId}/enviar", method = RequestMethod.POST)
 	public String enviar(
 			HttpServletRequest request,
-			@PathVariable Long contenidorOrigenId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@PathVariable Long contingutOrigenId,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
 			omplirModelPerEnviar(
 					entitatActual,
-					contenidorOrigenId,
+					contingutOrigenId,
 					model);
-			return "contenidorEnviarForm";
+			return "contingutEnviarForm";
 		}
 		bustiaService.enviarContingut(
 				entitatActual.getId(),
-				command.getContenidorDestiId(),
-				contenidorOrigenId,
+				command.getDestiId(),
+				contingutOrigenId,
 				command.getComentariEnviar());
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../" + contenidorOrigenId,
-				"contenidor.controller.element.enviat.ok");
+				"redirect:../../" + contingutOrigenId,
+				"contingut.controller.element.enviat.ok");
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/errors", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/errors", method = RequestMethod.GET)
 	public String errors(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
-				"contenidor",
-				contenidorService.getContingutAmbFills(
+				"contingut",
+				contingutService.getContingutAmbFills(
 						entitatActual.getId(),
-						contenidorId));
+						contingutId));
 		model.addAttribute(
 				"errors",
-				contenidorService.findErrorsValidacio(
+				contingutService.findErrorsValidacio(
 						entitatActual.getId(),
-						contenidorId));
-		return "contenidorErrors";
+						contingutId));
+		return "contingutErrors";
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/registre/datatable", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/registre/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<RegistreAnotacioDto> registreDatatable(
+	public DatatablesResponse registreDatatable(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<RegistreAnotacioDto> registres = null;
-		ContingutDto contenidor = contenidorService.getContingutAmbFills(
+		ContingutDto contingut = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorId);
-		if (contenidor instanceof ExpedientDto) {
-			ExpedientDto expedient = (ExpedientDto)contenidor;
+				contingutId);
+		if (contingut instanceof ExpedientDto) {
+			ExpedientDto expedient = (ExpedientDto)contingut;
 			registres = expedient.getFillsRegistres();
-		} else {
-			registres = new ArrayList<RegistreAnotacioDto>();
 		}
-		return PaginacioHelper.getPaginaPerDatatables(request, registres);
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				registres);
 	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}", method = RequestMethod.GET)
 	public String registreInfo(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -514,72 +514,72 @@ public class ContenidorController extends BaseUserController {
 				"registre",
 				registreService.findOne(
 						entitatActual.getId(),
-						contenidorId,
+						contingutId,
 						registreId));
 		return "registreDetall";
 	}
-	@RequestMapping(value = "/contenidor/{contenidorId}/registre/{registreId}/log", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/log", method = RequestMethod.GET)
 	public String registreLog(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
-				"contenidor",
-				contenidorService.getContingutAmbFills(
+				"contingut",
+				contingutService.getContingutAmbFills(
 						entitatActual.getId(),
-						contenidorId));
+						contingutId));
 		model.addAttribute(
 				"registre",
 				registreService.findOne(
 						entitatActual.getId(),
-						contenidorId,
+						contingutId,
 						registreId));
 		model.addAttribute(
 				"moviments",
-				contenidorService.findMovimentsPerContingutUser(
+				contingutService.findMovimentsPerContingutUser(
 						entitatActual.getId(),
 						registreId));
 		return "registreLog";
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/log", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/log", method = RequestMethod.GET)
 	public String log(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
-				"contenidor",
-				contenidorService.getContingutAmbFills(
+				"contingut",
+				contingutService.getContingutAmbFills(
 						entitatActual.getId(),
-						contenidorId));
+						contingutId));
 		model.addAttribute(
 				"logs",
-				contenidorService.findLogsPerContingutUser(
+				contingutService.findLogsPerContingutUser(
 						entitatActual.getId(),
-						contenidorId));
+						contingutId));
 		model.addAttribute(
 				"moviments",
-				contenidorService.findMovimentsPerContingutUser(
+				contingutService.findMovimentsPerContingutUser(
 						entitatActual.getId(),
-						contenidorId));
-		return "contenidorLog";
+						contingutId));
+		return "contingutLog";
 	}
 
-	@RequestMapping(value = "/contenidor/{contenidorId}/nti")
+	@RequestMapping(value = "/contingut/{contingutId}/nti")
 	public String nti(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
-				"contenidor",
-				contenidorService.getContingutAmbFills(
+				"contingut",
+				contingutService.getContingutAmbFills(
 						entitatActual.getId(),
-						contenidorId));
-		return "contenidorNti";
+						contingutId));
+		return "contingutNti";
 	}
 
 
@@ -600,7 +600,7 @@ public class ContenidorController extends BaseUserController {
 			EntitatDto entitatActual,
 			ContingutDto contingut,
 			Model model) {
-		model.addAttribute("contenidor", contingut);
+		model.addAttribute("contingut", contingut);
 		model.addAttribute(
 				"metaExpedients",
 				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
@@ -623,38 +623,38 @@ public class ContenidorController extends BaseUserController {
 							entitatActual.getId(),
 							contingut.getId()));
 		}
-		String contenidorVista = SessioHelper.getContenidorVista(request);
-		if (contenidorVista == null)
-			contenidorVista = CONTENIDOR_VISTA_ICONES;
+		String contingutVista = SessioHelper.getContenidorVista(request);
+		if (contingutVista == null)
+			contingutVista = CONTENIDOR_VISTA_ICONES;
 		model.addAttribute(
 				"vistaIcones",
-				new Boolean(CONTENIDOR_VISTA_ICONES.equals(contenidorVista)));
+				new Boolean(CONTENIDOR_VISTA_ICONES.equals(contingutVista)));
 		model.addAttribute(
 				"vistaLlistat",
-				new Boolean(CONTENIDOR_VISTA_LLISTAT.equals(contenidorVista)));
+				new Boolean(CONTENIDOR_VISTA_LLISTAT.equals(contingutVista)));
 	}
 
 	private void omplirModelPerMoureOCopiar(
 			EntitatDto entitatActual,
-			Long contenidorOrigenId,
+			Long contingutOrigenId,
 			Model model) {
-		ContingutDto contingutOrigen = contenidorService.getContingutAmbFills(
+		ContingutDto contingutOrigen = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorOrigenId);
+				contingutOrigenId);
 		model.addAttribute(
-				"contenidorOrigen",
+				"contingutOrigen",
 				contingutOrigen);
 	}
 
 	private void omplirModelPerEnviar(
 			EntitatDto entitatActual,
-			Long contenidorOrigenId,
+			Long contingutOrigenId,
 			Model model) {
-		ContingutDto contingutOrigen = contenidorService.getContingutAmbFills(
+		ContingutDto contingutOrigen = contingutService.getContingutAmbFills(
 				entitatActual.getId(),
-				contenidorOrigenId);
+				contingutOrigenId);
 		model.addAttribute(
-				"contenidorOrigen",
+				"contingutOrigen",
 				contingutOrigen);
 		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());

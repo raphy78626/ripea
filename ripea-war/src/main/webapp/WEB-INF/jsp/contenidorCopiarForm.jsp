@@ -14,7 +14,7 @@
 </head>
 <body>
 	<form:form action="" class="form-horizontal" commandName="contenidorMoureCopiarEnviarCommand">
-		<form:hidden path="contenidorOrigenId"/>
+		<form:hidden path="origenId"/>
 		<rip:inputFixed textKey="contenidor.copiar.camp.origen">
 			<c:choose>
 				<c:when test="${contenidorOrigen.expedient}"><span class="fa fa-briefcase"></span></c:when>
@@ -23,7 +23,7 @@
 			</c:choose>
 			${contenidorOrigen.nom}
 		</rip:inputFixed>
-		<rip:inputFileChooser name="contenidorDestiId" contenidorOrigen="${contenidorOrigen}" textKey="contenidor.copiar.camp.desti" required="true"/>
+		<rip:inputFileChooser name="destiId" contingutOrigen="${contenidorOrigen}" textKey="contenidor.copiar.camp.desti" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.copiar"/></button>
 			<a href="<c:url value="/contenidor/${contenidorOrigen.pare.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>

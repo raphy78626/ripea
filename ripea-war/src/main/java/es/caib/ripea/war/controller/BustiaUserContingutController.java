@@ -29,7 +29,7 @@ import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
-import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
+import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 
 /**
@@ -141,7 +141,7 @@ public class BustiaUserContingutController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -174,8 +174,8 @@ public class BustiaUserContingutController extends BaseUserController {
 				entitatActual,
 				contingutId,
 				model);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(bustiaId);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
 		return "bustiaPendentContingutReenviar";
 	}
@@ -184,7 +184,7 @@ public class BustiaUserContingutController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -236,8 +236,8 @@ public class BustiaUserContingutController extends BaseUserController {
 		model.addAttribute(
 				"contenidorDesti",
 				escriptori);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(contenidorOrigenId);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(contenidorOrigenId);
 		model.addAttribute(command);
 	}
 

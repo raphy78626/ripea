@@ -29,7 +29,7 @@ import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
-import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
+import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.command.RegistreRebutjarCommand;
 
@@ -133,8 +133,8 @@ public class BustiaUserRegistreController extends BaseUserController {
 		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(
 				entitatActual.getId());
 		model.addAttribute("contenidorOrigen", escriptori);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(escriptori.getId());
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(escriptori.getId());
 		model.addAttribute(command);
 		return "bustiaPendentRegistreAddexp";
 	}
@@ -143,7 +143,7 @@ public class BustiaUserRegistreController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -174,8 +174,8 @@ public class BustiaUserRegistreController extends BaseUserController {
 				entitatActual,
 				model,
 				bustiaId);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(bustiaId);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
 		return "bustiaPendentRegistreReenviar";
 	}
@@ -184,7 +184,7 @@ public class BustiaUserRegistreController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);

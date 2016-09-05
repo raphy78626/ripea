@@ -11,7 +11,7 @@
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<rip:modalHead/>
 <style>
 .tab-content {
     margin-top: 0.8em;
@@ -128,7 +128,7 @@
 		</div>
 	</div>
 	<div id="modal-botons" class="well">
-		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.tancar"/></a>
+		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
 </html>
