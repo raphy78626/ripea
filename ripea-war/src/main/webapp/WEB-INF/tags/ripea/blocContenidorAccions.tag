@@ -51,7 +51,7 @@
 		<li><a href="../contingut/${contingut.id}/log" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 		<c:if test="${not empty contingut.escriptoriPare}">
 			<c:if test="${contingut.carpeta or empty contingut.metaNode or contingut.metaNode.usuariActualDelete}">
-				<li><a href="${contingut.id}/delete" data-rdt-link-confirm="<spring:message code="contingut.confirmacio.esborrar.node"/>"><span class="fa fa-trash-o"></span>&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+				<li><a href="${contingut.id}/delete" data-confirm="<spring:message code="contingut.confirmacio.esborrar.node"/>"><span class="fa fa-trash-o"></span>&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 			</c:if>
 		</c:if>
 	</ul>

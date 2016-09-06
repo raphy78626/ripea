@@ -10,7 +10,6 @@
 	<rip:modalHead/>
 </head>
 <body>
-
 	<rip:blocContenidorPath contingut="${contingut}"/>
 	<c:if test="${contingut.registre && contingut.procesEstat == 'ERROR'}">
 		<ul class="nav nav-tabs" role="tablist">
@@ -33,13 +32,13 @@
 		<dt><spring:message code="contingut.admin.info.camp.contingut"/></dt>
 		<dd>
 			<c:choose>
-				<c:when test="${contingut.escriptori}"><span class="fa fa-desktop" title="<spring:message code="contenidor.contingut.path.escriptori"/>"></span></c:when>
-				<c:when test="${contingut.expedient}"><span class="fa fa-briefcase" title="<spring:message code="contenidor.contingut.icona.expedient"/>"></span></c:when>
-				<c:when test="${contingut.carpeta}"><span class="fa fa-folder" title="<spring:message code="contenidor.contingut.icona.carpeta"/>"></span></c:when>
-				<c:when test="${contingut.document}"><span class="fa fa-file" title="<spring:message code="contenidor.contingut.icona.document"/>"></span></c:when>
-				<c:when test="${contingut.arxiv}"><span class="fa fa-archive" title="<spring:message code="contenidor.contingut.icona.arxiu"/>"></span></c:when>
-				<c:when test="${contingut.bustia}"><span class="fa fa-inbox" title="<spring:message code="contenidor.contingut.icona.bustia"/>"></span></c:when>
-				<c:when test="${contingut.registre}"><span class="fa fa-book" title="<spring:message code="contenidor.contingut.icona.registre"/>"></span></c:when>
+				<c:when test="${contingut.escriptori}"><span class="fa fa-desktop" title="<spring:message code="contingut.path.escriptori"/>"></span></c:when>
+				<c:when test="${contingut.expedient}"><span class="fa fa-briefcase" title="<spring:message code="contingut.icona.expedient"/>"></span></c:when>
+				<c:when test="${contingut.carpeta}"><span class="fa fa-folder" title="<spring:message code="contingut.icona.carpeta"/>"></span></c:when>
+				<c:when test="${contingut.document}"><span class="fa fa-file" title="<spring:message code="contingut.icona.document"/>"></span></c:when>
+				<c:when test="${contingut.arxiv}"><span class="fa fa-archive" title="<spring:message code="contingut.icona.arxiu"/>"></span></c:when>
+				<c:when test="${contingut.bustia}"><span class="fa fa-inbox" title="<spring:message code="contingut.icona.bustia"/>"></span></c:when>
+				<c:when test="${contingut.registre}"><span class="fa fa-book" title="<spring:message code="contingut.icona.registre"/>"></span></c:when>
 			</c:choose>
 			${contingut.nom}
 		</dd>
@@ -116,6 +115,6 @@
 		</div>
 	</c:if>
 	<div id="modal-botons" class="well">
-		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
+		<a href="<c:url value="/contingutAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>

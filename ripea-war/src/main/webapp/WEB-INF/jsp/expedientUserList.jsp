@@ -108,7 +108,7 @@ $(document).ready(function() {
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
-								<li><a href="contenidor/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.obrir"/></a></li>
+								<li><a href="contingut/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.obrir"/></a></li>
 								{{if estat == 'OBERT'}}
 									{{if metaNode.usuariActualWrite}}
 										{{if !codiPropietariEscriptoriPare}}
@@ -125,7 +125,6 @@ $(document).ready(function() {
 						</div>
 					</script>
 				</th>				
-				
 			</tr>
 		</thead>
 	</table>

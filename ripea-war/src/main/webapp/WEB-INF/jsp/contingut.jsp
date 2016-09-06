@@ -449,7 +449,7 @@ $(document).ready(function() {
 																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/portafirmes/upload" data-toggle="modal"><span class="fa fa-send"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/></a></li>
 																					</c:if>
 																					<c:if test="${versio.firmaEstatPendent}">
-																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/portafirmes/cancel" data-rdt-link-confirm="<spring:message code="contingut.boto.portafirmes.cancelar.confirm"/>"><span class="fa fa-times"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.cancelar"/></a></li>
+																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/portafirmes/cancel" data-confirm="<spring:message code="contingut.boto.portafirmes.cancelar.confirm"/>"><span class="fa fa-times"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.cancelar"/></a></li>
 																					</c:if>
 																					<c:if test="${versio.firmaEstatBloquejarEnviaments}">
 																						<li><a href="#" data-toggle="modal" data-target="#pfirma-info-${versio.id}"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.info"/></a></li>

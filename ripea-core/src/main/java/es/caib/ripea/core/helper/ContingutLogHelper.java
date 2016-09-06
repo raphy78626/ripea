@@ -178,7 +178,8 @@ public class ContingutLogHelper {
 		for (ContingutLogEntity log: logs) {
 			ContingutLogDto dto = new ContingutLogDto();
 			dto.setId(log.getId());
-			dto.setData(log.getCreatedDate().toDate());
+			if (log.getCreatedDate() != null)
+				dto.setData(log.getCreatedDate().toDate());
 			dto.setTipus(
 					LogTipusEnumDto.valueOf(
 							log.getTipus().name()));
@@ -214,7 +215,8 @@ public class ContingutLogHelper {
 		for (ContingutMovimentEntity moviment: moviments) {
 			ContingutMovimentDto dto = new ContingutMovimentDto();
 			dto.setId(moviment.getId());
-			dto.setData(moviment.getCreatedDate().toDate());
+			if (moviment.getCreatedDate() != null)
+				dto.setData(moviment.getCreatedDate().toDate());
 			dto.setComentari(moviment.getComentari());
 			dto.setContingut(contingutDto);
 			dto.setRemitent(
