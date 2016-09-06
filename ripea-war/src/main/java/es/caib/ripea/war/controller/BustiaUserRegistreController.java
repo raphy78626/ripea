@@ -3,45 +3,19 @@
  */
 package es.caib.ripea.war.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import es.caib.ripea.core.api.dto.ArxiuDto;
-import es.caib.ripea.core.api.dto.BustiaDto;
-import es.caib.ripea.core.api.dto.ContingutDto;
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.EscriptoriDto;
-import es.caib.ripea.core.api.service.ArxiuService;
-import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.api.service.ContingutService;
-import es.caib.ripea.core.api.service.ExpedientService;
-import es.caib.ripea.core.api.service.MetaExpedientService;
-import es.caib.ripea.war.command.ContenidorCommand.Create;
-import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
-import es.caib.ripea.war.command.ExpedientCommand;
 
 /**
- * Controlador per a gentionar el contingut pendent a les bústies.
+ * Controlador per al manteniment de registres a les bústies.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
 @RequestMapping("/bustiaUser")
-public class BustiaUserContingutController extends BaseUserController {
+public class BustiaUserRegistreController extends BaseUserController {
 
-	@Autowired
+	/*@Autowired
 	private BustiaService bustiaService;
 	@Autowired
 	private ContingutService contenidorService;
@@ -51,33 +25,32 @@ public class BustiaUserContingutController extends BaseUserController {
 	private MetaExpedientService metaExpedientService;
 	@Autowired
 	private ArxiuService arxiuService;
+	@Autowired
+	private RegistreService registreService;*/
 
 
 
-	/*@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contenidorId}/agafar", method = RequestMethod.GET)
-	public String pendentAfegirEscriptori(
+	/*@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}", method = RequestMethod.GET)
+	public String registrePendentObrir(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contenidorId,
+			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
-		contenidorService.receive(
-				entitatActual.getId(),
-				bustiaId,
-				contenidorId,
-				escriptori.getId());
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../pendent",
-				"bustia.controller.pendent.contingut.agafat");
+		model.addAttribute(
+				"registre",
+				bustiaService.findOneRegistrePendent(
+						entitatActual.getId(),
+						bustiaId,
+						registreId));
+		return "bustiaPendentRegistre";
 	}*/
 
-	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contingutId}/nouexp", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/nouexp", method = RequestMethod.GET)
 	public String registrePendentNouexpGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
@@ -89,13 +62,13 @@ public class BustiaUserContingutController extends BaseUserController {
 				entitatActual,
 				command.getMetaNodeId(),
 				model);
-		return "bustiaPendentContingutNouexp";
+		return "bustiaPendentRegistreNouexp";
 	}
-	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contingutId}/nouexp", method = RequestMethod.POST)
+	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/nouexp", method = RequestMethod.POST)
 	public String registrePendentNouexpPost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			@Validated({Create.class}) ExpedientCommand command,
 			BindingResult bindingResult,
 			Model model) {
@@ -105,7 +78,7 @@ public class BustiaUserContingutController extends BaseUserController {
 					entitatActual,
 					command.getMetaNodeId(),
 					model);
-			return "bustiaPendentContingutNouexp";
+			return "bustiaPendentRegistreNouexp";
 		}
 		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		expedientService.create(
@@ -120,70 +93,66 @@ public class BustiaUserContingutController extends BaseUserController {
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
-				"bustia.controller.pendent.contingut.nouexp.ok");
+				"bustia.controller.pendent.registre.nouexp.ok");
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contingutId}/addexp", method = RequestMethod.GET)
+	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/addexp", method = RequestMethod.GET)
 	public String registrePendentAddexpGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		omplirModelPerAfegirAExpedient(
-				entitatActual,
-				model,
-				contingutId);
-		return "bustiaPendentContingutAddexp";
+		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(
+				entitatActual.getId());
+		model.addAttribute("contenidorOrigen", escriptori);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(escriptori.getId());
+		model.addAttribute(command);
+		return "bustiaPendentRegistreAddexp";
 	}
-	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contingutId}/addexp", method = RequestMethod.POST)
+	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/addexp", method = RequestMethod.POST)
 	public String registrePendentAddexpPost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
-			omplirModelPerAfegirAExpedient(
-					entitatActual,
-					model,
-					contingutId);
-			return "bustiaPendentContingutAddexp";
+			EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(
+					entitatActual.getId());
+			model.addAttribute("contenidorOrigen", escriptori);
+			return "bustiaPendentRegistreAddexp";
 		}
-		/*contenidorService.receive(
-				entitatActual.getId(),
-				bustiaId,
-				command.getContenidorOrigenId(),
-				command.getContenidorDestiId());*/
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
-				"bustia.controller.pendent.contingut.addexp.ok");
+				"bustia.controller.pendent.registre.addexp.ok");
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contingutId}/reenviar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/reenviar", method = RequestMethod.GET)
 	public String registrePendentReenviarGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		omplirModelPerReenviar(
 				entitatActual,
-				contingutId,
-				model);
+				model,
+				bustiaId);
 		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
 		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
-		return "bustiaPendentContingutReenviar";
+		return "bustiaPendentRegistreReenviar";
 	}
-	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contingutId}/reenviar", method = RequestMethod.POST)
+	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/reenviar", method = RequestMethod.POST)
 	public String registrePendentReenviarPost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
@@ -191,19 +160,57 @@ public class BustiaUserContingutController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			omplirModelPerReenviar(
 					entitatActual,
-					contingutId,
-					model);
-			return "bustiaPendentContingutReenviar";
+					model,
+					bustiaId);
+			return "bustiaPendentRegistreReenviar";
 		}
-		/*contenidorService.send(
-				entitatActual.getId(),
-				contingutId,
-				command.getContenidorDestiId(),
-				command.getComentariEnviar());*/
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
-				"bustia.controller.pendent.contingut.reenviat.ok");
+				"bustia.controller.pendent.registre.reenviat.ok");
+	}
+
+	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/rebutjar", method = RequestMethod.GET)
+	public String registrePendentRebutjarGet(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		RegistreRebutjarCommand command = new RegistreRebutjarCommand();
+		command.setRegistreId(registreId);
+		model.addAttribute(command);
+		omplirModelPerRebutjar(
+				entitatActual,
+				model,
+				registreId);
+		return "bustiaPendentRegistreRebutjar";
+	}
+	@RequestMapping(value = "/{bustiaId}/pendent/registre/{registreId}/rebutjar", method = RequestMethod.POST)
+	public String registrePendentRebutjarPost(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			@Valid RegistreRebutjarCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+			omplirModelPerRebutjar(
+					entitatActual,
+					model,
+					bustiaId);
+			return "bustiaPendentRegistreRebutjar";
+		}
+		registreService.rebutjar(
+				entitatActual.getId(),
+				bustiaId,
+				registreId,
+				command.getMotiu());
+		return getModalControllerReturnValueSuccess(
+				request,
+				"redirect:../../../pendent",
+				"bustia.controller.pendent.registre.rebutjat.ok");
 	}
 
 
@@ -228,30 +235,10 @@ public class BustiaUserContingutController extends BaseUserController {
 		}
 	}
 
-	private void omplirModelPerAfegirAExpedient(
+	private void omplirModelPerReenviar(
 			EntitatDto entitatActual,
 			Model model,
 			Long contenidorOrigenId) {
-		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
-		model.addAttribute(
-				"contenidorDesti",
-				escriptori);
-		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
-		command.setOrigenId(contenidorOrigenId);
-		model.addAttribute(command);
-	}
-
-	private void omplirModelPerReenviar(
-			EntitatDto entitatActual,
-			Long contenidorOrigenId,
-			Model model) {
-		ContingutDto contingutOrigen = contenidorService.findAmbIdUser(
-				entitatActual.getId(),
-				contenidorOrigenId,
-				true);
-		model.addAttribute(
-				"contingutOrigen",
-				contingutOrigen);
 		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());
 		model.addAttribute(
@@ -265,5 +252,16 @@ public class BustiaUserContingutController extends BaseUserController {
 						false,
 						true));
 	}
+
+	private void omplirModelPerRebutjar(
+			EntitatDto entitatActual,
+			Model model,
+			Long registreId) {
+		List<BustiaDto> busties = bustiaService.findPermesesPerUsuari(
+				entitatActual.getId());
+		model.addAttribute(
+				"busties",
+				busties);
+	}*/
 
 }

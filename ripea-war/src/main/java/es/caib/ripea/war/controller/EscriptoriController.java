@@ -31,7 +31,7 @@ public class EscriptoriController extends BaseUserController {
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
-		return "redirect:contenidor/" + escriptori.getId();
+		return "redirect:contingut/" + escriptori.getId();
 	}
 
 }

@@ -15,6 +15,6 @@
 		<c:if test="${required}">*</c:if>
 	</label>
 	<div class="controls col-xs-8">
-		<p class="form-control-static"><jsp:doBody/></p>
+		<div class="form-control-static"><jsp:doBody/></div>
 	</div>
 </div>

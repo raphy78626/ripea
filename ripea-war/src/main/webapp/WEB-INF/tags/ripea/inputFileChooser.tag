@@ -9,16 +9,16 @@
 <%@ attribute name="ocultarExpedients" required="false" rtexprvalue="true"%>
 <%@ attribute name="ocultarCarpetes" required="false" rtexprvalue="true"%>
 <%@ attribute name="ocultarDocuments" required="false" rtexprvalue="true"%>
-<%@ attribute name="contenidorOrigen" required="true" rtexprvalue="true" type="java.lang.Object"%>
+<%@ attribute name="contingutOrigen" required="true" rtexprvalue="true" type="java.lang.Object"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:choose>
-	<c:when test="${not empty contenidorOrigen.escriptoriPare}"><c:set var="contenidorBaseId" value="${contenidorOrigen.escriptoriPare.id}"/></c:when>
-	<c:otherwise><c:set var="contenidorBaseId" value="${contenidorOrigen.id}"/></c:otherwise>
+	<c:when test="${not empty contingutOrigen.escriptoriPare}"><c:set var="contenidorBaseId" value="${contingutOrigen.escriptoriPare.id}"/></c:when>
+	<c:otherwise><c:set var="contenidorBaseId" value="${contingutOrigen.id}"/></c:otherwise>
 </c:choose>
 <c:choose>
-	<c:when test="${not empty contenidorOrigen.pare}"><c:set var="contenidorInicialId" value="${contenidorOrigen.pare.id}"/></c:when>
-	<c:otherwise><c:set var="contenidorInicialId" value="${contenidorOrigen.id}"/></c:otherwise>
+	<c:when test="${not empty contingutOrigen.pare}"><c:set var="contenidorInicialId" value="${contingutOrigen.pare.id}"/></c:when>
+	<c:otherwise><c:set var="contenidorInicialId" value="${contingutOrigen.id}"/></c:otherwise>
 </c:choose>
 
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
@@ -84,7 +84,7 @@ function refrescarFileChooser(campPath, contenidorId) {
 				$('<a href="' + data.pare.id + '" class="list-group-item"><span class="fa fa-level-up fa-flip-horizontal"></span> ..</a>').appendTo("#file-chooser-" + campPath + "-content");
 			for (var i = 0; i < data.fills.length; i++) {
 				var ocultar = (data.fills[i].expedient && ocultarExpedients) || (data.fills[i].carpeta && ocultarCarpetes) || (data.fills[i].document && ocultarDocuments);
-				if (!ocultar && data.fills[i].id != '${contenidorOrigen.id}') {
+				if (!ocultar && data.fills[i].id != '${contingutOrigen.id}') {
 					var htmlIcona = '';
 					if (data.fills[i].expedient)
 						htmlIcona += '<span class="fa fa-briefcase"></span> ';
@@ -92,7 +92,7 @@ function refrescarFileChooser(campPath, contenidorId) {
 						htmlIcona += '<span class="fa fa-folder"></span> ';
 					else if (data.fills[i].document)
 						htmlIcona += '<span class="fa fa-file"></span> ';
-					if ((data.fills[i].expedient || data.fills[i].carpeta) && data.fills[i].id != '${contenidorOrigen.id}')
+					if ((data.fills[i].expedient || data.fills[i].carpeta) && data.fills[i].id != '${contingutOrigen.id}')
 						$('<a href="' + data.fills[i].id + '" class="list-group-item">' + htmlIcona + data.fills[i].nom + '</a>').appendTo("#file-chooser-" + campPath + "-content");
 					else
 						$('<div class="list-group-item text-muted" style="border:none">' + htmlIcona + data.fills[i].nom + '</div>').appendTo("#file-chooser-" + campPath + "-content");

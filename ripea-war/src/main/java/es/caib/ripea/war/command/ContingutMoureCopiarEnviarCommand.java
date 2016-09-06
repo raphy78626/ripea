@@ -13,28 +13,28 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ContenidorMoureCopiarEnviarCommand {
+public class ContingutMoureCopiarEnviarCommand {
 
 	@NotNull
-	protected Long contenidorOrigenId;
+	protected Long origenId;
 	@NotNull
-	protected Long contenidorDestiId;
+	protected Long destiId;
 	@Size(max=256)
 	protected String comentariEnviar;
 
 
 
-	public Long getContenidorOrigenId() {
-		return contenidorOrigenId;
+	public Long getOrigenId() {
+		return origenId;
 	}
-	public void setContenidorOrigenId(Long contenidorOrigenId) {
-		this.contenidorOrigenId = contenidorOrigenId;
+	public void setOrigenId(Long origenId) {
+		this.origenId = origenId;
 	}
-	public Long getContenidorDestiId() {
-		return contenidorDestiId;
+	public Long getDestiId() {
+		return destiId;
 	}
-	public void setContenidorDestiId(Long contenidorDestiId) {
-		this.contenidorDestiId = contenidorDestiId;
+	public void setDestiId(Long destiId) {
+		this.destiId = destiId;
 	}
 	public String getComentariEnviar() {
 		return comentariEnviar;

@@ -28,30 +28,30 @@ import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContenidorCommand.Update;
 
 /**
- * Controlador per al manteniment de carpetes dels contenidors.
+ * Controlador per al manteniment de carpetes.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/contenidor")
-public class ContenidorCarpetaController extends BaseUserController {
+@RequestMapping("/contingut")
+public class ContingutCarpetaController extends BaseUserController {
 
 	@Autowired
 	private CarpetaService carpetaService;
 
 
 
-	@RequestMapping(value = "/{contenidorId}/carpeta/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/carpeta/new", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
-		return get(request, contenidorId, null, model);
+		return get(request, contingutId, null, model);
 	}
-	@RequestMapping(value = "/{contenidorId}/carpeta/{carpetaId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/carpeta/{carpetaId}", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long carpetaId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -67,45 +67,45 @@ public class ContenidorCarpetaController extends BaseUserController {
 		else
 			command = new CarpetaCommand();
 		command.setEntitatId(entitatActual.getId());
-		command.setPareId(contenidorId);
+		command.setPareId(contingutId);
 		model.addAttribute(command);
-		return "contenidorCarpetaForm";
+		return "contingutCarpetaForm";
 	}
 
-	@RequestMapping(value = "/{contenidorId}/carpeta/new", method = RequestMethod.POST)
+	@RequestMapping(value = "/{contingutId}/carpeta/new", method = RequestMethod.POST)
 	public String postNew(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@Validated({Create.class}) CarpetaCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		return postUpdate(
 				request,
-				contenidorId,
+				contingutId,
 				command,
 				bindingResult,
 				model);
 	}
-	@RequestMapping(value = "/{contenidorId}/carpeta/update", method = RequestMethod.POST)
+	@RequestMapping(value = "/{contingutId}/carpeta/update", method = RequestMethod.POST)
 	public String postUpdate(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@Validated({Update.class}) CarpetaCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
-			return "contenidorCarpetaForm";
+			return "contingutCarpetaForm";
 		}
 		if (command.getId() == null) {
 			carpetaService.create(
 					entitatActual.getId(),
-					contenidorId,
+					contingutId,
 					command.getNom(),
 					command.getTipus());
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../contenidor/" + contenidorId,
+					"redirect:../../../contingut/" + contingutId,
 					"carpeta.controller.creada.ok");
 		} else {
 			carpetaService.update(
@@ -115,7 +115,7 @@ public class ContenidorCarpetaController extends BaseUserController {
 					command.getTipus());
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../contenidor/" + command.getPareId(),
+					"redirect:../../../contingut/" + command.getPareId(),
 					"carpeta.controller.modificada.ok");
 		}
 	}

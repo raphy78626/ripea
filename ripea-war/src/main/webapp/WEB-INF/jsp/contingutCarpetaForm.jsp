@@ -15,28 +15,28 @@ pageContext.setAttribute(
 		options);
 %>
 <c:choose>
-	<c:when test="${empty carpetaCommand.id}"><c:set var="titol"><spring:message code="contenidor.carpeta.form.titol.crear"/></c:set></c:when>
-	<c:otherwise><c:set var="titol"><spring:message code="contenidor.carpeta.form.titol.modificar"/></c:set></c:otherwise>
+	<c:when test="${empty carpetaCommand.id}"><c:set var="titol"><spring:message code="contingut.carpeta.form.titol.crear"/></c:set></c:when>
+	<c:otherwise><c:set var="titol"><spring:message code="contingut.carpeta.form.titol.modificar"/></c:set></c:otherwise>
 </c:choose>
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<rip:modalHead/>
 </head>
 <body>
 	<c:choose>
-		<c:when test="${empty carpetaCommand.id}"><c:set var="formAction"><rip:modalUrl value="/contenidor/${carpetaCommand.pareId}/carpeta/new"/></c:set></c:when>
-		<c:otherwise><c:set var="formAction"><rip:modalUrl value="/contenidor/${carpetaCommand.pareId}/carpeta/update"/></c:set></c:otherwise>
+		<c:when test="${empty carpetaCommand.id}"><c:set var="formAction"><rip:modalUrl value="/contingut/${carpetaCommand.pareId}/carpeta/new"/></c:set></c:when>
+		<c:otherwise><c:set var="formAction"><rip:modalUrl value="/contingut/${carpetaCommand.pareId}/carpeta/update"/></c:set></c:otherwise>
 	</c:choose>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="carpetaCommand">
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
-		<rip:inputSelect name="tipus" textKey="contenidor.carpeta.form.camp.tipus" optionItems="${carpetaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
-		<rip:inputText name="nom" textKey="contenidor.carpeta.form.camp.nom" required="true"/>
+		<rip:inputSelect name="tipus" textKey="contingut.carpeta.form.camp.tipus" optionItems="${carpetaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
+		<rip:inputText name="nom" textKey="contingut.carpeta.form.camp.nom" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/contenidor/${carpetaCommand.pareId}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/contingut/${carpetaCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

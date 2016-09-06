@@ -29,9 +29,10 @@ import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
-import es.caib.ripea.war.command.ContenidorMoureCopiarEnviarCommand;
+import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 
 /**
@@ -210,7 +211,7 @@ public class BustiaUserController extends BaseUserController {
 			@PathVariable Long bustiaId,
 			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
 			@PathVariable Long contingutId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -223,7 +224,7 @@ public class BustiaUserController extends BaseUserController {
 		}
 		expedientService.afegirContingutBustia(
 				entitatActual.getId(),
-				command.getContenidorDestiId(),
+				command.getDestiId(),
 				bustiaId,
 				contingutTipus,
 				contingutId);
@@ -245,8 +246,8 @@ public class BustiaUserController extends BaseUserController {
 				bustiaId,
 				contingutId,
 				model);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(bustiaId);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
 		return "bustiaPendentContingutReenviar";
 	}
@@ -255,7 +256,7 @@ public class BustiaUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
-			@Valid ContenidorMoureCopiarEnviarCommand command,
+			@Valid ContingutMoureCopiarEnviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -270,13 +271,40 @@ public class BustiaUserController extends BaseUserController {
 		bustiaService.contingutPendentReenviar(
 				entitatActual.getId(),
 				bustiaId,
-				command.getContenidorDestiId(),
+				command.getDestiId(),
 				contingutId,
 				command.getComentariEnviar());
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
 				"bustia.controller.pendent.contingut.reenviat.ok");
+	}
+
+	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	public String reintentar(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		boolean processatOk = bustiaService.registreReglaReintentarUser(
+				entitatActual.getId(),
+				bustiaId,
+				registreId);
+		if (processatOk) {
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../../../" + bustiaId,
+					"contenidor.controller.registre.reintentat.ok");
+		} else {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"contenidor.controller.registre.reintentat.error",
+							null));
+			return "redirect:../" + registreId;
+		}
 	}
 
 
@@ -300,8 +328,8 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute(
 				"contenidorDesti",
 				escriptori);
-		ContenidorMoureCopiarEnviarCommand command = new ContenidorMoureCopiarEnviarCommand();
-		command.setContenidorOrigenId(contenidorOrigenId);
+		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		command.setOrigenId(contenidorOrigenId);
 		model.addAttribute(command);
 	}
 

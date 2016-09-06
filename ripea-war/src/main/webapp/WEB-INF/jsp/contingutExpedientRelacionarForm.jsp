@@ -13,11 +13,11 @@ pageContext.setAttribute(
 				"expedient.user.opcions.estat.enum."));
 %>
 <c:set var="idioma"><%=org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage()%></c:set>
-<c:set var="titol"><spring:message code="contenidor.expedient.relacionar.form.titol"/></c:set>
+<c:set var="titol"><spring:message code="contingut.expedient.relacionar.form.titol"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<rip:modalHead/>
 	<script src="<c:url value="/webjars/datatables.net/1.10.11/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.11/js/dataTables.bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.11/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
@@ -29,7 +29,6 @@ pageContext.setAttribute(
 	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/js/select2.min.js"/>"></script>
 	<script src="<c:url value="/js/select2-locales/select2_locale_${idioma}.js"/>"></script>
-
 	<script>
 	$(document).ready(function() {
 		$('#netejarFiltre').click(function(e) {
@@ -44,19 +43,14 @@ pageContext.setAttribute(
 		});	
 		$('#expedientFiltreCommand').css('margin-bottom', '0px');
 	});
-	
 	function relacionar(expedientRelacionatId) {
 		$('#expedientRelacionatId').val(expedientRelacionatId);	
 		$('#expedientRelacionarCommand').submit();
 	}	
-	
 	</script>
-
 </head>
 <body>
-
 	<div style="height: 550px;">
-
 		<form:form action="" method="post" cssClass="well" commandName="expedientFiltreCommand">
 			<div class="row">
 				<div class="col-sm-2">
@@ -85,8 +79,6 @@ pageContext.setAttribute(
 				</div>
 			</div>
 		</form:form>
-	
-	
 		<form:form action="" method="post" commandName="expedientRelacionarCommand">
 			<div class="row">
 				<div class="col-sm-12">
@@ -97,7 +89,7 @@ pageContext.setAttribute(
 			</div>
 			<table id="taulaDades" 
 					data-toggle="datatable" 
-					data-url="<c:url value="/contenidor/${contenidorId}/expedient/${expedientId}/relacionar/datatable"/>" 
+					data-url="<c:url value="/contingut/${expedient.pare.id}/expedient/${expedientId}/relacionar/datatable"/>" 
 					class="table table-bordered table-striped" 
 					data-default-order="7" 
 					data-default-dir="desc"
@@ -129,10 +121,9 @@ pageContext.setAttribute(
 				</thead>
 			</table>
 			<div id="modal-botons" class="well">
-				<a href="<c:url value="/contenidor/${expedient.pare.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+				<a href="<c:url value="/contenidor/${expedient.pare.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 			</div>
 		</form:form>
-			
 	</div>
 </body>
 </html>

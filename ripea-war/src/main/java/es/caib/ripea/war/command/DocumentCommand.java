@@ -6,10 +6,13 @@ package es.caib.ripea.war.command;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 import es.caib.ripea.war.validation.ArxiuNoBuit;
 
@@ -20,14 +23,31 @@ import es.caib.ripea.war.validation.ArxiuNoBuit;
  */
 public class DocumentCommand extends ContenidorCommand {
 
+	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
+	protected DocumentTipusEnumDto documentTipus = DocumentTipusEnumDto.DIGITAL;
+	@NotEmpty(groups = {CreateFisic.class, UpdateFisic.class})
+	@Size(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class}, max=255)
+	protected String ubicacio;
 	protected Long metaNodeId;
-	@NotNull(groups = {Create.class, Update.class})
+	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
 	protected Date data;
-	@ArxiuNoBuit(groups = {Create.class})
+	@ArxiuNoBuit(groups = {CreateDigital.class})
 	protected MultipartFile arxiu;
 
 
 
+	public DocumentTipusEnumDto getDocumentTipus() {
+		return documentTipus;
+	}
+	public void setDocumentTipus(DocumentTipusEnumDto documentTipus) {
+		this.documentTipus = documentTipus;
+	}
+	public String getUbicacio() {
+		return ubicacio;
+	}
+	public void setUbicacio(String ubicacio) {
+		this.ubicacio = ubicacio;
+	}
 	public Long getMetaNodeId() {
 		return metaNodeId;
 	}
@@ -62,5 +82,10 @@ public class DocumentCommand extends ContenidorCommand {
 				command,
 				DocumentDto.class);
 	}
+
+	public interface CreateDigital {}
+	public interface UpdateDigital {}
+	public interface CreateFisic {}
+	public interface UpdateFisic {}
 
 }

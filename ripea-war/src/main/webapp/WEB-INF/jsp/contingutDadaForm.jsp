@@ -4,15 +4,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
+<c:set var="idioma"><%=org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage()%></c:set>
 <c:choose>
-	<c:when test="${empty dadaCommand.id}"><c:set var="titol"><spring:message code="contenidor.dada.form.titol.crear"/></c:set></c:when>
-	<c:otherwise><c:set var="titol"><spring:message code="contenidor.dada.form.titol.modificar"/></c:set></c:otherwise>
+	<c:when test="${empty dadaCommand.id}"><c:set var="titol"><spring:message code="contingut.dada.form.titol.crear"/></c:set></c:when>
+	<c:otherwise><c:set var="titol"><spring:message code="contingut.dada.form.titol.modificar"/></c:set></c:otherwise>
 </c:choose>
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${idioma}.js"/>"></script>
+	<rip:modalHead/>
 	<script src="<c:url value="/js/jquery.numeric.js"/>"></script>
 	<link href="<c:url value="/css/datepicker.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/js/bootstrap-datepicker.js"/>"></script>
@@ -59,33 +63,33 @@ $(document).ready(function() {
 </head>
 <body>
 
-	<c:set var="formAction"><rip:modalUrl value="/contenidor/${dadaCommand.nodeId}/dada/new"/></c:set>
+	<c:set var="formAction"><rip:modalUrl value="/contingut/${dadaCommand.nodeId}/dada/new"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="dadaCommand">
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
 		<form:hidden path="nodeId"/>
-		<rip:inputSelect name="metaDadaId" textKey="contenidor.dada.form.camp.metadada" required="true" optionItems="${metaDades}" optionValueAttribute="id" optionTextAttribute="nom"/>
+		<rip:inputSelect name="metaDadaId" textKey="contingut.dada.form.camp.metadada" required="true" optionItems="${metaDades}" optionValueAttribute="id" optionTextAttribute="nom"/>
 		<div id="dada-valor-TEXT" class="dada-valor hide">
-			<rip:inputText name="valorText" textKey="contenidor.dada.form.camp.valor" required="true"/>
+			<rip:inputText name="valorText" textKey="contingut.dada.form.camp.valor" required="true"/>
 		</div>
 		<div id="dada-valor-DATA" class="dada-valor hide">
-			<rip:inputDate name="valorData" textKey="contenidor.dada.form.camp.valor" required="true"/>
+			<rip:inputDate name="valorData" textKey="contingut.dada.form.camp.valor" required="true"/>
 		</div>
 		<div id="dada-valor-SENCER" class="dada-valor hide">
-			<rip:inputText name="valorSencer" textKey="contenidor.dada.form.camp.valor" required="true"/>
+			<rip:inputText name="valorSencer" textKey="contingut.dada.form.camp.valor" required="true"/>
 		</div>
 		<div id="dada-valor-FLOTANT" class="dada-valor hide">
-			<rip:inputText name="valorFlotant" textKey="contenidor.dada.form.camp.valor" required="true"/>
+			<rip:inputText name="valorFlotant" textKey="contingut.dada.form.camp.valor" required="true"/>
 		</div>
 		<div id="dada-valor-IMPORT" class="dada-valor hide">
-			<rip:inputText name="valorImport" textKey="contenidor.dada.form.camp.valor" required="true"/>
+			<rip:inputText name="valorImport" textKey="contingut.dada.form.camp.valor" required="true"/>
 		</div>
 		<div id="dada-valor-BOOLEA" class="dada-valor hide">
-			<rip:inputCheckbox name="valorBoolea" textKey="contenidor.dada.form.camp.valor"/>
+			<rip:inputCheckbox name="valorBoolea" textKey="contingut.dada.form.camp.valor"/>
 		</div>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/contenidor/${dadaCommand.nodeId}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/contingut/${dadaCommand.nodeId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 

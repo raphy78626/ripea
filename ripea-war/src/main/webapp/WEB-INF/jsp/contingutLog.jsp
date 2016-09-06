@@ -6,13 +6,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
-<c:set var="titol"><spring:message code="contenidor.log.titol"/></c:set>
-
+<c:set var="titol"><spring:message code="contingut.log.titol"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<rip:modalHead/>
 </head>
 <body>
 	<ul class="nav nav-tabs">
@@ -31,7 +29,7 @@
 		<li>
 			<a data-toggle="tab" href="#auditoria">
 				<span class="fa fa-eye"></span>
-				<spring:message code="contenidor.log.pipella.auditoria"/>
+				<spring:message code="contingut.log.pipella.auditoria"/>
 			</a>
 		</li>
 	</ul>
@@ -41,10 +39,10 @@
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
-						<th><spring:message code="contenidor.log.columna.data"/></th>
-						<th><spring:message code="contenidor.log.columna.usuari"/></th>
-						<th><spring:message code="contenidor.log.columna.accio"/></th>
-						<th><spring:message code="contenidor.log.columna.detalls"/></th>
+						<th><spring:message code="contingut.log.columna.data"/></th>
+						<th><spring:message code="contingut.log.columna.usuari"/></th>
+						<th><spring:message code="contingut.log.columna.accio"/></th>
+						<th><spring:message code="contingut.log.columna.detalls"/></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -67,8 +65,8 @@
 				<table class="table table-striped table-bordered">
 					<thead>
 						<tr>
-							<th><spring:message code="contenidor.log.columna.data"/></th>
-							<th><spring:message code="contenidor.log.columna.usuari"/></th>
+							<th><spring:message code="contingut.log.columna.data"/></th>
+							<th><spring:message code="contingut.log.columna.usuari"/></th>
 							<th>Origen</th>
 							<th>Desti</th>
 						</tr>
@@ -108,19 +106,19 @@
 		</div>
 		<div class="tab-pane" id="auditoria">
 			<dl class="dl-horizontal">
-				<dt><spring:message code="contenidor.log.camp.usuari.creacio"/></dt>
+				<dt><spring:message code="contingut.log.camp.usuari.creacio"/></dt>
 				<dd>${contingut.createdBy.nom}</dd>
-				<dt><spring:message code="contenidor.log.camp.data.creacio"/></dt>
+				<dt><spring:message code="contingut.log.camp.data.creacio"/></dt>
 				<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-				<dt><spring:message code="contenidor.log.camp.usuari.modificacio"/></dt>
+				<dt><spring:message code="contingut.log.camp.usuari.modificacio"/></dt>
 				<dd>${contingut.lastModifiedBy.nom}</dd>
-				<dt><spring:message code="contenidor.log.camp.data.modificacio"/></dt>
+				<dt><spring:message code="contingut.log.camp.data.modificacio"/></dt>
 				<dd><fmt:formatDate value="${contingut.lastModifiedDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
 			</dl>
 		</div>
 	</div>
 	<div id="modal-botons" class="well">
-		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
+		<a href="<c:url value="/contingut/${contingut.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
 </html>

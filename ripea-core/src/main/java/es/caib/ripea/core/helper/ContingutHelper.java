@@ -180,6 +180,8 @@ public class ContingutHelper {
 		} else if (deproxied instanceof DocumentEntity) {
 			DocumentEntity document = (DocumentEntity)deproxied;
 			DocumentDto dto = new DocumentDto();
+			dto.setDocumentTipus(document.getDocumentTipus());
+			dto.setUbicacio(document.getUbicacio());
 			dto.setData(document.getData());
 			dto.setDarreraVersio(
 					conversioTipusHelper.convertir(

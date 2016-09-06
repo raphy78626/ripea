@@ -32,7 +32,7 @@ tipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </script>
 </head>
 <body>
-	<rip:blocContenidorPath contenidor="${bustia}"/>
+	<rip:blocContenidorPath contingut="${bustia}"/>
 	<table id="taulaDades" class="table table-bordered table-striped" style="width:100%"
 		data-toggle="datatable"
 		data-url="<c:url value="/bustiaUser/${bustia.id}/pendent/datatable"/>"
@@ -62,11 +62,11 @@ tipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								{{if tipus == 'REGISTRE'}}
-									<li><a href="../../contenidor/${bustia.id}/registre/{{:id}}" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
+									<li><a href="../../contingut/${bustia.id}/registre/{{:id}}" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
 								{{else}}
-									<li><a href="../../contenidor/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.obrir"/></a></li>
+									<li><a href="../../contingut/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.obrir"/></a></li>
 								{{/if}}
-								<li><a href="../../contenidor/{{:id}}/log" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+								<li><a href="../../contingut/{{:id}}/log" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								{{if !procesAutomatic}}
 									<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/nouexp" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.nou.expedient"/>...</a></li>
 									<li><a href="../../bustiaUser/${bustia.id}/pendent/{{:tipus}}/{{:id}}/addexp" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>

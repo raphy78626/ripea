@@ -33,7 +33,7 @@ import es.caib.ripea.war.helper.PaginacioHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/contenidor")
+@RequestMapping("/contingut")
 public class ContenidorRegistreController extends BaseUserController {
 
 	@Autowired
@@ -45,17 +45,17 @@ public class ContenidorRegistreController extends BaseUserController {
 
 
 
-	@RequestMapping(value = "/{contenidorId}/registre/datatable", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/{contingutId}/registre/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesPagina<RegistreAnotacioDto> datatable(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<RegistreAnotacioDto> registres = null;
 		ContingutDto contenidor = contingutService.findAmbIdUser(
 				entitatActual.getId(),
-				contenidorId,
+				contingutId,
 				true);
 		if (contenidor instanceof ExpedientDto) {
 			ExpedientDto expedient = (ExpedientDto)contenidor;
@@ -66,10 +66,10 @@ public class ContenidorRegistreController extends BaseUserController {
 		return PaginacioHelper.getPaginaPerDatatables(request, registres);
 	}
 
-	@RequestMapping(value = "/{contenidorId}/registre/{registreId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/registre/{registreId}", method = RequestMethod.GET)
 	public String info(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -77,15 +77,15 @@ public class ContenidorRegistreController extends BaseUserController {
 				"registre",
 				registreService.findOne(
 						entitatActual.getId(),
-						contenidorId,
+						contingutId,
 						registreId));
 		return "registreDetall";
 	}
 
-	@RequestMapping(value = "/{contenidorId}/registre/{registreId}/log", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/registre/{registreId}/log", method = RequestMethod.GET)
 	public String log(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -93,13 +93,13 @@ public class ContenidorRegistreController extends BaseUserController {
 				"contenidor",
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
-						contenidorId,
+						contingutId,
 						true));
 		model.addAttribute(
 				"registre",
 				registreService.findOne(
 						entitatActual.getId(),
-						contenidorId,
+						contingutId,
 						registreId));
 		model.addAttribute(
 				"moviments",
@@ -109,21 +109,21 @@ public class ContenidorRegistreController extends BaseUserController {
 		return "registreLog";
 	}
 
-	@RequestMapping(value = "/{contenidorId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		boolean processatOk = bustiaService.registreReglaReintentarUser(
 				entitatActual.getId(),
-				contenidorId,
+				contingutId,
 				registreId);
 		if (processatOk) {
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../" + contenidorId,
+					"redirect:../../../" + contingutId,
 					"contenidor.controller.registre.reintentat.ok");
 		} else {
 			MissatgesHelper.error(
@@ -134,6 +134,6 @@ public class ContenidorRegistreController extends BaseUserController {
 							null));
 			return "redirect:../" + registreId;
 		}
-	}
+	}*/
 
 }

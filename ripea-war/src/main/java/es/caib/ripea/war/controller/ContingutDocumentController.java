@@ -38,13 +38,17 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
-import es.caib.ripea.war.command.ContenidorCommand.Create;
-import es.caib.ripea.war.command.ContenidorCommand.Update;
 import es.caib.ripea.war.command.DocumentCommand;
+import es.caib.ripea.war.command.DocumentCommand.CreateDigital;
+import es.caib.ripea.war.command.DocumentCommand.CreateFisic;
+import es.caib.ripea.war.command.DocumentCommand.UpdateDigital;
+import es.caib.ripea.war.command.DocumentCommand.UpdateFisic;
 import es.caib.ripea.war.command.PassarelaFirmaEnviarCommand;
 import es.caib.ripea.war.command.PortafirmesEnviarCommand;
 import es.caib.ripea.war.helper.MissatgesHelper;
@@ -53,18 +57,18 @@ import es.caib.ripea.war.passarelafirma.PassarelaFirmaHelper;
 import es.caib.ripea.war.passarelafirma.PassarelaFirmaSignaturesSet;
 
 /**
- * Controlador per al manteniment de documents dels contenidors.
+ * Controlador per al manteniment de documents.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/contenidor")
-public class ContenidorDocumentController extends BaseUserController {
+@RequestMapping("/contingut")
+public class ContingutDocumentController extends BaseUserController {
 
 	@Autowired
 	private AplicacioService aplicacioService;
 	@Autowired
-	private ContingutService contenidorService;
+	private ContingutService contingutService;
 	@Autowired
 	private DocumentService documentService;
 	@Autowired
@@ -75,17 +79,17 @@ public class ContenidorDocumentController extends BaseUserController {
 
 
 
-	@RequestMapping(value = "/{contenidorId}/document/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/new", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			Model model) {
-		return get(request, contenidorId, null, model);
+		return get(request, contingutId, null, model);
 	}
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -110,18 +114,18 @@ public class ContenidorDocumentController extends BaseUserController {
 					"metaDocuments",
 					metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
 							entitatActual.getId(),
-							contenidorId));
+							contingutId));
 		}
 		command.setEntitatId(entitatActual.getId());
-		command.setPareId(contenidorId);
+		command.setPareId(contingutId);
 		model.addAttribute(command);
-		return "contenidorDocumentForm";
+		return "contingutDocumentForm";
 	}
-	@RequestMapping(value = "/{contenidorId}/document/new", method = RequestMethod.POST)
-	public String postNew(
+	@RequestMapping(value = "/{contingutId}/document/digital/new", method = RequestMethod.POST)
+	public String postDigitalNew(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
-			@Validated({Create.class}) DocumentCommand command,
+			@PathVariable Long contingutId,
+			@Validated({CreateDigital.class}) DocumentCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
 		if (bindingResult.hasErrors()) {
@@ -130,88 +134,99 @@ public class ContenidorDocumentController extends BaseUserController {
 					"metaDocuments",
 					metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
 							entitatActual.getId(),
-							contenidorId));
-			return "contenidorDocumentForm";
+							contingutId));
+			return "contingutDocumentForm";
 		}
-		return postUpdate(
+		return createUpdateDocument(
 				request,
-				contenidorId,
+				contingutId,
 				command,
 				bindingResult,
 				model);
 	}
-	@RequestMapping(value = "/{contenidorId}/document/update", method = RequestMethod.POST)
-	public String postUpdate(
+	@RequestMapping(value = "/{contingutId}/document/digital/update", method = RequestMethod.POST)
+	public String postDigitalUpdate(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
-			@Validated({Update.class}) DocumentCommand command,
+			@PathVariable Long contingutId,
+			@Validated({UpdateDigital.class}) DocumentCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			model.addAttribute(
 					"metaDocuments",
 					metaDocumentService.findActiveByEntitatAndContenidorPerModificacio(
 							entitatActual.getId(),
-							contenidorId));
-			return "contenidorDocumentForm";
+							contingutId));
+			return "contingutDocumentForm";
 		}
-		if (command.getId() == null) {
-			documentService.create(
-					entitatActual.getId(),
-					contenidorId,
-					command.getMetaNodeId(),
-					command.getNom(),
-					command.getData(),
-					command.getArxiu().getOriginalFilename(),
-					command.getArxiu().getContentType(),
-					command.getArxiu().getBytes());
-			return getModalControllerReturnValueSuccess(
-					request,
-					"redirect:../../../contenidor/" + contenidorId,
-					"document.controller.creat.ok");
-		} else {
-			if (command.getArxiu() == null || command.getArxiu().isEmpty()) {
-				documentService.update(
-						entitatActual.getId(),
-						command.getId(),
-						command.getMetaNodeId(),
-						command.getNom(),
-						command.getData(),
-						null,
-						null,
-						null);
-			} else {
-				documentService.update(
-						entitatActual.getId(),
-						command.getId(),
-						command.getMetaNodeId(),
-						command.getNom(),
-						command.getData(),
-						command.getArxiu().getOriginalFilename(),
-						command.getArxiu().getContentType(),
-						command.getArxiu().getBytes());
-			}
-			return getModalControllerReturnValueSuccess(
-					request,
-					"redirect:../contenidor/" + command.getPareId(),
-					"document.controller.modificat.ok");
+		return createUpdateDocument(
+				request,
+				contingutId,
+				command,
+				bindingResult,
+				model);
+	}
+	@RequestMapping(value = "/{contingutId}/document/fisic/new", method = RequestMethod.POST)
+	public String postFisicNew(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			@Validated({CreateFisic.class}) DocumentCommand command,
+			BindingResult bindingResult,
+			Model model) throws IOException {
+		if (bindingResult.hasErrors()) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			model.addAttribute(
+					"metaDocuments",
+					metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
+							entitatActual.getId(),
+							contingutId));
+			return "contingutDocumentForm";
 		}
+		return createUpdateDocument(
+				request,
+				contingutId,
+				command,
+				bindingResult,
+				model);
+	}
+	@RequestMapping(value = "/{contingutId}/document/fisic/update", method = RequestMethod.POST)
+	public String postFisicUpdate(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			@Validated({UpdateFisic.class}) DocumentCommand command,
+			BindingResult bindingResult,
+			Model model) throws IOException {
+		if (bindingResult.hasErrors()) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			model.addAttribute(
+					"metaDocuments",
+					metaDocumentService.findActiveByEntitatAndContenidorPerModificacio(
+							entitatActual.getId(),
+							contingutId));
+			return "contingutDocumentForm";
+		}
+		return createUpdateDocument(
+				request,
+				contingutId,
+				command,
+				bindingResult,
+				model);
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/descarregar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/descarregar", method = RequestMethod.GET)
 	public String descarregar(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contenidor = contenidorService.findAmbIdUser(
+		ContingutDto contingut = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				documentId,
 				true);
-		if (contenidor instanceof DocumentDto) {
-			DocumentDto document = (DocumentDto)contenidor;
+		if (contingut instanceof DocumentDto) {
+			DocumentDto document = (DocumentDto)contingut;
 			FitxerDto fitxer = documentService.descarregar(
 					entitatActual.getId(),
 					documentId,
@@ -227,17 +242,17 @@ public class ContenidorDocumentController extends BaseUserController {
 				getMessage(
 						request, 
 						"document.controller.descarregar.error"));
-		if (contenidor.getPare() != null)
-			return "redirect:../../contenidor/" + contenidorId;
+		if (contingut.getPare() != null)
+			return "redirect:../../contingut/" + contingutId;
 		else
 			return "redirect:../../escriptori";
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/descarregar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/descarregar", method = RequestMethod.GET)
 	public String descarregarVersio(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -252,16 +267,16 @@ public class ContenidorDocumentController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/{contenidorId}/metaDocument/{metaDocumentId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/metaDocument/{metaDocumentId}", method = RequestMethod.GET)
 	@ResponseBody
 	public MetaDocumentDto metaDocumentInfo(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long metaDocumentId) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<MetaDocumentDto> metaDocuments = metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
 				entitatActual.getId(),
-				contenidorId);
+				contingutId);
 		for (MetaDocumentDto metaDocument: metaDocuments) {
 			if (metaDocument.getId().equals(metaDocumentId))
 				return metaDocument;
@@ -269,11 +284,11 @@ public class ContenidorDocumentController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/{contenidorId}/metaDocument/{metaDocumentId}/plantilla", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/metaDocument/{metaDocumentId}/plantilla", method = RequestMethod.GET)
 	public String metaDocumentPlantilla(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long metaDocumentId) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		FitxerDto plantilla = metaDocumentService.getPlantilla(
@@ -286,10 +301,10 @@ public class ContenidorDocumentController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/portafirmes/upload", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/portafirmes/upload", method = RequestMethod.GET)
 	public String portafirmesUploadGet(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			Model model) {
@@ -301,10 +316,10 @@ public class ContenidorDocumentController extends BaseUserController {
 		model.addAttribute(new PortafirmesEnviarCommand());
 		return "portafirmesEnviarForm";
 	}
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/portafirmes/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/portafirmes/upload", method = RequestMethod.POST)
 	public String portafirmesUploadPost(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			@Valid PortafirmesEnviarCommand command,
@@ -328,14 +343,14 @@ public class ContenidorDocumentController extends BaseUserController {
 				command.getDataCaducitat());
 		return this.getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../../../../contenidor/" + documentId,
+				"redirect:../../../../../../../contingut/" + documentId,
 				"document.controller.portafirmes.upload.ok");
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/portafirmes/cancel", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/portafirmes/cancel", method = RequestMethod.GET)
 	public String portafirmesCancel(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			Model model) {
@@ -346,14 +361,14 @@ public class ContenidorDocumentController extends BaseUserController {
 				versio);
 		return this.getAjaxControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../../../../contenidor/" + documentId,
+				"redirect:../../../../../../../contingut/" + documentId,
 				"document.controller.portafirmes.cancel.ok");
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/custodia/reintentar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/custodia/reintentar", method = RequestMethod.GET)
 	public String custodiaReintentar(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			Model model) {
@@ -364,14 +379,14 @@ public class ContenidorDocumentController extends BaseUserController {
 				versio);
 		return this.getAjaxControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../../../../contenidor/" + documentId,
+				"redirect:../../../../../../../contingut/" + documentId,
 				"document.controller.custodia.reintentar.ok");
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/custodia/esborrar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/custodia/esborrar", method = RequestMethod.GET)
 	public String custodiaEsborrar(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			Model model) {
@@ -382,15 +397,15 @@ public class ContenidorDocumentController extends BaseUserController {
 				versio);
 		return this.getAjaxControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../../../../contenidor/" + documentId,
+				"redirect:../../../../../../../contingut/" + documentId,
 				"document.controller.custodia.esborrar.ok");
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/pdf", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/pdf", method = RequestMethod.GET)
 	public String convertirPdf(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -405,10 +420,10 @@ public class ContenidorDocumentController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/firmaPassarela", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/firmaPassarela", method = RequestMethod.GET)
 	public String firmaPassarelaGet(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			Model model) {
@@ -420,10 +435,10 @@ public class ContenidorDocumentController extends BaseUserController {
 		model.addAttribute(new PassarelaFirmaEnviarCommand());
 		return "passarelaFirmaForm";
 	}
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/firmaPassarela", method = RequestMethod.POST)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/firmaPassarela", method = RequestMethod.POST)
 	public String firmaPassarelaPost(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			@Valid PassarelaFirmaEnviarCommand command,
@@ -452,15 +467,15 @@ public class ContenidorDocumentController extends BaseUserController {
 				command.getLloc(),
 				usuariActual.getEmail(),
 				LocaleContextHolder.getLocale().getLanguage(),
-				modalStr + "/contenidor/" + contenidorId + "/document/" + documentId + "/versio/" + versio + "/firmaPassarelaFinal",
+				modalStr + "/contingut/" + contingutId + "/document/" + documentId + "/versio/" + versio + "/firmaPassarelaFinal",
 				false);
 		return "redirect:" + procesFirmaUrl;
 	}
 
-	@RequestMapping(value = "/{contenidorId}/document/{documentId}/versio/{versio}/firmaPassarelaFinal")
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/firmaPassarelaFinal")
 	public String firmaPassarelaFinal(
 			HttpServletRequest request,
-			@PathVariable Long contenidorId,
+			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
 			@PathVariable int versio,
 			@RequestParam("signaturesSetId") String signaturesSetId,
@@ -532,7 +547,7 @@ public class ContenidorDocumentController extends BaseUserController {
 		}
 		return getModalControllerReturnValueSuccess(
 				request, 
-				"redirect:/contenidor/" + contenidorId,
+				"redirect:/contingut/" + contingutId,
 				null);
 	}
 
@@ -576,5 +591,61 @@ public class ContenidorDocumentController extends BaseUserController {
 				versio,
 				model);
 	}
-	
+
+	private String createUpdateDocument(
+			HttpServletRequest request,
+			Long contingutId,
+			DocumentCommand command,
+			BindingResult bindingResult,
+			Model model) throws NotFoundException, ValidationException, IOException {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (command.getId() == null) {
+			documentService.create(
+					entitatActual.getId(),
+					contingutId,
+					command.getDocumentTipus(),
+					command.getMetaNodeId(),
+					command.getNom(),
+					command.getData(),
+					command.getArxiu().getOriginalFilename(),
+					command.getArxiu().getContentType(),
+					command.getArxiu().getBytes(),
+					command.getUbicacio());
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../../../contingut/" + contingutId,
+					"document.controller.creat.ok");
+		} else {
+			if (command.getArxiu() == null || command.getArxiu().isEmpty()) {
+				documentService.update(
+						entitatActual.getId(),
+						command.getId(),
+						command.getDocumentTipus(),
+						command.getMetaNodeId(),
+						command.getNom(),
+						command.getData(),
+						null,
+						null,
+						null,
+						command.getUbicacio());
+			} else {
+				documentService.update(
+						entitatActual.getId(),
+						command.getId(),
+						command.getDocumentTipus(),
+						command.getMetaNodeId(),
+						command.getNom(),
+						command.getData(),
+						command.getArxiu().getOriginalFilename(),
+						command.getArxiu().getContentType(),
+						command.getArxiu().getBytes(),
+						command.getUbicacio());
+			}
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../contingut/" + command.getPareId(),
+					"document.controller.modificat.ok");
+		}
+	}
+
 }

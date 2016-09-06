@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
@@ -39,20 +40,25 @@ public class DocumentServiceBean implements DocumentService {
 	public DocumentDto create(
 			Long entitatId,
 			Long contenidorId,
+			DocumentTipusEnumDto tipus,
 			Long metaDocumentId,
 			String nom,
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) {
+			byte[] arxiuContingut,
+			String ubicacio) {
 		return delegate.create(
-				entitatId, contenidorId,
+				entitatId,
+				contenidorId,
+				tipus,
 				metaDocumentId,
 				nom,
 				data,
 				arxiuNom,
 				arxiuContentType,
-				arxiuContingut);
+				arxiuContingut,
+				ubicacio);
 	}
 
 	@Override
@@ -60,21 +66,25 @@ public class DocumentServiceBean implements DocumentService {
 	public DocumentDto update(
 			Long entitatId,
 			Long id,
+			DocumentTipusEnumDto tipus,
 			Long metaDocumentId,
 			String nom,
 			Date data,
 			String arxiuNom,
 			String arxiuContentType,
-			byte[] arxiuContingut) {
+			byte[] arxiuContingut,
+			String ubicacio) {
 		return delegate.update(
 				entitatId,
 				id,
+				tipus,
 				metaDocumentId,
 				nom,
 				data,
 				arxiuNom,
 				arxiuContentType,
-				arxiuContingut);
+				arxiuContingut,
+				ubicacio);
 	}
 
 	@Override

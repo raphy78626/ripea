@@ -5,20 +5,19 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<c:set var="titol"><spring:message code="bustia.pendent.contingut.addexp.titol"/></c:set>
+<c:set var="titol"><spring:message code="bustia.pendent.registre.addexp.titol"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
-	<script src="<c:url value="/js/webutil.common.js"/>"></script>
-	<rip:modalHead/>
+	<rip:modalHead titol="${titol}"/>
 </head>
 <body>
-	<form:form action="" class="form-horizontal" commandName="contingutMoureCopiarEnviarCommand">
+	<form:form action="" class="form-horizontal" commandName="contenidorMoureCopiarEnviarCommand">
 		<form:hidden path="origenId"/>
-		<rip:inputFileChooser name="destiId" contingutOrigen="${contenidorDesti}" textKey="bustia.pendent.contingut.addexp.camp.desti" ocultarDocuments="true" ocultarCarpetes="true" required="true"/>
+		<rip:inputFileChooser name="destiId" contingutOrigen="${contenidorOrigen}" textKey="bustia.pendent.registre.addexp.camp.desti" ocultarDocuments="true" ocultarCarpetes="true" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-sign-in"></span> <spring:message code="comu.boto.afegir"/></button>
-			<a href="<c:url value="/contenidor/${contenidorOrigen.pare.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/contenidor/${contenidorOrigen.pare.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

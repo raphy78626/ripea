@@ -24,6 +24,7 @@ import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
@@ -1388,6 +1389,7 @@ public class ContingutServiceImpl implements ContingutService {
 		} else if (contingutOrigen instanceof DocumentEntity) {
 			DocumentEntity documentOrigen = (DocumentEntity)contingutOrigen;
 			DocumentEntity documentNou = DocumentEntity.getBuilder(
+					DocumentTipusEnumDto.DIGITAL,
 					documentOrigen.getNom(),
 					documentOrigen.getData(),
 					documentOrigen.getExpedient(),

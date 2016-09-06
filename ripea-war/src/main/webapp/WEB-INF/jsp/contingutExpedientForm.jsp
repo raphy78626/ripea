@@ -6,13 +6,13 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <c:choose>
-	<c:when test="${empty expedientCommand.id}"><c:set var="titol"><spring:message code="contenidor.expedient.form.titol.crear"/></c:set></c:when>
-	<c:otherwise><c:set var="titol"><spring:message code="contenidor.expedient.form.titol.modificar"/></c:set></c:otherwise>
+	<c:when test="${empty expedientCommand.id}"><c:set var="titol"><spring:message code="contingut.expedient.form.titol.crear"/></c:set></c:when>
+	<c:otherwise><c:set var="titol"><spring:message code="contingut.expedient.form.titol.modificar"/></c:set></c:otherwise>
 </c:choose>
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<rip:modalHead/>
 	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/js/select2.min.js"/>"></script>
@@ -47,20 +47,20 @@
 </head>
 <body>
 	<c:choose>
-		<c:when test="${empty expedientCommand.id}"><c:set var="formAction"><rip:modalUrl value="/contenidor/${expedientCommand.pareId}/expedient/new"/></c:set></c:when>
-		<c:otherwise><c:set var="formAction"><rip:modalUrl value="/contenidor/${expedientCommand.pareId}/expedient/update"/></c:set></c:otherwise>
+		<c:when test="${empty expedientCommand.id}"><c:set var="formAction"><rip:modalUrl value="/contingut/${expedientCommand.pareId}/expedient/new"/></c:set></c:when>
+		<c:otherwise><c:set var="formAction"><rip:modalUrl value="/contingut/${expedientCommand.pareId}/expedient/update"/></c:set></c:otherwise>
 	</c:choose>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="expedientCommand">
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
-		<rip:inputSelect name="metaNodeId" textKey="contenidor.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom"/>
-		<rip:inputSelect name="arxiuId" textKey="contenidor.expedient.form.camp.arxiu" required="true" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nomAmbUnitat"/>
-		<rip:inputText name="nom" textKey="contenidor.expedient.form.camp.nom" required="true"/>
-		<rip:inputText name="any" textKey="contenidor.expedient.form.camp.any" required="true"/>
+		<rip:inputText name="nom" textKey="contingut.expedient.form.camp.nom" required="true"/>
+		<rip:inputSelect name="metaNodeId" textKey="contingut.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom"/>
+		<rip:inputSelect name="arxiuId" textKey="contingut.expedient.form.camp.arxiu" required="true" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nomAmbUnitat"/>
+		<rip:inputText name="any" textKey="contingut.expedient.form.camp.any" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/contingut/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

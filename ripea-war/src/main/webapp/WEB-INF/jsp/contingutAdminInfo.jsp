@@ -11,7 +11,7 @@
 </head>
 <body>
 
-	<rip:blocContenidorPath contenidor="${contingut}"/>
+	<rip:blocContenidorPath contingut="${contingut}"/>
 	<c:if test="${contingut.registre && contingut.procesEstat == 'ERROR'}">
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="active" role="presentation"><a href="#informacio" aria-controls="informacio" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.informacio"/></a>

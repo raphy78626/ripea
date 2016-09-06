@@ -3,13 +3,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags/ripea" prefix="rip"%>
-<%@ attribute name="contenidor" required="true" rtexprvalue="true" type="java.lang.Object"%>
+<%@ attribute name="contingut" required="true" rtexprvalue="true" type="java.lang.Object"%>
 <%@ attribute name="mostrarExpedients" required="true" rtexprvalue="true" type="java.lang.Boolean"%>
 <%@ attribute name="mostrarNoExpedients" required="true" rtexprvalue="true" type="java.lang.Boolean"%>
 <c:choose>
-	<c:when test="${mostrarExpedients and mostrarNoExpedients}"><c:set var="fills" value="${contenidor.fillsNoRegistres}"/></c:when>
-	<c:when test="${mostrarExpedients and not mostrarNoExpedients}"><c:set var="fills" value="${contenidor.fillsExpedients}"/></c:when>
-	<c:when test="${not mostrarExpedients and mostrarNoExpedients}"><c:set var="fills" value="${contenidor.fillsNoExpedients}"/></c:when>
+	<c:when test="${mostrarExpedients and mostrarNoExpedients}"><c:set var="fills" value="${contingut.fillsNoRegistres}"/></c:when>
+	<c:when test="${mostrarExpedients and not mostrarNoExpedients}"><c:set var="fills" value="${contingut.fillsExpedients}"/></c:when>
+	<c:when test="${not mostrarExpedients and mostrarNoExpedients}"><c:set var="fills" value="${contingut.fillsNoExpedients}"/></c:when>
 </c:choose>
 <c:set var="htmlIconaCarpeta"><span class="fa-stack"><i class="fa fa-folder fa-stack-2x"></i><i class="fa fa-clock-o fa-stack-1x fa-inverse"></i></span></c:set>
 <c:set var="htmlIconaCarpeta6em"><span class="fa-stack" style="font-size:.6em"><i class="fa fa-folder fa-stack-2x"></i><i class="fa fa-clock-o fa-stack-1x fa-inverse"></i></span></c:set>
@@ -35,24 +35,24 @@
 									<c:if test="${fill.node and not fill.valid}"><span class="fa fa-exclamation-triangle text-warning"></span></c:if>
 									${fill.nom}
 								</p>
-								<rip:blocContenidorAccions id="accions-fill-${fill.id}" className="botons-accions-element" modeLlistat="false" contenidor="${fill}"/>
+								<rip:blocContenidorAccions id="accions-fill-${fill.id}" className="botons-accions-element" modeLlistat="false" contingut="${fill}"/>
 							</div>
 						</div>
 						<script>
 							var tooltipTitle = '<dl class="text-left" style="min-width:120px">';
 							<c:if test="${fill.expedient or fill.document}">
-							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.titol"/></dt>';
+							tooltipTitle += '<dt><spring:message code="contingut.info.titol"/></dt>';
 							</c:if>
 							<c:if test="${not fill.expedient and not fill.document}">
-							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.nom"/></dt>';
+							tooltipTitle += '<dt><spring:message code="contingut.info.nom"/></dt>';
 							</c:if>
 							tooltipTitle += '<dd>${fn:escapeXml(fill.nom)}</dd>';
 							<c:if test="${fill.expedient}">
-							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.numero"/></dt>';
+							tooltipTitle += '<dt><spring:message code="contingut.info.numero"/></dt>';
 							tooltipTitle += '<dd>${fill.sequencia}/${fill.any}</dd>';
 							</c:if>
 							<c:if test="${fill.carpeta or fill.node and not empty fill.metaNode}">
-							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.tipus"/></dt>';
+							tooltipTitle += '<dt><spring:message code="contingut.info.tipus"/></dt>';
 							<c:choose>
 								<c:when test="${fill.carpeta}">
 							tooltipTitle += '<dd><spring:message code="carpeta.tipus.enum.${fill.tipus}"/></dd>';
@@ -62,20 +62,20 @@
 								</c:when>
 							</c:choose>
 							</c:if>
-							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.createl"/></dt>' +
+							tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
 									'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
-									'<dt><spring:message code="contenidor.contingut.info.creatper"/></dt>' +
+									'<dt><spring:message code="contingut.info.creatper"/></dt>' +
 									'<dd>${fn:escapeXml(fill.createdBy.nom)}</dd>';
 							<c:if test="${fill.expedient}">
-							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.arxiu"/></dt>' +
+							tooltipTitle += '<dt><spring:message code="contingut.info.arxiu"/></dt>' +
 									'<dd>${fn:escapeXml(fill.arxiu.nom)}</dd>' +
-									'<dt><spring:message code="contenidor.contingut.info.estat"/></dt>' +
+									'<dt><spring:message code="contingut.info.estat"/></dt>' +
 									'<dd><spring:message code="expedient.estat.enum.${fill.estat}"/></dd>';
 							</c:if>
 							<c:if test="${fill.document}">
-							tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.data"/></dt>' +
+							tooltipTitle += '<dt><spring:message code="contingut.info.data"/></dt>' +
 									'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
-									'<dt><spring:message code="contenidor.contingut.info.versio"/></dt>' +
+									'<dt><spring:message code="contingut.info.versio"/></dt>' +
 									'<dd>${fill.darreraVersio.versio}</dd>';
 							</c:if>
 							tooltipTitle += '</dl>';
@@ -115,10 +115,10 @@
 		<table class="table table-striped table-bordered table-hover">
 			<thead>
 				<tr>
-					<th><spring:message code="contenidor.contingut.info.nom"/></th>
-					<th><spring:message code="contenidor.contingut.info.tipus"/></th>
-					<th><spring:message code="contenidor.contingut.info.createl"/></th>
-					<th><spring:message code="contenidor.contingut.info.creatper"/></th>
+					<th><spring:message code="contingut.info.nom"/></th>
+					<th><spring:message code="contingut.info.tipus"/></th>
+					<th><spring:message code="contingut.info.createl"/></th>
+					<th><spring:message code="contingut.info.creatper"/></th>
 					<th width="10%">&nbsp;</th>
 				</tr>
 			</thead>
@@ -127,9 +127,9 @@
 					<tr id="info-fill-${fill.id}" class="element-drag-drop">
 						<td>
 							<c:choose>
-								<c:when test="${fill.expedient}"><span class="fa fa-briefcase" title="<spring:message code="contenidor.contingut.icona.expedient"/>"></span></c:when>
+								<c:when test="${fill.expedient}"><span class="fa fa-briefcase" title="<spring:message code="contingut.icona.expedient"/>"></span></c:when>
 								<c:when test="${fill.carpeta}"><rip:blocIconaCarpeta carpeta="${fill}" petita="${true}"/></c:when>
-								<c:when test="${fill.document}"><span class="fa fa-file" title="<spring:message code="contenidor.contingut.icona.document"/>"></span></c:when>
+								<c:when test="${fill.document}"><span class="fa fa-file" title="<spring:message code="contingut.icona.document"/>"></span></c:when>
 							</c:choose>
 							<c:if test="${fill.node and not fill.valid}">&nbsp;<span class="fa fa-exclamation-triangle text-warning"></span></c:if>
 							&nbsp;${fill.nom}
@@ -143,14 +143,14 @@
 						<td><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></td>
 						<td>${fill.createdBy.nom}</td>
 						<td>
-							<rip:blocContenidorAccions className="botons-accions-element" modeLlistat="true" contenidor="${fill}"/>
+							<rip:blocContenidorAccions className="botons-accions-element" modeLlistat="true" contingut="${fill}"/>
 						</td>
 					</tr>
 					<script>
 						var tooltipTitle = '<dl class="text-left" style="min-width:120px">' +
-								'<dt><spring:message code="contenidor.contingut.info.nom"/></dt>' +
+								'<dt><spring:message code="contingut.info.nom"/></dt>' +
 								'<dd>${fn:escapeXml(fill.nom)}</dd>' +
-								'<dt><spring:message code="contenidor.contingut.info.tipus"/></dt>';
+								'<dt><spring:message code="contingut.info.tipus"/></dt>';
 						<c:choose>
 							<c:when test="${fill.expedient or fill.document}">
 						tooltipTitle += '<dd>${fn:escapeXml(fill.metaNode.nom)}</dd>';
@@ -159,20 +159,20 @@
 						tooltipTitle += '<dd><spring:message code="carpeta.tipus.enum.${fill.tipus}"/></dd>';
 							</c:when>
 						</c:choose>
-						tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.createl"/></dt>' +
+						tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
 								'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
-								'<dt><spring:message code="contenidor.contingut.info.creatper"/></dt>' +
+								'<dt><spring:message code="contingut.info.creatper"/></dt>' +
 								'<dd>${fn:escapeXml(fill.createdBy.nom)}</dd>';
 						<c:if test="${fill.expedient}">
-						tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.arxiu"/></dt>' +
+						tooltipTitle += '<dt><spring:message code="contingut.info.arxiu"/></dt>' +
 								'<dd>${fn:escapeXml(fill.arxiu.nom)}</dd>' +
-								'<dt><spring:message code="contenidor.contingut.info.estat"/></dt>' +
+								'<dt><spring:message code="contingut.info.estat"/></dt>' +
 								'<dd><spring:message code="expedient.estat.enum.${fill.estat}"/></dd>';
 						</c:if>
 						<c:if test="${fill.document}">
-						tooltipTitle += '<dt><spring:message code="contenidor.contingut.info.data"/></dt>' +
+						tooltipTitle += '<dt><spring:message code="contingut.info.data"/></dt>' +
 								'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
-								'<dt><spring:message code="contenidor.contingut.info.versio"/></dt>' +
+								'<dt><spring:message code="contingut.info.versio"/></dt>' +
 								'<dd>${fill.darreraVersio.versio}</dd>';
 						</c:if>
 						tooltipTitle += '</dl>';

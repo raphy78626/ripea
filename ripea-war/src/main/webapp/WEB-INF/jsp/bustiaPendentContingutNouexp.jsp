@@ -43,9 +43,9 @@
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="expedientCommand">
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
-		<rip:inputSelect name="metaNodeId" textKey="contenidor.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" disabled="${not empty expedientCommand.id}"/>
-		<rip:inputSelect name="arxiuId" textKey="contenidor.expedient.form.camp.arxiu" required="true" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nomAmbUnitat"/>
-		<rip:inputText name="nom" textKey="contenidor.expedient.form.camp.nom" required="true"/>
+		<rip:inputSelect name="metaNodeId" textKey="contingut.expedient.form.camp.metanode" required="true" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" disabled="${not empty expedientCommand.id}"/>
+		<rip:inputSelect name="arxiuId" textKey="contingut.expedient.form.camp.arxiu" required="true" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nomAmbUnitat"/>
+		<rip:inputText name="nom" textKey="contingut.expedient.form.camp.nom" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
