@@ -15,8 +15,8 @@
 							<c:when test="${contingutPath.document}"><a href="<c:url value="/contingut/${contingutPath.id}"/>"><span class="fa fa-file" title="<spring:message code="contingut.icona.document"/>"></span> ${contingutPath.nom}</a></c:when>
 							<c:when test="${contingutPath.arxiv}">
 								<c:choose>
-									<c:when test="${status.first}"><span class="fa fa-sitemap" title="<spring:message code="contenidor.contingut.icona.unitat"/>"></span> ${contingutPath.nom}</c:when>
-									<c:otherwise><span class="fa fa-archive" title="<spring:message code="contenidor.contingut.icona.arxiu"/>"></span> ${contingutPath.nom}</c:otherwise>
+									<c:when test="${status.first}"><span class="fa fa-sitemap" title="<spring:message code="contingut.icona.unitat"/>"></span> ${contingutPath.nom}</c:when>
+									<c:otherwise><span class="fa fa-archive" title="<spring:message code="contingut.icona.arxiu"/>"></span> ${contingutPath.nom}</c:otherwise>
 								</c:choose>
 							</c:when>
 							<c:when test="${contingutPath.bustia}">

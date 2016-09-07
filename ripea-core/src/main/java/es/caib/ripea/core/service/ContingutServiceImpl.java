@@ -308,8 +308,8 @@ public class ContingutServiceImpl implements ContingutService {
 					LogTipusEnumDto.CREACIO,
 					metaDada.getCodi(),
 					dada.getValor(),
-					true,
-					true);
+					false,
+					false);
 			return conversioTipusHelper.convertir(
 					dada,
 					DadaDto.class);

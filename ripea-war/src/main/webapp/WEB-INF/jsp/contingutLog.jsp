@@ -16,19 +16,16 @@
 	<ul class="nav nav-tabs">
 		<li class="active">
 			<a data-toggle="tab" href="#accions">
-				<span class="fa fa-cog"></span>
 				<spring:message code="comu.boto.accions"/>
 			</a>
 		</li>
 		<li>
 			<a data-toggle="tab" href="#moviments">
-				<span class="fa fa-retweet"></span>
 				<spring:message code="comu.boto.moviments"/>
 			</a>
 		</li>
 		<li>
 			<a data-toggle="tab" href="#auditoria">
-				<span class="fa fa-eye"></span>
 				<spring:message code="contingut.log.pipella.auditoria"/>
 			</a>
 		</li>
@@ -105,16 +102,38 @@
 			</c:if>
 		</div>
 		<div class="tab-pane" id="auditoria">
-			<dl class="dl-horizontal">
-				<dt><spring:message code="contingut.log.camp.usuari.creacio"/></dt>
-				<dd>${contingut.createdBy.nom}</dd>
-				<dt><spring:message code="contingut.log.camp.data.creacio"/></dt>
-				<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-				<dt><spring:message code="contingut.log.camp.usuari.modificacio"/></dt>
-				<dd>${contingut.lastModifiedBy.nom}</dd>
-				<dt><spring:message code="contingut.log.camp.data.modificacio"/></dt>
-				<dd><fmt:formatDate value="${contingut.lastModifiedDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-			</dl>
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><spring:message code="contingut.log.creacio"/></h3>
+						</div>
+		  				<div class="panel-body">
+		    				<dl class="dl-horizontal">
+								<dt><spring:message code="contingut.log.camp.usuari.creacio"/></dt>
+								<dd>${contingut.createdBy.nom}</dd>
+								<dt><spring:message code="contingut.log.camp.data.creacio"/></dt>
+								<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+							</dl>
+		  				</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><spring:message code="contingut.log.modificacio"/></h3>
+						</div>
+		  				<div class="panel-body">
+		    				<dl class="dl-horizontal">
+								<dt><spring:message code="contingut.log.camp.usuari.modificacio"/></dt>
+								<dd>${contingut.lastModifiedBy.nom}</dd>
+								<dt><spring:message code="contingut.log.camp.data.modificacio"/></dt>
+								<dd><fmt:formatDate value="${contingut.lastModifiedDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+							</dl>
+		  				</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div id="modal-botons" class="well">

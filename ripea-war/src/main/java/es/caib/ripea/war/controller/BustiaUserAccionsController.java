@@ -39,7 +39,7 @@ import es.caib.ripea.war.command.ExpedientCommand;
  */
 @Controller
 @RequestMapping("/bustiaUser")
-public class BustiaUserContingutController extends BaseUserController {
+public class BustiaUserAccionsController extends BaseUserController {
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -53,25 +53,6 @@ public class BustiaUserContingutController extends BaseUserController {
 	private ArxiuService arxiuService;
 
 
-
-	/*@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contenidorId}/agafar", method = RequestMethod.GET)
-	public String pendentAfegirEscriptori(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			@PathVariable Long contenidorId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		EscriptoriDto escriptori = contenidorService.getEscriptoriPerUsuariActual(entitatActual.getId());
-		contenidorService.receive(
-				entitatActual.getId(),
-				bustiaId,
-				contenidorId,
-				escriptori.getId());
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../pendent",
-				"bustia.controller.pendent.contingut.agafat");
-	}*/
 
 	@RequestMapping(value = "/{bustiaId}/pendent/contingut/{contingutId}/nouexp", method = RequestMethod.GET)
 	public String registrePendentNouexpGet(
@@ -152,11 +133,6 @@ public class BustiaUserContingutController extends BaseUserController {
 					contingutId);
 			return "bustiaPendentContingutAddexp";
 		}
-		/*contenidorService.receive(
-				entitatActual.getId(),
-				bustiaId,
-				command.getContenidorOrigenId(),
-				command.getContenidorDestiId());*/
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
@@ -195,11 +171,6 @@ public class BustiaUserContingutController extends BaseUserController {
 					model);
 			return "bustiaPendentContingutReenviar";
 		}
-		/*contenidorService.send(
-				entitatActual.getId(),
-				contingutId,
-				command.getContenidorDestiId(),
-				command.getComentariEnviar());*/
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",

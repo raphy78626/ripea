@@ -6,6 +6,7 @@
 			adjustHeight: true,
 			maximized: false,
 			refreshMissatges: true,
+			reloadPage: false,
 			refreshDatatable: false,
 			elementBotons: "#modal-botons",
 			elementForm: "#modal-form",
@@ -67,6 +68,7 @@
 								maximized: plugin.settings.maximized,
 								refreshMissatges: plugin.settings.refreshMissatges,
 								refreshDatatable: plugin.settings.refreshDatatable,
+								reloadPage: plugin.settings.reloadPage,
 								elementBotons: plugin.settings.elementBotons,
 								elementForm: plugin.settings.elementForm,
 								elementTancarData: plugin.settings.elementTancarData,
@@ -79,6 +81,7 @@
 								maximized: plugin.settings.maximized,
 								refreshMissatges: plugin.settings.refreshMissatges,
 								refreshDatatable: plugin.settings.refreshDatatable,
+								reloadPage: plugin.settings.reloadPage,
 								elementBotons: plugin.settings.elementBotons,
 								elementForm: plugin.settings.elementForm,
 								elementTancarData: plugin.settings.elementTancarData,
@@ -191,13 +194,19 @@
 				iframe.on('load', function () {
 					var pathname = this.contentDocument.location.pathname;
 					if (pathname == webutilModalTancarPath()) {
+						if (settings.reloadPage) {
+							modalobj.on('hide.bs.modal', function() {
+								window.location.reload(true);
+							});
+						} else {
+							if (settings.refreshMissatges) {
+								webutilRefreshMissatges();
+							}
+							if (settings.refreshDatatable) {
+								$('#' + settings.dataTableId).webutilDatatable('refresh');
+							}
+						}
 						$('button.close', $(this).closest('.modal-dialog')).trigger('click');
-						if (settings.refreshMissatges) {
-							webutilRefreshMissatges();
-						}
-						if (settings.refreshDatatable) {
-							$('#' + settings.dataTableId).webutilDatatable('refresh');
-						}
 					}
 				});
 				modalobj.data('modal-configurada', true);

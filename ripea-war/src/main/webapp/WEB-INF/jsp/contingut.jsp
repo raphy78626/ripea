@@ -555,10 +555,10 @@ $(document).ready(function() {
 									<div id="botons-crear-contingut" class="btn-group">
 										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contingut.boto.crear.contingut"/>&nbsp;<span class="caret"></span></button>
 										<ul class="dropdown-menu text-left" role="menu">
-											<li><a href="../contingut/${contingut.id}/carpeta/new" data-toggle="modal"><span class="fa fa-folder"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.carpeta"/>...</a></li>
-											<li><a href="../contingut/${contingut.id}/document/new" data-toggle="modal"><span class="fa fa-file"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.document"/>...</a></li>
+											<li><a href="../contingut/${contingut.id}/carpeta/new" data-toggle="modal" data-reload-page="true"><span class="fa fa-folder"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.carpeta"/>...</a></li>
+											<li><a href="../contingut/${contingut.id}/document/new" data-toggle="modal" data-reload-page="true"><span class="fa fa-file"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.document"/>...</a></li>
 											<c:if test="${contingut.crearExpedients and not empty metaExpedients}">
-												<li><a href="../contingut/${contingut.id}/expedient/new" data-toggle="modal"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="contingut.boto.crear.expedient"/>...</a></li>
+												<li><a href="../contingut/${contingut.id}/expedient/new" data-toggle="modal" data-reload-page="true"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="contingut.boto.crear.expedient"/>...</a></li>
 											</c:if>
 										</ul>
 									</div>

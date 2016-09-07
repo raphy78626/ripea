@@ -109,6 +109,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 				contingut,
 				entitat).build();
 		carpeta = carpetaRepository.save(carpeta);
+		System.out.println(">>> Creacio CARPETA " + carpeta.getId() + " al pare " + carpeta.getPare().getId());
 		// Registra al log la creació de la carpeta
 		contenidorLogHelper.log(
 				carpeta,

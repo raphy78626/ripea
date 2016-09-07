@@ -60,22 +60,6 @@ public class BustiaUserController extends BaseUserController {
 			Model model) {
 		return "bustiaUserList";
 	}
-	/*@RequestMapping(value = "/unitat/{unitatCodi}", method = RequestMethod.GET)
-	public String get(
-			HttpServletRequest request,
-			@PathVariable String unitatCodi,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"arbreUnitatsOrganitzatives",
-				bustiaService.findArbreUnitatsOrganitzatives(
-						entitatActual.getId(),
-						true,
-						true,
-						true));
-		model.addAttribute("unitatCodi", unitatCodi);
-		return "bustiaUserList";
-	}*/
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
@@ -104,28 +88,6 @@ public class BustiaUserController extends BaseUserController {
 						false));
 		return "bustiaPendentList";
 	}
-
-	/*@RequestMapping(value = "/{bustiaId}/pendent/count", method = RequestMethod.GET)
-	@ResponseBody
-	public long pendentCount(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId) {
-		getEntitatActualComprovantPermisos(request);
-		return ElementsPendentsBustiaHelper.getCount(request);
-	}
-
-	@RequestMapping(value = "/{bustiaId}/pendent/refresh", method = RequestMethod.GET)
-	public String pendentRefresh(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		bustiaService.contingutPendentBustiesAllCount(
-				entitatActual.getId());
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../../pendent",
-				null);
-	}*/
 
 	@RequestMapping(value = "/{bustiaId}/pendent/datatable", method = RequestMethod.GET)
 	@ResponseBody
