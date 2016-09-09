@@ -31,8 +31,9 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "where "
 			+ "    inter.entitat = :entitat "
 			+ "and inter.expedient = :expedient "
+			+ "and inter.esRepresentant = false "
 			+ "order by "
-			+ "    inter.identificador desc")
+			+ "    inter.id asc")
 	List<InteressatEntity> findByEntitatAndExpedient(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("expedient") ExpedientEntity expedient);
@@ -43,7 +44,8 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "    InteressatEntity inter "
 			+ "where "
 			+ "    inter.entitat = :entitat "
-			+ "and inter.expedient = :expedient")
+			+ "and inter.expedient = :expedient "
+			+ "and inter.esRepresentant = false ")
 	Long countByEntitatAndExpedient(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("expedient") ExpedientEntity expedient);
@@ -63,6 +65,7 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "and (:esNullDocumentNum = true or inter.documentNum = :documentNum) "
 			+ "and (:esNullLlinatge1 = true or inter.llinatge1 = :llinatge1) "
 			+ "and (:esNullLlinatge2 = true or inter.llinatge2 = :llinatge2) "
+			+ "and inter.esRepresentant = false "
 			+ "order by "
 			+ "    inter.identificador desc")
 	List<InteressatPersonaFisicaEntity> findByFiltrePersonaFisica(
@@ -89,6 +92,7 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "    inter.entitat = :entitat "
 			+ "and (:esNullDocumentNum = true or inter.documentNum = :documentNum) "
 			+ "and (:esNullRaoSocial = true or inter.raoSocial = :raoSocial) "
+			+ "and inter.esRepresentant = false "
 			+ "order by "
 			+ "    inter.identificador desc")
 	List<InteressatPersonaJuridicaEntity> findByFiltrePersonaJuridica(

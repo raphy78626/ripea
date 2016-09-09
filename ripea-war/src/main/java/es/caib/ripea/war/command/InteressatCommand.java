@@ -22,6 +22,7 @@ import es.caib.ripea.war.command.InteressatCommand.PersonaJuridica;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 import es.caib.ripea.war.validation.DocumentIdentitat;
 import es.caib.ripea.war.validation.InteressatNoRepetit;
+import es.caib.ripea.war.validation.InteressatPais;
 
 /**
  * Command per al manteniment d'interessats.
@@ -29,13 +30,7 @@ import es.caib.ripea.war.validation.InteressatNoRepetit;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @InteressatNoRepetit(groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class})
-//		campId = "id",
-//		campEntitatId = "entitatId",
-//		campNom = "nom",
-//		campNif = "nif",
-//		campLlinatges = "llinatges",
-//		campIdentificador = "identificador",
-//		campTipus = "tipus")
+@InteressatPais(groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class})
 public class InteressatCommand  {
 
 //	public static final String TIPUS_CIUTADA = "C";
@@ -69,10 +64,8 @@ public class InteressatCommand  {
 	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
 	@Size(max = 4, groups={PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String pais;
-	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
 	@Size(max = 2, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String provincia;
-	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
 	@Size(max = 5, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String municipi;
 	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})

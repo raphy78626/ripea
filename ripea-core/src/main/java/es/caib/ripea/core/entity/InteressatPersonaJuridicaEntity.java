@@ -168,6 +168,7 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 			built.expedient =  expedient;
 			built.representant =  representant;
 			built.entitat = entitat;
+			built.esRepresentant = false;
 		}
 		public InteressatPersonaJuridicaEntity build() {
 			return built;

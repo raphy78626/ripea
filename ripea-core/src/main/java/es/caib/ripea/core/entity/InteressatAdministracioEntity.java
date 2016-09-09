@@ -37,7 +37,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 
 	@Override
 	public void updateIdentificador() {
-		this.identificador = this.organCodi;
+		//this.identificador = this.organCodi;
 	}
 	
 	public void update(
@@ -167,6 +167,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			built.expedient =  expedient;
 			built.representant =  representant;
 			built.entitat = entitat;
+			built.esRepresentant = false;
 		}
 		public InteressatAdministracioEntity build() {
 			return built;

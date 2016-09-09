@@ -133,6 +133,13 @@ ul.interessats {
 	border: 1px solid #428bca !important;
 	background-color: #f5f5f5;
 }
+.right {
+	float: right;
+}
+.brep {
+	padding-right: 5px;
+    padding-left: 6px;
+}
 </style>
 <c:if test="${edicioOnlineActiva and contenidor.document and not empty contenidor.escriptoriPare}">
 	<script src="http://www.java.com/js/deployJava.js"></script>
@@ -707,6 +714,7 @@ $(document).ready(function() {
 							<thead>
 								<tr>
 									<th data-rdt-property="id" data-rdt-visible="false">#</th>
+									<th data-rdt-property="representantId" data-rdt-visible="false">#</th>
 									<th data-rdt-property="tipus" data-rdt-template="cellTipusInteressatTemplate" data-rdt-sortable="false" width="15%">
 										<spring:message code="contenidor.contingut.interessat.columna.tipus"/>
 										<script id="cellTipusInteressatTemplate" type="text/x-jsrender">
@@ -714,7 +722,25 @@ $(document).ready(function() {
 										</script>
 									</th>
 									<th data-rdt-property="documentNum" data-rdt-sortable="false" width="15%"><spring:message code="contenidor.contingut.interessat.columna.document"/></th>
-									<th data-rdt-property="identificador" data-rdt-sortable="false" width="60%"><spring:message code="contenidor.contingut.interessat.columna.identificador"/></th>
+									<th data-rdt-property="identificador" data-rdt-sortable="false" width="35%"><spring:message code="contenidor.contingut.interessat.columna.identificador"/></th>
+									<th data-rdt-property="representantIdentificador" data-rdt-sortable="false" data-rdt-template="cellAccionsRepresentantTemplate" width="25%"><spring:message code="contenidor.contingut.interessat.columna.representant"/>
+										<script id="cellAccionsRepresentantTemplate" type="text/x-jsrender">
+											{{if tipus != '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.ADMINISTRACIO%>'}}
+												{{if representantId}}
+													{{:representantIdentificador}}
+													<div class="dropdown right">
+														<button class="btn btn-success brep" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<span class="caret"></span></button>
+														<ul class="dropdown-menu">
+															<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/{{:representantId}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.interessat.modificar.prepresentant"/></a></li>
+															<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/{{:representantId}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="contenidor.contingut.confirmacio.esborrar.representant"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.interessat.borrar.prepresentant"/></a></li>
+														</ul>
+													</div>	
+												{{else}}
+													<a class="btn btn-success right" href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/new" data-rdt-link-modal="true" title="<spring:message code="contenidor.contingut.interessat.nou.prepresentant"/>"><span class="fa fa-plus"></span></a>
+												{{/if}}
+											{{/if}}
+										</script>
+									</th>
 									<th data-rdt-property="id" data-rdt-sortable="false" data-rdt-template="cellAccionsInteressatTemplate" width="10%">
 										<script id="cellAccionsInteressatTemplate" type="text/x-jsrender">
 											<div class="dropdown">
@@ -722,6 +748,13 @@ $(document).ready(function() {
 												<ul class="dropdown-menu">
 													<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
 													<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="contenidor.contingut.confirmacio.esborrar.interessat"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+													<%--<li><hr/></li>
+													{{if representantId}}
+														<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/{{:representantId}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.interessat.modificar.prepresentant"/></a></li>
+														<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/{{:representantId}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="contenidor.contingut.confirmacio.esborrar.representant"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.interessat.borrar.prepresentant"/></a></li>
+													{{else}}
+														<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/new" data-rdt-link-modal="true"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contenidor.contingut.interessat.nou.prepresentant"/></a></li>														
+													{{/if}}--%>													
 												</ul>
 											</div>
 										</script>

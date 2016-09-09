@@ -30,6 +30,7 @@ public abstract class InteressatDto implements Serializable {
 	protected IndiomaEnumDto notificacioIdioma;
 	protected Boolean notificacioAutoritzat;
 	protected Long representantId;
+	protected String representantIdentificador;
 	protected String identificador;
 	
 	public Long getId() {
@@ -119,6 +120,12 @@ public abstract class InteressatDto implements Serializable {
 	}
 	public void setRepresentantId(Long representantId) {
 		this.representantId = representantId;
+	}
+	public String getRepresentantIdentificador() {
+		return representantIdentificador;
+	}
+	public void setRepresentantIdentificador(String representantIdentificador) {
+		this.representantIdentificador = representantIdentificador;
 	}
 	public String getIdentificador() {
 		return identificador;

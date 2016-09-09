@@ -202,6 +202,7 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 			built.expedient =  expedient;
 			built.representant =  representant;
 			built.entitat = entitat;
+			built.esRepresentant = false;
 		}
 		public InteressatPersonaFisicaEntity build() {
 			return built;

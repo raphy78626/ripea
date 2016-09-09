@@ -42,6 +42,16 @@ public class InteressatServiceBean implements InteressatService {
 			InteressatDto interessat) {
 		return delegate.create(entitatId, expedientId, interessat);
 	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public InteressatDto create(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId,
+			InteressatDto representant) {
+		return delegate.create(entitatId, expedientId, interessatId, representant);
+	}
 
 	@Override
 	@RolesAllowed("tothom")
@@ -54,11 +64,31 @@ public class InteressatServiceBean implements InteressatService {
 	
 	@Override
 	@RolesAllowed("tothom")
+	public InteressatDto update(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId,
+			InteressatDto representant) {
+		return delegate.update(entitatId, expedientId, interessatId, representant);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
 	public void delete(
 			Long entitatId,
 			Long expedientId,
 			Long interessatId) {
 		delegate.delete(entitatId, expedientId, interessatId);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public void delete(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId,
+			Long representantId) {
+		delegate.delete(entitatId, expedientId, interessatId, representantId);
 	}
 	
 	
@@ -70,6 +100,12 @@ public class InteressatServiceBean implements InteressatService {
 		return delegate.findById(entitatId, id);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public InteressatDto findRepresentantById(Long entitatId, Long interessatId, Long id) {
+		return delegate.findRepresentantById(entitatId, interessatId, id);
+	}
+	
 	@Override
 	@RolesAllowed("tothom")
 	public List<InteressatDto> findByExpedient(
@@ -131,6 +167,7 @@ public class InteressatServiceBean implements InteressatService {
 	}
 
 	@Override
+	@RolesAllowed("tothom")
 	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
 		return delegate.findUnitatsOrganitzativesByCodi(codi);
 	}
