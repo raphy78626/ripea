@@ -37,7 +37,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 
 	@Override
 	public void updateIdentificador() {
-		this.identificador = this.organCodi;
+		//this.identificador = this.organCodi;
 	}
 	
 	public void update(
@@ -87,7 +87,6 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 	 * @param notificacioAutoritzat	Camp per indicar si l'òrgan de l'administració pública ha autoritzat la recepció de notificacions en format electrònic.
 	 * @param expedient	Expedient on està vinculat l'òrgan de l'administració pública.
 	 * @param representant	Representant de l'òrgan de l'administració pública.
-	 * @param entitat	Entitat a la qual pertany aquest òrgan de l'administració pública.
 	 * @return
 	 */
 	public static Builder getBuilder(
@@ -105,8 +104,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			IndiomaEnumDto notificacioIdioma,
 			Boolean notificacioAutoritzat,
 			ExpedientEntity expedient,
-			InteressatEntity representant,
-			EntitatEntity entitat) {
+			InteressatEntity representant) {
 		return new Builder(
 				organCodi,
 				documentTipus,
@@ -122,8 +120,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				notificacioIdioma,
 				notificacioAutoritzat,
 				expedient,
-				representant,
-				entitat);
+				representant);
 	}
 
 	/**
@@ -148,8 +145,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				IndiomaEnumDto notificacioIdioma,
 				Boolean notificacioAutoritzat,
 				ExpedientEntity expedient,
-				InteressatEntity representant,
-				EntitatEntity entitat) {
+				InteressatEntity representant) {
 			built = new InteressatAdministracioEntity();
 			built.organCodi = organCodi;
 			built.documentTipus = documentTipus;
@@ -166,7 +162,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			built.notificacioAutoritzat =  notificacioAutoritzat;
 			built.expedient =  expedient;
 			built.representant =  representant;
-			built.entitat = entitat;
+			built.esRepresentant = false;
 		}
 		public InteressatAdministracioEntity build() {
 			return built;

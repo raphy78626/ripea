@@ -42,6 +42,16 @@ public class InteressatServiceBean implements InteressatService {
 			InteressatDto interessat) {
 		return delegate.create(entitatId, expedientId, interessat);
 	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public InteressatDto create(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId,
+			InteressatDto representant) {
+		return delegate.create(entitatId, expedientId, interessatId, representant);
+	}
 
 	@Override
 	@RolesAllowed("tothom")
@@ -54,6 +64,16 @@ public class InteressatServiceBean implements InteressatService {
 	
 	@Override
 	@RolesAllowed("tothom")
+	public InteressatDto update(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId,
+			InteressatDto representant) {
+		return delegate.update(entitatId, expedientId, interessatId, representant);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
 	public void delete(
 			Long entitatId,
 			Long expedientId,
@@ -61,15 +81,32 @@ public class InteressatServiceBean implements InteressatService {
 		delegate.delete(entitatId, expedientId, interessatId);
 	}
 	
+	@Override
+	@RolesAllowed("tothom")
+	public void delete(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId,
+			Long representantId) {
+		delegate.delete(entitatId, expedientId, interessatId, representantId);
+	}
+	
 	
 	@Override
 	@RolesAllowed("tothom")
 	public InteressatDto findById(
-			Long entitatId,
 			Long id) {
-		return delegate.findById(entitatId, id);
+		return delegate.findById(id);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public InteressatDto findRepresentantById(
+			Long interessatId, 
+			Long id) {
+		return delegate.findRepresentantById(interessatId, id);
+	}
+	
 	@Override
 	@RolesAllowed("tothom")
 	public List<InteressatDto> findByExpedient(
@@ -89,13 +126,11 @@ public class InteressatServiceBean implements InteressatService {
 	@Override
 	@RolesAllowed("tothom")
 	public List<InteressatPersonaFisicaDto> findByFiltrePersonaFisica(
-			Long entitatId,
 			String documentNum,
 			String nom,
 			String llinatge1,
 			String llinatge2) {
 		return delegate.findByFiltrePersonaFisica(
-				entitatId,
 				documentNum,
 				nom,
 				llinatge1,
@@ -105,11 +140,9 @@ public class InteressatServiceBean implements InteressatService {
 	@Override
 	@RolesAllowed("tothom")
 	public List<InteressatPersonaJuridicaDto> findByFiltrePersonaJuridica(
-			Long entitatId,
 			String documentNum,
 			String raoSocial) {
 		return delegate.findByFiltrePersonaJuridica(
-				entitatId, 
 				documentNum, 
 				raoSocial);
 	}
@@ -117,10 +150,8 @@ public class InteressatServiceBean implements InteressatService {
 	@Override
 	@RolesAllowed("tothom")
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
-			Long entitatId,
 			String organCodi) {
 		return delegate.findByFiltreAdministracio(
-				entitatId,
 				organCodi);
 	}
 
@@ -131,6 +162,7 @@ public class InteressatServiceBean implements InteressatService {
 	}
 
 	@Override
+	@RolesAllowed("tothom")
 	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
 		return delegate.findUnitatsOrganitzativesByCodi(codi);
 	}

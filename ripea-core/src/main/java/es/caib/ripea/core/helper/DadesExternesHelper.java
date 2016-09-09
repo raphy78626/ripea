@@ -162,7 +162,8 @@ public class DadesExternesHelper {
 					TypeFactory.defaultInstance().constructCollectionType(
 							List.class,
 							MunicipiDto.class));
-			Collections.sort(municipis);
+			if (municipis != null)
+				Collections.sort(municipis);
 			return municipis;
 		} catch (Exception ex) {
 			LOGGER.error("Error al obtenir les províncies de la font externa", ex);

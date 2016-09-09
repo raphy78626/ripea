@@ -45,13 +45,11 @@ public class InteressatNoRepetitValidator implements ConstraintValidator<Interes
 			final Long id = interessat.getId();
 			if (id != null)
 				return true;
-			final Long entitatId = interessat.getEntitatId();
 			final InteressatTipusEnumDto tipus = interessat.getTipus();
 			
 			boolean existeix;
 			if (InteressatTipusEnumDto.PERSONA_FISICA.equals(tipus)) {
 				List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltrePersonaFisica(
-						entitatId, 
 						interessat.getDocumentNum(), 
 						interessat.getNom(), 
 						interessat.getLlinatge1(), 
@@ -59,13 +57,11 @@ public class InteressatNoRepetitValidator implements ConstraintValidator<Interes
 				existeix = interessats.size() > 0;
 			} else if (InteressatTipusEnumDto.PERSONA_JURIDICA.equals(tipus)) {
 				List<InteressatPersonaJuridicaDto> interessats = interessatService.findByFiltrePersonaJuridica(
-						entitatId,
 						interessat.getDocumentNum(),
 						interessat.getRaoSocial());
 				existeix = interessats.size() > 0;
 			} else if (InteressatTipusEnumDto.ADMINISTRACIO.equals(tipus)) {
 				List<InteressatAdministracioDto> interessats = interessatService.findByFiltreAdministracio(
-						entitatId,
 						interessat.getOrganCodi());
 				existeix = interessats.size() > 0;
 			} else {

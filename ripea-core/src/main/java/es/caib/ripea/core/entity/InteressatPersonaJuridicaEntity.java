@@ -88,7 +88,6 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 	 * @param notificacioAutoritzat	Camp per indicar si l'interessat ha autoritzat la recepció de notificacions en format electrònic.
 	 * @param expedient	Expedient on està vinculat l'interessat.
 	 * @param representant	Representant de l'interessat.
-	 * @param entitat	Entitat a la qual pertany aquest interessat.
 	 * @return
 	 */
 	public static Builder getBuilder(
@@ -106,8 +105,7 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 			IndiomaEnumDto notificacioIdioma,
 			Boolean notificacioAutoritzat,
 			ExpedientEntity expedient,
-			InteressatEntity representant,
-			EntitatEntity entitat) {
+			InteressatEntity representant) {
 		return new Builder(
 				raoSocial,
 				documentTipus,
@@ -123,8 +121,7 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 				notificacioIdioma,
 				notificacioAutoritzat,
 				expedient,
-				representant,
-				entitat);
+				representant);
 	}
 
 	/**
@@ -149,8 +146,7 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 				IndiomaEnumDto notificacioIdioma,
 				Boolean notificacioAutoritzat,
 				ExpedientEntity expedient,
-				InteressatEntity representant,
-				EntitatEntity entitat) {
+				InteressatEntity representant) {
 			built = new InteressatPersonaJuridicaEntity();
 			built.raoSocial = raoSocial;
 			built.documentTipus = documentTipus;
@@ -167,7 +163,7 @@ public class InteressatPersonaJuridicaEntity extends InteressatEntity {
 			built.notificacioAutoritzat =  notificacioAutoritzat;
 			built.expedient =  expedient;
 			built.representant =  representant;
-			built.entitat = entitat;
+			built.esRepresentant = false;
 		}
 		public InteressatPersonaJuridicaEntity build() {
 			return built;

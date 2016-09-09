@@ -559,19 +559,12 @@ public class EntityComprovarHelper {
 	}
 
 	public InteressatEntity comprovarInteressat(
-			EntitatEntity entitat,
 			Long id) {
 		InteressatEntity interessat = interessatRepository.findOne(id);
 		if (interessat == null) {
 			throw new NotFoundException(
 					id,
 					InteressatEntity.class);
-		}
-		if (!entitat.getId().equals(interessat.getEntitat().getId())) {
-			throw new ValidationException(
-					id,
-					InteressatEntity.class,
-					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de l'interessat");
 		}
 		return interessat;
 	}

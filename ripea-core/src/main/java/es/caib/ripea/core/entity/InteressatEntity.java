@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -35,7 +36,6 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 @Table(	name = "ipa_interessat",
 		uniqueConstraints = {
 				@UniqueConstraint(columnNames = {
-						"entitat_id",
 						"expedient_id",
 						"document_num",
 						"nom",
@@ -97,11 +97,9 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	
 	@Column(name = "identificador", length = 80)
 	protected String identificador;
+	@Column(name = "es_representant")
+	protected Boolean esRepresentant;
 	
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
-	@JoinColumn(name = "entitat_id")
-	@ForeignKey(name = "ipa_entitat_interessat_fk")
-	protected EntitatEntity entitat;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "expedient_id")
 	@ForeignKey(name = "ipa_expedient_interessat_fk")
@@ -112,6 +110,11 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	protected InteressatEntity representant;
 	@Version
 	private long version = 0;
+	
+	@Transient
+	private Long representantId;
+	@Transient
+	private Long representantIdentificador;
 
 	public InteressatDocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
@@ -197,13 +200,6 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		this.notificacioAutoritzat = notificacioAutoritzat;
 	}
 
-	public EntitatEntity getEntitat() {
-		return entitat;
-	}
-	public void setEntitat(EntitatEntity entitat) {
-		this.entitat = entitat;
-	}
-
 	public ExpedientEntity getExpedient() {
 		return expedient;
 	}
@@ -232,7 +228,29 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	public void setIdentificador(String identificador) {
 		this.identificador = identificador;
 	}
+	
+	public Long getRepresentantId() {
+		Long representantId = null;
+		if (representant != null) {
+			representantId = representant.getId();
+		}
+		return representantId;
+	}
+	public String getRepresentantIdentificador() {
+		String representantIdentificador = "";
+		if (representant != null) {
+			representantIdentificador = representant.getIdentificador();
+		}
+		return representantIdentificador;
+	}
 
+	public Boolean getEsRepresentant() {
+		return esRepresentant;
+	}
+	public void setEsRepresentant(Boolean esRepresentant) {
+		this.esRepresentant = esRepresentant;
+	}
+	
 	@PreUpdate
 	@PrePersist
 	public abstract void updateIdentificador();

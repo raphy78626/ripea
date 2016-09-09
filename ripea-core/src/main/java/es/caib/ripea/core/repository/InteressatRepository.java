@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
@@ -29,12 +28,11 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "from "
 			+ "    InteressatEntity inter "
 			+ "where "
-			+ "    inter.entitat = :entitat "
-			+ "and inter.expedient = :expedient "
+			+ "    inter.expedient = :expedient "
+			+ "and inter.esRepresentant = false "
 			+ "order by "
-			+ "    inter.identificador desc")
-	List<InteressatEntity> findByEntitatAndExpedient(
-			@Param("entitat") EntitatEntity entitat,
+			+ "    inter.id asc")
+	List<InteressatEntity> findByExpedient(
 			@Param("expedient") ExpedientEntity expedient);
 	
 	@Query(	  "select "
@@ -42,10 +40,9 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "from "
 			+ "    InteressatEntity inter "
 			+ "where "
-			+ "    inter.entitat = :entitat "
-			+ "and inter.expedient = :expedient")
-	Long countByEntitatAndExpedient(
-			@Param("entitat") EntitatEntity entitat,
+			+ "    inter.expedient = :expedient "
+			+ "and inter.esRepresentant = false ")
+	Long countByExpedient(
 			@Param("expedient") ExpedientEntity expedient);
 
 	@Query(	  "select inter "
@@ -58,15 +55,14 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "from "
 			+ "    InteressatPersonaFisicaEntity inter "
 			+ "where "
-			+ "    inter.entitat = :entitat "
-			+ "and (:esNullNom = true or inter.nom = :nom) "
+			+ "	   (:esNullNom = true or inter.nom = :nom) "
 			+ "and (:esNullDocumentNum = true or inter.documentNum = :documentNum) "
 			+ "and (:esNullLlinatge1 = true or inter.llinatge1 = :llinatge1) "
 			+ "and (:esNullLlinatge2 = true or inter.llinatge2 = :llinatge2) "
+			+ "and inter.esRepresentant = false "
 			+ "order by "
 			+ "    inter.identificador desc")
 	List<InteressatPersonaFisicaEntity> findByFiltrePersonaFisica(
-			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullNom") boolean esNullNom,
 			@Param("nom") String nom,
 			@Param("esNullDocumentNum") boolean esNullDocumentNum,
@@ -86,13 +82,12 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "from "
 			+ "    InteressatPersonaJuridicaEntity inter "
 			+ "where "
-			+ "    inter.entitat = :entitat "
-			+ "and (:esNullDocumentNum = true or inter.documentNum = :documentNum) "
+			+ "    (:esNullDocumentNum = true or inter.documentNum = :documentNum) "
 			+ "and (:esNullRaoSocial = true or inter.raoSocial = :raoSocial) "
+			+ "and inter.esRepresentant = false "
 			+ "order by "
 			+ "    inter.identificador desc")
 	List<InteressatPersonaJuridicaEntity> findByFiltrePersonaJuridica(
-			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullDocumentNum") boolean esNullDocumentNum,
 			@Param("documentNum") String documentNum,
 			@Param("esNullRaoSocial") boolean esNullRaoSocial,
@@ -108,12 +103,10 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "from "
 			+ "    InteressatAdministracioEntity inter "
 			+ "where "
-			+ "    inter.entitat = :entitat "
-			+ "and (:esNullOrganCodi = true or inter.organCodi = :organCodi) "
+			+ "    (:esNullOrganCodi = true or inter.organCodi = :organCodi) "
 			+ "order by "
 			+ "    inter.identificador desc")
 	List<InteressatAdministracioEntity> findByFiltreAdministracio(
-			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullOrganCodi") boolean esNullOrganCodi,
 			@Param("organCodi") String organCodi);
 	
