@@ -100,7 +100,7 @@ pageContext.setAttribute(
 						<th data-col-name="id" data-visible="false">Id</th>
 						<th data-col-name="codiPropietariEscriptoriPare" data-visible="false"></th>
 						<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
-						<th data-col-name="sequenciaAny"><spring:message code="expedient.list.user.columna.numero"/></th>
+						<th data-col-name="numero"><spring:message code="expedient.list.user.columna.numero"/></th>
 						<th data-col-name="nom" width="30%"><spring:message code="expedient.list.user.columna.titol"/></th>
 						<th data-col-name="metaNode.nom" width="15%"><spring:message code="expedient.list.user.columna.tipus"/></th>
 						<th data-col-name="arxiu.nom" width="15%"><spring:message code="expedient.list.user.columna.arxiu"/></th>

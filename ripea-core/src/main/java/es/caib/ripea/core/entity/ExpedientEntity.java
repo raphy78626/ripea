@@ -65,35 +65,29 @@ public class ExpedientEntity extends NodeEntity {
 	protected int any;
 	@Column(name = "sequencia", nullable = false)
 	protected long sequencia;
+	@Column(name = "nti_version", length = 5, nullable = false)
+	protected String ntiVersion;
+	@Column(name = "nti_identif", length = 52, nullable = false)
+	protected String ntiIdentificador;
+	@Column(name = "nti_organo", length = 9, nullable = false)
+	protected String ntiOrgano;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "nti_fecha_ape", nullable = false)
+	protected Date ntiFechaApertura;
+	@Column(name = "nti_clasif_sia", length = 6, nullable = false)
+	protected String ntiClasificacionSia;
 	@Column(name = "sistra_publicat")
 	protected boolean sistraPublicat;
 	@Column(name = "sistra_unitat_adm")
 	protected Integer sistraUnitatAdministrativa;
 	@Column(name = "sistra_clau", length = 100)
 	protected String sistraClau;
-	
-	/** -> */
-//	@ManyToMany(cascade =
-//					{
-//		                CascadeType.DETACH,
-//		                CascadeType.MERGE,
-//		                CascadeType.REFRESH,
-//		                CascadeType.PERSIST
-//					},
-//				fetch = FetchType.LAZY)
-//	@JoinTable(
-//			name="ipa_expedient_rel",
-//			joinColumns=@JoinColumn(name="expedient_id", referencedColumnName="id"),
-//			inverseJoinColumns=@JoinColumn(name="expedient_rel_id", referencedColumnName="id")
-//	)
-//	@ForeignKey(name="ipa_expedient_rel_exp_fk", inverseName="ipa_expedient_rel_rel_fk")	
 	@ManyToMany(
-			cascade =
-			{
-                CascadeType.DETACH,
-                CascadeType.MERGE,
-                CascadeType.REFRESH,
-                CascadeType.PERSIST
+			cascade = {
+					CascadeType.DETACH,
+					CascadeType.MERGE,
+					CascadeType.REFRESH,
+					CascadeType.PERSIST
 			},
 			fetch = FetchType.LAZY)
 	@JoinTable(
@@ -102,33 +96,25 @@ public class ExpedientEntity extends NodeEntity {
 			inverseJoinColumns = {@JoinColumn(name = "expedient_rel_id", referencedColumnName="id")})
 	@ForeignKey(name="ipa_expedient_rel_exp_fk", inverseName="ipa_expedient_rel_rel_fk")	
 	protected List<ExpedientEntity> expedientsRelacionatsAmb;
-
-	/** <- */
-//	@ManyToMany(mappedBy="expedientsRelacionatsAmb",
-//				cascade =
-//					{
-//			            CascadeType.DETACH,
-//			            CascadeType.MERGE,
-//			            CascadeType.REFRESH,
-//			            CascadeType.PERSIST
-//					},
-//				fetch = FetchType.LAZY)
 	@ManyToMany(
-			cascade =
-				{
-		            CascadeType.DETACH,
-		            CascadeType.MERGE,
-		            CascadeType.REFRESH,
-		            CascadeType.PERSIST
-				},
+			cascade = {
+					CascadeType.DETACH,
+					CascadeType.MERGE,
+					CascadeType.REFRESH,
+					CascadeType.PERSIST
+			},
 			fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "ipa_expedient_rel",
-			joinColumns = {@JoinColumn(name = "expedient_rel_id", referencedColumnName="id")},
-			inverseJoinColumns = {@JoinColumn(name = "expedient_id", referencedColumnName="id")})
+			joinColumns = {
+					@JoinColumn(name = "expedient_rel_id", referencedColumnName="id")
+			},
+			inverseJoinColumns = {
+					@JoinColumn(name = "expedient_id", referencedColumnName="id")
+			})
 	@ForeignKey(name="ipa_expedient_rel_rel_fk", inverseName="ipa_expedient_rel_exp_fk")	
 	protected List<ExpedientEntity> expedientsRelacionatsPer;
-	
+
 	public ArxiuEntity getArxiu() {
 		return arxiu;
 	}
@@ -149,6 +135,21 @@ public class ExpedientEntity extends NodeEntity {
 	}
 	public long getSequencia() {
 		return sequencia;
+	}
+	public String getNtiVersion() {
+		return ntiVersion;
+	}
+	public String getNtiIdentificador() {
+		return ntiIdentificador;
+	}
+	public String getNtiOrgano() {
+		return ntiOrgano;
+	}
+	public Date getNtiFechaApertura() {
+		return ntiFechaApertura;
+	}
+	public String getNtiClasificacionSia() {
+		return ntiClasificacionSia;
 	}
 	public boolean isSistraPublicat() {
 		return sistraPublicat;
@@ -176,6 +177,10 @@ public class ExpedientEntity extends NodeEntity {
 			long sequencia) {
 		this.any = any;
 		this.sequencia = sequencia;
+	}
+	public void updateNtiIdentificador(
+			String ntiIdentificador) {
+		this.ntiIdentificador = ntiIdentificador;
 	}
 	public void updateEstat(
 			ExpedientEstatEnumDto estat,
@@ -211,7 +216,7 @@ public class ExpedientEntity extends NodeEntity {
 	public void setExpedientsRelacionatsPer(List<ExpedientEntity> expedientsRelacionatsPer) {
 		this.expedientsRelacionatsPer = expedientsRelacionatsPer;
 	}
-	
+
 	@Transient
 	public List<ExpedientEntity> getExpedientsRelacionats() {
 		List<ExpedientEntity> relacionats = new ArrayList<ExpedientEntity>();
@@ -219,19 +224,27 @@ public class ExpedientEntity extends NodeEntity {
 		relacionats.addAll(this.getExpedientsRelacionatsPer());
 		return relacionats;
 	}
-	
+
 	public static Builder getBuilder(
 			String nom,
 			MetaNodeEntity metaNode,
 			ArxiuEntity arxiu,
 			ContingutEntity pare,
-			EntitatEntity entitat) {
+			EntitatEntity entitat,
+			String ntiVersion,
+			String ntiOrgano,
+			Date ntiFechaApertura,
+			String ntiClasificacionSia) {
 		return new Builder(
 				nom,
 				metaNode,
 				arxiu,
 				pare,
-				entitat);
+				entitat,
+				ntiVersion,
+				ntiOrgano,
+				ntiFechaApertura,
+				ntiClasificacionSia);
 	}
 
 	public static class Builder {
@@ -241,13 +254,22 @@ public class ExpedientEntity extends NodeEntity {
 				MetaNodeEntity metaNode,
 				ArxiuEntity arxiu,
 				ContingutEntity pare,
-				EntitatEntity entitat) {
+				EntitatEntity entitat,
+				String ntiVersion,
+				String ntiOrgano,
+				Date ntiFechaApertura,
+				String ntiClasificacionSia) {
 			built = new ExpedientEntity();
 			built.nom = nom;
 			built.metaNode = metaNode;
 			built.arxiu = arxiu;
 			built.pare = pare;
 			built.entitat = entitat;
+			built.ntiVersion = ntiVersion;
+			built.ntiIdentificador = new Long(System.currentTimeMillis()).toString();
+			built.ntiOrgano = ntiOrgano;
+			built.ntiFechaApertura = ntiFechaApertura;
+			built.ntiClasificacionSia = ntiClasificacionSia;
 			built.estat = ExpedientEstatEnumDto.OBERT;
 			built.tipus = ContingutTipusEnumDto.EXPEDIENT;
 		}

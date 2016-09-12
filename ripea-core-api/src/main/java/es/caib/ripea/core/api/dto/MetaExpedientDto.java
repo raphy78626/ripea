@@ -15,17 +15,25 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class MetaExpedientDto extends MetaNodeAmbMetaDadesDto implements Serializable {
 
-	private String classificacio;
+	private String classificacioDocumental;
+	private String classificacioSia;
 	private Long pareId;
 	private List<MetaExpedientMetaDocumentDto> metaDocuments;
 	private int arxiusCount;
 
 
-	public String getClassificacio() {
-		return classificacio;
+
+	public String getClassificacioDocumental() {
+		return classificacioDocumental;
 	}
-	public void setClassificacio(String classificacio) {
-		this.classificacio = classificacio;
+	public void setClassificacioDocumental(String classificacioDocumental) {
+		this.classificacioDocumental = classificacioDocumental;
+	}
+	public String getClassificacioSia() {
+		return classificacioSia;
+	}
+	public void setClassificacioSia(String classificacioSia) {
+		this.classificacioSia = classificacioSia;
 	}
 	public Long getPareId() {
 		return pareId;

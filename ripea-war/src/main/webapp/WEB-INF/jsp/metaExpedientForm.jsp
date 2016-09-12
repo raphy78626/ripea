@@ -22,7 +22,8 @@
 		<rip:inputText name="codi" textKey="metaexpedient.form.camp.codi" required="true"/>
 		<rip:inputText name="nom" textKey="metaexpedient.form.camp.nom" required="true"/>
 		<rip:inputTextarea name="descripcio" textKey="metaexpedient.form.camp.descripcio"/>
-		<rip:inputText name="classificacio" textKey="metaexpedient.form.camp.classificacio"/>
+		<rip:inputText name="classificacioDocumental" textKey="metaexpedient.form.camp.classificacio.doc" required="true"/>
+		<rip:inputText name="classificacioSia" textKey="metaexpedient.form.camp.classificacio.sia" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/metaExpedient"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>

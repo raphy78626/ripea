@@ -6,6 +6,7 @@ package es.caib.ripea.core.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +116,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 	
 	public ExpedientServiceImpl() {
 		this.ordenacioMap = new HashMap<String, String[]>();
-		ordenacioMap.put("sequenciaAny", new String[] {"any", "sequencia"});
+		ordenacioMap.put("numero", new String[] {"any", "sequencia"});
 	}
 
 	@Transactional
@@ -198,15 +199,16 @@ public class ExpedientServiceImpl implements ExpedientService {
 			// TODO Comprovar que el metaExpedient és de primer nivell
 		}
 		// Crea l'expedient
-		ExpedientEntity expedient = ExpedientEntity.getBuilder(
+		ExpedientEntity expedient = contingutHelper.crearNouExpedient(
 				nom,
 				metaExpedient,
 				arxiu,
 				contingut,
-				entitat).build();
-		expedientRepository.save(expedient);
-		// Calcula en número del nou expedient
-		contingutHelper.calcularSequenciaExpedient(expedient, any);
+				entitat,
+				"1.0",
+				arxiu.getUnitatCodi(),
+				new Date(),
+				any);
 		// Lliga el contingut al nou expedient
 		if (contingutPendentId != null) {
 			moureContingutPendentDeBustiaAExpedient(

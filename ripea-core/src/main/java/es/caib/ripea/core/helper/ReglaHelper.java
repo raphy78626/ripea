@@ -126,14 +126,16 @@ public class ReglaHelper {
 				break;
 			case EXP_CREAR:
 				//System.out.println(">>> Processant anotacio de registre creant nou expedient (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
-				ExpedientEntity expedientCrear = ExpedientEntity.getBuilder(
+				ExpedientEntity expedientCreat = contingutHelper.crearNouExpedient(
 						"Creat automàticament amb anotació " + pendent.getIdentificador(),
 						regla.getMetaExpedient(),
 						regla.getArxiu(),
 						regla.getArxiu(),
-						regla.getEntitat()).build();
-				contingutHelper.calcularSequenciaExpedient(expedientCrear, null);
-				ExpedientEntity expedientCreat = expedientRepository.saveAndFlush(expedientCrear);
+						regla.getEntitat(),
+						"1.0",
+						regla.getArxiu().getUnitatCodi(),
+						new Date(),
+						null);
 				contingutHelper.ferIEnregistrarMoviment(
 						pendent,
 						expedientCreat,

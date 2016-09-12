@@ -35,8 +35,10 @@ import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 @EntityListeners(AuditingEntityListener.class)
 public class MetaExpedientEntity extends MetaNodeEntity {
 
-	@Column(name = "classificacio", length = 30)
-	private String classificacio;
+	@Column(name = "clasif_doc", length = 30)
+	private String classificacioDocumental;
+	@Column(name = "clasif_sia", length = 6)
+	private String classificacioSia;
 	@ManyToOne(
 			optional = true,
 			fetch = FetchType.EAGER)
@@ -57,8 +59,11 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			inverseJoinColumns = {@JoinColumn(name = "arxiu_id")})
 	protected List<ArxiuEntity> arxius;
 	
-	public String getClassificacio() {
-		return classificacio;
+	public String getClassificacioDocumental() {
+		return classificacioDocumental;
+	}
+	public String getClassificacioSia() {
+		return classificacioSia;
 	}
 	public MetaExpedientEntity getPare() {
 		return pare;
@@ -74,13 +79,15 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			String codi,
 			String nom,
 			String descripcio,
-			String classificacio,
+			String classificacioDocumental,
+			String classificacioSia,
 			MetaExpedientEntity pare) {
 		super.update(
 				codi,
 				nom,
 				descripcio);
-		this.classificacio = classificacio;
+		this.classificacioDocumental = classificacioDocumental;
+		this.classificacioSia = classificacioSia;
 		this.pare = pare;
 	}
 
@@ -126,14 +133,16 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			String codi,
 			String nom,
 			String descripcio,
-			String classificacio,
+			String classificacioDocumental,
+			String classificacioSia,
 			EntitatEntity entitat,
 			MetaExpedientEntity pare) {
 		return new Builder(
 				codi,
 				nom,
 				descripcio,
-				classificacio,
+				classificacioDocumental,
+				classificacioSia,
 				entitat,
 				pare);
 	}
@@ -149,14 +158,16 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 				String codi,
 				String nom,
 				String descripcio,
-				String classificacio,
+				String classificacioDocumental,
+				String classificacioSia,
 				EntitatEntity entitat,
 				MetaExpedientEntity pare) {
 			built = new MetaExpedientEntity();
 			built.codi = codi;
 			built.nom = nom;
 			built.descripcio = descripcio;
-			built.classificacio = classificacio;
+			built.classificacioDocumental = classificacioDocumental;
+			built.classificacioSia = classificacioSia;
 			built.entitat = entitat;
 			built.tipus = MetaNodeTipusEnum.EXPEDIENT;
 			built.pare = pare;

@@ -1413,13 +1413,16 @@ public class ContingutServiceImpl implements ContingutService {
 			documentNou.updateDarreraVersio(versio);
 		} else if (contingutOrigen instanceof ExpedientEntity) {
 			ExpedientEntity expedientOrigen = (ExpedientEntity)contingutOrigen;
-			ExpedientEntity expedientNou = ExpedientEntity.getBuilder(
+			creat = contingutHelper.crearNouExpedient(
 					expedientOrigen.getNom(),
 					expedientOrigen.getMetaExpedient(),
 					expedientOrigen.getArxiu(),
 					contingutDesti,
-					entitat).build();
-			creat = contingutRepository.save(expedientNou);
+					entitat,
+					expedientOrigen.getNtiVersion(),
+					expedientOrigen.getNtiOrgano(),
+					new Date(),
+					null);
 		}
 		if (creat != null) {
 			if (creat instanceof NodeEntity) {

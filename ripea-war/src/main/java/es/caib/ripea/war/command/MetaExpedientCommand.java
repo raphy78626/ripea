@@ -31,10 +31,11 @@ public class MetaExpedientCommand {
 	private String nom;
 	@Size(max=1024)
 	private String descripcio;
-	@Size(max=9)
-	private String classificacio;
+	@NotEmpty @Size(max=30)
+	private String classificacioDocumental;
+	@NotEmpty @Size(max=6)
+	private String classificacioSia;
 	private Long pareId;
-
 	private Long entitatId;
 
 
@@ -63,11 +64,17 @@ public class MetaExpedientCommand {
 	public void setDescripcio(String descripcio) {
 		this.descripcio = descripcio;
 	}
-	public String getClassificacio() {
-		return classificacio;
+	public String getClassificacioDocumental() {
+		return classificacioDocumental;
 	}
-	public void setClassificacio(String classificacio) {
-		this.classificacio = classificacio;
+	public void setClassificacioDocumental(String classificacioDocumental) {
+		this.classificacioDocumental = classificacioDocumental;
+	}
+	public String getClassificacioSia() {
+		return classificacioSia;
+	}
+	public void setClassificacioSia(String classificacioSia) {
+		this.classificacioSia = classificacioSia;
 	}
 	public Long getPareId() {
 		return pareId;

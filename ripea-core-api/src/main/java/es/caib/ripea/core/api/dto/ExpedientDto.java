@@ -3,7 +3,6 @@
  */
 package es.caib.ripea.core.api.dto;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -21,6 +20,12 @@ public class ExpedientDto extends NodeDto {
 	protected String tancatMotiu;
 	protected int any;
 	protected long sequencia;
+	protected String ntiVersion;
+	protected String ntiIdentificador;
+	protected String ntiOrgano;
+	protected String ntiOrganoDescripcio;
+	protected Date ntiFechaApertura;
+	protected String ntiClasificacionSia;
 	protected boolean sistraPublicat;
 	protected Integer sistraUnitatAdministrativa;
 	protected String sistraClau;
@@ -62,12 +67,41 @@ public class ExpedientDto extends NodeDto {
 	public void setSequencia(long sequencia) {
 		this.sequencia = sequencia;
 	}
-	public String getSequenciaAny() {
-		return new StringBuilder()
-				.append(sequencia)
-				.append('/')
-				.append(any)
-				.toString();
+	public String getNtiVersion() {
+		return ntiVersion;
+	}
+	public void setNtiVersion(String ntiVersion) {
+		this.ntiVersion = ntiVersion;
+	}
+	public String getNtiIdentificador() {
+		return ntiIdentificador;
+	}
+	public void setNtiIdentificador(String ntiIdentificador) {
+		this.ntiIdentificador = ntiIdentificador;
+	}
+	public String getNtiOrgano() {
+		return ntiOrgano;
+	}
+	public void setNtiOrgano(String ntiOrgano) {
+		this.ntiOrgano = ntiOrgano;
+	}
+	public String getNtiOrganoDescripcio() {
+		return ntiOrganoDescripcio;
+	}
+	public void setNtiOrganoDescripcio(String ntiOrganoDescripcio) {
+		this.ntiOrganoDescripcio = ntiOrganoDescripcio;
+	}
+	public Date getNtiFechaApertura() {
+		return ntiFechaApertura;
+	}
+	public void setNtiFechaApertura(Date ntiFechaApertura) {
+		this.ntiFechaApertura = ntiFechaApertura;
+	}
+	public String getNtiClasificacionSia() {
+		return ntiClasificacionSia;
+	}
+	public void setNtiClasificacionSia(String ntiClasificacionSia) {
+		this.ntiClasificacionSia = ntiClasificacionSia;
 	}
 	public boolean isSistraPublicat() {
 		return sistraPublicat;
@@ -96,11 +130,8 @@ public class ExpedientDto extends NodeDto {
 		return sequencia + "/" + any;
 	}
 
-	public String getNtiVersion() {
+	/*public String getNtiVersion() {
 		return "1.0";
-	}
-	public String getNtiVersionUrl() {
-		return "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e";
 	}
 	public String getNtiIdentificador() {
 		return "ES_" + getNtiOrgano() + "_" + getAny() + "_EXP_RIP" + String.format("%027d", getId());
@@ -115,17 +146,25 @@ public class ExpedientDto extends NodeDto {
 			return new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss").format(getCreatedDate());
 		else
 			return null;
+	}*/
+
+	public String getNtiVersionUrl() {
+		return "http://administracionelectronica.gob.es/ENI/XSD/V" + ntiVersion + "/expediente-e";
 	}
 	public String getNtiClasificacion() {
-		if (getMetaNode() != null) {
-			MetaExpedientDto metaExpedient = (MetaExpedientDto)getMetaNode();
-			if (metaExpedient.getClassificacio() != null) {
-				return metaExpedient.getClassificacio();
-			} else {
-				return getNtiOrgano() + "_PRO_RIP" + String.format("%027d", metaExpedient.getId());
-			}
+		if (ntiClasificacionSia != null) {
+			return ntiClasificacionSia;
 		} else {
-			return getNtiOrgano() + "_PRO_RIP" + String.format("%027d", 0);
+			if (getMetaNode() != null) {
+				MetaExpedientDto metaExpedient = (MetaExpedientDto)getMetaNode();
+				if (metaExpedient.getClassificacioSia() != null) {
+					return metaExpedient.getClassificacioSia();
+				} else {
+					return ntiOrgano + "_PRO_RIP" + String.format("%027d", metaExpedient.getId());
+				}
+			} else {
+				return ntiOrgano + "_PRO_RIP" + String.format("%027d", 0);
+			}
 		}
 	}
 	public String getNtiEstado() {

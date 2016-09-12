@@ -3,8 +3,8 @@
 <%@ taglib tagdir="/WEB-INF/tags/ripea" prefix="rip"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <c:set var="titol"><spring:message code="contingut.nti.titol"/></c:set>
 
@@ -23,7 +23,10 @@
 			<dt><spring:message code="contingut.nti.camp.organ"/></dt>
 			<dd>${contingut.ntiOrgano}</dd>
 			<dt><spring:message code="contingut.nti.camp.data"/></dt>
-			<dd>${contingut.ntiFechaApertura}</dd>
+			<dd>
+				<fmt:formatDate value="${contingut.ntiFechaApertura}" pattern="yyyyMMdd'T'HH:mm:ss"/>
+				<%--fmt:formatDate value="${contingut.ntiFechaApertura}" pattern="dd/MM/yyyy HH:mm:ss"/--%>
+			</dd>
 			<dt><spring:message code="contingut.nti.camp.classificacio"/></dt>
 			<dd>${contingut.ntiClasificacion}</dd>
 			<dt><spring:message code="contingut.nti.camp.estat"/></dt>

@@ -6,6 +6,7 @@ package es.caib.ripea.core.helper;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -62,6 +63,7 @@ import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
 import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
+import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.MetaDadaRepository;
 import es.caib.ripea.core.repository.MetaDocumentRepository;
 import es.caib.ripea.core.repository.MetaExpedientMetaDocumentRepository;
@@ -91,6 +93,8 @@ public class ContingutHelper {
 	private DadaRepository dadaRepository;
 	@Resource
 	private DocumentRepository documentRepository;
+	@Resource
+	private ExpedientRepository expedientRepository;
 	@Resource
 	private DocumentVersioRepository documentVersioRepository;
 	@Resource
@@ -149,7 +153,7 @@ public class ContingutHelper {
 		ContingutDto resposta = null;
 		MetaNodeDto metaNode = null;
 		// Crea el contenidor del tipus correcte
-		Object deproxied = HibernateHelper.deproxy(contingut);
+		ContingutEntity deproxied = HibernateHelper.deproxy(contingut);
 		if (deproxied instanceof EscriptoriEntity) {
 			EscriptoriDto dto = new EscriptoriDto();
 			resposta = dto;
@@ -161,6 +165,12 @@ public class ContingutHelper {
 			dto.setTancatMotiu(expedient.getTancatMotiu());
 			dto.setAny(expedient.getAny());
 			dto.setSequencia(expedient.getSequencia());
+			dto.setNtiVersion(expedient.getNtiVersion());
+			dto.setNtiIdentificador(expedient.getNtiIdentificador());
+			dto.setNtiOrgano(expedient.getNtiOrgano());
+			dto.setNtiOrganoDescripcio(expedient.getNtiOrgano());
+			dto.setNtiFechaApertura(expedient.getNtiFechaApertura());
+			dto.setNtiClasificacionSia(expedient.getNtiClasificacionSia());
 			dto.setSistraPublicat(expedient.isSistraPublicat());
 			dto.setSistraUnitatAdministrativa(expedient.getSistraUnitatAdministrativa());
 			dto.setSistraClau(expedient.getSistraClau());
@@ -573,6 +583,52 @@ public class ContingutHelper {
 		expedient.updateAnySequencia(
 				anyExpedient,
 				sequenciaExpedient);
+	}
+
+	public ExpedientEntity crearNouExpedient(
+			String nom,
+			MetaExpedientEntity metaExpedient,
+			ArxiuEntity arxiu,
+			ContingutEntity pare,
+			EntitatEntity entitat,
+			String ntiVersion,
+			String ntiOrgano,
+			Date ntiFechaApertura,
+			Integer any) {
+		ExpedientEntity expedientCrear = ExpedientEntity.getBuilder(
+				nom,
+				metaExpedient,
+				arxiu,
+				pare,
+				entitat,
+				"1.0",
+				ntiOrgano,
+				ntiFechaApertura,
+				metaExpedient.getClassificacioSia()).build();
+		ExpedientEntity expedientCreat = expedientRepository.save(expedientCrear);
+		// Calcula en número del nou expedient
+		calcularSequenciaExpedient(
+				expedientCreat,
+				any);
+		// Calcula l'identificador del nou expedient
+		calcularIdentificadorExpedient(
+				expedientCreat,
+				entitat.getUnitatArrel(),
+				any);
+		return expedientCreat;
+	}
+
+	public void calcularIdentificadorExpedient(
+			ExpedientEntity expedient,
+			String organCodi,
+			Integer any) {
+		int anyExpedient;
+		if (any != null)
+			anyExpedient = any.intValue();
+		else
+			anyExpedient = Calendar.getInstance().get(Calendar.YEAR);
+		String ntiIdentificador = "ES_" + organCodi + "_" + anyExpedient + "_EXP_RIP" + String.format("%027d", expedient.getId());
+		expedient.updateNtiIdentificador(ntiIdentificador);
 	}
 
 	public EscriptoriEntity getEscriptoriPerUsuari(

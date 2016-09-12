@@ -106,7 +106,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaExpedient.getCodi(),
 				metaExpedient.getNom(),
 				metaExpedient.getDescripcio(),
-				metaExpedient.getClassificacio(),
+				metaExpedient.getClassificacioDocumental(),
+				metaExpedient.getClassificacioSia(),
 				entitat,
 				metaExpedientPare).build();
 		return conversioTipusHelper.convertir(
@@ -144,7 +145,8 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaExpedient.getCodi(),
 				metaExpedient.getNom(),
 				metaExpedient.getDescripcio(),
-				metaExpedient.getClassificacio(),
+				metaExpedient.getClassificacioDocumental(),
+				metaExpedient.getClassificacioSia(),
 				metaExpedientPare);
 		return conversioTipusHelper.convertir(
 				metaExpedientEntitiy,
