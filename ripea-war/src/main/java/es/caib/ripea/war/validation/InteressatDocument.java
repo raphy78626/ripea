@@ -19,10 +19,10 @@ import javax.validation.Payload;
  */
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy=InteressatNoRepetitValidator.class)
-public @interface InteressatNoRepetit {
+@Constraint(validatedBy=InteressatDocumentValidator.class)
+public @interface InteressatDocument {
 
-	String message() default "Ja existeix un altre interessat donat d'alta amb aquestes dades";
+	String message() default "Número de document incorrecte";
 
 	Class<?>[] groups() default {};
 

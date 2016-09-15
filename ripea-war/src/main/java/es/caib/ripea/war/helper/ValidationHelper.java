@@ -40,9 +40,16 @@ public class ValidationHelper {
 			FieldError fieldError = errors.getFieldError(field);
 			if (fieldError == null || !fieldError.isBindingFailure()) {
 				ConstraintDescriptor<?> constraintDescriptor = violation.getConstraintDescriptor();
+				
+				String msgError = constraintDescriptor.getAnnotation().annotationType().getSimpleName();
+				if (constraintDescriptor.getAttributes().containsKey("message")) {
+					String msg = (String)constraintDescriptor.getAttributes().get("message");
+					if (!msg.startsWith("{"))
+						msgError = msg;
+				}
 				errors.rejectValue(
 						field,
-						constraintDescriptor.getAnnotation().annotationType().getSimpleName(),
+						msgError,
 						getArgumentsForConstraint(
 								errors.getObjectName(),
 								field,
@@ -61,7 +68,11 @@ public class ValidationHelper {
 		for (Map.Entry<String, Object> entry : descriptor.getAttributes().entrySet()) {
 			String attributeName = entry.getKey();
 			Object attributeValue = entry.getValue();
-			if ("message".equals(attributeName) || "groups".equals(attributeName) || "payload".equals(attributeName)) {
+			if ("message".equals(attributeName) || 
+					"groups".equals(attributeName) || 
+					"payload".equals(attributeName) ||
+					"max".equals(attributeName) ||
+					"min".equals(attributeName)) {
 				attributesToExpose.put(attributeName, attributeValue);
 			}
 		}

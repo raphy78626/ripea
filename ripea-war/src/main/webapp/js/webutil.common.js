@@ -269,7 +269,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		    placeholder: $(this).data('placeholder'),
 		    theme: "bootstrap",
 		    allowClear: $(this).data('placeholder') ? true : false,
-		    minimumResultsForSearch: "-1"
+		    minimumResultsForSearch: $(this).data('minimumresults')
 		});
 		$(this).on('select2-open', function() {
 			webutilModalAdjustHeight();

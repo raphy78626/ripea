@@ -11,5 +11,11 @@
 	<cache name="unitatsOrganitzatives" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
 	<cache name="usuariAmbCodi" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
 	<cache name="elementsPendentsBustiesUsuari" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
+	<cache name="paisos" maxElementsInMemory="250" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
+	<cache name="provincies" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
+	<cache name="provinciesPerComunitat" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
+	<cache name="municipisPerProvincia" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
+	<cache name="unitatOrganitzativa" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
+	<cache name="municipisAmbNom" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
 
 </ehcache>

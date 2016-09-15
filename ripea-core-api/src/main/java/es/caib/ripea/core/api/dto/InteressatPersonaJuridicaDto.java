@@ -7,24 +7,24 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 
 /**
- * Informació d'un interessat de tipus administració.
+ * Informació d'un interessat de tipus ciutadà.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class InteressatAdministracioDto extends InteressatDto {
+public class InteressatPersonaJuridicaDto extends InteressatDto {
 
-	protected String organCodi;
+	protected String raoSocial;
 
 	@Override
 	public InteressatTipusEnumDto getTipus() {
-		return InteressatTipusEnumDto.ADMINISTRACIO;
+		return InteressatTipusEnumDto.PERSONA_JURIDICA;
 	}
 	
-	public String getOrganCodi() {
-		return organCodi;
+	public String getRaoSocial() {
+		return raoSocial;
 	}
-	public void setOrganCodi(String organCodi) {
-		this.organCodi = organCodi;
+	public void setRaoSocial(String raoSocial) {
+		this.raoSocial = raoSocial;
 	}
 
 	@Override

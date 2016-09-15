@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
-import es.caib.ripea.core.api.dto.InteressatCiutadaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.service.InteressatService;
 
@@ -40,32 +42,70 @@ public class InteressatServiceBean implements InteressatService {
 			InteressatDto interessat) {
 		return delegate.create(entitatId, expedientId, interessat);
 	}
-
+	
 	@Override
 	@RolesAllowed("tothom")
-	public void addToExpedient(
-			Long entitatId,
-			Long expedientId, Long id) {
-		delegate.addToExpedient(entitatId, expedientId, id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public void removeFromExpedient(
+	public InteressatDto create(
 			Long entitatId,
 			Long expedientId,
-			Long id) {
-		delegate.removeFromExpedient(entitatId, expedientId, id);
+			Long interessatId,
+			InteressatDto representant) {
+		return delegate.create(entitatId, expedientId, interessatId, representant);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public InteressatDto update(
+			Long entitatId,
+			Long expedientId,
+			InteressatDto interessat) {
+		return delegate.update(entitatId, expedientId, interessat);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public InteressatDto update(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId,
+			InteressatDto representant) {
+		return delegate.update(entitatId, expedientId, interessatId, representant);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public void delete(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId) {
+		delegate.delete(entitatId, expedientId, interessatId);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public void delete(
+			Long entitatId,
+			Long expedientId,
+			Long interessatId,
+			Long representantId) {
+		delegate.delete(entitatId, expedientId, interessatId, representantId);
+	}
+	
 	@Override
 	@RolesAllowed("tothom")
 	public InteressatDto findById(
-			Long entitatId,
 			Long id) {
-		return delegate.findById(entitatId, id);
+		return delegate.findById(id);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public InteressatDto findRepresentantById(
+			Long interessatId, 
+			Long id) {
+		return delegate.findRepresentantById(interessatId, id);
+	}
+	
 	@Override
 	@RolesAllowed("tothom")
 	public List<InteressatDto> findByExpedient(
@@ -73,31 +113,57 @@ public class InteressatServiceBean implements InteressatService {
 			Long expedientId) {
 		return delegate.findByExpedient(entitatId, expedientId);
 	}
-
+	
 	@Override
 	@RolesAllowed("tothom")
-	public List<InteressatCiutadaDto> findByFiltreCiutada(
+	public Long countByExpedient(
 			Long entitatId,
-			String nom,
-			String nif,
-			String llinatges) {
-		return delegate.findByFiltreCiutada(
-				entitatId,
-				nom,
-				nif,
-				llinatges);
+			Long expedientId) {
+		return delegate.countByExpedient(entitatId, expedientId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<InteressatAdministracioDto> findByFiltreAdministracio(
-			Long entitatId,
+	public List<InteressatPersonaFisicaDto> findByFiltrePersonaFisica(
+			String documentNum,
 			String nom,
-			String identificador) {
-		return delegate.findByFiltreAdministracio(
-				entitatId,
+			String llinatge1,
+			String llinatge2) {
+		return delegate.findByFiltrePersonaFisica(
+				documentNum,
 				nom,
-				identificador);
+				llinatge1,
+				llinatge2);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public List<InteressatPersonaJuridicaDto> findByFiltrePersonaJuridica(
+			String documentNum,
+			String raoSocial) {
+		return delegate.findByFiltrePersonaJuridica(
+				documentNum, 
+				raoSocial);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public List<InteressatAdministracioDto> findByFiltreAdministracio(
+			String organCodi) {
+		return delegate.findByFiltreAdministracio(
+				organCodi);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByEntitat(String entitatCodi) {
+		return delegate.findUnitatsOrganitzativesByEntitat(entitatCodi);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
+		return delegate.findUnitatsOrganitzativesByCodi(codi);
 	}
 
 }

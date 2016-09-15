@@ -26,6 +26,9 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
+import es.caib.ripea.core.api.dto.MunicipiDto;
+import es.caib.ripea.core.api.dto.PaisDto;
+import es.caib.ripea.core.api.dto.ProvinciaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.entity.BustiaEntity;
@@ -90,6 +93,8 @@ public class CacheHelper {
 	private PluginHelper pluginHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
+	@Resource
+	private DadesExternesHelper dadesExternesHelper;
 
 	private Map<String, Set<String>> usuarisElementsPendentsPerEntitat;
 
@@ -241,6 +246,40 @@ public class CacheHelper {
 			String entitatCodi) {
 	}
 
+	@Cacheable(value = "unitatOrganitzativa", key="#organCodi")
+	public UnitatOrganitzativaDto findUnitatOrganitzativaPerCodi(
+			String organCodi) {
+		UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(organCodi);
+		if (unitat != null) {
+			if (unitat.getCodiPais() != null && !"".equals(unitat.getCodiPais()))
+				unitat.setCodiPais(("000" + unitat.getCodiPais()).substring(unitat.getCodiPais().length()));
+			if(unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat()))
+				unitat.setCodiComunitat(("00" + unitat.getCodiComunitat()).substring(unitat.getCodiComunitat().length()));
+			
+			if ((unitat.getCodiProvincia() == null || "".equals(unitat.getCodiProvincia())) && 
+					unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat())) {
+				List<ProvinciaDto> provincies = findProvinciesPerComunitat(unitat.getCodiComunitat());
+				if (provincies != null && provincies.size() == 1) {
+					unitat.setCodiProvincia(provincies.get(0).getCodi());
+				}		
+			}
+			if (unitat.getCodiProvincia() != null && !"".equals(unitat.getCodiProvincia())) {
+				unitat.setCodiProvincia(("00" + unitat.getCodiProvincia()).substring(unitat.getCodiProvincia().length()));
+				
+				if (unitat.getLocalitat() == null && unitat.getNomLocalitat() != null) {
+					MunicipiDto municipi = findMunicipiAmbNom(
+							unitat.getCodiProvincia(), 
+							unitat.getNomLocalitat());
+					if (municipi != null)
+						unitat.setLocalitat(municipi.getCodi());
+					else
+						logger.error("UNITAT ORGANITZATIVA. No s'ha trobat la localitat amb el nom: '" + unitat.getNomLocalitat() + "'");
+				}
+			}
+		}
+		return unitat;
+	}
+	
 	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
 	public long countElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
@@ -286,8 +325,47 @@ public class CacheHelper {
 			EntitatEntity entitat,
 			String usuariCodi) {
 	}
+	
+	@Cacheable(value = "paisos")
+	public List<PaisDto> findPaisos() {
+		return dadesExternesHelper.findPaisos();
+	}
+	
+	@Cacheable(value = "provincies")
+	public List<ProvinciaDto> findProvincies() {
+		return dadesExternesHelper.findProvincies();
+	}
 
-
+	@Cacheable(value = "provinciesPerComunitat", key="#comunitatCodi")
+	public List<ProvinciaDto> findProvinciesPerComunitat(String comunitatCodi) {
+		return dadesExternesHelper.findProvinciesPerComunitat(comunitatCodi);
+	}
+	
+	@Cacheable(value = "municipisPerProvincia", key="#provinciaCodi")
+	public List<MunicipiDto> findMunicipisPerProvincia(String provinciaCodi) {
+		return dadesExternesHelper.findMunicipisPerProvincia(provinciaCodi);
+	}
+	
+	@Cacheable(value = "municipisAmbNom", key="#municipiNom")
+	public MunicipiDto findMunicipiAmbNom(String provinciaCodi, String nom) {
+		MunicipiDto municipi = null;
+		List<MunicipiDto> municipis = findMunicipisPerProvincia(provinciaCodi);
+		if (municipis != null) {
+			for (MunicipiDto mun: municipis) {
+												
+				if (	mun.getNom().equals(nom) || 
+						(mun.getNom().equals("Palma") && nom.equals("Palma de Mallorca")) || 						// Excepció: Palma
+						(mun.getNom().equals("Maó") && nom.equals("Maó-Mahón")) ||									// Excepció: Maó
+						(mun.getNom().equals("Santa Eulalia del Río") && nom.equals("Santa Eulària des Riu")) ||	// Excepció: Santa Eulària des Riu
+						(mun.getNom().equals("Deyá") && nom.equals("Deià"))											// Excepció: Deià
+				) { 
+					municipi = mun;
+					break;
+				}
+			}
+		}
+		return municipi;
+	}
 
 	private ValidacioErrorDto crearValidacioError(
 			MetaDadaEntity metaDada,

@@ -13,6 +13,11 @@ pageContext.setAttribute(
 		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.registre.RegistreTipusEnum.class,
 				"registre.anotacio.tipus.enum."));
+pageContext.setAttribute(
+		"interessatsTipusEnumOptions",
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
+				es.caib.ripea.core.api.dto.InteressatTipusEnumDto.class,
+				"interessat.tipus.enum."));
 %>
 <c:set var="potModificarContingut" value="${false}"/>
 <c:if test="${contingut.node}"><c:set var="potModificarContingut" value="${empty contingut.metaNode or contingut.metaNode.usuariActualWrite}"/></c:if>
@@ -135,6 +140,13 @@ ul.interessats {
 	border: 1px solid #428bca !important;
 	background-color: #f5f5f5;
 }
+.right {
+	float: right;
+}
+.brep {
+	padding-right: 5px;
+    padding-left: 6px;
+}
 </style>
 <c:if test="${edicioOnlineActiva and contingut.document and not empty contingut.escriptoriPare}">
 	<script src="http://www.java.com/js/deployJava.js"></script>
@@ -183,6 +195,10 @@ var registreTipusText = new Array();
 <c:forEach var="option" items="${registreTipusEnumOptions}">
 registreTipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </c:forEach>
+var interessatTipusText = new Array();
+<c:forEach var="option" items="${interessatsTipusEnumOptions}">
+interessatTipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
+</c:forEach>
 $(document).ready(function() {
 	<c:if test="${contingut.carpeta and contingut.tipus == 'ESBORRANY'}">
 		$('.container-main .panel-heading h2 span.fa').replaceWith('<rip:blocIconaCarpeta carpeta="${contingut}" petita="${true}"/>');
@@ -222,6 +238,10 @@ $(document).ready(function() {
 	$('#taulaDades').on('draw.dt', function (e, settings) {
 		var api = new $.fn.dataTable.Api(settings);
 		$('#dades-count').html(api.page.info().recordsTotal);
+	});
+	$('#taulaInteressats').on('draw.dt', function (e, settings) {
+		var api = new $.fn.dataTable.Api(settings);
+		$('#interessats-count').html(api.page.info().recordsTotal);
 	});
 	$('.element-draggable').draggable({
 		containment: 'parent',
@@ -305,28 +325,6 @@ $(document).ready(function() {
 							</c:if>
 						</c:if>
 					</dl>
-					<c:if test="${contingut.expedient}">
-						<h4 class="interessats">
-							<spring:message code="contingut.info.interessats"/>
-							<c:if test="${potModificarContingut}"><a href="../expedient/${contingut.id}/interessat/new" class="btn btn-link btn-sm" title="<spring:message code="comu.boto.afegir"/>"><span class="fa fa-plus"></span></a></c:if>
-						</h4>
-						<c:if test="${not empty interessats}">
-							<ul class="list-unstyled interessats">
-								<c:forEach var="interessat" items="${interessats}">
-									<li>
-										<c:if test="${interessat.ciutada}">
-											<span class="fa fa-user" title="<spring:message code="contingut.info.interessat.tipus.ciutada"/>"></span>&nbsp;<span title="NIF: ${interessat.nif}">${interessat.nom} ${interessat.llinatges}</span>
-										</c:if>
-										<c:if test="${interessat.administracio}">
-											<span class="fa fa-institution" title="<spring:message code="contingut.info.interessat.tipus.administracio"/>"></span>&nbsp;<span title="ID: ${interessat.identificador}">${interessat.nom}</span>
-										</c:if>
-										<c:if test="${potModificarContingut}"><a href="../expedient/${contingut.id}/interessat/${interessat.id}/delete" class="hidden interessat-esborrar" title="<spring:message code="comu.boto.esborrar"/>"><span class="fa fa-minus"></span></a></c:if>
-										<div class="clearfix"></div>
-									</li>
-								</c:forEach>
-							</ul>
-						</c:if>
-					</c:if>
 					<rip:blocContenidorAccions id="botons-accions-info" contingut="${contingut}" modeLlistat="true" mostrarObrir="false"/>
 				</div>
 				<%--                     --%>
@@ -378,6 +376,9 @@ $(document).ready(function() {
 				<c:if test="${contingut.expedient}">
 					<li>
 						<a href="#registres" data-toggle="tab"><spring:message code="contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contingut.fillsRegistresCount}</span></a>
+					</li>
+					<li>
+						<a href="#interessats" data-toggle="tab"><spring:message code="contingut.tab.interessats"/>&nbsp;<span class="badge" id="interessats-count">${interessatsCount}</span></a>
 					</li>
 				</c:if>
 			</ul>
@@ -641,6 +642,76 @@ $(document).ready(function() {
 						<%--                    --%>
 						<%-- /Pipella registres --%>
 						<%--                    --%>
+					</div>
+					<div class="tab-pane" id="interessats">
+						<%--                     --%>
+						<%-- Pipella interessats --%>
+						<%--                     --%>
+						<table id="taulaInteressats" data-toggle="datatable" data-url="<c:url value="/contingut/${contingut.id}/interessat/datatable"/>" data-paging-enabled="false" data-botons-template="#taulaInteressatsBotonsTemplate" class="table table-striped table-bordered" style="width:100%">
+							<thead>
+								<tr>
+									<th data-col-name="id" data-visible="false">#</th>
+									<th data-col-name="representantId" data-visible="false">#</th>
+									<th data-col-name="tipus" data-template="#cellTipusInteressatTemplate" data-orderable="false" width="15%">
+										<spring:message code="contingut.interessat.columna.tipus"/>
+										<script id="cellTipusInteressatTemplate" type="text/x-jsrender">
+											{{:~eval('interessatTipusText["' + tipus + '"]')}}
+										</script>
+									</th>
+									<th data-col-name="documentNum" data-orderable="false" width="15%"><spring:message code="contingut.interessat.columna.document"/></th>
+									<th data-col-name="identificador" data-orderable="false" width="35%"><spring:message code="contingut.interessat.columna.identificador"/></th>
+									<th data-col-name="representantIdentificador" data-orderable="false" width="25%"><spring:message code="contingut.interessat.columna.representant"/>
+<%-- 
+									<th data-rdt-property="representantIdentificador" data-rdt-sortable="false" data-rdt-template="cellAccionsRepresentantTemplate" width="25%"><spring:message code="contingut.interessat.columna.representant"/>
+										<script id="cellAccionsRepresentantTemplate" type="text/x-jsrender">
+											{{if tipus != '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.ADMINISTRACIO%>'}}
+												{{if representantId}}
+													{{:representantIdentificador}}
+													<div class="dropdown right">
+														<button class="btn btn-success brep" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<span class="caret"></span></button>
+														<ul class="dropdown-menu">
+															<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/{{:representantId}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.modificar.prepresentant"/></a></li>
+															<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/{{:representantId}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="contingut.confirmacio.esborrar.representant"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.borrar.representant"/></a></li>
+														</ul>
+													</div>	
+												{{else}}
+													<a class="btn btn-success right" href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/new" data-rdt-link-modal="true" title="<spring:message code="contingut.interessat.nou.prepresentant"/>"><span class="fa fa-plus"></span></a>
+												{{/if}}
+											{{/if}}
+										</script>
+									</th>
+--%>
+									<th data-col-name="id" data-orderable="false" data-template="#cellAccionsInteressatTemplate" width="10%">
+										<script id="cellAccionsInteressatTemplate" type="text/x-jsrender">
+											<div class="dropdown">
+												<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+												<ul class="dropdown-menu">
+													<li><a href="../expedient/${contingut.id}/interessat/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+													<li><a href="../expedient/${contingut.id}/interessat/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="contingut.confirmacio.esborrar.interessat"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+													{{if tipus != '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.ADMINISTRACIO%>'}}
+														<li><hr/></li>
+														{{if representantId}}
+															<li><a href="../expedient/${contingut.id}/interessat/{{:id}}/representant/{{:representantId}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.modificar.prepresentant"/></a></li>
+															<li><a href="../expedient/${contingut.id}/interessat/{{:id}}/representant/{{:representantId}}/delete" data-toggle="ajax" data-confirm="<spring:message code="contingut.confirmacio.esborrar.representant"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.borrar.representant"/></a></li>
+														{{else}}
+															<li><a href="../expedient/${contingut.id}/interessat/{{:id}}/representant/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.nou.prepresentant"/></a></li>														
+														{{/if}}
+													{{/if}}											
+												</ul>
+											</div>
+										</script>
+									</th>
+								</tr>
+							</thead>
+						</table>
+						<script id="taulaInteressatsBotonsTemplate" type="text/x-jsrender">
+							<c:if test="${potModificarContingut}">
+								<p style="text-align:right"><a href="../expedient/${contingut.id}/interessat/new" class="btn btn-default" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contingut.boto.nou.interessat"/></a></p>
+							</c:if>
+						</script>
+						<%--                      --%>
+						<%-- /Pipella interessats --%>
+						<%--                      --%>
 					</div>
 				</c:if>
 			</div>

@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -46,13 +47,11 @@ public class ExpedientEntity extends NodeEntity {
 	@JoinColumn(name = "arxiu_id")
 	@ForeignKey(name = "ipa_arxiu_expedient_fk")
 	protected ArxiuEntity arxiu;
-	@ManyToMany(
+	@OneToMany(
+			mappedBy = "expedient",
+			fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
-			fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "ipa_expedient_interessat",
-			joinColumns = {@JoinColumn(name = "expedient_id")},
-			inverseJoinColumns = {@JoinColumn(name = "interessat_id")})
+			orphanRemoval = true)
 	protected Set<InteressatEntity> interessats = new HashSet<InteressatEntity>();
 	@Column(name = "estat", nullable = false)
 	protected ExpedientEstatEnumDto estat;

@@ -42,6 +42,7 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			if (unidades != null) {
 				for (UnidadTF unidad: unidades) {
 					if ("V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
+						
 						UnitatOrganitzativa unitat = new UnitatOrganitzativa(
 								unidad.getCodigo(),
 								unidad.getDenominacion(),
@@ -50,6 +51,7 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 								unidad.getCodigoEstadoEntidad(),
 								unidad.getCodUnidadSuperior(),
 								unidad.getCodUnidadRaiz());
+						
 						unitats.add(unitat);
 					}
 				}
@@ -66,7 +68,7 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					ex);
 		}
 	}
-
+	
 	@Override
 	public UnitatOrganitzativa findAmbCodi(String codi) throws SistemaExternException {
 		try {
@@ -83,7 +85,13 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 						unidad.getFechaAltaOficial(),
 						unidad.getCodigoEstadoEntidad(),
 						unidad.getCodUnidadSuperior(),
-						unidad.getCodUnidadRaiz());
+						unidad.getCodUnidadRaiz(),
+						unidad.getCodigoAmbPais(),
+						unidad.getCodAmbComunidad(),
+						unidad.getCodAmbProvincia(),
+						unidad.getCodPostal(),
+						unidad.getDescripcionLocalidad(),
+						getAdressa(unidad.getCodigoTipoVia(), unidad.getNombreVia(), unidad.getNumVia()));
 			} else {
 				LOGGER.error(
 						"La unitat organitzativa no està vigent (" +
@@ -147,6 +155,77 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.password");
 	}
 
+	private String getAdressa(
+			Long tipusVia,
+			String nomVia,
+			String numVia) {
+		
+		String adressa = "";
+		if (tipusVia != null) {
+			switch (tipusVia.intValue()) {
+			case 1:
+				adressa = "Alameda ";
+				break;
+			case 2:
+				adressa = "Calle ";
+				break;
+			case 3:
+				adressa = "Camino ";
+				break;
+			case 4:
+				adressa = "Carrer ";
+				break;
+			case 5:
+				adressa = "Carretera ";
+				break;
+			case 6:
+				adressa = "Glorieta";
+				break;
+			case 7:
+				adressa = "Kalea ";
+				break;
+			case 8:
+				adressa = "Pasaje ";
+				break;
+			case 9:
+				adressa = "Paseo ";
+				break;
+			case 10:
+				adressa = "Plaça ";
+				break;
+			case 11:
+				adressa = "Plaza ";
+				break;
+			case 12:
+				adressa = "Rambla ";
+				break;
+			case 13:
+				adressa = "Ronda ";
+				break;
+			case 14:
+				adressa = "Rúa ";
+				break;
+			case 15:
+				adressa = "Sector ";
+				break;
+			case 16:
+				adressa = "Travesía ";
+				break;
+			case 17:
+				adressa = "Urbanización ";
+				break;
+			default:
+				break;
+			}
+		}
+		
+		adressa += nomVia;
+		if (numVia != null) {
+			adressa += ", " + numVia;
+		}
+		return adressa;
+	}
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UnitatsOrganitzativesPluginDir3.class);
 
 }

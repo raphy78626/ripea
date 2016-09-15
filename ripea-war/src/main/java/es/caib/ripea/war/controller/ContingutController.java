@@ -30,6 +30,7 @@ import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
+import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
@@ -583,6 +584,29 @@ public class ContingutController extends BaseUserController {
 						registreId));
 		return "registreLog";
 	}*/
+	
+	@RequestMapping(value = "/contingut/{contingutId}/interessat/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse interessatDatatable(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<InteressatDto> interessats = null;
+		ContingutDto contingut = contingutService.findAmbIdUser(
+				entitatActual.getId(),
+				contingutId,
+				true);
+		if (contingut instanceof ExpedientDto) {
+			interessats = interessatService.findByExpedient(
+					entitatActual.getId(),
+					contingutId);
+		}
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				interessats);
+	}
+	
 
 	@RequestMapping(value = "/contingut/{contingutId}/log", method = RequestMethod.GET)
 	public String log(

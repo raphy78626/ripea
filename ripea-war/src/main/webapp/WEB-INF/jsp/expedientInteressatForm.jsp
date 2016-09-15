@@ -1,3 +1,4 @@
+<%@page import="es.caib.ripea.war.helper.EnumHelper"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib tagdir="/WEB-INF/tags/ripea" prefix="rip"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -5,15 +6,62 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<c:set var="titol"><spring:message code="interessat.form.titol"/></c:set>
+<%
+java.util.List<EnumHelper.HtmlOption> tipusEnum = EnumHelper.getOptionsForEnum(
+		es.caib.ripea.core.api.dto.InteressatTipusEnumDto.class,
+		"interessat.tipus.enum.");
+Boolean esRepresentant = (Boolean)request.getAttribute("esRepresentant");
+if (esRepresentant != null && esRepresentant) {
+	tipusEnum.remove(2);
+}
+pageContext.setAttribute(
+		"tipusEnumOptions",
+		tipusEnum);
+pageContext.setAttribute(
+		"documentTipusEnumOptions",
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
+				es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto.class,
+				"interessat.document.tipus.enum."));
+pageContext.setAttribute(
+		"idiomaEnumOptions",
+		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
+				es.caib.ripea.core.api.dto.IndiomaEnumDto.class,
+				"idioma.enum."));
+%>
+
+<c:set var="titol">
+	<c:choose>
+		<c:when test="${esRepresentant}">
+			<c:choose>
+				<c:when test="${not empty interessatCommand.id}"><spring:message code="representant.form.edit.titol"/></c:when>
+				<c:otherwise><spring:message code="representant.form.titol"/></c:otherwise>
+			</c:choose>
+		</c:when>
+		<c:otherwise>
+			<c:choose>
+				<c:when test="${not empty interessatCommand.id}"><spring:message code="interessat.form.edit.titol"/></c:when>
+				<c:otherwise><spring:message code="interessat.form.titol"/></c:otherwise>
+			</c:choose>
+		</c:otherwise>
+	</c:choose>
+</c:set>
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons-ciutada"/>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons-administracio"/>
+	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
+	<rip:modalHead/>
 <style>
 .tab-pane {
 	margin-top: 1em;
+}
+body {
+	font-size: 13px;
+}
+.control-label {
+	padding-right: 5px !important;
 }
 </style>
 <script type="text/javascript">
@@ -21,108 +69,281 @@ var interessatNoms = [];
 var interessatLlinatges = [];
 <c:forEach var="interessat" items="${interessats}">
 interessatNoms['${interessat.id}'] = "${interessat.nom}";
-<c:if test="${interessat.ciutada}">
+<c:if test="${interessat.personaFisica}">
 	interessatLlinatges['${interessat.id}'] = "${interessat.llinatges}";
 </c:if>
 </c:forEach>
 $(document).ready(function() {
+
+	var munOrgan = '';
+	var netejar = <c:out value="${empty interessatCommand.id and empty netejar}"/>;
+	
 	$('form').submit(function() {
 		$('form input').removeAttr('disabled');
 		return true;
 	});
-	$('select#id').change(function() {
-		if (this.value == '') {
+ 	$('select#tipus').change(function() {
+ 		munOrgan = '';
+ 		var lPais = $("label[for='pais']");
+		var lProvincia = $("label[for='provincia']");
+		var lMunicipi = $("label[for='municipi']");
+		var lAdresa = $("label[for='adresa']");
+		var lCodiPostal = $("label[for='codiPostal']");
+
+		$('#pais').prop("readonly", false);
+		$('#provincia').prop("readonly", false);
+		$('#municipi').prop("readonly", false);
+		$('#codiPostal').prop("readonly", false);
+		$('#adresa').prop("readonly", false);
+		$('#documentTipus').prop("readonly", false);
+		$('#documentNum').prop("readonly", false);
+
+		// Netejar
+		if (netejar) {
+			$('input#documentNum').val('');
 			$('input#nom').val('');
-			$('input#nom').removeAttr('disabled');
-			$('input#llinatges').val('');
-			$('input#llinatges').removeAttr('disabled');
-		} else {
-			$('input#nom').val(interessatNoms[this.value]);
-			$('input#nom').attr('disabled', 'disabled');
-			$('input#llinatges').val(interessatLlinatges[this.value]);
-			$('input#llinatges').attr('disabled', 'disabled');
-		}
+			$('input#llinatge1').val('');
+			$('input#llinatge2').val('');
+			$('input#raoSocial').val('');
+			$('select#organCodi').val('');
+			$('select#organCodi').change();
+			$('input#email').val('');
+			$('input#telefon').val('');
+			$('textarea#observacions').val('');
+			$('#pais').val("724");
+			$('#pais').change();
+// 			$('#provincia').prop("disabled", true);
+// 			$('#municipi').prop("disabled", true);
+ 		}
+ 		netejar = true;
+		
+ 		if (this.value == '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.PERSONA_FISICA%>') {
+			$('input#nom').prop( "disabled", false );
+			$('input#nom').closest(".form-group").removeClass('ocult');
+			$('input#llinatge1').prop( "disabled", false );
+			$('input#llinatge1').closest(".form-group").removeClass('ocult');
+			$('input#llinatge2').prop( "disabled", false );
+			$('input#llinatge2').closest(".form-group").removeClass('ocult');
+			$('select#documentTipus').prop( "disabled", false );
+			$('select#documentTipus').closest(".form-group").removeClass('ocult');
+			$('input#documentNum').prop( "disabled", false );
+			$('input#documentNum').closest(".form-group").removeClass('ocult');
+			
+			$('input#raoSocial').prop( "disabled", true );
+			$('input#raoSocial').closest(".form-group").addClass('ocult');
+			
+			$('select#organCodi').prop( "disabled", true );
+			$('select#organCodi').closest(".form-group").addClass('ocult');
+
+			lPais.text("<spring:message code="interessat.form.camp.pais"/>" + " *")
+			lProvincia.text("<spring:message code="interessat.form.camp.provincia"/>" + " *")
+			lMunicipi.text("<spring:message code="interessat.form.camp.municipi"/>" + " *")
+			lAdresa.text("<spring:message code="interessat.form.camp.adresa"/>" + " *")
+			lCodiPostal.text("<spring:message code="interessat.form.camp.codiPostal"/>" + " *")
+ 		} else if (this.value == '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.PERSONA_JURIDICA%>') {
+ 			$('input#nom').prop( "disabled", true );
+			$('input#nom').closest(".form-group").addClass('ocult');
+			$('input#llinatge1').prop( "disabled", true );
+			$('input#llinatge1').closest(".form-group").addClass('ocult');
+			$('input#llinatge2').prop( "disabled", true );
+			$('input#llinatge2').closest(".form-group").addClass('ocult');
+			$('select#documentTipus').prop( "disabled", false );
+			$('select#documentTipus').closest(".form-group").removeClass('ocult');
+			$('input#documentNum').prop( "disabled", false );
+			$('input#documentNum').closest(".form-group").removeClass('ocult');
+			
+			$('input#raoSocial').prop( "disabled", false );
+			$('input#raoSocial').closest(".form-group").removeClass('ocult');
+			
+			$('select#organCodi').prop( "disabled", true );
+			$('select#organCodi').closest(".form-group").addClass('ocult');
+
+			lPais.text("<spring:message code="interessat.form.camp.pais"/>" + " *")
+			lProvincia.text("<spring:message code="interessat.form.camp.provincia"/>" + " *")
+			lMunicipi.text("<spring:message code="interessat.form.camp.municipi"/>" + " *")
+			lAdresa.text("<spring:message code="interessat.form.camp.adresa"/>" + " *")
+			lCodiPostal.text("<spring:message code="interessat.form.camp.codiPostal"/>" + " *")
+ 	 	} else {
+ 	 		$('input#nom').prop( "disabled", true );
+			$('input#nom').closest(".form-group").addClass('ocult');
+			$('input#llinatge1').prop( "disabled", true );
+			$('input#llinatge1').closest(".form-group").addClass('ocult');
+			$('input#llinatge2').prop( "disabled", true );
+			$('input#llinatge2').closest(".form-group").addClass('ocult');
+			$('select#documentTipus').prop( "disabled", false );
+			$('select#documentTipus').closest(".form-group").removeClass('ocult');
+			$('input#documentNum').prop( "disabled", false );
+			$('input#documentNum').closest(".form-group").removeClass('ocult');
+			
+			$('input#raoSocial').prop( "disabled", true );
+			$('input#raoSocial').closest(".form-group").addClass('ocult');
+			
+			$('select#organCodi').prop( "disabled", false );
+			$('select#organCodi').closest(".form-group").removeClass('ocult');
+
+			lPais.text("<spring:message code="interessat.form.camp.pais"/>")
+			lProvincia.text("<spring:message code="interessat.form.camp.provincia"/>")
+			lMunicipi.text("<spring:message code="interessat.form.camp.municipi"/>")
+			lAdresa.text("<spring:message code="interessat.form.camp.adresa"/>")
+			lCodiPostal.text("<spring:message code="interessat.form.camp.codiPostal"/>")
+
+			$('#pais').prop("readonly", true);
+			$('#provincia').prop("readonly", true);
+			$('#municipi').prop("readonly", true);
+			$('#codiPostal').prop("readonly", true);
+			$('#adresa').prop("readonly", true);
+			$('#documentTipus').prop("readonly", true);
+			$('#documentTipus').val("NIF");
+			$('#documentTipus').change();
+			$('#documentNum').prop("readonly", true);
+
+// 			$('select#organCodi').val('');
+// 			$('select#organCodi').change();
+					
+ 		}
+//  		var iframe = $('.modal-body iframe', window.parent.document);
+// 		var height = $('html').height();
+// 		iframe.height(height + 'px');
+ 	});
+ 	if ($("#id").val() != '') {
+		$('select#tipus').prop( "readonly", true );
+	}
+ 	$('input#documentNum').on('keydown', function(evt) {
+		$(this).val(function (_, val) {
+			return val.toUpperCase();
+		});
 	});
-	$('select#id').change();
+ 	$('select#organCodi').change(function() {
+ 		munOrgan = '';
+ 	 	if ($(this).val() != "") {
+	 		$.ajax({
+				type: 'GET',
+				url: "<c:url value="/expedient/organ/"/>" + $(this).val(),
+				success: function(data) {
+					$('#pais').val(data.codiPais);
+					$('#pais').change();
+// 					$('#provincia').prop("disabled", (data.codiPais != '724'));
+					$('#provincia').val(data.codiProvincia);
+					$('#provincia').change();
+// 					$('#municipi').prop("disabled", (data.codiPais != '724'));
+		 	 		$('#municipi').val(data.localitat);
+		 	 		munOrgan = data.localitat;
+		 	 		$('#municipi').change();
+		 	 		$('#codiPostal').val(data.codiPostal);
+		 	 		$('#adresa').val(data.adressa);
+		 	 		$('#documentNum').val(data.nifCif);
+				}
+			});
+ 	 	} else {
+ 	 		$('#pais').val("");
+ 	 		$('#pais').change();
+ 	 		$('#provincia').val("");
+ 	 		$('#provincia').change();
+ 	 		$('#municipi').val("");
+ 	 		$('#municipi').change();
+ 	 		$('#codiPostal').val("");
+ 	 		$('#adresa').val("");
+ 	 		$('#documentNum').val("");
+ 	 	}
+ 	});
+ 	$('select#pais').change(function() {
+ 		if ($(this).val() == '724') {
+ 			$('#provincia').prop("disabled", false);
+			$('#municipi').prop("disabled", false);
+		} else {
+			$('#provincia').val("");
+ 	 		$('#provincia').change();
+			$('#provincia').prop("disabled", true);
+			$('#municipi').val("");
+ 	 		$('#municipi').change();
+			$('#municipi').prop("disabled", true);
+		}
+ 	});
+ 	$('select#provincia').change(function(valor) {
+ 		if ($(this).val() != '') {
+ 			$.ajax({
+				type: 'GET',
+				url: "<c:url value="/expedient/municipis/"/>" + $(this).val(),
+				success: function(data) {
+					var selMunicipi = $('#municipi');
+					selMunicipi.empty();
+					selMunicipi.append("<option value=\"\"></option>");
+					if (data && data.length > 0) {
+						var items = [];
+						$.each(data, function(i, val) {
+							items.push({
+								"id": val.codi,
+								"text": val.nom
+							});
+							selMunicipi.append("<option value=\"" + val.codi + "\">" + val.nom + "</option>");
+						});
+					}
+					var select2Options = {theme: 'bootstrap', allowClear: true, minimumResultsForSearch: "6"};
+					selMunicipi.select2("destroy");
+					selMunicipi.select2(select2Options);
+					if (munOrgan != '')
+						selMunicipi.val(munOrgan);
+					selMunicipi.trigger("change");
+				}
+			});
+ 	 	}
+ 	});
+	
+	$('select#tipus').change();
+// 	$('#pais').change();
 });
 </script>
 </head>
 <body>
-	<ul class="nav nav-tabs">
-		<li<c:if test="${interessatCommand.ciutada}"> class="active"</c:if>><a href="#ciutada" data-toggle="tab">Ciutadà</a></li>
-		<li<c:if test="${interessatCommand.administracio}"> class="active"</c:if>><a href="#administracio" data-toggle="tab">Administració</a></li>
-	</ul>
-	<div class="tab-content">
-		<div class="tab-pane<c:if test="${interessatCommand.ciutada}"> active</c:if>" id="ciutada">
-			<c:choose>
-				<c:when test="${interessatCommand.ciutada}"><c:set var="commandName" value="interessatCommand"/></c:when>
-				<c:otherwise><c:set var="commandName" value="emptyCommand"/></c:otherwise>
-			</c:choose>
-			<c:choose>
-				<c:when test="${interessatCommand.comprovat}"><c:set var="formAction"><rip:modalUrl value="/expedient/${expedientId}/interessatCiutada"/></c:set></c:when>
-				<c:otherwise><c:set var="formAction"><rip:modalUrl value="/expedient/${expedientId}/interessatComprovarCiutada"/></c:set></c:otherwise>
-			</c:choose>
-			<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="${commandName}">
-				<form:hidden path="entitatId"/>
-				<form:hidden path="comprovat"/>
-				<input type="hidden" name="tipus" value="<%=es.caib.ripea.war.command.InteressatCommand.TIPUS_CIUTADA%>"/>
-				<rip:inputText name="nif" textKey="interessat.form.camp.nif" required="true"/>
-				<c:choose>
-					<c:when test="${interessatCommand.ciutada and interessatCommand.comprovat}">
-						<c:if test="${fn:length(interessats) > 0}">
-							<rip:inputSelect name="id" textKey="interessat.form.camp.id" required="true" optionItems="${interessats}" optionValueAttribute="id" optionTextAttribute="llinatgesComaNom" emptyOption="true" emptyOptionTextKey="interessat.form.camp.id.sense.valor"/>
-						</c:if>
-						<rip:inputText name="nom" textKey="interessat.form.camp.nom" required="true"/>
-						<rip:inputText name="llinatges" textKey="interessat.form.camp.llinatges" required="true"/>
-						<div id="botons-ciutada" class="well">
-							<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-							<a href="<c:url value="/contenidor/${expedientId}"/>" class="btn btn-default btn-tancar"><spring:message code="comu.boto.cancelar"/></a>
-						</div>
-					</c:when>
-					<c:otherwise>
-						<div id="botons-administracio" class="well">
-							<button type="submit" class="btn btn-info"><span class="fa fa-question-sign"></span> <spring:message code="comu.boto.consultar"/></button>
-							<a href="<c:url value="/contenidor/${expedientId}"/>" class="btn btn-default btn-tancar"><spring:message code="comu.boto.cancelar"/></a>
-						</div>
-					</c:otherwise>
-				</c:choose>
-				
-			</form:form>
+
+	<c:choose>
+		<c:when test="${not empty esRepresentant}">
+			<c:set var="formAction"><rip:modalUrl value="/expedient/${expedientId}/interessat/${interessatId}/representant"/></c:set>
+		</c:when>
+		<c:otherwise>
+			<c:set var="formAction"><rip:modalUrl value="/expedient/${expedientId}/interessat"/></c:set>
+		</c:otherwise>
+	</c:choose>
+	
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="interessatCommand">
+		<form:hidden path="entitatId"/>
+		<form:hidden path="id"/>
+		<input type="hidden" id="id"/>
+		<rip:inputSelect name="tipus" textKey="interessat.form.camp.tipus" optionItems="${tipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" labelSize="2" />
+		<div class="row">
+			<div class="col-xs-6"><rip:inputSelect name="documentTipus" textKey="interessat.form.camp.document.tipus" optionItems="${documentTipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
+			<div class="col-xs-6"><rip:inputText name="documentNum" textKey="interessat.form.camp.document.numero" required="true"/></div>
 		</div>
-		<div class="tab-pane<c:if test="${interessatCommand.administracio}"> active</c:if>" id="administracio">
-			<c:choose>
-				<c:when test="${interessatCommand.administracio}"><c:set var="commandName" value="interessatCommand"/></c:when>
-				<c:otherwise><c:set var="commandName" value="emptyCommand"/></c:otherwise>
-			</c:choose>
-			<c:choose>
-				<c:when test="${interessatCommand.comprovat}"><c:set var="formAction"><rip:modalUrl value="/expedient/${expedientId}/interessatAdministracio"/></c:set></c:when>
-				<c:otherwise><c:set var="formAction"><rip:modalUrl value="/expedient/${expedientId}/interessatComprovarAdministracio"/></c:set></c:otherwise>
-			</c:choose>
-			<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="${commandName}">
-				<form:hidden path="entitatId"/>
-				<form:hidden path="comprovat"/>
-				<input type="hidden" name="tipus" value="<%=es.caib.ripea.war.command.InteressatCommand.TIPUS_ADMINISTRACIO%>"/>
-				<rip:inputText name="identificador" textKey="interessat.form.camp.identificador" required="true"/>
-				<c:choose>
-					<c:when test="${interessatCommand.administracio and interessatCommand.comprovat}">
-						<c:if test="${fn:length(interessats) > 0}">
-							<rip:inputSelect name="id" textKey="interessat.form.camp.id" required="true" optionItems="${interessats}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" emptyOptionTextKey="interessat.form.camp.id.sense.valor"/>
-						</c:if>
-						<rip:inputText name="nom" textKey="interessat.form.camp.nom" required="true"/>
-						<div id="botons-administracio" class="well">
-							<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-							<a href="<c:url value="/contenidor/${expedientId}"/>" class="btn btn-default btn-tancar"><spring:message code="comu.boto.cancelar"/></a>
-						</div>
-					</c:when>
-					<c:otherwise>
-						<div id="botons-administracio" class="well">
-							<button type="submit" class="btn btn-info"><span class="fa fa-question-sign"></span> <spring:message code="comu.boto.consultar"/></button>
-							<a href="<c:url value="/contenidor/${expedientId}"/>" class="btn btn-default btn-tancar"><spring:message code="comu.boto.cancelar"/></a>
-						</div>
-					</c:otherwise>
-				</c:choose>
-			</form:form>
+		<rip:inputText name="nom" textKey="interessat.form.camp.nom" required="true" labelSize="2"/>
+		<div class="row">
+			<div class="col-xs-6"><rip:inputText name="llinatge1" textKey="interessat.form.camp.llinatge1" required="true"/></div>
+			<div class="col-xs-6"><rip:inputText name="llinatge2" textKey="interessat.form.camp.llinatge2"/></div>
+		</div>	
+		<rip:inputText name="raoSocial" textKey="interessat.form.camp.raoSocial" required="true" labelSize="2"/>
+		<rip:inputSelect name="organCodi" textKey="interessat.form.camp.organCodi" optionItems="${unitatsOrganitzatives}" optionTextAttribute="denominacio" optionValueAttribute="codi" emptyOption="true" required="true" optionMinimumResultsForSearch="6" labelSize="2"/>
+		<div class="row">
+			<div class="col-xs-6"><rip:inputSelect name="pais" textKey="interessat.form.camp.pais" optionItems="${paisos}" optionTextAttribute="nom" optionValueAttribute="codi_numeric" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+			<div class="col-xs-6"><rip:inputSelect name="provincia" textKey="interessat.form.camp.provincia" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+			<div class="col-xs-6"><rip:inputSelect name="municipi" textKey="interessat.form.camp.municipi" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+<%-- 			<div class="col-xs-6"><rip:inputText name="municipi" textKey="interessat.form.camp.municipi" required="true"/></div> --%>
+			<div class="col-xs-6"><rip:inputText name="codiPostal" textKey="interessat.form.camp.codiPostal" required="true"/></div>
 		</div>
-	</div>
+		<rip:inputTextarea name="adresa" textKey="interessat.form.camp.adresa" required="true" labelSize="2"/>
+		<div class="row">
+			<div class="col-xs-6"><rip:inputText name="email" textKey="interessat.form.camp.email"/></div>
+			<div class="col-xs-6"><rip:inputText name="telefon" textKey="interessat.form.camp.telefon"/></div>
+		</div>
+		<rip:inputTextarea name="observacions" textKey="interessat.form.camp.observacions" labelSize="2"/>
+		<div class="row">
+			<div class="col-xs-6"><rip:inputSelect name="notificacioIdioma" textKey="interessat.form.camp.idioma" optionItems="${idiomaEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
+			<div class="col-xs-6"><rip:inputCheckbox name="notificacioAutoritzat" textKey="interessat.form.camp.autoritzat" labelSize="10"/></div>
+		</div>
+		
+		<div id="modal-botons" class="well">
+			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+ 			<a href="<c:url value="/contingut/${expedientId}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+		</div>
+	</form:form>
+
 </body>
 </html>

@@ -21,18 +21,21 @@
 <%@ attribute name="disabled" required="false" rtexprvalue="true"%>
 <%@ attribute name="multiple" required="false" rtexprvalue="true"%>
 <%@ attribute name="optionMinimumResultsForSearch" required="false" rtexprvalue="true"%>
+<%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campId" value="${campPath}"/><c:if test="${not empty id}"><c:set var="campId" value="${id}"/></c:if>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="campLabelText"><c:choose><c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when><c:when test="${not empty text}">${text}</c:when><c:otherwise>${campPath}</c:otherwise></c:choose><c:if test="${required}">*</c:if></c:set>
 <c:set var="campPlaceholder"><c:choose><c:when test="${not empty placeholderKey}"><spring:message code="${placeholderKey}"/></c:when><c:otherwise>${placeholder}</c:otherwise></c:choose></c:set>
 <c:set var="minimumResultsForSearch"><c:choose><c:when test="${not empty optionMinimumResultsForSearch}">${optionMinimumResultsForSearch}</c:when><c:otherwise>${-1}</c:otherwise></c:choose></c:set>
+<c:set var="campLabelSize"><c:choose><c:when test="${not empty labelSize}">${labelSize}</c:when><c:otherwise>4</c:otherwise></c:choose></c:set>
+<c:set var="campInputSize">${12 - campLabelSize}</c:set>
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>"<c:if test="${multiple}"> data-toggle="multifield"</c:if>>
 <c:choose>
 	<c:when test="${not inline}">
-		<label class="control-label col-xs-4" for="${campPath}">${campLabelText}</label>
-		<div class="controls col-xs-8">
-			<form:select path="${campPath}" cssClass="form-control" id="${campId}" disabled="${disabled}" style="width:100%" data-toggle="select2" data-placeholder="${campPlaceholder}">
+		<label class="control-label col-xs-${campLabelSize}" for="${campPath}">${campLabelText}</label>
+		<div class="controls col-xs-${campInputSize}">
+			<form:select path="${campPath}" cssClass="form-control" id="${campId}" disabled="${disabled}" style="width:100%" data-toggle="select2" data-placeholder="${campPlaceholder}" data-minimumresults="${minimumResultsForSearch}">
 				<c:if test="${emptyOption == 'true'}">
 					<c:choose>
 						<c:when test="${not empty emptyOptionTextKey}"><option value=""><spring:message code="${emptyOptionTextKey}"/></option></c:when>
@@ -64,7 +67,7 @@
 	</c:when>
 	<c:otherwise>
    		<label class="sr-only" for="${campPath}">${campLabelText}</label>
-		<form:select path="${campPath}" cssClass="form-control" id="${campId}" disabled="${disabled}" data-toggle="select2" data-placeholder="${campPlaceholder}">
+		<form:select path="${campPath}" cssClass="form-control" id="${campId}" disabled="${disabled}" data-toggle="select2" data-placeholder="${campPlaceholder}" data-minimumresults="${minimumResultsForSearch}">
 			<c:if test="${emptyOption == 'true'}">
 				<c:choose>
 					<c:when test="${not empty emptyOptionTextKey}"><option value=""><spring:message code="${emptyOptionTextKey}"/></option></c:when>

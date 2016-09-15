@@ -19,10 +19,10 @@ import javax.validation.Payload;
  */
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy=InteressatNoRepetitValidator.class)
-public @interface InteressatNoRepetit {
+@Constraint(validatedBy=InteressatPaisValidator.class)
+public @interface InteressatPais {
 
-	String message() default "Ja existeix un altre interessat donat d'alta amb aquestes dades";
+	String message() default "Ha d'informar de la provincia i el municipi quan el país és Espanya";
 
 	Class<?>[] groups() default {};
 
