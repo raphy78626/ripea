@@ -560,7 +560,7 @@ public class InteressatServiceImpl implements InteressatService {
 				representant,
 				InteressatDto.class);
 	}
-
+	
 	@Transactional(readOnly=true)
 	@Override
 	public List<InteressatDto> findByExpedient(

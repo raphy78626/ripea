@@ -91,7 +91,6 @@ public class InteressatServiceBean implements InteressatService {
 		delegate.delete(entitatId, expedientId, interessatId, representantId);
 	}
 	
-	
 	@Override
 	@RolesAllowed("tothom")
 	public InteressatDto findById(
