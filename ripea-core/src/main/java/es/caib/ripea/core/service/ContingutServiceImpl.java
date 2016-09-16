@@ -1388,6 +1388,9 @@ public class ContingutServiceImpl implements ContingutService {
 			creat = contingutRepository.save(carpetaNova);
 		} else if (contingutOrigen instanceof DocumentEntity) {
 			DocumentEntity documentOrigen = (DocumentEntity)contingutOrigen;
+			DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
+					documentOrigen,
+					documentOrigen.getVersioDarrera().getVersio());
 			DocumentEntity documentNou = DocumentEntity.getBuilder(
 					DocumentTipusEnumDto.DIGITAL,
 					documentOrigen.getNom(),
@@ -1396,10 +1399,6 @@ public class ContingutServiceImpl implements ContingutService {
 					documentOrigen.getMetaDocument(),
 					contingutDesti,
 					entitat).build();
-			creat = contingutRepository.save(documentNou);
-			DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
-					documentOrigen,
-					documentOrigen.getDarreraVersio());
 			FitxerDto fitxer = documentHelper.getFitxerAssociat(
 					documentVersio);
 			int versio = 1;
@@ -1410,7 +1409,8 @@ public class ContingutServiceImpl implements ContingutService {
 					fitxer.getContentType(),
 					fitxer.getContingut());
 			documentVersioRepository.save(documentVersioNova);
-			documentNou.updateDarreraVersio(versio);
+			documentNou.updateVersioDarrera(documentVersioNova);
+			creat = contingutRepository.save(documentNou);
 		} else if (contingutOrigen instanceof ExpedientEntity) {
 			ExpedientEntity expedientOrigen = (ExpedientEntity)contingutOrigen;
 			creat = contingutHelper.crearNouExpedient(

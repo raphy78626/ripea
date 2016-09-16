@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
+import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
+import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
+import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -178,14 +181,26 @@ public class ExpedientServiceBean implements ExpedientService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void relacionar(
+	public void relacioCreate(
 			Long entitatId,
 			Long id,
-			Long acumulatId) {
-		delegate.relacionar(
+			Long relacionatId) {
+		delegate.relacioCreate(
 				entitatId,
 				id,
-				acumulatId);
+				relacionatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean relacioDelete(
+			Long entitatId, 
+			Long expedientId, 
+			Long relacionatId) {
+		return delegate.relacioDelete(
+				entitatId,
+				expedientId,
+				relacionatId);
 	}
 
 	@Override
@@ -197,12 +212,87 @@ public class ExpedientServiceBean implements ExpedientService {
 	}
 
 	@Override
-	@RolesAllowed("tothom")
-	public boolean relacioDelete(
-			Long entitatId, 
-			Long expedientId, 
-			Long relacionatId) throws NotFoundException {
-		return delegate.relacioDelete(entitatId, expedientId, relacionatId);
+	public DocumentNotificacioDto notificacioCreate(
+			Long entitatId,
+			Long expedientId,
+			DocumentNotificacioDto notificacio) {
+		return delegate.notificacioCreate(
+				entitatId,
+				expedientId,
+				notificacio);
+	}
+
+	@Override
+	public DocumentNotificacioDto notificacioUpdate(
+			Long entitatId,
+			Long expedientId,
+			DocumentNotificacioDto notificacio) {
+		return delegate.notificacioUpdate(
+				entitatId,
+				expedientId,
+				notificacio);
+	}
+
+	@Override
+	public DocumentNotificacioDto notificacioDelete(
+			Long entitatId,
+			Long expedientId,
+			Long notificacioId) {
+		return delegate.notificacioDelete(
+				entitatId,
+				expedientId,
+				notificacioId);
+	}
+
+	@Override
+	public List<DocumentEnviamentDto> notificacioFindByExpedientId(
+			Long entitatId,
+			Long expedientId) {
+		return delegate.notificacioFindByExpedientId(
+				entitatId,
+				expedientId);
+	}
+
+	@Override
+	public DocumentPublicacioDto publicacioCreate(
+			Long entitatId,
+			Long expedientId,
+			DocumentPublicacioDto publicacio) {
+		return delegate.publicacioCreate(
+				entitatId,
+				expedientId,
+				publicacio);
+	}
+
+	@Override
+	public DocumentPublicacioDto publicacioUpdate(
+			Long entitatId,
+			Long expedientId,
+			DocumentPublicacioDto publicacio) {
+		return delegate.publicacioUpdate(
+				entitatId,
+				expedientId,
+				publicacio);
+	}
+
+	@Override
+	public DocumentPublicacioDto publicacioDelete(
+			Long entitatId,
+			Long expedientId,
+			Long publicacioId)
+			throws NotFoundException {
+		return delegate.publicacioDelete(
+				entitatId, expedientId,
+				publicacioId);
+	}
+
+	@Override
+	public List<DocumentPublicacioDto> publicacioFindByExpedientId(
+			Long entitatId,
+			Long expedientId) {
+		return delegate.publicacioFindByExpedientId(
+				entitatId,
+				expedientId);
 	}
 
 }

@@ -630,6 +630,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				false);
 		DocumentEntity document = entityComprovarHelper.comprovarDocument(
 				entitat,
+				null,
 				documentId,
 				true,
 				false,

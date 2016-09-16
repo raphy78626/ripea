@@ -52,12 +52,6 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 	private byte[] arxiuContingut;
 	@Column(name = "arxiu_gesdoc_id", length = 100)
 	private String arxiuGesdocId;
-	@Column(name = "custodiat")
-	private boolean custodiat;
-	@Column(name = "custodia_id", length = 256)
-	private String custodiaId;
-	@Column(name = "custodia_url", length = 1024)
-	private String custodiaUrl;
 	@Version
 	private long version = 0;
 
@@ -84,15 +78,6 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 	public String getArxiuGesdocId() {
 		return arxiuGesdocId;
 	}
-	public boolean isCustodiat() {
-		return custodiat;
-	}
-	public String getCustodiaId() {
-		return custodiaId;
-	}
-	public String getCustodiaUrl() {
-		return custodiaUrl;
-	}
 
 	public void updateArxiu(
 			String arxiuNom,
@@ -102,16 +87,6 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 		this.arxiuContentType = arxiuContentType;
 		this.arxiuContingut = arxiuContingut;
 		this.arxiuContentLength = arxiuContingut.length;
-	}
-	public void updateCustodiaUrl(
-			String custodiaUrl) {
-		this.custodiaUrl = custodiaUrl;
-	}
-	public void updateCustodiaEstat(
-			boolean custodiat,
-			String custodiaId) {
-		this.custodiat = custodiat;
-		this.custodiaId = custodiaId;
 	}
 
 	/**

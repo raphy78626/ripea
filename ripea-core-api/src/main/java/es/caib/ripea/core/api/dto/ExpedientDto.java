@@ -15,22 +15,25 @@ import java.util.Date;
 public class ExpedientDto extends NodeDto {
 
 	public ArxiuDto arxiu;
-	protected ExpedientEstatEnumDto estat;
-	protected Date tancatData;
-	protected String tancatMotiu;
-	protected int any;
-	protected long sequencia;
-	protected String ntiVersion;
-	protected String ntiIdentificador;
-	protected String ntiOrgano;
-	protected String ntiOrganoDescripcio;
-	protected Date ntiFechaApertura;
-	protected String ntiClasificacionSia;
-	protected boolean sistraPublicat;
-	protected Integer sistraUnitatAdministrativa;
-	protected String sistraClau;
-	
-	
+	private ExpedientEstatEnumDto estat;
+	private Date tancatData;
+	private String tancatMotiu;
+	private int any;
+	private long sequencia;
+	private String ntiVersion;
+	private String ntiIdentificador;
+	private String ntiOrgano;
+	private String ntiOrganoDescripcio;
+	private Date ntiFechaApertura;
+	private String ntiClasificacionSia;
+	private boolean sistraPublicat;
+	private Integer sistraUnitatAdministrativa;
+	private String sistraClau;
+
+	private String numero;
+
+
+
 	public ArxiuDto getArxiu() {
 		return arxiu;
 	}
@@ -121,16 +124,21 @@ public class ExpedientDto extends NodeDto {
 	public void setSistraClau(String sistraClau) {
 		this.sistraClau = sistraClau;
 	}
-
+	public String getNumero() {
+		return numero;
+	}
+	public void setNumero(String numero) {
+		this.numero = numero;
+	}
 	public MetaExpedientDto getMetaExpedient() {
 		return (MetaExpedientDto)getMetaNode();
 	}
 
-	public String getNumero() {
+	/*public String getNumero() {
 		return sequencia + "/" + any;
 	}
 
-	/*public String getNtiVersion() {
+	public String getNtiVersion() {
 		return "1.0";
 	}
 	public String getNtiIdentificador() {

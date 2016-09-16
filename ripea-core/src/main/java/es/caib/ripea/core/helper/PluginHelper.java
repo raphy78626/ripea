@@ -23,17 +23,22 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
+import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
+import es.caib.ripea.plugin.ciutada.CiutadaNotificacioResultat;
 import es.caib.ripea.plugin.ciutada.CiutadaPersona;
 import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
@@ -388,24 +393,40 @@ public class PluginHelper {
 	}
 
 	public long portafirmesUpload(
-			DocumentVersioEntity documentVersio,
+			DocumentEntity document,
 			String motiu,
 			PortafirmesPrioritatEnum prioritat,
-			Date dataCaducitat) {
+			Date dataCaducitat,
+			List<DocumentEntity> annexos) {
 		String accioDescripcio = "Enviament de document a firmar";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
-				"documentVersioId",
-				documentVersio.getId().toString());
+				"documentId",
+				document.getId().toString());
+		accioParams.put(
+				"documentTitol",
+				document.getNom());
 		accioParams.put("motiu", motiu);
 		accioParams.put("prioritat", prioritat.toString());
 		accioParams.put(
 				"dataCaducitat",
 				new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(dataCaducitat));
-		DocumentEntity document = documentVersio.getDocument();
-		accioParams.put(
-				"documentId",
-				document.getId().toString());
+		if (annexos != null) {
+			StringBuilder annexosIds = new StringBuilder();
+			StringBuilder annexosTitols = new StringBuilder();
+			boolean primer = true;
+			for (DocumentEntity annex: annexos) {
+				if (!primer) {
+					annexosIds.append(", ");
+					annexosTitols.append(", ");
+				}
+				annexosIds.append(annex.getId());
+				annexosTitols.append(annex.getNom());
+				primer = false;
+			}
+			accioParams.put("annexosIds", annexosIds.toString());
+			accioParams.put("annexosTitols", annexosTitols.toString());
+		}
 		MetaDocumentEntity metaDocument = document.getMetaDocument();
 		if (metaDocument != null) {
 			accioParams.put(
@@ -425,9 +446,10 @@ public class PluginHelper {
 						false);
 				String urlCustodia = null;
 				if (portafirmesEnviarDocumentEstampat()) {
-					urlCustodia = documentVersio.getCustodiaUrl();
+					urlCustodia = document.getCustodiaUrl();
 				}
-				FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(documentVersio);
+				FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(
+						document.getVersioDarrera());
 				FitxerDto fitxerConvertit = conversioConvertirPdfIEstamparUrl(
 						fitxerOriginal,
 						urlCustodia);
@@ -499,7 +521,7 @@ public class PluginHelper {
 				}
 			} else {
 				String errorMissatge = "El meta-document associat no està correctament configurat per a fer enviaments al portafirmes (" +
-						"documentVersioId=" + documentVersio.getId().toString() + ")";
+						"documentId=" + document.getId().toString() + ")";
 				integracioHelper.addAccioError(
 						IntegracioHelper.INTCODI_PFIRMA,
 						accioDescripcio,
@@ -512,7 +534,7 @@ public class PluginHelper {
 			}
 		} else {
 			String errorMissatge = "El document que s'intenta enviar no te meta-document associat (" +
-							"documentVersioId=" + documentVersio.getId().toString() + ")";
+							"documentId=" + document.getId().toString() + ")";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_PFIRMA,
 					accioDescripcio,
@@ -526,16 +548,12 @@ public class PluginHelper {
 	}
 
 	public PortafirmesDocument portafirmesDownload(
-			DocumentVersioEntity documentVersio,
+			DocumentEntity document,
 			DocumentPortafirmesEntity documentPortafirmes) {
 		String accioDescripcio = "Descarregar document firmat";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
 				"documentVersioId",
-				documentVersio.getId().toString());
-		DocumentEntity document = documentVersio.getDocument();
-		accioParams.put(
-				"documentId",
 				document.getId().toString());
 		accioParams.put(
 				"documentPortafirmesId",
@@ -701,17 +719,17 @@ public class PluginHelper {
 	}
 
 	public String custodiaReservarUrl(
-			DocumentVersioEntity documentVersio) {
-		if (documentVersio.getCustodiaUrl() != null)
-			return documentVersio.getCustodiaUrl();
+			DocumentEntity document) {
+		if (document.getCustodiaUrl() != null)
+			return document.getCustodiaUrl();
 		String accioDescripcio = "Reservar URL";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
-				"documentVersioId",
-				documentVersio.getId().toString());
+				"documentId",
+				document.getId().toString());
 		try {
 			String url = getCustodiaPlugin().reservarUrl(
-					documentVersio.getId().toString());
+					document.getId().toString());
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_CUSTODIA,
 					accioDescripcio,
@@ -735,15 +753,15 @@ public class PluginHelper {
 	}
 
 	public String custodiaCustodiarDocumentFirmat(
-			DocumentVersioEntity documentVersio,
+			DocumentEntity document,
 			String custodiaTipus,
 			String arxiuNom,
 			byte[] arxiuContingut) {
 		String accioDescripcio = "Custodiar document firmat";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
-				"documentVersioId",
-				documentVersio.getId().toString());
+				"documentId",
+				document.getId().toString());
 		accioParams.put(
 				"arxiuNom",
 				arxiuNom);
@@ -752,7 +770,7 @@ public class PluginHelper {
 				new Integer(arxiuContingut.length).toString());
 		try {
 			getCustodiaPlugin().custodiarPdfFirmat(
-					documentVersio.getId().toString(),
+					document.getId().toString(),
 					custodiaTipus,
 					arxiuNom,
 					new ByteArrayInputStream(arxiuContingut));
@@ -761,7 +779,7 @@ public class PluginHelper {
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
-			return documentVersio.getId().toString();
+			return document.getId().toString();
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
 			integracioHelper.addAccioError(
@@ -778,18 +796,18 @@ public class PluginHelper {
 		}
 	}
 
-	public void custodiaEsborrar(DocumentVersioEntity documentVersio) {
+	public void custodiaEsborrar(DocumentEntity document) {
 		String accioDescripcio = "Esborrar document custodiat";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put(
-				"documentVersioId",
-				documentVersio.getId().toString());
+				"documentId",
+				document.getId().toString());
 		accioParams.put(
 				"custodiaId",
-				documentVersio.getCustodiaId());
+				document.getCustodiaId());
 		try {
 			getCustodiaPlugin().esborrarDocumentCustodiat(
-					documentVersio.getCustodiaId(),
+					document.getCustodiaId(),
 					false);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_CUSTODIA,
@@ -860,6 +878,10 @@ public class PluginHelper {
 		String accioDescripcio = "Creació d'un expedient a la zona personal del ciutadà";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientId", expedient.getId().toString());
+		accioParams.put("expedientNumero", expedient.getNumero());
+		accioParams.put("expedientTitol", expedient.getNom());
+		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
+		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
 		accioParams.put("unitatAdministrativa", new Long(unitatAdministrativa).toString());
 		accioParams.put("idioma", idioma);
 		accioParams.put("descripcio", descripcio);
@@ -896,7 +918,7 @@ public class PluginHelper {
 				}
 			}
 			getCiutadaPlugin().expedientCrear(
-					expedient.getId().toString(),
+					expedient.getNtiIdentificador(),
 					unitatAdministrativa,
 					idioma,
 					descripcio,
@@ -936,13 +958,17 @@ public class PluginHelper {
 		String accioDescripcio = "Creació d'un avis a la zona personal del ciutadà";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientId", expedient.getId().toString());
+		accioParams.put("expedientNumero", expedient.getNumero());
+		accioParams.put("expedientTitol", expedient.getNom());
+		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
+		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
 		accioParams.put("unitatAdministrativa", new Long(unitatAdministrativa).toString());
 		accioParams.put("titol", titol);
 		accioParams.put("text", text);
 		accioParams.put("textMobil", textMobil);
 		try {
 			getCiutadaPlugin().avisCrear(
-					expedient.getId().toString(),
+					expedient.getNtiIdentificador(),
 					unitatAdministrativa,
 					titol,
 					text,
@@ -953,6 +979,94 @@ public class PluginHelper {
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_CIUTADA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CIUTADA,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public CiutadaNotificacioResultat ciutadaNotificacioCrear(
+			ExpedientEntity expedient,
+			long unitatAdministrativa,
+			String registreOficinaCodi,
+			String registreOrganCodi,
+			InteressatEntity destinatari,
+			InteressatEntity representat,
+			String idioma,
+			String assumpteTipus,
+			String oficiTitol,
+			String oficiText,
+			String avisTitol,
+			String avisText,
+			String avisTextSms,
+			boolean confirmarRecepcio,
+			List<DocumentEntity> annexos) {
+		String accioDescripcio = "Enviament d'una notificació electrònica al ciutadà";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientId", expedient.getId().toString());
+		accioParams.put("expedientNumero", expedient.getNumero());
+		accioParams.put("expedientTitol", expedient.getNom());
+		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
+		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
+		accioParams.put("unitatAdministrativa", new Long(unitatAdministrativa).toString());
+		accioParams.put("registreOficinaCodi", registreOficinaCodi);
+		accioParams.put("registreOrganCodi", registreOrganCodi);
+		accioParams.put("destinatari", destinatari.toString());
+		accioParams.put("representat", representat.toString());
+		accioParams.put("idioma", idioma);
+		accioParams.put("assumpteTipus", assumpteTipus);
+		accioParams.put("oficiTitol", oficiTitol);
+		accioParams.put("avisTitol", avisTitol);
+		accioParams.put("confirmarRecepcio", new Boolean(confirmarRecepcio).toString());
+		if (annexos != null) {
+			StringBuilder annexosIds = new StringBuilder();
+			StringBuilder annexosTitols = new StringBuilder();
+			boolean primer = true;
+			for (DocumentEntity annex: annexos) {
+				if (!primer) {
+					annexosIds.append(", ");
+					annexosTitols.append(", ");
+				}
+				annexosIds.append(annex.getId());
+				annexosTitols.append(annex.getNom());
+				primer = false;
+			}
+			accioParams.put("annexosIds", annexosIds.toString());
+			accioParams.put("annexosTitols", annexosTitols.toString());
+		}
+		try {
+			CiutadaNotificacioResultat resultat = getCiutadaPlugin().notificacioCrear(
+					expedient.getNtiIdentificador(),
+					unitatAdministrativa,
+					registreOficinaCodi,
+					registreOrganCodi,
+					toPluginCiutadaPersona(destinatari),
+					toPluginCiutadaPersona(representat),
+					idioma,
+					assumpteTipus,
+					oficiTitol,
+					oficiText,
+					avisTitol,
+					avisText,
+					avisTextSms,
+					confirmarRecepcio,
+					null);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_CIUTADA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT);
+			return resultat;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
 			integracioHelper.addAccioError(
@@ -992,6 +1106,43 @@ public class PluginHelper {
 			}
 		}
 		return resposta;
+	}
+
+	private CiutadaPersona toPluginCiutadaPersona(
+			InteressatEntity interessat) {
+		if (interessat == null)
+			return null;
+		if (	!InteressatDocumentTipusEnumDto.NIF.equals(interessat.getDocumentTipus()) &&
+				!InteressatDocumentTipusEnumDto.CIF.equals(interessat.getDocumentTipus())) {
+			throw new ValidationException(
+					interessat.getId(),
+					InteressatEntity.class,
+					"No es pot notificar a interessats amb el tipus de document " + interessat.getDocumentTipus());
+		}
+		CiutadaPersona persona = new CiutadaPersona();
+		if (interessat instanceof InteressatPersonaFisicaEntity) {
+			InteressatPersonaFisicaEntity interessatPf = (InteressatPersonaFisicaEntity)interessat;
+			persona.setNif(interessatPf.getDocumentNum());
+			persona.setNom(interessatPf.getNom());
+			persona.setLlinatge1(interessatPf.getLlinatge1());
+			persona.setLlinatge2(interessatPf.getLlinatge2());
+			persona.setPaisCodi(interessat.getPais());
+			persona.setProvinciaCodi(interessat.getProvincia());
+			persona.setLocalitatCodi(interessat.getMunicipi());
+		} else if (interessat instanceof InteressatPersonaJuridicaEntity) {
+			InteressatPersonaFisicaEntity interessatPj = (InteressatPersonaFisicaEntity)interessat;
+			persona.setNif(interessatPj.getDocumentNum());
+			persona.setNom(interessatPj.getNom());
+			persona.setPaisCodi(interessat.getPais());
+			persona.setProvinciaCodi(interessat.getProvincia());
+			persona.setLocalitatCodi(interessat.getMunicipi());
+		} else if (interessat instanceof InteressatAdministracioEntity) {
+			throw new ValidationException(
+					interessat.getId(),
+					InteressatEntity.class,
+					"Els interessats de les notificacions només poden ser persones físiques o jurídiques");
+		}
+		return persona;
 	}
 
 	private DadesUsuariPlugin getDadesUsuariPlugin() {

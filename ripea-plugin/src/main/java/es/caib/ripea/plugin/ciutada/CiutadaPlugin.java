@@ -5,7 +5,7 @@ import java.util.List;
 import es.caib.ripea.plugin.SistemaExternException;
 
 /**
- * Plugin per a l'enviament d'avisos i notificacions al ciutadà.
+ * Plugin per a la comunicació amb el ciutadà.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -65,24 +65,18 @@ public interface CiutadaPlugin {
 	 * 
 	 * @param expedientIdentificador
 	 * @param unitatAdministrativa
-	 * @param oficinaCodi
-	 * @param oficinaOrganCodi
+	 * @param registreOficinaCodi
+	 * @param registreOrganCodi
 	 * @param destinatari
-	 * @param destinatariPaisCodi
-	 * @param destinatariPaisNom
-	 * @param destinatariProvinciaCodi
-	 * @param destinatariProvinciaNom
-	 * @param destinatariLocalitatCodi
-	 * @param destinatariLocalitatNom
 	 * @param representat
-	 * @param notificacioIdioma
-	 * @param notificacioAssumpteTipus
-	 * @param notificacioOficiTitol
-	 * @param notificacioOficiText
-	 * @param notificacioAvisTitol
-	 * @param notificacioAvisText
-	 * @param notificacioAvisTextSms
-	 * @param notificacioConfirmarRecepcio
+	 * @param idioma
+	 * @param assumpteTipus
+	 * @param oficiTitol
+	 * @param oficiText
+	 * @param avisTitol
+	 * @param avisText
+	 * @param avisTextSms
+	 * @param confirmarRecepcio
 	 * @param annexos
 	 * @return les dades de la notificació creada
 	 * @throws SistemaExternException
@@ -91,24 +85,18 @@ public interface CiutadaPlugin {
 	public CiutadaNotificacioResultat notificacioCrear(
 			String expedientIdentificador,
 			long unitatAdministrativa,
-			String oficinaCodi,
-			String oficinaOrganCodi,
+			String registreOficinaCodi,
+			String registreOrganCodi,
 			CiutadaPersona destinatari,
-			String destinatariPaisCodi,
-			String destinatariPaisNom,
-			String destinatariProvinciaCodi,
-			String destinatariProvinciaNom,
-			String destinatariLocalitatCodi,
-			String destinatariLocalitatNom,
 			CiutadaPersona representat,
-			String notificacioIdioma,
-			String notificacioAssumpteTipus,
-			String notificacioOficiTitol,
-			String notificacioOficiText,
-			String notificacioAvisTitol,
-			String notificacioAvisText,
-			String notificacioAvisTextSms,
-			boolean notificacioConfirmarRecepcio,
+			String idioma,
+			String assumpteTipus,
+			String oficiTitol,
+			String oficiText,
+			String avisTitol,
+			String avisText,
+			String avisTextSms,
+			boolean confirmarRecepcio,
 			List<CiutadaDocument> annexos) throws SistemaExternException;
 
 	/**

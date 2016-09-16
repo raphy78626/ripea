@@ -39,7 +39,7 @@ public class ExpedientRelacionarValidator implements ConstraintValidator<Expedie
 			final ConstraintValidatorContext context) {
 		boolean valid = true;
 		// Comprova que no es relacioni l'expedient amb ell mateix
-		if (command.getExpedientARelacionarId().equals(command.getExpedientRelacionatId())) {
+		if (command.getExpedientId().equals(command.getRelacionatId())) {
 			context.buildConstraintViolationWithTemplate(
 					MessageHelper.getInstance().getMessage(this.codiMissatge + ".mateix"))
 			.addNode("expedientRelacionatId")
@@ -47,14 +47,14 @@ public class ExpedientRelacionarValidator implements ConstraintValidator<Expedie
 			valid = false;
 		}
 		// Comprova que no estigui ja relacionat
-		for (ExpedientDto relacionat : expedientService.relacioFindAmbExpedient(
-														command.getEntitatId(),
-														command.getExpedientARelacionarId())) 
-			if (command.getExpedientRelacionatId().equals(relacionat.getId())){
+		for (ExpedientDto relacionat: expedientService.relacioFindAmbExpedient(
+				command.getEntitatId(),
+				command.getExpedientId())) 
+			if (command.getRelacionatId().equals(relacionat.getId())){
 				context.buildConstraintViolationWithTemplate(
-						MessageHelper.getInstance().getMessage(this.codiMissatge + ".repetit", new Object[] {relacionat.getNom()}))
-				.addNode("expedientRelacionatId")
-				.addConstraintViolation();				
+						MessageHelper.getInstance().getMessage(this.codiMissatge + ".repetit", new Object[] {relacionat.getNom()})).
+				addNode("expedientRelacionatId").
+				addConstraintViolation();				
 				valid = false;
 				break;
 			}
@@ -62,4 +62,5 @@ public class ExpedientRelacionarValidator implements ConstraintValidator<Expedie
 			context.disableDefaultConstraintViolation();
 		return valid;
 	}
+
 }

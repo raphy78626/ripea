@@ -244,7 +244,7 @@ public class ContingutExpedientController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ExpedientRelacionarCommand command = new ExpedientRelacionarCommand();
 		command.setEntitatId(entitatActual.getId());
-		command.setExpedientARelacionarId(expedientId);
+		command.setExpedientId(expedientId);
 		model.addAttribute(command);
 		model.addAttribute(
 				"expedient",
@@ -297,10 +297,10 @@ public class ContingutExpedientController extends BaseUserController {
 			
 			return "contingutExpedientRelacionarForm";
 		}
-		expedientService.relacionar(
+		expedientService.relacioCreate(
 				entitatActual.getId(),
-				command.getExpedientARelacionarId(),
-				command.getExpedientRelacionatId());
+				command.getExpedientId(),
+				command.getRelacionatId());
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../../contingut/" + contingutId,

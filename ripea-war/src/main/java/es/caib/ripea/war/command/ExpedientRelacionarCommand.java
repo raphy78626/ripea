@@ -22,10 +22,10 @@ public class ExpedientRelacionarCommand {
 	protected Long entitatId;
 	/** Expedient sobre el que es realitza la acció de relacionar amb un altre expedient. */
 	@NotNull
-	protected Long expedientARelacionarId;
+	protected Long expedientId;
 	/** Expedient seleccionar per a relacionar amb l'expedient sobre el que es realitza la acció. */
 	@NotNull
-	protected Long expedientRelacionatId;
+	protected Long relacionatId;
 
 
 	public Long getEntitatId() {
@@ -34,17 +34,17 @@ public class ExpedientRelacionarCommand {
 	public void setEntitatId(Long entitatId) {
 		this.entitatId = entitatId;
 	}
-	public Long getExpedientARelacionarId() {
-		return expedientARelacionarId;
+	public Long getExpedientId() {
+		return expedientId;
 	}
-	public void setExpedientARelacionarId(Long expedientId) {
-		this.expedientARelacionarId = expedientId;
+	public void setExpedientId(Long expedientId) {
+		this.expedientId = expedientId;
 	}
-	public Long getExpedientRelacionatId() {
-		return expedientRelacionatId;
+	public Long getRelacionatId() {
+		return relacionatId;
 	}
-	public void setExpedientRelacionatId(Long expedientRelacionatId) {
-		this.expedientRelacionatId = expedientRelacionatId;
+	public void setRelacionatId(Long relacionatId) {
+		this.relacionatId = relacionatId;
 	}
 
 	@Override

@@ -56,7 +56,8 @@ import es.caib.zonaper.ws.v2.model.eventoexpediente.EventoExpediente;
 import es.caib.zonaper.ws.v2.model.expediente.Expediente;
 
 /**
- * Implementació de del plugin de zona personal per SISTRA.
+ * Implementació de del plugin de comunicació amb el ciutadà
+ * emprant SISTRA.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -83,10 +84,7 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			Expediente expediente = new Expediente();
 			expediente.setIdentificadorExpediente(expedientIdentificador);
 			expediente.setUnidadAdministrativa(unitatAdministrativa);
-			expediente.setClaveExpediente(
-					getExpedientClau(
-							expedientIdentificador,
-							unitatAdministrativa));
+			expediente.setClaveExpediente(expedientClau);
 			expediente.setIdioma(idioma);
 			expediente.setDescripcion(descripcio);
 			expediente.setAutenticado(true);
@@ -222,24 +220,18 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 	public CiutadaNotificacioResultat notificacioCrear(
 			String expedientIdentificador,
 			long unitatAdministrativa,
-			String oficinaCodi,
-			String oficinaOrganCodi,
+			String registreOficinaCodi,
+			String registreOficinaOrganCodi,
 			CiutadaPersona destinatari,
-			String destinatariPaisCodi,
-			String destinatariPaisNom,
-			String destinatariProvinciaCodi,
-			String destinatariProvinciaNom,
-			String destinatariLocalitatCodi,
-			String destinatariLocalitatNom,
 			CiutadaPersona representat,
-			String notificacioIdioma,
-			String notificacioAssumpteTipus,
-			String notificacioOficiTitol,
-			String notificacioOficiText,
-			String notificacioAvisTitol,
-			String notificacioAvisText,
-			String notificacioAvisTextSms,
-			boolean notificacioConfirmarRecepcio,
+			String idioma,
+			String assumpteTipus,
+			String oficiTitol,
+			String oficiText,
+			String avisTitol,
+			String avisText,
+			String avisTextSms,
+			boolean confirmarRecepcio,
 			List<CiutadaDocument> annexos) throws SistemaExternException {
 		String expedientClau = "<buit>";
 		try {
@@ -253,8 +245,8 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			datosExpediente.setClaveExpediente(expedientClau);
 			notificacion.setDatosExpediente(datosExpediente);
 			OficinaRegistral oficinaRegistral = new OficinaRegistral();
-			oficinaRegistral.setCodigoOficina(oficinaCodi);
-			oficinaRegistral.setCodigoOrgano(oficinaOrganCodi);
+			oficinaRegistral.setCodigoOficina(registreOficinaCodi);
+			oficinaRegistral.setCodigoOrgano(registreOficinaOrganCodi);
 			notificacion.setOficinaRegistral(oficinaRegistral);
 			DatosInteresado datosInteresado = new DatosInteresado();
 			datosInteresado.setNif(destinatari.getNif());
@@ -262,53 +254,53 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			datosInteresado.setCodigoPais(
 					newJAXBElement(
 							"codigoPais",
-							destinatariPaisCodi,
+							destinatari.getPaisCodi(),
 							String.class));
 			datosInteresado.setNombrePais(
 					newJAXBElement(
 							"nombrePais",
-							destinatariPaisNom,
+							destinatari.getPaisNom(),
 							String.class));
 			datosInteresado.setCodigoProvincia(
 					newJAXBElement(
 							"codigoProvincia",
-							destinatariProvinciaCodi,
+							destinatari.getProvinciaCodi(),
 							String.class));
 			datosInteresado.setNombreProvincia(
 					newJAXBElement(
 							"nombreProvincia",
-							destinatariProvinciaNom,
+							destinatari.getProvinciaNom(),
 							String.class));
 			datosInteresado.setCodigoLocalidad(
 					newJAXBElement(
 							"codigoLocalidad",
-							destinatariLocalitatCodi,
+							destinatari.getLocalitatCodi(),
 							String.class));
 			datosInteresado.setNombreLocalidad(
 					newJAXBElement(
 							"nombreLocalidad",
-							destinatariLocalitatNom,
+							destinatari.getLocalitatNom(),
 							String.class));
 			notificacion.setDatosInteresado(datosInteresado);
 			DatosNotificacion datosNotificacion = new DatosNotificacion();
-			datosNotificacion.setTipoAsunto(notificacioAssumpteTipus);
-			datosNotificacion.setIdioma(notificacioIdioma);
+			datosNotificacion.setTipoAsunto(assumpteTipus);
+			datosNotificacion.setIdioma(idioma);
 			OficioRemision oficioRemision = new OficioRemision();
-			oficioRemision.setTitulo(notificacioOficiTitol);
-			oficioRemision.setTexto(notificacioOficiText);
+			oficioRemision.setTitulo(oficiTitol);
+			oficioRemision.setTexto(oficiText);
 			datosNotificacion.setOficioRemision(oficioRemision);
-			if (notificacioAvisTitol != null) {
+			if (avisTitol != null) {
 				Aviso aviso = new Aviso();
-				aviso.setTitulo(notificacioAvisTitol);
-				aviso.setTexto(notificacioAvisText);
+				aviso.setTitulo(avisTitol);
+				aviso.setTexto(avisText);
 				aviso.setTextoSMS(
 						newJAXBElement(
 								"textoSMS",
-								notificacioAvisTextSms,
+								avisTextSms,
 								String.class));
 				datosNotificacion.setAviso(aviso);
 			}
-			datosNotificacion.setAcuseRecibo(notificacioConfirmarRecepcio);
+			datosNotificacion.setAcuseRecibo(confirmarRecepcio);
 			notificacion.setDatosNotificacion(datosNotificacion);
 			if (representat != null) {
 				DatosRepresentado datosRepresentado = new DatosRepresentado();
@@ -356,7 +348,7 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 							"expedientIdentificador=" + expedientIdentificador + ", " +
 							"unitatAdministrativa=" + unitatAdministrativa + ", " +
 							"expedientClau=" + expedientClau + ", " +
-							"titol=" + notificacioOficiTitol + ", " +
+							"oficiTitol=" + oficiTitol + ", " +
 							"destinatariNif=" + destinatari.getNif() + ")",
 					ex);
 		}

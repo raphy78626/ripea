@@ -90,8 +90,8 @@ CREATE TABLE IPA_METAEXPEDIENT
 (
   ID             NUMBER(19)                     NOT NULL,
   PARE_ID        NUMBER(19),
-  CLASIF_SIA    VARCHAR2(6)                    NOT NULL,
-  CLASIF_DOC    VARCHAR2(30)                   NOT NULL,
+  CLASIF_SIA     VARCHAR2(6)                    NOT NULL,
+  CLASIF_DOC     VARCHAR2(30)                   NOT NULL
 );
 
 
@@ -278,20 +278,55 @@ CREATE TABLE IPA_EXPEDIENT
   SISTRA_UNITAT_ADM  NUMBER(10)
 );
 
+
 CREATE TABLE IPA_EXPEDIENT_REL
 (
   EXPEDIENT_ID       NUMBER(19)                 NOT NULL,
   EXPEDIENT_REL_ID   NUMBER(19)                 NOT NULL
 );
 
+
 CREATE TABLE IPA_DOCUMENT
 (
-  ID              NUMBER(19)                    NOT NULL,
-  TIPUS           NUMBER(10)                    NOT NULL,
-  UBICACIO        VARCHAR2(255),
-  DARRERA_VERSIO  NUMBER(10)                    NOT NULL,
-  DATA            TIMESTAMP(6),
-  EXPEDIENT_ID    NUMBER(19)
+  ID                   NUMBER(19)               NOT NULL,
+  TIPUS                NUMBER(10)               NOT NULL,
+  UBICACIO             VARCHAR2(255),
+  VERSIO_DARRERA_ID    NUMBER(19),
+  DATA                 TIMESTAMP(6),
+  EXPEDIENT_ID         NUMBER(19),
+  CUSTODIAT            NUMBER(1),
+  CUSTODIA_ID          VARCHAR2(256),
+  CUSTODIA_URL         VARCHAR2(1024)
+);
+
+
+CREATE TABLE IPA_DOCUMENT_ENVIAMENT
+(
+  ID                   NUMBER(19)               NOT NULL,
+  DTYPE                VARCHAR2(124)            NOT NULL,
+  ASSUMPTE             VARCHAR2(1024)           NOT NULL,
+  ESTAT                VARCHAR2(1020)           NOT NULL,
+  DATA_ENVIAMENT       TIMESTAMP(6)             NOT NULL,
+  OBSERVACIONS         VARCHAR2(640),
+  SISTEMA_EXTERN_ID    VARCHAR2(1020),
+  VERSION              NUMBER(19)               NOT NULL,
+  DATA_PUBLICACIO      TIMESTAMP(6),
+  TIPUS                VARCHAR2(1020)           NOT NULL,
+  DATA_RECEPCIO        TIMESTAMP(6),
+  DESTIN_DOCNUM        VARCHAR2(68),
+  DESTIN_DOCTIP        VARCHAR2(4),
+  DESTIN_EMAIL         VARCHAR2(640),
+  DESTIN_LLING1        VARCHAR2(120)            NOT NULL,
+  DESTIN_LLING2        VARCHAR2(120),
+  DESTIN_NOM           VARCHAR2(120)            NOT NULL,
+  DESTIN_REPRES        NUMBER(1),
+  REGISTRE_NUM         VARCHAR2(400),
+  DOCUMENT_ID          NUMBER(19)               NOT NULL,
+  EXPEDIENT_ID         NUMBER(19)               NOT NULL,
+  CREATEDDATE          TIMESTAMP(6),
+  LASTMODIFIEDDATE     TIMESTAMP(6),
+  CREATEDBY_CODI       VARCHAR2(256),
+  LASTMODIFIEDBY_CODI  VARCHAR2(256)
 );
 
 
@@ -309,10 +344,7 @@ CREATE TABLE IPA_DOCUMENT_VERSIO
   VERSION               NUMBER(19)              NOT NULL,
   CREATEDBY_CODI        VARCHAR2(64),
   LASTMODIFIEDBY_CODI   VARCHAR2(64),
-  DOCUMENT_ID           NUMBER(19)              NOT NULL,
-  CUSTODIAT             NUMBER(1),
-  CUSTODIA_ID           VARCHAR2(256),
-  CUSTODIA_URL          VARCHAR2(1024)
+  DOCUMENT_ID           NUMBER(19)              NOT NULL
 );
 
 

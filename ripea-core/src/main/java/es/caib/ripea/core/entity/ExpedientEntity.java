@@ -91,10 +91,14 @@ public class ExpedientEntity extends NodeEntity {
 			fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "ipa_expedient_rel",
-			joinColumns = {@JoinColumn(name = "expedient_id", referencedColumnName="id")},
-			inverseJoinColumns = {@JoinColumn(name = "expedient_rel_id", referencedColumnName="id")})
-	@ForeignKey(name="ipa_expedient_rel_exp_fk", inverseName="ipa_expedient_rel_rel_fk")	
-	protected List<ExpedientEntity> expedientsRelacionatsAmb;
+			joinColumns = {
+					@JoinColumn(name = "expedient_id", referencedColumnName = "id")},
+			inverseJoinColumns = {
+					@JoinColumn(name = "expedient_rel_id", referencedColumnName = "id")})
+	@ForeignKey(
+			name = "ipa_expedient_rel_exp_fk",
+			inverseName = "ipa_expedient_rel_rel_fk")	
+	protected List<ExpedientEntity> relacionatsAmb = new ArrayList<ExpedientEntity>();
 	@ManyToMany(
 			cascade = {
 					CascadeType.DETACH,
@@ -106,13 +110,13 @@ public class ExpedientEntity extends NodeEntity {
 	@JoinTable(
 			name = "ipa_expedient_rel",
 			joinColumns = {
-					@JoinColumn(name = "expedient_rel_id", referencedColumnName="id")
-			},
+					@JoinColumn(name = "expedient_rel_id", referencedColumnName="id")},
 			inverseJoinColumns = {
-					@JoinColumn(name = "expedient_id", referencedColumnName="id")
-			})
-	@ForeignKey(name="ipa_expedient_rel_rel_fk", inverseName="ipa_expedient_rel_exp_fk")	
-	protected List<ExpedientEntity> expedientsRelacionatsPer;
+					@JoinColumn(name = "expedient_id", referencedColumnName="id")})
+	@ForeignKey(
+			name = "ipa_expedient_rel_rel_fk",
+			inverseName = "ipa_expedient_rel_exp_fk")	
+	protected List<ExpedientEntity> relacionatsPer = new ArrayList<ExpedientEntity>();
 
 	public ArxiuEntity getArxiu() {
 		return arxiu;
@@ -162,6 +166,17 @@ public class ExpedientEntity extends NodeEntity {
 	public MetaExpedientEntity getMetaExpedient() {
 		return (MetaExpedientEntity)getMetaNode();
 	}
+	public List<ExpedientEntity> getRelacionatsAmb() {
+		return relacionatsAmb;
+	}
+	public List<ExpedientEntity> getRelacionatsPer() {
+		return relacionatsPer;
+	}
+
+	@Transient
+	public String getNumero() {
+		return sequencia + "/" + any;
+	}
 
 	public void update(
 			String nom,
@@ -202,26 +217,11 @@ public class ExpedientEntity extends NodeEntity {
 		}
 	}
 
-	public List<ExpedientEntity> getExpedientsRelacionatsAmb() {
-		return expedientsRelacionatsAmb;
+	public void addRelacionat(ExpedientEntity relacionat) {
+		relacionatsAmb.add(relacionat);
 	}
-	public void setExpedientsRelacionatsAmb(List<ExpedientEntity> expedientsRelacionatsAmb) {
-		this.expedientsRelacionatsAmb = expedientsRelacionatsAmb;
-	}
-
-	public List<ExpedientEntity> getExpedientsRelacionatsPer() {
-		return expedientsRelacionatsPer;
-	}
-	public void setExpedientsRelacionatsPer(List<ExpedientEntity> expedientsRelacionatsPer) {
-		this.expedientsRelacionatsPer = expedientsRelacionatsPer;
-	}
-
-	@Transient
-	public List<ExpedientEntity> getExpedientsRelacionats() {
-		List<ExpedientEntity> relacionats = new ArrayList<ExpedientEntity>();
-		relacionats.addAll(this.getExpedientsRelacionatsAmb());
-		relacionats.addAll(this.getExpedientsRelacionatsPer());
-		return relacionats;
+	public void removeRelacionat(ExpedientEntity relacionat) {
+		relacionatsAmb.remove(relacionat);
 	}
 
 	public static Builder getBuilder(

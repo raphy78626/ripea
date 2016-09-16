@@ -6,8 +6,6 @@ package es.caib.ripea.core.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,7 +19,6 @@ import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
  */
 @Entity
 @Table(name = "ipa_bustia")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners(AuditingEntityListener.class)
 public class BustiaEntity extends ContingutEntity {
 

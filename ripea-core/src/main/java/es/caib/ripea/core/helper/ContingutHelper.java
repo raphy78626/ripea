@@ -174,6 +174,7 @@ public class ContingutHelper {
 			dto.setSistraPublicat(expedient.isSistraPublicat());
 			dto.setSistraUnitatAdministrativa(expedient.getSistraUnitatAdministrativa());
 			dto.setSistraClau(expedient.getSistraClau());
+			dto.setNumero(expedient.getNumero());
 			dto.setArxiu((ArxiuDto)toContingutDto(expedient.getArxiu()));
 			metaNode = conversioTipusHelper.convertir(
 					expedient.getMetaNode(),
@@ -193,12 +194,12 @@ public class ContingutHelper {
 			dto.setDocumentTipus(document.getDocumentTipus());
 			dto.setUbicacio(document.getUbicacio());
 			dto.setData(document.getData());
-			dto.setDarreraVersio(
-					conversioTipusHelper.convertir(
-							documentVersioRepository.findByDocumentAndVersio(
-									document,
-									document.getDarreraVersio()),
-							DocumentVersioDto.class));
+			if (document.getVersioDarrera() != null) {
+				dto.setDarreraVersio(
+						conversioTipusHelper.convertir(
+								document.getVersioDarrera(),
+								DocumentVersioDto.class));
+			}
 			metaNode = conversioTipusHelper.convertir(
 					document.getMetaNode(),
 					MetaDocumentDto.class);

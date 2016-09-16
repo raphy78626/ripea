@@ -38,11 +38,22 @@ public class DocumentEntity extends NodeEntity {
 	@JoinColumn(name = "expedient_id")
 	@ForeignKey(name = "ipa_expedient_document_fk")
 	protected ExpedientEntity expedient;
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data")
+	@Temporal(TemporalType.TIMESTAMP)
 	protected Date data;
-	@Column(name = "darrera_versio", nullable = false)
-	protected int darreraVersio;
+	@Column(name = "custodiat")
+	private boolean custodiat;
+	@Column(name = "custodia_data")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date custodiaData;
+	@Column(name = "custodia_id", length = 256)
+	private String custodiaId;
+	@Column(name = "custodia_url", length = 1024)
+	private String custodiaUrl;
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "versio_darrera_id")
+	@ForeignKey(name = "ipa_verdarrera_document_fk")
+	protected DocumentVersioEntity versioDarrera;
 
 
 
@@ -58,8 +69,20 @@ public class DocumentEntity extends NodeEntity {
 	public Date getData() {
 		return data;
 	}
-	public int getDarreraVersio() {
-		return darreraVersio;
+	public DocumentVersioEntity getVersioDarrera() {
+		return versioDarrera;
+	}
+	public boolean isCustodiat() {
+		return custodiat;
+	}
+	public Date getCustodiaData() {
+		return custodiaData;
+	}
+	public String getCustodiaId() {
+		return custodiaId;
+	}
+	public String getCustodiaUrl() {
+		return custodiaUrl;
 	}
 
 	public MetaDocumentEntity getMetaDocument() {
@@ -76,8 +99,22 @@ public class DocumentEntity extends NodeEntity {
 		this.data = data;
 		this.ubicacio = ubicacio;
 	}
-	public void updateDarreraVersio(int darreraVersio) {
-		this.darreraVersio = darreraVersio;
+	public void updateVersioDarrera(
+			DocumentVersioEntity versioDarrera) {
+		this.versioDarrera = versioDarrera;
+	}
+
+	public void updateCustodiaUrl(
+			String custodiaUrl) {
+		this.custodiaUrl = custodiaUrl;
+	}
+	public void updateCustodiaEstat(
+			boolean custodiat,
+			Date custodiaData,
+			String custodiaId) {
+		this.custodiat = custodiat;
+		this.custodiaData = custodiaData;
+		this.custodiaId = custodiaId;
 	}
 
 	public static Builder getBuilder(
@@ -115,7 +152,6 @@ public class DocumentEntity extends NodeEntity {
 			built.metaNode = metaNode;
 			built.pare = pare;
 			built.entitat = entitat;
-			built.darreraVersio = 0;
 			built.tipus = ContingutTipusEnumDto.DOCUMENT;
 		}
 		public Builder ubicacio(String ubicacio) {
