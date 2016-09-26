@@ -16,16 +16,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
-import org.fundaciobit.plugins.signatureweb.api.CommonInfoSignature;
-import org.fundaciobit.plugins.signatureweb.api.FileInfoSignature;
+import org.fundaciobit.plugins.signature.api.CommonInfoSignature;
+import org.fundaciobit.plugins.signature.api.FileInfoSignature;
 import org.fundaciobit.plugins.signatureweb.api.ISignatureWebPlugin;
-import org.fundaciobit.plugins.signatureweb.api.ITimeStampGenerator;
-import org.fundaciobit.plugins.signatureweb.api.IUploadedFile;
-import org.fundaciobit.plugins.signatureweb.api.PdfVisibleSignature;
-import org.fundaciobit.plugins.signatureweb.api.PolicyInfoSignature;
-import org.fundaciobit.plugins.signatureweb.api.SecureVerificationCodeStampInfo;
-import org.fundaciobit.plugins.signatureweb.api.SignaturesTableHeader;
-import org.fundaciobit.plugins.signatureweb.api.StatusSignaturesSet;
+import org.fundaciobit.plugins.signature.api.ITimeStampGenerator;
+import org.fundaciobit.plugins.signature.api.PdfVisibleSignature;
+import org.fundaciobit.plugins.signature.api.PolicyInfoSignature;
+import org.fundaciobit.plugins.signature.api.SecureVerificationCodeStampInfo;
+import org.fundaciobit.plugins.signature.api.SignaturesTableHeader;
+import org.fundaciobit.plugins.signature.api.StatusSignaturesSet;
 import org.fundaciobit.plugins.utils.PluginsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,8 +159,7 @@ public class PassarelaFirmaHelper {
 			HttpServletResponse response,
 			String signaturesSetId,
 			int signatureIndex,
-			String query,
-			Map<String, IUploadedFile> uploadedFiles) throws Exception {
+			String query) throws Exception {
 		PassarelaFirmaSignaturesSet ss = getSignaturesSet(request, signaturesSetId);
 		long pluginId = ss.getPluginId();
 		ISignatureWebPlugin signaturePlugin;
@@ -195,7 +193,6 @@ public class PassarelaFirmaHelper {
 					signaturesSetId,
 					signatureIndex,
 					request,
-					uploadedFiles,
 					response);
 		} else {
 			signaturePlugin.requestGET(
@@ -205,7 +202,6 @@ public class PassarelaFirmaHelper {
 					signaturesSetId,
 					signatureIndex,
 					request,
-					uploadedFiles,
 					response);
 		}
 	}
@@ -280,8 +276,7 @@ public class PassarelaFirmaHelper {
 				filtreCertificats,
 				request.getUserPrincipal().getName(),
 				destinatariNif,
-				pis,
-				urlFinalCalculada);
+				pis);
 		File filePerFirmar = getFitxerAFirmarPath(signaturaId);
 		FileUtils.writeByteArrayToFile(
 				filePerFirmar,
@@ -309,7 +304,7 @@ public class PassarelaFirmaHelper {
 				caducitat.getTime(),
 				commonInfoSignature,
 				new FileInfoSignature[] {fis},
-				urlFinal);
+				urlFinalCalculada, urlFinal);
 		return signaturesSet;
 	}
 

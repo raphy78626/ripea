@@ -1,18 +1,13 @@
 package es.caib.ripea.war.passarelafirma;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.fundaciobit.plugins.signatureweb.api.IUploadedFile;
-import org.fundaciobit.plugins.signatureweb.api.StatusSignaturesSet;
+import org.fundaciobit.plugins.signature.api.StatusSignaturesSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.view.RedirectView;
 
 import es.caib.ripea.war.helper.MissatgesHelper;
@@ -106,7 +99,7 @@ public class PassarelaFirmaController {
 			HttpServletResponse response,
 			@PathVariable String signaturesSetID,
 			@PathVariable int signatureIndex) throws Exception {
-		Map<String, IUploadedFile> uploadedFiles = getMultipartFiles(request);
+		
 		String servletPath = request.getServletPath();
 		int indexBarra = StringUtils.ordinalIndexOf(
 				servletPath,
@@ -116,12 +109,12 @@ public class PassarelaFirmaController {
 						"/"));
 		String query = servletPath.substring(indexBarra + 1);
 		passarelaFirmaHelper.requestPlugin(
-				request,
+		    
+		    request,
 				response,
 				signaturesSetID,
-				signatureIndex,
-				query,
-				uploadedFiles);
+        signatureIndex,
+				query);
 	}
 
 	@RequestMapping(value = "/final/{signaturesSetId}")
@@ -146,77 +139,6 @@ public class PassarelaFirmaController {
 	}*/
 
 
-
-	private Map<String, IUploadedFile> getMultipartFiles(HttpServletRequest request) {
-		Map<String, IUploadedFile> uploadedFiles;
-		uploadedFiles = new HashMap<String, IUploadedFile>();
-		if (request instanceof MultipartHttpServletRequest) {
-			try {
-				MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-				Map<String, MultipartFile> files = multipartRequest.getFileMap();
-				if (log.isDebugEnabled()) {
-					log.debug("getMultipartFiles::multipartRequest.getFileMap() = " + files);
-					log.debug("getMultipartFiles::multipartRequest.getFileMap().size() = " + files.size());
-				}
-				for (String name : files.keySet()) {
-					MultipartFile mpf = files.get(name);
-					if (log.isDebugEnabled()) {
-						log.debug("getMultipartFiles::KEY[" + name + "] = len:" + mpf.getSize());
-					}
-					if (mpf.isEmpty() || mpf.getSize() == 0) {
-						continue;
-					}
-					uploadedFiles.put(name, new SignatureWebUploadedFile(mpf));
-				}
-			} catch (Throwable e) {
-				log.error("Error processant fitxers pujats en la petició web: " + e.getMessage(), e);
-			}
-		}
-		return uploadedFiles;
-	}
-
-	private static class SignatureWebUploadedFile implements IUploadedFile {
-		protected final MultipartFile mpf;
-		/**
-		 * @param mpf
-		 */
-		public SignatureWebUploadedFile(MultipartFile mpf) {
-			super();
-			this.mpf = mpf;
-		}
-		@Override
-		public String getFormFieldName() {
-			return mpf.getName();
-		}
-		@Override
-		public String getOriginalFilename() {
-			return mpf.getOriginalFilename();
-		}
-		@Override
-		public String getContentType() {
-			return mpf.getContentType();
-		}
-		@Override
-		public boolean isEmpty() {
-			return mpf.isEmpty();
-		}
-		@Override
-		public long getSize() {
-			return mpf.getSize();
-		}
-		@Override
-		public byte[] getBytes() throws IOException {
-			return mpf.getBytes();
-		}
-		@Override
-		public InputStream getInputStream() throws IOException {
-			return mpf.getInputStream();
-		}
-		@Override
-		public void transferTo(File dest) throws IOException, IllegalStateException {
-			mpf.transferTo(dest);
-		}
-	}
 
 	protected static Logger log = LoggerFactory.getLogger(PassarelaFirmaController.class);
 

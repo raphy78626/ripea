@@ -2,9 +2,9 @@ package es.caib.ripea.war.passarelafirma;
 
 import java.util.Date;
 
-import org.fundaciobit.plugins.signatureweb.api.CommonInfoSignature;
-import org.fundaciobit.plugins.signatureweb.api.FileInfoSignature;
-import org.fundaciobit.plugins.signatureweb.api.SignaturesSet;
+import org.fundaciobit.plugins.signature.api.CommonInfoSignature;
+import org.fundaciobit.plugins.signature.api.FileInfoSignature;
+import org.fundaciobit.plugins.signatureweb.api.SignaturesSetWeb;
 
 /**
  * Bean amb informació sobre un o varis documents a firmar amb
@@ -12,26 +12,27 @@ import org.fundaciobit.plugins.signatureweb.api.SignaturesSet;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class PassarelaFirmaSignaturesSet extends SignaturesSet {
+public class PassarelaFirmaSignaturesSet extends SignaturesSetWeb {
 
-	protected final String urlFinal;
+
 	protected Long pluginId = null;
+	
+	protected final String urlFinalCalculada;
 
 	public PassarelaFirmaSignaturesSet(
 			String signaturesSetId,
 			Date expiryDate,
 			CommonInfoSignature commonInfoSignature,
 			FileInfoSignature[] fileInfoSignatureArray,
-			String urlFinal) {
+			String urlFinalCalculada, String urlFinal) {
 		super(	signaturesSetId,
 				expiryDate,
 				commonInfoSignature,
-				fileInfoSignatureArray);
-		this.urlFinal = urlFinal;
+				fileInfoSignatureArray,urlFinalCalculada);
+		this.urlFinalCalculada = urlFinalCalculada; 
+		
 	}
-	public String getUrlFinal() {
-		return urlFinal;
-	}
+
 	public Long getPluginId() {
 		return pluginId;
 	}
@@ -39,4 +40,10 @@ public class PassarelaFirmaSignaturesSet extends SignaturesSet {
 		this.pluginId = pluginId;
 	}
 
+  public String getUrlFinalCalculada() {
+    return urlFinalCalculada;
+  }
+
+	
+	
 }
