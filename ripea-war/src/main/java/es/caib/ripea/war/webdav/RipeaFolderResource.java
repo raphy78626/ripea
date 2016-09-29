@@ -156,7 +156,7 @@ public class RipeaFolderResource implements FolderResource {
 		logger.debug("[C] child " + getIdentificadorPerLog() + "");
 		if (contingut instanceof DocumentDto) {
 			DocumentDto document = (DocumentDto)contingut;
-			if (childName.equals(document.getDarreraVersio().getArxiuNom()))
+			if (childName.equals(document.getVersioDarrera().getArxiuNom()))
 			return new RipeaFileResource(
 					entitat,
 					document,

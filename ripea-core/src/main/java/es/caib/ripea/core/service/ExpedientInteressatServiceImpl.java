@@ -22,7 +22,8 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.service.InteressatService;
+import es.caib.ripea.core.api.service.ExpedientInteressatService;
+import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
@@ -46,7 +47,7 @@ import es.caib.ripea.core.repository.InteressatRepository;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Service
-public class InteressatServiceImpl implements InteressatService {
+public class ExpedientInteressatServiceImpl implements ExpedientInteressatService {
 
 	@Resource
 	private EntitatRepository entitatRepository;
@@ -60,9 +61,9 @@ public class InteressatServiceImpl implements InteressatService {
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
-	private ContingutHelper contenidorHelper;
+	private ContingutHelper contingutHelper;
 	@Resource
-	private ContingutLogHelper contenidorLogHelper;
+	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
@@ -98,7 +99,6 @@ public class InteressatServiceImpl implements InteressatService {
 					+ "expedientId=" + expedientId + ", "
 					+ "interessat=" + interessat + ")");
 		}
-		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -108,7 +108,6 @@ public class InteressatServiceImpl implements InteressatService {
 				entitat,
 				null,
 				expedientId);
-		
 		InteressatEntity pare = null;
 		if (interessatId != null) {
 			pare = interessatRepository.findOne(interessatId);
@@ -118,20 +117,19 @@ public class InteressatServiceImpl implements InteressatService {
 						InteressatEntity.class);
 			}
 		}
-			
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient
-		contenidorHelper.comprovarPermisosContingut(
+		contingutHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
@@ -153,7 +151,7 @@ public class InteressatServiceImpl implements InteressatService {
 					interessatPersonaFisicaDto.getEmail(),
 					interessatPersonaFisicaDto.getTelefon(),
 					interessatPersonaFisicaDto.getObservacions(),
-					interessatPersonaFisicaDto.getNotificacioIdioma(),
+					interessatPersonaFisicaDto.getPreferenciaIdioma(),
 					interessatPersonaFisicaDto.getNotificacioAutoritzat(),
 					expedient,
 					null).build();
@@ -171,7 +169,7 @@ public class InteressatServiceImpl implements InteressatService {
 					interessatPersonaJuridicaDto.getEmail(),
 					interessatPersonaJuridicaDto.getTelefon(),
 					interessatPersonaJuridicaDto.getObservacions(),
-					interessatPersonaJuridicaDto.getNotificacioIdioma(),
+					interessatPersonaJuridicaDto.getPreferenciaIdioma(),
 					interessatPersonaJuridicaDto.getNotificacioAutoritzat(),
 					expedient,
 					null).build();
@@ -189,7 +187,7 @@ public class InteressatServiceImpl implements InteressatService {
 					interessatAdministracioDto.getEmail(),
 					interessatAdministracioDto.getTelefon(),
 					interessatAdministracioDto.getObservacions(),
-					interessatAdministracioDto.getNotificacioIdioma(),
+					interessatAdministracioDto.getPreferenciaIdioma(),
 					interessatAdministracioDto.getNotificacioAutoritzat(),
 					expedient,
 					null).build();
@@ -203,7 +201,7 @@ public class InteressatServiceImpl implements InteressatService {
 			pare.setRepresentant(interessatEntity);
 		expedient.addInteressat(interessatEntity);
 		// Registra al log la creació de l'interessat
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
 				null,
@@ -267,7 +265,6 @@ public class InteressatServiceImpl implements InteressatService {
 				entitat,
 				null,
 				expedientId);
-		
 		InteressatEntity pare = null;
 		if (interessatId != null) {
 			pare = interessatRepository.findOne(interessatId);
@@ -279,27 +276,24 @@ public class InteressatServiceImpl implements InteressatService {
 						InteressatEntity.class);
 			}
 		}
-		
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient
-		contenidorHelper.comprovarPermisosContingut(
+		contingutHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
 				false);
-		
 		InteressatEntity interessatEntity = null;
-		
 		if (interessat.isPersonaFisica()) {
 			InteressatPersonaFisicaDto interessatPersonaFisicaDto = (InteressatPersonaFisicaDto)interessat;
 			interessatEntity = interessatRepository.findPersonaFisicaById(interessat.getId());
@@ -317,7 +311,7 @@ public class InteressatServiceImpl implements InteressatService {
 					interessatPersonaFisicaDto.getEmail(),
 					interessatPersonaFisicaDto.getTelefon(),
 					interessatPersonaFisicaDto.getObservacions(),
-					interessatPersonaFisicaDto.getNotificacioIdioma(),
+					interessatPersonaFisicaDto.getPreferenciaIdioma(),
 					interessatPersonaFisicaDto.getNotificacioAutoritzat());
 		} else if (interessat.isPersonaJuridica()) {
 			InteressatPersonaJuridicaDto interessatPersonaJuridicaDto = (InteressatPersonaJuridicaDto)interessat;
@@ -334,7 +328,7 @@ public class InteressatServiceImpl implements InteressatService {
 					interessatPersonaJuridicaDto.getEmail(),
 					interessatPersonaJuridicaDto.getTelefon(),
 					interessatPersonaJuridicaDto.getObservacions(),
-					interessatPersonaJuridicaDto.getNotificacioIdioma(),
+					interessatPersonaJuridicaDto.getPreferenciaIdioma(),
 					interessatPersonaJuridicaDto.getNotificacioAutoritzat());
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
@@ -351,14 +345,14 @@ public class InteressatServiceImpl implements InteressatService {
 					interessatAdministracioDto.getEmail(),
 					interessatAdministracioDto.getTelefon(),
 					interessatAdministracioDto.getObservacions(),
-					interessatAdministracioDto.getNotificacioIdioma(),
+					interessatAdministracioDto.getPreferenciaIdioma(),
 					interessatAdministracioDto.getNotificacioAutoritzat());
 			UnitatOrganitzativaDto unitat = findUnitatsOrganitzativesByCodi(interessatAdministracioDto.getOrganCodi());
 			interessatEntity.setIdentificador(unitat.getDenominacio());
 		}
 		interessatEntity = interessatRepository.save(interessatEntity);
 		// Registra al log la creació de l'interessat
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
 				null,
@@ -405,18 +399,18 @@ public class InteressatServiceImpl implements InteressatService {
 				null,
 				expedientId);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient
-		contenidorHelper.comprovarPermisosContingut(
+		contingutHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
@@ -426,7 +420,7 @@ public class InteressatServiceImpl implements InteressatService {
 			interessatRepository.delete(interessat);
 			//expedient.deleteInteressat(interessat);
 			// Registra al log la baixa de l'interessat
-			contenidorLogHelper.log(
+			contingutLogHelper.log(
 					expedient,
 					LogTipusEnumDto.MODIFICACIO,
 					null,
@@ -471,18 +465,18 @@ public class InteressatServiceImpl implements InteressatService {
 				null,
 				expedientId);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				expedient,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient
-		contenidorHelper.comprovarPermisosContingut(
+		contingutHelper.comprovarPermisosContingut(
 				expedient,
 				false,
 				true,
@@ -497,7 +491,7 @@ public class InteressatServiceImpl implements InteressatService {
 				interessatRepository.delete(representant);
 				//expedient.deleteInteressat(interessat);
 				// Registra al log la baixa de l'interessat
-				contenidorLogHelper.log(
+				contingutLogHelper.log(
 						expedient,
 						LogTipusEnumDto.MODIFICACIO,
 						null,
@@ -530,25 +524,29 @@ public class InteressatServiceImpl implements InteressatService {
 		}
 	}
 	
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	@Override
 	public InteressatDto findById(Long id) {
 		logger.debug("Consulta de l'interessat ("
 				+ "id=" + id + ")");
-		InteressatEntity interessat = entityComprovarHelper.comprovarInteressat(id);
+		InteressatEntity interessat = entityComprovarHelper.comprovarInteressat(
+				null,
+				id);
 		return conversioTipusHelper.convertir(
 				interessat,
 				InteressatDto.class);
 	}
 	
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	@Override
 	public InteressatDto findRepresentantById(
 			Long interessatId,
 			Long id) {
 		logger.debug("Consulta de l'interessat ("
 				+ "id=" + id + ")");
-		InteressatEntity interessat = entityComprovarHelper.comprovarInteressat(interessatId);
+		InteressatEntity interessat = entityComprovarHelper.comprovarInteressat(
+				null,
+				interessatId);
 		if (interessat.getRepresentantId() == null || !interessat.getRepresentantId().equals(id)) {
 			throw new ValidationException(
 					id,
@@ -560,8 +558,8 @@ public class InteressatServiceImpl implements InteressatService {
 				representant,
 				InteressatDto.class);
 	}
-	
-	@Transactional(readOnly=true)
+
+	@Transactional(readOnly = true)
 	@Override
 	public List<InteressatDto> findByExpedient(
 			Long entitatId,
@@ -578,7 +576,7 @@ public class InteressatServiceImpl implements InteressatService {
 				entitat,
 				null,
 				expedientId);
-		List<InteressatEntity> interessats = interessatRepository.findByExpedient(
+		List<InteressatEntity> interessats = interessatRepository.findByExpedientAndNotRepresentant(
 				expedient);
 		List<InteressatDto> resposta = new ArrayList<InteressatDto>();
 		for (InteressatEntity interessat: interessats) {
@@ -593,10 +591,10 @@ public class InteressatServiceImpl implements InteressatService {
 		}
 		return resposta;
 	}
-	
-	@Transactional(readOnly=true)
+
+	@Transactional(readOnly = true)
 	@Override
-	public Long countByExpedient(
+	public long countByExpedient(
 			Long entitatId,
 			Long expedientId) {
 		logger.debug("Consulta interessats de l'expedient ("
@@ -611,11 +609,55 @@ public class InteressatServiceImpl implements InteressatService {
 				entitat,
 				null,
 				expedientId);
-		Long interessatcount = interessatRepository.countByExpedient(
+		return interessatRepository.countByExpedient(
 				expedient);
-		if (interessatcount == null)
-			interessatcount = 0L;
-		return interessatcount;
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<InteressatDto> findAmbDocumentPerNotificacio(
+			Long entitatId,
+			Long documentId) {
+		logger.debug("Consulta interessats del document per notificacions ("
+				+ "entitatId=" + entitatId + ", "
+				+ "documentId=" + documentId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
+				entitat,
+				null,
+				documentId,
+				false,
+				false,
+				false);
+		ExpedientEntity expedient = contingutHelper.getExpedientSuperior(
+				document,
+				false,
+				false,
+				true);
+		if (expedient == null) {
+			throw new ValidationException(
+					documentId,
+					DocumentEntity.class,
+					"El document no pertany a cap expedient");
+		}
+		List<InteressatEntity> interessats = interessatRepository.findByExpedientPerNotificacions(
+				expedient);
+		List<InteressatDto> resposta = new ArrayList<InteressatDto>();
+		for (InteressatEntity interessat: interessats) {
+			if (interessat instanceof InteressatPersonaFisicaEntity)
+				resposta.add(conversioTipusHelper.convertir(
+						interessat,
+						InteressatPersonaFisicaDto.class));
+			else if (interessat instanceof InteressatPersonaJuridicaEntity)
+				resposta.add(conversioTipusHelper.convertir(
+						interessat,
+						InteressatAdministracioDto.class));
+		}
+		return resposta;
 	}
 
 	@Transactional(readOnly = true)
@@ -676,7 +718,7 @@ public class InteressatServiceImpl implements InteressatService {
 
 
 
-	private static final Logger logger = LoggerFactory.getLogger(InteressatServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExpedientInteressatServiceImpl.class);
 
 
 

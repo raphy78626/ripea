@@ -17,7 +17,6 @@ public abstract class DocumentEnviamentDto extends AuditoriaDto {
 
 	private Long id;
 	private DocumentEnviamentEstatEnumDto estat;
-	private String sistemaExternId;
 	private String assumpte;
 	private Date dataEnviament;
 	private String observacions;
@@ -37,12 +36,6 @@ public abstract class DocumentEnviamentDto extends AuditoriaDto {
 	}
 	public void setEstat(DocumentEnviamentEstatEnumDto estat) {
 		this.estat = estat;
-	}
-	public String getSistemaExternId() {
-		return sistemaExternId;
-	}
-	public void setSistemaExternId(String sistemaExternId) {
-		this.sistemaExternId = sistemaExternId;
 	}
 	public String getAssumpte() {
 		return assumpte;
@@ -74,6 +67,15 @@ public abstract class DocumentEnviamentDto extends AuditoriaDto {
 	public void setAnnexos(List<DocumentDto> annexos) {
 		this.annexos = annexos;
 	}
+
+	public boolean isNotificacio() {
+		return this instanceof DocumentNotificacioDto;
+	}
+	public boolean isPublicacio() {
+		return this instanceof DocumentPublicacioDto;
+	}
+
+	public abstract String getDestinatari();
 
 	private static final long serialVersionUID = -139254994389509932L;
 

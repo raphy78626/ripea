@@ -1,0 +1,123 @@
+/**
+ * 
+ */
+package es.caib.ripea.core.helper;
+
+import java.util.Date;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.springframework.stereotype.Component;
+
+import es.caib.ripea.core.entity.DocumentNotificacioEntity;
+import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.InteressatEntity;
+import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
+import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat;
+import es.caib.ripea.plugin.ciutada.CiutadaNotificacioResultat;
+import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat.ZonaperJustificantEstat;
+
+/**
+ * Mètodes comuns per a gestionar expedients.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
+@Component
+public class ExpedientHelper {
+
+	@Resource
+	private PluginHelper pluginHelper;
+
+
+
+	public boolean pluginCiutadaNotificacioEnviar(
+			DocumentNotificacioEntity notificacio,
+			InteressatEntity destinatari) {
+		ExpedientEntity expedient = notificacio.getExpedient();
+		if (!expedient.isSistraPublicat()) {
+			try {
+				CiutadaExpedientInformacio expedientInfo = pluginHelper.ciutadaExpedientCrear(
+						expedient,
+						destinatari);
+				expedient.updateSistra(
+						true,
+						expedient.getMetaExpedient().getUnitatAdministrativa(),
+						expedientInfo.getClau());
+			} catch (Exception ex) {
+				Throwable rootCause = ExceptionUtils.getRootCause(ex);
+				if (rootCause == null) rootCause = ex;
+				notificacio.updateEnviament(
+						true,
+						true,
+						ExceptionUtils.getStackTrace(rootCause),
+						null);
+			}
+		}
+		if (expedient.isSistraPublicat()) {
+			try {
+				CiutadaNotificacioResultat notificacioResultat = pluginHelper.ciutadaNotificacioEnviar(
+						expedient,
+						destinatari,
+						notificacio.getOficiTitol(),
+						notificacio.getOficiText(),
+						notificacio.getAvisTitol(),
+						notificacio.getAvisText(),
+						notificacio.getAvisTextSms(),
+						notificacio.getIdioma(),
+						true,
+						null); // annexos
+				notificacio.updateEnviament(
+						true,
+						false,
+						null,
+						notificacioResultat.getRegistreNumero());
+				return true;
+			} catch (Exception ex) {
+				Throwable rootCause = ExceptionUtils.getRootCause(ex);
+				if (rootCause == null) rootCause = ex;
+				notificacio.updateEnviament(
+						true,
+						true,
+						ExceptionUtils.getStackTrace(rootCause),
+						null);
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public boolean pluginCiutadaNotificacioComprovarEstat(
+			DocumentNotificacioEntity notificacio) {
+		ExpedientEntity expedient = notificacio.getExpedient();
+		try {
+			CiutadaNotificacioEstat notificacioEstat = pluginHelper.ciutadaNotificacioComprovarEstat(
+					expedient,
+					notificacio.getRegistreNumero());
+			boolean entregadaORebutjada = !ZonaperJustificantEstat.PENDENT.equals(notificacioEstat.getEstat());
+			Date recepcio = null;
+			if (ZonaperJustificantEstat.ENTREGADA.equals(notificacioEstat.getEstat())) {
+				recepcio = notificacioEstat.getData();
+			}
+			notificacio.updateProcessament(
+					true,
+					false,
+					null,
+					recepcio,
+					entregadaORebutjada);
+			return true;
+		} catch (Exception ex) {
+			Throwable rootCause = ExceptionUtils.getRootCause(ex);
+			if (rootCause == null) rootCause = ex;
+			notificacio.updateProcessament(
+					true,
+					true,
+					ExceptionUtils.getStackTrace(rootCause),
+					null,
+					false);
+			return false;
+		}
+	}
+
+}

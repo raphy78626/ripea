@@ -6,7 +6,6 @@ package es.caib.ripea.core.helper;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -45,7 +44,7 @@ public class DadesExternesHelper {
 					TypeFactory.defaultInstance().constructCollectionType(
 							List.class,  
 							PaisDto.class));
-			Collections.sort(paisos);
+//			Collections.sort(paisos);
 			return paisos;
 			
 		} catch (Exception ex) {
@@ -69,7 +68,7 @@ public class DadesExternesHelper {
 					TypeFactory.defaultInstance().constructCollectionType(
 							List.class,  
 							ProvinciaDto.class));
-			Collections.sort(provincies);
+//			Collections.sort(provincies);
 			return provincies;
 			
 		} catch (Exception ex) {
@@ -162,8 +161,8 @@ public class DadesExternesHelper {
 					TypeFactory.defaultInstance().constructCollectionType(
 							List.class,
 							MunicipiDto.class));
-			if (municipis != null)
-				Collections.sort(municipis);
+			/*if (municipis != null)
+				Collections.sort(municipis);*/
 			return municipis;
 		} catch (Exception ex) {
 			LOGGER.error("Error al obtenir les províncies de la font externa", ex);

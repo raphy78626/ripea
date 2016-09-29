@@ -16,7 +16,7 @@ import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.InteressatTipusEnumDto;
-import es.caib.ripea.core.api.service.InteressatService;
+import es.caib.ripea.core.api.service.ExpedientInteressatService;
 import es.caib.ripea.war.command.InteressatCommand;
 
 /**
@@ -28,7 +28,7 @@ import es.caib.ripea.war.command.InteressatCommand;
 public class InteressatNoRepetitValidator implements ConstraintValidator<InteressatNoRepetit, Object> {
 
 	@Autowired
-	private InteressatService interessatService;
+	private ExpedientInteressatService expedientInteressatService;
 
 
 
@@ -49,19 +49,19 @@ public class InteressatNoRepetitValidator implements ConstraintValidator<Interes
 			
 			boolean existeix;
 			if (InteressatTipusEnumDto.PERSONA_FISICA.equals(tipus)) {
-				List<InteressatPersonaFisicaDto> interessats = interessatService.findByFiltrePersonaFisica(
+				List<InteressatPersonaFisicaDto> interessats = expedientInteressatService.findByFiltrePersonaFisica(
 						interessat.getDocumentNum(), 
 						interessat.getNom(), 
 						interessat.getLlinatge1(), 
 						interessat.getLlinatge2());
 				existeix = interessats.size() > 0;
 			} else if (InteressatTipusEnumDto.PERSONA_JURIDICA.equals(tipus)) {
-				List<InteressatPersonaJuridicaDto> interessats = interessatService.findByFiltrePersonaJuridica(
+				List<InteressatPersonaJuridicaDto> interessats = expedientInteressatService.findByFiltrePersonaJuridica(
 						interessat.getDocumentNum(),
 						interessat.getRaoSocial());
 				existeix = interessats.size() > 0;
 			} else if (InteressatTipusEnumDto.ADMINISTRACIO.equals(tipus)) {
-				List<InteressatAdministracioDto> interessats = interessatService.findByFiltreAdministracio(
+				List<InteressatAdministracioDto> interessats = expedientInteressatService.findByFiltreAdministracio(
 						interessat.getOrganCodi());
 				existeix = interessats.size() > 0;
 			} else {

@@ -251,6 +251,8 @@ public class ContingutLogHelper {
 			ContingutLogEntity contingutLogPare) {
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
 				contingutSuperior,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			logContingutSuperior(

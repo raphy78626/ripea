@@ -18,6 +18,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
+import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 
 /**
@@ -32,13 +33,15 @@ public class DocumentEntity extends NodeEntity {
 
 	@Column(name = "tipus", nullable = false)
 	protected DocumentTipusEnumDto documentTipus;
+	@Column(name = "estat", nullable = false)
+	protected DocumentEstatEnumDto estat;
 	@Column(name = "ubicacio", length = 255)
 	protected String ubicacio;
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "expedient_id")
 	@ForeignKey(name = "ipa_expedient_document_fk")
 	protected ExpedientEntity expedient;
-	@Column(name = "data")
+	@Column(name = "data", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	protected Date data;
 	@Column(name = "custodiat")
@@ -59,6 +62,9 @@ public class DocumentEntity extends NodeEntity {
 
 	public DocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
+	}
+	public DocumentEstatEnumDto getEstat() {
+		return estat;
 	}
 	public String getUbicacio() {
 		return ubicacio;
@@ -99,6 +105,10 @@ public class DocumentEntity extends NodeEntity {
 		this.data = data;
 		this.ubicacio = ubicacio;
 	}
+	public void updateEstat(
+			DocumentEstatEnumDto estat) {
+		this.estat = estat;
+	}
 	public void updateVersioDarrera(
 			DocumentVersioEntity versioDarrera) {
 		this.versioDarrera = versioDarrera;
@@ -119,6 +129,7 @@ public class DocumentEntity extends NodeEntity {
 
 	public static Builder getBuilder(
 			DocumentTipusEnumDto documentTipus,
+			DocumentEstatEnumDto estat,
 			String nom,
 			Date data,
 			ExpedientEntity expedient,
@@ -127,6 +138,7 @@ public class DocumentEntity extends NodeEntity {
 			EntitatEntity entitat) {
 		return new Builder(
 				documentTipus,
+				estat,
 				nom,
 				data,
 				expedient,
@@ -138,6 +150,7 @@ public class DocumentEntity extends NodeEntity {
 		DocumentEntity built;
 		Builder(
 				DocumentTipusEnumDto documentTipus,
+				DocumentEstatEnumDto estat,
 				String nom,
 				Date data,
 				ExpedientEntity expedient,
@@ -146,6 +159,7 @@ public class DocumentEntity extends NodeEntity {
 				EntitatEntity entitat) {
 			built = new DocumentEntity();
 			built.documentTipus = documentTipus;
+			built.estat = estat;
 			built.nom = nom;
 			built.data = data;
 			built.expedient = expedient;

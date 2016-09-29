@@ -31,6 +31,10 @@ public class DocumentPublicacioDto extends DocumentEnviamentDto {
 		this.dataPublicacio = dataPublicacio;
 	}
 
+	public String getDestinatari() {
+		return tipus.name();
+	}
+
 	private static final long serialVersionUID = -139254994389509932L;
 
 }

@@ -50,4 +50,33 @@ public class RegistreServiceBean implements RegistreService {
 		delegate.rebutjar(entitatId, bustiaId, registreId, motiu);
 	}
 
+	@Override
+	public void reglaAplicarPendents() {
+		delegate.reglaAplicarPendents();
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public boolean reglaReintentarAdmin(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) {
+		return delegate.reglaReintentarAdmin(
+				entitatId,
+				bustiaId,
+				registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean reglaReintentarUser(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) {
+		return delegate.reglaReintentarUser(
+				entitatId,
+				bustiaId,
+				registreId);
+	}
+
 }

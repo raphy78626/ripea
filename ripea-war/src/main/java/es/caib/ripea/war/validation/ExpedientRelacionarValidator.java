@@ -23,14 +23,11 @@ import es.caib.ripea.war.helper.MessageHelper;
  */
 public class ExpedientRelacionarValidator implements ConstraintValidator<ExpedientRelacionar, ExpedientRelacionarCommand> {
 	
-	private String codiMissatge;
-
 	@Autowired
 	private ExpedientService expedientService;
 	
 	@Override
 	public void initialize(final ExpedientRelacionar anotacio) {
-		codiMissatge = anotacio.message();
 	}
 
 	@Override
@@ -41,8 +38,9 @@ public class ExpedientRelacionarValidator implements ConstraintValidator<Expedie
 		// Comprova que no es relacioni l'expedient amb ell mateix
 		if (command.getExpedientId().equals(command.getRelacionatId())) {
 			context.buildConstraintViolationWithTemplate(
-					MessageHelper.getInstance().getMessage(this.codiMissatge + ".mateix"))
-			.addNode("expedientRelacionatId")
+					MessageHelper.getInstance().getMessage(
+							"contingut.expedient.relacionar.validacio.mateix"))
+			.addNode("relacionatId")
 			.addConstraintViolation();				
 			valid = false;
 		}
@@ -52,8 +50,9 @@ public class ExpedientRelacionarValidator implements ConstraintValidator<Expedie
 				command.getExpedientId())) 
 			if (command.getRelacionatId().equals(relacionat.getId())){
 				context.buildConstraintViolationWithTemplate(
-						MessageHelper.getInstance().getMessage(this.codiMissatge + ".repetit", new Object[] {relacionat.getNom()})).
-				addNode("expedientRelacionatId").
+						MessageHelper.getInstance().getMessage(
+								"contingut.expedient.relacionar.validacio.repetida")).
+				addNode("relacionatId").
 				addConstraintViolation();				
 				valid = false;
 				break;

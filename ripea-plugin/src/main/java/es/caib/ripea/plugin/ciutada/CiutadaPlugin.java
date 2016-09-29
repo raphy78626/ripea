@@ -17,6 +17,7 @@ public interface CiutadaPlugin {
 	 * 
 	 * @param expedientIdentificador
 	 * @param unitatAdministrativa
+	 * @param identificadorProcedimiento
 	 * @param idioma
 	 * @param descripcio
 	 * @param destinatari
@@ -25,12 +26,14 @@ public interface CiutadaPlugin {
 	 * @param avisosHabilitats
 	 * @param avisEmail
 	 * @param avisMobil
+	 * @return les dades de l'expedient creat
 	 * @throws SistemaExternException
 	 *             Si hi ha hagut algun problema per a crear l'expedient
 	 */
-	public void expedientCrear(
+	public CiutadaExpedientInformacio expedientCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
+			String unitatAdministrativa,
+			String identificadorProcedimiento,
 			String idioma,
 			String descripcio,
 			CiutadaPersona destinatari,
@@ -54,7 +57,7 @@ public interface CiutadaPlugin {
 	 */
 	public void avisCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
+			String unitatAdministrativa,
 			String titol,
 			String text,
 			String textSms,
@@ -64,12 +67,12 @@ public interface CiutadaPlugin {
 	 * Envia una notificació telemàtica al ciutadà.
 	 * 
 	 * @param expedientIdentificador
+	 * @param expedientClau
 	 * @param unitatAdministrativa
 	 * @param registreOficinaCodi
 	 * @param registreOrganCodi
 	 * @param destinatari
 	 * @param representat
-	 * @param idioma
 	 * @param assumpteTipus
 	 * @param oficiTitol
 	 * @param oficiText
@@ -84,12 +87,12 @@ public interface CiutadaPlugin {
 	 */
 	public CiutadaNotificacioResultat notificacioCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
+			String expedientClau,
+			String unitatAdministrativa,
 			String registreOficinaCodi,
 			String registreOrganCodi,
 			CiutadaPersona destinatari,
 			CiutadaPersona representat,
-			String idioma,
 			String assumpteTipus,
 			String oficiTitol,
 			String oficiText,
@@ -107,7 +110,7 @@ public interface CiutadaPlugin {
 	 * @throws SistemaExternException
 	 *             Si hi ha hagut algun problema per a obtenir l'estat de la notificació
 	 */
-	public CiutadaJustificantRecepcio notificacioObtenirJustificantRecepcio(
+	public CiutadaNotificacioEstat notificacioObtenirJustificantRecepcio(
 			String registreNumero) throws SistemaExternException;
 
 }

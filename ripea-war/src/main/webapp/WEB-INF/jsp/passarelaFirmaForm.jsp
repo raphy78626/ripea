@@ -9,7 +9,7 @@
 <html>
 <head>
 	<title>${titol}</title>
-	<rip:modalHead titol="${titol}" buttonContainerId="botons"/>
+	<rip:modalHead/>
 	<link href="<c:url value="/css/datepicker.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/js/bootstrap-datepicker.js"/>"></script>
 	<script src="<c:url value="/js/datepicker-locales/bootstrap-datepicker.${idioma}.js"/>"></script>
@@ -28,13 +28,13 @@
 			</a>
 		</div>
 	</c:if>
-	<c:set var="formAction"><rip:modalUrl value="/contenidor/${document.id}/document/${document.id}/versio/${documentVersio.versio}/firmaPassarela"/></c:set>
+	<c:set var="formAction"><rip:modalUrl value="/document/${document.id}/firmaPassarela"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="passarelaFirmaEnviarCommand" role="form">
 		<rip:inputText name="motiu" textKey="contenidor.document.passarelafirma.camp.motiu" required="true"/>
 		<rip:inputText name="lloc" textKey="contenidor.document.passarelafirma.camp.lloc" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-play"></span> <spring:message code="contenidor.document.passarelafirma.iniciar"/></button>
-			<a href="<c:url value="/contenidor/${document.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/contenidor/${document.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

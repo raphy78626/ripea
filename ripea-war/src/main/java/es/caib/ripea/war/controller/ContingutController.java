@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -28,18 +29,21 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
+import es.caib.ripea.core.api.dto.InteressatTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
+import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.ExpedientService;
-import es.caib.ripea.core.api.service.InteressatService;
+import es.caib.ripea.core.api.service.ExpedientInteressatService;
 import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
@@ -54,12 +58,14 @@ import es.caib.ripea.war.command.DadaCommand.DadaTipusSencer;
 import es.caib.ripea.war.command.DadaCommand.DadaTipusText;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.EnumHelper;
 import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.SessioHelper;
 import es.caib.ripea.war.helper.ValidationHelper;
 
 /**
- * Controlador per al manteniment de continguts.
+ * Controlador per a la gestió de contenidors i mètodes compartits entre
+ * diferents tipus de contingut.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -78,7 +84,7 @@ public class ContingutController extends BaseUserController {
 	@Autowired
 	private DocumentService documentService;
 	@Autowired
-	private InteressatService interessatService;
+	private ExpedientInteressatService interessatService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -88,8 +94,8 @@ public class ContingutController extends BaseUserController {
 	@Autowired
 	private RegistreService registreService;
 
-	@Autowired(required = true)
-	private javax.validation.Validator validator;
+	@Autowired
+	private Validator validator;
 
 
 
@@ -539,7 +545,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		boolean processatOk = bustiaService.registreReglaReintentarUser(
+		boolean processatOk = registreService.reglaReintentarUser(
 				entitatActual.getId(),
 				contingutId,
 				registreId);
@@ -701,6 +707,21 @@ public class ContingutController extends BaseUserController {
 		model.addAttribute(
 				"vistaLlistat",
 				new Boolean(CONTENIDOR_VISTA_LLISTAT.equals(contingutVista)));
+		model.addAttribute(
+				"registreTipusEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						RegistreTipusEnum.class,
+						"registre.anotacio.tipus.enum."));
+		model.addAttribute(
+				"enviamentEstatEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						DocumentEnviamentEstatEnumDto.class,
+						"enviament.estat.enum."));
+		model.addAttribute(
+				"interessatTipusEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						InteressatTipusEnumDto.class,
+						"interessat.tipus.enum."));
 	}
 
 	private void omplirModelPerMoureOCopiar(

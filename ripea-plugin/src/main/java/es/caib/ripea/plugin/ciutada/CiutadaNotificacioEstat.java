@@ -10,7 +10,7 @@ import java.util.Date;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class CiutadaJustificantRecepcio {
+public class CiutadaNotificacioEstat {
 
 	public enum ZonaperJustificantEstat {
 		PENDENT,

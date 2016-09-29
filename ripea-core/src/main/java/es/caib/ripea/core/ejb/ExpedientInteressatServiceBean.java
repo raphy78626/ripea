@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
+import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.dto.InteressatDto;
-import es.caib.ripea.core.api.service.InteressatService;
+import es.caib.ripea.core.api.service.ExpedientInteressatService;
 
 /**
  * Implementació de InteressatService com a EJB que empra una clase
@@ -27,10 +27,10 @@ import es.caib.ripea.core.api.service.InteressatService;
  */
 @Stateless
 @Interceptors(SpringBeanAutowiringInterceptor.class)
-public class InteressatServiceBean implements InteressatService {
+public class ExpedientInteressatServiceBean implements ExpedientInteressatService {
 
 	@Autowired
-	InteressatService delegate;
+	ExpedientInteressatService delegate;
 
 
 
@@ -116,10 +116,18 @@ public class InteressatServiceBean implements InteressatService {
 	
 	@Override
 	@RolesAllowed("tothom")
-	public Long countByExpedient(
+	public long countByExpedient(
 			Long entitatId,
 			Long expedientId) {
 		return delegate.countByExpedient(entitatId, expedientId);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public List<InteressatDto> findAmbDocumentPerNotificacio(
+			Long entitatId,
+			Long documentId) {
+		return delegate.findAmbDocumentPerNotificacio(entitatId, documentId);
 	}
 
 	@Override

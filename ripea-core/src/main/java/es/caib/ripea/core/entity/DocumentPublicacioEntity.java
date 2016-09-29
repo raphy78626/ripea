@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -48,9 +47,11 @@ public class DocumentPublicacioEntity extends DocumentEnviamentEntity {
 	public void update(
 			String assumpte,
 			String observacions,
+			DocumentPublicacioTipusEnumDto tipus,
 			Date dataPublicacio) {
 		this.assumpte = assumpte;
 		this.observacions = observacions;
+		this.tipus = tipus;
 		this.dataPublicacio = dataPublicacio;
 	}
 

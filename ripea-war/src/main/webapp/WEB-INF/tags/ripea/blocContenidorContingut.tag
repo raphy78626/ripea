@@ -76,7 +76,7 @@
 							tooltipTitle += '<dt><spring:message code="contingut.info.data"/></dt>' +
 									'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
 									'<dt><spring:message code="contingut.info.versio"/></dt>' +
-									'<dd>${fill.darreraVersio.versio}</dd>';
+									'<dd>${fill.versioDarrera.versio}</dd>';
 							</c:if>
 							tooltipTitle += '</dl>';
 							$('#info-fill-${fill.id}').tooltip({
@@ -173,7 +173,7 @@
 						tooltipTitle += '<dt><spring:message code="contingut.info.data"/></dt>' +
 								'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
 								'<dt><spring:message code="contingut.info.versio"/></dt>' +
-								'<dd>${fill.darreraVersio.versio}</dd>';
+								'<dd>${fill.versioDarrera.versio}</dd>';
 						</c:if>
 						tooltipTitle += '</dl>';
 						$('#info-fill-${fill.id} > td:not(:last-child)').tooltip({

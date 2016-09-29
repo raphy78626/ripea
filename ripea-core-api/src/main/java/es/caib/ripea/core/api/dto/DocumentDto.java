@@ -13,15 +13,26 @@ import java.util.Date;
 public class DocumentDto extends NodeDto {
 
 	protected DocumentTipusEnumDto documentTipus;
+	protected DocumentEstatEnumDto estat;
 	protected String ubicacio;
 	private Date data;
-	private DocumentVersioDto darreraVersio;
+	private boolean custodiat;
+	private Date custodiaData;
+	private String custodiaId;
+	private String custodiaUrl;
+	private DocumentVersioDto versioDarrera;
 
 	public DocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
 	}
 	public void setDocumentTipus(DocumentTipusEnumDto documentTipus) {
 		this.documentTipus = documentTipus;
+	}
+	public DocumentEstatEnumDto getEstat() {
+		return estat;
+	}
+	public void setEstat(DocumentEstatEnumDto estat) {
+		this.estat = estat;
 	}
 	public String getUbicacio() {
 		return ubicacio;
@@ -35,13 +46,36 @@ public class DocumentDto extends NodeDto {
 	public void setData(Date data) {
 		this.data = data;
 	}
-	public DocumentVersioDto getDarreraVersio() {
-		return darreraVersio;
+	public boolean isCustodiat() {
+		return custodiat;
 	}
-	public void setDarreraVersio(DocumentVersioDto darreraVersio) {
-		this.darreraVersio = darreraVersio;
+	public void setCustodiat(boolean custodiat) {
+		this.custodiat = custodiat;
 	}
-
+	public Date getCustodiaData() {
+		return custodiaData;
+	}
+	public void setCustodiaData(Date custodiaData) {
+		this.custodiaData = custodiaData;
+	}
+	public String getCustodiaId() {
+		return custodiaId;
+	}
+	public void setCustodiaId(String custodiaId) {
+		this.custodiaId = custodiaId;
+	}
+	public String getCustodiaUrl() {
+		return custodiaUrl;
+	}
+	public void setCustodiaUrl(String custodiaUrl) {
+		this.custodiaUrl = custodiaUrl;
+	}
+	public DocumentVersioDto getVersioDarrera() {
+		return versioDarrera;
+	}
+	public void setVersioDarrera(DocumentVersioDto versioDarrera) {
+		this.versioDarrera = versioDarrera;
+	}
 	public MetaDocumentDto getMetaDocument() {
 		return (MetaDocumentDto)getMetaNode();
 	}

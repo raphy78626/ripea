@@ -15,11 +15,12 @@ import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
 /**
- * Declaració dels mètodes per a gestionar contenidors.
+ * Declaració dels mètodes per a gestionar els interessats dels
+ * expedients.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface InteressatService {
+public interface ExpedientInteressatService {
 
 	/**
 	 * Crea un nou interessat i l'associa a un expedient.
@@ -198,9 +199,27 @@ public interface InteressatService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public Long countByExpedient(
+	public long countByExpedient(
 			Long entitatId,
 			Long expedientId) throws NotFoundException;
+
+	/**
+	 * Consulta dels interessats associats a un document per a fer
+	 * notificacions. El document ha d'estar forçosament associat a un
+	 * expedient.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany l'interessat.
+	 * @param documentId
+	 *            Atribut id del document.
+	 * @return Els insteressats associats a l'expedient.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<InteressatDto> findAmbDocumentPerNotificacio(
+			Long entitatId,
+			Long documentId) throws NotFoundException;
 
 	/**
 	 * Consulta els interessats per nom i identificador.

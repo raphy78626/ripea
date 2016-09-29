@@ -20,10 +20,8 @@ public class ExpedientRelacionarCommand {
 
 	@NotNull
 	protected Long entitatId;
-	/** Expedient sobre el que es realitza la acció de relacionar amb un altre expedient. */
 	@NotNull
 	protected Long expedientId;
-	/** Expedient seleccionar per a relacionar amb l'expedient sobre el que es realitza la acció. */
 	@NotNull
 	protected Long relacionatId;
 
@@ -53,4 +51,5 @@ public class ExpedientRelacionarCommand {
 	}
 	
 	public interface Relacionar {}
+
 }

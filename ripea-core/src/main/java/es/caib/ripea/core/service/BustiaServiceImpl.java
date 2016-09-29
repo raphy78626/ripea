@@ -10,12 +10,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +30,6 @@ import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
-import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
@@ -387,8 +383,11 @@ public class BustiaServiceImpl implements BustiaService {
 				BustiaEntity.class,
 				new Permission[] {ExtendedPermission.READ},
 				auth);
+		if (busties.isEmpty()) {
+			return paginacioHelper.getPaginaDtoBuida(BustiaDto.class);
+		}
 		List<Long> bustiaIds = new ArrayList<Long>();
-		for (BustiaEntity bustia : busties) {
+		for (BustiaEntity bustia: busties) {
 			bustiaIds.add(bustia.getId());
 		}
 		// Realitza la consulta
@@ -441,7 +440,9 @@ public class BustiaServiceImpl implements BustiaService {
 		// Comprova que aquest contingut no pertanyi a cap expedient
 		ExpedientEntity expedientActual = contingutHelper.getExpedientSuperior(
 				contingut,
-				true);
+				true,
+				false,
+				false);
 		if (expedientActual != null) {
 			logger.error("No es pot enviar un node que pertany a un expedient");
 			throw new ValidationException(
@@ -822,90 +823,6 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia);
 	}
 
-	@Override
-	@Transactional
-	@Async
-	@Scheduled(fixedRate = 10000)
-	public void registreReglaAplicarPendents() {
-		logger.debug("Aplicant regles a les anotacions pendents");
-		List<RegistreEntity> pendents = registreRepository.findByReglaNotNullAndProcesEstatOrderByCreatedDateAsc(
-				RegistreProcesEstatEnum.PENDENT);
-		logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
-		if (!pendents.isEmpty()) {
-			for (RegistreEntity pendent: pendents) {
-				reglaAplicar(pendent);
-			}
-		} else {
-			logger.debug("No hi ha registres pendents de processar");
-		}
-	}
-
-	@Override
-	@Transactional
-	public boolean registreReglaReintentarAdmin(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId) {
-		logger.debug("Reintentant aplicació de regla a anotació pendent (" +
-				"entitatId=" + entitatId + ", " +
-				"bustiaId=" + bustiaId + ", " +
-				"registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				false,
-				true);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				false);
-		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
-				registreId,
-				bustia);
-		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
-				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
-			return reglaAplicar(anotacio);
-		} else {
-			throw new ValidationException(
-					anotacio.getId(),
-					RegistreEntity.class,
-					"L'estat de l'anotació no és PENDENT o ERROR");
-		}
-	}
-
-	@Override
-	@Transactional
-	public boolean registreReglaReintentarUser(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId) {
-		logger.debug("Reintentant aplicació de regla a anotació pendent (" +
-				"entitatId=" + entitatId + ", " +
-				"bustiaId=" + bustiaId + ", " +
-				"registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				false,
-				true);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
-		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
-				registreId,
-				bustia);
-		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
-				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
-			return reglaAplicar(anotacio);
-		} else {
-			throw new ValidationException(
-					anotacio.getId(),
-					RegistreEntity.class,
-					"L'estat de l'anotació no és PENDENT o ERROR");
-		}
-	}
-
 
 
 	private BustiaDto toBustiaDto(
@@ -997,45 +914,6 @@ public class BustiaServiceImpl implements BustiaService {
 			pendent.setComentari(contingut.getDarrerMoviment().getComentari());
 		}
 		return pendent;
-	}
-
-	private boolean reglaAplicar(
-			RegistreEntity anotacio) {
-		contingutLogHelper.log(
-				anotacio,
-				LogTipusEnumDto.PROCESSAMENT,
-				null,
-				null,
-				false,
-				false);
-		logger.debug("Aplicant regla a anotació de registre (" +
-				"anotacioId=" + anotacio.getId() + ", " +
-				"anotacioNum=" + anotacio.getIdentificador() + ", " +
-				"reglaId=" + anotacio.getRegla().getId() + ", " +
-				"reglaTipus=" + anotacio.getRegla().getTipus().name() + ", " +
-				"metaExpedient=" + anotacio.getRegla().getMetaExpedient() + ", " +
-				"arxiu=" + anotacio.getRegla().getArxiu() + ", " +
-				"bustia=" + anotacio.getRegla().getBustia() + ")");
-		try {
-			reglaHelper.aplicar(anotacio.getId());
-			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
-			return true;
-		} catch (Exception ex) {
-			String procesError;
-			if (ex instanceof ScheduledTaskException) {
-				procesError = ex.getMessage();
-			} else {
-				procesError = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
-			}
-			reglaHelper.actualitzarEstatError(
-					anotacio.getId(),
-					procesError);
-			logger.debug("Processament anotació ERROR (" +
-					"id=" + anotacio.getId() + ", " +
-					"núm.=" + anotacio.getIdentificador() + "): " +
-					procesError);
-			return false;
-		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);

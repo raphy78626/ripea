@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -53,13 +54,17 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.DocumentHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.ExpedientHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
+import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPortafirmesRepository;
+import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
 import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
+import es.caib.ripea.core.repository.InteressatRepository;
 import es.caib.ripea.core.repository.MetaDocumentRepository;
 import es.caib.ripea.core.repository.MetaExpedientMetaDocumentRepository;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocument;
@@ -82,16 +87,24 @@ public class DocumentServiceImpl implements DocumentService {
 	@Resource
 	private DocumentVersioRepository documentVersioRepository;
 	@Resource
+	private MetaExpedientMetaDocumentRepository metaExpedientMetaDocumentRepository;
+	@Resource
+	private InteressatRepository interessatRepository;
+	@Resource
 	private DocumentPortafirmesRepository documentPortafirmesRepository;
 	@Resource
-	private MetaExpedientMetaDocumentRepository metaExpedientMetaDocumentRepository;
+	private DocumentNotificacioRepository documentNotificacioRepository;
+	@Resource
+	private DocumentPublicacioRepository documentPublicacioRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
-	private ContingutHelper contenidorHelper;
+	private ContingutHelper contingutHelper;
+	@Resource
+	private ExpedientHelper expedientHelper;
 	@Resource
 	private DocumentHelper documentHelper;
 	@Resource
@@ -103,7 +116,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
-	private ContingutLogHelper contenidorLogHelper;
+	private ContingutLogHelper contingutLogHelper;
 
 
 
@@ -149,29 +162,31 @@ public class DocumentServiceImpl implements DocumentService {
 					true);
 		}
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				contingut);
 		// Comprova l'accés al path del contenidor pare
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				contingut,
 				true,
 				false,
 				false,
 				true);
 		// Comprova que el nom sigui vàlid
-		if (!contenidorHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(nom)) {
 			throw new ValidationException(
 					"<creacio>",
 					DocumentEntity.class,
 					"El nom del document no és vàlid (no pot començar amb \".\")");
 		}
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
-				true);
+				true,
+				false,
+				false);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContingut(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
@@ -244,6 +259,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		DocumentEntity document = DocumentEntity.getBuilder(
 				tipus,
+				DocumentEstatEnumDto.ESBORRANY,
 				nom,
 				data,
 				expedientSuperior,
@@ -262,12 +278,13 @@ public class DocumentServiceImpl implements DocumentService {
 					arxiuContentType,
 					arxiuContingut);
 			documentVersioRepository.save(documentVersio);
+			document.updateVersioDarrera(documentVersio);
 		}
 		if (expedientSuperior != null) {
 			cacheHelper.evictErrorsValidacioPerNode(expedientSuperior);
 		}
 		// Registra al log la creació del document
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				document,
 				LogTipusEnumDto.CREACIO,
 				null,
@@ -313,36 +330,38 @@ public class DocumentServiceImpl implements DocumentService {
 				true,
 				false);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				document);
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
 				false,
 				true);
 		// Comprova que el nom sigui vàlid
-		if (!contenidorHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(nom)) {
 			throw new ValidationException(
 					id,
 					DocumentEntity.class,
 					"El nom del document no és vàlid (no pot començar amb \".\")");
 		}
 		// Comprova el permís de modificació a l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				document,
-				true);
+				true,
+				false,
+				false);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContingut(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
 					false);
 		}
 		// Comprova el permís de modificació del document
-		contenidorHelper.comprovarPermisosContingut(
+		contingutHelper.comprovarPermisosContingut(
 				document,
 				false,
 				true,
@@ -373,7 +392,7 @@ public class DocumentServiceImpl implements DocumentService {
 			document.updateVersioDarrera(documentVersio);
 		}
 		// Registra al log la modificació del document
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				document,
 				LogTipusEnumDto.MODIFICACIO,
 				null,
@@ -405,29 +424,31 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				true);
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contenidorHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				document);
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
 				false,
 				true);
 		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				document,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
-			contenidorHelper.comprovarPermisosContingut(
+			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
 					false,
 					true,
 					false);
 		}
 		// Comprova el permís d'esborrar del document actual
-		contenidorHelper.comprovarPermisosContingut(
+		contingutHelper.comprovarPermisosContingut(
 				document,
 				false,
 				false,
@@ -442,7 +463,7 @@ public class DocumentServiceImpl implements DocumentService {
 		if (expedientSuperior != null)
 			cacheHelper.evictErrorsValidacioPerNode(expedientSuperior);
 		// Registra al log l'eliminació del document
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				document,
 				LogTipusEnumDto.ELIMINACIO,
 				null,
@@ -474,7 +495,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -505,7 +526,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -554,7 +575,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -601,7 +622,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -625,14 +646,12 @@ public class DocumentServiceImpl implements DocumentService {
 	public void portafirmesEnviar(
 			Long entitatId,
 			Long id,
-			int versio,
 			String motiu,
 			PortafirmesPrioritatEnumDto prioritat,
 			Date dataCaducitat) {
 		logger.debug("Enviant document a portafirmes (" +
 				"entitatId=" + entitatId + ", " +
 				"id=" + id + ", " +
-				"versio=" + versio + ", " +
 				"motiu=" + motiu + ", " +
 				"prioritat=" + prioritat + ", " +
 				"dataCaducitat=" + dataCaducitat + ")");
@@ -650,39 +669,37 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
 				false,
 				true);
+		if (!DocumentTipusEnumDto.DIGITAL.equals(document.getDocumentTipus())) {
+			throw new ValidationException(
+					document.getId(),
+					DocumentEntity.class,
+					"El document a enviar al portafirmes no és de tipus " + DocumentTipusEnumDto.DIGITAL);
+		}
 		DocumentPortafirmesEntity documentPortafirmesDarrer = findDocumentPortafirmesDarrer(
 				entitat,
-				document,
-				versio);
+				document);
 		if (documentPortafirmesDarrer != null && PortafirmesEstatEnumDto.PENDENT.equals(documentPortafirmesDarrer.getPortafirmesEstat())) {
 			logger.error(
 					"Hi ha enviaments a portafirmes en estat pendent pel document (" +
 					"entitatId=" + entitatId + ", " +
-					"id=" + id + ", " +
-					"versio=" + versio + ")");
+					"id=" + id + ")");
 			throw new ValidationException(
-					"(documentId=" + document.getId() + ", versio=" + versio + ")",
-					DocumentVersioEntity.class,
+					document.getId(),
+					DocumentEntity.class,
 					"Hi ha enviaments a portafirmes en estat pendent pel document");
 		}
-		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
-				document,
-				versio);
+		DocumentVersioEntity documentVersio = document.getVersioDarrera();
 		if (documentVersio == null) {
-			logger.error("No s'ha trobat la versió del document (" +
-					"documentId=" + id + ", " +
-					"versio=" + versio + ")");
 			throw new NotFoundException(
-					"(documentId=" + id + ", versio=" + versio + ")",
+					"(documentId=" + id + ", versio=darrera)",
 					DocumentVersioEntity.class);
 		}
-
 		// TODO Verificar permisos de l'usuari per fer aquesta acció
 		if (pluginHelper.portafirmesEnviarDocumentEstampat()) {
 			String custodiaUrl = pluginHelper.custodiaReservarUrl(document);
@@ -696,7 +713,7 @@ public class DocumentServiceImpl implements DocumentService {
 				null);
 		DocumentPortafirmesEntity documentPortafirmes = DocumentPortafirmesEntity.getBuilder(
 				document,
-				versio,
+				document.getVersioDarrera().getVersio(),
 				motiu,
 				prioritat,
 				dataCaducitat,
@@ -704,7 +721,7 @@ public class DocumentServiceImpl implements DocumentService {
 				PortafirmesEstatEnumDto.PENDENT).build();
 		documentPortafirmesRepository.save(documentPortafirmes);
 		// Registra al log l'enviament al portafirmes
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				document,
 				LogTipusEnumDto.PFIRMA_ENVIAMENT,
 				null,
@@ -719,12 +736,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public void portafirmesCancelar(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		logger.debug("Enviant document a portafirmes (" +
 				"entitatId=" + entitatId + ", " +
-				"id=" + id + ", " +
-				"versio=" + versio + ")");
+				"id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -739,45 +754,41 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
 				false,
 				true);
-		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
-				document,
-				versio);
+		DocumentVersioEntity documentVersio = document.getVersioDarrera();
 		if (documentVersio == null) {
-			logger.error("No s'ha trobat la versió del document (" +
-					"documentId=" + id + ", " +
-					"versio=" + versio + ")");
+			logger.error("No s'ha trobat la darrera versió del document (" +
+					"documentId=" + id + ")");
 			throw new NotFoundException(
-					"(documentId=" + id + ", versio=" + versio + ")",
+					"(documentId=" + id + ", versio=darrera)",
 					DocumentVersioEntity.class);
 		}
 		DocumentPortafirmesEntity documentPortafirmesDarrer = findDocumentPortafirmesDarrer(
 				entitat,
-				document,
-				versio);
+				document);
 		if (documentPortafirmesDarrer == null) {
 			logger.error(
 					"No s'ha trobat cap enviament a portafirmes pel document (" +
 					"entitatId=" + entitat.getId() + ", " +
-					"id=" + document.getId() + ", " +
-					"versio=" + versio + ")");
+					"id=" + document.getId() + ")");
 			throw new ValidationException(
-					"(documentId=" + document.getId() + ", versio=" + versio + ")",
-					DocumentVersioEntity.class,
+					document.getId(),
+					DocumentEntity.class,
 					"No s'ha trobat cap enviament a portafirmes pel document)");
 		}
 		if (!PortafirmesEstatEnumDto.PENDENT.equals(documentPortafirmesDarrer.getPortafirmesEstat())) {
 			logger.error(
 					"No s'ha trobat cap enviament a portafirmes en estat pendent pel document (" +
 					"entitatId=" + entitatId + ", " +
-					"id=" + id + ", " +
-					"versio=" + versio + ")");
+					"id=" + id + ")");
 			throw new ValidationException(
+					document.getId(),
+					DocumentEntity.class,
 					"No s'ha trobat cap enviament a portafirmes en estat pendent pel document");
 		}
 
@@ -789,7 +800,7 @@ public class DocumentServiceImpl implements DocumentService {
 		documentPortafirmesDarrer.updateEstat(
 				PortafirmesEstatEnumDto.CANCELAT);
 		// Registra al log la cancelació de la firma del document
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				document,
 				LogTipusEnumDto.PFIRMA_CANCELACIO,
 				null,
@@ -837,7 +848,7 @@ public class DocumentServiceImpl implements DocumentService {
 			break;
 		case DOCUMENT_FIRMAT:
 			// Registra al log la firma del document
-			contenidorLogHelper.log(
+			contingutLogHelper.log(
 					documentPortafirmes.getDocument(),
 					LogTipusEnumDto.PFIRMA_FIRMA,
 					null,
@@ -854,7 +865,7 @@ public class DocumentServiceImpl implements DocumentService {
 			break;
 		case DOCUMENT_REBUTJAT:
 			// Registra al log el rebuig de la firma del document
-			contenidorLogHelper.log(
+			contingutLogHelper.log(
 					documentPortafirmes.getDocument(),
 					LogTipusEnumDto.PFIRMA_REBUIG,
 					null,
@@ -878,12 +889,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public FitxerDto convertirPdfPerFirma(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		logger.debug("Convertint document a format PDF per firmar ("
 				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "versio=" + versio + ")");
+				+ "id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -898,21 +907,18 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
 				false,
 				true);
-		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
-				document,
-				versio);
+		DocumentVersioEntity documentVersio = document.getVersioDarrera();
 		if (documentVersio == null) {
-			logger.error("No s'ha trobat la versió del document (" +
-					"documentId=" + id + ", " +
-					"versio=" + versio + ")");
+			logger.error("No s'ha trobat la darrera versió del document (" +
+					"documentId=" + id + ")");
 			throw new NotFoundException(
-					"(documentId=" + id + ", versio=" + versio + ")",
+					"(documentId=" + id + ", versio=darrera)",
 					DocumentVersioEntity.class);
 		}
 		return pluginHelper.conversioConvertirPdfIEstamparUrl(
@@ -925,12 +931,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public String generarIdentificadorFirmaClient(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		logger.debug("Generar identificador firma applet ("
 				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "versio=" + versio + ")");
+				+ "id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -945,23 +949,21 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
 				false,
 				true);
-		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
-				document,
-				versio);
+		DocumentVersioEntity documentVersio = document.getVersioDarrera();
 		if (documentVersio == null) {
-			logger.error("No s'ha trobat la versió del document (" +
-					"documentId=" + id + ", " +
-					"versio=" + versio + ")");
+			logger.error("No s'ha trobat la darrera versió del document (" +
+					"documentId=" + id + ")");
 			throw new NotFoundException(
-					"(documentId=" + id + ", versio=" + versio + ")",
+					"(documentId=" + id + ", versio=darrera)",
 					DocumentVersioEntity.class);
 		}
+		int versio = documentVersio.getVersio();
 		try {
 			return firmaAppletXifrar(
 					new ObjecteFirmaApplet( 
@@ -1017,14 +1019,14 @@ public class DocumentServiceImpl implements DocumentService {
 					false);
 			// Per a consultes no es comprova el contenidor arrel
 			// Comprova l'accés al path del document
-			contenidorHelper.comprovarPermisosPathContingut(
+			contingutHelper.comprovarPermisosPathContingut(
 					document,
 					true,
 					false,
 					false,
 					true);
 			// Registra al log la firma del document
-			contenidorLogHelper.log(
+			contingutLogHelper.log(
 					document,
 					LogTipusEnumDto.APPLET_FIRMA,
 					null,
@@ -1043,7 +1045,7 @@ public class DocumentServiceImpl implements DocumentService {
 					new Date(),
 					custodiaDocumentId);
 			// Registra al log la custòdia de la firma del document
-			contenidorLogHelper.log(
+			contingutLogHelper.log(
 					document,
 					LogTipusEnumDto.CUSTODIA,
 					null,
@@ -1066,12 +1068,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public void custodiaPortafirmesReintentar(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		logger.debug("Reintentant custòdia de document firmat amb portafirmes que ha donat error ("
 				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "versio=" + versio + ")");
+				+ "id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -1086,7 +1086,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -1094,25 +1094,22 @@ public class DocumentServiceImpl implements DocumentService {
 				true);
 		DocumentPortafirmesEntity documentPortafirmesDarrer = findDocumentPortafirmesDarrer(
 				entitat,
-				document,
-				versio);
+				document);
 		if (documentPortafirmesDarrer == null) {
 			logger.error(
 					"No s'ha trobat cap enviament a portafirmes pel document (" +
 					"entitatId=" + entitat.getId() + ", " +
-					"id=" + document.getId() + ", " +
-					"versio=" + versio + ")");
+					"id=" + document.getId() + ")");
 			throw new ValidationException(
-					"(documentId=" + document.getId() + ", versio=" + versio + ")",
-					DocumentVersioEntity.class,
+					document.getId(),
+					DocumentEntity.class,
 					"No s'ha trobat cap enviament a portafirmes pel document");
 		}
 		if (!PortafirmesEstatEnumDto.FIRMAT.equals(documentPortafirmesDarrer.getPortafirmesEstat())) {
 			logger.error(
 					"El darrer enviament a portafirmes no està pendent de custodiar pel document (" +
 					"entitatId=" + entitatId + ", " +
-					"id=" + id + ", " +
-					"versio=" + versio + ")");
+					"id=" + id + ")");
 			throw new ValidationException(
 					documentPortafirmesDarrer.getId(),
 					DocumentPortafirmesEntity.class,
@@ -1128,7 +1125,7 @@ public class DocumentServiceImpl implements DocumentService {
 			// Neteja l'error de l'enviament al portafirmes
 			documentPortafirmesDarrer.updateError(null);
 			// Registra al log la custòdia del document
-			contenidorLogHelper.log(
+			contingutLogHelper.log(
 					document,
 					LogTipusEnumDto.CUSTODIA,
 					null,
@@ -1146,12 +1143,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public void custodiaEsborrar(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		logger.debug("Esborrar document de custòdia ("
 				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "versio=" + versio + ")");
+				+ "id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -1166,7 +1161,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false);
 		// Per a consultes no es comprova el contenidor arrel
 		// Comprova l'accés al path del document
-		contenidorHelper.comprovarPermisosPathContingut(
+		contingutHelper.comprovarPermisosPathContingut(
 				document,
 				true,
 				false,
@@ -1181,8 +1176,7 @@ public class DocumentServiceImpl implements DocumentService {
 				document.getCustodiaId());
 		DocumentPortafirmesEntity documentPortafirmesDarrer = findDocumentPortafirmesDarrer(
 				entitat,
-				document,
-				versio);
+				document);
 		if (documentPortafirmesDarrer != null && PortafirmesEstatEnumDto.CUSTODIAT.equals(documentPortafirmesDarrer.getPortafirmesEstat())) {
 			documentPortafirmesDarrer.updateEstat(PortafirmesEstatEnumDto.ESBORRAT);
 		}
@@ -1192,7 +1186,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	private DocumentDto toDocumentDto(
 			DocumentEntity document) {
-		return (DocumentDto)contenidorHelper.toContingutDto(
+		return (DocumentDto)contingutHelper.toContingutDto(
 				document,
 				false,
 				false,
@@ -1243,7 +1237,7 @@ public class DocumentServiceImpl implements DocumentService {
 							custodiaDocumentId);
 					documentPortafirmes.updateEstat(PortafirmesEstatEnumDto.CUSTODIAT);
 					// Registra al log la custòdia del document
-					contenidorLogHelper.log(
+					contingutLogHelper.log(
 							documentPortafirmes.getDocument(),
 							LogTipusEnumDto.CUSTODIA,
 							null,
@@ -1298,16 +1292,12 @@ public class DocumentServiceImpl implements DocumentService {
 
 	private DocumentPortafirmesEntity findDocumentPortafirmesDarrer(
 			EntitatEntity entitat,
-			DocumentEntity document,
-			int versio) {
-		List<DocumentPortafirmesEntity> documentsPortafirmes = documentPortafirmesRepository.findByDocumentAndVersio(
-				document,
-				versio);
+			DocumentEntity document) {
+		List<DocumentPortafirmesEntity> documentsPortafirmes = documentPortafirmesRepository.findByDocumentOrderByCreatedDateDesc(
+				document);
 		DocumentPortafirmesEntity documentPortafirmesDarrer = null;
-		for (DocumentPortafirmesEntity documentPortafirmes: documentsPortafirmes) {
-			if (documentPortafirmesDarrer == null || documentPortafirmes.getCreatedDate().toDate().after(documentPortafirmesDarrer.getCreatedDate().toDate())) {
-				documentPortafirmesDarrer = documentPortafirmes;
-			}
+		if (!documentsPortafirmes.isEmpty()) {
+			documentPortafirmesDarrer = documentsPortafirmes.get(0);
 		}
 		return documentPortafirmesDarrer;
 	}

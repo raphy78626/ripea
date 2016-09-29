@@ -23,11 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
-import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
-import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
-import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
-import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
@@ -43,9 +38,6 @@ import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutLogEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
-import es.caib.ripea.core.entity.DocumentEntity;
-import es.caib.ripea.core.entity.DocumentNotificacioEntity;
-import es.caib.ripea.core.entity.DocumentPublicacioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
@@ -60,18 +52,22 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.ExpedientHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
+import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
+import es.caib.ripea.core.repository.DocumentEnviamentRepository;
 import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
+import es.caib.ripea.core.repository.InteressatRepository;
 import es.caib.ripea.core.repository.MetaExpedientRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
@@ -102,6 +98,10 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Resource
 	private BustiaRepository bustiaRepository;
 	@Resource
+	private InteressatRepository interessatRepository;
+	@Resource
+	private DocumentEnviamentRepository documentEnviamentRepository;
+	@Resource
 	private DocumentNotificacioRepository documentNotificacioRepository;
 	@Resource
 	private DocumentPublicacioRepository documentPublicacioRepository;
@@ -113,6 +113,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Resource
 	private ContingutHelper contingutHelper;
 	@Resource
+	private ExpedientHelper expedientHelper;
+	@Resource
 	private PaginacioHelper paginacioHelper;
 	@Resource
 	private CacheHelper cacheHelper;
@@ -122,6 +124,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private UsuariHelper usuariHelper;
 	@Resource
 	private EmailHelper emailHelper;
+	@Resource
+	private PluginHelper pluginHelper;
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
@@ -202,7 +206,9 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
-				true);
+				true,
+				false,
+				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
@@ -360,6 +366,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
@@ -489,6 +497,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// No s'ha de poder agafar un expedient no arrel
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			logger.error("No es pot agafar un expedient no arrel (id=" + id + ")");
@@ -561,6 +571,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// No s'ha de poder agafar un expedient no arrel
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			logger.error("No es pot agafar un expedient no arrel (id=" + id + ")");
@@ -1072,335 +1084,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 		for (ExpedientEntity e: relacionats)
 			relacionatsDto.add(toExpedientDto(e, false));		
 		return relacionatsDto;
-	}
-
-	@Transactional
-	@Override
-	public DocumentNotificacioDto notificacioCreate(
-			Long entitatId,
-			Long expedientId,
-			DocumentNotificacioDto notificacio) {
-		logger.debug("Creant una notificació de l'expedient (" +
-				"entitatId=" + entitatId + ", " +
-				"expedientId=" + expedientId + ", " +
-				"notificacio=" + notificacio + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		DocumentEntity document = entityComprovarHelper.comprovarDocument(
-				entitat,
-				expedient,
-				notificacio.getDocument().getId(),
-				false,
-				false,
-				false);
-		// TODO Enviament de la notificació amb el plugin
-		String sistemaExternId = "???";
-		DocumentNotificacioEntity entity = DocumentNotificacioEntity.getBuilder(
-				expedient,
-				DocumentEnviamentEstatEnumDto.ENVIAT_OK,
-				notificacio.getAssumpte(),
-				new Date(),
-				sistemaExternId,
-				document,
-				notificacio.getTipus(),
-				notificacio.getDestinatariDocumentTipus(),
-				notificacio.getDestinatariDocumentNum(),
-				notificacio.getDestinatariNom(),
-				notificacio.getDestinatariLlinatge1(),
-				notificacio.getDestinatariLlinatge2(),
-				notificacio.isDestinatariRepresentant()).
-				build();
-		contingutLogHelper.log(
-				expedient,
-				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
-				entity,
-				LogObjecteTipusEnumDto.NOTIFICACIO,
-				LogTipusEnumDto.CREACIO,
-				notificacio.getAssumpte(),
-				notificacio.getNomSencerRepresentantAmbDocument(),
-				false,
-				false);
-		return conversioTipusHelper.convertir(
-				documentNotificacioRepository.save(entity),
-				DocumentNotificacioDto.class);
-	}
-
-	@Transactional
-	@Override
-	public DocumentNotificacioDto notificacioUpdate(
-			Long entitatId,
-			Long expedientId,
-			DocumentNotificacioDto notificacio) {
-		logger.debug("Modificant una notificació de l'expedient (" +
-				"entitatId=" + entitatId + ", " +
-				"expedientId=" + expedientId + ", " +
-				"notificacio=" + notificacio + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		DocumentNotificacioEntity entity = entityComprovarHelper.comprovarNotificacio(
-				expedient,
-				null,
-				notificacio.getId());
-		if (!DocumentNotificacioTipusEnumDto.MANUAL.equals(entity.getTipus())) {
-			throw new ValidationException(
-					notificacio.getId(),
-					DocumentNotificacioEntity.class,
-					"No es pot modificar una notificació que no te el tipus " + DocumentNotificacioTipusEnumDto.MANUAL);
-		}
-		entity.update(
-				notificacio.getAssumpte(),
-				notificacio.getObservacions(),
-				notificacio.getDestinatariDocumentTipus(),
-				notificacio.getDestinatariDocumentNum(),
-				notificacio.getDestinatariNom(),
-				notificacio.getDestinatariLlinatge1(),
-				notificacio.getDestinatariLlinatge2(),
-				notificacio.isDestinatariRepresentant());
-		contingutLogHelper.log(
-				expedient,
-				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
-				entity,
-				LogObjecteTipusEnumDto.NOTIFICACIO,
-				LogTipusEnumDto.CREACIO,
-				notificacio.getAssumpte(),
-				notificacio.getNomSencerRepresentantAmbDocument(),
-				false,
-				false);
-		return conversioTipusHelper.convertir(
-				entity,
-				DocumentNotificacioDto.class);
-	}
-
-	@Transactional
-	@Override
-	public DocumentNotificacioDto notificacioDelete(
-			Long entitatId,
-			Long expedientId,
-			Long notificacioId) {
-		logger.debug("Esborrant una notificació de l'expedient (" +
-				"entitatId=" + entitatId + ", " +
-				"expedientId=" + expedientId + ", " +
-				"notificacioId=" + notificacioId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		DocumentNotificacioEntity notificacio = entityComprovarHelper.comprovarNotificacio(
-				expedient,
-				null,
-				notificacioId);
-		if (!DocumentNotificacioTipusEnumDto.MANUAL.equals(notificacio.getTipus())) {
-			throw new ValidationException(
-					notificacioId,
-					DocumentNotificacioEntity.class,
-					"No es pot esborrar una notificació que no te el tipus " + DocumentNotificacioTipusEnumDto.MANUAL);
-		}
-		documentNotificacioRepository.delete(notificacio);
-		return conversioTipusHelper.convertir(
-				notificacio,
-				DocumentNotificacioDto.class);
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public List<DocumentEnviamentDto> notificacioFindByExpedientId(
-			Long entitatId,
-			Long expedientId) {
-		logger.debug("Obtenint la llista de notificacions de l'expedient (" +
-				"entitatId=" + entitatId + ", " +
-				"expedientId=" + expedientId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		return conversioTipusHelper.convertirList(
-				documentNotificacioRepository.findByExpedientOrderByDestinatariDocumentNumAscDataEnviamentAsc(
-						expedient),
-				DocumentEnviamentDto.class);
-	}
-
-	@Transactional
-	@Override
-	public DocumentPublicacioDto publicacioCreate(
-			Long entitatId,
-			Long expedientId,
-			DocumentPublicacioDto publicacio) {
-		logger.debug("Creant una publicació de l'expedient (" +
-				"entitatId=" + entitatId + ", " +
-				"expedientId=" + expedientId + ", " +
-				"publicacio=" + publicacio + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		DocumentEntity document = entityComprovarHelper.comprovarDocument(
-				entitat,
-				expedient,
-				publicacio.getDocument().getId(),
-				false,
-				false,
-				false);
-		DocumentPublicacioEntity entity = DocumentPublicacioEntity.getBuilder(
-				expedient,
-				DocumentEnviamentEstatEnumDto.ENVIAT_OK,
-				publicacio.getAssumpte(),
-				new Date(),
-				document,
-				publicacio.getTipus()).
-				build();
-		contingutLogHelper.log(
-				expedient,
-				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
-				entity,
-				LogObjecteTipusEnumDto.PUBLICACIO,
-				LogTipusEnumDto.CREACIO,
-				publicacio.getAssumpte(),
-				publicacio.getTipus().name(),
-				false,
-				false);
-		return conversioTipusHelper.convertir(
-				documentPublicacioRepository.save(entity),
-				DocumentPublicacioDto.class);
-	}
-
-	@Transactional
-	@Override
-	public DocumentPublicacioDto publicacioUpdate(
-			Long entitatId,
-			Long expedientId,
-			DocumentPublicacioDto publicacio) {
-		logger.debug("Modificant una publicació de l'expedient (" +
-				"entitatId=" + entitatId + ", " +
-				"expedientId=" + expedientId + ", " +
-				"publicacio=" + publicacio + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		DocumentPublicacioEntity entity = entityComprovarHelper.comprovarPublicacio(
-				expedient,
-				null,
-				publicacio.getId());
-		entity.update(
-				publicacio.getAssumpte(),
-				publicacio.getObservacions(),
-				publicacio.getDataPublicacio());
-		contingutLogHelper.log(
-				expedient,
-				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
-				entity,
-				LogObjecteTipusEnumDto.PUBLICACIO,
-				LogTipusEnumDto.MODIFICACIO,
-				publicacio.getAssumpte(),
-				publicacio.getTipus().name(),
-				false,
-				false);
-		return conversioTipusHelper.convertir(
-				entity,
-				DocumentPublicacioDto.class);
-	}
-
-	@Transactional
-	@Override
-	public DocumentPublicacioDto publicacioDelete(
-			Long entitatId,
-			Long expedientId,
-			Long publicacioId) {
-		logger.debug("Esborrant una publicació de l'expedient (" +
-				"entitatId=" + entitatId + ", " +
-				"expedientId=" + expedientId + ", " +
-				"publicacioId=" + publicacioId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		DocumentPublicacioEntity publicacio = documentPublicacioRepository.findOne(
-				publicacioId);
-		if (publicacio == null) {
-			throw new NotFoundException(
-					publicacioId,
-					DocumentNotificacioEntity.class);
-		}
-		if (!DocumentNotificacioTipusEnumDto.MANUAL.equals(publicacio.getTipus())) {
-			throw new ValidationException(
-					publicacioId,
-					DocumentNotificacioEntity.class,
-					"No es pot esborrar una notificació que no te el tipus " + DocumentNotificacioTipusEnumDto.MANUAL);
-		}
-		documentPublicacioRepository.delete(publicacio);
-		return conversioTipusHelper.convertir(
-				publicacio,
-				DocumentPublicacioDto.class);
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public List<DocumentPublicacioDto> publicacioFindByExpedientId(
-			Long entitatId,
-			Long expedientId) {
-		logger.debug("Obtenint la llista de publicacions de l'expedient (" +
-				"entitatId=" + entitatId + ", " +
-				"expedientId=" + expedientId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		return conversioTipusHelper.convertirList(
-				documentPublicacioRepository.findByExpedientOrderByDataEnviamentAsc(
-						expedient),
-				DocumentPublicacioDto.class);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ExpedientServiceImpl.class);

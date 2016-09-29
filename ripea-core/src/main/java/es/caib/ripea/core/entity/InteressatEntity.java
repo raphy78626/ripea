@@ -23,8 +23,8 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.ripea.core.api.dto.IndiomaEnumDto;
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
+import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 
 /**
@@ -67,8 +67,8 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 //	observacions: 			COMÚ				observacions de l’interessat.
 //	notificacioIdioma: 		COMÚ				per emmagatzemar l’idioma desitjat per a les notificacions.
 //	NotificacioAutoritzat: 	COMÚ				per indicar si l’interessat ha autoritzat la recepció de notificacions en format electrònic.
-	
-	@Column(name = "document_tipus", length = 40)
+
+	@Column(name = "document_tipus", length = 1)
 	@Enumerated(EnumType.STRING)
 	protected InteressatDocumentTipusEnumDto documentTipus;
 	@Column(name = "document_num", length = 17)
@@ -91,15 +91,15 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	protected String observacions;
 	@Column(name = "not_idioma", length = 2)
 	@Enumerated(EnumType.STRING)
-	protected IndiomaEnumDto notificacioIdioma;
+	protected InteressatIdiomaEnumDto preferenciaIdioma;
 	@Column(name = "not_autoritzat")
-	protected Boolean notificacioAutoritzat;
-	
+	protected boolean notificacioAutoritzat;
+
 	@Column(name = "identificador", length = 80)
 	protected String identificador;
 	@Column(name = "es_representant")
-	protected Boolean esRepresentant;
-	
+	protected boolean esRepresentant;
+
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "expedient_id")
 	@ForeignKey(name = "ipa_expedient_interessat_fk")
@@ -110,11 +110,13 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	protected InteressatEntity representant;
 	@Version
 	private long version = 0;
-	
+
 	@Transient
 	private Long representantId;
 	@Transient
 	private Long representantIdentificador;
+
+
 
 	public InteressatDocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
@@ -186,14 +188,14 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		this.observacions = observacions;
 	}
 
-	public IndiomaEnumDto getNotificacioIdioma() {
-		return notificacioIdioma;
+	public InteressatIdiomaEnumDto getPreferenciaIdioma() {
+		return preferenciaIdioma;
 	}
-	public void setNotificacioIdioma(IndiomaEnumDto notificacioIdioma) {
-		this.notificacioIdioma = notificacioIdioma;
+	public void setPreferenciaIdioma(InteressatIdiomaEnumDto preferenciaIdioma) {
+		this.preferenciaIdioma = preferenciaIdioma;
 	}
 
-	public Boolean getNotificacioAutoritzat() {
+	public boolean isNotificacioAutoritzat() {
 		return notificacioAutoritzat;
 	}
 	public void setNotificacioAutoritzat(Boolean notificacioAutoritzat) {
@@ -244,7 +246,7 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		return representantIdentificador;
 	}
 
-	public Boolean getEsRepresentant() {
+	public boolean isEsRepresentant() {
 		return esRepresentant;
 	}
 	public void setEsRepresentant(Boolean esRepresentant) {

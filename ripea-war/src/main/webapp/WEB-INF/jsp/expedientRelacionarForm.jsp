@@ -89,7 +89,7 @@ pageContext.setAttribute(
 			</div>
 			<table id="taulaDades" 
 					data-toggle="datatable" 
-					data-url="<c:url value="/contingut/${expedient.pare.id}/expedient/${expedientId}/relacionar/datatable"/>" 
+					data-url="<c:url value="/expedient/${expedientId}/relacio/datatable"/>" 
 					class="table table-bordered table-striped" 
 					data-default-order="7" 
 					data-default-dir="desc"
@@ -115,7 +115,7 @@ pageContext.setAttribute(
 							<script id="cellAccionsTemplate" type="text/x-jsrender">
 								<button type="button" class="btn btn-success" onClick="relacionar({{:id}})"><span class="fa fa-link"></span> <spring:message code="comu.boto.relacionar"/></button>
 							</script>
-						</th>				
+						</th>
 					</tr>
 				</thead>
 			</table>

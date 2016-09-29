@@ -61,14 +61,12 @@ public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {
 	@Column(name = "estat", nullable = false)
 	@Enumerated(EnumType.STRING)
 	protected DocumentEnviamentEstatEnumDto estat;
-	@Column(name = "sistema_extern_id")
-	protected String sistemaExternId;
 	@Column(name = "assumpte", length = 256, nullable = false)
 	protected String assumpte;
 	@Column(name = "data_enviament", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	protected Date dataEnviament;
-	@Column(name = "observacions", length = 160)
+	@Column(name = "observacions", length = 256)
 	protected String observacions;
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "document_id")
@@ -92,9 +90,6 @@ public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {
 	}
 	public DocumentEnviamentEstatEnumDto getEstat() {
 		return estat;
-	}
-	public String getSistemaExternId() {
-		return sistemaExternId;
 	}
 	public String getAssumpte() {
 		return assumpte;

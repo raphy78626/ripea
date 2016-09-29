@@ -81,6 +81,7 @@ public class PortaFIBCallBackWsImpl implements PortaFIBCallBackWs {
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
+					0,
 					errorDescripcio);
 			throw new CallBackException(errorDescripcio, new CallBackFault());
 		}
@@ -94,7 +95,8 @@ public class PortaFIBCallBackWsImpl implements PortaFIBCallBackWs {
 							IntegracioHelper.INTCODI_CALLBACK,
 							accioDescripcio,
 							accioParams,
-							IntegracioAccioTipusEnumDto.RECEPCIO);
+							IntegracioAccioTipusEnumDto.RECEPCIO,
+							0);
 				} else {
 					logger.error(
 							"Error al processar petició rebuda al callback de portafirmes (" +
@@ -107,6 +109,7 @@ public class PortaFIBCallBackWsImpl implements PortaFIBCallBackWs {
 							accioDescripcio,
 							accioParams,
 							IntegracioAccioTipusEnumDto.RECEPCIO,
+							0,
 							errorDescripcio,
 							ex);
 					throw new CallBackException(
@@ -126,6 +129,7 @@ public class PortaFIBCallBackWsImpl implements PortaFIBCallBackWs {
 						accioDescripcio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.RECEPCIO,
+						0,
 						errorDescripcio,
 						ex);
 				throw new CallBackException(

@@ -72,6 +72,7 @@ public class MCGDwsImpl implements MCGDws {
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
+					0,
 					errorDescripcio);
 			callbackResponse.setReturn(-1);
 		}
@@ -85,7 +86,8 @@ public class MCGDwsImpl implements MCGDws {
 							IntegracioHelper.INTCODI_CALLBACK,
 							accioDescripcio,
 							accioParams,
-							IntegracioAccioTipusEnumDto.RECEPCIO);
+							IntegracioAccioTipusEnumDto.RECEPCIO,
+							0);
 					callbackResponse.setReturn(1);
 				} else {
 					logger.error(
@@ -99,6 +101,7 @@ public class MCGDwsImpl implements MCGDws {
 							accioDescripcio,
 							accioParams,
 							IntegracioAccioTipusEnumDto.RECEPCIO,
+							0,
 							errorDescripcio,
 							ex);
 					callbackResponse.setReturn(-1);
@@ -115,6 +118,7 @@ public class MCGDwsImpl implements MCGDws {
 						accioDescripcio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.RECEPCIO,
+						0,
 						errorDescripcio,
 						ex);
 				callbackResponse.setReturn(-1);

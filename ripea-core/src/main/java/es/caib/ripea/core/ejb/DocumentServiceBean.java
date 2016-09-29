@@ -144,14 +144,12 @@ public class DocumentServiceBean implements DocumentService {
 	public void portafirmesEnviar(
 			Long entitatId,
 			Long id,
-			int versio,
 			String motiu,
 			PortafirmesPrioritatEnumDto prioritat,
 			Date dataCaducitat) {
 		delegate.portafirmesEnviar(
 				entitatId,
 				id,
-				versio,
 				motiu,
 				prioritat,
 				dataCaducitat);
@@ -161,12 +159,10 @@ public class DocumentServiceBean implements DocumentService {
 	@RolesAllowed("tothom")
 	public void portafirmesCancelar(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		delegate.portafirmesCancelar(
 				entitatId,
-				id,
-				versio);
+				id);
 	}
 
 	@Override
@@ -180,24 +176,20 @@ public class DocumentServiceBean implements DocumentService {
 	@RolesAllowed("tothom")
 	public FitxerDto convertirPdfPerFirma(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		return delegate.convertirPdfPerFirma(
 				entitatId,
-				id,
-				versio);
+				id);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public String generarIdentificadorFirmaClient(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		return delegate.generarIdentificadorFirmaClient(
 				entitatId,
-				id,
-				versio);
+				id);
 	}
 
 	@Override
@@ -216,24 +208,20 @@ public class DocumentServiceBean implements DocumentService {
 	@RolesAllowed("tothom")
 	public void custodiaPortafirmesReintentar(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		delegate.custodiaPortafirmesReintentar(
 				entitatId,
-				id,
-				versio);
+				id);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public void custodiaEsborrar(
 			Long entitatId,
-			Long id,
-			int versio) {
+			Long id) {
 		delegate.custodiaEsborrar(
 				entitatId,
-				id,
-				versio);
+				id);
 	}
 
 }

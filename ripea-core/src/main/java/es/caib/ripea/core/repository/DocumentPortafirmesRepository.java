@@ -20,9 +20,8 @@ public interface DocumentPortafirmesRepository extends JpaRepository<DocumentPor
 
 	List<DocumentPortafirmesEntity> findByDocument(DocumentEntity document);
 
-	List<DocumentPortafirmesEntity> findByDocumentAndVersio(
-			DocumentEntity document,
-			int versio);
+	List<DocumentPortafirmesEntity> findByDocumentOrderByCreatedDateDesc(
+			DocumentEntity document);
 
 	DocumentPortafirmesEntity findByPortafirmesId(
 			long portafirmesId);

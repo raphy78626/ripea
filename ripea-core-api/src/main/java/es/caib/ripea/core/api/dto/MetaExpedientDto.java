@@ -17,6 +17,15 @@ public class MetaExpedientDto extends MetaNodeAmbMetaDadesDto implements Seriali
 
 	private String classificacioDocumental;
 	private String classificacioSia;
+	private String unitatAdministrativa;
+	private boolean notificacioActiva;
+	private String notificacioOrganCodi;
+	private String notificacioLlibreCodi;
+	private String notificacioAvisTitol;
+	private String notificacioAvisText;
+	private String notificacioAvisTextSms;
+	private String notificacioOficiTitol;
+	private String notificacioOficiText;
 	private Long pareId;
 	private List<MetaExpedientMetaDocumentDto> metaDocuments;
 	private int arxiusCount;
@@ -34,6 +43,60 @@ public class MetaExpedientDto extends MetaNodeAmbMetaDadesDto implements Seriali
 	}
 	public void setClassificacioSia(String classificacioSia) {
 		this.classificacioSia = classificacioSia;
+	}
+	public String getUnitatAdministrativa() {
+		return unitatAdministrativa;
+	}
+	public void setUnitatAdministrativa(String unitatAdministrativa) {
+		this.unitatAdministrativa = unitatAdministrativa;
+	}
+	public boolean isNotificacioActiva() {
+		return notificacioActiva;
+	}
+	public void setNotificacioActiva(boolean notificacioActiva) {
+		this.notificacioActiva = notificacioActiva;
+	}
+	public String getNotificacioOrganCodi() {
+		return notificacioOrganCodi;
+	}
+	public void setNotificacioOrganCodi(String notificacioOrganCodi) {
+		this.notificacioOrganCodi = notificacioOrganCodi;
+	}
+	public String getNotificacioLlibreCodi() {
+		return notificacioLlibreCodi;
+	}
+	public void setNotificacioLlibreCodi(String notificacioLlibreCodi) {
+		this.notificacioLlibreCodi = notificacioLlibreCodi;
+	}
+	public String getNotificacioAvisTitol() {
+		return notificacioAvisTitol;
+	}
+	public void setNotificacioAvisTitol(String notificacioAvisTitol) {
+		this.notificacioAvisTitol = notificacioAvisTitol;
+	}
+	public String getNotificacioAvisText() {
+		return notificacioAvisText;
+	}
+	public void setNotificacioAvisText(String notificacioAvisText) {
+		this.notificacioAvisText = notificacioAvisText;
+	}
+	public String getNotificacioAvisTextSms() {
+		return notificacioAvisTextSms;
+	}
+	public void setNotificacioAvisTextSms(String notificacioAvisTextSms) {
+		this.notificacioAvisTextSms = notificacioAvisTextSms;
+	}
+	public String getNotificacioOficiTitol() {
+		return notificacioOficiTitol;
+	}
+	public void setNotificacioOficiTitol(String notificacioOficiTitol) {
+		this.notificacioOficiTitol = notificacioOficiTitol;
+	}
+	public String getNotificacioOficiText() {
+		return notificacioOficiText;
+	}
+	public void setNotificacioOficiText(String notificacioOficiText) {
+		this.notificacioOficiText = notificacioOficiText;
 	}
 	public Long getPareId() {
 		return pareId;

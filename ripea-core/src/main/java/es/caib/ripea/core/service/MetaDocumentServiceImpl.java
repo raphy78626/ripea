@@ -606,7 +606,9 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				null);
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
 				contingut,
-				true);
+				true,
+				false,
+				false);
 		List<MetaDocumentEntity> metaDocuments = findMetaDocumentsDisponiblesPerCreacio(
 				entitat,
 				expedientSuperior);
@@ -637,7 +639,9 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				false);
 		ExpedientEntity expedientSuperior = contenidorHelper.getExpedientSuperior(
 				document,
-				true);
+				true,
+				false,
+				false);
 		// Han de ser els mateixos que per a la creació però afegit el meta-document
 		// del document que es vol modificar
 		List<MetaDocumentEntity> metaDocuments = findMetaDocumentsDisponiblesPerCreacio(

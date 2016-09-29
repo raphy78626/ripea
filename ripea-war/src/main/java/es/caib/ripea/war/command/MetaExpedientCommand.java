@@ -25,16 +25,33 @@ public class MetaExpedientCommand {
 
 	private Long id;
 
-	@NotEmpty @Size(max=64)
+	@NotEmpty @Size(max = 64)
 	private String codi;
-	@NotEmpty @Size(max=256)
+	@NotEmpty @Size(max = 256)
 	private String nom;
 	@Size(max=1024)
 	private String descripcio;
-	@NotEmpty @Size(max=30)
+	@NotEmpty @Size(max = 30)
 	private String classificacioDocumental;
-	@NotEmpty @Size(max=6)
+	@NotEmpty @Size(max = 6)
 	private String classificacioSia;
+	@Size(max = 9)
+	private String unitatAdministrativa;
+	private boolean notificacioActiva;
+	@Size(max = 9)
+	private String notificacioOrganCodi;
+	@Size(max = 4)
+	private String notificacioLlibreCodi;
+	@Size(max = 256)
+	private String notificacioAvisTitol;
+	@Size(max = 1024)
+	private String notificacioAvisText;
+	@Size(max = 200)
+	private String notificacioAvisTextSms;
+	@Size(max = 256)
+	private String notificacioOficiTitol;
+	@Size(max = 1024)
+	private String notificacioOficiText;
 	private Long pareId;
 	private Long entitatId;
 
@@ -75,6 +92,60 @@ public class MetaExpedientCommand {
 	}
 	public void setClassificacioSia(String classificacioSia) {
 		this.classificacioSia = classificacioSia;
+	}
+	public String getUnitatAdministrativa() {
+		return unitatAdministrativa;
+	}
+	public void setUnitatAdministrativa(String unitatAdministrativa) {
+		this.unitatAdministrativa = unitatAdministrativa;
+	}
+	public boolean isNotificacioActiva() {
+		return notificacioActiva;
+	}
+	public void setNotificacioActiva(boolean notificacioActiva) {
+		this.notificacioActiva = notificacioActiva;
+	}
+	public String getNotificacioOrganCodi() {
+		return notificacioOrganCodi;
+	}
+	public void setNotificacioOrganCodi(String notificacioOrganCodi) {
+		this.notificacioOrganCodi = notificacioOrganCodi;
+	}
+	public String getNotificacioLlibreCodi() {
+		return notificacioLlibreCodi;
+	}
+	public void setNotificacioLlibreCodi(String notificacioLlibreCodi) {
+		this.notificacioLlibreCodi = notificacioLlibreCodi;
+	}
+	public String getNotificacioAvisTitol() {
+		return notificacioAvisTitol;
+	}
+	public void setNotificacioAvisTitol(String notificacioAvisTitol) {
+		this.notificacioAvisTitol = notificacioAvisTitol;
+	}
+	public String getNotificacioAvisText() {
+		return notificacioAvisText;
+	}
+	public void setNotificacioAvisText(String notificacioAvisText) {
+		this.notificacioAvisText = notificacioAvisText;
+	}
+	public String getNotificacioAvisTextSms() {
+		return notificacioAvisTextSms;
+	}
+	public void setNotificacioAvisTextSms(String notificacioAvisTextSms) {
+		this.notificacioAvisTextSms = notificacioAvisTextSms;
+	}
+	public String getNotificacioOficiTitol() {
+		return notificacioOficiTitol;
+	}
+	public void setNotificacioOficiTitol(String notificacioOficiTitol) {
+		this.notificacioOficiTitol = notificacioOficiTitol;
+	}
+	public String getNotificacioOficiText() {
+		return notificacioOficiText;
+	}
+	public void setNotificacioOficiText(String notificacioOficiText) {
+		this.notificacioOficiText = notificacioOficiText;
 	}
 	public Long getPareId() {
 		return pareId;

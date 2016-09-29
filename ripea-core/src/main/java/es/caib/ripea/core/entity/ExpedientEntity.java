@@ -75,10 +75,12 @@ public class ExpedientEntity extends NodeEntity {
 	protected Date ntiFechaApertura;
 	@Column(name = "nti_clasif_sia", length = 6, nullable = false)
 	protected String ntiClasificacionSia;
+	@Column(name = "sistra_bantel_num", length = 16)
+	protected String sistraBantelNum;
 	@Column(name = "sistra_publicat")
 	protected boolean sistraPublicat;
-	@Column(name = "sistra_unitat_adm")
-	protected Integer sistraUnitatAdministrativa;
+	@Column(name = "sistra_unitat_adm", length = 9)
+	protected String sistraUnitatAdministrativa;
 	@Column(name = "sistra_clau", length = 100)
 	protected String sistraClau;
 	@ManyToMany(
@@ -154,10 +156,13 @@ public class ExpedientEntity extends NodeEntity {
 	public String getNtiClasificacionSia() {
 		return ntiClasificacionSia;
 	}
+	public String getSistraBantelNum() {
+		return sistraBantelNum;
+	}
 	public boolean isSistraPublicat() {
 		return sistraPublicat;
 	}
-	public Integer getSistraUnitatAdministrativa() {
+	public String getSistraUnitatAdministrativa() {
 		return sistraUnitatAdministrativa;
 	}
 	public String getSistraClau() {
@@ -203,6 +208,15 @@ public class ExpedientEntity extends NodeEntity {
 		this.tancatMotiu = tancatMotiu;
 		if (ExpedientEstatEnumDto.TANCAT.equals(estat))
 			this.tancatData = new Date();
+	}
+
+	public void updateSistra(
+			boolean sistraPublicat,
+			String sistraUnitatAdministrativa,
+			String sistraClau) {
+		this.sistraPublicat = sistraPublicat;
+		this.sistraUnitatAdministrativa = sistraUnitatAdministrativa;
+		this.sistraClau = sistraClau;
 	}
 
 	public void addInteressat(InteressatEntity interessat) {

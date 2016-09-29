@@ -13,14 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
-import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
-import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
-import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ExpedientService;
 
 /**
@@ -209,90 +205,6 @@ public class ExpedientServiceBean implements ExpedientService {
 			Long entitatId, 
 			Long expedientId) {
 		return delegate.relacioFindAmbExpedient(entitatId, expedientId);
-	}
-
-	@Override
-	public DocumentNotificacioDto notificacioCreate(
-			Long entitatId,
-			Long expedientId,
-			DocumentNotificacioDto notificacio) {
-		return delegate.notificacioCreate(
-				entitatId,
-				expedientId,
-				notificacio);
-	}
-
-	@Override
-	public DocumentNotificacioDto notificacioUpdate(
-			Long entitatId,
-			Long expedientId,
-			DocumentNotificacioDto notificacio) {
-		return delegate.notificacioUpdate(
-				entitatId,
-				expedientId,
-				notificacio);
-	}
-
-	@Override
-	public DocumentNotificacioDto notificacioDelete(
-			Long entitatId,
-			Long expedientId,
-			Long notificacioId) {
-		return delegate.notificacioDelete(
-				entitatId,
-				expedientId,
-				notificacioId);
-	}
-
-	@Override
-	public List<DocumentEnviamentDto> notificacioFindByExpedientId(
-			Long entitatId,
-			Long expedientId) {
-		return delegate.notificacioFindByExpedientId(
-				entitatId,
-				expedientId);
-	}
-
-	@Override
-	public DocumentPublicacioDto publicacioCreate(
-			Long entitatId,
-			Long expedientId,
-			DocumentPublicacioDto publicacio) {
-		return delegate.publicacioCreate(
-				entitatId,
-				expedientId,
-				publicacio);
-	}
-
-	@Override
-	public DocumentPublicacioDto publicacioUpdate(
-			Long entitatId,
-			Long expedientId,
-			DocumentPublicacioDto publicacio) {
-		return delegate.publicacioUpdate(
-				entitatId,
-				expedientId,
-				publicacio);
-	}
-
-	@Override
-	public DocumentPublicacioDto publicacioDelete(
-			Long entitatId,
-			Long expedientId,
-			Long publicacioId)
-			throws NotFoundException {
-		return delegate.publicacioDelete(
-				entitatId, expedientId,
-				publicacioId);
-	}
-
-	@Override
-	public List<DocumentPublicacioDto> publicacioFindByExpedientId(
-			Long entitatId,
-			Long expedientId) {
-		return delegate.publicacioFindByExpedientId(
-				entitatId,
-				expedientId);
 	}
 
 }

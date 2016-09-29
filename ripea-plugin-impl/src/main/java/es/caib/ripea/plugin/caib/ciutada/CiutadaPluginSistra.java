@@ -32,6 +32,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import es.caib.regtel.ws.v2.model.aviso.Aviso;
 import es.caib.regtel.ws.v2.model.datosexpediente.DatosExpediente;
 import es.caib.regtel.ws.v2.model.datosinteresado.DatosInteresado;
+import es.caib.regtel.ws.v2.model.datosinteresado.IdentificacionInteresadoDesglosada;
 import es.caib.regtel.ws.v2.model.datosnotificacion.DatosNotificacion;
 import es.caib.regtel.ws.v2.model.datosregistrosalida.DatosRegistroSalida;
 import es.caib.regtel.ws.v2.model.datosrepresentado.DatosRepresentado;
@@ -42,11 +43,12 @@ import es.caib.regtel.ws.v2.model.oficinaregistral.OficinaRegistral;
 import es.caib.regtel.ws.v2.model.oficioremision.OficioRemision;
 import es.caib.regtel.ws.v2.model.resultadoregistro.ResultadoRegistro;
 import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.ciutada.CiutadaPersona;
 import es.caib.ripea.plugin.ciutada.CiutadaDocument;
-import es.caib.ripea.plugin.ciutada.CiutadaJustificantRecepcio;
-import es.caib.ripea.plugin.ciutada.CiutadaJustificantRecepcio.ZonaperJustificantEstat;
+import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
+import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat;
+import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat.ZonaperJustificantEstat;
 import es.caib.ripea.plugin.ciutada.CiutadaNotificacioResultat;
+import es.caib.ripea.plugin.ciutada.CiutadaPersona;
 import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
 import es.caib.ripea.plugin.utils.PropertiesHelper;
 import es.caib.zonaper.ws.v2.model.configuracionavisosexpediente.ConfiguracionAvisosExpediente;
@@ -63,46 +65,58 @@ import es.caib.zonaper.ws.v2.model.expediente.Expediente;
  */
 public class CiutadaPluginSistra implements CiutadaPlugin {
 
+	private static final String NTI_EXPID_PREFIX = "ES_"; 
+	
 	@Override
-	public void expedientCrear(
+	public CiutadaExpedientInformacio expedientCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
+			String unitatAdministrativa,
+			String identificadorProcedimiento,
 			String idioma,
 			String descripcio,
 			CiutadaPersona destinatari,
 			CiutadaPersona representat,
 			String bantelNumeroEntrada,
 			boolean avisosHabilitats,
-			String avisEmail,
-			String avisMobil) throws SistemaExternException {
+			String avisosEmail,
+			String avisosMobil) throws SistemaExternException {
 		comprovarZonaPersonalCreada(destinatari);
 		String expedientClau = "<buit>";
 		try {
 			expedientClau = getExpedientClau(
 					expedientIdentificador,
 					unitatAdministrativa);
+			String identificadorSistra = getExpedientIdentificadorPerSistra(expedientIdentificador);
 			Expediente expediente = new Expediente();
-			expediente.setIdentificadorExpediente(expedientIdentificador);
-			expediente.setUnidadAdministrativa(unitatAdministrativa);
+			expediente.setIdentificadorExpediente(identificadorSistra);
+			expediente.setUnidadAdministrativa(new Long(unitatAdministrativa).longValue());
 			expediente.setClaveExpediente(expedientClau);
 			expediente.setIdioma(idioma);
 			expediente.setDescripcion(descripcio);
 			expediente.setAutenticado(true);
+			expediente.setIdentificadorProcedimiento(
+					newJAXBElement(
+							"identificadorProcedimiento",
+							identificadorProcedimiento,
+							String.class));
 			expediente.setNifRepresentante(
 					newJAXBElement(
 							"nifRepresentante",
 							destinatari.getNif(),
 							String.class));
-			expediente.setNifRepresentado(
-					newJAXBElement(
-							"nifRepresentado",
-							representat.getNif(),
-							String.class));
-			expediente.setNombreRepresentado(
-					newJAXBElement(
-							"nombreRepresentado",
-							representat.getNom(),
-							String.class));
+
+			if (representat != null) {
+				expediente.setNifRepresentado(
+						newJAXBElement(
+								"nifRepresentado",
+								representat.getNif(),
+								String.class));
+				expediente.setNombreRepresentado(
+						newJAXBElement(
+								"nombreRepresentado",
+								representat.getNom(),
+								String.class));
+			}
 			expediente.setNumeroEntradaBTE(
 					newJAXBElement(
 							"numeroEntradaBTE",
@@ -117,12 +131,12 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			configuracionAvisos.setAvisoEmail(
 					newJAXBElement(
 							"avisoEmail",
-							avisEmail,
+							avisosEmail,
 							String.class));
 			configuracionAvisos.setAvisoSMS(
 					newJAXBElement(
 							"avisoSMS",
-							avisMobil,
+							avisosMobil,
 							String.class));
 			expediente.setConfiguracionAvisos(
 					newJAXBElement(
@@ -130,6 +144,9 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 							configuracionAvisos,
 							ConfiguracionAvisosExpediente.class));
 			getZonaperWs().altaExpediente(expediente);
+			return new CiutadaExpedientInformacio(
+					identificadorSistra,
+					expedientClau);
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut crear l'expedient a la zona personal (" +
@@ -145,7 +162,7 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 	@Override
 	public void avisCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
+			String unitatAdministrativa,
 			String titol,
 			String text,
 			String textSms,
@@ -201,8 +218,8 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 								DocumentosExpediente.class));
 			}
 			getZonaperWs().altaEventoExpediente(
-					unitatAdministrativa,
-					expedientIdentificador,
+					new Long(unitatAdministrativa).longValue(),
+					getExpedientIdentificadorPerSistra(expedientIdentificador),
 					expedientClau,
 					evento);
 		} catch (Exception ex) {
@@ -219,13 +236,13 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 	@Override
 	public CiutadaNotificacioResultat notificacioCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
+			String expedientClau,
+			String unitatAdministrativa,
 			String registreOficinaCodi,
 			String registreOficinaOrganCodi,
 			CiutadaPersona destinatari,
 			CiutadaPersona representat,
 			String idioma,
-			String assumpteTipus,
 			String oficiTitol,
 			String oficiText,
 			String avisTitol,
@@ -233,15 +250,12 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			String avisTextSms,
 			boolean confirmarRecepcio,
 			List<CiutadaDocument> annexos) throws SistemaExternException {
-		String expedientClau = "<buit>";
 		try {
-			expedientClau = getExpedientClau(
-					expedientIdentificador,
-					unitatAdministrativa);
 			DatosRegistroSalida notificacion = new DatosRegistroSalida();
 			DatosExpediente datosExpediente = new DatosExpediente();
-			datosExpediente.setIdentificadorExpediente(expedientIdentificador);
-			datosExpediente.setUnidadAdministrativa(unitatAdministrativa);
+			datosExpediente.setIdentificadorExpediente(
+					getExpedientIdentificadorPerSistra(expedientIdentificador));
+			datosExpediente.setUnidadAdministrativa(new Long(unitatAdministrativa).longValue());
 			datosExpediente.setClaveExpediente(expedientClau);
 			notificacion.setDatosExpediente(datosExpediente);
 			OficinaRegistral oficinaRegistral = new OficinaRegistral();
@@ -250,7 +264,11 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			notificacion.setOficinaRegistral(oficinaRegistral);
 			DatosInteresado datosInteresado = new DatosInteresado();
 			datosInteresado.setNif(destinatari.getNif());
-			datosInteresado.setNombreApellidos(destinatari.getLlinatgesComaNom());
+			IdentificacionInteresadoDesglosada idInteresado = new IdentificacionInteresadoDesglosada();
+			idInteresado.setNombre(destinatari.getNom());
+			idInteresado.setApellido1(destinatari.getLlinatge1());
+			idInteresado.setApellido2(destinatari.getLlinatge2());
+			datosInteresado.setNombreApellidosDesglosado(idInteresado);
 			datosInteresado.setCodigoPais(
 					newJAXBElement(
 							"codigoPais",
@@ -274,16 +292,18 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			datosInteresado.setCodigoLocalidad(
 					newJAXBElement(
 							"codigoLocalidad",
-							destinatari.getLocalitatCodi(),
+							destinatari.getMunicipiCodi(),
 							String.class));
 			datosInteresado.setNombreLocalidad(
 					newJAXBElement(
 							"nombreLocalidad",
-							destinatari.getLocalitatNom(),
+							destinatari.getMunicipiNom(),
 							String.class));
 			notificacion.setDatosInteresado(datosInteresado);
 			DatosNotificacion datosNotificacion = new DatosNotificacion();
-			datosNotificacion.setTipoAsunto(assumpteTipus);
+			String assumpteTipus = getAssumpteTipus();
+			datosNotificacion.setTipoAsunto(
+					(assumpteTipus != null) ? assumpteTipus : "OT");
 			datosNotificacion.setIdioma(idioma);
 			OficioRemision oficioRemision = new OficioRemision();
 			oficioRemision.setTitulo(oficiTitol);
@@ -354,32 +374,32 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 		}
 	}
 
-	public CiutadaJustificantRecepcio notificacioObtenirJustificantRecepcio(
+	public CiutadaNotificacioEstat notificacioObtenirJustificantRecepcio(
 			String registreNumero) throws SistemaExternException {
 		try {
 			DetalleAcuseRecibo acuseRecibo = getRegtelWs().obtenerDetalleAcuseRecibo(registreNumero);
-			CiutadaJustificantRecepcio justificant = new CiutadaJustificantRecepcio();
+			CiutadaNotificacioEstat notificacioEstat = new CiutadaNotificacioEstat();
 			if (acuseRecibo.getFechaAcuseRecibo() != null) {
 				XMLGregorianCalendar cal = acuseRecibo.getFechaAcuseRecibo().getValue();
-				justificant.setData(cal.toGregorianCalendar().getTime());
+				notificacioEstat.setData(cal.toGregorianCalendar().getTime());
 			}
 			if (acuseRecibo.getEstado() != null) {
 				switch (acuseRecibo.getEstado()) {
 				case ENTREGADA:
-					justificant.setEstat(ZonaperJustificantEstat.ENTREGADA);
+					notificacioEstat.setEstat(ZonaperJustificantEstat.ENTREGADA);
 					break;
 				case PENDIENTE:
-					justificant.setEstat(ZonaperJustificantEstat.PENDENT);
+					notificacioEstat.setEstat(ZonaperJustificantEstat.PENDENT);
 					break;
 				case RECHAZADA:
-					justificant.setEstat(ZonaperJustificantEstat.REBUTJADA);
+					notificacioEstat.setEstat(ZonaperJustificantEstat.REBUTJADA);
 					break;
 				default:
-					justificant.setEstat(ZonaperJustificantEstat.PENDENT);
+					notificacioEstat.setEstat(ZonaperJustificantEstat.PENDENT);
 					break;
 				}
 			}
-			return justificant;
+			return notificacioEstat;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut obtenir el justificant de recepció (" +
@@ -428,7 +448,7 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 				wsdlUrl,
 				new QName(
 						"urn:es:caib:zonaper:ws:v2:services",
-						"BackofficeFacade"));
+						"BackofficeFacadeService"));
 		es.caib.zonaper.ws.v2.services.BackofficeFacade backofficeFacade = service.getBackofficeFacade();
 		BindingProvider bp = (BindingProvider)backofficeFacade;
 		Map<String, Object> reqContext = bp.getRequestContext();
@@ -457,7 +477,7 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 				wsdlUrl,
 				new QName(
 						"urn:es:caib:regtel:ws:v2:services",
-						"BackofficeFacade"));
+						"BackofficeFacadeService"));
 		es.caib.regtel.ws.v2.services.BackofficeFacade backofficeFacade = service.getBackofficeFacade();
 		BindingProvider bp = (BindingProvider)backofficeFacade;
 		Map<String, Object> reqContext = bp.getRequestContext();
@@ -491,8 +511,8 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 
 	private String getExpedientClau(
 			String expedientIdentificador,
-			long unitatAdministrativa) throws NoSuchAlgorithmException {
-		String missatge = expedientIdentificador + unitatAdministrativa;
+			String unitatAdministrativa) throws NoSuchAlgorithmException {
+		String missatge = expedientIdentificador + "/" + unitatAdministrativa;
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		byte[] digest = md.digest(missatge.getBytes());
 		StringBuilder hexString = new StringBuilder();
@@ -503,7 +523,17 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 	        }
 	        hexString.append(hex);
 	    }
-	    return hexString.toString();
+	    return hexString.toString().toUpperCase();
+	}
+
+	private String getExpedientIdentificadorPerSistra(
+			String expedientIdentificador) {
+		if (expedientIdentificador.length() > 50 && expedientIdentificador.startsWith(NTI_EXPID_PREFIX)) {
+			return expedientIdentificador.substring(NTI_EXPID_PREFIX.length() + 19);
+			//return expedientIdentificador.substring(NTI_EXPID_PREFIX.length());
+		} else {
+			return expedientIdentificador;
+		}
 	}
 
 	private String getBaseUrl() {
@@ -521,6 +551,10 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 	private boolean isLogMissatgesActiu() {
 		return PropertiesHelper.getProperties().getAsBoolean(
 				"es.caib.ripea.plugin.ciutada.sistra.log.actiu");
+	}
+	private String getAssumpteTipus() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.ciutada.sistra.assumpte.tipus");
 	}
 
 	private class LogMessageHandler implements SOAPHandler<SOAPMessageContext> {

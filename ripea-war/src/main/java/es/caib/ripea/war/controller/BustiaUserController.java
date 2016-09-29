@@ -28,12 +28,13 @@ import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
+import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.MissatgesHelper;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -46,6 +47,8 @@ public class BustiaUserController extends BaseUserController {
 
 	@Autowired
 	private BustiaService bustiaService;
+	@Autowired
+	private RegistreService registreService;
 	@Autowired
 	private ContingutService contingutService;
 	@Autowired
@@ -249,7 +252,7 @@ public class BustiaUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		boolean processatOk = bustiaService.registreReglaReintentarUser(
+		boolean processatOk = registreService.reglaReintentarUser(
 				entitatActual.getId(),
 				bustiaId,
 				registreId);

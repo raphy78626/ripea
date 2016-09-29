@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import es.caib.ripea.core.api.dto.IndiomaEnumDto;
+import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
@@ -81,7 +81,7 @@ public class InteressatCommand  {
 	protected String telefon;
 	@Size(max = 160, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String observacions;
-	protected IndiomaEnumDto notificacioIdioma;
+	protected InteressatIdiomaEnumDto preferenciaIdioma;
 	protected Boolean notificacioAutoritzat;
 
 	@NotNull
@@ -190,11 +190,11 @@ public class InteressatCommand  {
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
 	}
-	public IndiomaEnumDto getNotificacioIdioma() {
-		return notificacioIdioma;
+	public InteressatIdiomaEnumDto getPreferenciaIdioma() {
+		return preferenciaIdioma;
 	}
-	public void setNotificacioIdioma(IndiomaEnumDto notificacioIdioma) {
-		this.notificacioIdioma = notificacioIdioma;
+	public void setPreferenciaIdioma(InteressatIdiomaEnumDto preferenciaIdioma) {
+		this.preferenciaIdioma = preferenciaIdioma;
 	}
 	public Boolean getNotificacioAutoritzat() {
 		return notificacioAutoritzat;

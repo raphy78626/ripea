@@ -18,8 +18,8 @@ public class CiutadaPersona {
 	private String paisNom;
 	private String provinciaCodi;
 	private String provinciaNom;
-	private String localitatCodi;
-	private String localitatNom;
+	private String municipiCodi;
+	private String municipiNom;
 
 
 
@@ -71,17 +71,17 @@ public class CiutadaPersona {
 	public void setProvinciaNom(String provinciaNom) {
 		this.provinciaNom = provinciaNom;
 	}
-	public String getLocalitatCodi() {
-		return localitatCodi;
+	public String getMunicipiCodi() {
+		return municipiCodi;
 	}
-	public void setLocalitatCodi(String localitatCodi) {
-		this.localitatCodi = localitatCodi;
+	public void setMunicipiCodi(String municipiCodi) {
+		this.municipiCodi = municipiCodi;
 	}
-	public String getLocalitatNom() {
-		return localitatNom;
+	public String getMunicipiNom() {
+		return municipiNom;
 	}
-	public void setLocalitatNom(String localitatNom) {
-		this.localitatNom = localitatNom;
+	public void setMunicipiNom(String municipiNom) {
+		this.municipiNom = municipiNom;
 	}
 	public String getLlinatges() {
 		if (llinatge2 == null) {

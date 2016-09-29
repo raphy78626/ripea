@@ -11,14 +11,16 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
+import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
+import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 
 /**
  * Classe del model de dades que representa una notificació d'un document
@@ -30,7 +32,7 @@ import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
 @EntityListeners(AuditingEntityListener.class)
 public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 
-	@Column(name = "tipus", nullable = false)
+	@Column(name = "tipus")
 	@Enumerated(EnumType.STRING)
 	private DocumentNotificacioTipusEnumDto tipus;
 	@Column(name = "data_recepcio")
@@ -38,20 +40,63 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 	private Date dataRecepcio;
 	@Column(name = "registre_num", length = 100)
 	private String registreNumero;
-	@Column(name = "destin_doctip", length = 1)
-	private String destinatariDocumentTipus;
+	@Column(name = "destin_doctip")
+	private InteressatDocumentTipusEnumDto destinatariDocumentTipus;
 	@Column(name = "destin_docnum", length = 17)
 	private String destinatariDocumentNum;
-	@Column(name = "destin_nom", length = 30, nullable = false)
+	@Column(name = "destin_nom", length = 30)
 	private String destinatariNom;
-	@Column(name = "destin_lling1", length = 30, nullable = false)
+	@Column(name = "destin_lling1", length = 30)
 	private String destinatariLlinatge1;
 	@Column(name = "destin_lling2", length = 30)
 	private String destinatariLlinatge2;
+	@Column(name = "destin_paicod", length = 4)
+	private String destinatariPaisCodi;
+	@Column(name = "destin_prvcod", length = 2)
+	private String destinatariProvinciaCodi;
+	@Column(name = "destin_muncod", length = 5)
+	private String destinatariMunicipiCodi;
 	@Column(name = "destin_email", length = 160)
 	private String destinatariEmail;
 	@Column(name = "destin_repres")
 	private boolean destinatariRepresentant;
+	@Column(name = "unitat_adm", length = 9)
+	private String unitatAdministrativa;
+	@Column(name = "organ_codi", length = 9)
+	private String organCodi;
+	@Column(name = "llibre_codi", length = 4)
+	private String llibreCodi;
+	@Column(name = "avis_titol", length = 256)
+	private String avisTitol;
+	@Column(name = "avis_text", length = 1024)
+	private String avisText;
+	@Column(name = "avis_textsms", length = 200)
+	private String avisTextSms;
+	@Column(name = "ofici_titol", length = 1024)
+	private String oficiTitol;
+	@Column(name = "ofici_text", length = 256)
+	private String oficiText;
+	@Column(name = "idioma", length = 2)
+	@Enumerated(EnumType.STRING)
+	private InteressatIdiomaEnumDto idioma;
+	@Column(name = "enviam_data")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date enviamentData;
+	@Column(name = "enviam_count")
+	private Integer enviamentCount;
+	@Column(name = "enviam_error")
+	private boolean enviamentError;
+	@Column(name = "enviam_error_desc", length = 2048)
+	private String enviamentErrorDescripcio;
+	@Column(name = "proces_data")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date processamentData;
+	@Column(name = "proces_count")
+	private Integer processamentCount;
+	@Column(name = "proces_error")
+	private boolean processamentError;
+	@Column(name = "proces_error_desc", length = 2048)
+	private String processamentErrorDescripcio;
 
 
 
@@ -64,7 +109,7 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 	public String getRegistreNumero() {
 		return registreNumero;
 	}
-	public String getDestinatariDocumentTipus() {
+	public InteressatDocumentTipusEnumDto getDestinatariDocumentTipus() {
 		return destinatariDocumentTipus;
 	}
 	public String getDestinatariDocumentNum() {
@@ -82,19 +127,90 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 	public String getDestinatariLlinatge2() {
 		return destinatariLlinatge2;
 	}
+	public String getDestinatariPaisCodi() {
+		return destinatariPaisCodi;
+	}
+	public String getDestinatariProvinciaCodi() {
+		return destinatariProvinciaCodi;
+	}
+	public String getDestinatariMunicipiCodi() {
+		return destinatariMunicipiCodi;
+	}
 	public boolean isDestinatariRepresentant() {
 		return destinatariRepresentant;
 	}
+	public String getUnitatAdministrativa() {
+		return unitatAdministrativa;
+	}
+	public String getOrganCodi() {
+		return organCodi;
+	}
+	public String getLlibreCodi() {
+		return llibreCodi;
+	}
+	public String getAvisTitol() {
+		return avisTitol;
+	}
+	public String getAvisText() {
+		return avisText;
+	}
+	public String getAvisTextSms() {
+		return avisTextSms;
+	}
+	public String getOficiTitol() {
+		return oficiTitol;
+	}
+	public String getOficiText() {
+		return oficiText;
+	}
+	public InteressatIdiomaEnumDto getIdioma() {
+		return idioma;
+	}
+	public Date getEnviamentData() {
+		return enviamentData;
+	}
+	public Integer getEnviamentCount() {
+		return enviamentCount;
+	}
+	public boolean isEnviamentError() {
+		return enviamentError;
+	}
+	public String getEnviamentErrorDescripcio() {
+		return enviamentErrorDescripcio;
+	}
+	public Date getProcessamentData() {
+		return processamentData;
+	}
+	public Integer getProcessamentCount() {
+		return processamentCount;
+	}
+	public boolean isProcessamentError() {
+		return processamentError;
+	}
+	public String getProcessamentErrorDescripcio() {
+		return processamentErrorDescripcio;
+	}
 
 	public void update(
+			DocumentEnviamentEstatEnumDto estat,
 			String assumpte,
 			String observacions,
-			String destinatariDocumentTipus,
+			InteressatDocumentTipusEnumDto destinatariDocumentTipus,
 			String destinatariDocumentNum,
 			String destinatariNom,
 			String destinatariLlinatge1,
 			String destinatariLlinatge2,
-			boolean destinatariRepresentant) {
+			boolean destinatariRepresentant,
+			String unitatAdministrativa,
+			String organCodi,
+			String llibreCodi,
+			String avisTitol,
+			String avisText,
+			String avisTextSms,
+			String oficiTitol,
+			String oficiText,
+			InteressatIdiomaEnumDto idioma) {
+		this.estat = estat;
 		this.assumpte = assumpte;
 		this.observacions = observacions;
 		this.destinatariDocumentTipus = destinatariDocumentTipus;
@@ -103,6 +219,70 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 		this.destinatariLlinatge1 = destinatariLlinatge1;
 		this.destinatariLlinatge2 = destinatariLlinatge2;
 		this.destinatariRepresentant = destinatariRepresentant;
+		this.unitatAdministrativa = unitatAdministrativa;
+		this.organCodi = organCodi;
+		this.llibreCodi = llibreCodi;
+		this.avisTitol = avisTitol;
+		this.avisText = avisText;
+		this.avisTextSms = avisTextSms;
+		this.oficiTitol = oficiTitol;
+		this.oficiText = oficiText;
+		this.idioma = idioma;
+	}
+
+	public void updateEnviament(
+			boolean enviamentCountIncrementar,
+			boolean enviamentError,
+			String enviamentErrorDescripcio,
+			String registreNumero) {
+		this.enviamentData = new Date();
+		if (enviamentCountIncrementar) {
+			if (this.enviamentCount == null)
+				this.enviamentCount = 1;
+			else
+				this.enviamentCount += 1;
+		}
+		this.enviamentError = enviamentError;
+		if (enviamentErrorDescripcio != null) {
+			this.enviamentErrorDescripcio = enviamentErrorDescripcio.substring(0, 2048);
+		}
+		if (enviamentError) {
+			estat = DocumentEnviamentEstatEnumDto.ENVIAT_ERROR;
+		} else {
+			this.registreNumero = registreNumero;
+			estat = DocumentEnviamentEstatEnumDto.ENVIAT_OK;
+		}
+	}
+
+	public void updateProcessament(
+			boolean processamentCountIncrementar,
+			boolean processamentError,
+			String processamentErrorDescripcio,
+			Date dataRecepcio,
+			boolean entregadaORebutjada) {
+		this.processamentData = new Date();
+		if (processamentCountIncrementar) {
+			if (this.processamentCount == null)
+				this.processamentCount = 1;
+			else
+				this.processamentCount += 1;
+		}
+		this.processamentError = processamentError;
+		if (enviamentErrorDescripcio != null) {
+			this.processamentErrorDescripcio = processamentErrorDescripcio.substring(0, 2048);
+		}
+		if (processamentError) {
+			estat = DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR;
+		} else {
+			if (entregadaORebutjada) {
+				if (dataRecepcio != null) {
+					this.dataRecepcio = dataRecepcio;
+					estat = DocumentEnviamentEstatEnumDto.PROCESSAT_OK;
+				} else {
+					estat = DocumentEnviamentEstatEnumDto.PROCESSAT_REBUTJAT;
+				}
+			}
+		}
 	}
 
 	public static Builder getBuilder(
@@ -110,21 +290,23 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 			DocumentEnviamentEstatEnumDto estat,
 			String assumpte,
 			Date dataEnviament,
-			String sistemaExternId,
 			DocumentEntity document,
 			DocumentNotificacioTipusEnumDto tipus,
-			String destinatariDocumentTipus,
+			InteressatDocumentTipusEnumDto destinatariDocumentTipus,
 			String destinatariDocumentNum,
 			String destinatariNom,
 			String destinatariLlinatge1,
 			String destinatariLlinatge2,
-			boolean destinatariRepresentant) {
+			String destinatariPaisCodi,
+			String destinatariProvinciaCodi,
+			String destinatariMunicipiCodi,
+			boolean destinatariRepresentant,
+			InteressatIdiomaEnumDto idioma) {
 		return new Builder(
 				expedient,
 				estat,
 				assumpte,
 				dataEnviament,
-				sistemaExternId,
 				document,
 				tipus,
 				destinatariDocumentTipus,
@@ -132,7 +314,11 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 				destinatariNom,
 				destinatariLlinatge1,
 				destinatariLlinatge2,
-				destinatariRepresentant);
+				destinatariPaisCodi,
+				destinatariProvinciaCodi,
+				destinatariMunicipiCodi,
+				destinatariRepresentant,
+				idioma);
 	}
 
 	public static class Builder {
@@ -142,21 +328,23 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 				DocumentEnviamentEstatEnumDto estat,
 				String assumpte,
 				Date dataEnviament,
-				String sistemaExternId,
 				DocumentEntity document,
 				DocumentNotificacioTipusEnumDto tipus,
-				String destinatariDocumentTipus,
+				InteressatDocumentTipusEnumDto destinatariDocumentTipus,
 				String destinatariDocumentNum,
 				String destinatariNom,
 				String destinatariLlinatge1,
 				String destinatariLlinatge2,
-				boolean destinatariRepresentant) {
+				String destinatariPaisCodi,
+				String destinatariProvinciaCodi,
+				String destinatariMunicipiCodi,
+				boolean destinatariRepresentant,
+				InteressatIdiomaEnumDto idioma) {
 			built = new DocumentNotificacioEntity();
 			built.expedient = expedient;
 			built.estat = estat;
 			built.assumpte = assumpte;
 			built.dataEnviament = dataEnviament;
-			built.sistemaExternId = sistemaExternId;
 			built.document = document;
 			built.tipus = tipus;
 			built.destinatariDocumentTipus = destinatariDocumentTipus;
@@ -164,7 +352,11 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 			built.destinatariNom = destinatariNom;
 			built.destinatariLlinatge1 = destinatariLlinatge1;
 			built.destinatariLlinatge2 = destinatariLlinatge2;
+			built.destinatariPaisCodi = destinatariPaisCodi;
+			built.destinatariProvinciaCodi = destinatariProvinciaCodi;
+			built.destinatariMunicipiCodi = destinatariMunicipiCodi;
 			built.destinatariRepresentant = destinatariRepresentant;
+			built.idioma = idioma;
 		}
 		public Builder annexos(List<DocumentEntity> annexos) {
 			built.annexos = annexos;
@@ -176,6 +368,38 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 		}
 		public Builder destinatariEmail(String destinatariEmail) {
 			built.destinatariEmail = destinatariEmail;
+			return this;
+		}
+		public Builder unitatAdministrativa(String unitatAdministrativa) {
+			built.unitatAdministrativa = unitatAdministrativa;
+			return this;
+		}
+		public Builder organCodi(String organCodi) {
+			built.organCodi = organCodi;
+			return this;
+		}
+		public Builder llibreCodi(String llibreCodi) {
+			built.llibreCodi = llibreCodi;
+			return this;
+		}
+		public Builder avisTitol(String avisTitol) {
+			built.avisTitol = avisTitol;
+			return this;
+		}
+		public Builder avisText(String avisText) {
+			built.avisText = avisText;
+			return this;
+		}
+		public Builder avisTextSms(String avisTextSms) {
+			built.avisTextSms = avisTextSms;
+			return this;
+		}
+		public Builder oficiTitol(String oficiTitol) {
+			built.oficiTitol = oficiTitol;
+			return this;
+		}
+		public Builder oficiText(String oficiText) {
+			built.oficiText = oficiText;
 			return this;
 		}
 		public DocumentNotificacioEntity build() {
@@ -214,6 +438,10 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 		if (tipus != other.tipus)
 			return false;
 		return true;
+	}
+
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;

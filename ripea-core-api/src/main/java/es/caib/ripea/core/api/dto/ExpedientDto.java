@@ -27,7 +27,7 @@ public class ExpedientDto extends NodeDto {
 	private Date ntiFechaApertura;
 	private String ntiClasificacionSia;
 	private boolean sistraPublicat;
-	private Integer sistraUnitatAdministrativa;
+	private String sistraUnitatAdministrativa;
 	private String sistraClau;
 
 	private String numero;
@@ -112,10 +112,10 @@ public class ExpedientDto extends NodeDto {
 	public void setSistraPublicat(boolean sistraPublicat) {
 		this.sistraPublicat = sistraPublicat;
 	}
-	public Integer getSistraUnitatAdministrativa() {
+	public String getSistraUnitatAdministrativa() {
 		return sistraUnitatAdministrativa;
 	}
-	public void setSistraUnitatAdministrativa(Integer sistraUnitatAdministrativa) {
+	public void setSistraUnitatAdministrativa(String sistraUnitatAdministrativa) {
 		this.sistraUnitatAdministrativa = sistraUnitatAdministrativa;
 	}
 	public String getSistraClau() {

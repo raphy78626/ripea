@@ -54,7 +54,7 @@
 								'					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
 								'					<h4 class="modal-title"></h4>' +
 								'				</div>' +
-								'				<div class="modal-body">' +
+								'				<div class="modal-body" style="padding:0">' +
 								'					<iframe frameborder="0" height="10" width="100%"></iframe>' +
 								'				</div>' +
 								'				<div class="modal-footer"></div>' +
@@ -124,6 +124,8 @@
 						// Copiar el titol de la modal
 						var titol = $(this).contents().find("title").html();
 						$('.modal-header h4', $(this).parent().parent()).html(titol);
+						// Afegir padding-top al body
+						$('body', $(iframe).contents()).css('padding-top', '12px');
 						// Copiar botons
 						var dataBotons = $('body', $(iframe).contents()).data('modal-botons');
 						var modalBotons = (dataBotons) ? $(dataBotons, $(iframe).contents()) : $(settings.elementBotons, $(iframe).contents());
@@ -148,11 +150,12 @@
 							});
 							modalBotons.hide();
 						}
+						// Ajustar alçada per canvi de pipella
 						var $pipelles = $('.nav-tabs', $(iframe).contents());
 						if ($pipelles.length) {
 							$('a[data-toggle="tab"]', $(iframe).contents()).on('click', function (e) {
 								setTimeout(
-										function(){console.log('ADJUST!');webutilModalAdjustHeight($(iframe))}, 500);
+										function(){webutilModalAdjustHeight($(iframe))}, 500);
 							});
 						}
 						// Evaluar URL del formulari

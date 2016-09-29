@@ -217,7 +217,6 @@ public interface DocumentService {
 			Long id,
 			int versio) throws NotFoundException;
 
-
 	/**
 	 * Envia un document a firmar al portafirmes.
 	 * 
@@ -225,8 +224,6 @@ public interface DocumentService {
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param id
 	 *            Atribut id del document que es vol enviar a firmar.
-	 * @param versio
-	 *            El número de versió del document que es vol enviar a firmar.
 	 * @param motiu
 	 *            El motiu de l'enviament.
 	 * @param prioritat
@@ -244,7 +241,6 @@ public interface DocumentService {
 	public void portafirmesEnviar(
 			Long entitatId,
 			Long id,
-			int versio,
 			String motiu,
 			PortafirmesPrioritatEnumDto prioritat,
 			Date dataCaducitat) throws NotFoundException, IllegalStateException, SistemaExternException;
@@ -268,8 +264,7 @@ public interface DocumentService {
 	@PreAuthorize("hasRole('tothom')")
 	public void portafirmesCancelar(
 			Long entitatId,
-			Long id,
-			int versio) throws NotFoundException, IllegalStateException, SistemaExternException;
+			Long id) throws NotFoundException, IllegalStateException, SistemaExternException;
 
 	/**
 	 * Processa una petició del callback de portafirmes.
@@ -294,8 +289,6 @@ public interface DocumentService {
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param id
 	 *            Atribut id del document que es vol convertir.
-	 * @param versio
-	 *            El número de versió del document que es vol convertir.
 	 * @return el fitxer convertit.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -305,8 +298,7 @@ public interface DocumentService {
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto convertirPdfPerFirma(
 			Long entitatId,
-			Long id,
-			int versio) throws NotFoundException, SistemaExternException;
+			Long id) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Genera un identificador del document per firmar en el navegador
@@ -316,8 +308,6 @@ public interface DocumentService {
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param id
 	 *            Atribut id del document que es vol convertir.
-	 * @param versio
-	 *            El número de versió del document del qual es vol generar identif.
 	 * @return l'identificador generat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -327,8 +317,7 @@ public interface DocumentService {
 	@PreAuthorize("hasRole('tothom')")
 	public String generarIdentificadorFirmaClient(
 			Long entitatId,
-			Long id,
-			int versio) throws NotFoundException, SistemaExternException;
+			Long id) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Envia a custòdia un document firmat al navegador.
@@ -358,8 +347,6 @@ public interface DocumentService {
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param id
 	 *            Atribut id del document que es vol custodiar.
-	 * @param versio
-	 *            El número de versió del document que es vol custodiar.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws SistemaExternException
@@ -368,8 +355,7 @@ public interface DocumentService {
 	@PreAuthorize("hasRole('tothom')")
 	public void custodiaPortafirmesReintentar(
 			Long entitatId,
-			Long id,
-			int versio) throws NotFoundException, SistemaExternException;
+			Long id) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Esborrar un document custodiat.
@@ -378,8 +364,6 @@ public interface DocumentService {
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param id
 	 *            Atribut id del document que es vol custodiar.
-	 * @param versio
-	 *            El número de versió del document que es vol custodiar.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws SistemaExternException
@@ -388,7 +372,6 @@ public interface DocumentService {
 	@PreAuthorize("hasRole('tothom')")
 	public void custodiaEsborrar(
 			Long entitatId,
-			Long id,
-			int versio) throws NotFoundException, SistemaExternException;
+			Long id) throws NotFoundException, SistemaExternException;
 
 }

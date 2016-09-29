@@ -4,21 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%
-pageContext.setAttribute(
-		"edicioOnlineActiva",
-		new Boolean(false));
-pageContext.setAttribute(
-		"registreTipusEnumOptions",
-		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.registre.RegistreTipusEnum.class,
-				"registre.anotacio.tipus.enum."));
-pageContext.setAttribute(
-		"interessatsTipusEnumOptions",
-		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.dto.InteressatTipusEnumDto.class,
-				"interessat.tipus.enum."));
-%>
+
 <c:set var="potModificarContingut" value="${false}"/>
 <c:if test="${contingut.node}"><c:set var="potModificarContingut" value="${empty contingut.metaNode or contingut.metaNode.usuariActualWrite}"/></c:if>
 <c:set var="htmlIconaCarpeta6em"><span class="fa-stack" style="font-size:.6em"><i class="fa fa-folder fa-stack-2x"></i><i class="fa fa-clock-o fa-stack-1x fa-inverse"></i></span></c:set>
@@ -196,8 +182,12 @@ var registreTipusText = new Array();
 registreTipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </c:forEach>
 var interessatTipusText = new Array();
-<c:forEach var="option" items="${interessatsTipusEnumOptions}">
+<c:forEach var="option" items="${interessatTipusEnumOptions}">
 interessatTipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
+</c:forEach>
+var enviamentEstatText = new Array();
+<c:forEach var="option" items="${enviamentEstatEnumOptions}">
+enviamentEstatText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </c:forEach>
 $(document).ready(function() {
 	<c:if test="${contingut.carpeta and contingut.tipus == 'ESBORRANY'}">
@@ -242,6 +232,10 @@ $(document).ready(function() {
 	$('#taulaInteressats').on('draw.dt', function (e, settings) {
 		var api = new $.fn.dataTable.Api(settings);
 		$('#interessats-count').html(api.page.info().recordsTotal);
+	});
+	$('#taulaEnviaments').on('draw.dt', function (e, settings) {
+		var api = new $.fn.dataTable.Api(settings);
+		$('#enviaments-count').html(api.page.info().recordsTotal);
 	});
 	$('.element-draggable').draggable({
 		containment: 'parent',
@@ -321,7 +315,7 @@ $(document).ready(function() {
 							<dd><fmt:formatDate value="${contingut.data}" pattern="dd/MM/yyyy"/></dd>
 							<c:if test="${contingut.documentTipus != 'FISIC'}">
 								<dt><spring:message code="contingut.info.versio"/></dt>
-								<dd>${contingut.darreraVersio.versio}</dd>
+								<dd>${contingut.versioDarrera.versio}</dd>
 							</c:if>
 						</c:if>
 					</dl>
@@ -380,6 +374,9 @@ $(document).ready(function() {
 					<li>
 						<a href="#interessats" data-toggle="tab"><spring:message code="contingut.tab.interessats"/>&nbsp;<span class="badge" id="interessats-count">${interessatsCount}</span></a>
 					</li>
+					<li>
+						<a href="#enviaments" data-toggle="tab"><spring:message code="contingut.tab.enviaments"/>&nbsp;<span class="badge" id="enviaments-count">${enviamentsCount}</span></a>
+					</li>
 				</c:if>
 			</ul>
 			<%--           --%>
@@ -407,8 +404,12 @@ $(document).ready(function() {
 												<div id="collapse_${versio.id}" class="panel-collapse collapse<c:if test="${status.first}"> in</c:if>">
 													<div class="panel-body">
 														<dl class="dl-horizontal">
-															<dt><spring:message code="contingut.versions.arxiu"/>:</dt>
+															<dt><spring:message code="contingut.versions.arxiu.nom"/>:</dt>
 															<dd>${versio.arxiuNom}</dd>
+															<dt><spring:message code="contingut.versions.arxiu.tipus"/>:</dt>
+															<dd>${versio.arxiuContentType}</dd>
+															<dt><spring:message code="contingut.versions.arxiu.tamany"/>:</dt>
+															<dd>${versio.arxiuContentLength} bytes</dd>
 															<dt><spring:message code="contingut.versions.createl"/>:</dt>
 															<dd><fmt:formatDate value="${versio.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
 															<c:if test="${versio.firmaIntentat}">
@@ -422,57 +423,57 @@ $(document).ready(function() {
 																	</c:choose>
 																</dd>
 															</c:if>
-															<c:if test="${versio.custodiat}">
+															<%--c:if test="${versio.custodiat}">
 																<dt><spring:message code="contingut.versions.custodia.url"/>:</dt>
 																<dd><a href="${versio.custodiaUrl}" target="_blank">${versio.custodiaUrl}</a> <span class="fa fa-external-link"></span></dd>
-															</c:if>
+															</c:if--%>
 														</dl>
 														<div class="btn-toolbar pull-right">
 															<c:if test="${not empty contingut.escriptoriPare and status.first}">
-																<a href="../webdav${contingut.pathAsString}/${contingut.nom}/${contingut.darreraVersio.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contingut.boto.link.dav"/></a>
+																<a href="../webdav${contingut.pathAsString}/${contingut.nom}/${contingut.versioDarrera.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contingut.boto.link.dav"/></a>
 															</c:if>
 															<c:if test="${edicioOnlineActiva}">
 																<c:if test="${not empty contingut.escriptoriPare and status.first}">
-																	<a href="../webdav${contingut.pathAsString}/${contingut.nom}/${contingut.darreraVersio.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contingut.boto.editar.office"/></a>
+																	<a href="../webdav${contingut.pathAsString}/${contingut.nom}/${contingut.versioDarrera.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contingut.boto.editar.office"/></a>
 																</c:if>
 															</c:if>
-															<a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/descarregar" class="btn btn-default"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
+															<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar/${versio.versio}" class="btn btn-default"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
 															<c:if test="${not empty contingut.metaNode and (contingut.metaNode.firmaPortafirmesActiva or contingut.metaNode.firmaPassarelaActiva)}">
 																<div class="btn-group">
 		  															<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 																		<spring:message code="contingut.boto.firma.accions"/> <span class="caret"></span>
 																	</button>
 																	<ul class="dropdown-menu" role="menu">
-																		<c:if test="${contingut.metaNode.firmaPortafirmesActiva}">
+																		<%--c:if test="${contingut.metaNode.firmaPortafirmesActiva}">
 																			<c:choose>
 																				<c:when test="${not versio.custodiat}">
 																					<c:if test="${not versio.firmaEstatBloquejarEnviaments}">
-																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/portafirmes/upload" data-toggle="modal"><span class="fa fa-send"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/></a></li>
+																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/portafirmes/upload" data-toggle="modal"><span class="fa fa-send"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/></a></li>
 																					</c:if>
 																					<c:if test="${versio.firmaEstatPendent}">
-																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/portafirmes/cancel" data-confirm="<spring:message code="contingut.boto.portafirmes.cancelar.confirm"/>"><span class="fa fa-times"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.cancelar"/></a></li>
+																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/portafirmes/cancel" data-confirm="<spring:message code="contingut.boto.portafirmes.cancelar.confirm"/>"><span class="fa fa-times"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.cancelar"/></a></li>
 																					</c:if>
 																					<c:if test="${versio.firmaEstatBloquejarEnviaments}">
 																						<li><a href="#" data-toggle="modal" data-target="#pfirma-info-${versio.id}"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.info"/></a></li>
 																					</c:if>
 																					<c:if test="${versio.firmaError}">
-																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/custodia/reintentar"><span class="fa fa-repeat"></span>&nbsp;<spring:message code="contingut.boto.custodia.reintentar"/></a></li>
+																						<li><a href="../contingut/${contingut.id}/document/${contingut.id}/custodia/reintentar"><span class="fa fa-repeat"></span>&nbsp;<spring:message code="contingut.boto.custodia.reintentar"/></a></li>
 																					</c:if>
 																				</c:when>
 																				<c:otherwise>
-																					<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/custodia/esborrar"><span class="fa fa-remove"></span>&nbsp;<spring:message code="contingut.boto.custodia.esborrar"/></a></li>
+																					<li><a href="../contingut/${contingut.id}/document/${contingut.id}/custodia/esborrar"><span class="fa fa-remove"></span>&nbsp;<spring:message code="contingut.boto.custodia.esborrar"/></a></li>
 																				</c:otherwise>
 																			</c:choose>
-																		</c:if>
+																		</c:if--%>
 																		<c:if test="${contingut.metaNode.firmaPassarelaActiva and not versio.firmaEstatBloquejarEnviaments}">
-																			<c:choose>
+																			<%--c:choose>
 																				<c:when test="${not versio.custodiat}">
-																					<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/firmaPassarela" data-toggle="modal"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/></a></li>
+																					<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/></a></li>
 																				</c:when>
 																				<c:otherwise>
-																					<li><a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.versio}/custodia/esborrar"><span class="fa fa-remove"></span>&nbsp;<spring:message code="contingut.boto.custodia.esborrar"/></a></li>
+																					<li><a href="../document/${contingut.id}/custodia/esborrar"><span class="fa fa-remove"></span>&nbsp;<spring:message code="contingut.boto.custodia.esborrar"/></a></li>
 																				</c:otherwise>
-																			</c:choose>
+																			</c:choose--%>
 																		</c:if>
 																	</ul>
 																	<c:if test="${contingut.metaNode.firmaPortafirmesActiva and versio.firmaEstatBloquejarEnviaments}">
@@ -696,7 +697,7 @@ $(document).ready(function() {
 														{{else}}
 															<li><a href="../expedient/${contingut.id}/interessat/{{:id}}/representant/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.nou.prepresentant"/></a></li>														
 														{{/if}}
-													{{/if}}											
+													{{/if}}
 												</ul>
 											</div>
 										</script>
@@ -712,6 +713,83 @@ $(document).ready(function() {
 						<%--                      --%>
 						<%-- /Pipella interessats --%>
 						<%--                      --%>
+					</div>
+					<div class="tab-pane" id="enviaments">
+						<%--                    --%>
+						<%-- Pipella enviaments --%>
+						<%--                    --%>
+						<table id="taulaEnviaments" data-toggle="datatable" data-url="<c:url value="/expedient/${contingut.id}/enviament/datatable"/>" data-paging-enabled="false" class="table table-bordered table-striped" style="width:100%">
+							<thead>
+								<tr>
+									<th data-col-name="notificacio" data-visible="false"></th>
+									<th data-col-name="publicacio" data-visible="false"></th>
+									<th data-col-name="tipus" data-orderable="false" data-template="#cellEnviamentTipusTemplate" width="15%">
+										<spring:message code="contingut.enviament.columna.tipus"/>
+										<script id="cellEnviamentTipusTemplate" type="text/x-jsrender">
+											{{if notificacio}}
+												{{if tipus == 'MANUAL'}}
+													<spring:message code="contingut.enviament.notificacio.man"/>
+												{{else}}
+													<spring:message code="contingut.enviament.notificacio.elec"/>
+												{{/if}}
+											{{else publicacio}}
+												<spring:message code="contingut.enviament.publicacio"/>
+											{{/if}}
+										</script>
+									</th>
+									<th data-col-name="dataEnviament" data-converter="datetime" data-orderable="false" width="20%"><spring:message code="contingut.enviament.columna.data"/></th>
+									<th data-col-name="assumpte" data-orderable="false" width="25%"><spring:message code="contingut.enviament.columna.assumpte"/></th>
+									<th data-col-name="destinatari" data-orderable="false" data-template="#cellEnviamentDestiTemplate" width="20%">
+										<spring:message code="contingut.enviament.columna.destinatari"/>
+										<script id="cellEnviamentDestiTemplate" type="text/x-jsrender">
+											{{if notificacio}}
+												{{:destinatari}}
+											{{else publicacio}}
+												{{:tipus}}
+											{{/if}}
+										</script>
+									</th>
+									<th data-col-name="estat" data-template="#cellEnviamentEstatTemplate" data-orderable="false" width="10%">
+										<spring:message code="contingut.enviament.columna.estat"/>
+										<script id="cellEnviamentEstatTemplate" type="text/x-jsrender">
+											{{if estat == 'PENDENT'}}
+												<span class="label label-warning"><span class="fa fa-clock-o"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
+											{{else estat == 'ENVIAT_OK'}}
+												<span class="label label-info"><span class="fa fa-envelope-o"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
+											{{else estat == 'ENVIAT_ERROR'}}
+												<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
+											{{else estat == 'PROCESSAT_OK'}}
+												<span class="label label-success"><span class="fa fa-check"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
+											{{else estat == 'PROCESSAT_REBUTJAT'}}
+												<span class="label label-default"><span class="fa fa-times"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
+											{{else estat == 'PROCESSAT_ERROR'}}
+												<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
+											{{/if}}
+										</script>
+									</th>
+									<th data-col-name="id" data-orderable="false" data-template="#cellEnviamentAccionsTemplate" width="10%">
+										<script id="cellEnviamentAccionsTemplate" type="text/x-jsrender">
+											<div class="dropdown">
+												<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+												<ul class="dropdown-menu">
+													<li><a href="../expedient/${contingut.id}/{{if notificacio}}notificacio{{else}}publicacio{{/if}}/{{:id}}/info" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
+													{{if notificacio && tipus == 'MANUAL'}}
+														<li><a href="../expedient/${contingut.id}/notificacio/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+														<li><a href="../expedient/${contingut.id}/notificacio/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="contingut.confirmacio.esborrar.notificacio"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+													{{else publicacio}}
+														<li><a href="../expedient/${contingut.id}/publicacio/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+														<li><a href="../expedient/${contingut.id}/publicacio/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="contingut.confirmacio.esborrar.publicacio"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+													{{/if}}
+												</ul>
+											</div>
+										</script>
+									</th>
+								</tr>
+							</thead>
+						</table>
+						<%--                     --%>
+						<%-- /Pipella enviaments --%>
+						<%--                     --%>
 					</div>
 				</c:if>
 			</div>

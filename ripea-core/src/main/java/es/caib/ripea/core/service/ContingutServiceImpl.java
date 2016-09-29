@@ -24,6 +24,7 @@ import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
+import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -167,7 +168,9 @@ public class ContingutServiceImpl implements ContingutService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
-				true);
+				true,
+				false,
+				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
@@ -241,7 +244,9 @@ public class ContingutServiceImpl implements ContingutService {
 			// Comprova el permís de modificació de l'expedient superior
 			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 					contingut,
-					true);
+					true,
+					false,
+					false);
 			if (expedientSuperior != null) {
 				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
@@ -358,7 +363,9 @@ public class ContingutServiceImpl implements ContingutService {
 			// Comprova el permís de modificació de l'expedient superior
 			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 					contingut,
-					true);
+					true,
+					false,
+					false);
 			if (expedientSuperior != null) {
 				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
@@ -434,7 +441,9 @@ public class ContingutServiceImpl implements ContingutService {
 			// Comprova el permís de modificació de l'expedient superior
 			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 					contingut,
-					true);
+					true,
+					false,
+					false);
 			if (expedientSuperior != null) {
 				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
@@ -549,6 +558,8 @@ public class ContingutServiceImpl implements ContingutService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
@@ -862,10 +873,14 @@ public class ContingutServiceImpl implements ContingutService {
 		// Comprova si pertanyen al mateix expedient o si no pertanyen a cap
 		ExpedientEntity expedientSuperiorOrigen = contingutHelper.getExpedientSuperior(
 				contingutOrigen,
-				true);
+				true,
+				false,
+				false);
 		ExpedientEntity expedientSuperiorDesti = contingutHelper.getExpedientSuperior(
 				contingutDesti,
-				true);
+				true,
+				false,
+				false);
 		if (	(expedientSuperiorOrigen != null && expedientSuperiorDesti == null) ||
 				(expedientSuperiorOrigen == null && expedientSuperiorDesti != null)) {
 			logger.error("Els continguts origen i destí no pertanyen al mateix expedient ("
@@ -1393,6 +1408,7 @@ public class ContingutServiceImpl implements ContingutService {
 					documentOrigen.getVersioDarrera().getVersio());
 			DocumentEntity documentNou = DocumentEntity.getBuilder(
 					DocumentTipusEnumDto.DIGITAL,
+					DocumentEstatEnumDto.ESBORRANY,
 					documentOrigen.getNom(),
 					documentOrigen.getData(),
 					documentOrigen.getExpedient(),
