@@ -314,6 +314,29 @@ $(document).ready(function() {
 						<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
 						<dt><spring:message code="contingut.info.creatper"/></dt>
 						<dd>${contingut.createdBy.nom}</dd>
+						<c:if test="${not empty relacionats}">
+							<h4 id="expedient-info-relacionats" style="padding-bottom: 0 !important;margin-bottom: 4px !important; border-bottom: 1px solid #e3e3e3">
+								<spring:message code="contingut.info.relacionats"/>
+							</h4>
+							<ul class="list-unstyled">
+								<c:forEach var="expedientRelacionat" items="${relacionats}">
+									<c:if test="${!expedientRelacionat.esborrat}">
+										<li>
+											<span class="fa fa-briefcase"></span>
+											<a href="${expedientRelacionat.id}">
+												[${expedientRelacionat.sequencia}/${expedientRelacionat.any}] 
+												${expedientRelacionat.nom} 
+											</a>
+											<c:if test="${potModificarContingut}">
+												<a href="../expedient/${contingut.id}/relacio/${expedientRelacionat.id}/delete" class="btn btn-default btn-xs" data-confirm="<spring:message code="contingut.info.relacio.esborrar.confirm"/>" style="float: right;">
+													<span class="fa fa-trash-o"></span>
+												</a> 
+											</c:if>
+										</li>
+									</c:if>
+								</c:forEach>
+							</ul>
+						</c:if>
 					</dl>
 					<rip:blocContenidorAccions id="botons-accions-info" contingut="${contingut}" modeLlistat="true" mostrarObrir="false"/>
 				</div>
