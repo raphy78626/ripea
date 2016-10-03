@@ -79,7 +79,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 			InteressatDto interessat) {
 		return create(entitatId, expedientId, null, interessat);
 	}
-	
+
 	@Transactional
 	@Override
 	public InteressatDto create(
@@ -227,7 +227,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					InteressatAdministracioDto.class);
 		}
 	}
-	
+
 	@Transactional
 	@Override
 	public InteressatDto update(
@@ -236,7 +236,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 			InteressatDto interessat) {
 		return update(entitatId, expedientId, null, interessat);
 	}
-	
+
 	@Transactional
 	@Override
 	public InteressatDto update(
@@ -442,7 +442,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					"No s'ha trobat l'interessat a l'expedient (expedientId=" + expedientId + ")");
 		}
 	}
-	
+
 	@Transactional
 	@Override
 	public void delete(
@@ -523,7 +523,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					"No s'ha trobat l'interessat a l'expedient (expedientId=" + expedientId + ")");
 		}
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public InteressatDto findById(Long id) {
@@ -536,7 +536,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 				interessat,
 				InteressatDto.class);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public InteressatDto findRepresentantById(
@@ -684,7 +684,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 						llinatge2),
 				InteressatPersonaFisicaDto.class);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<InteressatPersonaJuridicaDto> findByFiltrePersonaJuridica(
@@ -716,12 +716,6 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 				InteressatAdministracioDto.class);
 	}
 
-
-
-	private static final Logger logger = LoggerFactory.getLogger(ExpedientInteressatServiceImpl.class);
-
-
-
 	@Override
 	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByEntitat(String entitatCodi) {
 		return cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).toDadesList();
@@ -731,5 +725,9 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
 		return cacheHelper.findUnitatOrganitzativaPerCodi(codi);
 	}
+
+
+
+	private static final Logger logger = LoggerFactory.getLogger(ExpedientInteressatServiceImpl.class);
 
 }

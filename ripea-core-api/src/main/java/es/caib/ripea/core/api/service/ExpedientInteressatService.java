@@ -40,7 +40,7 @@ public interface ExpedientInteressatService {
 			Long entitatId,
 			Long expedientId,
 			InteressatDto interessat) throws NotFoundException;
-	
+
 	/**
 	 * Crea un nou interessat i l'associa a un expedient.
 	 * 
@@ -60,7 +60,7 @@ public interface ExpedientInteressatService {
 			Long expedientId, 
 			Long interessatId,
 			InteressatDto representant) throws NotFoundException;
-	
+
 	/**
 	 * Modifica un representant associat a un interessat.
 	 * 
@@ -102,7 +102,7 @@ public interface ExpedientInteressatService {
 			Long expedientId, 
 			Long interessatId, 
 			InteressatDto representant);
-	
+
 	/**
 	 * elimina un interessat existent en un expedient.
 	 * 
@@ -120,7 +120,7 @@ public interface ExpedientInteressatService {
 			Long entitatId,
 			Long expedientId,
 			Long interessatId);
-	
+
 	/**
 	 * elimina un interessat existent en un expedient.
 	 * 
@@ -170,7 +170,7 @@ public interface ExpedientInteressatService {
 	InteressatDto findRepresentantById(
 			Long interessatId, 
 			Long id);
-	
+
 	/**
 	 * Consulta dels interessats associats a un expedient.
 	 * 
@@ -186,7 +186,7 @@ public interface ExpedientInteressatService {
 	public List<InteressatDto> findByExpedient(
 			Long entitatId,
 			Long expedientId) throws NotFoundException;
-	
+
 	/**
 	 * Consulta el nombre d'interessats associats a un expedient.
 	 * 
@@ -240,7 +240,7 @@ public interface ExpedientInteressatService {
 			String nom,
 			String llinatge1,
 			String llinatge2) throws NotFoundException;
-	
+
 	/**
 	 * Consulta els interessats per nom i identificador.
 	 * 
@@ -258,7 +258,6 @@ public interface ExpedientInteressatService {
 	public List<InteressatPersonaJuridicaDto> findByFiltrePersonaJuridica(
 			String documentNum,
 			String raoSocial) throws NotFoundException;
-	
 
 	/**
 	 * Consulta els interessats per nom i identificador.
@@ -272,10 +271,6 @@ public interface ExpedientInteressatService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			String organCodi) throws NotFoundException;
-
-	////////////////////////////////////////////////////////////////////////	
-	// Obtenir unitats organitzatives -> Interessats tipus administració
-	////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * Consulta les unitats organitzatives de la entitat.
