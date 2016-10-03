@@ -57,24 +57,15 @@ import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.DocumentHelper;
-import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
-import es.caib.ripea.core.helper.MetaNodeHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
-import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
-import es.caib.ripea.core.repository.BustiaRepository;
-import es.caib.ripea.core.repository.ContingutLogRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentVersioRepository;
-import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
-import es.caib.ripea.core.repository.MetaDadaRepository;
-import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeRepository;
-import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
@@ -86,27 +77,15 @@ import es.caib.ripea.core.repository.UsuariRepository;
 public class ContingutServiceImpl implements ContingutService {
 
 	@Resource
-	private EntitatRepository entitatRepository;
-	@Resource
 	private UsuariRepository usuariRepository;
 	@Resource
 	private EscriptoriRepository escriptoriRepository;
 	@Resource
 	private ContingutRepository contingutRepository;
 	@Resource
-	private ContingutLogRepository contingutLogRepository;
-	@Resource
-	private MetaDadaRepository metaDadaRepository;
-	@Resource
 	private DadaRepository dadaRepository;
 	@Resource
-	private MetaNodeMetaDadaRepository metaNodeMetaDadaRepository;
-	@Resource
 	private DocumentVersioRepository documentVersioRepository;
-	@Resource
-	private BustiaRepository bustiaRepository;
-	@Resource
-	private RegistreRepository registreRepository;
 	@Resource
 	private MetaNodeRepository metaNodeRepository;
 
@@ -115,19 +94,13 @@ public class ContingutServiceImpl implements ContingutService {
 	@Resource
 	PaginacioHelper paginacioHelper;
 	@Resource
-	private PermisosHelper permisosHelper;
-	@Resource
 	private CacheHelper cacheHelper;
-	@Resource
-	private MetaNodeHelper metaNodeHelper;
 	@Resource
 	private ContingutHelper contingutHelper;
 	@Resource
 	private DocumentHelper documentHelper;
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
-	@Resource
-	private EmailHelper emailHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
 	@Resource
@@ -1408,7 +1381,7 @@ public class ContingutServiceImpl implements ContingutService {
 					documentOrigen.getVersioDarrera().getVersio());
 			DocumentEntity documentNou = DocumentEntity.getBuilder(
 					DocumentTipusEnumDto.DIGITAL,
-					DocumentEstatEnumDto.ESBORRANY,
+					DocumentEstatEnumDto.REDACCIO,
 					documentOrigen.getNom(),
 					documentOrigen.getData(),
 					documentOrigen.getExpedient(),

@@ -34,13 +34,11 @@ import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
-import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
-import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.plugin.ciutada.CiutadaDocument;
 import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
@@ -433,11 +431,15 @@ public class PluginHelper {
 		}
 	}
 
-	public long portafirmesUpload(
+	public String portafirmesUpload(
 			DocumentEntity document,
 			String motiu,
 			PortafirmesPrioritatEnum prioritat,
 			Date dataCaducitat,
+			String documentTipus,
+			String[] responsables,
+			MetaDocumentFirmaFluxTipusEnumDto fluxTipus,
+			String fluxId,
 			List<DocumentEntity> annexos) {
 		String accioDescripcio = "Enviament de document a firmar";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -469,135 +471,93 @@ public class PluginHelper {
 			accioParams.put("annexosIds", annexosIds.toString());
 			accioParams.put("annexosTitols", annexosTitols.toString());
 		}
-		MetaDocumentEntity metaDocument = document.getMetaDocument();
-		if (metaDocument != null) {
-			accioParams.put(
-					"metaDocumentId",
-					metaDocument.getId().toString());
-			boolean metaDocumentConfigurat = true;
-			PortafirmesDocument portafirmesDocument = new PortafirmesDocument();
-			portafirmesDocument.setTitol(document.getNom());
-			if (metaDocument.getPortafirmesDocumentTipus() == null || metaDocument.getPortafirmesDocumentTipus().isEmpty()) {
-				metaDocumentConfigurat = false;
+		PortafirmesDocument portafirmesDocument = new PortafirmesDocument();
+		portafirmesDocument.setTitol(document.getNom());
+		portafirmesDocument.setFirmat(
+				false);
+		String urlCustodia = null;
+		if (portafirmesEnviarDocumentEstampat()) {
+			urlCustodia = document.getCustodiaUrl();
+		}
+		FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(
+				document.getVersioDarrera());
+		FitxerDto fitxerConvertit = conversioConvertirPdfIEstamparUrl(
+				fitxerOriginal,
+				urlCustodia);
+		portafirmesDocument.setArxiuNom(
+				fitxerConvertit.getNom());
+		portafirmesDocument.setArxiuContingut(
+				fitxerConvertit.getContingut());
+		List<PortafirmesFluxBloc> flux = new ArrayList<PortafirmesFluxBloc>();
+		if (MetaDocumentFirmaFluxTipusEnumDto.SERIE.equals(fluxTipus)) {
+			for (String responsable: responsables) {
+				PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
+				bloc.setMinSignataris(1);
+				bloc.setDestinataris(new String[] {responsable});
+				bloc.setObligatorietats(new boolean[] {true});
+				flux.add(bloc);
 			}
-			if (metaDocument.getPortafirmesResponsables() == null || metaDocument.getPortafirmesResponsables().length == 0) {
-				metaDocumentConfigurat = false;
+		} else if (MetaDocumentFirmaFluxTipusEnumDto.PARALEL.equals(fluxTipus)) {
+			PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
+			bloc.setMinSignataris(responsables.length);
+			bloc.setDestinataris(responsables);
+			boolean[] obligatorietats = new boolean[responsables.length];
+			Arrays.fill(obligatorietats, true);
+			bloc.setObligatorietats(obligatorietats);
+			flux.add(bloc);
+		}
+		try {
+			Calendar dataCaducitatCal = Calendar.getInstance();
+			dataCaducitatCal.setTime(dataCaducitat);
+			if (	dataCaducitatCal.get(Calendar.HOUR_OF_DAY) == 0 &&
+					dataCaducitatCal.get(Calendar.MINUTE) == 0 &&
+					dataCaducitatCal.get(Calendar.SECOND) == 0 &&
+					dataCaducitatCal.get(Calendar.MILLISECOND) == 0) {
+				dataCaducitatCal.set(Calendar.HOUR_OF_DAY, 23);
+				dataCaducitatCal.set(Calendar.MINUTE, 59);
+				dataCaducitatCal.set(Calendar.SECOND, 59);
+				dataCaducitatCal.set(Calendar.MILLISECOND, 999);
 			}
-			if (metaDocumentConfigurat) {
-				portafirmesDocument.setFirmat(
-						false);
-				String urlCustodia = null;
-				if (portafirmesEnviarDocumentEstampat()) {
-					urlCustodia = document.getCustodiaUrl();
-				}
-				FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(
-						document.getVersioDarrera());
-				FitxerDto fitxerConvertit = conversioConvertirPdfIEstamparUrl(
-						fitxerOriginal,
-						urlCustodia);
-				portafirmesDocument.setArxiuNom(
-						fitxerConvertit.getNom());
-				portafirmesDocument.setArxiuContingut(
-						fitxerConvertit.getContingut());
-				String[] responsables = metaDocument.getPortafirmesResponsables();
-				List<PortafirmesFluxBloc> flux = new ArrayList<PortafirmesFluxBloc>();
-				if (MetaDocumentFirmaFluxTipusEnumDto.SERIE.equals(metaDocument.getPortafirmesFluxTipus())) {
-					for (String responsable: responsables) {
-						PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
-						bloc.setMinSignataris(1);
-						bloc.setDestinataris(new String[] {responsable});
-						bloc.setObligatorietats(new boolean[] {true});
-						flux.add(bloc);
-					}
-				} else if (MetaDocumentFirmaFluxTipusEnumDto.PARALEL.equals(metaDocument.getPortafirmesFluxTipus())) {
-					PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
-					bloc.setMinSignataris(responsables.length);
-					bloc.setDestinataris(responsables);
-					boolean[] obligatorietats = new boolean[responsables.length];
-					Arrays.fill(obligatorietats, true);
-					bloc.setObligatorietats(obligatorietats);
-					flux.add(bloc);
-				}
-				try {
-					Calendar dataCaducitatCal = Calendar.getInstance();
-					dataCaducitatCal.setTime(dataCaducitat);
-					if (	dataCaducitatCal.get(Calendar.HOUR_OF_DAY) == 0 &&
-							dataCaducitatCal.get(Calendar.MINUTE) == 0 &&
-							dataCaducitatCal.get(Calendar.SECOND) == 0 &&
-							dataCaducitatCal.get(Calendar.MILLISECOND) == 0) {
-						dataCaducitatCal.set(Calendar.HOUR_OF_DAY, 23);
-						dataCaducitatCal.set(Calendar.MINUTE, 59);
-						dataCaducitatCal.set(Calendar.SECOND, 59);
-						dataCaducitatCal.set(Calendar.MILLISECOND, 999);
-					}
-					long portafirmesEnviamentId = getPortafirmesPlugin().upload(
-							portafirmesDocument,
-							Long.parseLong(metaDocument.getPortafirmesDocumentTipus()),
-							motiu,
-							"Aplicació RIPEA",
-							prioritat,
-							dataCaducitatCal.getTime(),
-							flux,
-							null, //new Long(metaDocument.getPortafirmesFluxId()),
-							null,
-							false);
-					integracioHelper.addAccioOk(
-							IntegracioHelper.INTCODI_PFIRMA,
-							accioDescripcio,
-							accioParams,
-							IntegracioAccioTipusEnumDto.ENVIAMENT,
-							System.currentTimeMillis() - t0);
-					return portafirmesEnviamentId;
-				} catch (Exception ex) {
-					String errorDescripcio = "Error al accedir al plugin de portafirmes";
-					integracioHelper.addAccioError(
-							IntegracioHelper.INTCODI_PFIRMA,
-							accioDescripcio,
-							accioParams,
-							IntegracioAccioTipusEnumDto.ENVIAMENT,
-							System.currentTimeMillis() - t0,
-							errorDescripcio,
-							ex);
-					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_PFIRMA,
-							errorDescripcio,
-							ex);
-				}
-			} else {
-				String errorMissatge = "El meta-document associat no està correctament configurat per a fer enviaments al portafirmes (" +
-						"documentId=" + document.getId().toString() + ")";
-				integracioHelper.addAccioError(
-						IntegracioHelper.INTCODI_PFIRMA,
-						accioDescripcio,
-						accioParams,
-						IntegracioAccioTipusEnumDto.ENVIAMENT,
-						System.currentTimeMillis() - t0,
-						errorMissatge);
-				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_PFIRMA,
-						errorMissatge);
-			}
-		} else {
-			String errorMissatge = "El document que s'intenta enviar no te meta-document associat (" +
-							"documentId=" + document.getId().toString() + ")";
+			String portafirmesEnviamentId = getPortafirmesPlugin().upload(
+					portafirmesDocument,
+					documentTipus,
+					motiu,
+					"Aplicació RIPEA",
+					prioritat,
+					dataCaducitatCal.getTime(),
+					flux,
+					fluxId,
+					null,
+					false);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_PFIRMA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return portafirmesEnviamentId;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de portafirmes";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_PFIRMA,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
-					errorMissatge);
+					errorDescripcio,
+					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_PFIRMA,
-					errorMissatge);
+					errorDescripcio,
+					ex);
 		}
 	}
 
 	public PortafirmesDocument portafirmesDownload(
-			DocumentEntity document,
 			DocumentPortafirmesEntity documentPortafirmes) {
 		String accioDescripcio = "Descarregar document firmat";
 		Map<String, String> accioParams = new HashMap<String, String>();
+		DocumentEntity document = documentPortafirmes.getDocument();
 		accioParams.put(
 				"documentVersioId",
 				document.getId().toString());
@@ -637,14 +597,10 @@ public class PluginHelper {
 	}
 
 	public void portafirmesDelete(
-			DocumentVersioEntity documentVersio,
 			DocumentPortafirmesEntity documentPortafirmes) {
 		String accioDescripcio = "Esborrar document enviat a firmar";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put(
-				"documentVersioId",
-				documentVersio.getId().toString());
-		DocumentEntity document = documentVersio.getDocument();
+		DocumentEntity document = documentPortafirmes.getDocument();
 		accioParams.put(
 				"documentId",
 				document.getId().toString());
@@ -813,7 +769,7 @@ public class PluginHelper {
 		}
 	}
 
-	public String custodiaCustodiarDocumentFirmat(
+	public String custodiaEnviarDocumentFirmat(
 			DocumentEntity document,
 			String custodiaTipus,
 			String arxiuNom,

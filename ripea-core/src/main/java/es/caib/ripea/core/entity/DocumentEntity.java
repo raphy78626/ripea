@@ -44,8 +44,6 @@ public class DocumentEntity extends NodeEntity {
 	@Column(name = "data", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	protected Date data;
-	@Column(name = "custodiat")
-	private boolean custodiat;
 	@Column(name = "custodia_data")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date custodiaData;
@@ -77,9 +75,6 @@ public class DocumentEntity extends NodeEntity {
 	}
 	public DocumentVersioEntity getVersioDarrera() {
 		return versioDarrera;
-	}
-	public boolean isCustodiat() {
-		return custodiat;
 	}
 	public Date getCustodiaData() {
 		return custodiaData;
@@ -114,17 +109,13 @@ public class DocumentEntity extends NodeEntity {
 		this.versioDarrera = versioDarrera;
 	}
 
-	public void updateCustodiaUrl(
-			String custodiaUrl) {
-		this.custodiaUrl = custodiaUrl;
-	}
-	public void updateCustodiaEstat(
-			boolean custodiat,
+	public void updateInformacioCustodia(
 			Date custodiaData,
-			String custodiaId) {
-		this.custodiat = custodiat;
+			String custodiaId,
+			String custodiaUrl) {
 		this.custodiaData = custodiaData;
 		this.custodiaId = custodiaId;
+		this.custodiaUrl = custodiaUrl;
 	}
 
 	public static Builder getBuilder(

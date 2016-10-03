@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
+import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
@@ -96,12 +97,12 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				false,
 				false,
 				false);
-		/*if (!document.isCustodiat()) {
+		if (!DocumentEstatEnumDto.CUSTODIAT.equals(document.getEstat())) {
 			throw new ValidationException(
 					documentId,
 					DocumentEntity.class,
 					"El document no està custodiat");
-		}*/
+		}
 		ExpedientEntity expedient = contingutHelper.getExpedientSuperior(
 				document,
 				false,
@@ -193,7 +194,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				// annexos().
 				build();
 		if (DocumentNotificacioTipusEnumDto.ELECTRONICA.equals(notificacio.getTipus())) {
-			expedientHelper.pluginCiutadaNotificacioEnviar(
+			expedientHelper.ciutadaNotificacioEnviar(
 					notificacioEntity,
 					interessat);
 		}
@@ -377,13 +378,13 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 					true,
 					null,
 					null).build();
-			return expedientHelper.pluginCiutadaNotificacioEnviar(
+			return expedientHelper.ciutadaNotificacioEnviar(
 					notificacio,
 					destinatari);
 		} else if (
 				DocumentEnviamentEstatEnumDto.ENVIAT_OK.equals(notificacio.getEstat()) ||
 				DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR.equals(notificacio.getEstat())) {
-			return expedientHelper.pluginCiutadaNotificacioComprovarEstat(
+			return expedientHelper.ciutadaNotificacioComprovarEstat(
 					notificacio);
 		} else {
 			// Si arriba aquí vol dir que no hi ha res a reintentar
@@ -434,7 +435,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 		logger.debug("Aplicant regles a " + pendents.size() + " notificacions pendents");
 		if (!pendents.isEmpty()) {
 			for (DocumentNotificacioEntity pendent: pendents) {
-				expedientHelper.pluginCiutadaNotificacioComprovarEstat(
+				expedientHelper.ciutadaNotificacioComprovarEstat(
 						pendent);
 			}
 		} else {

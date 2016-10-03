@@ -10,7 +10,8 @@ package es.caib.ripea.core.api.dto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public enum DocumentEstatEnumDto {
-	ESBORRANY,
-	DEFINITIU,
-	FIRMA_PENDENT
+	REDACCIO,
+	FIRMA_PENDENT,
+	FIRMAT,
+	CUSTODIAT
 }

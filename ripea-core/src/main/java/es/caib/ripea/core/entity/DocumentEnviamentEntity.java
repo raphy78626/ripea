@@ -26,6 +26,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -151,6 +152,10 @@ public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {
 		} else if (!expedient.equals(other.expedient))
 			return false;
 		return true;
+	}
+
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;

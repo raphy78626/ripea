@@ -52,15 +52,15 @@ import es.caib.ripea.plugin.utils.PropertiesHelper;
 public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 
 	@Override
-	public long upload(
+	public String upload(
 			PortafirmesDocument document,
-			Long documentTipus,
+			String documentTipus,
 			String motiu,
 			String remitent,
 			PortafirmesPrioritatEnum prioritat,
 			Date dataCaducitat,
 			List<PortafirmesFluxBloc> flux,
-			Long plantillaFluxId,
+			String plantillaFluxId,
 			List<PortafirmesDocument> annexos,
 			boolean signarAnnexos) throws SistemaExternException {
 		try {
@@ -92,12 +92,14 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 							plantillaFluxId));
 			requestPeticioDeFirmaWs.setFitxerAFirmar(
 					toFitxerBean(document));
-			requestPeticioDeFirmaWs.setTipusDocumentID(documentTipus);
-			requestPeticioDeFirmaWs.setModeDeFirma(new Boolean(false));
+			requestPeticioDeFirmaWs.setTipusDocumentID(
+					new Long(documentTipus));
+			requestPeticioDeFirmaWs.setModeDeFirma(
+					new Boolean(false));
 			requestPeticioDeFirmaWs.setIdiomaID("ca");
 			PeticioDeFirmaWs responsePeticioDeFirmaWs = getPeticioDeFirmaWs().createAndStartPeticioDeFirma(
 					requestPeticioDeFirmaWs);
-			return responsePeticioDeFirmaWs.getPeticioDeFirmaID();
+			return new Long(responsePeticioDeFirmaWs.getPeticioDeFirmaID()).toString();
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut pujar el document al portafirmes (" +
@@ -110,10 +112,10 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 
 	@Override
 	public PortafirmesDocument download(
-			long id) throws SistemaExternException {
+			String id) throws SistemaExternException {
 		try {
 			FitxerBean fitxerFirmat = getPeticioDeFirmaWs().getLastSignedFileOfPeticioDeFirma(
-					id);
+					new Long(id).longValue());
 			FitxerBean fitxerDescarregat = getPeticioDeFirmaWs().downloadFileUsingEncryptedFileID(
 					fitxerFirmat.getEncryptedFileID());
 			PortafirmesDocument downloadedDocument = new PortafirmesDocument();
@@ -130,10 +132,10 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 
 	@Override
 	public void delete(
-			long id) throws SistemaExternException {
+			String id) throws SistemaExternException {
 		try {
 			getPeticioDeFirmaWs().deletePeticioDeFirma(
-					id);
+					new Long(id).longValue());
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut esborrar el document del portafirmes (id=" + id + ")",
@@ -183,7 +185,7 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 
 	private FluxDeFirmesWs toFluxDeFirmes(
 			List<PortafirmesFluxBloc> flux,
-			Long plantillaFluxId) throws Exception {
+			String plantillaFluxId) throws Exception {
 		if (flux == null && plantillaFluxId == null) {
 			throw new SistemaExternException(
 					"No s'ha especificat cap flux de firma");
@@ -191,7 +193,7 @@ public class PortafirmesPluginPortafib implements PortafirmesPlugin {
 		FluxDeFirmesWs fluxWs;
 		if (plantillaFluxId != null && flux == null) {
 			fluxWs = getPeticioDeFirmaWs().instantiatePlantillaFluxDeFirmes(
-					plantillaFluxId);
+					new Long(plantillaFluxId).longValue());
 		} else {
 			int numNifs = 0;
 			if (flux.size() > 0) {

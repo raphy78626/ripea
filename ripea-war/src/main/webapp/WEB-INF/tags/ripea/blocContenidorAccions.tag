@@ -16,7 +16,7 @@
 				<c:when test="${contingut.expedient and (empty contingut.metaNode or contingut.metaNode.usuariActualWrite)}">
 					<li><a href="../contingut/${contingut.pare.id}/expedient/${contingut.id}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li>
 				</c:when>
-				<c:when test="${contingut.document and (empty contingut.metaNode or contingut.metaNode.usuariActualWrite)}">
+				<c:when test="${contingut.document and (empty contingut.metaNode or contingut.metaNode.usuariActualWrite) and contingut.estat == 'REDACCIO'}">
 					<li><a href="../contingut/${contingut.pare.id}/document/${contingut.id}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li>
 				</c:when>
 				<c:when test="${contingut.carpeta}">
@@ -33,7 +33,9 @@
 			<li><a href="../contingut/${contingut.id}/log" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 			<c:if test="${not empty contingut.escriptoriPare}">
 				<c:if test="${contingut.carpeta or empty contingut.metaNode or contingut.metaNode.usuariActualDelete}">
-					<li><a href="${contingut.id}/delete" data-confirm="<spring:message code="contingut.confirmacio.esborrar.node"/>"><span class="fa fa-trash-o"></span>&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+					<c:if test="${not contingut.document or contingut.estat == 'REDACCIO'}">
+						<li><a href="${contingut.id}/delete" data-confirm="<spring:message code="contingut.confirmacio.esborrar.node"/>"><span class="fa fa-trash-o"></span>&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+					</c:if>
 				</c:if>
 			</c:if>
 			<li role="separator" class="divider"></li>
@@ -59,13 +61,18 @@
 				<c:if test="${contingut.documentTipus != 'FISIC'}">
 					<li><a href="../contingut/${contingut.pare.id}/document/${contingut.id}/descarregar/${contingut.versioDarrera.versio}"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a></li>
 				</c:if>
-				<li><a href="../document/${contingut.id}/notificar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="comu.boto.notificar"/>...</a></li>
-				<li><a href="../document/${contingut.id}/publicar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-clipboard"></span>&nbsp;<spring:message code="comu.boto.publicar"/>...</a></li>
-				<c:if test="${contingut.metaNode.firmaPortafirmesActiva}">
-					<li><a href="../document/${contingut.id}/portafirmes/upload" data-toggle="modal"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/>...</a></li>
+				<c:if test="${contingut.estat == 'CUSTODIAT'}">
+					<li><a href="../document/${contingut.id}/notificar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="comu.boto.notificar"/>...</a></li>
+					<li><a href="../document/${contingut.id}/publicar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-clipboard"></span>&nbsp;<spring:message code="comu.boto.publicar"/>...</a></li>
 				</c:if>
-				<c:if test="${contingut.metaNode.firmaPassarelaActiva}">
-					<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/></a></li>
+				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPortafirmesActiva}">
+					<li><a href="../document/${contingut.id}/portafirmes/upload" data-toggle="modal" data-reload-page="true"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/>...</a></li>
+				</c:if>
+				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPassarelaActiva}">
+					<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal" data-reload-page="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/></a></li>
+				</c:if>
+				<c:if test="${contingut.estat != 'REDACCIO'}">
+					<li><a href="../document/${contingut.id}/firma/info" data-toggle="modal" data-reload-page="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.firma.detalls"/></a></li>
 				</c:if>
 			</c:if>
 			

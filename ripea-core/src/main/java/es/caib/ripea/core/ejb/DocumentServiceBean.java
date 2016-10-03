@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -174,6 +175,26 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
+	public void portafirmesReintentar(
+			Long entitatId,
+			Long id) {
+		delegate.portafirmesReintentar(
+				entitatId,
+				id);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public DocumentPortafirmesDto portafirmesInfo(
+			Long entitatId,
+			Long documentId) {
+		return delegate.portafirmesInfo(
+				entitatId,
+				documentId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
 	public FitxerDto convertirPdfPerFirma(
 			Long entitatId,
 			Long id) {
@@ -202,16 +223,6 @@ public class DocumentServiceBean implements DocumentService {
 				identificador,
 				arxiuNom,
 				arxiuContingut);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public void custodiaPortafirmesReintentar(
-			Long entitatId,
-			Long id) {
-		delegate.custodiaPortafirmesReintentar(
-				entitatId,
-				id);
 	}
 
 	@Override

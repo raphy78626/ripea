@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -222,10 +223,10 @@ public interface DocumentService {
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param id
+	 * @param documentId
 	 *            Atribut id del document que es vol enviar a firmar.
-	 * @param motiu
-	 *            El motiu de l'enviament.
+	 * @param assumpte
+	 *            L'assumpte de l'enviament.
 	 * @param prioritat
 	 *            La prioritat de l'enviament.
 	 * @param dataCaducitat
@@ -240,8 +241,8 @@ public interface DocumentService {
 	@PreAuthorize("hasRole('tothom')")
 	public void portafirmesEnviar(
 			Long entitatId,
-			Long id,
-			String motiu,
+			Long documentId,
+			String assumpte,
 			PortafirmesPrioritatEnumDto prioritat,
 			Date dataCaducitat) throws NotFoundException, IllegalStateException, SistemaExternException;
 
@@ -264,7 +265,7 @@ public interface DocumentService {
 	@PreAuthorize("hasRole('tothom')")
 	public void portafirmesCancelar(
 			Long entitatId,
-			Long id) throws NotFoundException, IllegalStateException, SistemaExternException;
+			Long documentId) throws NotFoundException, IllegalStateException, SistemaExternException;
 
 	/**
 	 * Processa una petició del callback de portafirmes.
@@ -281,6 +282,40 @@ public interface DocumentService {
 	public Exception portafirmesCallback(
 			long documentId,
 			PortafirmesCallbackEstatEnum estat) throws NotFoundException;
+
+	/**
+	 * Reintenta la custòdia d'un document firmat amb portafirmes que ha donat
+	 * error al custodiar.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contenidor.
+	 * @param documentId
+	 *            Atribut id del document que es vol custodiar.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 * @throws SistemaExternException
+	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public void portafirmesReintentar(
+			Long entitatId,
+			Long documentId) throws NotFoundException, SistemaExternException;
+
+	/**
+	 * Retorna la informació del darrer enviament a portafirmes del document.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contenidor.
+	 * @param documentId
+	 *            Atribut id del document que es vol convertir.
+	 * @return la informació de l'enviament a portafirmes.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public DocumentPortafirmesDto portafirmesInfo(
+			Long entitatId,
+			Long documentId) throws NotFoundException;
 
 	/**
 	 * Converteix el document a format PDF per a firmar-lo.
@@ -338,24 +373,6 @@ public interface DocumentService {
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) throws NotFoundException, SistemaExternException;
-
-	/**
-	 * Reintenta la custòdia d'un document firmat amb portafirmes que ha donat
-	 * error al custodiar.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param id
-	 *            Atribut id del document que es vol custodiar.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws SistemaExternException
-	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public void custodiaPortafirmesReintentar(
-			Long entitatId,
-			Long id) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Esborrar un document custodiat.

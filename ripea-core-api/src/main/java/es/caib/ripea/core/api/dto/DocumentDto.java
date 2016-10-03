@@ -16,7 +16,6 @@ public class DocumentDto extends NodeDto {
 	protected DocumentEstatEnumDto estat;
 	protected String ubicacio;
 	private Date data;
-	private boolean custodiat;
 	private Date custodiaData;
 	private String custodiaId;
 	private String custodiaUrl;
@@ -45,12 +44,6 @@ public class DocumentDto extends NodeDto {
 	}
 	public void setData(Date data) {
 		this.data = data;
-	}
-	public boolean isCustodiat() {
-		return custodiat;
-	}
-	public void setCustodiat(boolean custodiat) {
-		this.custodiat = custodiat;
 	}
 	public Date getCustodiaData() {
 		return custodiaData;

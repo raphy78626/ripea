@@ -101,6 +101,9 @@ public class DocumentPublicacioEntity extends DocumentEnviamentEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
+		result = prime * result + ((expedient == null) ? 0 : expedient.hashCode());
+		result = prime * result + ((document == null) ? 0 : document.hashCode());
+		result = prime * result + ((dataEnviament == null) ? 0 : dataEnviament.hashCode());
 		result = prime * result + ((dataPublicacio == null) ? 0 : dataPublicacio.hashCode());
 		result = prime * result + ((tipus == null) ? 0 : tipus.hashCode());
 		return result;
@@ -114,6 +117,21 @@ public class DocumentPublicacioEntity extends DocumentEnviamentEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		DocumentPublicacioEntity other = (DocumentPublicacioEntity) obj;
+		if (expedient == null) {
+			if (other.expedient != null)
+				return false;
+		} else if (!expedient.equals(other.expedient))
+			return false;
+		if (document == null) {
+			if (other.document != null)
+				return false;
+		} else if (!document.equals(other.document))
+			return false;
+		if (dataEnviament == null) {
+			if (other.dataEnviament != null)
+				return false;
+		} else if (!dataEnviament.equals(other.dataEnviament))
+			return false;
 		if (dataPublicacio == null) {
 			if (other.dataPublicacio != null)
 				return false;

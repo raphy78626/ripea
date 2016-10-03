@@ -26,5 +26,8 @@
 			<dd>${publicacio.observacions}</dd>
 		</c:if>
 	</dl>
+	<div id="modal-botons" class="well">
+		<a href="<c:url value="/contenidor/${publicacio.document.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
+	</div>
 </body>
 </html>

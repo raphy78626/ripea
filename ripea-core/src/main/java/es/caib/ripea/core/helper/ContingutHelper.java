@@ -193,9 +193,9 @@ public class ContingutHelper {
 			DocumentEntity document = (DocumentEntity)deproxied;
 			DocumentDto dto = new DocumentDto();
 			dto.setDocumentTipus(document.getDocumentTipus());
+			dto.setEstat(document.getEstat());
 			dto.setUbicacio(document.getUbicacio());
 			dto.setData(document.getData());
-			dto.setCustodiat(document.isCustodiat());
 			dto.setCustodiaData(document.getCustodiaData());
 			dto.setCustodiaId(document.getCustodiaId());
 			dto.setCustodiaUrl(document.getCustodiaUrl());

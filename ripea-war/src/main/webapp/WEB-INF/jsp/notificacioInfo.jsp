@@ -125,5 +125,8 @@
 			</c:if>
 		</div>
 	</div>
+	<div id="modal-botons" class="well">
+		<a href="<c:url value="/contenidor/${notificacio.document.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
+	</div>
 </body>
 </html>

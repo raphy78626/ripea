@@ -95,7 +95,7 @@ public class DocumentController extends BaseUserController {
 				documentId,
 				model);
 		model.addAttribute(new PortafirmesEnviarCommand());
-		return "portafirmesEnviarForm";
+		return "portafirmesForm";
 	}
 	@RequestMapping(value = "/{documentId}/portafirmes/upload", method = RequestMethod.POST)
 	public String portafirmesUploadPost(
@@ -110,7 +110,7 @@ public class DocumentController extends BaseUserController {
 					request,
 					documentId,
 					model);
-			return "portafirmesEnviarForm";
+			return "portafirmesForm";
 		}
 		documentService.portafirmesEnviar(
 				entitatActual.getId(),
@@ -120,8 +120,34 @@ public class DocumentController extends BaseUserController {
 				command.getDataCaducitat());
 		return this.getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../../../../contingut/" + documentId,
+				"redirect:../../../contingut/" + documentId,
 				"document.controller.portafirmes.upload.ok");
+	}
+
+	@RequestMapping(value = "/{documentId}/firma/info", method = RequestMethod.GET)
+	public String portafirmesInfo(
+			HttpServletRequest request,
+			@PathVariable Long documentId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		model.addAttribute(
+				"portafirmes",
+				documentService.portafirmesInfo(
+						entitatActual.getId(),
+						documentId));
+		return "portafirmesInfo";
+	}
+
+	@RequestMapping(value = "/{documentId}/portafirmes/reintentar", method = RequestMethod.GET)
+	public String portafirmesReintentar(
+			HttpServletRequest request,
+			@PathVariable Long documentId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		documentService.portafirmesReintentar(
+				entitatActual.getId(),
+				documentId);
+		return "redirect:../firma/info";
 	}
 
 	@RequestMapping(value = "/{documentId}/portafirmes/cancel", method = RequestMethod.GET)
@@ -133,9 +159,9 @@ public class DocumentController extends BaseUserController {
 		documentService.portafirmesCancelar(
 				entitatActual.getId(),
 				documentId);
-		return this.getAjaxControllerReturnValueSuccess(
+		return this.getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../../../../../../contingut/" + documentId,
+				"redirect:../../../contingut/" + documentId,
 				"document.controller.portafirmes.cancel.ok");
 	}
 
@@ -145,7 +171,7 @@ public class DocumentController extends BaseUserController {
 			@PathVariable Long documentId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		documentService.custodiaPortafirmesReintentar(
+		documentService.portafirmesReintentar(
 				entitatActual.getId(),
 				documentId);
 		return this.getAjaxControllerReturnValueSuccess(

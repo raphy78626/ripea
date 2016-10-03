@@ -33,12 +33,6 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
-	<%--link href="<c:url value="/css/DT_bootstrap.css"/>" rel="stylesheet">
-	<script src="<c:url value="/js/jquery.dataTables.js"/>"></script>
-	<script src="<c:url value="/js/DT_bootstrap.js"/>"></script>
-	<script src="<c:url value="/js/jsrender.min.js"/>"></script>
-	<script src="<c:url value="/js/ripea.datatable.js"/>"></script>
-	<script src="<c:url value="/js/ripea.modal.js"/>"></script--%>
 	<script src="<c:url value="/js/clamp.js"/>"></script>
 	<script src="<c:url value="/js/jquery-ui-1.10.3.custom.min.js"/>"></script>
 <style>
@@ -300,10 +294,6 @@ $(document).ready(function() {
 								</c:otherwise>
 							</c:choose>
 						</c:if>
-						<dt><spring:message code="contingut.info.createl"/></dt>
-						<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
-						<dt><spring:message code="contingut.info.creatper"/></dt>
-						<dd>${contingut.createdBy.nom}</dd>
 						<c:if test="${contingut.expedient}">
 							<dt><spring:message code="contingut.info.arxiu"/></dt>
 							<dd>${contingut.arxiu.nom}</dd>
@@ -311,6 +301,8 @@ $(document).ready(function() {
 							<dd><spring:message code="expedient.estat.enum.${contingut.estat}"/></dd>
 						</c:if>
 						<c:if test="${contingut.document}">
+							<dt><spring:message code="contingut.info.estat"/></dt>
+							<dd><spring:message code="document.estat.enum.${contingut.estat}"/></dd>
 							<dt><spring:message code="contingut.info.data"/></dt>
 							<dd><fmt:formatDate value="${contingut.data}" pattern="dd/MM/yyyy"/></dd>
 							<c:if test="${contingut.documentTipus != 'FISIC'}">
@@ -318,6 +310,10 @@ $(document).ready(function() {
 								<dd>${contingut.versioDarrera.versio}</dd>
 							</c:if>
 						</c:if>
+						<dt><spring:message code="contingut.info.createl"/></dt>
+						<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
+						<dt><spring:message code="contingut.info.creatper"/></dt>
+						<dd>${contingut.createdBy.nom}</dd>
 					</dl>
 					<rip:blocContenidorAccions id="botons-accions-info" contingut="${contingut}" modeLlistat="true" mostrarObrir="false"/>
 				</div>

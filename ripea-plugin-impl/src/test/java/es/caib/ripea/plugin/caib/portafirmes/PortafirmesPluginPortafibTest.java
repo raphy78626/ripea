@@ -85,9 +85,9 @@ public class PortafirmesPluginPortafibTest {
 		bloc.setMinSignataris(1);
 		bloc.setObligatorietats(new boolean[] {true});
 		flux.add(bloc);
-		long documentId = plugin.upload(
+		String documentId = plugin.upload(
 				uploadDocument,
-				new Long(99),
+				"99",
 				"Prova d'enviament RIPEA",
 				"Aplicació RIPEA",
 				PortafirmesPrioritatEnum.NORMAL,

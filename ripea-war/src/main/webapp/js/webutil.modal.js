@@ -142,7 +142,11 @@
 									});
 								} else {
 									clon.on('click', function () {
-										element.click();
+										if ($(this).prop("tagName") == 'A') {
+											$(iframe).attr('src', $(this).attr('href'));
+										} else {
+											element.click();
+										}
 										return false;
 									});
 								}
