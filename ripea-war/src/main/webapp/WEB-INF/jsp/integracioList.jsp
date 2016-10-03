@@ -30,6 +30,10 @@
 				<th data-col-name="data" data-orderable="false" data-converter="datetime"><spring:message code="integracio.list.columna.data"/></th>
 				<th data-col-name="descripcio" data-orderable="false"><spring:message code="integracio.list.columna.descripcio"/></th>
 				<th data-col-name="tipus" data-orderable="false"><spring:message code="integracio.list.columna.tipus"/></th>
+				<th data-col-name="tempsResposta" data-template="#cellTempsTemplate" data-orderable="false">
+					<spring:message code="integracio.list.columna.temps.resposta"/>
+					<script id="cellTempsTemplate" type="text/x-jsrender">{{:tempsResposta}} ms</script>
+				</th>
 				<th data-col-name="estat" data-template="#cellEstatTemplate" data-orderable="false">
 					<spring:message code="integracio.list.columna.estat"/>
 					<script id="cellEstatTemplate" type="text/x-jsrender">

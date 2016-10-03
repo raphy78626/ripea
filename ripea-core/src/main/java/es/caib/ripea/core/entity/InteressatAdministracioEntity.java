@@ -9,8 +9,8 @@ import javax.persistence.EntityListeners;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.ripea.core.api.dto.IndiomaEnumDto;
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
+import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 
 /**
  * Classe del model de dades que representa un interessat de tipus administració pública.
@@ -52,7 +52,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			String email,
 			String telefon,
 			String observacions,
-			IndiomaEnumDto notificacioIdioma,
+			InteressatIdiomaEnumDto preferenciaIdioma,
 			Boolean notificacioAutoritzat) {
 		this.organCodi = organCodi;
 		this.documentTipus = documentTipus;
@@ -65,7 +65,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 		this.email =  email;
 		this.telefon =  telefon;
 		this.observacions =  observacions;
-		this.notificacioIdioma =  notificacioIdioma;
+		this.preferenciaIdioma =  preferenciaIdioma;
 		this.notificacioAutoritzat =  notificacioAutoritzat;
 	}
 
@@ -101,7 +101,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			String email,
 			String telefon,
 			String observacions,
-			IndiomaEnumDto notificacioIdioma,
+			InteressatIdiomaEnumDto preferenciaIdioma,
 			Boolean notificacioAutoritzat,
 			ExpedientEntity expedient,
 			InteressatEntity representant) {
@@ -117,7 +117,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				email,
 				telefon,
 				observacions,
-				notificacioIdioma,
+				preferenciaIdioma,
 				notificacioAutoritzat,
 				expedient,
 				representant);
@@ -142,7 +142,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				String email,
 				String telefon,
 				String observacions,
-				IndiomaEnumDto notificacioIdioma,
+				InteressatIdiomaEnumDto preferenciaIdioma,
 				Boolean notificacioAutoritzat,
 				ExpedientEntity expedient,
 				InteressatEntity representant) {
@@ -158,7 +158,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			built.email =  email;
 			built.telefon =  telefon;
 			built.observacions =  observacions;
-			built.notificacioIdioma =  notificacioIdioma;
+			built.preferenciaIdioma =  preferenciaIdioma;
 			built.notificacioAutoritzat =  notificacioAutoritzat;
 			built.expedient =  expedient;
 			built.representant =  representant;

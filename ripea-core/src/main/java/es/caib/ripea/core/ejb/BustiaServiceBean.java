@@ -231,33 +231,4 @@ public class BustiaServiceBean implements BustiaService {
 		delegate.deletePermis(entitatId, id, permisId);
 	}
 
-	@Override
-	public void registreReglaAplicarPendents() {
-		delegate.registreReglaAplicarPendents();
-	}
-
-	@Override
-	@RolesAllowed("IPA_ADMIN")
-	public boolean registreReglaReintentarAdmin(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId) {
-		return delegate.registreReglaReintentarAdmin(
-				entitatId,
-				bustiaId,
-				registreId);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public boolean registreReglaReintentarUser(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId) {
-		return delegate.registreReglaReintentarUser(
-				entitatId,
-				bustiaId,
-				registreId);
-	}
-
 }

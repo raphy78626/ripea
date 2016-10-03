@@ -65,7 +65,7 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 	@Override
 	public String getName() {
 		//logger.debug("[A] getName " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getArxiuNom());
-		return document.getDarreraVersio().getArxiuNom();
+		return document.getVersioDarrera().getArxiuNom();
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 	@Override
 	public Date getModifiedDate() {
 		//logger.debug("[A] getModifiedDate " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getLastModifiedDate());
-		return document.getDarreraVersio().getLastModifiedDate();
+		return document.getVersioDarrera().getLastModifiedDate();
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 	@Override
 	public Date getCreateDate() {
 		//logger.debug("[A] getCreateDate " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getCreatedDate());
-		return document.getDarreraVersio().getCreatedDate();
+		return document.getVersioDarrera().getCreatedDate();
 	}
 
 	@Override
@@ -125,13 +125,13 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 	@Override
 	public String getContentType(String accepts) {
 		//logger.debug("[A] getContentType " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getArxiuContentType());
-		return document.getDarreraVersio().getArxiuContentType();
+		return document.getVersioDarrera().getArxiuContentType();
 	}
 
 	@Override
 	public Long getContentLength() {
 		//logger.debug("[A] getContentLength " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getArxiuContentLength());
-		return document.getDarreraVersio().getArxiuContentLength();
+		return document.getVersioDarrera().getArxiuContentLength();
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 			fitxer = getDocumentService().descarregar(
 					entitat.getId(),
 					document.getId(),
-					document.getDarreraVersio().getVersio());
+					document.getVersioDarrera().getVersio());
 		}
 		return fitxer;
 	}

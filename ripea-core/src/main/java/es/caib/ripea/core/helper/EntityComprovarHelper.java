@@ -22,6 +22,8 @@ import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
+import es.caib.ripea.core.entity.DocumentNotificacioEntity;
+import es.caib.ripea.core.entity.DocumentPublicacioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
@@ -40,6 +42,8 @@ import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
+import es.caib.ripea.core.repository.DocumentNotificacioRepository;
+import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
@@ -97,6 +101,10 @@ public class EntityComprovarHelper {
 	private ReglaRepository reglaRepository;
 	@Resource
 	private InteressatRepository interessatRepository;
+	@Resource
+	private DocumentNotificacioRepository documentNotificacioRepository;
+	@Resource
+	private DocumentPublicacioRepository documentPublicacioRepository;
 
 	@Resource
 	private PermisosHelper permisosHelper;
@@ -386,30 +394,81 @@ public class EntityComprovarHelper {
 	public ExpedientEntity comprovarExpedient(
 			EntitatEntity entitat,
 			ArxiuEntity arxiu,
-			Long id) {
-		ExpedientEntity expedient = expedientRepository.findOne(id);
+			Long expedientId) {
+		return comprovarExpedient(
+				entitat,
+				 arxiu,
+				expedientId,
+				false,
+				false,
+				false);
+	}
+	public ExpedientEntity comprovarExpedient(
+			EntitatEntity entitat,
+			ArxiuEntity arxiu,
+			Long expedientId,
+			boolean comprovarPermisRead,
+			boolean comprovarPermisWrite,
+			boolean comprovarPermisDelete) {
+		ExpedientEntity expedient = expedientRepository.findOne(expedientId);
 		if (expedient == null) {
 			throw new NotFoundException(
-					id,
+					expedientId,
 					ExpedientEntity.class);
 		}
 		if (!entitat.getId().equals(expedient.getEntitat().getId())) {
 			throw new ValidationException(
-					id,
+					expedientId,
 					ExpedientEntity.class,
 					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de l'expedient");
 		}
 		if (arxiu != null && !arxiu.equals(expedient.getArxiu())) {
 			throw new ValidationException(
-					id,
+					expedientId,
 					ExpedientEntity.class,
 					"L'arxiu especificat (id=" + arxiu.getId() + ") no coincideix amb l'arxiu de l'expedient");
+		}
+		if (comprovarPermisRead || comprovarPermisWrite || comprovarPermisDelete) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			List<Permission> permisos = new ArrayList<Permission>();
+			StringBuilder permisosStr = new StringBuilder();
+			if (comprovarPermisRead) {
+				permisos.add(ExtendedPermission.READ);
+				if (permisosStr.length() > 0)
+					permisosStr.append(" && ");
+				permisosStr.append("READ");
+			}
+			if (comprovarPermisWrite) {
+				permisos.add(ExtendedPermission.WRITE);
+				if (permisosStr.length() > 0)
+					permisosStr.append(" && ");
+				permisosStr.append("WRITE");
+			}
+			if (comprovarPermisDelete) {
+				permisos.add(ExtendedPermission.DELETE);
+				if (permisosStr.length() > 0)
+					permisosStr.append(" && ");
+				permisosStr.append("DELETE");
+			}
+			boolean granted = permisosHelper.isGrantedAll(
+					expedient.getMetaExpedient().getId(),
+					MetaNodeEntity.class,
+					permisos.toArray(new Permission[permisos.size()]),
+					auth);
+			if (!granted) {
+				throw new PermissionDeniedException(
+						expedientId,
+						DocumentEntity.class,
+						auth.getName(),
+						permisosStr.toString());
+			}
 		}
 		return expedient;
 	}
 
 	public DocumentEntity comprovarDocument(
 			EntitatEntity entitat,
+			ExpedientEntity expedient,
 			Long documentId,
 			boolean comprovarPermisRead,
 			boolean comprovarPermisWrite,
@@ -425,6 +484,12 @@ public class EntityComprovarHelper {
 					documentId,
 					DocumentEntity.class,
 					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat del document");
+		}
+		if (expedient != null && !document.getExpedient().equals(expedient)) {
+			throw new ValidationException(
+					documentId,
+					DocumentEntity.class,
+					"L'expedient especificat (id=" + expedient.getId() + ") no coincideix amb l'entitat del document (id=" + document.getExpedient().getId() + ")");
 		}
 		if (document.getMetaDocument() != null && (comprovarPermisRead || comprovarPermisWrite || comprovarPermisDelete)) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -598,14 +663,73 @@ public class EntityComprovarHelper {
 	}
 
 	public InteressatEntity comprovarInteressat(
-			Long id) {
-		InteressatEntity interessat = interessatRepository.findOne(id);
+			ExpedientEntity expedient,
+			Long interessatId) {
+		InteressatEntity interessat = interessatRepository.findOne(interessatId);
 		if (interessat == null) {
 			throw new NotFoundException(
-					id,
+					interessatId,
 					InteressatEntity.class);
 		}
+		if (expedient != null && !interessat.getExpedient().equals(expedient)) {
+			throw new ValidationException(
+					interessatId,
+					InteressatEntity.class,
+					"L'expedient especificat (id=" + expedient.getId() + ") no coincideix amb l'expedeint de l'interessat (id=" + interessat.getExpedient().getId() + ")");
+		}
 		return interessat;
+	}
+
+	public DocumentNotificacioEntity comprovarNotificacio(
+			ExpedientEntity expedient,
+			DocumentEntity document,
+			Long notificacioId) {
+		DocumentNotificacioEntity notificacio = documentNotificacioRepository.findOne(
+				notificacioId);
+		if (notificacio == null) {
+			throw new NotFoundException(
+					notificacioId,
+					DocumentNotificacioEntity.class);
+		}
+		if (!notificacio.getExpedient().equals(expedient)) {
+			throw new ValidationException(
+					notificacioId,
+					DocumentNotificacioEntity.class,
+					"L'expedient especificat (id=" + expedient.getId() + ") no coincideix amb l'expedient de la notificació (id=" + notificacio.getExpedient().getId() + ")");
+		}
+		if (document != null && !notificacio.getDocument().equals(document)) {
+			throw new ValidationException(
+					notificacioId,
+					DocumentNotificacioEntity.class,
+					"El document especificat (id=" + document.getId() + ") no coincideix amb el document de la notificació (id=" + notificacio.getDocument().getId() + ")");
+		}
+		return notificacio;
+	}
+
+	public DocumentPublicacioEntity comprovarPublicacio(
+			ExpedientEntity expedient,
+			DocumentEntity document,
+			Long publicacioId) {
+		DocumentPublicacioEntity publicacio = documentPublicacioRepository.findOne(
+				publicacioId);
+		if (publicacio == null) {
+			throw new NotFoundException(
+					publicacioId,
+					DocumentNotificacioEntity.class);
+		}
+		if (!publicacio.getExpedient().equals(expedient)) {
+			throw new ValidationException(
+					publicacioId,
+					DocumentPublicacioEntity.class,
+					"L'expedient especificat (id=" + expedient.getId() + ") no coincideix amb l'expedient de la publicació (id=" + publicacio.getExpedient().getId() + ")");
+		}
+		if (document != null && !publicacio.getDocument().equals(document)) {
+			throw new ValidationException(
+					publicacioId,
+					DocumentPublicacioEntity.class,
+					"El document especificat (id=" + document.getId() + ") no coincideix amb el document de la publicació (id=" + publicacio.getDocument().getId() + ")");
+		}
+		return publicacio;
 	}
 
 }

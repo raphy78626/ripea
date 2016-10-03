@@ -26,6 +26,7 @@ import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
+import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -51,16 +52,22 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.ExpedientHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
+import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
+import es.caib.ripea.core.repository.DocumentEnviamentRepository;
+import es.caib.ripea.core.repository.DocumentNotificacioRepository;
+import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
+import es.caib.ripea.core.repository.InteressatRepository;
 import es.caib.ripea.core.repository.MetaExpedientRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
@@ -90,6 +97,14 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private RegistreRepository registreRepository;
 	@Resource
 	private BustiaRepository bustiaRepository;
+	@Resource
+	private InteressatRepository interessatRepository;
+	@Resource
+	private DocumentEnviamentRepository documentEnviamentRepository;
+	@Resource
+	private DocumentNotificacioRepository documentNotificacioRepository;
+	@Resource
+	private DocumentPublicacioRepository documentPublicacioRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -97,6 +112,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private PermisosHelper permisosHelper;
 	@Resource
 	private ContingutHelper contingutHelper;
+	@Resource
+	private ExpedientHelper expedientHelper;
 	@Resource
 	private PaginacioHelper paginacioHelper;
 	@Resource
@@ -108,7 +125,9 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Resource
 	private EmailHelper emailHelper;
 	@Resource
-	private ContingutLogHelper contenidorLogHelper;
+	private PluginHelper pluginHelper;
+	@Resource
+	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 
@@ -156,7 +175,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 			throw new ValidationException(
 					"<creacio>",
 					ExpedientEntity.class,
-					"No es pot crear un expedient sense un meta-expedient associat");			
+					"No es pot crear un expedient sense un meta-expedient associat");
 		}
 		ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
 				entitat,
@@ -187,7 +206,9 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
-				true);
+				true,
+				false,
+				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
@@ -218,7 +239,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 					contingutPendentId);
 		}
 		// Registra al log la creació de l'expedient
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.CREACIO,
 				null,
@@ -301,7 +322,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				metaExpedient,
 				arxiu);
 		// Registra al log la modificació de l'expedient
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
 				null,
@@ -345,6 +366,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
@@ -361,7 +384,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				true);
 		expedientRepository.delete(expedient);
 		// Registra al log l'eliminació de l'expedient
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.ELIMINACIO,
 				null,
@@ -474,6 +497,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// No s'ha de poder agafar un expedient no arrel
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			logger.error("No es pot agafar un expedient no arrel (id=" + id + ")");
@@ -509,7 +534,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 					usuariNou);
 		}
 		// Registra al log l'apropiació de l'expedient
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.RESERVA,
 				null,
@@ -546,6 +571,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// No s'ha de poder agafar un expedient no arrel
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				expedient,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			logger.error("No es pot agafar un expedient no arrel (id=" + id + ")");
@@ -578,7 +605,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				usuariOriginal,
 				usuariNou);
 		// Registra al log l'apropiacio de l'expedient
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.RESERVA,
 				null,
@@ -615,7 +642,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				expedient.getArxiu(),
 				null);
 		// Registra al log l'alliberació de l'expedient
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.ALLIBERACIO,
 				null,
@@ -648,7 +675,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				expedient.getArxiu(),
 				null);
 		// Registra al log l'alliberació de l'expedient
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.ALLIBERACIO,
 				null,
@@ -695,7 +722,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		expedient.updateEstat(
 				ExpedientEstatEnumDto.TANCAT,
 				motiu);
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.TANCAMENT,
 				null,
@@ -727,7 +754,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				acumulatId);
 		// Registra al log l'acumulació
-		ContingutLogEntity contenidorLog = contenidorLogHelper.log(
+		ContingutLogEntity contenidorLog = contingutLogHelper.log(
 				expedientDesti,
 				LogTipusEnumDto.ACUMULACIO,
 				null,
@@ -740,7 +767,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 					expedientDesti,
 					null);
 			// Registra al log el moviment del node
-			contenidorLogHelper.log(
+			contingutLogHelper.log(
 					contingut,
 					LogTipusEnumDto.MOVIMENT,
 					contenidorLog,
@@ -941,7 +968,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 
 	@Transactional
 	@Override
-	public void relacionar(
+	public void relacioCreate(
 			Long entitatId,
 			Long id,
 			Long relacionatId) {
@@ -958,65 +985,23 @@ public class ExpedientServiceImpl implements ExpedientService {
 				entitat,
 				null,
 				id);
-		ExpedientEntity expedientRelacionat = entityComprovarHelper.comprovarExpedient(
+		ExpedientEntity relacionat = entityComprovarHelper.comprovarExpedient(
 				entitat,
 				null,
 				relacionatId);
-		
-		expedient.getExpedientsRelacionatsAmb().add(expedientRelacionat);
-		
-		//TODO: enregistrar la informació en el log
-//		// Registra al log la relació
-//		ContingutLogEntity contenidorLog = contenidorLogHelper.log(
-//				expedient,
-//				LogTipusEnumDto.RELACIO,
-//				null,
-//				null,
-//				false,
-//				false);
-//		contenidorLog = contenidorLogHelper.log(
-//				expedientRelacionat,
-//				LogTipusEnumDto.RELACIO,
-//				contenidorLog,
-//				null,
-//				false,
-//				false);
-	}
-
-	private static final Logger logger = LoggerFactory.getLogger(ExpedientServiceImpl.class);
-
-
-	@Transactional(readOnly = true)
-	@Override
-	public List<ExpedientDto> relacioFindAmbExpedient(
-			Long entitatId,
-			Long expedientId) {
-		logger.debug("Obtenint la llista d'expedients relacionats ("
-				+ "entitatId=" + entitatId + ", "
-				+ "expedientId=" + expedientId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
+		expedient.addRelacionat(relacionat);
+		contingutLogHelper.log(
+				expedient,
+				LogTipusEnumDto.MODIFICACIO,
+				null,
+				null,
+				relacionat,
+				LogObjecteTipusEnumDto.RELACIO,
+				LogTipusEnumDto.CREACIO,
+				relacionatId.toString(),
+				null,
 				false,
 				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				expedientId);
-		
-		List<ExpedientEntity> relacionats = expedient.getExpedientsRelacionats();
-		Collections.sort(
-				relacionats, 
-				new Comparator<ExpedientEntity>() {
-				    @Override
-				    public int compare(ExpedientEntity e1, ExpedientEntity e2) {
-				        return e1.getNom().compareTo(e2.getNom());
-				    }
-				});
-		List<ExpedientDto> relacionatsDto = new ArrayList<ExpedientDto>();
-		for (ExpedientEntity e : relacionats)
-			relacionatsDto.add(toExpedientDto(e, false));		
-		return relacionatsDto;
 	}
 
 	@Transactional
@@ -1038,36 +1023,69 @@ public class ExpedientServiceImpl implements ExpedientService {
 				entitat,
 				null,
 				id);
-		ExpedientEntity expedientRelacionat = entityComprovarHelper.comprovarExpedient(
+		ExpedientEntity relacionat = entityComprovarHelper.comprovarExpedient(
 				entitat,
 				null,
 				relacionatId);
-		
-		boolean ret = true;
-		if (expedient.getExpedientsRelacionatsAmb().contains(expedientRelacionat)) {
-			expedient.getExpedientsRelacionatsAmb().remove(expedientRelacionat);
-		} else if (expedientRelacionat.getExpedientsRelacionatsAmb().contains(expedient)) {
-			expedientRelacionat.getExpedientsRelacionatsAmb().remove(expedient);
-		} else
-			ret = false;
-		if (ret) {
-			//TODO: enregistrar la informació en el log
-//			// Registra al log la relació
-//			ContingutLogEntity contenidorLog = contenidorLogHelper.log(
-//					expedient,
-//					LogTipusEnumDto.RELACIO_ESBORRAR,
-//					null,
-//					null,
-//					false,
-//					false);
-//			contenidorLog = contenidorLogHelper.log(
-//					expedientRelacionat,
-//					LogTipusEnumDto.RELACIO_ESBORRAR,
-//					contenidorLog,
-//					null,
-//					false,
-//					false);
+		boolean trobat = true;
+		if (expedient.getRelacionatsAmb().contains(relacionat)) {
+			expedient.removeRelacionat(relacionat);
+		} else if (relacionat.getRelacionatsAmb().contains(expedient)) {
+			relacionat.removeRelacionat(expedient);
+		} else {
+			trobat = false;
 		}
-		return ret;
+		if (trobat) {
+			contingutLogHelper.log(
+					expedient,
+					LogTipusEnumDto.MODIFICACIO,
+					null,
+					null,
+					relacionat,
+					LogObjecteTipusEnumDto.RELACIO,
+					LogTipusEnumDto.ELIMINACIO,
+					relacionatId.toString(),
+					null,
+					false,
+					false);
+		}
+		return trobat;
 	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<ExpedientDto> relacioFindAmbExpedient(
+			Long entitatId,
+			Long expedientId) {
+		logger.debug("Obtenint la llista d'expedients relacionats (" +
+				"entitatId=" + entitatId + ", " +
+				"expedientId=" + expedientId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
+				entitat,
+				null,
+				expedientId);
+		List<ExpedientEntity> relacionats = new ArrayList<ExpedientEntity>();
+		relacionats.addAll(expedient.getRelacionatsAmb());
+		relacionats.addAll(expedient.getRelacionatsPer());
+		Collections.sort(
+				relacionats, 
+				new Comparator<ExpedientEntity>() {
+				    @Override
+				    public int compare(ExpedientEntity e1, ExpedientEntity e2) {
+				        return e1.getNom().compareTo(e2.getNom());
+				    }
+				});
+		List<ExpedientDto> relacionatsDto = new ArrayList<ExpedientDto>();
+		for (ExpedientEntity e: relacionats)
+			relacionatsDto.add(toExpedientDto(e, false));		
+		return relacionatsDto;
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(ExpedientServiceImpl.class);
+
 }

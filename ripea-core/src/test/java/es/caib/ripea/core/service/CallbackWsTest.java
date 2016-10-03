@@ -23,6 +23,7 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import es.caib.ripea.core.service.ws.callback.Application;
+import es.caib.ripea.core.service.ws.callback.Attributes;
 import es.caib.ripea.core.service.ws.callback.CallbackRequest;
 import es.caib.ripea.core.service.ws.callback.CallbackResponse;
 import es.caib.ripea.core.service.ws.callback.Document;
@@ -51,6 +52,13 @@ public class CallbackWsTest {
 		Application application = new Application();
 		Document document = new Document();
 		document.setId(documentId);
+		Attributes attributes = new Attributes();
+		// 0 - DOCUMENT_PAUSAT;
+		// 1 - DOCUMENT_PENDENT;
+		// 2 - DOCUMENT_FIRMAT;
+		// 3 - DOCUMENT_REBUTJAT;
+		attributes.setState(new Integer(2));
+		document.setAttributes(attributes);
 		application.setDocument(document);
 		callbackRequest.setApplication(application);
 		CallbackResponse callbackResponse = getMCGDService().callback(

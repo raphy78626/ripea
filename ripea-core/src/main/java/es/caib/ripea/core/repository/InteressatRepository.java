@@ -29,10 +29,22 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "    InteressatEntity inter "
 			+ "where "
 			+ "    inter.expedient = :expedient "
+			+ "and (type(inter) = es.caib.ripea.core.entity.InteressatPersonaFisicaEntity or type(inter) = es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity) "
+			+ "order by "
+			+ "    inter.id asc")
+	List<InteressatEntity> findByExpedientPerNotificacions(
+			@Param("expedient") ExpedientEntity expedient);
+
+	@Query(	  "select "
+			+ "    inter "
+			+ "from "
+			+ "    InteressatEntity inter "
+			+ "where "
+			+ "    inter.expedient = :expedient "
 			+ "and inter.esRepresentant = false "
 			+ "order by "
 			+ "    inter.id asc")
-	List<InteressatEntity> findByExpedient(
+	List<InteressatEntity> findByExpedientAndNotRepresentant(
 			@Param("expedient") ExpedientEntity expedient);
 	
 	@Query(	  "select "
@@ -42,7 +54,7 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "where "
 			+ "    inter.expedient = :expedient "
 			+ "and inter.esRepresentant = false ")
-	Long countByExpedient(
+	long countByExpedient(
 			@Param("expedient") ExpedientEntity expedient);
 
 	@Query(	  "select inter "

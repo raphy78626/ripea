@@ -41,6 +41,7 @@ import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
+import es.caib.ripea.core.api.exception.PermissionDeniedException;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
@@ -174,6 +175,7 @@ public class ContingutHelper {
 			dto.setSistraPublicat(expedient.isSistraPublicat());
 			dto.setSistraUnitatAdministrativa(expedient.getSistraUnitatAdministrativa());
 			dto.setSistraClau(expedient.getSistraClau());
+			dto.setNumero(expedient.getNumero());
 			dto.setArxiu((ArxiuDto)toContingutDto(expedient.getArxiu()));
 			metaNode = conversioTipusHelper.convertir(
 					expedient.getMetaNode(),
@@ -191,14 +193,18 @@ public class ContingutHelper {
 			DocumentEntity document = (DocumentEntity)deproxied;
 			DocumentDto dto = new DocumentDto();
 			dto.setDocumentTipus(document.getDocumentTipus());
+			dto.setEstat(document.getEstat());
 			dto.setUbicacio(document.getUbicacio());
 			dto.setData(document.getData());
-			dto.setDarreraVersio(
-					conversioTipusHelper.convertir(
-							documentVersioRepository.findByDocumentAndVersio(
-									document,
-									document.getDarreraVersio()),
-							DocumentVersioDto.class));
+			dto.setCustodiaData(document.getCustodiaData());
+			dto.setCustodiaId(document.getCustodiaId());
+			dto.setCustodiaUrl(document.getCustodiaUrl());
+			if (document.getVersioDarrera() != null) {
+				dto.setVersioDarrera(
+						conversioTipusHelper.convertir(
+								document.getVersioDarrera(),
+								DocumentVersioDto.class));
+			}
 			metaNode = conversioTipusHelper.convertir(
 					document.getMetaNode(),
 					MetaDocumentDto.class);
@@ -540,7 +546,9 @@ public class ContingutHelper {
 
 	public ExpedientEntity getExpedientSuperior(
 			ContingutEntity contingut,
-			boolean incloureActual) {
+			boolean incloureActual,
+			boolean comprovarPermisRead,
+			boolean comprovarPermisWrite) {
 		ExpedientEntity expedientSuperior = null;
 		if (incloureActual && contingut instanceof ExpedientEntity) {
 			expedientSuperior = (ExpedientEntity)contingut;
@@ -555,6 +563,37 @@ public class ContingutHelper {
 						expedientSuperior = (ExpedientEntity)contenidorPath;
 						break;
 					}
+				}
+			}
+		}
+		if (expedientSuperior != null) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (comprovarPermisRead) {
+				boolean granted = permisosHelper.isGrantedAll(
+						expedientSuperior.getMetaExpedient().getId(),
+						MetaNodeEntity.class,
+						new Permission[] {ExtendedPermission.READ},
+						auth);
+				if (!granted) {
+					throw new PermissionDeniedException(
+							expedientSuperior.getMetaExpedient().getId(),
+							MetaExpedientEntity.class,
+							auth.getName(),
+							"READ");
+				}
+			}
+			if (comprovarPermisWrite) {
+				boolean granted = permisosHelper.isGrantedAll(
+						expedientSuperior.getMetaExpedient().getId(),
+						MetaNodeEntity.class,
+						new Permission[] {ExtendedPermission.WRITE},
+						auth);
+				if (!granted) {
+					throw new PermissionDeniedException(
+							expedientSuperior.getMetaExpedient().getId(),
+							MetaExpedientEntity.class,
+							auth.getName(),
+							"WRITE");
 				}
 			}
 		}

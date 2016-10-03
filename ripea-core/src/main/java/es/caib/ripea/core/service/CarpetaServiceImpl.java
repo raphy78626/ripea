@@ -95,7 +95,9 @@ public class CarpetaServiceImpl implements CarpetaService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
-				true);
+				true,
+				false,
+				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
@@ -162,7 +164,9 @@ public class CarpetaServiceImpl implements CarpetaService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				carpeta,
-				true);
+				true,
+				false,
+				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
@@ -214,6 +218,8 @@ public class CarpetaServiceImpl implements CarpetaService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				carpeta,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(

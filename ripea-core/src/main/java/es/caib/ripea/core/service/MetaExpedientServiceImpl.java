@@ -108,8 +108,18 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaExpedient.getDescripcio(),
 				metaExpedient.getClassificacioDocumental(),
 				metaExpedient.getClassificacioSia(),
+				metaExpedient.getUnitatAdministrativa(),
 				entitat,
-				metaExpedientPare).build();
+				metaExpedientPare,
+				metaExpedient.isNotificacioActiva()).
+				notificacioOrganCodi(metaExpedient.getNotificacioOrganCodi()).
+				notificacioLlibreCodi(metaExpedient.getNotificacioLlibreCodi()).
+				notificacioAvisTitol(metaExpedient.getNotificacioAvisTitol()).
+				notificacioAvisText(metaExpedient.getNotificacioAvisText()).
+				notificacioAvisTextSms(metaExpedient.getNotificacioAvisTextSms()).
+				notificacioOficiTitol(metaExpedient.getNotificacioOficiTitol()).
+				notificacioOficiText(metaExpedient.getNotificacioOficiText()).
+				build();
 		return conversioTipusHelper.convertir(
 				metaExpedientRepository.save(entity),
 				MetaExpedientDto.class);
@@ -128,7 +138,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				false,
 				true,
 				false);
-		MetaExpedientEntity metaExpedientEntitiy = entityComprovarHelper.comprovarMetaExpedient(
+		MetaExpedientEntity metaExpedientEntity = entityComprovarHelper.comprovarMetaExpedient(
 				entitat,
 				metaExpedient.getId(),
 				false,
@@ -141,15 +151,24 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 					false,
 					false);
 		}
-		metaExpedientEntitiy.update(
+		metaExpedientEntity.update(
 				metaExpedient.getCodi(),
 				metaExpedient.getNom(),
 				metaExpedient.getDescripcio(),
 				metaExpedient.getClassificacioDocumental(),
 				metaExpedient.getClassificacioSia(),
+				metaExpedient.getUnitatAdministrativa(),
+				metaExpedient.isNotificacioActiva(),
+				metaExpedient.getNotificacioOrganCodi(),
+				metaExpedient.getNotificacioLlibreCodi(),
+				metaExpedient.getNotificacioAvisTitol(),
+				metaExpedient.getNotificacioAvisText(),
+				metaExpedient.getNotificacioAvisTextSms(),
+				metaExpedient.getNotificacioOficiTitol(),
+				metaExpedient.getNotificacioOficiText(),
 				metaExpedientPare);
 		return conversioTipusHelper.convertir(
-				metaExpedientEntitiy,
+				metaExpedientEntity,
 				MetaExpedientDto.class);
 	}
 

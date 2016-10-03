@@ -43,8 +43,8 @@ pageContext.setAttribute(
 		});	
 		$('#expedientFiltreCommand').css('margin-bottom', '0px');
 	});
-	function relacionar(expedientRelacionatId) {
-		$('#expedientRelacionatId').val(expedientRelacionatId);	
+	function relacionar(relacionatId) {
+		$('#relacionatId').val(relacionatId);	
 		$('#expedientRelacionarCommand').submit();
 	}	
 	</script>
@@ -83,13 +83,13 @@ pageContext.setAttribute(
 			<div class="row">
 				<div class="col-sm-12">
 					<form:hidden path="entitatId"/>
-					<form:hidden path="expedientARelacionarId"/>
-					<rip:inputHidden name="expedientRelacionatId" required="true"/>
+					<form:hidden path="expedientId"/>
+					<rip:inputHidden name="relacionatId" required="true"/>
 				</div>
 			</div>
 			<table id="taulaDades" 
 					data-toggle="datatable" 
-					data-url="<c:url value="/contingut/${expedient.pare.id}/expedient/${expedientId}/relacionar/datatable"/>" 
+					data-url="<c:url value="/expedient/${expedientId}/relacio/datatable"/>" 
 					class="table table-bordered table-striped" 
 					data-default-order="7" 
 					data-default-dir="desc"
@@ -108,15 +108,14 @@ pageContext.setAttribute(
 						<th data-col-name="estat" data-template="#cellEstatTemplate" width="10%">
 							<spring:message code="expedient.list.user.columna.estat"/>
 							<script id="cellEstatTemplate" type="text/x-jsrender">
-						{{if estat == 'OBERT'}}<span class="fa fa-folder-open" title="Obert"></span>{{else}}<span class="fa fa-folder" title="Tancat">{{/if}}
-					</script>
+								{{if estat == 'OBERT'}}<span class="fa fa-folder-open" title="Obert"></span>{{else}}<span class="fa fa-folder" title="Tancat">{{/if}}
+							</script>
 						</th>
 						<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 							<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<button type="button" class="btn btn-success" onClick="relacionar({{:id}})"><span class="fa fa-link"></span> <spring:message code="comu.boto.relacionar"/></button>
-					</script>
-						</th>				
-						
+								<button type="button" class="btn btn-success" onClick="relacionar({{:id}})"><span class="fa fa-link"></span> <spring:message code="comu.boto.relacionar"/></button>
+							</script>
+						</th>
 					</tr>
 				</thead>
 			</table>

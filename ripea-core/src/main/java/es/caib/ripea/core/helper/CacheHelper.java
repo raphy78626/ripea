@@ -279,7 +279,7 @@ public class CacheHelper {
 		}
 		return unitat;
 	}
-	
+
 	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
 	public long countElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
@@ -325,27 +325,35 @@ public class CacheHelper {
 			EntitatEntity entitat,
 			String usuariCodi) {
 	}
-	
+
 	@Cacheable(value = "paisos")
 	public List<PaisDto> findPaisos() {
-		return dadesExternesHelper.findPaisos();
+		return conversioTipusHelper.convertirList(
+				pluginHelper.dadesExternesPaisosFindAll(),
+				PaisDto.class);
 	}
-	
+
 	@Cacheable(value = "provincies")
 	public List<ProvinciaDto> findProvincies() {
-		return dadesExternesHelper.findProvincies();
+		return conversioTipusHelper.convertirList(
+				pluginHelper.dadesExternesProvinciesFindAll(),
+				ProvinciaDto.class);
 	}
 
 	@Cacheable(value = "provinciesPerComunitat", key="#comunitatCodi")
 	public List<ProvinciaDto> findProvinciesPerComunitat(String comunitatCodi) {
-		return dadesExternesHelper.findProvinciesPerComunitat(comunitatCodi);
+		return conversioTipusHelper.convertirList(
+				pluginHelper.dadesExternesProvinciesFindAmbComunitat(comunitatCodi),
+				ProvinciaDto.class);
 	}
-	
+
 	@Cacheable(value = "municipisPerProvincia", key="#provinciaCodi")
 	public List<MunicipiDto> findMunicipisPerProvincia(String provinciaCodi) {
-		return dadesExternesHelper.findMunicipisPerProvincia(provinciaCodi);
+		return conversioTipusHelper.convertirList(
+				pluginHelper.dadesExternesMunicipisFindAmbProvincia(provinciaCodi),
+				MunicipiDto.class);
 	}
-	
+
 	@Cacheable(value = "municipisAmbNom", key="#municipiNom")
 	public MunicipiDto findMunicipiAmbNom(String provinciaCodi, String nom) {
 		MunicipiDto municipi = null;

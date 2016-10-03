@@ -24,6 +24,7 @@ import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
+import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -56,24 +57,15 @@ import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.DocumentHelper;
-import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
-import es.caib.ripea.core.helper.MetaNodeHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
-import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
-import es.caib.ripea.core.repository.BustiaRepository;
-import es.caib.ripea.core.repository.ContingutLogRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentVersioRepository;
-import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
-import es.caib.ripea.core.repository.MetaDadaRepository;
-import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeRepository;
-import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
@@ -85,27 +77,15 @@ import es.caib.ripea.core.repository.UsuariRepository;
 public class ContingutServiceImpl implements ContingutService {
 
 	@Resource
-	private EntitatRepository entitatRepository;
-	@Resource
 	private UsuariRepository usuariRepository;
 	@Resource
 	private EscriptoriRepository escriptoriRepository;
 	@Resource
 	private ContingutRepository contingutRepository;
 	@Resource
-	private ContingutLogRepository contingutLogRepository;
-	@Resource
-	private MetaDadaRepository metaDadaRepository;
-	@Resource
 	private DadaRepository dadaRepository;
 	@Resource
-	private MetaNodeMetaDadaRepository metaNodeMetaDadaRepository;
-	@Resource
 	private DocumentVersioRepository documentVersioRepository;
-	@Resource
-	private BustiaRepository bustiaRepository;
-	@Resource
-	private RegistreRepository registreRepository;
 	@Resource
 	private MetaNodeRepository metaNodeRepository;
 
@@ -114,19 +94,13 @@ public class ContingutServiceImpl implements ContingutService {
 	@Resource
 	PaginacioHelper paginacioHelper;
 	@Resource
-	private PermisosHelper permisosHelper;
-	@Resource
 	private CacheHelper cacheHelper;
-	@Resource
-	private MetaNodeHelper metaNodeHelper;
 	@Resource
 	private ContingutHelper contingutHelper;
 	@Resource
 	private DocumentHelper documentHelper;
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
-	@Resource
-	private EmailHelper emailHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
 	@Resource
@@ -167,7 +141,9 @@ public class ContingutServiceImpl implements ContingutService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
-				true);
+				true,
+				false,
+				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
 					expedientSuperior,
@@ -241,7 +217,9 @@ public class ContingutServiceImpl implements ContingutService {
 			// Comprova el permís de modificació de l'expedient superior
 			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 					contingut,
-					true);
+					true,
+					false,
+					false);
 			if (expedientSuperior != null) {
 				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
@@ -358,7 +336,9 @@ public class ContingutServiceImpl implements ContingutService {
 			// Comprova el permís de modificació de l'expedient superior
 			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 					contingut,
-					true);
+					true,
+					false,
+					false);
 			if (expedientSuperior != null) {
 				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
@@ -434,7 +414,9 @@ public class ContingutServiceImpl implements ContingutService {
 			// Comprova el permís de modificació de l'expedient superior
 			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 					contingut,
-					true);
+					true,
+					false,
+					false);
 			if (expedientSuperior != null) {
 				contingutHelper.comprovarPermisosContingut(
 						expedientSuperior,
@@ -549,6 +531,8 @@ public class ContingutServiceImpl implements ContingutService {
 		// Comprova el permís de modificació de l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
+				false,
+				false,
 				false);
 		if (expedientSuperior != null) {
 			contingutHelper.comprovarPermisosContingut(
@@ -862,10 +846,14 @@ public class ContingutServiceImpl implements ContingutService {
 		// Comprova si pertanyen al mateix expedient o si no pertanyen a cap
 		ExpedientEntity expedientSuperiorOrigen = contingutHelper.getExpedientSuperior(
 				contingutOrigen,
-				true);
+				true,
+				false,
+				false);
 		ExpedientEntity expedientSuperiorDesti = contingutHelper.getExpedientSuperior(
 				contingutDesti,
-				true);
+				true,
+				false,
+				false);
 		if (	(expedientSuperiorOrigen != null && expedientSuperiorDesti == null) ||
 				(expedientSuperiorOrigen == null && expedientSuperiorDesti != null)) {
 			logger.error("Els continguts origen i destí no pertanyen al mateix expedient ("
@@ -1388,18 +1376,18 @@ public class ContingutServiceImpl implements ContingutService {
 			creat = contingutRepository.save(carpetaNova);
 		} else if (contingutOrigen instanceof DocumentEntity) {
 			DocumentEntity documentOrigen = (DocumentEntity)contingutOrigen;
+			DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
+					documentOrigen,
+					documentOrigen.getVersioDarrera().getVersio());
 			DocumentEntity documentNou = DocumentEntity.getBuilder(
 					DocumentTipusEnumDto.DIGITAL,
+					DocumentEstatEnumDto.REDACCIO,
 					documentOrigen.getNom(),
 					documentOrigen.getData(),
 					documentOrigen.getExpedient(),
 					documentOrigen.getMetaDocument(),
 					contingutDesti,
 					entitat).build();
-			creat = contingutRepository.save(documentNou);
-			DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
-					documentOrigen,
-					documentOrigen.getDarreraVersio());
 			FitxerDto fitxer = documentHelper.getFitxerAssociat(
 					documentVersio);
 			int versio = 1;
@@ -1410,7 +1398,8 @@ public class ContingutServiceImpl implements ContingutService {
 					fitxer.getContentType(),
 					fitxer.getContingut());
 			documentVersioRepository.save(documentVersioNova);
-			documentNou.updateDarreraVersio(versio);
+			documentNou.updateVersioDarrera(documentVersioNova);
+			creat = contingutRepository.save(documentNou);
 		} else if (contingutOrigen instanceof ExpedientEntity) {
 			ExpedientEntity expedientOrigen = (ExpedientEntity)contingutOrigen;
 			creat = contingutHelper.crearNouExpedient(

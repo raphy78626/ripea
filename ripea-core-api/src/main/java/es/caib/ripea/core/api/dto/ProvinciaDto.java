@@ -1,19 +1,19 @@
+/**
+ * 
+ */
 package es.caib.ripea.core.api.dto;
 
-public class ProvinciaDto implements Comparable<ProvinciaDto>{
+import java.io.Serializable;
+
+/**
+ * Objecte que representa una província provinent d'una font externa.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
+public class ProvinciaDto implements Serializable {
+
 	private String codi;
 	private String nom;
-	
-	public ProvinciaDto() {
-		
-	}
-	
-	public ProvinciaDto(
-			String codi,
-			String nom) {
-		this.codi = codi;
-		this.nom = nom;
-	}
 
 	public String getCodi() {
 		return codi;
@@ -28,9 +28,6 @@ public class ProvinciaDto implements Comparable<ProvinciaDto>{
 		this.nom = nom;
 	}
 
-	@Override
-	public int compareTo(ProvinciaDto o) {
-		return nom.compareToIgnoreCase(o.getNom());
-	}
-	
+	private static final long serialVersionUID = -5902192920575301790L;
+
 }

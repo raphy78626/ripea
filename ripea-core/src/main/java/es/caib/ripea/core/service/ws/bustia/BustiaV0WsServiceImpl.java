@@ -57,8 +57,6 @@ public class BustiaV0WsServiceImpl implements BustiaV0WsService {
 		}
 	}
 
-
-
 	private static final Logger logger = LoggerFactory.getLogger(BustiaV0WsServiceImpl.class);
 
 }

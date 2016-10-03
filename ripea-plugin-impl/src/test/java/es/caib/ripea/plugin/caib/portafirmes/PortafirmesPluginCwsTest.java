@@ -24,7 +24,7 @@ public class PortafirmesPluginCwsTest {
 	private PortafirmesPlugin plugin;
 
 	private PortafirmesDocument uploadDocument;
-	private long documentId;
+	private String documentId;
 
 
 
@@ -80,7 +80,7 @@ public class PortafirmesPluginCwsTest {
 	@Test
 	public void download() throws Exception {
 		System.out.println(">>> Document id per descarregar: " + documentId);
-		documentId = 30078; // 30078
+		documentId = "30078";
 		PortafirmesDocument downloadDocument = plugin.download(documentId);
 		assertThat(
 				downloadDocument.getTitol(),

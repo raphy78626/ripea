@@ -51,6 +51,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				"entitat:" + entitat + ", " +
 				"unitatAdministrativa:" + unitatAdministrativa + ", " +
 				"numero:" + registreNumero + ")");
+		validarAnotacioRegistre(registreEntrada);
 		bustiaService.registreAnotacioCrear(
 				entitat,
 				RegistreTipusEnum.ENTRADA,
@@ -84,6 +85,44 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				"referenciaExpedient:" + referenciaExpedient + ")");
 		throw new ValidationException(
 				"Els enviaments de tipus EXPEDIENT encara no estan suportats");
+	}
+
+
+
+	private void validarAnotacioRegistre(
+			RegistreAnotacio registreEntrada) {
+		if (registreEntrada.getNumero() == 0) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'numero'");
+		}
+		if (registreEntrada.getData() == null) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'data'");
+		}
+		if (registreEntrada.getIdentificador() == null) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'identificador'");
+		}
+		if (registreEntrada.getExtracte() == null) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'extracte'");
+		}
+		if (registreEntrada.getOficinaCodi() == null) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'oficinaCodi'");
+		}
+		if (registreEntrada.getLlibreCodi() == null) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'llibreCodi'");
+		}
+		if (registreEntrada.getAssumpteTipusCodi() == null) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'assumpteTipusCodi'");
+		}
+		if (registreEntrada.getIdiomaCodi() == null) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'idiomaCodi'");
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaV1WsServiceImpl.class);

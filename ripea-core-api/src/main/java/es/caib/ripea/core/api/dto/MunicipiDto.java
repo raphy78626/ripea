@@ -1,19 +1,19 @@
+/**
+ * 
+ */
 package es.caib.ripea.core.api.dto;
 
-public class MunicipiDto implements Comparable<MunicipiDto> {
+import java.io.Serializable;
+
+/**
+ * Objecte que representa un municipi provinent d'una font externa.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
+public class MunicipiDto implements Serializable {
+
 	private String codi;
 	private String nom;
-	
-	public MunicipiDto() {
-		
-	}
-	
-	public MunicipiDto(
-			String codi,
-			String nom) {
-		this.codi = codi;
-		this.nom = nom;
-	}
 
 	public String getCodi() {
 		return codi;
@@ -28,9 +28,6 @@ public class MunicipiDto implements Comparable<MunicipiDto> {
 		this.nom = nom;
 	}
 
-	@Override
-	public int compareTo(MunicipiDto o) {
-		return nom.compareToIgnoreCase(o.getNom());
-	}
-	
+	private static final long serialVersionUID = -6781006082031161827L;
+
 }

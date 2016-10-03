@@ -23,7 +23,7 @@ import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.service.DadesExternesService;
-import es.caib.ripea.core.api.service.InteressatService;
+import es.caib.ripea.core.api.service.ExpedientInteressatService;
 import es.caib.ripea.war.command.InteressatCommand;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
 import es.caib.ripea.war.command.InteressatCommand.PersonaFisica;
@@ -38,10 +38,10 @@ import es.caib.ripea.war.helper.ValidationHelper;
  */
 @Controller
 @RequestMapping("/expedient")
-public class InteressatController extends BaseUserController {
+public class ExpedientInteressatController extends BaseUserController {
 
 	@Autowired
-	private InteressatService interessatService;
+	private ExpedientInteressatService expedientInteressatService;
 	@Autowired
 	private DadesExternesService dadesExternesService;
 
@@ -59,7 +59,7 @@ public class InteressatController extends BaseUserController {
 		model.addAttribute("interessatCommand", interessatCommand);
 		model.addAttribute("expedientId", expedientId);
 		try {
-			model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+			model.addAttribute("unitatsOrganitzatives", expedientInteressatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
 		} catch (Exception e) {
 			MissatgesHelper.warning(request, getMessage(request, "interessat.controller.unitat.error"));
 		}
@@ -84,13 +84,13 @@ public class InteressatController extends BaseUserController {
 			@PathVariable Long interessatId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		InteressatDto interessatDto = interessatService.findById(interessatId); 
+		InteressatDto interessatDto = expedientInteressatService.findById(interessatId); 
 		InteressatCommand interessatCommand = InteressatCommand.asCommand(interessatDto);
 		interessatCommand.setEntitatId(entitatActual.getId());
 		model.addAttribute("interessatCommand", interessatCommand);
 		model.addAttribute("expedientId", expedientId);
 		try {
-			model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+			model.addAttribute("unitatsOrganitzatives", expedientInteressatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
 		} catch (Exception e) {
 			MissatgesHelper.warning(request, getMessage(request, "interessat.controller.unitat.error"));
 		}
@@ -118,7 +118,6 @@ public class InteressatController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		
 		List<Class<?>> grups = new ArrayList<Class<?>>();
 		if (interessatCommand.getTipus() != null) {
 			switch (interessatCommand.getTipus()) {
@@ -137,11 +136,10 @@ public class InteressatController extends BaseUserController {
 				interessatCommand,
 				bindingResult,
 				grups.toArray(new Class[grups.size()]));
-		
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("expedientId", expedientId);
 			try {
-				model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+				model.addAttribute("unitatsOrganitzatives", expedientInteressatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
 			} catch (Exception e) {
 				MissatgesHelper.warning(request, getMessage(request, "interessat.controller.unitat.error"));
 			}
@@ -162,7 +160,6 @@ public class InteressatController extends BaseUserController {
 			model.addAttribute("netejar", false);
 			return "expedientInteressatForm";
 		}
-		
 		InteressatDto interessatDto = null;
 		switch (interessatCommand.getTipus()) {
 		case PERSONA_FISICA:
@@ -175,15 +172,14 @@ public class InteressatController extends BaseUserController {
 			interessatDto = InteressatCommand.asAdministracioDto(interessatCommand);
 			break;
 		}
-		
 		String msgKey = "interessat.controller.afegit.ok";
 		if (interessatCommand.getId() == null) {
-			interessatService.create(
+			expedientInteressatService.create(
 					entitatActual.getId(),
 					expedientId,
 					interessatDto);	
 		} else {
-			interessatService.update(
+			expedientInteressatService.update(
 					entitatActual.getId(),
 					expedientId,
 					interessatDto);
@@ -202,7 +198,7 @@ public class InteressatController extends BaseUserController {
 			@PathVariable Long interessatId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		interessatService.delete(
+		expedientInteressatService.delete(
 				entitatActual.getId(),
 				expedientId,
 				interessatId);
@@ -229,7 +225,7 @@ public class InteressatController extends BaseUserController {
 		model.addAttribute("esRepresentant", true);
 		model.addAttribute("interessatId", interessatId);
 		try {
-			model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+			model.addAttribute("unitatsOrganitzatives", expedientInteressatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
 		} catch (Exception e) {
 			MissatgesHelper.warning(request, getMessage(request, "interessat.controller.unitat.error"));
 		}
@@ -255,7 +251,7 @@ public class InteressatController extends BaseUserController {
 			@PathVariable Long representantId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		InteressatDto representantDto = interessatService.findRepresentantById(interessatId, representantId);
+		InteressatDto representantDto = expedientInteressatService.findRepresentantById(interessatId, representantId);
 //		InteressatDto representantDto = interessatService.findById(entitatActual.getId(), representantId);
 		InteressatCommand interessatCommand = InteressatCommand.asCommand(representantDto);
 		interessatCommand.setEntitatId(entitatActual.getId());
@@ -264,7 +260,7 @@ public class InteressatController extends BaseUserController {
 		model.addAttribute("esRepresentant", true);
 		model.addAttribute("interessatId", interessatId);
 		try {
-			model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+			model.addAttribute("unitatsOrganitzatives", expedientInteressatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
 		} catch (Exception e) {
 			MissatgesHelper.warning(request, getMessage(request, "interessat.controller.unitat.error"));
 		}
@@ -316,7 +312,7 @@ public class InteressatController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("expedientId", expedientId);
 			try {
-				model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
+				model.addAttribute("unitatsOrganitzatives", expedientInteressatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi()));
 			} catch (Exception e) {
 				MissatgesHelper.warning(request, getMessage(request, "interessat.controller.unitat.error"));
 			}
@@ -355,13 +351,13 @@ public class InteressatController extends BaseUserController {
 		
 		String msgKey = "interessat.controller.representant.afegit.ok";
 		if (interessatCommand.getId() == null) {
-			interessatService.create(
+			expedientInteressatService.create(
 					entitatActual.getId(),
 					expedientId,
 					interessatId,
 					interessatDto);	
 		} else {
-			interessatService.update(
+			expedientInteressatService.update(
 					entitatActual.getId(),
 					expedientId,
 					interessatId,
@@ -382,7 +378,7 @@ public class InteressatController extends BaseUserController {
 			@PathVariable Long representantId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		interessatService.delete(
+		expedientInteressatService.delete(
 				entitatActual.getId(),
 				expedientId,
 				interessatId,
@@ -402,7 +398,7 @@ public class InteressatController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable String codi,
 			Model model) {
-		return interessatService.findUnitatsOrganitzativesByCodi(codi);
+		return expedientInteressatService.findUnitatsOrganitzativesByCodi(codi);
 	}
 	
 	@RequestMapping(value = "/municipis/{codiProvincia}", method = RequestMethod.GET)

@@ -23,7 +23,7 @@
 		<c:if test="${required}">*</c:if>
 	</label>
 	<div class="controls col-xs-${campInputSize}">
-		<form:textarea path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}"/>
+		<form:textarea path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" rows="6"/>
 		<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
 	</div>
 </div>

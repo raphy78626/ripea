@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
+import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.war.command.ContingutFiltreCommand;
 import es.caib.ripea.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
 import es.caib.ripea.war.helper.DatatablesHelper;
@@ -49,7 +49,7 @@ public class ContingutAdminController extends BaseAdminController {
 	@Autowired
 	private ContingutService contingutService;
 	@Autowired
-	private BustiaService bustiaService;
+	private RegistreService registreService;
 	@Autowired
 	private MetaExpedientService metaExpedientService;
 	@Autowired
@@ -190,7 +190,7 @@ public class ContingutAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		boolean processatOk = bustiaService.registreReglaReintentarAdmin(
+		boolean processatOk = registreService.reglaReintentarAdmin(
 				entitatActual.getId(),
 				bustiaId,
 				registreId);

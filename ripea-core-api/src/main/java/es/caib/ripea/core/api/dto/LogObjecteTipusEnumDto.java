@@ -17,5 +17,8 @@ public enum LogObjecteTipusEnumDto {
 	DOCUMENT,
 	DADA,
 	INTERESSAT,
-	REGISTRE
+	REGISTRE,
+	RELACIO,
+	NOTIFICACIO,
+	PUBLICACIO
 }

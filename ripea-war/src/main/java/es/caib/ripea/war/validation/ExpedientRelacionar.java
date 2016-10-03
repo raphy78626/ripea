@@ -24,7 +24,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExpedientRelacionar {
 
-	String message() default "contenidor.expedient.relacionar.validacio";
+	String message() default "Error en la validació de la relació";
 
 	Class<?>[] groups() default {};
 

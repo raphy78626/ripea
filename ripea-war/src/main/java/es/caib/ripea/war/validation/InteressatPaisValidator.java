@@ -36,14 +36,16 @@ public class InteressatPaisValidator implements ConstraintValidator<InteressatPa
 				if ("724".equals(interessat.getPais())) {
 					if (interessat.getProvincia() == null || "".equals(interessat.getProvincia())) {
 						context
-							.buildConstraintViolationWithTemplate(MessageHelper.getInstance().getMessage("interessat.form.valid.provincia"))
+							.buildConstraintViolationWithTemplate(
+									MessageHelper.getInstance().getMessage("interessat.form.valid.provincia"))
 							.addNode("provincia")
 							.addConstraintViolation();
 						valid = false;
 					}
 					if (interessat.getMunicipi() == null || "".equals(interessat.getMunicipi())) {
 						context
-							.buildConstraintViolationWithTemplate(MessageHelper.getInstance().getMessage("interessat.form.valid.municipi"))
+							.buildConstraintViolationWithTemplate(
+									MessageHelper.getInstance().getMessage("interessat.form.valid.municipi"))
 							.addNode("municipi")
 							.addConstraintViolation();
 						valid = false;

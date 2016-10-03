@@ -56,4 +56,48 @@ public interface RegistreService {
 			Long registreId,
 			String motiu) throws NotFoundException;
 
+	/**
+	 * Processa periòdicament les regles pendents d'aplicar a les anotacions
+	 * de registre.
+	 */
+	public void reglaAplicarPendents();
+
+	/**
+	 * Torna a processar una anotació de registre pendent o amb error.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param bustiaId
+	 *            Atribut id de la bústia de la qual es vol modificar el permís.
+	 * @param registreId
+	 *            Atribut id de l'anotació de registre que es vol tornar a processar.
+	 * @return true si s'ha processat sense errors o false en cas contrari.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public boolean reglaReintentarAdmin(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) throws NotFoundException;
+
+	/**
+	 * Torna a processar una anotació de registre pendent o amb error.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param bustiaId
+	 *            Atribut id de la bústia de la qual es vol modificar el permís.
+	 * @param registreId
+	 *            Atribut id de l'anotació de registre que es vol tornar a processar.
+	 * @return true si s'ha processat sense errors o false en cas contrari.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public boolean reglaReintentarUser(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) throws NotFoundException;
+
 }

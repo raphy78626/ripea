@@ -3,16 +3,24 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.exception.ValidationException;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -20,8 +28,10 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
+import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
@@ -45,9 +55,13 @@ public class RegistreServiceImpl implements RegistreService {
 	@Resource
 	private ContingutHelper contingutHelper;
 	@Resource
+	private ContingutLogHelper contingutLogHelper;
+	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
+	@Resource
+	private ReglaHelper reglaHelper;
 	@Resource
 	private BustiaHelper bustiaHelper;
 
@@ -130,6 +144,131 @@ public class RegistreServiceImpl implements RegistreService {
 		bustiaHelper.evictElementsPendentsBustia(
 				entitat,
 				bustia);
+	}
+
+	@Override
+	@Transactional
+	@Async
+	@Scheduled(fixedRateString = "${config:es.caib.ripea.tasca.regla.pendent.periode.execucio}")
+	public void reglaAplicarPendents() {
+		logger.debug("Aplicant regles a les anotacions pendents");
+		List<RegistreEntity> pendents = registreRepository.findByReglaNotNullAndProcesEstatOrderByCreatedDateAsc(
+				RegistreProcesEstatEnum.PENDENT);
+		logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
+		if (!pendents.isEmpty()) {
+			for (RegistreEntity pendent: pendents) {
+				reglaAplicar(pendent);
+			}
+		} else {
+			logger.debug("No hi ha registres pendents de processar");
+		}
+	}
+
+	@Override
+	@Transactional
+	public boolean reglaReintentarAdmin(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) {
+		logger.debug("Reintentant aplicació de regla a anotació pendent (" +
+				"entitatId=" + entitatId + ", " +
+				"bustiaId=" + bustiaId + ", " +
+				"registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				false);
+		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
+				registreId,
+				bustia);
+		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
+				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
+			return reglaAplicar(anotacio);
+		} else {
+			throw new ValidationException(
+					anotacio.getId(),
+					RegistreEntity.class,
+					"L'estat de l'anotació no és PENDENT o ERROR");
+		}
+	}
+
+	@Override
+	@Transactional
+	public boolean reglaReintentarUser(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) {
+		logger.debug("Reintentant aplicació de regla a anotació pendent (" +
+				"entitatId=" + entitatId + ", " +
+				"bustiaId=" + bustiaId + ", " +
+				"registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				true);
+		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
+				registreId,
+				bustia);
+		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
+				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
+			return reglaAplicar(anotacio);
+		} else {
+			throw new ValidationException(
+					anotacio.getId(),
+					RegistreEntity.class,
+					"L'estat de l'anotació no és PENDENT o ERROR");
+		}
+	}
+
+
+
+	private boolean reglaAplicar(
+			RegistreEntity anotacio) {
+		contingutLogHelper.log(
+				anotacio,
+				LogTipusEnumDto.PROCESSAMENT,
+				null,
+				null,
+				false,
+				false);
+		logger.debug("Aplicant regla a anotació de registre (" +
+				"anotacioId=" + anotacio.getId() + ", " +
+				"anotacioNum=" + anotacio.getIdentificador() + ", " +
+				"reglaId=" + anotacio.getRegla().getId() + ", " +
+				"reglaTipus=" + anotacio.getRegla().getTipus().name() + ", " +
+				"metaExpedient=" + anotacio.getRegla().getMetaExpedient() + ", " +
+				"arxiu=" + anotacio.getRegla().getArxiu() + ", " +
+				"bustia=" + anotacio.getRegla().getBustia() + ")");
+		try {
+			reglaHelper.aplicar(anotacio.getId());
+			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
+			return true;
+		} catch (Exception ex) {
+			String procesError;
+			if (ex instanceof ScheduledTaskException) {
+				procesError = ex.getMessage();
+			} else {
+				procesError = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
+			}
+			reglaHelper.actualitzarEstatError(
+					anotacio.getId(),
+					procesError);
+			logger.debug("Processament anotació ERROR (" +
+					"id=" + anotacio.getId() + ", " +
+					"núm.=" + anotacio.getIdentificador() + "): " +
+					procesError);
+			return false;
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);

@@ -17,7 +17,6 @@ import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ExpedientService;
 
 /**
@@ -178,14 +177,26 @@ public class ExpedientServiceBean implements ExpedientService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void relacionar(
+	public void relacioCreate(
 			Long entitatId,
 			Long id,
-			Long acumulatId) {
-		delegate.relacionar(
+			Long relacionatId) {
+		delegate.relacioCreate(
 				entitatId,
 				id,
-				acumulatId);
+				relacionatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean relacioDelete(
+			Long entitatId, 
+			Long expedientId, 
+			Long relacionatId) {
+		return delegate.relacioDelete(
+				entitatId,
+				expedientId,
+				relacionatId);
 	}
 
 	@Override
@@ -194,15 +205,6 @@ public class ExpedientServiceBean implements ExpedientService {
 			Long entitatId, 
 			Long expedientId) {
 		return delegate.relacioFindAmbExpedient(entitatId, expedientId);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public boolean relacioDelete(
-			Long entitatId, 
-			Long expedientId, 
-			Long relacionatId) throws NotFoundException {
-		return delegate.relacioDelete(entitatId, expedientId, relacionatId);
 	}
 
 }

@@ -37,6 +37,7 @@ public class IntegracioHelper {
 	public static final String INTCODI_GESDOC = "GESDOC";
 	public static final String INTCODI_CONVERT = "CONVERT";
 	public static final String INTCODI_CALLBACK = "CALLBACK";
+	public static final String INTCODI_DADESEXT = "DADESEXT";
 
 	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = new HashMap<String, LinkedList<IntegracioAccioDto>>();
 	private Map<String, Integer> maxAccionsIntegracio = new HashMap<String, Integer>();
@@ -72,6 +73,9 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_CONVERT));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_DADESEXT));
 		return integracions;
 	}
 
@@ -84,13 +88,15 @@ public class IntegracioHelper {
 			String integracioCodi,
 			String descripcio,
 			Map<String, String> parametres,
-			IntegracioAccioTipusEnumDto tipus) {
+			IntegracioAccioTipusEnumDto tipus,
+			long tempsResposta) {
 		IntegracioAccioDto accio = new IntegracioAccioDto();
 		accio.setIntegracio(novaIntegracio(integracioCodi));
 		accio.setData(new Date());
 		accio.setDescripcio(descripcio);
 		accio.setParametres(parametres);
 		accio.setTipus(tipus);
+		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
 		addAccio(
 				integracioCodi,
@@ -101,6 +107,7 @@ public class IntegracioHelper {
 			String descripcio,
 			Map<String, String> parametres,
 			IntegracioAccioTipusEnumDto tipus,
+			long tempsResposta,
 			String errorDescripcio) {
 		IntegracioAccioDto accio = new IntegracioAccioDto();
 		accio.setIntegracio(novaIntegracio(integracioCodi));
@@ -108,6 +115,7 @@ public class IntegracioHelper {
 		accio.setDescripcio(descripcio);
 		accio.setParametres(parametres);
 		accio.setTipus(tipus);
+		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
 		accio.setErrorDescripcio(errorDescripcio);
 		addAccio(
@@ -119,6 +127,7 @@ public class IntegracioHelper {
 			String descripcio,
 			Map<String, String> parametres,
 			IntegracioAccioTipusEnumDto tipus,
+			long tempsResposta,
 			String errorDescripcio,
 			Throwable throwable) {
 		IntegracioAccioDto accio = new IntegracioAccioDto();
@@ -127,6 +136,7 @@ public class IntegracioHelper {
 		accio.setDescripcio(descripcio);
 		accio.setParametres(parametres);
 		accio.setTipus(tipus);
+		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
 		accio.setErrorDescripcio(errorDescripcio);
 		accio.setExcepcioMessage(
@@ -203,6 +213,8 @@ public class IntegracioHelper {
 			integracio.setNom("Com. ciutadà");
 		} else if (INTCODI_CALLBACK.equals(codi)) {
 			integracio.setNom("Callback PF");
+		} else if (INTCODI_DADESEXT.equals(codi)) {
+			integracio.setNom("Dades ext.");
 		}
 		return integracio;
 	}

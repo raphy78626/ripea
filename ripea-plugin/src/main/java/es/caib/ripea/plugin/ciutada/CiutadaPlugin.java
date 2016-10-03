@@ -5,7 +5,7 @@ import java.util.List;
 import es.caib.ripea.plugin.SistemaExternException;
 
 /**
- * Plugin per a l'enviament d'avisos i notificacions al ciutadà.
+ * Plugin per a la comunicació amb el ciutadà.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -17,6 +17,7 @@ public interface CiutadaPlugin {
 	 * 
 	 * @param expedientIdentificador
 	 * @param unitatAdministrativa
+	 * @param identificadorProcedimiento
 	 * @param idioma
 	 * @param descripcio
 	 * @param destinatari
@@ -25,12 +26,14 @@ public interface CiutadaPlugin {
 	 * @param avisosHabilitats
 	 * @param avisEmail
 	 * @param avisMobil
+	 * @return les dades de l'expedient creat
 	 * @throws SistemaExternException
 	 *             Si hi ha hagut algun problema per a crear l'expedient
 	 */
-	public void expedientCrear(
+	public CiutadaExpedientInformacio expedientCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
+			String unitatAdministrativa,
+			String identificadorProcedimiento,
 			String idioma,
 			String descripcio,
 			CiutadaPersona destinatari,
@@ -54,7 +57,7 @@ public interface CiutadaPlugin {
 	 */
 	public void avisCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
+			String unitatAdministrativa,
 			String titol,
 			String text,
 			String textSms,
@@ -64,25 +67,19 @@ public interface CiutadaPlugin {
 	 * Envia una notificació telemàtica al ciutadà.
 	 * 
 	 * @param expedientIdentificador
+	 * @param expedientClau
 	 * @param unitatAdministrativa
-	 * @param oficinaCodi
-	 * @param oficinaOrganCodi
+	 * @param registreOficinaCodi
+	 * @param registreOrganCodi
 	 * @param destinatari
-	 * @param destinatariPaisCodi
-	 * @param destinatariPaisNom
-	 * @param destinatariProvinciaCodi
-	 * @param destinatariProvinciaNom
-	 * @param destinatariLocalitatCodi
-	 * @param destinatariLocalitatNom
 	 * @param representat
-	 * @param notificacioIdioma
-	 * @param notificacioAssumpteTipus
-	 * @param notificacioOficiTitol
-	 * @param notificacioOficiText
-	 * @param notificacioAvisTitol
-	 * @param notificacioAvisText
-	 * @param notificacioAvisTextSms
-	 * @param notificacioConfirmarRecepcio
+	 * @param assumpteTipus
+	 * @param oficiTitol
+	 * @param oficiText
+	 * @param avisTitol
+	 * @param avisText
+	 * @param avisTextSms
+	 * @param confirmarRecepcio
 	 * @param annexos
 	 * @return les dades de la notificació creada
 	 * @throws SistemaExternException
@@ -90,25 +87,19 @@ public interface CiutadaPlugin {
 	 */
 	public CiutadaNotificacioResultat notificacioCrear(
 			String expedientIdentificador,
-			long unitatAdministrativa,
-			String oficinaCodi,
-			String oficinaOrganCodi,
+			String expedientClau,
+			String unitatAdministrativa,
+			String registreOficinaCodi,
+			String registreOrganCodi,
 			CiutadaPersona destinatari,
-			String destinatariPaisCodi,
-			String destinatariPaisNom,
-			String destinatariProvinciaCodi,
-			String destinatariProvinciaNom,
-			String destinatariLocalitatCodi,
-			String destinatariLocalitatNom,
 			CiutadaPersona representat,
-			String notificacioIdioma,
-			String notificacioAssumpteTipus,
-			String notificacioOficiTitol,
-			String notificacioOficiText,
-			String notificacioAvisTitol,
-			String notificacioAvisText,
-			String notificacioAvisTextSms,
-			boolean notificacioConfirmarRecepcio,
+			String assumpteTipus,
+			String oficiTitol,
+			String oficiText,
+			String avisTitol,
+			String avisText,
+			String avisTextSms,
+			boolean confirmarRecepcio,
 			List<CiutadaDocument> annexos) throws SistemaExternException;
 
 	/**
@@ -119,7 +110,7 @@ public interface CiutadaPlugin {
 	 * @throws SistemaExternException
 	 *             Si hi ha hagut algun problema per a obtenir l'estat de la notificació
 	 */
-	public CiutadaJustificantRecepcio notificacioObtenirJustificantRecepcio(
+	public CiutadaNotificacioEstat notificacioObtenirJustificantRecepcio(
 			String registreNumero) throws SistemaExternException;
 
 }

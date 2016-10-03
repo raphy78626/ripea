@@ -40,13 +40,6 @@
 						</div>
 						<script>
 							var tooltipTitle = '<dl class="text-left" style="min-width:120px">';
-							<c:if test="${fill.expedient or fill.document}">
-							tooltipTitle += '<dt><spring:message code="contingut.info.titol"/></dt>';
-							</c:if>
-							<c:if test="${not fill.expedient and not fill.document}">
-							tooltipTitle += '<dt><spring:message code="contingut.info.nom"/></dt>';
-							</c:if>
-							tooltipTitle += '<dd>${fn:escapeXml(fill.nom)}</dd>';
 							<c:if test="${fill.expedient}">
 							tooltipTitle += '<dt><spring:message code="contingut.info.numero"/></dt>';
 							tooltipTitle += '<dd>${fill.sequencia}/${fill.any}</dd>';
@@ -62,10 +55,6 @@
 								</c:when>
 							</c:choose>
 							</c:if>
-							tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
-									'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
-									'<dt><spring:message code="contingut.info.creatper"/></dt>' +
-									'<dd>${fn:escapeXml(fill.createdBy.nom)}</dd>';
 							<c:if test="${fill.expedient}">
 							tooltipTitle += '<dt><spring:message code="contingut.info.arxiu"/></dt>' +
 									'<dd>${fn:escapeXml(fill.arxiu.nom)}</dd>' +
@@ -73,11 +62,17 @@
 									'<dd><spring:message code="expedient.estat.enum.${fill.estat}"/></dd>';
 							</c:if>
 							<c:if test="${fill.document}">
-							tooltipTitle += '<dt><spring:message code="contingut.info.data"/></dt>' +
+							tooltipTitle += '<dt><spring:message code="contingut.info.estat"/></dt>' +
+									'<dd><spring:message code="document.estat.enum.${fill.estat}"/></dd>' +
+									'<dt><spring:message code="contingut.info.data"/></dt>' +
 									'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
 									'<dt><spring:message code="contingut.info.versio"/></dt>' +
-									'<dd>${fill.darreraVersio.versio}</dd>';
+									'<dd>${fill.versioDarrera.versio}</dd>';
 							</c:if>
+							tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
+									'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
+									'<dt><spring:message code="contingut.info.creatper"/></dt>' +
+									'<dd>${fn:escapeXml(fill.createdBy.nom)}</dd>';
 							tooltipTitle += '</dl>';
 							$('#info-fill-${fill.id}').tooltip({
 								trigger: 'hover',
@@ -148,8 +143,6 @@
 					</tr>
 					<script>
 						var tooltipTitle = '<dl class="text-left" style="min-width:120px">' +
-								'<dt><spring:message code="contingut.info.nom"/></dt>' +
-								'<dd>${fn:escapeXml(fill.nom)}</dd>' +
 								'<dt><spring:message code="contingut.info.tipus"/></dt>';
 						<c:choose>
 							<c:when test="${fill.expedient or fill.document}">
@@ -159,10 +152,6 @@
 						tooltipTitle += '<dd><spring:message code="carpeta.tipus.enum.${fill.tipus}"/></dd>';
 							</c:when>
 						</c:choose>
-						tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
-								'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
-								'<dt><spring:message code="contingut.info.creatper"/></dt>' +
-								'<dd>${fn:escapeXml(fill.createdBy.nom)}</dd>';
 						<c:if test="${fill.expedient}">
 						tooltipTitle += '<dt><spring:message code="contingut.info.arxiu"/></dt>' +
 								'<dd>${fn:escapeXml(fill.arxiu.nom)}</dd>' +
@@ -170,11 +159,17 @@
 								'<dd><spring:message code="expedient.estat.enum.${fill.estat}"/></dd>';
 						</c:if>
 						<c:if test="${fill.document}">
-						tooltipTitle += '<dt><spring:message code="contingut.info.data"/></dt>' +
+						tooltipTitle += '<dt><spring:message code="contingut.info.estat"/></dt>' +
+								'<dd><spring:message code="document.estat.enum.${fill.estat}"/></dd>' +
+								'<dt><spring:message code="contingut.info.data"/></dt>' +
 								'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
 								'<dt><spring:message code="contingut.info.versio"/></dt>' +
-								'<dd>${fill.darreraVersio.versio}</dd>';
+								'<dd>${fill.versioDarrera.versio}</dd>';
 						</c:if>
+						tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
+						'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
+						'<dt><spring:message code="contingut.info.creatper"/></dt>' +
+						'<dd>${fn:escapeXml(fill.createdBy.nom)}</dd>';
 						tooltipTitle += '</dl>';
 						$('#info-fill-${fill.id} > td:not(:last-child)').tooltip({
 							trigger: 'hover',

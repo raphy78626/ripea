@@ -19,9 +19,6 @@ public class DocumentVersioDto extends AuditoriaDto {
 	private String arxiuNom;
 	private String arxiuContentType;
 	private long arxiuContentLength;
-	private boolean custodiat;
-	private String custodiaId;
-	protected String custodiaUrl;
 
 	private String portafirmesConversioArxiuNom;
 	private List<PortafirmesEnviamentDto> portafirmesEnviaments;
@@ -57,24 +54,6 @@ public class DocumentVersioDto extends AuditoriaDto {
 	}
 	public void setArxiuContentLength(long arxiuContentLength) {
 		this.arxiuContentLength = arxiuContentLength;
-	}
-	public boolean isCustodiat() {
-		return custodiat;
-	}
-	public void setCustodiat(boolean custodiat) {
-		this.custodiat = custodiat;
-	}
-	public String getCustodiaId() {
-		return custodiaId;
-	}
-	public void setCustodiaId(String custodiaId) {
-		this.custodiaId = custodiaId;
-	}
-	public String getCustodiaUrl() {
-		return custodiaUrl;
-	}
-	public void setCustodiaUrl(String custodiaUrl) {
-		this.custodiaUrl = custodiaUrl;
 	}
 	public String getPortafirmesConversioArxiuNom() {
 		return portafirmesConversioArxiuNom;

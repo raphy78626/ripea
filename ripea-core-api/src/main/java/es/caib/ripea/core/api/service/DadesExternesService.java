@@ -25,7 +25,7 @@ public interface DadesExternesService {
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public List<PaisDto> findPaisos();
-	
+
 	/**
 	 * Retorna el llistat de totes les províncies.
 	 * 
@@ -33,7 +33,7 @@ public interface DadesExternesService {
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public List<ProvinciaDto> findProvincies();
-	
+
 	/**
 	 * Retorna el llistat de totes les províncies d'una comunitat.
 	 * 

@@ -23,35 +23,40 @@ import es.caib.ripea.plugin.portafirmes.PortafirmesPrioritatEnum;
 public class PortafirmesPluginMock implements PortafirmesPlugin {
 
 	@Override
-	public long upload(
+	public String upload(
 			PortafirmesDocument document,
-			Long documentTipus,
+			String documentTipus,
 			String motiu,
 			String remitent,
 			PortafirmesPrioritatEnum prioritat,
 			Date dataCaducitat,
 			List<PortafirmesFluxBloc> flux,
-			Long plantillaFluxId,
+			String plantillaFluxId,
 			List<PortafirmesDocument> annexos,
 			boolean signarAnnexos) throws SistemaExternException {
-		return System.currentTimeMillis();
+		//throw new SistemaExternException("Això no acaba d'anar be");
+		return new Long(System.currentTimeMillis()).toString();
 	}
 
 	@Override
 	public PortafirmesDocument download(
-			long id) throws SistemaExternException {
-		return null;
+			String id) throws SistemaExternException {
+		//throw new SistemaExternException("Això no acaba d'anar be");
+		PortafirmesDocument pdoc = new PortafirmesDocument();
+		pdoc.setArxiuNom("arxiu.pdf");
+		pdoc.setArxiuContingut(new byte[0]);
+		pdoc.setFirmat(true);
+		return pdoc;
 	}
 
 	@Override
 	public void delete(
-			long id) throws SistemaExternException {
-		
+			String id) throws SistemaExternException {
+		throw new SistemaExternException("Això no acaba d'anar be");
 	}
 
 	@Override
 	public List<PortafirmesDocumentTipus> findDocumentTipus() throws SistemaExternException {
-		
 		List<PortafirmesDocumentTipus> resposta = new ArrayList<PortafirmesDocumentTipus>();
 		PortafirmesDocumentTipus tipusDocument = new PortafirmesDocumentTipus();
 		for(int i = 0; i < 5; i++) {

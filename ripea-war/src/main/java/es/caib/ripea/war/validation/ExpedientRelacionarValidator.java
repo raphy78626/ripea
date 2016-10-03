@@ -23,14 +23,11 @@ import es.caib.ripea.war.helper.MessageHelper;
  */
 public class ExpedientRelacionarValidator implements ConstraintValidator<ExpedientRelacionar, ExpedientRelacionarCommand> {
 	
-	private String codiMissatge;
-
 	@Autowired
 	private ExpedientService expedientService;
 	
 	@Override
 	public void initialize(final ExpedientRelacionar anotacio) {
-		codiMissatge = anotacio.message();
 	}
 
 	@Override
@@ -39,22 +36,24 @@ public class ExpedientRelacionarValidator implements ConstraintValidator<Expedie
 			final ConstraintValidatorContext context) {
 		boolean valid = true;
 		// Comprova que no es relacioni l'expedient amb ell mateix
-		if (command.getExpedientARelacionarId().equals(command.getExpedientRelacionatId())) {
+		if (command.getExpedientId().equals(command.getRelacionatId())) {
 			context.buildConstraintViolationWithTemplate(
-					MessageHelper.getInstance().getMessage(this.codiMissatge + ".mateix"))
-			.addNode("expedientRelacionatId")
+					MessageHelper.getInstance().getMessage(
+							"contingut.expedient.relacionar.validacio.mateix"))
+			.addNode("relacionatId")
 			.addConstraintViolation();				
 			valid = false;
 		}
 		// Comprova que no estigui ja relacionat
-		for (ExpedientDto relacionat : expedientService.relacioFindAmbExpedient(
-														command.getEntitatId(),
-														command.getExpedientARelacionarId())) 
-			if (command.getExpedientRelacionatId().equals(relacionat.getId())){
+		for (ExpedientDto relacionat: expedientService.relacioFindAmbExpedient(
+				command.getEntitatId(),
+				command.getExpedientId())) 
+			if (command.getRelacionatId().equals(relacionat.getId())){
 				context.buildConstraintViolationWithTemplate(
-						MessageHelper.getInstance().getMessage(this.codiMissatge + ".repetit", new Object[] {relacionat.getNom()}))
-				.addNode("expedientRelacionatId")
-				.addConstraintViolation();				
+						MessageHelper.getInstance().getMessage(
+								"contingut.expedient.relacionar.validacio.repetida")).
+				addNode("relacionatId").
+				addConstraintViolation();				
 				valid = false;
 				break;
 			}
@@ -62,4 +61,5 @@ public class ExpedientRelacionarValidator implements ConstraintValidator<Expedie
 			context.disableDefaultConstraintViolation();
 		return valid;
 	}
+
 }
