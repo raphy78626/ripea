@@ -1,4 +1,4 @@
-# ![Logo](https://raw.githubusercontent.com/GovernIB/ripea/binaris/projectinfo_Attachments/icon.jpg) RIPEA
+# ![Logo](https://github.com/GovernIB/maven/raw/binaris/ripea/projectinfo_Attachments/icon.jpg) RIPEA
 
 **Descripció**
 
@@ -26,5 +26,5 @@ Actualment encara es troba en procés però es pot dir que les principals caract
 
 **Captures de pantalla**
 
-![Plana Principal](https://raw.githubusercontent.com/GovernIB/ripea/binaris/projectinfo_Attachments/screenshots/Captura_1.png)<br/>
+![Plana Principal](https://github.com/GovernIB/maven/raw/binaris/ripea/projectinfo_Attachments/screenshots/Captura_1.png)<br/>
 Plana Principal
