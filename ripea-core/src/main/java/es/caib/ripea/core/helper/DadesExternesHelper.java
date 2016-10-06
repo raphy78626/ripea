@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -39,6 +40,7 @@ public class DadesExternesHelper {
 			httpConnection.setDoOutput(true);
 
 			ObjectMapper mapper = new ObjectMapper();
+			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 			List<PaisDto> paisos = mapper.readValue(
 					httpConnection.getInputStream(), 
 					TypeFactory.defaultInstance().constructCollectionType(
@@ -63,6 +65,7 @@ public class DadesExternesHelper {
 			httpConnection.setDoOutput(true);
 			
 			ObjectMapper mapper = new ObjectMapper();
+			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 			List<ProvinciaDto> provincies = mapper.readValue(
 					httpConnection.getInputStream(), 
 					TypeFactory.defaultInstance().constructCollectionType(
@@ -87,6 +90,7 @@ public class DadesExternesHelper {
 			httpConnection.setDoOutput(true);
 			
 			ObjectMapper mapper = new ObjectMapper();
+			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 			
 			List<ProvinciaDto> provincies = new ArrayList<ProvinciaDto>();
 			
@@ -155,6 +159,7 @@ public class DadesExternesHelper {
 			httpConnection.setDoOutput(true);
 			
 			ObjectMapper mapper = new ObjectMapper();
+			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 			
 			List<MunicipiDto> municipis = mapper.readValue(
 					httpConnection.getInputStream(),

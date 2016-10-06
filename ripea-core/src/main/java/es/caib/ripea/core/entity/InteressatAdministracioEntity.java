@@ -27,21 +27,30 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 	
 	@Column(name = "organ_codi", length = 9)
 	protected String organCodi;
-
+	@Column(name = "organ_nom", length = 80)
+	protected String organNom;
+	
 	public String getOrganCodi() {
 		return organCodi;
 	}
 	public void setOrganCodi(String organCodi) {
 		this.organCodi = organCodi;
 	}
-
+	public String getOrganNom() {
+		return organNom;
+	}
+	public void setOrganNom(String organNom) {
+		this.organNom = organNom;
+	}
+	
 	@Override
-	public void updateIdentificador() {
-		//this.identificador = this.organCodi;
+	public String getIdentificador() {
+		return this.organNom;
 	}
 	
 	public void update(
 			String organCodi,
+			String organNom,
 			InteressatDocumentTipusEnumDto documentTipus,
 			String documentNum,
 			String pais,
@@ -55,6 +64,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			InteressatIdiomaEnumDto preferenciaIdioma,
 			Boolean notificacioAutoritzat) {
 		this.organCodi = organCodi;
+		this.organNom = organNom;
 		this.documentTipus = documentTipus;
 		this.documentNum = documentNum;
 		this.pais = pais;
@@ -91,6 +101,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 	 */
 	public static Builder getBuilder(
 			String organCodi,
+			String organNom,
 			InteressatDocumentTipusEnumDto documentTipus,
 			String documentNum,
 			String pais,
@@ -107,6 +118,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			InteressatEntity representant) {
 		return new Builder(
 				organCodi,
+				organNom,
 				documentTipus,
 				documentNum,
 				pais,
@@ -132,6 +144,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 		InteressatAdministracioEntity built;
 		Builder(
 				String organCodi,
+				String organNom,
 				InteressatDocumentTipusEnumDto documentTipus,
 				String documentNum,
 				String pais,
@@ -148,6 +161,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				InteressatEntity representant) {
 			built = new InteressatAdministracioEntity();
 			built.organCodi = organCodi;
+			built.organNom = organNom;
 			built.documentTipus = documentTipus;
 			built.documentNum = documentNum;
 			built.pais = pais;

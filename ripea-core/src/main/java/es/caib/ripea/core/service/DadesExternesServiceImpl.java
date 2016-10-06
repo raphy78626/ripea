@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import es.caib.ripea.core.api.dto.ComunitatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
+import es.caib.ripea.core.api.dto.NivellAdministracioDto;
 import es.caib.ripea.core.api.dto.PaisDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
 import es.caib.ripea.core.api.service.DadesExternesService;
@@ -36,6 +38,12 @@ public class DadesExternesServiceImpl implements DadesExternesService {
 	}
 	
 	@Override
+	public List<ComunitatDto> findComunitats() {
+		LOGGER.debug("Cercant totes les comunitats");
+		return cacheHelper.findComunitats();
+	}
+	
+	@Override
 	public List<ProvinciaDto> findProvincies() {
 		LOGGER.debug("Cercant totes les províncies");
 		return cacheHelper.findProvincies();
@@ -53,6 +61,12 @@ public class DadesExternesServiceImpl implements DadesExternesService {
 		return cacheHelper.findMunicipisPerProvincia(provinciaCodi);
 	}
 
+	@Override
+	public List<NivellAdministracioDto> findNivellAdministracions() {
+		LOGGER.debug("Cercant els nivells de les administracions");
+		return cacheHelper.findNivellAdministracio();
+	}
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesExternesServiceImpl.class);
 
 }

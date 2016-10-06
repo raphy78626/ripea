@@ -37,6 +37,7 @@ import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.HibernateHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
+import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.InteressatRepository;
@@ -58,6 +59,8 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 
 	@Resource
 	private CacheHelper cacheHelper;
+	@Resource
+	private PluginHelper pluginHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
@@ -175,8 +178,10 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					null).build();
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
+			UnitatOrganitzativaDto unitat = findUnitatsOrganitzativesByCodi(interessatAdministracioDto.getOrganCodi());
 			interessatEntity = InteressatAdministracioEntity.getBuilder(
-					interessatAdministracioDto.getOrganCodi(),
+					unitat.getCodi(),
+					unitat.getDenominacio(),
 					interessatAdministracioDto.getDocumentTipus(),
 					interessatAdministracioDto.getDocumentNum(),
 					interessatAdministracioDto.getPais(),
@@ -191,8 +196,6 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatAdministracioDto.getNotificacioAutoritzat(),
 					expedient,
 					null).build();
-			UnitatOrganitzativaDto unitat = findUnitatsOrganitzativesByCodi(interessatAdministracioDto.getOrganCodi());
-			interessatEntity.setIdentificador(unitat.getDenominacio());
 		}
 		if (pare != null)
 			interessatEntity.setEsRepresentant(true);
@@ -333,8 +336,10 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
 			interessatEntity = interessatRepository.findAdministracioById(interessat.getId());
+			UnitatOrganitzativaDto unitat = findUnitatsOrganitzativesByCodi(interessatAdministracioDto.getOrganCodi());
 			((InteressatAdministracioEntity)interessatEntity).update(
-					interessatAdministracioDto.getOrganCodi(),
+					unitat.getCodi(),
+					unitat.getDenominacio(),
 					interessatAdministracioDto.getDocumentTipus(),
 					interessatAdministracioDto.getDocumentNum(),
 					interessatAdministracioDto.getPais(),
@@ -347,8 +352,6 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatAdministracioDto.getObservacions(),
 					interessatAdministracioDto.getPreferenciaIdioma(),
 					interessatAdministracioDto.getNotificacioAutoritzat());
-			UnitatOrganitzativaDto unitat = findUnitatsOrganitzativesByCodi(interessatAdministracioDto.getOrganCodi());
-			interessatEntity.setIdentificador(unitat.getDenominacio());
 		}
 		interessatEntity = interessatRepository.save(interessatEntity);
 		// Registra al log la creació de l'interessat
@@ -578,12 +581,19 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 				expedientId);
 		List<InteressatEntity> interessats = interessatRepository.findByExpedientAndNotRepresentant(
 				expedient);
+//		List<InteressatDto> resposta = conversioTipusHelper.convertirList(
+//				interessats, 
+//				InteressatDto.class);
 		List<InteressatDto> resposta = new ArrayList<InteressatDto>();
 		for (InteressatEntity interessat: interessats) {
 			if (interessat instanceof InteressatPersonaFisicaEntity)
 				resposta.add(conversioTipusHelper.convertir(
 						interessat,
 						InteressatPersonaFisicaDto.class));
+			else if (interessat instanceof InteressatPersonaJuridicaEntity)
+				resposta.add(conversioTipusHelper.convertir(
+						interessat,
+						InteressatPersonaJuridicaDto.class));
 			else if (interessat instanceof InteressatAdministracioEntity)
 				resposta.add(conversioTipusHelper.convertir(
 						interessat,
@@ -724,6 +734,25 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 	@Override
 	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
 		return cacheHelper.findUnitatOrganitzativaPerCodi(codi);
+	}
+	
+	@Override
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByFiltre(
+			String codiDir3, 
+			String denominacio,
+			String nivellAdm, 
+			String comunitat, 
+			String provincia, 
+			String localitat, 
+			Boolean arrel) {
+		return pluginHelper.unitatsOrganitzativesFindByFiltre(
+				codiDir3, 
+				denominacio,
+				nivellAdm, 
+				comunitat, 
+				provincia, 
+				localitat, 
+				arrel);
 	}
 
 

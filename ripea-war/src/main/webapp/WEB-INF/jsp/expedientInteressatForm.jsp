@@ -63,6 +63,49 @@ body {
 .control-label {
 	padding-right: 5px !important;
 }
+.organ-btn {
+	position: absolute;
+	right: 0px;
+}
+#organ-filtre {
+	width: calc(83.33333333% - 30px);
+	margin-right: 15px;
+	margin-left: 15px;
+	margin-bottom: 10px;
+	padding: 10px 0px 5px 0px;
+}
+#organ-filtre .form-group{ 
+	margin-bottom: 5px;
+}
+#filtre-btn {
+	float: right;
+}
+.rmodal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('<c:url value="/img/loading.gif"/>') 
+                50% 50% 
+                no-repeat;
+}
+body.loading {
+    overflow: hidden;   
+}
+body.loading .rmodal {
+    display: block;
+}
+#organTitol {
+	font-weight: bold;
+	margin-bottom: 10px;
+    padding-bottom: 2px;
+    margin-top: -6px;
+    border-bottom: 1px solid #DDD;
+}
 </style>
 <script type="text/javascript">
 var interessatNoms = [];
@@ -77,6 +120,17 @@ $(document).ready(function() {
 
 	var munOrgan = '';
 	var netejar = <c:out value="${empty interessatCommand.id and empty netejar}"/>;
+	var organsCarregats = <c:out value="${not empty unitatsOrganitzatives}"/>;
+
+	$body = $("body");
+
+	$(document).on({
+		ajaxStart: function() { $body.addClass("loading");    },
+		ajaxStop: function() { $body.removeClass("loading"); }    
+	});
+	
+	// Posicionam el botó de l'administració
+	$('select#organCodi').closest(".controls").css('width', 'calc(83.33333333% - 50px)');
 	
 	$('form').submit(function() {
 		$('form input').removeAttr('disabled');
@@ -84,18 +138,13 @@ $(document).ready(function() {
 	});
  	$('select#tipus').change(function() {
  		munOrgan = '';
- 		var lPais = $("label[for='pais']");
-		var lProvincia = $("label[for='provincia']");
-		var lMunicipi = $("label[for='municipi']");
-		var lAdresa = $("label[for='adresa']");
-		var lCodiPostal = $("label[for='codiPostal']");
 
-		$('#pais').prop("readonly", false);
-		$('#provincia').prop("readonly", false);
-		$('#municipi').prop("readonly", false);
+		$('#pais').prop("disabled", false);
+		$('#provincia').prop("disabled", false);
+		$('#municipi').prop("disabled", false);
 		$('#codiPostal').prop("readonly", false);
 		$('#adresa').prop("readonly", false);
-		$('#documentTipus').prop("readonly", false);
+		$('#documentTipus').prop("disabled", false);
 		$('#documentNum').prop("readonly", false);
 
 		// Netejar
@@ -112,101 +161,60 @@ $(document).ready(function() {
 			$('textarea#observacions').val('');
 			$('#pais').val("724");
 			$('#pais').change();
-// 			$('#provincia').prop("disabled", true);
-// 			$('#municipi').prop("disabled", true);
  		}
  		netejar = true;
+
+		var tipusInt = 1;
 		
  		if (this.value == '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.PERSONA_FISICA%>') {
-			$('input#nom').prop( "disabled", false );
-			$('input#nom').closest(".form-group").removeClass('ocult');
-			$('input#llinatge1').prop( "disabled", false );
-			$('input#llinatge1').closest(".form-group").removeClass('ocult');
-			$('input#llinatge2').prop( "disabled", false );
-			$('input#llinatge2').closest(".form-group").removeClass('ocult');
-			$('select#documentTipus').prop( "disabled", false );
-			$('select#documentTipus').closest(".form-group").removeClass('ocult');
-			$('input#documentNum').prop( "disabled", false );
-			$('input#documentNum').closest(".form-group").removeClass('ocult');
-			
-			$('input#raoSocial').prop( "disabled", true );
-			$('input#raoSocial').closest(".form-group").addClass('ocult');
-			
-			$('select#organCodi').prop( "disabled", true );
-			$('select#organCodi').closest(".form-group").addClass('ocult');
-
-			lPais.text("<spring:message code="interessat.form.camp.pais"/>" + " *")
-			lProvincia.text("<spring:message code="interessat.form.camp.provincia"/>" + " *")
-			lMunicipi.text("<spring:message code="interessat.form.camp.municipi"/>" + " *")
-			lAdresa.text("<spring:message code="interessat.form.camp.adresa"/>" + " *")
-			lCodiPostal.text("<spring:message code="interessat.form.camp.codiPostal"/>" + " *")
+ 			tipusInt = 1;
  		} else if (this.value == '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.PERSONA_JURIDICA%>') {
- 			$('input#nom').prop( "disabled", true );
-			$('input#nom').closest(".form-group").addClass('ocult');
-			$('input#llinatge1').prop( "disabled", true );
-			$('input#llinatge1').closest(".form-group").addClass('ocult');
-			$('input#llinatge2').prop( "disabled", true );
-			$('input#llinatge2').closest(".form-group").addClass('ocult');
-			$('select#documentTipus').prop( "disabled", false );
-			$('select#documentTipus').closest(".form-group").removeClass('ocult');
-			$('input#documentNum').prop( "disabled", false );
-			$('input#documentNum').closest(".form-group").removeClass('ocult');
-			
-			$('input#raoSocial').prop( "disabled", false );
-			$('input#raoSocial').closest(".form-group").removeClass('ocult');
-			
-			$('select#organCodi').prop( "disabled", true );
-			$('select#organCodi').closest(".form-group").addClass('ocult');
-
-			lPais.text("<spring:message code="interessat.form.camp.pais"/>" + " *")
-			lProvincia.text("<spring:message code="interessat.form.camp.provincia"/>" + " *")
-			lMunicipi.text("<spring:message code="interessat.form.camp.municipi"/>" + " *")
-			lAdresa.text("<spring:message code="interessat.form.camp.adresa"/>" + " *")
-			lCodiPostal.text("<spring:message code="interessat.form.camp.codiPostal"/>" + " *")
+ 			tipusInt = 2;
  	 	} else {
- 	 		$('input#nom').prop( "disabled", true );
-			$('input#nom').closest(".form-group").addClass('ocult');
-			$('input#llinatge1').prop( "disabled", true );
-			$('input#llinatge1').closest(".form-group").addClass('ocult');
-			$('input#llinatge2').prop( "disabled", true );
-			$('input#llinatge2').closest(".form-group").addClass('ocult');
-			$('select#documentTipus').prop( "disabled", false );
-			$('select#documentTipus').closest(".form-group").removeClass('ocult');
-			$('input#documentNum').prop( "disabled", false );
-			$('input#documentNum').closest(".form-group").removeClass('ocult');
-			
-			$('input#raoSocial').prop( "disabled", true );
-			$('input#raoSocial').closest(".form-group").addClass('ocult');
-			
-			$('select#organCodi').prop( "disabled", false );
-			$('select#organCodi').closest(".form-group").removeClass('ocult');
+ 	 		tipusInt = 3;
 
-			lPais.text("<spring:message code="interessat.form.camp.pais"/>")
-			lProvincia.text("<spring:message code="interessat.form.camp.provincia"/>")
-			lMunicipi.text("<spring:message code="interessat.form.camp.municipi"/>")
-			lAdresa.text("<spring:message code="interessat.form.camp.adresa"/>")
-			lCodiPostal.text("<spring:message code="interessat.form.camp.codiPostal"/>")
-
-			$('#pais').prop("readonly", true);
-			$('#provincia').prop("readonly", true);
-			$('#municipi').prop("readonly", true);
+ 	 		if (organsCarregats == false) {
+ 	 			$.ajax({
+ 					type: 'GET',
+ 					url: "<c:url value="/expedient/organs"/>",
+ 					success: function(data) {
+ 						var selOrgan = $('#organCodi');
+ 						selOrgan.empty();
+ 						selOrgan.append("<option value=\"\"></option>");
+ 						if (data && data.length > 0) {
+ 							var items = [];
+ 							$.each(data, function(i, val) {
+ 								items.push({
+ 									"id": val.codi,
+ 									"text": val.denominacio
+ 								});
+ 								selOrgan.append("<option value=\"" + val.codi + "\">" + val.denominacio + "</option>");
+ 							});
+ 						}
+ 						var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
+ 						selOrgan.select2("destroy");
+ 						selOrgan.select2(select2Options);
+ 					}
+ 				});
+ 			 	organsCarregats = true
+ 	 	 	}
+ 	 	 	
+			$('#pais').prop("disabled", true);
+			$('#provincia').prop("disabled", true);
+			$('#municipi').prop("disabled", true);
 			$('#codiPostal').prop("readonly", true);
 			$('#adresa').prop("readonly", true);
-			$('#documentTipus').prop("readonly", true);
 			$('#documentTipus').val("NIF");
 			$('#documentTipus').change();
+			$('#documentTipus').prop("disabled", true);
 			$('#documentNum').prop("readonly", true);
 
-// 			$('select#organCodi').val('');
-// 			$('select#organCodi').change();
-					
  		}
-//  		var iframe = $('.modal-body iframe', window.parent.document);
-// 		var height = $('html').height();
-// 		iframe.height(height + 'px');
+ 		canviVisibilitat(tipusInt);
+ 		
  	});
  	if ($("#id").val() != '') {
-		$('select#tipus').prop( "readonly", true );
+		$('select#tipus').prop( "disabled", true );
 	}
  	$('input#documentNum').on('keydown', function(evt) {
 		$(this).val(function (_, val) {
@@ -222,10 +230,8 @@ $(document).ready(function() {
 				success: function(data) {
 					$('#pais').val(data.codiPais);
 					$('#pais').change();
-// 					$('#provincia').prop("disabled", (data.codiPais != '724'));
 					$('#provincia').val(data.codiProvincia);
 					$('#provincia').change();
-// 					$('#municipi').prop("disabled", (data.codiPais != '724'));
 		 	 		$('#municipi').val(data.localitat);
 		 	 		munOrgan = data.localitat;
 		 	 		$('#municipi').change();
@@ -248,8 +254,13 @@ $(document).ready(function() {
  	});
  	$('select#pais').change(function() {
  		if ($(this).val() == '724') {
- 			$('#provincia').prop("disabled", false);
-			$('#municipi').prop("disabled", false);
+ 	 		if ($('select#tipus').val() != '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.ADMINISTRACIO%>') {
+ 				$('#provincia').prop("disabled", false);
+				$('#municipi').prop("disabled", false);
+ 	 		} else {
+ 	 			$('#provincia').prop("disabled", true);
+				$('#municipi').prop("disabled", true);
+ 	 	 	}
 		} else {
 			$('#provincia').val("");
  	 		$('#provincia').change();
@@ -278,7 +289,78 @@ $(document).ready(function() {
 							selMunicipi.append("<option value=\"" + val.codi + "\">" + val.nom + "</option>");
 						});
 					}
-					var select2Options = {theme: 'bootstrap', allowClear: true, minimumResultsForSearch: "6"};
+					var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
+					selMunicipi.select2("destroy");
+					selMunicipi.select2(select2Options);
+					if (munOrgan != '') {
+						selMunicipi.val(munOrgan);
+						selMunicipi.change();
+					}
+				}
+			});
+ 	 	} else {
+ 	 		var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
+ 	 		$('#municipi').select2("destroy");
+ 	 		$('#municipi').select2(select2Options);
+ 	 	}
+ 	});
+
+
+	$('select#filtreComunitat').change(function(valor) {
+		var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
+ 		if ($(this).val() != '') {
+ 			$.ajax({
+				type: 'GET',
+				url: "<c:url value="/expedient/provincies/"/>" + $(this).val(),
+				success: function(data) {
+					var selProvincia = $('#filtreProvincia');
+					selProvincia.empty();
+					selProvincia.append("<option value=\"\"></option>");
+					if (data && data.length > 0) {
+						var items = [];
+						$.each(data, function(i, val) {
+							items.push({
+								"id": val.codi,
+								"text": val.nom
+							});
+							selProvincia.append("<option value=\"" + val.codi + "\">" + val.nom + "</option>");
+						});
+					}
+					selProvincia.select2("destroy");
+					selProvincia.select2(select2Options);
+					if (munOrgan != '')
+						selProvincia.val(munOrgan);
+					selProvincia.trigger("change");
+				}
+			});
+ 	 	} else {
+ 	 		$('#filtreProvincia').select2("destroy");
+ 	 		$('#filtreProvincia').select2(select2Options);
+ 	 	}
+ 		$('#filtreLocalitat').select2("destroy");
+	 	$('#filtreLocalitat').select2(select2Options);
+ 	});
+ 	 	 	 	 	
+	$('select#filtreProvincia').change(function(valor) {
+ 		if ($(this).val() != '') {
+ 			$.ajax({
+				type: 'GET',
+				url: "<c:url value="/expedient/municipis/"/>" + $(this).val(),
+				success: function(data) {
+					var selMunicipi = $('#filtreLocalitat');
+					selMunicipi.empty();
+					selMunicipi.append("<option value=\"\"></option>");
+					if (data && data.length > 0) {
+						var items = [];
+						$.each(data, function(i, val) {
+							items.push({
+								"id": val.codi + "-" + val.codiEntitatGeografica,
+								"text": val.nom
+							});
+							selMunicipi.append("<option value=\"" + val.codi + "-" + val.codiEntitatGeografica + "\">" + val.nom + "</option>");
+						});
+					}
+					var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
 					selMunicipi.select2("destroy");
 					selMunicipi.select2(select2Options);
 					if (munOrgan != '')
@@ -286,12 +368,110 @@ $(document).ready(function() {
 					selMunicipi.trigger("change");
 				}
 			});
+ 	 	} else {
+ 	 		var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
+ 	 		$('#filtreLocalitat').select2("destroy");
+ 	 		$('#filtreLocalitat').select2(select2Options);
  	 	}
  	});
+ 	 	 	 	 	
+	$('#filtre-btn').click(function(){
+		var cod = $('#filtreCodiDir3').val();
+		var den = $('#filtreDenominacio').val();
+		var niv = $('#filtreNivellAdministracio').val();
+		var com = $('#filtreComunitat').val();
+		var pro = $('#filtreProvincia').val();
+		var loc = $('#filtreLocalitat').val();
+		var arr = $('#filtreArrel').prop('checked');
+		$.ajax({
+			type: 'POST',
+			url: "<c:url value="/expedient/organ/filtre"/>",
+			dataType: "json",
+			data: {	codiDir3: cod,
+					denominacio: den,
+					nivellAdm: niv,
+					comunitat: com,
+					provincia: pro,
+					localitat: loc,
+					arrel: arr},
+			success: function(data) {
+				var selOrgan = $('#organCodi');
+				selOrgan.empty();
+				selOrgan.append("<option value=\"\"></option>");
+				if (data && data.length > 0) {
+					var items = [];
+					$.each(data, function(i, val) {
+						items.push({
+							"id": val.codi,
+							"text": val.denominacio
+						});
+						selOrgan.append("<option value=\"" + val.codi + "\">" + val.denominacio + "</option>");
+					});
+				}
+				var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
+				selOrgan.select2("destroy");
+				selOrgan.select2(select2Options);
+				selOrgan.change();
+				selOrgan.select2("open");
+				
+			}
+		});
+	});
+
+	$('#btnSave').click(function(){
+		$('#tipus').prop( "disabled", false );
+		$('#pais').prop("disabled", false);
+		$('#provincia').prop("disabled", false);
+		$('#municipi').prop("disabled", false);
+		$('#codiPostal').prop("disabled", false);
+		$('#adresa').prop("readonly", false);
+		$('#documentTipus').prop("disabled", false);
+		$('#documentNum').prop("readonly", false);
+		$('#interessatform').submit();
+	});
 	
 	$('select#tipus').change();
 // 	$('#pais').change();
 });
+
+function canviVisibilitat(tipus) {
+	$('input#nom').prop( "disabled", (tipus != 1) );
+	$('input#llinatge1').prop( "disabled", (tipus != 1) );
+	$('input#llinatge2').prop( "disabled", (tipus != 1) );
+	if (tipus == 1) {
+		$('input#nom').closest(".form-group").removeClass('ocult');
+		$('input#llinatge1').closest(".form-group").removeClass('ocult');
+		$('input#llinatge2').closest(".form-group").removeClass('ocult');
+	} else {
+		$('input#nom').closest(".form-group").addClass('ocult');
+		$('input#llinatge1').closest(".form-group").addClass('ocult');
+		$('input#llinatge2').closest(".form-group").addClass('ocult');
+	}
+		
+	$('input#raoSocial').prop( "disabled", (tipus != 2) );
+	if (tipus == 2) {
+		$('input#raoSocial').closest(".form-group").removeClass('ocult');
+	} else {
+		$('input#raoSocial').closest(".form-group").addClass('ocult');
+	}
+	
+	$('select#organCodi').prop( "disabled", (tipus != 3) );
+	if (tipus == 3) {
+		$('select#organCodi').closest(".form-group").removeClass('ocult');
+		$('.organ-btn').removeClass('ocult');
+	} else {
+		$('select#organCodi').closest(".form-group").addClass('ocult');
+		$('.organ-btn').addClass('ocult');
+		$('#organ-filtre').removeClass('in');
+	}
+
+	$("label[for='pais']").text("<spring:message code="interessat.form.camp.pais"/>" + (tipus != 3 ? " *" : ""))
+	$("label[for='provincia']").text("<spring:message code="interessat.form.camp.provincia"/>" + (tipus != 3 ? " *" : ""))
+	$("label[for='municipi']").text("<spring:message code="interessat.form.camp.municipi"/>" + (tipus != 3 ? " *" : ""))
+	$("label[for='adresa']").text("<spring:message code="interessat.form.camp.adresa"/>" + (tipus != 3 ? " *" : ""))
+	$("label[for='codiPostal']").text("<spring:message code="interessat.form.camp.codiPostal"/>" + (tipus != 3 ? " *" : ""))
+
+}
 </script>
 </head>
 <body>
@@ -305,45 +485,79 @@ $(document).ready(function() {
 		</c:otherwise>
 	</c:choose>
 	
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="interessatCommand">
+	<form:form id="interessatform" action="${formAction}" method="post" cssClass="form-horizontal" commandName="interessatCommand">
 		<form:hidden path="entitatId"/>
 		<form:hidden path="id"/>
 		<input type="hidden" id="id"/>
+		<!-- FILA: Tipus d'interessat -->
 		<rip:inputSelect name="tipus" textKey="interessat.form.camp.tipus" optionItems="${tipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" labelSize="2" />
+		<!-- FILA: Administració -->
+		<!-- Filtre de administració -->
+		<div class="row ">
+			<div class="col-xs-2"></div>
+			<div id="organ-filtre" class="col-xs-10 well collapse">
+				<div class="col-xs-12" id="organTitol"><span><spring:message code="interessat.form.organ.filtre.titol"/></span></div>
+				<div class="col-xs-6"><rip:inputText name="filtreCodiDir3" textKey="interessat.form.camp.organ.filtre.codi"/></div>
+				<div class="col-xs-6"><rip:inputText name="filtreDenominacio" textKey="interessat.form.camp.organ.filtre.denominacio"/></div>
+				<div class="col-xs-6"><rip:inputSelect name="filtreNivellAdministracio" textKey="interessat.form.camp.organ.filtre.nivell.administracio" optionItems="${nivellAdministracions}" optionTextAttribute="descripcio" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+				<div class="col-xs-6"><rip:inputSelect name="filtreComunitat" textKey="interessat.form.camp.organ.filtre.comunitat" optionItems="${comunitats}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+				<div class="col-xs-6"><rip:inputSelect name="filtreProvincia" textKey="interessat.form.camp.organ.filtre.provincies" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+				<div class="col-xs-6"><rip:inputSelect name="filtreLocalitat" textKey="interessat.form.camp.organ.filtre.localitat" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codiDir3" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+				<div class="col-xs-6"><rip:inputCheckbox name="filtreArrel" textKey="interessat.form.camp.organ.filtre.arrel" labelSize="4"/></div>
+				<div class="col-xs-6"><button id="filtre-btn" type="button" class="btn"><span class="fa fa-bars"></span>  <spring:message code="comu.boto.refrescar"/></button></div>
+			</div>
+		</div>
+		<!-- Selector d'administració i botó per obrir filtre -->
+		<div class="row">
+			<div class="col-xs-12 organ"><rip:inputSelect name="organCodi" textKey="interessat.form.camp.organCodi" optionItems="${unitatsOrganitzatives}" optionTextAttribute="denominacio" optionValueAttribute="codi" emptyOption="true" required="true" optionMinimumResultsForSearch="6" labelSize="2"/></div>
+			<div class="col-xs-1 organ-btn"><button type="button" class="btn" data-toggle="collapse" data-target="#organ-filtre"><span class="fa fa-bars"></span></button></div>
+		</div>
+		<!-- FILA: Document interessat -->
 		<div class="row">
 			<div class="col-xs-6"><rip:inputSelect name="documentTipus" textKey="interessat.form.camp.document.tipus" optionItems="${documentTipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
 			<div class="col-xs-6"><rip:inputText name="documentNum" textKey="interessat.form.camp.document.numero" required="true"/></div>
 		</div>
+		<!-- FILA: Nom interessat -->
 		<rip:inputText name="nom" textKey="interessat.form.camp.nom" required="true" labelSize="2"/>
+		<!-- FILA: Llinatges interessat -->
 		<div class="row">
 			<div class="col-xs-6"><rip:inputText name="llinatge1" textKey="interessat.form.camp.llinatge1" required="true"/></div>
 			<div class="col-xs-6"><rip:inputText name="llinatge2" textKey="interessat.form.camp.llinatge2"/></div>
 		</div>	
+		<!-- FILA: Raó social -->
 		<rip:inputText name="raoSocial" textKey="interessat.form.camp.raoSocial" required="true" labelSize="2"/>
-		<rip:inputSelect name="organCodi" textKey="interessat.form.camp.organCodi" optionItems="${unitatsOrganitzatives}" optionTextAttribute="denominacio" optionValueAttribute="codi" emptyOption="true" required="true" optionMinimumResultsForSearch="6" labelSize="2"/>
+		<!-- FILA: País i província -->
 		<div class="row">
-			<div class="col-xs-6"><rip:inputSelect name="pais" textKey="interessat.form.camp.pais" optionItems="${paisos}" optionTextAttribute="nom" optionValueAttribute="codiNumeric" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+			<div class="col-xs-6"><rip:inputSelect name="pais" textKey="interessat.form.camp.pais" optionItems="${paisos}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
 			<div class="col-xs-6"><rip:inputSelect name="provincia" textKey="interessat.form.camp.provincia" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+		</div>
+		<!-- FILA: Municipi i codi postal -->
+		<div class="row">
 			<div class="col-xs-6"><rip:inputSelect name="municipi" textKey="interessat.form.camp.municipi" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
 <%-- 			<div class="col-xs-6"><rip:inputText name="municipi" textKey="interessat.form.camp.municipi" required="true"/></div> --%>
 			<div class="col-xs-6"><rip:inputText name="codiPostal" textKey="interessat.form.camp.codiPostal" required="true"/></div>
 		</div>
+		<!-- FILA: Adressa -->
 		<rip:inputTextarea name="adresa" textKey="interessat.form.camp.adresa" required="true" labelSize="2"/>
+		<!-- FILA: Correu electrònic i telèfon -->
 		<div class="row">
 			<div class="col-xs-6"><rip:inputText name="email" textKey="interessat.form.camp.email"/></div>
 			<div class="col-xs-6"><rip:inputText name="telefon" textKey="interessat.form.camp.telefon"/></div>
 		</div>
+		<!-- FILA: Observacions -->
 		<rip:inputTextarea name="observacions" textKey="interessat.form.camp.observacions" labelSize="2"/>
+		<!-- FILA: Notificació (idioma i autorització) -->
 		<div class="row">
 			<div class="col-xs-6"><rip:inputSelect name="preferenciaIdioma" textKey="interessat.form.camp.idioma" optionItems="${idiomaEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
 			<div class="col-xs-6"><rip:inputCheckbox name="notificacioAutoritzat" textKey="interessat.form.camp.autoritzat" labelSize="10"/></div>
 		</div>
 		
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+			<button id="btnSave" type="button" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
  			<a href="<c:url value="/contingut/${expedientId}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 
+	<div class="rmodal"></div>
 </body>
 </html>

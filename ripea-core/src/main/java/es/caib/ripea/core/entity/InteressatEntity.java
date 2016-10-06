@@ -13,8 +13,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -95,8 +93,6 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	@Column(name = "not_autoritzat")
 	protected boolean notificacioAutoritzat;
 
-	@Column(name = "identificador", length = 80)
-	protected String identificador;
 	@Column(name = "es_representant")
 	protected boolean esRepresentant;
 
@@ -224,12 +220,7 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		this.version = version;
 	}
 	
-	public String getIdentificador() {
-		return identificador;
-	}
-	public void setIdentificador(String identificador) {
-		this.identificador = identificador;
-	}
+	public abstract String getIdentificador();
 	
 	public Long getRepresentantId() {
 		Long representantId = null;
@@ -253,15 +244,6 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		this.esRepresentant = esRepresentant;
 	}
 	
-	@PreUpdate
-	@PrePersist
-	public abstract void updateIdentificador();
-	
-	
-//	public void setIdentificador(InteressatEntity interessat) {
-//		this.updateIdentificador();
-//	}
-
 	private static final long serialVersionUID = -2299453443943600172L;
 
 }

@@ -22,13 +22,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
+import es.caib.ripea.core.api.dto.ComunitatDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
+import es.caib.ripea.core.api.dto.NivellAdministracioDto;
 import es.caib.ripea.core.api.dto.PaisDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
+import es.caib.ripea.core.api.dto.TipusViaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.entity.BustiaEntity;
@@ -93,8 +96,6 @@ public class CacheHelper {
 	private PluginHelper pluginHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
-	@Resource
-	private DadesExternesHelper dadesExternesHelper;
 
 	private Map<String, Set<String>> usuarisElementsPendentsPerEntitat;
 
@@ -251,6 +252,11 @@ public class CacheHelper {
 			String organCodi) {
 		UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(organCodi);
 		if (unitat != null) {
+			unitat.setAdressa(
+					getAdressa(
+							unitat.getTipusVia(), 
+							unitat.getNomVia(), 
+							unitat.getNumVia()));
 			if (unitat.getCodiPais() != null && !"".equals(unitat.getCodiPais()))
 				unitat.setCodiPais(("000" + unitat.getCodiPais()).substring(unitat.getCodiPais().length()));
 			if(unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat()))
@@ -331,6 +337,15 @@ public class CacheHelper {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesPaisosFindAll(),
 				PaisDto.class);
+//		return pluginHelper.findPaisos();
+	}
+	
+	@Cacheable(value = "comunitats")
+	public List<ComunitatDto> findComunitats() {
+		return conversioTipusHelper.convertirList(
+				pluginHelper.dadesExternesComunitatsFindAll(),
+				ComunitatDto.class);
+//		return pluginHelper.findComunitats();
 	}
 
 	@Cacheable(value = "provincies")
@@ -338,6 +353,7 @@ public class CacheHelper {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesProvinciesFindAll(),
 				ProvinciaDto.class);
+//		return pluginHelper.findProvincies();
 	}
 
 	@Cacheable(value = "provinciesPerComunitat", key="#comunitatCodi")
@@ -345,13 +361,47 @@ public class CacheHelper {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesProvinciesFindAmbComunitat(comunitatCodi),
 				ProvinciaDto.class);
+//		List<ProvinciaDto> provinciesComunitat = new ArrayList<ProvinciaDto>();
+//		
+//		Long comunitatCodiNum = null;
+//		try { comunitatCodiNum = Long.parseLong(comunitatCodi); } catch (Exception e) {}
+//
+//		if (comunitatCodiNum != null) {
+//			List<ProvinciaDto> provincies = findProvincies();
+//			for (ProvinciaDto provincia: provincies) {
+//				if (comunitatCodiNum.equals(provincia.getCodiComunitat()))
+//					provinciesComunitat.add(provincia);
+//			}
+//		}
+//		return provinciesComunitat;
 	}
+	
+//	@Cacheable(value = "municipis")
+//	public List<MunicipiDto> findMunicipis() {
+//		return conversioTipusHelper.convertirList(
+//				pluginHelper.dadesExternesMunicipisFindAll(),
+//				MunicipiDto.class);
+////		return pluginHelper.findLocalitats();
+//	}
 
 	@Cacheable(value = "municipisPerProvincia", key="#provinciaCodi")
 	public List<MunicipiDto> findMunicipisPerProvincia(String provinciaCodi) {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesMunicipisFindAmbProvincia(provinciaCodi),
 				MunicipiDto.class);
+//		List<MunicipiDto> municipisProvincia = new ArrayList<MunicipiDto>();
+//		
+//		Long provinciaCodiNum = null;
+//		try { provinciaCodiNum = Long.parseLong(provinciaCodi); } catch (Exception e) {}
+//
+//		if (provinciaCodiNum != null) {
+//			List<MunicipiDto> municipis = findMunicipis();
+//			for (MunicipiDto municipi: municipis) {
+//				if (provinciaCodiNum.equals(municipi.getCodiProvincia()))
+//					municipisProvincia.add(municipi);
+//			}
+//		}
+//		return municipisProvincia;
 	}
 
 	@Cacheable(value = "municipisAmbNom", key="#municipiNom")
@@ -361,18 +411,31 @@ public class CacheHelper {
 		if (municipis != null) {
 			for (MunicipiDto mun: municipis) {
 												
-				if (	mun.getNom().equals(nom) || 
-						(mun.getNom().equals("Palma") && nom.equals("Palma de Mallorca")) || 						// Excepció: Palma
-						(mun.getNom().equals("Maó") && nom.equals("Maó-Mahón")) ||									// Excepció: Maó
-						(mun.getNom().equals("Santa Eulalia del Río") && nom.equals("Santa Eulària des Riu")) ||	// Excepció: Santa Eulària des Riu
-						(mun.getNom().equals("Deyá") && nom.equals("Deià"))											// Excepció: Deià
+				if (	mun.getNom().equals(nom) //|| 
+						//(mun.getNom().equals("Palma") && nom.equals("Palma de Mallorca")) || 							// Excepció: Palma
+						//(mun.getNom().equals("Maó") && nom.equals("Maó-Mahón")) ||									// Excepció: Maó
+						//(mun.getNom().equals("Santa Eulalia del Río") && nom.equals("Santa Eulària des Riu")) ||		// Excepció: Santa Eulària des Riu
+						//(mun.getNom().equals("Deyá") && nom.equals("Deià"))											// Excepció: Deià
 				) { 
 					municipi = mun;
 					break;
 				}
 			}
+			if (municipi == null) {
+				logger.error("No s'ha trobat cap municipi amb el nom: '" + nom + "' a la provincia " + provinciaCodi);
+			}
 		}
 		return municipi;
+	}
+	
+	@Cacheable(value = "nivellAdministracio")
+	public List<NivellAdministracioDto> findNivellAdministracio() {
+		return pluginHelper.findNivellAdministracio();
+	}
+	
+	@Cacheable(value = "tipusVia")
+	public List<TipusViaDto	> findTipusVia() {
+		return pluginHelper.findTipusVia();
 	}
 
 	private ValidacioErrorDto crearValidacioError(
@@ -411,6 +474,29 @@ public class CacheHelper {
 		usuaris.add(usuariCodi);
 	}
 
+	private String getAdressa(
+			Long tipusVia,
+			String nomVia,
+			String numVia) {
+		
+		String adressa = "";
+		if (tipusVia != null) {
+			List<TipusViaDto> tipus = findTipusVia();
+			for (TipusViaDto tvia: tipus) {
+				if (tvia.getCodi().equals(tipusVia)) {
+					adressa = tvia.getDescripcio() + " ";
+					break;
+				}
+			}
+		}
+		
+		adressa += nomVia;
+		if (numVia != null) {
+			adressa += ", " + numVia;
+		}
+		return adressa;
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(CacheHelper.class);
 
 }

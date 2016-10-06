@@ -73,7 +73,7 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "and (:esNullLlinatge2 = true or inter.llinatge2 = :llinatge2) "
 			+ "and inter.esRepresentant = false "
 			+ "order by "
-			+ "    inter.identificador desc")
+			+ "    inter.llinatge1 desc, inter.llinatge2 desc, inter.nom desc")
 	List<InteressatPersonaFisicaEntity> findByFiltrePersonaFisica(
 			@Param("esNullNom") boolean esNullNom,
 			@Param("nom") String nom,
@@ -98,7 +98,7 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "and (:esNullRaoSocial = true or inter.raoSocial = :raoSocial) "
 			+ "and inter.esRepresentant = false "
 			+ "order by "
-			+ "    inter.identificador desc")
+			+ "    inter.raoSocial desc")
 	List<InteressatPersonaJuridicaEntity> findByFiltrePersonaJuridica(
 			@Param("esNullDocumentNum") boolean esNullDocumentNum,
 			@Param("documentNum") String documentNum,
@@ -117,7 +117,7 @@ public interface InteressatRepository extends JpaRepository<InteressatEntity, Lo
 			+ "where "
 			+ "    (:esNullOrganCodi = true or inter.organCodi = :organCodi) "
 			+ "order by "
-			+ "    inter.identificador desc")
+			+ "    inter.organNom desc")
 	List<InteressatAdministracioEntity> findByFiltreAdministracio(
 			@Param("esNullOrganCodi") boolean esNullOrganCodi,
 			@Param("organCodi") String organCodi);

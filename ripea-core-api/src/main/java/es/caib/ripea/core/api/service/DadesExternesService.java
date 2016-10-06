@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.ripea.core.api.dto.ComunitatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
+import es.caib.ripea.core.api.dto.NivellAdministracioDto;
 import es.caib.ripea.core.api.dto.PaisDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
 
@@ -35,6 +37,14 @@ public interface DadesExternesService {
 	public List<ProvinciaDto> findProvincies();
 
 	/**
+	 * Retorna el llistat de totes les comunitats.
+	 * 
+	 * @return el llistat de comunitats.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<ComunitatDto> findComunitats();
+	
+	/**
 	 * Retorna el llistat de totes les províncies d'una comunitat.
 	 * 
 	 * @return el llistat de províncies.
@@ -51,5 +61,15 @@ public interface DadesExternesService {
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public List<MunicipiDto> findMunicipisPerProvincia(String provinciaCodi);
+
+	/**
+	 * Retorna el llistat dels nivells de les administracions.
+	 * 
+	 * @param provinciaCodi
+	 *            El codi de la província.
+	 * @return el llistat de nivells de administracions.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<NivellAdministracioDto> findNivellAdministracions();
 
 }

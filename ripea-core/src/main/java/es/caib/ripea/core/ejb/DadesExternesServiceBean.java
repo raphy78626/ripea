@@ -12,7 +12,9 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.ComunitatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
+import es.caib.ripea.core.api.dto.NivellAdministracioDto;
 import es.caib.ripea.core.api.dto.PaisDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
 import es.caib.ripea.core.api.service.DadesExternesService;
@@ -39,6 +41,12 @@ public class DadesExternesServiceBean implements DadesExternesService {
 	
 	@Override
 	@RolesAllowed("tothom")
+	public List<ComunitatDto> findComunitats() {
+		return delegate.findComunitats();
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
 	public List<ProvinciaDto> findProvincies() {
 		return delegate.findProvincies();
 	}
@@ -52,6 +60,12 @@ public class DadesExternesServiceBean implements DadesExternesService {
 	@RolesAllowed("tothom")
 	public List<MunicipiDto> findMunicipisPerProvincia(String provinciaCodi) {
 		return delegate.findMunicipisPerProvincia(provinciaCodi);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<NivellAdministracioDto> findNivellAdministracions() {
+		return delegate.findNivellAdministracions();
 	}
 
 }

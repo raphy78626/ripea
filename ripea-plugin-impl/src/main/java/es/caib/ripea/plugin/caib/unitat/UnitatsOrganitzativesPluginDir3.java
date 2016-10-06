@@ -3,9 +3,11 @@
  */
 package es.caib.ripea.plugin.caib.unitat;
 
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -13,6 +15,10 @@ import javax.xml.ws.BindingProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWs;
 import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWsService;
@@ -91,7 +97,10 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 						unidad.getCodAmbProvincia(),
 						unidad.getCodPostal(),
 						unidad.getDescripcionLocalidad(),
-						getAdressa(unidad.getCodigoTipoVia(), unidad.getNombreVia(), unidad.getNumVia()));
+						//getAdressa(unidad.getCodigoTipoVia(), unidad.getNombreVia(), unidad.getNumVia()));
+						unidad.getCodigoTipoVia(), 
+						unidad.getNombreVia(), 
+						unidad.getNumVia());
 			} else {
 				LOGGER.error(
 						"La unitat organitzativa no està vigent (" +
@@ -115,7 +124,49 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		}
 	}
 
+	@Override
+	public List<UnitatOrganitzativa> cercaUnitats(
+			String codiUnitat, 
+			String denominacioUnitat,
+			Long codiNivellAdministracio, 
+			Long codiComunitat, 
+			Boolean ambOficines, 
+			Boolean esUnitatArrel,
+			Long codiProvincia, 
+			String codiLocalitat) throws SistemaExternException {
+		
+		LOGGER.debug("Cercant tots els paisos");
+		try {
+			URL url = new URL(getServiceCercaUrl()
+					+ "?codigo=" + codiUnitat
+					+ "&denominacion=" + denominacioUnitat
+					+ "&codNivelAdministracion=" + (codiNivellAdministracio != null ? codiNivellAdministracio : "-1")
+					+ "&codComunidadAutonoma=" + (codiComunitat != null ? codiComunitat : "-1")
+					+ "&conOficinas=" + (ambOficines != null && ambOficines ? "true" : "false")
+					+ "&unidadRaiz=" + (esUnitatArrel != null && esUnitatArrel ? "true" : "false")
+					+ "&provincia="+ (codiProvincia != null ? codiProvincia : "-1")
+					+ "&localidad=" + (codiLocalitat != null ? codiLocalitat : "-1"));
+			HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
+			httpConnection.setRequestMethod("GET");
+			httpConnection.setDoInput(true);
+			httpConnection.setDoOutput(true);
 
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			List<UnitatOrganitzativa> unitats = mapper.readValue(
+					httpConnection.getInputStream(), 
+					TypeFactory.defaultInstance().constructCollectionType(
+							List.class,  
+							UnitatOrganitzativa.class));
+			Collections.sort(unitats);
+			return unitats;
+			
+		} catch (Exception ex) {
+			LOGGER.error("Error al obtenir les províncies de la font externa", ex);
+			return null;
+		}
+	}
+	
 
 	private Dir3CaibObtenerUnidadesWs getObtenerUnidadesService() throws MalformedURLException {
 		Dir3CaibObtenerUnidadesWs client = null;
@@ -146,6 +197,10 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.url");
 	}
+	private String getServiceCercaUrl() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.unitats.cerca.dir3.service.url");
+	}
 	private String getUsername() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.username");
@@ -155,77 +210,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.password");
 	}
 
-	private String getAdressa(
-			Long tipusVia,
-			String nomVia,
-			String numVia) {
-		
-		String adressa = "";
-		if (tipusVia != null) {
-			switch (tipusVia.intValue()) {
-			case 1:
-				adressa = "Alameda ";
-				break;
-			case 2:
-				adressa = "Calle ";
-				break;
-			case 3:
-				adressa = "Camino ";
-				break;
-			case 4:
-				adressa = "Carrer ";
-				break;
-			case 5:
-				adressa = "Carretera ";
-				break;
-			case 6:
-				adressa = "Glorieta";
-				break;
-			case 7:
-				adressa = "Kalea ";
-				break;
-			case 8:
-				adressa = "Pasaje ";
-				break;
-			case 9:
-				adressa = "Paseo ";
-				break;
-			case 10:
-				adressa = "Plaça ";
-				break;
-			case 11:
-				adressa = "Plaza ";
-				break;
-			case 12:
-				adressa = "Rambla ";
-				break;
-			case 13:
-				adressa = "Ronda ";
-				break;
-			case 14:
-				adressa = "Rúa ";
-				break;
-			case 15:
-				adressa = "Sector ";
-				break;
-			case 16:
-				adressa = "Travesía ";
-				break;
-			case 17:
-				adressa = "Urbanización ";
-				break;
-			default:
-				break;
-			}
-		}
-		
-		adressa += nomVia;
-		if (numVia != null) {
-			adressa += ", " + numVia;
-		}
-		return adressa;
-	}
-	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UnitatsOrganitzativesPluginDir3.class);
 
 }

@@ -3,54 +3,56 @@
  */
 package es.caib.ripea.plugin.dadesext;
 
+import java.io.Serializable;
+
 /**
- * Objecte que representa un pais provinent d'una font externa.
+ * Informació d'una unitat organitzativa.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class Pais {
+public class Pais implements Serializable {
 
-	private int codiNumeric;
-	private String codi2Char;
-	private String codi3Char;
+	private String codi;
+	private String alfa2;
+	private String alfa3;
 	private String nom;
 
-	public Pais() {
-	}
 	public Pais(
-			int codiNumeric,
-			String codi2Char,
-			String codi3Char,
+			Long codi,
+			String alfa2,
+			String alfa3,
 			String nom) {
-		super();
-		this.codiNumeric = codiNumeric;
-		this.codi2Char = codi2Char;
-		this.codi3Char = codi3Char;
+		this.setCodi(codi);
+		this.alfa2 = alfa2;
+		this.alfa3 = alfa3;
 		this.nom = nom;
 	}
 
-	public int getCodiNumeric() {
-		return codiNumeric;
+	public String getCodi() {
+		return codi;
+	}
+	public void setCodi(String codi) {
+		this.codi = codi;
+	}
+	public void setCodi(Long lCodi) {
+		String sCodi = lCodi.toString();
+		this.codi = ("000" + sCodi).substring(sCodi.length());
 	}
 
-	public void setCodiNumeric(int codiNumeric) {
-		this.codiNumeric = codiNumeric;
+	public String getAlfa2() {
+		return alfa2;
 	}
 
-	public String getCodi2Char() {
-		return codi2Char;
+	public void setAlfa2(String alfa2) {
+		this.alfa2 = alfa2;
 	}
 
-	public void setCodi2Char(String codi2Char) {
-		this.codi2Char = codi2Char;
+	public String getAlfa3() {
+		return alfa3;
 	}
 
-	public String getCodi3Char() {
-		return codi3Char;
-	}
-
-	public void setCodi3Char(String codi3Char) {
-		this.codi3Char = codi3Char;
+	public void setAlfa3(String alfa3) {
+		this.alfa3 = alfa3;
 	}
 
 	public String getNom() {
@@ -59,5 +61,7 @@ public class Pais {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
+
+	private static final long serialVersionUID = -5602898182576627524L;
 
 }

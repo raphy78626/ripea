@@ -110,4 +110,52 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 		return null;
 	}
 
+	@Override
+	public List<UnitatOrganitzativa> cercaUnitats(
+			String codiUnitat, 
+			String denominacioUnitat,
+			Long codiNivellAdministracio, 
+			Long codiComunitat, 
+			Boolean ambOficines, 
+			Boolean esUnitatArrel,
+			Long codiProvincia, 
+			String codiLocalitat) throws SistemaExternException {
+		List<UnitatOrganitzativa> unitats = new ArrayList<UnitatOrganitzativa>();
+		UnitatOrganitzativa unitatArrel = new UnitatOrganitzativa(
+				UNITAT_ARREL_CODI,
+				"Limit Tecnologies",
+				"12345678Z",
+				new Date(0),
+				"V");
+		unitats.add(unitatArrel);
+		UnitatOrganitzativa unitat1 = new UnitatOrganitzativa(
+				"LIM000001",
+				"Departament de programari",
+				"12345678Z",
+				new Date(0),
+				"V",
+				UNITAT_ARREL_CODI,
+				UNITAT_ARREL_CODI);
+		unitats.add(unitat1);
+		UnitatOrganitzativa unitat2 = new UnitatOrganitzativa(
+				"LIM000002",
+				"Departament de comunicacions i taller",
+				"12345678Z",
+				new Date(0),
+				"V",
+				UNITAT_ARREL_CODI,
+				UNITAT_ARREL_CODI);
+		unitats.add(unitat2);
+		UnitatOrganitzativa unitat3 = new UnitatOrganitzativa(
+				"LIM000003",
+				"Departament comercial",
+				"12345678Z",
+				new Date(0),
+				"V",
+				UNITAT_ARREL_CODI,
+				UNITAT_ARREL_CODI);
+		unitats.add(unitat3);
+		return unitats;
+	}
+
 }

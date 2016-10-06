@@ -13,6 +13,7 @@ import java.io.Serializable;
 public class ProvinciaDto implements Serializable {
 
 	private String codi;
+	private Long codiComunitat;
 	private String nom;
 
 	public String getCodi() {
@@ -21,6 +22,14 @@ public class ProvinciaDto implements Serializable {
 	public void setCodi(String codi) {
 		this.codi = codi;
 	}
+	
+	public Long getCodiComunitat() {
+		return codiComunitat;
+	}
+	public void setCodiComunitat(Long codiComunitat) {
+		this.codiComunitat = codiComunitat;
+	}
+
 	public String getNom() {
 		return nom;
 	}

@@ -57,10 +57,10 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 	}
 	
 	@Override
-	public void updateIdentificador() {
-		this.identificador = this.llinatge1 + (this.llinatge2 != null ? " " + this.llinatge2 : "") + ", " + this.nom;
+	public String getIdentificador() {
+		return this.llinatge1 + (this.llinatge2 != null ? " " + this.llinatge2 : "") + ", " + this.nom;
 	}
-
+	
 	public void update(
 			String nom,
 			String llinatge1,
@@ -256,5 +256,6 @@ public class InteressatPersonaFisicaEntity extends InteressatEntity {
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
+
 
 }

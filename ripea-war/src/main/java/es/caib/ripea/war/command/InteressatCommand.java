@@ -87,6 +87,15 @@ public class InteressatCommand  {
 	@NotNull
 	protected InteressatTipusEnumDto tipus;
 	protected boolean comprovat = false;
+	
+	// Camps de filtre (No s'utilitzen al fer submit)
+	protected String filtreCodiDir3;
+	protected String filtreDenominacio;
+	protected String filtreNivellAdministracio;
+	protected String filtreComunitat;
+	protected String filtreProvincia;
+	protected String filtreLocalitat;
+	protected Boolean filtreArrel;
 
 	public Long getId() {
 		return id;
@@ -215,6 +224,49 @@ public class InteressatCommand  {
 		this.comprovat = comprovat;
 	}
 
+	public String getFiltreCodiDir3() {
+		return filtreCodiDir3;
+	}
+	public void setFiltreCodiDir3(String filtreCodiDir3) {
+		this.filtreCodiDir3 = filtreCodiDir3;
+	}
+	public String getFiltreDenominacio() {
+		return filtreDenominacio;
+	}
+	public void setFiltreDenominacio(String filtreDenominacio) {
+		this.filtreDenominacio = filtreDenominacio;
+	}
+	public String getFiltreNivellAdministracio() {
+		return filtreNivellAdministracio;
+	}
+	public void setFiltreNivellAdministracio(String filtreNivellAdministracio) {
+		this.filtreNivellAdministracio = filtreNivellAdministracio;
+	}
+	public String getFiltreComunitat() {
+		return filtreComunitat;
+	}
+	public void setFiltreComunitat(String filtreComunitat) {
+		this.filtreComunitat = filtreComunitat;
+	}
+	public String getFiltreProvincia() {
+		return filtreProvincia;
+	}
+	public void setFiltreProvincia(String filtreProvincia) {
+		this.filtreProvincia = filtreProvincia;
+	}
+	public String getFiltreLocalitat() {
+		return filtreLocalitat;
+	}
+	public void setFiltreLocalitat(String filtreLocalitat) {
+		this.filtreLocalitat = filtreLocalitat;
+	}
+	public Boolean getFiltreArrel() {
+		return filtreArrel;
+	}
+	public void setFiltreArrel(Boolean filtreArrel) {
+		this.filtreArrel = filtreArrel;
+	}
+	
 	public static InteressatCommand asCommand(InteressatDto dto) {
 		InteressatCommand command = ConversioTipusHelper.convertir(
 				dto,

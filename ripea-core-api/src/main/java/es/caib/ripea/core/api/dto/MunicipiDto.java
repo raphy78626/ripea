@@ -14,6 +14,19 @@ public class MunicipiDto implements Serializable {
 
 	private String codi;
 	private String nom;
+	private String codiEntitatGeografica;
+	private Long codiProvincia;
+	
+	public MunicipiDto() {
+		
+	}
+	
+	public MunicipiDto(
+			String codi,
+			String nom) {
+		this.codi = codi;
+		this.nom = nom;
+	}
 
 	public String getCodi() {
 		return codi;
@@ -26,6 +39,22 @@ public class MunicipiDto implements Serializable {
 	}
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+	public String getCodiEntitatGeografica() {
+		return codiEntitatGeografica;
+	}
+	public void setCodiEntitatGeografica(String codiEntitatGeografica) {
+		this.codiEntitatGeografica = codiEntitatGeografica;
+	}
+	public Long getCodiProvincia() {
+		return codiProvincia;
+	}
+	public void setCodiProvincia(Long codiProvincia) {
+		this.codiProvincia = codiProvincia;
+	}
+	
+	public String getCodiDir3() {
+		return codi + "-" + codiEntitatGeografica;
 	}
 
 	private static final long serialVersionUID = -6781006082031161827L;

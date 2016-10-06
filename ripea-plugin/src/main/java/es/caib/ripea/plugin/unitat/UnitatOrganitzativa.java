@@ -6,12 +6,16 @@ package es.caib.ripea.plugin.unitat;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Informació d'una unitat organitzativa.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class UnitatOrganitzativa implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrganitzativa> {
 
 	private String codi;
 	private String denominacio;
@@ -36,8 +40,15 @@ public class UnitatOrganitzativa implements Serializable {
 	private String codiPostal;
 	private String nomLocalitat;
 	private String adressa;
+	private Long tipusVia;
+	private String nomVia;
+	private String numVia; 
 
 
+	public UnitatOrganitzativa() {
+		
+	}
+	
 	public UnitatOrganitzativa(
 			String codi,
 			String denominacio,
@@ -79,7 +90,9 @@ public class UnitatOrganitzativa implements Serializable {
 			Long codiProvincia,
 			String codiPostal,
 			String nomLocalitat,
-			String adressa) {
+			Long tipusVia,
+			String nomVia,
+			String numVia) {
 		this.codi = codi;
 		this.denominacio = denominacio;
 		this.nifCif = nifCif;
@@ -92,18 +105,78 @@ public class UnitatOrganitzativa implements Serializable {
 		this.codiProvincia = codiProvincia != null? codiProvincia.toString() : "";
 		this.codiPostal = codiPostal;
 		this.nomLocalitat = nomLocalitat;
+		this.tipusVia = tipusVia;
+		this.nomVia = nomVia;
+		this.numVia = numVia;
+	}
+	
+	
+
+	public UnitatOrganitzativa(
+			String codi, 
+			String denominacio, 
+			String nifCif, 
+			String nivellAdministracio,
+			String tipusEntitatPublica, 
+			String tipusUnitatOrganica, 
+			String poder, 
+			String sigles,
+			String codiUnitatSuperior, 
+			String codiUnitatArrel, 
+			Long nivellJerarquic, 
+			Date dataCreacioOficial,
+			Date dataSupressioOficial, 
+			Date dataExtincioFuncional, 
+			Date dataAnulacio, 
+			String estat, 
+			String codiPais,
+			String codiComunitat, 
+			String codiProvincia, 
+			String codiPostal, 
+			String nomLocalitat, 
+			String adressa,
+			Long tipusVia, 
+			String nomVia, 
+			String numVia) {
+		super();
+		this.codi = codi;
+		this.denominacio = denominacio;
+		this.nifCif = nifCif;
+		this.nivellAdministracio = nivellAdministracio;
+		this.tipusEntitatPublica = tipusEntitatPublica;
+		this.tipusUnitatOrganica = tipusUnitatOrganica;
+		this.poder = poder;
+		this.sigles = sigles;
+		this.codiUnitatSuperior = codiUnitatSuperior;
+		this.codiUnitatArrel = codiUnitatArrel;
+		this.nivellJerarquic = nivellJerarquic;
+		this.dataCreacioOficial = dataCreacioOficial;
+		this.dataSupressioOficial = dataSupressioOficial;
+		this.dataExtincioFuncional = dataExtincioFuncional;
+		this.dataAnulacio = dataAnulacio;
+		this.estat = estat;
+		this.codiPais = codiPais;
+		this.codiComunitat = codiComunitat;
+		this.codiProvincia = codiProvincia;
+		this.codiPostal = codiPostal;
+		this.nomLocalitat = nomLocalitat;
 		this.adressa = adressa;
+		this.tipusVia = tipusVia;
+		this.nomVia = nomVia;
+		this.numVia = numVia;
 	}
 
 	public String getCodi() {
 		return codi;
 	}
+	@JsonProperty("codigo")
 	public void setCodi(String codi) {
 		this.codi = codi;
 	}
 	public String getDenominacio() {
 		return denominacio;
 	}
+	@JsonProperty("denominacion")
 	public void setDenominacio(String denominacio) {
 		this.denominacio = denominacio;
 	}
@@ -218,6 +291,7 @@ public class UnitatOrganitzativa implements Serializable {
 	public String getNomLocalitat() {
 		return nomLocalitat;
 	}
+	@JsonProperty("localidad")
 	public void setNomLocalitat(String nomLocalitat) {
 		this.nomLocalitat = nomLocalitat;
 	}
@@ -227,7 +301,31 @@ public class UnitatOrganitzativa implements Serializable {
 	public void setAdressa(String adressa) {
 		this.adressa = adressa;
 	}
+	public Long getTipusVia() {
+		return tipusVia;
+	}
+	public void setTipusVia(Long tipusVia) {
+		this.tipusVia = tipusVia;
+	}
+	public String getNomVia() {
+		return nomVia;
+	}
+	public void setNomVia(String nomVia) {
+		this.nomVia = nomVia;
+	}
+	public String getNumVia() {
+		return numVia;
+	}
+	public void setNumVia(String numVia) {
+		this.numVia = numVia;
+	}
 
 	private static final long serialVersionUID = -5602898182576627524L;
+
+
+	@Override
+	public int compareTo(UnitatOrganitzativa o) {
+		return denominacio.compareToIgnoreCase(o.getDenominacio());
+	}
 
 }

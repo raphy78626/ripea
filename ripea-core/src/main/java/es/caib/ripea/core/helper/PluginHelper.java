@@ -22,13 +22,18 @@ import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
+import es.caib.ripea.core.api.dto.ComunitatDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.core.api.dto.MetaDocumentFirmaFluxTipusEnumDto;
+import es.caib.ripea.core.api.dto.NivellAdministracioDto;
+import es.caib.ripea.core.api.dto.PaisDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
+import es.caib.ripea.core.api.dto.ProvinciaDto;
+import es.caib.ripea.core.api.dto.TipusViaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -49,6 +54,7 @@ import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.custodia.CustodiaPlugin;
+import es.caib.ripea.plugin.dadesext.Comunitat;
 import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.Municipi;
 import es.caib.ripea.plugin.dadesext.Pais;
@@ -287,7 +293,253 @@ public class PluginHelper {
 					ex);
 		}
 	}
-
+	public List<UnitatOrganitzativaDto> unitatsOrganitzativesFindByFiltre(
+			String codiUnitat, 
+			String denominacioUnitat,
+			String codiNivellAdministracio, 
+			String codiComunitat, 
+			String codiProvincia, 
+			String codiLocalitat, 
+			Boolean esUnitatArrel) {
+		String accioDescripcio = "Consulta d'unitats organitzatives donat un filtre";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codiUnitat", codiUnitat);
+		accioParams.put("denominacioUnitat", denominacioUnitat);
+		accioParams.put("codiNivellAdministracio", codiNivellAdministracio);
+		accioParams.put("codiComunitat", codiComunitat);
+		accioParams.put("codiProvincia", codiProvincia);
+		accioParams.put("codiLocalitat", codiLocalitat);
+		accioParams.put("esUnitatArrel", esUnitatArrel == null ? "null" : esUnitatArrel.toString() );
+		long t0 = System.currentTimeMillis();
+		try {
+			List<UnitatOrganitzativaDto> unitatsOrganitzatives = conversioTipusHelper.convertirList(
+					getUnitatsOrganitzativesPlugin().cercaUnitats(
+							codiUnitat, 
+							denominacioUnitat, 
+							longValue(codiNivellAdministracio), 
+							longValue(codiComunitat), 
+							false, 
+							esUnitatArrel, 
+							longValue(codiProvincia), 
+							codiLocalitat),
+					UnitatOrganitzativaDto.class);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_UNITATS,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return unitatsOrganitzatives;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al realitzar la cerca de unitats organitzatives";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_UNITATS,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_UNITATS,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	private Long longValue(String text) {
+		if (text == null || text.isEmpty())
+			return null;
+		return Long.parseLong(text);
+	}
+	
+	public List<PaisDto> findPaisos() {
+		String accioDescripcio = "Consulta paisos";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		long t0 = System.currentTimeMillis();
+		try {
+			List<PaisDto> paisos = conversioTipusHelper.convertirList(
+					getDadesExternesPlugin().paisFindAll(),
+					PaisDto.class);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0);
+			return paisos;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de dades externes";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DADESEXT,
+					errorDescripcio,
+					ex);
+		}
+	}
+	public List<ComunitatDto> findComunitats() {
+		String accioDescripcio = "Consulta comunitats";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		long t0 = System.currentTimeMillis();
+		try {
+			List<ComunitatDto> comunitats = conversioTipusHelper.convertirList(
+					getDadesExternesPlugin().comunitatFindAll(),
+					ComunitatDto.class);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0);
+			return comunitats;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de dades externes";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DADESEXT,
+					errorDescripcio,
+					ex);
+		}
+	}
+	public List<ProvinciaDto> findProvincies() {
+		String accioDescripcio = "Consulta provincies";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		long t0 = System.currentTimeMillis();
+		try {
+			List<ProvinciaDto> provincies = conversioTipusHelper.convertirList(
+					getDadesExternesPlugin().provinciaFindAll(),
+					ProvinciaDto.class);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0);
+			return provincies;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de dades externes";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DADESEXT,
+					errorDescripcio,
+					ex);
+		}
+	}
+//	public List<MunicipiDto> findLocalitats() {
+//		String accioDescripcio = "Consulta provincies";
+//		Map<String, String> accioParams = new HashMap<String, String>();
+//		long t0 = System.currentTimeMillis();
+//		try {
+//			List<MunicipiDto> localitats = conversioTipusHelper.convertirList(
+//					getDadesExternesPlugin().findLocalitats(),
+//					MunicipiDto.class);
+//			integracioHelper.addAccioOk(
+//					IntegracioHelper.INTCODI_DADESEXT,
+//					accioDescripcio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.RECEPCIO,
+//					System.currentTimeMillis() - t0);
+//			return localitats;
+//		} catch (Exception ex) {
+//			String errorDescripcio = "Error al accedir al plugin de dades externes";
+//			integracioHelper.addAccioError(
+//					IntegracioHelper.INTCODI_DADESEXT,
+//					accioDescripcio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.RECEPCIO,
+//					System.currentTimeMillis() - t0,
+//					errorDescripcio,
+//					ex);
+//			throw new SistemaExternException(
+//					IntegracioHelper.INTCODI_DADESEXT,
+//					errorDescripcio,
+//					ex);
+//		}
+//	}
+	public List<NivellAdministracioDto> findNivellAdministracio() {
+		String accioDescripcio = "Consulta de nivells d'administració";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		long t0 = System.currentTimeMillis();
+		try {
+			List<NivellAdministracioDto> nivellAdministracio = conversioTipusHelper.convertirList(
+					getDadesExternesPlugin().nivellAdministracioFindAll(),
+					NivellAdministracioDto.class);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0);
+			return nivellAdministracio;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de dades externes";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DADESEXT,
+					errorDescripcio,
+					ex);
+		}
+	}
+	public List<TipusViaDto> findTipusVia() {
+		String accioDescripcio = "Consulta de tipus de via";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		long t0 = System.currentTimeMillis();
+		try {
+			List<TipusViaDto> tipusVies = conversioTipusHelper.convertirList(
+					getDadesExternesPlugin().tipusViaFindAll(),
+					TipusViaDto.class);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0);
+			return tipusVies;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de dades externes";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DADESEXT,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
 	public boolean isGestioDocumentalPluginActiu() {
 		return getGestioDocumentalPlugin() != null;
 	}
@@ -1170,6 +1422,35 @@ public class PluginHelper {
 		}
 	}
 
+	public List<Comunitat> dadesExternesComunitatsFindAll() {
+		String accioDescripcio = "Consulta de totes les comunitats";
+		long t0 = System.currentTimeMillis();
+		try {
+			List<Comunitat> comunitats = getDadesExternesPlugin().comunitatFindAll();
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					null,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return comunitats;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de dades externes";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DADESEXT,
+					accioDescripcio,
+					null,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DADESEXT,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
 	public List<Provincia> dadesExternesProvinciesFindAll() {
 		String accioDescripcio = "Consulta de totes les províncies";
 		long t0 = System.currentTimeMillis();
@@ -1230,6 +1511,35 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+//	public List<Municipi> dadesExternesMunicipisFindAll() {
+//		String accioDescripcio = "Consulta de tots els municipis";
+//		long t0 = System.currentTimeMillis();
+//		try {
+//			List<Municipi> municipis = getDadesExternesPlugin().municipiFindAll();
+//			integracioHelper.addAccioOk(
+//					IntegracioHelper.INTCODI_DADESEXT,
+//					accioDescripcio,
+//					null,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0);
+//			return municipis;
+//		} catch (Exception ex) {
+//			String errorDescripcio = "Error al accedir al plugin de dades externes";
+//			integracioHelper.addAccioError(
+//					IntegracioHelper.INTCODI_DADESEXT,
+//					accioDescripcio,
+//					null,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0,
+//					errorDescripcio,
+//					ex);
+//			throw new SistemaExternException(
+//					IntegracioHelper.INTCODI_DADESEXT,
+//					errorDescripcio,
+//					ex);
+//		}
+//	}
 
 	public List<Municipi> dadesExternesMunicipisFindAmbProvincia(
 			String provinciaCodi) {

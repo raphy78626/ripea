@@ -174,4 +174,23 @@ public class ExpedientInteressatServiceBean implements ExpedientInteressatServic
 		return delegate.findUnitatsOrganitzativesByCodi(codi);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByFiltre(
+			String codiDir3, 
+			String denominacio,
+			String nivellAdm, 
+			String comunitat, 
+			String provincia, 
+			String localitat, 
+			Boolean arrel) {
+		return delegate.findUnitatsOrganitzativesByFiltre(
+				codiDir3, 
+				denominacio, 
+				nivellAdm, 
+				comunitat, 
+				provincia, 
+				localitat, 
+				arrel);
+	}
 }

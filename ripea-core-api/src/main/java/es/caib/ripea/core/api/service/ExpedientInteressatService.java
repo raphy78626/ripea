@@ -294,5 +294,24 @@ public interface ExpedientInteressatService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi);
+	
+	/**
+	 * Consulta una unitats organitzative segons el filtre passat.
+	 * 
+	 *            Atribut codi de l'unitat.
+	 * @return La unitats organitzativa trobada.
+	 * @param codi
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByFiltre(
+			String codiDir3, 
+			String denominacio, 
+			String nivellAdm,
+			String comunitat, 
+			String provincia, 
+			String localitat, 
+			Boolean arrel);
 
 }

@@ -30,8 +30,11 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private String codiPostal;
 	private String nomLocalitat;
 	private String localitat;
+	
 	private String adressa;
-
+	private Long tipusVia;
+	private String nomVia;
+	private String numVia; 
 
 	public String getCodi() {
 		return codi;
@@ -134,6 +137,24 @@ public class UnitatOrganitzativaDto implements Serializable {
 	}
 	public void setAdressa(String adressa) {
 		this.adressa = adressa;
+	}
+	public Long getTipusVia() {
+		return tipusVia;
+	}
+	public void setTipusVia(Long tipusVia) {
+		this.tipusVia = tipusVia;
+	}
+	public String getNomVia() {
+		return nomVia;
+	}
+	public void setNomVia(String nomVia) {
+		this.nomVia = nomVia;
+	}
+	public String getNumVia() {
+		return numVia;
+	}
+	public void setNumVia(String numVia) {
+		this.numVia = numVia;
 	}
 
 	private static final long serialVersionUID = -5602898182576627524L;
