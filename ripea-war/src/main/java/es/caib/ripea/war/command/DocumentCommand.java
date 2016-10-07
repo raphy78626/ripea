@@ -13,26 +13,30 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
+import es.caib.ripea.war.command.DocumentCommand.CreateDigital;
+import es.caib.ripea.war.command.DocumentCommand.UpdateDigital;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
-import es.caib.ripea.war.validation.ArxiuNoBuit;
+import es.caib.ripea.war.validation.DocumentDigitalExistent;
 
 /**
  * Command per al manteniment de documents.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@DocumentDigitalExistent(groups = {CreateDigital.class, UpdateDigital.class})
 public class DocumentCommand extends ContenidorCommand {
 
 	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
-	protected DocumentTipusEnumDto documentTipus = DocumentTipusEnumDto.DIGITAL;
+	private DocumentTipusEnumDto documentTipus = DocumentTipusEnumDto.DIGITAL;
 	@NotEmpty(groups = {CreateFisic.class, UpdateFisic.class})
 	@Size(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class}, max=255)
-	protected String ubicacio;
-	protected Long metaNodeId;
+	private String ubicacio;
+	private Long metaNodeId;
 	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
-	protected Date data;
-	@ArxiuNoBuit(groups = {CreateDigital.class})
-	protected MultipartFile arxiu;
+	private Date data;
+	private MultipartFile arxiu;
+	private DocumentFisicOrigenEnum origen;
+	private String escanejatTempId;
 
 
 
@@ -66,6 +70,18 @@ public class DocumentCommand extends ContenidorCommand {
 	public void setArxiu(MultipartFile arxiu) {
 		this.arxiu = arxiu;
 	}
+	public DocumentFisicOrigenEnum getOrigen() {
+		return origen;
+	}
+	public void setOrigen(DocumentFisicOrigenEnum origen) {
+		this.origen = origen;
+	}
+	public String getEscanejatTempId() {
+		return escanejatTempId;
+	}
+	public void setEscanejatTempId(String escanejatTempId) {
+		this.escanejatTempId = escanejatTempId;
+	}
 
 	public static DocumentCommand asCommand(DocumentDto dto) {
 		DocumentCommand command = ConversioTipusHelper.convertir(
@@ -87,5 +103,10 @@ public class DocumentCommand extends ContenidorCommand {
 	public interface UpdateDigital {}
 	public interface CreateFisic {}
 	public interface UpdateFisic {}
+
+	public enum DocumentFisicOrigenEnum {
+		DISC,
+		ESCANER
+	}
 
 }

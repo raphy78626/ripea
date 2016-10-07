@@ -10,6 +10,7 @@
 	</excludes>
 	<decorator name="senseCapNiPeus" page="senseCapNiPeus.jsp">
 		<pattern>/firmapassarela*</pattern>
+		<pattern>/scanweb*</pattern>
 	</decorator>
 	<decorator name="default" page="default.jsp">
 		<pattern>/*</pattern>

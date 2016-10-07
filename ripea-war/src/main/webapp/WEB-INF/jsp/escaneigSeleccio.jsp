@@ -5,20 +5,21 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <html>
 <head>
-	<title><spring:message code="passarelafirma.seleccio.titol"/></title>
+	<title><spring:message code="escaneig.seleccio.titol"/></title>
 	<rip:modalHead/>
 </head>
 <body>
 	<div class="lead" style="margin-bottom: 10px; text-align: center;">
-		<h3><spring:message code="passarelafirma.seleccio.capsalera"/></h3>
+		<h3><spring:message code="escaneig.seleccio.capsalera"/></h3>
 		<div class="well" style="max-width: 400px; margin: 0 auto 10px;">
 			<c:forEach items="${plugins}" var="plugin">
-				<a href="../showsignaturemodule/${plugin.pluginId}/${signaturesSetId}" class="btn btn-large btn-block btn-primary">
+				<a href="../showscanwebmodule/${plugin.pluginId}/${scanWebId}" class="btn btn-large btn-block btn-primary">
 					<b>${plugin.nom}</b><br />
 					<small><i>${plugin.descripcioCurta}</i></small>
 				</a>
 			</c:forEach>
 		</div>
 	</div>
+	<br/>
 </body>
 </html>

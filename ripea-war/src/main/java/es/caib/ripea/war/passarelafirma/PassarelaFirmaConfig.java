@@ -12,25 +12,24 @@ import org.fundaciobit.plugins.signatureweb.api.SignaturesSetWeb;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class PassarelaFirmaSignaturesSet extends SignaturesSetWeb {
-
+public class PassarelaFirmaConfig extends SignaturesSetWeb {
 
 	protected Long pluginId = null;
-	
-	protected final String urlFinalCalculada;
+	protected final String urlFinalRipea;
 
-	public PassarelaFirmaSignaturesSet(
+	public PassarelaFirmaConfig(
 			String signaturesSetId,
 			Date expiryDate,
 			CommonInfoSignature commonInfoSignature,
 			FileInfoSignature[] fileInfoSignatureArray,
-			String urlFinalCalculada, String urlFinal) {
+			String urlFinal,
+			String urlFinalRipea) {
 		super(	signaturesSetId,
 				expiryDate,
 				commonInfoSignature,
-				fileInfoSignatureArray,urlFinalCalculada);
-		this.urlFinalCalculada = urlFinalCalculada; 
-		
+				fileInfoSignatureArray,
+				urlFinal);
+		this.urlFinalRipea = urlFinalRipea;
 	}
 
 	public Long getPluginId() {
@@ -39,11 +38,8 @@ public class PassarelaFirmaSignaturesSet extends SignaturesSetWeb {
 	public void setPluginId(Long pluginId) {
 		this.pluginId = pluginId;
 	}
+	public String getUrlFinalRipea() {
+		return urlFinalRipea;
+	}
 
-  public String getUrlFinalCalculada() {
-    return urlFinalCalculada;
-  }
-
-	
-	
 }

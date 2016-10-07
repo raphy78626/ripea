@@ -22,9 +22,9 @@ import es.caib.ripea.ws.v0.bustia.BustiaV0Service;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class BustiaTest {
+public class BustiaV0Test {
 
-	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/bustia";
+	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/v0/bustia";
 	private static final String USERNAME = null;
 	private static final String PASSWORD = null;
 

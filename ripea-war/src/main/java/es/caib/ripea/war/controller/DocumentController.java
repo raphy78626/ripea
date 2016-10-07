@@ -54,8 +54,8 @@ import es.caib.ripea.war.helper.EnumHelper;
 import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.ModalHelper;
 import es.caib.ripea.war.helper.ValidationHelper;
+import es.caib.ripea.war.passarelafirma.PassarelaFirmaConfig;
 import es.caib.ripea.war.passarelafirma.PassarelaFirmaHelper;
-import es.caib.ripea.war.passarelafirma.PassarelaFirmaSignaturesSet;
 
 /**
  * Controlador per al manteniment de documents.
@@ -211,127 +211,6 @@ public class DocumentController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/{documentId}/firmaPassarela", method = RequestMethod.GET)
-	public String firmaPassarelaGet(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			Model model) {
-		emplenarModelFirmaClient(
-				request,
-				documentId,
-				model);
-		model.addAttribute(new PassarelaFirmaEnviarCommand());
-		return "passarelaFirmaForm";
-	}
-	@RequestMapping(value = "/{documentId}/firmaPassarela", method = RequestMethod.POST)
-	public String firmaPassarelaPost(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			@Valid PassarelaFirmaEnviarCommand command,
-			BindingResult bindingResult,
-			Model model) throws IOException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			emplenarModelFirmaClient(
-					request,
-					documentId,
-					model);
-			return "passarelaFirmaForm";
-		}
-		FitxerDto fitxerPerFirmar = documentService.convertirPdfPerFirma(
-				entitatActual.getId(),
-				documentId);
-		UsuariDto usuariActual = aplicacioService.getUsuariActual();
-		String modalStr = (ModalHelper.isModal(request)) ? "/modal" : "";
-		String procesFirmaUrl = passarelaFirmaHelper.iniciarProcesDeFirma(
-				request,
-				fitxerPerFirmar,
-				usuariActual.getNif(),
-				command.getMotiu(),
-				command.getLloc(),
-				usuariActual.getEmail(),
-				LocaleContextHolder.getLocale().getLanguage(),
-				modalStr + "/document/" + documentId + "/firmaPassarelaFinal",
-				false);
-		return "redirect:" + procesFirmaUrl;
-	}
-
-	@RequestMapping(value = "/{documentId}/firmaPassarelaFinal")
-	public String firmaPassarelaFinal(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			@RequestParam("signaturesSetId") String signaturesSetId,
-			Model model) throws IOException {
-		PassarelaFirmaSignaturesSet signaturesSet = passarelaFirmaHelper.finalitzarProcesDeFirma(
-				request,
-				signaturesSetId);
-		StatusSignaturesSet status = signaturesSet.getStatusSignaturesSet();
-		switch (status.getStatus()) {
-		case StatusSignaturesSet.STATUS_FINAL_OK:
-			FileInfoSignature firmaInfo = signaturesSet.getFileInfoSignatureArray()[0];
-			StatusSignature firmaStatus = firmaInfo.getStatusSignature();
-			if (firmaStatus.getStatus() == StatusSignature.STATUS_FINAL_OK) {
-				if (firmaStatus.getSignedData() == null || !firmaStatus.getSignedData().exists()) {
-					firmaStatus.setStatus(StatusSignature.STATUS_FINAL_ERROR);
-					String msg = "L'estat indica que ha finalitzat correctament però el fitxer firmat o no s'ha definit o no existeix";
-					firmaStatus.setErrorMsg(msg);
-					MissatgesHelper.error(
-							request,
-							getMessage(
-									request, 
-									"document.controller.firma.passarela.final.ok.nofile"));
-				} else {
-					FileInputStream fis = new FileInputStream(firmaStatus.getSignedData());
-					EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-					String identificador = documentService.generarIdentificadorFirmaClient(
-							entitatActual.getId(),
-							documentId);
-					documentService.custodiarDocumentFirmaClient(
-							identificador,
-							firmaStatus.getSignedData().getName(),
-							IOUtils.toByteArray(fis));
-					MissatgesHelper.success(
-							request,
-							getMessage(
-									request, 
-									"document.controller.firma.passarela.final.ok"));
-				}
-			} else {
-				MissatgesHelper.error(
-						request,
-						getMessage(
-								request, 
-								"document.controller.firma.passarela.final.ok.statuserr"));
-			}
-			break;
-		case StatusSignaturesSet.STATUS_FINAL_ERROR:
-			MissatgesHelper.error(
-					request,
-					getMessage(
-							request, 
-							"document.controller.firma.passarela.final.error",
-							new Object[] {status.getErrorMsg()}));
-			break;
-		case StatusSignaturesSet.STATUS_CANCELLED:
-			MissatgesHelper.warning(
-					request,
-					getMessage(
-							request, 
-							"document.controller.firma.passarela.final.cancel"));
-			break;
-		default:
-			MissatgesHelper.warning(
-					request,
-					getMessage(
-							request, 
-							"document.controller.firma.passarela.final.desconegut"));
-		}
-		return getModalControllerReturnValueSuccess(
-				request, 
-				"redirect:/contingut/" + documentId,
-				null);
-	}
-
 	@RequestMapping(value = "/{documentId}/notificar", method = RequestMethod.GET)
 	public String notificarGet(
 			HttpServletRequest request,
@@ -425,6 +304,130 @@ public class DocumentController extends BaseUserController {
 				request,
 				"redirect:../../../contingut/" + documentId,
 				"document.controller.publicacio.ok");
+	}
+
+	@RequestMapping(value = "/{documentId}/firmaPassarela", method = RequestMethod.GET)
+	public String firmaPassarelaGet(
+			HttpServletRequest request,
+			@PathVariable Long documentId,
+			Model model) {
+		emplenarModelFirmaClient(
+				request,
+				documentId,
+				model);
+		model.addAttribute(new PassarelaFirmaEnviarCommand());
+		return "passarelaFirmaForm";
+	}
+	@RequestMapping(value = "/{documentId}/firmaPassarela", method = RequestMethod.POST)
+	public String firmaPassarelaPost(
+			HttpServletRequest request,
+			@PathVariable Long documentId,
+			@Valid PassarelaFirmaEnviarCommand command,
+			BindingResult bindingResult,
+			Model model) throws IOException {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+			emplenarModelFirmaClient(
+					request,
+					documentId,
+					model);
+			return "passarelaFirmaForm";
+		}
+		FitxerDto fitxerPerFirmar = documentService.convertirPdfPerFirma(
+				entitatActual.getId(),
+				documentId);
+		UsuariDto usuariActual = aplicacioService.getUsuariActual();
+		String modalStr = (ModalHelper.isModal(request)) ? "/modal" : "";
+		String procesFirmaUrl = passarelaFirmaHelper.iniciarProcesDeFirma(
+				request,
+				fitxerPerFirmar,
+				usuariActual.getNif(),
+				command.getMotiu(),
+				command.getLloc(),
+				usuariActual.getEmail(),
+				LocaleContextHolder.getLocale().getLanguage(),
+				modalStr + "/document/" + documentId + "/firmaPassarelaFinal",
+				false);
+		return "redirect:" + procesFirmaUrl;
+	}
+
+	@RequestMapping(value = "/{documentId}/firmaPassarelaFinal")
+	public String firmaPassarelaFinal(
+			HttpServletRequest request,
+			@PathVariable Long documentId,
+			@RequestParam("signaturesSetId") String signaturesSetId,
+			Model model) throws IOException {
+		PassarelaFirmaConfig signaturesSet = passarelaFirmaHelper.finalitzarProcesDeFirma(
+				request,
+				signaturesSetId);
+		StatusSignaturesSet status = signaturesSet.getStatusSignaturesSet();
+		switch (status.getStatus()) {
+		case StatusSignaturesSet.STATUS_FINAL_OK:
+			FileInfoSignature firmaInfo = signaturesSet.getFileInfoSignatureArray()[0];
+			StatusSignature firmaStatus = firmaInfo.getStatusSignature();
+			if (firmaStatus.getStatus() == StatusSignature.STATUS_FINAL_OK) {
+				if (firmaStatus.getSignedData() == null || !firmaStatus.getSignedData().exists()) {
+					firmaStatus.setStatus(StatusSignature.STATUS_FINAL_ERROR);
+					String msg = "L'estat indica que ha finalitzat correctament però el fitxer firmat o no s'ha definit o no existeix";
+					firmaStatus.setErrorMsg(msg);
+					MissatgesHelper.error(
+							request,
+							getMessage(
+									request, 
+									"document.controller.firma.passarela.final.ok.nofile"));
+				} else {
+					FileInputStream fis = new FileInputStream(firmaStatus.getSignedData());
+					EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+					String identificador = documentService.generarIdentificadorFirmaClient(
+							entitatActual.getId(),
+							documentId);
+					documentService.custodiarDocumentFirmaClient(
+							identificador,
+							firmaStatus.getSignedData().getName(),
+							IOUtils.toByteArray(fis));
+					MissatgesHelper.success(
+							request,
+							getMessage(
+									request, 
+									"document.controller.firma.passarela.final.ok"));
+				}
+			} else {
+				MissatgesHelper.error(
+						request,
+						getMessage(
+								request, 
+								"document.controller.firma.passarela.final.ok.statuserr"));
+			}
+			break;
+		case StatusSignaturesSet.STATUS_FINAL_ERROR:
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"document.controller.firma.passarela.final.error",
+							new Object[] {status.getErrorMsg()}));
+			break;
+		case StatusSignaturesSet.STATUS_CANCELLED:
+			MissatgesHelper.warning(
+					request,
+					getMessage(
+							request, 
+							"document.controller.firma.passarela.final.cancel"));
+			break;
+		default:
+			MissatgesHelper.warning(
+					request,
+					getMessage(
+							request, 
+							"document.controller.firma.passarela.final.desconegut"));
+		}
+		passarelaFirmaHelper.closeSignaturesSet(
+				request,
+				signaturesSet);
+		return getModalControllerReturnValueSuccess(
+				request, 
+				"redirect:/contingut/" + documentId,
+				null);
 	}
 
 	@InitBinder

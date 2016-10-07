@@ -57,7 +57,6 @@
 								'				<div class="modal-body" style="padding:0">' +
 								'					<iframe frameborder="0" height="10" width="100%"></iframe>' +
 								'				</div>' +
-								'				<div class="modal-footer"></div>' +
 								'			</div>' +
 								'		</div>' +
 								'	</div>' +
@@ -130,7 +129,7 @@
 						var dataBotons = $('body', $(iframe).contents()).data('modal-botons');
 						var modalBotons = (dataBotons) ? $(dataBotons, $(iframe).contents()) : $(settings.elementBotons, $(iframe).contents());
 						if (modalBotons.length) {
-							$('.modal-footer *', $(this).parent().parent()).remove();
+							$('.modal-body', $(iframe).parent().parent()).after('<div class="modal-footer"></div>');
 							$('.btn', modalBotons).each(function(index) {
 								var element = $(this);
 								var clon = element.clone();
@@ -199,6 +198,8 @@
 					});
 				});
 				iframe.on('load', function () {
+					console.log("Modal footer remove");
+					$('.modal-footer', modalobj).remove();
 					var pathname = this.contentDocument.location.pathname;
 					if (pathname == webutilModalTancarPath()) {
 						if (settings.reloadPage) {
@@ -219,7 +220,6 @@
 				modalobj.data('modal-configurada', true);
 			}
 			$('.modal-body iframe *', modalobj).remove();
-			$('.modal-footer *', modalobj).remove();
 			modalobj.modal('show');
 		});
 	};

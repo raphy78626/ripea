@@ -1,11 +1,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ attribute name="name" required="false" rtexprvalue="true"%>
 <%@ attribute name="text" required="false" rtexprvalue="true"%>
 <%@ attribute name="textKey" required="false" rtexprvalue="true"%>
 <%@ attribute name="required" required="false" rtexprvalue="true"%>
 <%@ attribute name="disabled" required="false" rtexprvalue="true"%>
 <%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
+<c:if test="${not empty name}">
+	<c:set var="campPath" value="${name}"/>
+	<c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
+</c:if>
 <c:set var="campLabelSize"><c:choose><c:when test="${not empty labelSize}">${labelSize}</c:when><c:otherwise>4</c:otherwise></c:choose></c:set>
 <c:set var="campInputSize">${12 - campLabelSize}</c:set>
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
@@ -18,6 +23,7 @@
 		<c:if test="${required}">*</c:if>
 	</label>
 	<div class="controls col-xs-${campInputSize}">
-		<div class="form-control-static"><jsp:doBody/></div>
+		<jsp:doBody/>
+		<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
 	</div>
 </div>

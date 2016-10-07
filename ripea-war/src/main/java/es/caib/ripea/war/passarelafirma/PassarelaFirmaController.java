@@ -57,7 +57,7 @@ public class PassarelaFirmaController {
 		// Si cap modul compleix llavors mostrar missatge
 		if (pluginsFiltered.size() == 0) {
 			String msg = "No existeix cap mòdul de firma que passi els filtres";
-			PassarelaFirmaSignaturesSet pfss = passarelaFirmaHelper.getSignaturesSet(
+			PassarelaFirmaConfig pfss = passarelaFirmaHelper.getSignaturesSet(
 					request,
 					signaturesSetId);
 			if (pfss == null) {
@@ -81,8 +81,7 @@ public class PassarelaFirmaController {
 			HttpServletResponse response,
 			@PathVariable("pluginId") Long pluginId,
 			@PathVariable("signaturesSetID") String signaturesSetID) throws Exception {
-		// Assignar plugin Elegit
-		PassarelaFirmaSignaturesSet pfss = passarelaFirmaHelper.getSignaturesSet(
+		PassarelaFirmaConfig pfss = passarelaFirmaHelper.getSignaturesSet(
 				request,
 				signaturesSetID);
 		pfss.setPluginId(pluginId);
@@ -92,14 +91,13 @@ public class PassarelaFirmaController {
 		return new RedirectView(urlToPluginWebPage, false);
 	}
 
-	private static final String REQUEST_PLUGIN_MAPPING = "/requestPlugin/{signaturesSetID}/{signatureIndex}/**";
+	private static final String REQUEST_PLUGIN_MAPPING = "/requestPlugin/{signaturesSetId}/{signatureIndex}/**";
 	@RequestMapping(value = REQUEST_PLUGIN_MAPPING)
 	public void requestPlugin(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable String signaturesSetID,
+			@PathVariable String signaturesSetId,
 			@PathVariable int signatureIndex) throws Exception {
-		
 		String servletPath = request.getServletPath();
 		int indexBarra = StringUtils.ordinalIndexOf(
 				servletPath,
@@ -109,11 +107,10 @@ public class PassarelaFirmaController {
 						"/"));
 		String query = servletPath.substring(indexBarra + 1);
 		passarelaFirmaHelper.requestPlugin(
-		    
-		    request,
+				request,
 				response,
-				signaturesSetID,
-        signatureIndex,
+				signaturesSetId,
+				signatureIndex,
 				query);
 	}
 
@@ -122,21 +119,11 @@ public class PassarelaFirmaController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable("signaturesSetId") String signaturesSetId) throws Exception {
-		PassarelaFirmaSignaturesSet pss = passarelaFirmaHelper.finalitzarProcesDeFirma(
+		PassarelaFirmaConfig pss = passarelaFirmaHelper.finalitzarProcesDeFirma(
 				request,
 				signaturesSetId);
-		return "redirect:" + pss.getUrlFinal() + "?signaturesSetId=" + signaturesSetId;
+		return "redirect:" + pss.getUrlFinalRipea() + "?signaturesSetId=" + signaturesSetId;
 	}
-
-	/*@RequestMapping(value = "/error")
-	public ModelAndView errorProcesDeFirma(
-			HttpServletRequest request,
-			HttpServletResponse response,
-			@RequestParam("URL_FINAL") String urlFinal) throws Exception {
-		ModelAndView mav = new ModelAndView(PassarelaFirmaHelper.VISTA_FINAL);
-		mav.addObject("URL_FINAL", urlFinal);
-		return mav;
-	}*/
 
 
 

@@ -14,6 +14,7 @@
 <html>
 <head>
 	<title>${titol}</title>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<link href="<c:url value="/css/datepicker.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
@@ -25,32 +26,45 @@
 	<rip:modalHead/>
 <script>
 $(document).ready(function() {
-	$("#metaNodeId").on('change', function() {
+	$('#metaNodeId').on('change', function() {
 		if ($(this).val()) {
 			$.get("../metaDocument/" +  $(this).val())
 			.done(function(data) {
 				if (data.plantillaNom) {
-					$('#plantilla-buida').addClass('hidden');
-					$('#plantilla-descarregar').removeClass('hidden');
-					$('#plantilla-descarregar a').attr('href', '../metaDocument/' + data.id + '/plantilla');
+					$('#info-plantilla-si').removeClass('hidden');
+					$('#info-plantilla-no').addClass('hidden');
+					$('#info-plantilla-si a').attr('href', '../metaDocument/' + data.id + '/plantilla');
 				} else {
-					$('#plantilla-buida').removeClass('hidden');
-					$('#plantilla-descarregar').addClass('hidden');
+					$('#info-plantilla-si').addClass('hidden');
+					$('#info-plantilla-no').removeClass('hidden');
 				}
-				var iframe = $('.modal-body iframe', window.parent.document);
-				var height = $('html').height();
-				iframe.height(height + 'px');
+				webutilModalAdjustHeight();
 			})
 			.fail(function() {
 				alert("<spring:message code="contingut.document.form.alert.plantilla"/>");
 			});
+		} else {
+			$('#info-plantilla-no').removeClass('hidden');
+			$('#info-plantilla-si').addClass('hidden');
 		}
+	});
+	$('input[type=radio][name=origen]').on('change', function() {
+		if ($(this).val() == 'DISC') {
+			$('#input-origen-arxiu').removeClass('hidden');
+			$('#input-origen-escaner').addClass('hidden');
+			$('input[name=origen][value=DISC]').parent().addClass('active');
+		} else {
+			$('#input-origen-escaner').removeClass('hidden');
+			$('#input-origen-arxiu').addClass('hidden');
+			$('input[name=origen][value=ESCANER]').parent().addClass('active');
+		}
+		webutilModalAdjustHeight();
 	});
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
 		var $tab = $($(e.target).attr('href'));
 		if ($tab.attr('id') == 'digital') {
 			$('#documentTipus').val('DIGITAL');
-		} else {
+		} else if ($tab.attr('id') == 'fisic') {
 			$('#documentTipus').val('FISIC');
 		}
 	});
@@ -59,12 +73,17 @@ $(document).ready(function() {
 		var lastSlashIndex = action.lastIndexOf('/');
 		var actionProcessed = action.substring(0, lastSlashIndex);
 		if ($('#documentTipus').val() == 'DIGITAL') {
-			if (action.endsWith("new")) {
-				actionProcessed += '/digital/new';
+			var $btn = $(this).find("button[type=submit]:focus");
+			if ($btn.length == 0) {
+				if (action.endsWith("new")) {
+					actionProcessed += '/digital/new';
+				} else {
+					actionProcessed += '/digital/update';
+				}
 			} else {
-				actionProcessed += '/digital/update';
+				actionProcessed += '/escaneig/inici';
 			}
-		} else {
+		} else if ($('#documentTipus').val() == 'FISIC') {
 			if (action.endsWith("new")) {
 				actionProcessed += '/fisic/new';
 			} else {
@@ -74,6 +93,8 @@ $(document).ready(function() {
 		$(this).attr('action', actionProcessed);
 		return true;
 	});
+	$('#metaNodeId').trigger('change');
+	$('input[type=radio][name=origen][value=${documentCommand.origen}]').trigger('change');
 });
 </script>
 </head>
@@ -103,11 +124,30 @@ $(document).ready(function() {
 		</c:if>
 		<div class="tab-content">
 			<div role="tabpanel" class="tab-pane<c:if test="${documentCommand.documentTipus == 'DIGITAL'}"> active</c:if>" id="digital">
-				<rip:inputFixed textKey="contingut.document.form.camp.plantilla">
-					<div id="plantilla-buida"><spring:message code="contingut.document.form.camp.plantilla.sense"/></div>
-					<div id="plantilla-descarregar" class="hidden"><a href="#" class="btn btn-info btn-xs"><span class="fa fa-file"></span>&nbsp;Descarregar</a></div>
-				</rip:inputFixed>
-				<rip:inputFile name="arxiu" textKey="contingut.document.form.camp.arxiu" required="${empty documentCommand.id}"/>
+				<div id="info-plantilla-si" class="alert well-sm alert-info hidden">
+					<span class="fa fa-info-circle"></span>
+					<spring:message code="contingut.document.form.info.plantilla.si"/>
+					<a href="#" class="btn btn-xs btn-default pull-right"><spring:message code="comu.boto.descarregar"/></a>
+				</div>
+				<div id="info-plantilla-no" class="alert well-sm alert-info hidden">
+					<span class="fa fa-info-circle"></span>
+					<spring:message code="contingut.document.form.info.plantilla.no"/>
+				</div>
+				<rip:inputRadio name="origen" textKey="contingut.document.form.camp.origen" botons="true" optionItems="${digitalOrigenOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
+				<div id="input-origen-arxiu" class="hidden">
+					<rip:inputFile name="arxiu" textKey="contingut.document.form.camp.arxiu" required="${empty documentCommand.id}"/>
+				</div>
+				<div id="input-origen-escaner" class="hidden">
+					<rip:inputFixed name="escanejatTempId" textKey="contingut.document.form.camp.escaneig">
+						<rip:inputHidden name="escanejatTempId"/>
+						<div class="input-group">
+							<input type="text" class="form-control" disabled="disabled" value="${escanejat.nom}"/>
+							<span class="input-group-btn">
+								<button class="btn btn-default" name="hola" type="submit"><span class="fa fa-print"></span> <spring:message code="contingut.document.form.boto.escaneig"/></button>
+							</span>
+	    				</div>
+					</rip:inputFixed>
+				</div>
 			</div>
 			<div role="tabpanel" class="tab-pane<c:if test="${documentCommand.documentTipus == 'FISIC'}"> active</c:if>" id="fisic">
 				<rip:inputTextarea name="ubicacio" textKey="contingut.document.form.camp.ubicacio" required="true"/>
@@ -115,7 +155,6 @@ $(document).ready(function() {
 		</div>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/contingut/${documentCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

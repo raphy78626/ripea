@@ -1245,6 +1245,26 @@ public class ContingutServiceImpl implements ContingutService {
 				break;
 			}
 		}
+		Date dataInici = filtre.getDataCreacioInici();
+		if (dataInici != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataInici);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			dataInici = cal.getTime();
+		}
+		Date dataFi = filtre.getDataCreacioFi();
+		if (dataFi != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataFi);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			cal.set(Calendar.SECOND, 59);
+			cal.set(Calendar.MILLISECOND, 999);
+			dataFi = cal.getTime();
+		}
 		return paginacioHelper.toPaginaDto(
 				contingutRepository.findByFiltrePaginat(
 						entitat,
@@ -1259,10 +1279,10 @@ public class ContingutServiceImpl implements ContingutService {
 						filtre.getNom(),
 						(metaNode == null),
 						metaNode,
-						(filtre.getDataCreacioInici() == null),
-						filtre.getDataCreacioInici(),
-						(filtre.getDataCreacioFi() == null),
-						filtre.getDataCreacioFi(),
+						(dataInici == null),
+						dataInici,
+						(dataFi == null),
+						dataFi,
 						filtre.isMostrarEsborrats(),
 						filtre.isMostrarNoEsborrats(),
 						paginacioHelper.toSpringDataPageable(paginacioParams)),

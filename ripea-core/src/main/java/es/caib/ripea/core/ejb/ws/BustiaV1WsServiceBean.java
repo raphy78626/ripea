@@ -3,7 +3,9 @@
  */
 package es.caib.ripea.core.ejb.ws;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.jws.WebService;
@@ -39,6 +41,8 @@ import es.caib.ripea.core.service.ws.bustia.BustiaV1WsServiceImpl;
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BustiaV1WsServiceBean implements BustiaV1WsService {
 
+	@Resource
+	private SessionContext sessionContext;
 	@Autowired
 	private BustiaV1WsServiceImpl delegate;
 
@@ -47,6 +51,15 @@ public class BustiaV1WsServiceBean implements BustiaV1WsService {
 			String entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
+		if (sessionContext != null) {
+			if (sessionContext.getCallerPrincipal() != null) {
+				System.out.println(">>> callerPrincipal: " + sessionContext.getCallerPrincipal().getName());
+			} else {
+				System.out.println(">>> callerPrincipal: <null>");
+			}
+		} else {
+			System.out.println(">>> sessionContext: <null>");
+		}
 		delegate.enviarAnotacioRegistreEntrada(
 				entitat,
 				unitatAdministrativa,

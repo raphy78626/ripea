@@ -1,25 +1,28 @@
-package es.caib.ripea.war.passarelafirma;
+/**
+ * 
+ */
+package es.caib.ripea.war.escaneig;
 
 import java.util.Properties;
 
 /**
- * Bean amb informació d'un plugin de firma.
+ * Bean amb informació d'un plugin d'escaneig.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class PassarelaFirmaPlugin {
+public class EscaneigPlugin {
 
-	long pluginId;
+	String pluginId;
 	String nom;
 	String descripcioCurta;
 	String classe;
 	Properties properties;
 
-	public PassarelaFirmaPlugin() {
+	public EscaneigPlugin() {
 	}
 
-	public PassarelaFirmaPlugin(
-			long pluginId,
+	public EscaneigPlugin(
+			String pluginId,
 			String nom,
 			String descripcioCurta,
 			String classe,
@@ -32,32 +35,32 @@ public class PassarelaFirmaPlugin {
 
 	}
 
-	public long getPluginId() {
-		return (pluginId);
+	public String getPluginId() {
+		return pluginId;
 	}
-	public void setPluginId(long pluginId) {
+	public void setPluginId(String pluginId) {
 		this.pluginId = pluginId;
 	}
 	public String getNom() {
-		return (nom);
+		return nom;
 	}
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 	public String getDescripcioCurta() {
-		return (descripcioCurta);
+		return descripcioCurta;
 	}
 	public void setDescripcioCurta(String descripcioCurta) {
 		this.descripcioCurta = descripcioCurta;
 	}
 	public String getClasse() {
-		return (classe);
+		return classe;
 	}
 	public void setClasse(String classe) {
 		this.classe = classe;
 	}
 	public Properties getProperties() {
-		return (properties);
+		return properties;
 	}
 	public void setProperties(Properties properties) {
 		this.properties = properties;

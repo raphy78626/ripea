@@ -47,7 +47,7 @@ public class PassarelaFirmaHelper {
 	@Autowired
 	private AplicacioService aplicacioService;
 
-	private Map<String, PassarelaFirmaSignaturesSet> signaturesSetsMap = new HashMap<String, PassarelaFirmaSignaturesSet>();
+	private Map<String, PassarelaFirmaConfig> signaturesSetsMap = new HashMap<String, PassarelaFirmaConfig>();
 	private long lastCheckFirmesCaducades = 0;
 
 
@@ -60,19 +60,53 @@ public class PassarelaFirmaHelper {
 			String llocFirma,
 			String emailFirmant,
 			String idiomaCodi,
-			String urlFinal,
+			String urlFinalRipea,
 			boolean navegadorSuportaJava) throws IOException {
-		PassarelaFirmaSignaturesSet signaturesSet = getSignaturesSetFirmaPassarela(
-				request,
-				fitxerPerFirmar,
+		long signaturaId = generateUniqueSignaturesSetId();
+		String signaturesSetId = new Long(signaturaId).toString();
+		Calendar caducitat = Calendar.getInstance();
+		caducitat.add(Calendar.MINUTE, 40);
+		CommonInfoSignature commonInfoSignature;
+		final String urlFinal = getRelativeControllerBase(request, CONTEXTWEB) + "/final/" + signaturesSetId;
+		// TODO Veure manual de MiniApplet
+		final String filtreCertificats = "filters.1=nonexpired:";
+		// TODO Definir politica de Firma (opcional)
+		PolicyInfoSignature pis = null;
+		commonInfoSignature = new CommonInfoSignature(
+				idiomaCodi,
+				filtreCertificats,
+				request.getUserPrincipal().getName(),
 				destinatariNif,
+				pis);
+		File filePerFirmar = getFitxerAFirmarPath(signaturaId);
+		FileUtils.writeByteArrayToFile(
+				filePerFirmar,
+				fitxerPerFirmar.getContingut());
+		FileInfoSignature fis = getFileInfoSignature(
+				signaturesSetId,
+				filePerFirmar, // File amb el fitxer a firmar
+				fitxerPerFirmar.getContentType(), // Tipus mime del fitxer a firmar
+				fitxerPerFirmar.getNom(), // Nom del fitxer a firmar
+				0, // posició taula firmes: 0, 1, -1 (sense, primera pag., darrera pag.)
+				null, // SignaturesTableHeader 
 				motiu,
 				llocFirma,
 				emailFirmant,
+				1, // Nombre de firmes (nomes en suporta una)
 				idiomaCodi,
+				FileInfoSignature.SIGN_TYPE_PADES,
+				FileInfoSignature.SIGN_ALGORITHM_SHA1,
+				FileInfoSignature.SIGN_MODE_IMPLICIT,
+				false, // userRequiresTimeStamp,
+				null, // timeStampGenerator,
+				null); // svcsi
+		PassarelaFirmaConfig signaturesSet = new PassarelaFirmaConfig(
+				signaturesSetId,
+				caducitat.getTime(),
+				commonInfoSignature,
+				new FileInfoSignature[] {fis},
 				urlFinal,
-				navegadorSuportaJava);
-		final String signaturesSetId = signaturesSet.getSignaturesSetID();
+				urlFinalRipea);
 		startSignatureProcess(signaturesSet);
 		return CONTEXTWEB + "/selectsignmodule/" + signaturesSetId;
 	}
@@ -80,7 +114,7 @@ public class PassarelaFirmaHelper {
 	public List<PassarelaFirmaPlugin> getAllPlugins(
 			HttpServletRequest request,
 			String signaturesSetId) throws Exception {
-		PassarelaFirmaSignaturesSet signaturesSet = getSignaturesSet(request, signaturesSetId);
+		PassarelaFirmaConfig signaturesSet = getSignaturesSet(request, signaturesSetId);
 		List<PassarelaFirmaPlugin> plugins = getAllPluginsFromProperties();
 		if (plugins == null || plugins.size() == 0) {
 			String msg = "S'ha produit un error llegint els plugins o no se n'han definit.";
@@ -104,29 +138,10 @@ public class PassarelaFirmaHelper {
 		return pluginsFiltered;
 	}
 
-	public PassarelaFirmaSignaturesSet finalitzarProcesDeFirma(
-			HttpServletRequest request,
-			String signaturesSetId) {
-		PassarelaFirmaSignaturesSet pss = getSignaturesSet(request, signaturesSetId);
-		// Check pss is null
-		if (pss == null) {
-			String msg = "moduldefirma.caducat: " + signaturesSetId;
-			throw new RuntimeException(msg);
-		}
-		StatusSignaturesSet sss = pss.getStatusSignaturesSet();
-		if (sss.getStatus() == StatusSignaturesSet.STATUS_INITIALIZING
-				|| sss.getStatus() == StatusSignaturesSet.STATUS_IN_PROGRESS) {
-			// Vull presuposar que si i que el mòdul de firma s'ha oblidat
-			// d'indicar aquest fet ???
-			sss.setStatus(StatusSignaturesSet.STATUS_FINAL_OK);
-		}
-		return pss;
-	}
-
 	public String signDocuments(
 			HttpServletRequest request,
 			String signaturesSetId) throws Exception {
-		PassarelaFirmaSignaturesSet signaturesSet = getSignaturesSet(request, signaturesSetId);
+		PassarelaFirmaConfig signaturesSet = getSignaturesSet(request, signaturesSetId);
 		Long pluginId = signaturesSet.getPluginId();
 		// El plugin existeix?
 		ISignatureWebPlugin signaturePlugin;
@@ -160,7 +175,7 @@ public class PassarelaFirmaHelper {
 			String signaturesSetId,
 			int signatureIndex,
 			String query) throws Exception {
-		PassarelaFirmaSignaturesSet ss = getSignaturesSet(request, signaturesSetId);
+		PassarelaFirmaConfig ss = getSignaturesSet(request, signaturesSetId);
 		long pluginId = ss.getPluginId();
 		ISignatureWebPlugin signaturePlugin;
 		try {
@@ -206,13 +221,26 @@ public class PassarelaFirmaHelper {
 		}
 	}
 
-	/**
-	 * Fa neteja
-	 * 
-	 * @param signaturesSetId
-	 * @return
-	 */
-	public PassarelaFirmaSignaturesSet getSignaturesSet(
+	public PassarelaFirmaConfig finalitzarProcesDeFirma(
+			HttpServletRequest request,
+			String signaturesSetId) {
+		PassarelaFirmaConfig pss = getSignaturesSet(request, signaturesSetId);
+		// Check pss is null
+		if (pss == null) {
+			String msg = "moduldefirma.caducat: " + signaturesSetId;
+			throw new RuntimeException(msg);
+		}
+		StatusSignaturesSet sss = pss.getStatusSignaturesSet();
+		if (sss.getStatus() == StatusSignaturesSet.STATUS_INITIALIZING
+				|| sss.getStatus() == StatusSignaturesSet.STATUS_IN_PROGRESS) {
+			// Vull presuposar que si i que el mòdul de firma s'ha oblidat
+			// d'indicar aquest fet ???
+			sss.setStatus(StatusSignaturesSet.STATUS_FINAL_OK);
+		}
+		return pss;
+	}
+
+	public PassarelaFirmaConfig getSignaturesSet(
 			HttpServletRequest request,
 			String signaturesSetId) {
 		// Fer net peticions caducades SignaturesSet.getExpiryDate()
@@ -222,10 +250,10 @@ public class PassarelaFirmaHelper {
 		final long un_minut_en_ms = 60 * 60 * 1000;
 		if (now + un_minut_en_ms > lastCheckFirmesCaducades) {
 			lastCheckFirmesCaducades = now;
-			List<PassarelaFirmaSignaturesSet> keysToDelete = new ArrayList<PassarelaFirmaSignaturesSet>();
+			List<PassarelaFirmaConfig> keysToDelete = new ArrayList<PassarelaFirmaConfig>();
 			Set<String> ids = signaturesSetsMap.keySet();
 			for (String id : ids) {
-				PassarelaFirmaSignaturesSet ss = signaturesSetsMap.get(id);
+				PassarelaFirmaConfig ss = signaturesSetsMap.get(id);
 				if (now > ss.getExpiryDate().getTime()) {
 					keysToDelete.add(ss);
 					SimpleDateFormat sdf = new SimpleDateFormat();
@@ -236,7 +264,7 @@ public class PassarelaFirmaHelper {
 			if (keysToDelete.size() != 0) {
 				synchronized (signaturesSetsMap) {
 
-					for (PassarelaFirmaSignaturesSet pss : keysToDelete) {
+					for (PassarelaFirmaConfig pss : keysToDelete) {
 						closeSignaturesSet(request, pss);
 					}
 				}
@@ -245,70 +273,36 @@ public class PassarelaFirmaHelper {
 		return signaturesSetsMap.get(signaturesSetId);
 	}
 
+	public void closeSignaturesSet(HttpServletRequest request, PassarelaFirmaConfig pss) {
+		Long pluginId = pss.getPluginId();
+		final String signaturesSetId = pss.getSignaturesSetID();
+		if (pluginId != null) {
+			ISignatureWebPlugin signaturePlugin = null;
+			try {
+				signaturePlugin = getInstanceByPluginId(pluginId);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				return;
+			}
+			if (signaturePlugin == null) {
+				log.error("plugin.signatureweb.noexist: " + String.valueOf(pluginId));
+			}
+			try {
+				signaturePlugin.closeSignaturesSet(request, signaturesSetId);
+			} catch (Exception e) {
+				log.error("Error borrant dades d'un SignaturesSet " + signaturesSetId + ": " + e.getMessage(), e);
+			}
+		}
+		signaturesSetsMap.remove(signaturesSetId);
+	}
+
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
 	// ----------------------------- U T I L I T A T S ----------------------
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
 
-	private PassarelaFirmaSignaturesSet getSignaturesSetFirmaPassarela(
-			HttpServletRequest request,
-			FitxerDto fitxerPerFirmar,
-			String destinatariNif,
-			String motiu,
-			String llocFirma,
-			String emailFirmant,
-			String idiomaCodi,
-			String urlFinal,
-			boolean navegadorSuportaJava) throws IOException {
-		long signaturaId = generateUniqueSignaturesSetId();
-		String signaturesSetId = new Long(signaturaId).toString();
-		Calendar caducitat = Calendar.getInstance();
-		caducitat.add(Calendar.MINUTE, 40);
-		CommonInfoSignature commonInfoSignature;
-		final String urlFinalCalculada = getRelativeControllerBase(request, CONTEXTWEB) + "/final/" + signaturesSetId;
-		// TODO Veure manual de MiniApplet
-		final String filtreCertificats = "filters.1=nonexpired:";
-		// TODO Definir politica de Firma (opcional)
-		PolicyInfoSignature pis = null;
-		commonInfoSignature = new CommonInfoSignature(
-				idiomaCodi,
-				filtreCertificats,
-				request.getUserPrincipal().getName(),
-				destinatariNif,
-				pis);
-		File filePerFirmar = getFitxerAFirmarPath(signaturaId);
-		FileUtils.writeByteArrayToFile(
-				filePerFirmar,
-				fitxerPerFirmar.getContingut());
-		FileInfoSignature fis = getFileInfoSignature(
-				signaturesSetId,
-				filePerFirmar, // File amb el fitxer a firmar
-				fitxerPerFirmar.getContentType(), // Tipus mime del fitxer a firmar
-				fitxerPerFirmar.getNom(), // Nom del fitxer a firmar
-				0, // posició taula firmes: 0, 1, -1 (sense, primera pag., darrera pag.)
-				null, // SignaturesTableHeader 
-				motiu,
-				llocFirma,
-				emailFirmant,
-				1, // Nombre de firmes (nomes en suporta una)
-				idiomaCodi,
-				FileInfoSignature.SIGN_TYPE_PADES,
-				FileInfoSignature.SIGN_ALGORITHM_SHA1,
-				FileInfoSignature.SIGN_MODE_IMPLICIT,
-				false, // userRequiresTimeStamp,
-				null, // timeStampGenerator,
-				null); // svcsi
-		PassarelaFirmaSignaturesSet signaturesSet = new PassarelaFirmaSignaturesSet(
-				signaturesSetId,
-				caducitat.getTime(),
-				commonInfoSignature,
-				new FileInfoSignature[] {fis},
-				urlFinalCalculada, urlFinal);
-		return signaturesSet;
-	}
-
-	private void startSignatureProcess(PassarelaFirmaSignaturesSet signaturesSet) {
+	private void startSignatureProcess(PassarelaFirmaConfig signaturesSet) {
 		synchronized (signaturesSetsMap) {
 			final String signaturesSetId = signaturesSet.getSignaturesSetID();
 			signaturesSetsMap.put(signaturesSetId, signaturesSet);
@@ -406,31 +400,6 @@ public class PassarelaFirmaHelper {
 				userRequiresTimeStamp,
 				timeStampGenerator);
 		return fis;
-	}
-
-	private void closeSignaturesSet(HttpServletRequest request, PassarelaFirmaSignaturesSet pss) {
-		Long pluginId = pss.getPluginId();
-		final String signaturesSetId = pss.getSignaturesSetID();
-		if (pluginId == null) {
-			// Encara no s'ha asignat plugin al signatureset
-		} else {
-			ISignatureWebPlugin signaturePlugin = null;
-			try {
-				signaturePlugin = getInstanceByPluginId(pluginId);
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-				return;
-			}
-			if (signaturePlugin == null) {
-				log.error("plugin.signatureweb.noexist: " + String.valueOf(pluginId));
-			}
-			try {
-				signaturePlugin.closeSignaturesSet(request, signaturesSetId);
-			} catch (Exception e) {
-				log.error("Error borrant dades d'un SignaturesSet " + signaturesSetId + ": " + e.getMessage(), e);
-			}
-		}
-		signaturesSetsMap.remove(signaturesSetId);
 	}
 
 	private List<PassarelaFirmaPlugin> plugins;

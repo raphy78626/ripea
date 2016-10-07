@@ -5,7 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<c:set var="titol"><spring:message code="contenidor.document.passarelafirma.titol"/></c:set>
+<c:set var="titol"><spring:message code="passarelafirma.form.titol"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
@@ -22,18 +22,18 @@
 	<c:if test="${documentVersio.arxiuNom != documentVersio.portafirmesConversioArxiuNom}">
 		<div class="alert well-sm alert-warning alert-dismissable">
 			<span class="fa fa-exclamation-triangle"></span>
-			<spring:message code="contenidor.document.passarelafirma.conversio.avis"/>
+			<spring:message code="passarelafirma.form.conversio.avis"/>
 			<a data-rdt-link-modal="true" class="btn btn-xs btn-default pull-right" href="pdf">
-				<spring:message code="contenidor.document.passarelafirma.conversio.boto.previsualitzar"/>
+				<spring:message code="passarelafirma.form.conversio.boto.previsualitzar"/>
 			</a>
 		</div>
 	</c:if>
 	<c:set var="formAction"><rip:modalUrl value="/document/${document.id}/firmaPassarela"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="passarelaFirmaEnviarCommand" role="form">
-		<rip:inputText name="motiu" textKey="contenidor.document.passarelafirma.camp.motiu" required="true"/>
-		<rip:inputText name="lloc" textKey="contenidor.document.passarelafirma.camp.lloc" required="true"/>
+		<rip:inputText name="motiu" textKey="passarelafirma.form.camp.motiu" required="true"/>
+		<rip:inputText name="lloc" textKey="passarelafirma.form.camp.lloc" required="true"/>
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-play"></span> <spring:message code="contenidor.document.passarelafirma.iniciar"/></button>
+			<button type="submit" class="btn btn-success"><span class="fa fa-play"></span> <spring:message code="passarelafirma.form.iniciar"/></button>
 			<a href="<c:url value="/contenidor/${document.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

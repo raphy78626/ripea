@@ -549,7 +549,10 @@ public class PluginHelper {
 		String accioDescripcio = "Creació d'un arxiu";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("arxiuNom", arxiuNom);
-		accioParams.put("contingut", new Integer(contingut.length).toString());
+		if (contingut != null)
+			accioParams.put("contingut", new Integer(contingut.length).toString() + " bytes");
+		else
+			accioParams.put("contingut", "<null>");
 		long t0 = System.currentTimeMillis();
 		try {
 			String gestioDocumentalId = getGestioDocumentalPlugin().create(
