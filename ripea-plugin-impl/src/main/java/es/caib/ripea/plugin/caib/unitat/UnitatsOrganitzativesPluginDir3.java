@@ -48,7 +48,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			if (unidades != null) {
 				for (UnidadTF unidad: unidades) {
 					if ("V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
-						
 						UnitatOrganitzativa unitat = new UnitatOrganitzativa(
 								unidad.getCodigo(),
 								unidad.getDenominacion(),
@@ -134,7 +133,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			Boolean esUnitatArrel,
 			Long codiProvincia, 
 			String codiLocalitat) throws SistemaExternException {
-		
 		LOGGER.debug("Cercant tots els paisos");
 		try {
 			URL url = new URL(getServiceCercaUrl()
@@ -150,7 +148,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
 			httpConnection.setDoOutput(true);
-
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 			List<UnitatOrganitzativa> unitats = mapper.readValue(
@@ -160,13 +157,13 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 							UnitatOrganitzativa.class));
 			Collections.sort(unitats);
 			return unitats;
-			
 		} catch (Exception ex) {
 			LOGGER.error("Error al obtenir les províncies de la font externa", ex);
 			return null;
 		}
 	}
-	
+
+
 
 	private Dir3CaibObtenerUnidadesWs getObtenerUnidadesService() throws MalformedURLException {
 		Dir3CaibObtenerUnidadesWs client = null;
@@ -181,14 +178,26 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		bp.getRequestContext().put(
 				BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
 				getServiceUrl());
-		String username = getUsername();
+		String username = getServiceUsername();
 		if (username != null && !username.isEmpty()) {
 			bp.getRequestContext().put(
 					BindingProvider.USERNAME_PROPERTY,
 					username);
 			bp.getRequestContext().put(
 					BindingProvider.PASSWORD_PROPERTY,
-					getPassword());
+					getServicePassword());
+		}
+		Integer connectTimeout = getServiceConnectTimeout();
+		if (connectTimeout != null) {
+			bp.getRequestContext().put(
+					"com.sun.xml.internal.ws.connect.timeout",
+					connectTimeout);
+		}
+		Integer requestTimeout = getServiceRequestTimeout();
+		if (requestTimeout != null) {
+			bp.getRequestContext().put(
+					"com.sun.xml.internal.ws.request.timeout",
+					requestTimeout);
 		}
 		return client;
 	}
@@ -197,17 +206,31 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.url");
 	}
-	private String getServiceCercaUrl() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.unitats.cerca.dir3.service.url");
-	}
-	private String getUsername() {
+	private String getServiceUsername() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.username");
 	}
-	private String getPassword() {
+	private String getServicePassword() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.password");
+	}
+	private Integer getServiceConnectTimeout() {
+		String key = "es.caib.ripea.plugin.unitats.organitzatives.dir3.service.connect.timeout";
+		if (PropertiesHelper.getProperties().getProperty(key) != null)
+			return PropertiesHelper.getProperties().getAsInt(key);
+		else
+			return null;
+	}
+	private Integer getServiceRequestTimeout() {
+		String key = "es.caib.ripea.plugin.unitats.organitzatives.dir3.service.request.timeout";
+		if (PropertiesHelper.getProperties().getProperty(key) != null)
+			return PropertiesHelper.getProperties().getAsInt(key);
+		else
+			return null;
+	}
+	private String getServiceCercaUrl() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.unitats.cerca.dir3.service.url");
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UnitatsOrganitzativesPluginDir3.class);
