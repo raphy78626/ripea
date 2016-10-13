@@ -3,11 +3,13 @@
  */
 package es.caib.ripea.core.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -40,12 +42,7 @@ import es.caib.ripea.plugin.usuari.DadesUsuari;
 @Service
 public class AplicacioServiceImpl implements AplicacioService {
 
-	private static final MajorVersion MAJOR_VERSION = MajorVersion.V0_8;
-	private static final int MINOR_VERSION = 8;
-
-	private enum MajorVersion {
-		V0_1, V0_2, V0_3, V0_4, V0_5, V0_6, V0_7, V0_8
-	}
+	private String version;
 
 	@Resource
 	private UsuariRepository usuariRepository;
@@ -66,8 +63,16 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Override
 	public String getVersioActual() {
 		logger.debug("Obtenint versió actual de l'aplicació");
-		String majorVersionActual = MAJOR_VERSION.name();
-		return majorVersionActual.substring(1).replace("_", ".") + "." + MINOR_VERSION;
+		if (version == null) {
+			try {
+				version = IOUtils.toString(
+						getClass().getResourceAsStream("versio"),
+						"UTF-8");
+			} catch (IOException e) {
+				version = "???";
+			}
+		}
+		return version;
 	}
 
 	@Transactional
