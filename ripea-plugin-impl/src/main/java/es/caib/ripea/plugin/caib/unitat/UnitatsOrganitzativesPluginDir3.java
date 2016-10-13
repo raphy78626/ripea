@@ -3,18 +3,27 @@
  */
 package es.caib.ripea.plugin.caib.unitat;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.BindingProvider;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.xml.ws.handler.Handler;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPHandler;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,36 +48,35 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 	public List<UnitatOrganitzativa> findAmbPare(String pareCodi) throws SistemaExternException {
 		try {
 			List<UnitatOrganitzativa> unitats = new ArrayList<UnitatOrganitzativa>();
-			UnitatOrganitzativa unitatOrganitzativaArrel = findAmbCodi(pareCodi);
-			unitats.add(unitatOrganitzativaArrel);
+			UnidadTF unidadPare = getObtenerUnidadesService().obtenerUnidad(
+					pareCodi,
+					null,
+					null);
 			List<UnidadTF> unidades = getObtenerUnidadesService().obtenerArbolUnidades(
 					pareCodi,
 					null,
 					null);//df.format(new Date()));
+			unidades.add(0, unidadPare);
 			if (unidades != null) {
 				for (UnidadTF unidad: unidades) {
 					if ("V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
-						UnitatOrganitzativa unitat = new UnitatOrganitzativa(
+						unitats.add(toUnitatOrganitzativa(unidad));
+						/*unitats.add(new UnitatOrganitzativa(
 								unidad.getCodigo(),
 								unidad.getDenominacion(),
 								unidad.getCodigo(), // CifNif
 								unidad.getFechaAltaOficial(),
 								unidad.getCodigoEstadoEntidad(),
 								unidad.getCodUnidadSuperior(),
-								unidad.getCodUnidadRaiz());
-						
-						unitats.add(unitat);
+								unidad.getCodUnidadRaiz()));*/
 					}
 				}
 			}
+			serialitzar(unitats);
 			return unitats;
 		} catch (Exception ex) {
-			LOGGER.error(
-					"No s'han pogut consultar les unitats organitzatives (" +
-					"pareCodi=" + pareCodi + ")",
-					ex);
 			throw new SistemaExternException(
-					"No s'han pogut consultar les unitats organitzatives (" +
+					"No s'han pogut consultar les unitats organitzatives via WS (" +
 					"pareCodi=" + pareCodi + ")",
 					ex);
 		}
@@ -83,27 +91,8 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					null,
 					null);
 			if (unidad != null && "V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
-				unitat = new UnitatOrganitzativa(
-						unidad.getCodigo(),
-						unidad.getDenominacion(),
-						unidad.getCodigo(), // CifNif
-						unidad.getFechaAltaOficial(),
-						unidad.getCodigoEstadoEntidad(),
-						unidad.getCodUnidadSuperior(),
-						unidad.getCodUnidadRaiz(),
-						unidad.getCodigoAmbPais(),
-						unidad.getCodAmbComunidad(),
-						unidad.getCodAmbProvincia(),
-						unidad.getCodPostal(),
-						unidad.getDescripcionLocalidad(),
-						//getAdressa(unidad.getCodigoTipoVia(), unidad.getNombreVia(), unidad.getNumVia()));
-						unidad.getCodigoTipoVia(), 
-						unidad.getNombreVia(), 
-						unidad.getNumVia());
+				unitat = toUnitatOrganitzativa(unidad);
 			} else {
-				LOGGER.error(
-						"La unitat organitzativa no està vigent (" +
-						"codi=" + codi + ")");
 				throw new SistemaExternException(
 						"La unitat organitzativa no està vigent (" +
 						"codi=" + codi + ")");
@@ -112,10 +101,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		} catch (SistemaExternException ex) {
 			throw ex;
 		} catch (Exception ex) {
-			LOGGER.error(
-					"No s'ha pogut consultar la unitat organitzativa (" +
-					"codi=" + codi + ")",
-					ex);
 			throw new SistemaExternException(
 					"No s'ha pogut consultar la unitat organitzativa (" +
 					"codi=" + codi + ")",
@@ -133,7 +118,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			Boolean esUnitatArrel,
 			Long codiProvincia, 
 			String codiLocalitat) throws SistemaExternException {
-		LOGGER.debug("Cercant tots els paisos");
 		try {
 			URL url = new URL(getServiceCercaUrl()
 					+ "?codigo=" + codiUnitat
@@ -158,8 +142,17 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			Collections.sort(unitats);
 			return unitats;
 		} catch (Exception ex) {
-			LOGGER.error("Error al obtenir les províncies de la font externa", ex);
-			return null;
+			throw new SistemaExternException(
+					"No s'han pogut consultar les unitats organitzatives via REST (" +
+					"codiUnitat=" + codiUnitat + ", " +
+					"denominacioUnitat=" + denominacioUnitat + ", " +
+					"codiNivellAdministracio=" + codiNivellAdministracio + ", " +
+					"codiComunitat=" + codiComunitat + ", " +
+					"ambOficines=" + ambOficines + ", " +
+					"esUnitatArrel=" + esUnitatArrel + ", " +
+					"codiProvincia=" + codiProvincia + ", " +
+					"codiLocalitat=" + codiLocalitat + ")",
+					ex);
 		}
 	}
 
@@ -187,17 +180,17 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					BindingProvider.PASSWORD_PROPERTY,
 					getServicePassword());
 		}
-		Integer connectTimeout = getServiceConnectTimeout();
+		if (isLogMissatgesActiu()) {
+			@SuppressWarnings("rawtypes")
+			List<Handler> handlerChain = new ArrayList<Handler>();
+			handlerChain.add(new LogMessageHandler());
+			bp.getBinding().setHandlerChain(handlerChain);
+		}
+		Integer connectTimeout = getServiceTimeout();
 		if (connectTimeout != null) {
 			bp.getRequestContext().put(
-					"com.sun.xml.internal.ws.connect.timeout",
+					"org.jboss.ws.timeout",
 					connectTimeout);
-		}
-		Integer requestTimeout = getServiceRequestTimeout();
-		if (requestTimeout != null) {
-			bp.getRequestContext().put(
-					"com.sun.xml.internal.ws.request.timeout",
-					requestTimeout);
 		}
 		return client;
 	}
@@ -214,15 +207,12 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.password");
 	}
-	private Integer getServiceConnectTimeout() {
-		String key = "es.caib.ripea.plugin.unitats.organitzatives.dir3.service.connect.timeout";
-		if (PropertiesHelper.getProperties().getProperty(key) != null)
-			return PropertiesHelper.getProperties().getAsInt(key);
-		else
-			return null;
+	private boolean isLogMissatgesActiu() {
+		return PropertiesHelper.getProperties().getAsBoolean(
+				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.log.actiu");
 	}
-	private Integer getServiceRequestTimeout() {
-		String key = "es.caib.ripea.plugin.unitats.organitzatives.dir3.service.request.timeout";
+	private Integer getServiceTimeout() {
+		String key = "es.caib.ripea.plugin.unitats.organitzatives.dir3.service.timeout";
 		if (PropertiesHelper.getProperties().getProperty(key) != null)
 			return PropertiesHelper.getProperties().getAsInt(key);
 		else
@@ -233,6 +223,76 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 				"es.caib.ripea.plugin.unitats.cerca.dir3.service.url");
 	}
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(UnitatsOrganitzativesPluginDir3.class);
+	private void serialitzar(Object obj) {
+		try {
+			FileOutputStream fileOut = new FileOutputStream(
+					"/home/LIMIT_CECOMASA.LOCAL/josepg/unitats.ser");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(obj);
+			out.close();
+			fileOut.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private UnitatOrganitzativa toUnitatOrganitzativa(UnidadTF unidad) {
+		UnitatOrganitzativa unitat = new UnitatOrganitzativa(
+				unidad.getCodigo(),
+				unidad.getDenominacion(),
+				unidad.getCodigo(), // CifNif
+				unidad.getFechaAltaOficial(),
+				unidad.getCodigoEstadoEntidad(),
+				unidad.getCodUnidadSuperior(),
+				unidad.getCodUnidadRaiz(),
+				unidad.getCodigoAmbPais(),
+				unidad.getCodAmbComunidad(),
+				unidad.getCodAmbProvincia(),
+				unidad.getCodPostal(),
+				unidad.getDescripcionLocalidad(),
+				unidad.getCodigoTipoVia(), 
+				unidad.getNombreVia(), 
+				unidad.getNumVia());
+		return unitat;
+	}
+
+	private class LogMessageHandler implements SOAPHandler<SOAPMessageContext> {
+		public boolean handleMessage(SOAPMessageContext messageContext) {
+			log(messageContext);
+			return true;
+		}
+		public Set<QName> getHeaders() {
+			return Collections.emptySet();
+		}
+		public boolean handleFault(SOAPMessageContext messageContext) {
+			log(messageContext);
+			return true;
+		}
+		public void close(MessageContext context) {
+		}
+		private void log(SOAPMessageContext messageContext) {
+			SOAPMessage msg = messageContext.getMessage();
+			try {
+				Boolean outboundProperty = (Boolean)messageContext.get(
+						MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+				if (outboundProperty)
+					System.out.print("Missatge SOAP petició: ");
+				else
+					System.out.print("Missatge SOAP resposta: ");
+				msg.writeTo(System.out);
+				System.out.println();
+			} catch (SOAPException ex) {
+				Logger.getLogger(LogMessageHandler.class.getName()).log(
+						Level.SEVERE,
+						null,
+						ex);
+			} catch (IOException ex) {
+				Logger.getLogger(LogMessageHandler.class.getName()).log(
+						Level.SEVERE,
+						null,
+						ex);
+			}
+		}
+	}
 
 }
