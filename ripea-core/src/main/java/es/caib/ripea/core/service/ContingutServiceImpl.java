@@ -24,10 +24,7 @@ import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
-import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
-import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
-import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
@@ -43,7 +40,6 @@ import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
-import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
@@ -1396,30 +1392,22 @@ public class ContingutServiceImpl implements ContingutService {
 			creat = contingutRepository.save(carpetaNova);
 		} else if (contingutOrigen instanceof DocumentEntity) {
 			DocumentEntity documentOrigen = (DocumentEntity)contingutOrigen;
-			DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
-					documentOrigen,
-					documentOrigen.getVersioDarrera().getVersio());
-			DocumentEntity documentNou = DocumentEntity.getBuilder(
-					DocumentTipusEnumDto.DIGITAL,
-					DocumentEstatEnumDto.REDACCIO,
+			creat = contingutHelper.crearNouDocument(
+					documentOrigen.getDocumentTipus(),
 					documentOrigen.getNom(),
 					documentOrigen.getData(),
+					documentOrigen.getDataCaptura(),
+					documentOrigen.getNtiOrgano(),
+					documentOrigen.getNtiOrigen(),
+					documentOrigen.getNtiEstadoElaboracion(),
+					documentOrigen.getNtiTipoDocumental(),
 					documentOrigen.getExpedient(),
 					documentOrigen.getMetaDocument(),
 					contingutDesti,
-					entitat).build();
-			FitxerDto fitxer = documentHelper.getFitxerAssociat(
-					documentVersio);
-			int versio = 1;
-			DocumentVersioEntity documentVersioNova = documentHelper.crearVersioAmbFitxerAssociat(
-					documentNou,
-					versio,
-					fitxer.getNom(),
-					fitxer.getContentType(),
-					fitxer.getContingut());
-			documentVersioRepository.save(documentVersioNova);
-			documentNou.updateVersioDarrera(documentVersioNova);
-			creat = contingutRepository.save(documentNou);
+					entitat,
+					documentOrigen.getUbicacio(),
+					documentHelper.getFitxerAssociat(
+							documentOrigen.getVersioDarrera()));
 		} else if (contingutOrigen instanceof ExpedientEntity) {
 			ExpedientEntity expedientOrigen = (ExpedientEntity)contingutOrigen;
 			creat = contingutHelper.crearNouExpedient(

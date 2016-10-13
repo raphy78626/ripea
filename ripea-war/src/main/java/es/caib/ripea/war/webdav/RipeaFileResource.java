@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
-import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -175,17 +174,15 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 				document.getEntitat().getId(),
 				document.getId());
 		try {
+			FitxerDto fitxer = new FitxerDto();
+			fitxer.setNom(darreraVersio.getArxiuNom());
+			fitxer.setContentType(darreraVersio.getArxiuContentType());
+			fitxer.setContingut(IOUtils.toByteArray(in));
 			getDocumentService().update(
 					document.getEntitat().getId(),
 					document.getId(),
-					DocumentTipusEnumDto.DIGITAL,
-					document.getMetaDocument().getId(),
-					document.getNom(),
-					document.getData(),
-					darreraVersio.getArxiuNom(),
-					darreraVersio.getArxiuContentType(),
-					IOUtils.toByteArray(in),
-					null);
+					document,
+					fitxer);
 		} catch (IOException ex) {
 			throw new BadRequestException("Error al llegir les dades de l'arxiu", ex);
 		}

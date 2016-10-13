@@ -23,9 +23,13 @@ import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.service.CarpetaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
@@ -210,17 +214,24 @@ public class RipeaFolderResource implements FolderResource {
 			MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
 			mimeType = mimeTypesMap.getContentType(newName);
 		}
+		FitxerDto fitxer = new FitxerDto();
+		fitxer.setNom(newName);
+		fitxer.setContentType(mimeType);
+		fitxer.setContingut(IOUtils.toByteArray(inputStream));
+		DocumentDto dto = new DocumentDto();
+		dto.setNom(newName);
+		dto.setDocumentTipus(DocumentTipusEnumDto.DIGITAL);
+		Date ara = new Date();
+		dto.setData(ara);
+		dto.setDataCaptura(ara);
+		dto.setNtiOrigen(DocumentNtiOrigenEnumDto.O0);
+		dto.setNtiEstadoElaboracion(DocumentNtiEstadoElaboracionEnumDto.EE01);
+		dto.setNtiTipoDocumental(DocumentNtiTipoDocumentalEnumDto.TD99);
 		DocumentDto document = getDocumentService().create(
 				contingut.getEntitat().getId(),
 				contingut.getId(),
-				DocumentTipusEnumDto.DIGITAL,
-				null,
-				newName,
-				new Date(),
-				newName,
-				mimeType,
-				IOUtils.toByteArray(inputStream),
-				null);
+				dto,
+				fitxer);
 		return contenidorToResource(document);
 	}
 

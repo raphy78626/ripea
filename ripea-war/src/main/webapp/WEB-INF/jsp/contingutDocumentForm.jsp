@@ -52,19 +52,16 @@ $(document).ready(function() {
 		if ($(this).val() == 'DISC') {
 			$('#input-origen-arxiu').removeClass('hidden');
 			$('#input-origen-escaner').addClass('hidden');
-			$('input[name=origen][value=DISC]').parent().addClass('active');
 		} else {
 			$('#input-origen-escaner').removeClass('hidden');
 			$('#input-origen-arxiu').addClass('hidden');
-			$('input[name=origen][value=ESCANER]').parent().addClass('active');
 		}
 		webutilModalAdjustHeight();
 	});
-	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-		var $tab = $($(e.target).attr('href'));
-		if ($tab.attr('id') == 'digital') {
+	$('#digitalOFisic').on('shown.bs.collapse', function(e) {
+		if ($(e.target).attr('id') == 'collapseDigital') {
 			$('#documentTipus').val('DIGITAL');
-		} else if ($tab.attr('id') == 'fisic') {
+		} else if ($(e.target).attr('id') == 'collapseFisic') {
 			$('#documentTipus').val('FISIC');
 		}
 	});
@@ -108,53 +105,86 @@ $(document).ready(function() {
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
 		<form:hidden path="documentTipus"/>
-		<rip:inputText name="nom" textKey="contingut.document.form.camp.nom" required="true"/>
-		<rip:inputDate name="data" textKey="contingut.document.form.camp.data" required="true"/>
-		<rip:inputSelect name="metaNodeId" textKey="contingut.document.form.camp.metanode" optionItems="${metaDocuments}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" emptyOptionTextKey="contingut.document.form.camp.metanode.buit"/>
-		<c:if test="${empty documentCommand.id}">
-			<ul class="nav nav-tabs" role="tablist">
-				<c:if test="${empty documentCommand.id || documentCommand.documentTipus == 'DIGITAL'}">
-					<li role="presentation"<c:if test="${documentCommand.documentTipus == 'DIGITAL'}"> class="active"</c:if>><a href="#digital" aria-controls="digital" role="tab" data-toggle="tab"><spring:message code="contingut.document.form.tab.digital"/></a></li>
-				</c:if>
-				<c:if test="${empty documentCommand.id || documentCommand.documentTipus == 'FISIC'}">
-					<li role="presentation"<c:if test="${documentCommand.documentTipus == 'FISIC'}"> class="active"</c:if>><a href="#fisic" aria-controls="fisic" role="tab" data-toggle="tab"><spring:message code="contingut.document.form.tab.fisic"/></a></li>
-				</c:if>
-			</ul>
-			<br/>
-		</c:if>
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#dades_doc" aria-controls="dades_doc" role="tab" data-toggle="tab"><spring:message code="contingut.document.form.tab.dades.doc"/></a></li>
+			<li role="presentation"><a href="#dades_nti" aria-controls="dades_nti" role="tab" data-toggle="tab"><spring:message code="contingut.document.form.tab.dades.nti"/></a></li>
+		</ul>
+		<br/>
 		<div class="tab-content">
-			<div role="tabpanel" class="tab-pane<c:if test="${documentCommand.documentTipus == 'DIGITAL'}"> active</c:if>" id="digital">
-				<div id="info-plantilla-si" class="alert well-sm alert-info hidden">
-					<span class="fa fa-info-circle"></span>
-					<spring:message code="contingut.document.form.info.plantilla.si"/>
-					<a href="#" class="btn btn-xs btn-default pull-right"><spring:message code="comu.boto.descarregar"/></a>
-				</div>
-				<div id="info-plantilla-no" class="alert well-sm alert-info hidden">
-					<span class="fa fa-info-circle"></span>
-					<spring:message code="contingut.document.form.info.plantilla.no"/>
-				</div>
-				<rip:inputRadio name="origen" textKey="contingut.document.form.camp.origen" botons="true" optionItems="${digitalOrigenOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
-				<div id="input-origen-arxiu" class="hidden">
-					<rip:inputFile name="arxiu" textKey="contingut.document.form.camp.arxiu" required="${empty documentCommand.id}"/>
-				</div>
-				<div id="input-origen-escaner" class="hidden">
-					<rip:inputFixed name="escanejatTempId" textKey="contingut.document.form.camp.escaneig">
-						<rip:inputHidden name="escanejatTempId"/>
-						<div class="input-group">
-							<input type="text" class="form-control" disabled="disabled" value="${escanejat.nom}"/>
-							<span class="input-group-btn">
-								<button class="btn btn-default" name="hola" type="submit"><span class="fa fa-print"></span> <spring:message code="contingut.document.form.boto.escaneig"/></button>
-							</span>
-	    				</div>
-					</rip:inputFixed>
+			<div role="tabpanel" class="tab-pane active" id="dades_doc">
+				<rip:inputText name="nom" textKey="contingut.document.form.camp.nom" required="true"/>
+				<rip:inputDate name="data" textKey="contingut.document.form.camp.data" required="true"/>
+				<rip:inputSelect name="metaNodeId" textKey="contingut.document.form.camp.metanode" optionItems="${metaDocuments}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" emptyOptionTextKey="contingut.document.form.camp.metanode.buit"/>
+				<div class="panel-group" id="digitalOFisic" role="tablist" aria-multiselectable="true">
+					<c:if test="${empty documentCommand.id || documentCommand.documentTipus == 'DIGITAL'}">
+						<div class="panel panel-default">
+							<div class="panel-heading" role="tab" id="headingDigital">
+								<h4 class="panel-title">
+									<a role="button" data-toggle="collapse" data-parent="#digitalOFisic" href="#collapseDigital" aria-expanded="true" aria-controls="collapseDigital">
+										<spring:message code="contingut.document.form.tab.digital"/>
+									</a>
+								</h4>
+							</div>
+							<div id="collapseDigital" class="panel-collapse collapse<c:if test="${documentCommand.documentTipus == 'DIGITAL'}"> in</c:if>" role="tabpanel" aria-labelledby="headingDigital">
+								<div class="panel-body">
+									<div id="info-plantilla-si" class="alert well-sm alert-info hidden">
+										<span class="fa fa-info-circle"></span>
+										<spring:message code="contingut.document.form.info.plantilla.si"/>
+										<a href="#" class="btn btn-xs btn-default pull-right"><spring:message code="comu.boto.descarregar"/></a>
+									</div>
+									<div id="info-plantilla-no" class="alert well-sm alert-info hidden">
+										<span class="fa fa-info-circle"></span>
+										<spring:message code="contingut.document.form.info.plantilla.no"/>
+									</div>
+									<rip:inputRadio name="origen" textKey="contingut.document.form.camp.origen" botons="true" optionItems="${digitalOrigenOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
+									<div id="input-origen-arxiu" class="hidden">
+										<rip:inputFile name="arxiu" textKey="contingut.document.form.camp.arxiu" required="${empty documentCommand.id}"/>
+									</div>
+									<div id="input-origen-escaner" class="hidden">
+										<rip:inputFixed name="escanejatTempId" textKey="contingut.document.form.camp.escaneig">
+											<rip:inputHidden name="escanejatTempId"/>
+											<div class="input-group">
+												<input type="text" class="form-control" disabled="disabled" value="${escanejat.nom}"/>
+												<span class="input-group-btn">
+													<button class="btn btn-default" name="hola" type="submit"><span class="fa fa-print"></span> <spring:message code="contingut.document.form.boto.escaneig"/></button>
+												</span>
+						    				</div>
+										</rip:inputFixed>
+									</div>
+								</div>
+							</div>
+						</div>
+					</c:if>
+					<c:if test="${empty documentCommand.id || documentCommand.documentTipus == 'FISIC'}">
+						<div class="panel panel-default">
+							<div class="panel-heading" role="tab" id="headingFisic">
+								<h4 class="panel-title">
+									<a role="button" data-toggle="collapse" data-parent="#digitalOFisic" href="#collapseFisic" aria-expanded="true" aria-controls="collapseFisic">
+										<spring:message code="contingut.document.form.tab.fisic"/>
+									</a>
+								</h4>
+							</div>
+							<div id="collapseFisic" class="panel-collapse collapse<c:if test="${documentCommand.documentTipus == 'FISIC'}"> in</c:if>" role="tabpanel" aria-labelledby="headingFisic">
+								<div class="panel-body">
+									<rip:inputTextarea name="ubicacio" textKey="contingut.document.form.camp.ubicacio" required="true"/>
+								</div>
+							</div>
+						</div>
+					</c:if>
 				</div>
 			</div>
-			<div role="tabpanel" class="tab-pane<c:if test="${documentCommand.documentTipus == 'FISIC'}"> active</c:if>" id="fisic">
-				<rip:inputTextarea name="ubicacio" textKey="contingut.document.form.camp.ubicacio" required="true"/>
+			<div role="tabpanel" class="tab-pane" id="dades_nti">
+				<rip:inputDate name="dataCaptura" textKey="contingut.document.form.camp.nti.datacap" required="true"/>
+				<rip:inputText name="ntiOrgano" textKey="contingut.document.form.camp.nti.organo" required="true"/>
+				<rip:inputSelect name="ntiOrigen" textKey="contingut.document.form.camp.nti.origen" required="true" optionItems="${ntiOrigenOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
+				<rip:inputSelect name="ntiEstadoElaboracion" textKey="contingut.document.form.camp.nti.estela" required="true" optionItems="${ntiEstatElaboracioOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
+				<rip:inputSelect name="ntiTipoDocumental" textKey="contingut.document.form.camp.nti.tipdoc" required="true" optionItems="${ntiTipusDocumentalOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
+				<rip:inputText name="ntiIdDocumentoOrigen" textKey="contingut.document.form.camp.nti.iddoc"/>
 			</div>
 		</div>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+			<a href="<c:url value="/contingut/${documentCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

@@ -12,6 +12,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.war.command.DocumentCommand.CreateDigital;
 import es.caib.ripea.war.command.DocumentCommand.UpdateDigital;
@@ -37,6 +40,19 @@ public class DocumentCommand extends ContenidorCommand {
 	private MultipartFile arxiu;
 	private DocumentFisicOrigenEnum origen;
 	private String escanejatTempId;
+	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
+	private Date dataCaptura;
+	@NotEmpty(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
+	@Size(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class}, max=9)
+	private String ntiOrgano;
+	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
+	private DocumentNtiOrigenEnumDto ntiOrigen;
+	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
+	private DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion;
+	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
+	private DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental;
+	@Size(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class}, max=48)
+	private String ntiIdDocumentoOrigen;
 
 
 
@@ -81,6 +97,42 @@ public class DocumentCommand extends ContenidorCommand {
 	}
 	public void setEscanejatTempId(String escanejatTempId) {
 		this.escanejatTempId = escanejatTempId;
+	}
+	public Date getDataCaptura() {
+		return dataCaptura;
+	}
+	public void setDataCaptura(Date dataCaptura) {
+		this.dataCaptura = dataCaptura;
+	}
+	public String getNtiOrgano() {
+		return ntiOrgano;
+	}
+	public void setNtiOrgano(String ntiOrgano) {
+		this.ntiOrgano = ntiOrgano;
+	}
+	public DocumentNtiOrigenEnumDto getNtiOrigen() {
+		return ntiOrigen;
+	}
+	public void setNtiOrigen(DocumentNtiOrigenEnumDto ntiOrigen) {
+		this.ntiOrigen = ntiOrigen;
+	}
+	public DocumentNtiEstadoElaboracionEnumDto getNtiEstadoElaboracion() {
+		return ntiEstadoElaboracion;
+	}
+	public void setNtiEstadoElaboracion(DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion) {
+		this.ntiEstadoElaboracion = ntiEstadoElaboracion;
+	}
+	public DocumentNtiTipoDocumentalEnumDto getNtiTipoDocumental() {
+		return ntiTipoDocumental;
+	}
+	public void setNtiTipoDocumental(DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental) {
+		this.ntiTipoDocumental = ntiTipoDocumental;
+	}
+	public String getNtiIdDocumentoOrigen() {
+		return ntiIdDocumentoOrigen;
+	}
+	public void setNtiIdDocumentoOrigen(String ntiIdDocumentoOrigen) {
+		this.ntiIdDocumentoOrigen = ntiIdDocumentoOrigen;
 	}
 
 	public static DocumentCommand asCommand(DocumentDto dto) {

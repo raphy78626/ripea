@@ -29,10 +29,16 @@ import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaNodeDto;
@@ -48,9 +54,11 @@ import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
+import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientSequenciaEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
@@ -119,6 +127,8 @@ public class ContingutHelper {
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
 	private MetaNodeHelper metaNodeHelper;
+	@Resource
+	private DocumentHelper documentHelper;
 	@Resource
 	private PluginHelper pluginHelper;
 	@Resource
@@ -199,6 +209,17 @@ public class ContingutHelper {
 			dto.setCustodiaData(document.getCustodiaData());
 			dto.setCustodiaId(document.getCustodiaId());
 			dto.setCustodiaUrl(document.getCustodiaUrl());
+			dto.setDataCaptura(document.getDataCaptura());
+			dto.setNtiVersion(document.getNtiVersion());
+			dto.setNtiIdentificador(document.getNtiIdentificador());
+			dto.setNtiOrgano(document.getNtiOrgano());
+			dto.setNtiOrigen(document.getNtiOrigen());
+			dto.setNtiEstadoElaboracion(document.getNtiEstadoElaboracion());
+			dto.setNtiTipoDocumental(document.getNtiTipoDocumental());
+			dto.setNtiIdDocumentoOrigen(document.getNtiIdDocumentoOrigen());
+			dto.setNtiTipoFirma(document.getNtiTipoFirma());
+			dto.setNtiCsv(document.getNtiCsv());
+			dto.setNtiCsvRegulacion(document.getNtiCsvRegulacion());
 			if (document.getVersioDarrera() != null) {
 				dto.setVersioDarrera(
 						conversioTipusHelper.convertir(
@@ -644,11 +665,11 @@ public class ContingutHelper {
 				ntiOrgano,
 				ntiFechaApertura,
 				metaExpedient.getClassificacioSia()).build();
-		ExpedientEntity expedientCreat = expedientRepository.save(expedientCrear);
 		// Calcula en número del nou expedient
 		calcularSequenciaExpedient(
-				expedientCreat,
+				expedientCrear,
 				any);
+		ExpedientEntity expedientCreat = expedientRepository.save(expedientCrear);
 		// Calcula l'identificador del nou expedient
 		calcularIdentificadorExpedient(
 				expedientCreat,
@@ -668,6 +689,67 @@ public class ContingutHelper {
 			anyExpedient = Calendar.getInstance().get(Calendar.YEAR);
 		String ntiIdentificador = "ES_" + organCodi + "_" + anyExpedient + "_EXP_RIP" + String.format("%027d", expedient.getId());
 		expedient.updateNtiIdentificador(ntiIdentificador);
+	}
+
+	public DocumentEntity crearNouDocument(
+			DocumentTipusEnumDto documentTipus,
+			String nom,
+			Date data,
+			Date dataCaptura,
+			String ntiOrgano,
+			DocumentNtiOrigenEnumDto ntiOrigen,
+			DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion,
+			DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental,
+			ExpedientEntity expedient,
+			MetaDocumentEntity metaDocument,
+			ContingutEntity pare,
+			EntitatEntity entitat,
+			String ubicacio,
+			FitxerDto fitxer) {
+		DocumentEntity documentCrear = DocumentEntity.getBuilder(
+				documentTipus,
+				DocumentEstatEnumDto.REDACCIO,
+				nom,
+				data,
+				dataCaptura,
+				"1.0",
+				ntiOrgano,
+				ntiOrigen,
+				ntiEstadoElaboracion,
+				ntiTipoDocumental,
+				expedient,
+				metaDocument,
+				pare,
+				entitat).
+				ubicacio(ubicacio).
+				build();
+		DocumentEntity documentCreat = documentRepository.save(documentCrear);
+		calcularIdentificadorDocument(
+				documentCreat,
+				entitat.getUnitatArrel());
+		if (DocumentTipusEnumDto.DIGITAL.equals(documentTipus)) {
+			int versio = 1;
+			DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
+					documentCreat,
+					versio,
+					fitxer.getNom(),
+					fitxer.getContentType(),
+					fitxer.getContingut());
+			documentVersioRepository.save(documentVersio);
+			documentCreat.updateVersioDarrera(documentVersio);
+		}
+		if (expedient != null) {
+			cacheHelper.evictErrorsValidacioPerNode(expedient);
+		}
+		return documentCreat;
+	}
+
+	public void calcularIdentificadorDocument(
+			DocumentEntity document,
+			String organCodi) {
+		int any = Calendar.getInstance().get(Calendar.YEAR);
+		String ntiIdentificador = "ES_" + organCodi + "_" + any + "_RIP" + String.format("%027d", document.getId());
+		document.updateNtiIdentificador(ntiIdentificador);
 	}
 
 	public EscriptoriEntity getEscriptoriPerUsuari(

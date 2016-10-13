@@ -210,29 +210,11 @@
 		</plugins>
 	</build>
 	<repositories>
-    <!-- Requerim API WS de PORTAFIB, API WS de REGWEB3 i API WS de DIR3CAIB -->
-    <repository>
-       <id>github-governib-maven-repos</id>
-       <name>GitHub GovernIB Maven Repository</name>
-       <url>http://GovernIB.github.io/maven/maven/</url>
-    </repository>
-    <!--
 		<repository>
-			<name>PortaFIB Maven repository</name>
-			<id>es.caib.portafib</id>
-			<url>https://github.com/GovernIB/portafib/raw/gh-pages/maven</url>
+			<id>github-governib-maven-repos</id>
+			<name>GitHub GovernIB Maven Repository</name>
+			<url>http://GovernIB.github.io/maven/maven/</url>
 		</repository>
-		<repository>
-			<name>Regweb Maven repository</name>
-			<id>es.caib.regweb</id>
-			<url>https://github.com/GovernIB/registre/raw/gh-pages/maven</url>
-		</repository>
-		<repository>
-			<name>Dir3caib Maven repository</name>
-			<id>es.caib.dir3caib</id>
-			<url>https://github.com/GovernIB/dir3caib/raw/gh-pages/maven</url>
-		</repository>
-    -->
 		<repository>
 			<name>Local Maven repository</name>
 			<id>es.caib.ripea.local</id>

@@ -37,6 +37,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
@@ -114,7 +117,19 @@ public class ContingutDocumentController extends BaseUserController {
 					model);
 		} else {
 			command = new DocumentCommand();
-			command.setData(new Date());
+			Date ara = new Date();
+			command.setData(ara);
+			command.setDataCaptura(ara);
+			command.setNtiOrigen(DocumentNtiOrigenEnumDto.O0);
+			command.setNtiEstadoElaboracion(DocumentNtiEstadoElaboracionEnumDto.EE01);
+			command.setNtiTipoDocumental(DocumentNtiTipoDocumentalEnumDto.TD99);
+			ContingutDto contingut = contingutService.findAmbIdUser(
+					entitatActual.getId(),
+					contingutId,
+					false);
+			if (contingut.getExpedientPare() != null) {
+				command.setNtiOrgano(contingut.getExpedientPare().getNtiOrgano());
+			}
 			omplirModelFormulari(
 					request,
 					command,
@@ -144,7 +159,6 @@ public class ContingutDocumentController extends BaseUserController {
 		}
 		return createUpdateDocument(
 				request,
-				contingutId,
 				command,
 				bindingResult,
 				model);
@@ -166,7 +180,6 @@ public class ContingutDocumentController extends BaseUserController {
 		}
 		return createUpdateDocument(
 				request,
-				contingutId,
 				command,
 				bindingResult,
 				model);
@@ -188,7 +201,6 @@ public class ContingutDocumentController extends BaseUserController {
 		}
 		return createUpdateDocument(
 				request,
-				contingutId,
 				command,
 				bindingResult,
 				model);
@@ -210,7 +222,6 @@ public class ContingutDocumentController extends BaseUserController {
 		}
 		return createUpdateDocument(
 				request,
-				contingutId,
 				command,
 				bindingResult,
 				model);
@@ -437,7 +448,6 @@ public class ContingutDocumentController extends BaseUserController {
 
 	private String createUpdateDocument(
 			HttpServletRequest request,
-			Long contingutId,
 			DocumentCommand command,
 			BindingResult bindingResult,
 			Model model) throws NotFoundException, ValidationException, IOException, ClassNotFoundException {
@@ -463,31 +473,19 @@ public class ContingutDocumentController extends BaseUserController {
 		if (command.getId() == null) {
 			documentService.create(
 					entitatActual.getId(),
-					contingutId,
-					command.getDocumentTipus(),
-					command.getMetaNodeId(),
-					command.getNom(),
-					command.getData(),
-					(fitxer != null) ? fitxer.getNom() : null,
-					(fitxer != null) ? fitxer.getContentType() : null,
-					(fitxer != null) ? fitxer.getContingut() : null,
-					command.getUbicacio());
+					command.getPareId(),
+					DocumentCommand.asDto(command),
+					fitxer);
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../contingut/" + contingutId,
+					"redirect:../../../contingut/" + command.getPareId(),
 					"document.controller.creat.ok");
 		} else {
 			documentService.update(
 					entitatActual.getId(),
 					command.getId(),
-					command.getDocumentTipus(),
-					command.getMetaNodeId(),
-					command.getNom(),
-					command.getData(),
-					(fitxer != null) ? fitxer.getNom() : null,
-					(fitxer != null) ? fitxer.getContentType() : null,
-					(fitxer != null) ? fitxer.getContingut() : null,
-					command.getUbicacio());
+					DocumentCommand.asDto(command),
+					fitxer);
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../contingut/" + command.getPareId(),
@@ -512,7 +510,7 @@ public class ContingutDocumentController extends BaseUserController {
 					"metaDocuments",
 					metaDocumentService.findActiveByEntitatAndContenidorPerModificacio(
 							entitatActual.getId(),
-							contingutId));
+							command.getId()));
 		}
 		model.addAttribute(
 				"digitalOrigenOptions",
@@ -527,6 +525,21 @@ public class ContingutDocumentController extends BaseUserController {
 							servletContext,
 							tempId));
 		}
+		model.addAttribute(
+				"ntiOrigenOptions",
+				EnumHelper.getOptionsForEnum(
+						DocumentNtiOrigenEnumDto.class,
+						"document.nti.origen.enum."));
+		model.addAttribute(
+				"ntiEstatElaboracioOptions",
+				EnumHelper.getOptionsForEnum(
+						DocumentNtiEstadoElaboracionEnumDto.class,
+						"document.nti.estela.enum."));
+		model.addAttribute(
+				"ntiTipusDocumentalOptions",
+				EnumHelper.getOptionsForEnum(
+						DocumentNtiTipoDocumentalEnumDto.class,
+						"document.nti.tipdoc.enum."));
 	}
 
 }

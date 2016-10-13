@@ -33,7 +33,6 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 	private Date dataExtincioFuncional;
 	private Date dataAnulacio;
 	private String estat; // V: Vigente, E: Extinguido, A: Anulado, T: Transitorio
-
 	private String codiPais;
 	private String codiComunitat;
 	private String codiProvincia;

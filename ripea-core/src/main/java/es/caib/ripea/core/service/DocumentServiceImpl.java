@@ -122,25 +122,13 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentDto create(
 			Long entitatId,
 			Long contingutId,
-			DocumentTipusEnumDto tipus,
-			Long metaDocumentId,
-			String nom,
-			Date data,
-			String arxiuNom,
-			String arxiuContentType,
-			byte[] arxiuContingut,
-			String ubicacio) {
+			DocumentDto document,
+			FitxerDto fitxer) {
 		logger.debug("Creant nou document (" +
 				"entitatId=" + entitatId + ", " +
 				"contingutId=" + contingutId + ", " +
-				"tipus=" + tipus + ", " +
-				"metaDocumentId=" + metaDocumentId + ", " +
-				"nom=" + nom + ", " +
-				"data=" + data + ", " +
-				"arxiuNom=" + arxiuNom + ", " +
-				"arxiuContentType=" + arxiuContentType + ", " +
-				"arxiuContingut=" + arxiuContingut + ", " +
-				"ubicacio=" + ubicacio + ")");
+				"document=" + document + ", " +
+				"fitxer=" + fitxer + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -152,10 +140,10 @@ public class DocumentServiceImpl implements DocumentService {
 				null);
 		// Comprova el meta-document
 		MetaDocumentEntity metaDocument = null;
-		if (metaDocumentId != null) {
+		if (document.getMetaDocument() != null) {
 			metaDocument = entityComprovarHelper.comprovarMetaDocument(
 					entitat,
-					metaDocumentId,
+					document.getMetaDocument().getId(),
 					true);
 		}
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
@@ -170,7 +158,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				true);
 		// Comprova que el nom sigui vàlid
-		if (!contingutHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(document.getNom())) {
 			throw new ValidationException(
 					"<creacio>",
 					DocumentEntity.class,
@@ -195,7 +183,7 @@ public class DocumentServiceImpl implements DocumentService {
 					logger.error("No es pot crear un document amb un meta-document desactivat ("
 							+ "entitatId=" + entitatId + ", "
 							+ "contingutId=" + contingutId + ", "
-							+ "metaDocumentId=" + metaDocumentId + ", "
+							+ "metaDocumentId=" + metaDocument.getId() + ", "
 							+ "usuari=" + auth.getName() + ")");
 					throw new SecurityException("No es pot crear un document amb un meta-document desactivat");
 				}
@@ -210,7 +198,7 @@ public class DocumentServiceImpl implements DocumentService {
 						logger.error("La multiplicitat especificada per al meta-document no permet crear nous documents ("
 								+ "entitatId=" + entitatId + ", "
 								+ "contingutId=" + contingutId + ", "
-								+ "metaDocumentId=" + metaDocumentId + ", "
+								+ "metaDocumentId=" + metaDocument.getId() + ", "
 								+ "usuari=" + auth.getName() + ")");
 						throw new SecurityException("La multiplicitat especificada per al meta-document no permet crear nous documents");
 					}
@@ -224,7 +212,7 @@ public class DocumentServiceImpl implements DocumentService {
 						logger.error("No es pot crear un document amb un meta-document no disponible ("
 								+ "entitatId=" + entitatId + ", "
 								+ "contingutId=" + contingutId + ", "
-								+ "metaDocumentId=" + metaDocumentId + ", "
+								+ "metaDocumentId=" + metaDocument.getId() + ", "
 								+ "usuari=" + auth.getName() + ")");
 						throw new SecurityException("No es pot crear un document amb un meta-document no disponible");
 					}
@@ -238,7 +226,7 @@ public class DocumentServiceImpl implements DocumentService {
 						logger.error("La multiplicitat especificada per al meta-document no permet crear nous documents ("
 								+ "entitatId=" + entitatId + ", "
 								+ "contingutId=" + contingutId + ", "
-								+ "metaDocumentId=" + metaDocumentId + ", "
+								+ "metaDocumentId=" + metaDocument.getId() + ", "
 								+ "usuari=" + auth.getName() + ")");
 						throw new SecurityException("La multiplicitat especificada per al meta-document no permet crear nous documents");
 					}
@@ -254,41 +242,33 @@ public class DocumentServiceImpl implements DocumentService {
 				throw new SecurityException("No es pot crear un document amb meta-document fora d'un expedient");
 			}
 		}
-		DocumentEntity document = DocumentEntity.getBuilder(
-				tipus,
-				DocumentEstatEnumDto.REDACCIO,
-				nom,
-				data,
+		DocumentEntity entity = contingutHelper.crearNouDocument(
+				document.getDocumentTipus(),
+				document.getNom(),
+				document.getData(),
+				document.getDataCaptura(),
+				document.getNtiOrgano(),
+				document.getNtiOrigen(),
+				document.getNtiEstadoElaboracion(),
+				document.getNtiTipoDocumental(),
 				expedientSuperior,
 				metaDocument,
 				contingut,
-				entitat).
-				ubicacio(ubicacio).
-				build();
-		documentRepository.save(document);
-		if (DocumentTipusEnumDto.DIGITAL.equals(tipus)) {
-			int versio = 1;
-			DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
-					document,
-					versio,
-					arxiuNom,
-					arxiuContentType,
-					arxiuContingut);
-			documentVersioRepository.save(documentVersio);
-			document.updateVersioDarrera(documentVersio);
-		}
+				entitat,
+				document.getUbicacio(),
+				fitxer);
 		if (expedientSuperior != null) {
 			cacheHelper.evictErrorsValidacioPerNode(expedientSuperior);
 		}
 		// Registra al log la creació del document
 		contingutLogHelper.log(
-				document,
+				entity,
 				LogTipusEnumDto.CREACIO,
 				null,
 				null,
 				true,
 				true);
-		return toDocumentDto(document);
+		return toDocumentDto(entity);
 	}
 
 	@Transactional
@@ -296,30 +276,19 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentDto update(
 			Long entitatId,
 			Long id,
-			DocumentTipusEnumDto tipus,
-			Long metaDocumentId,
-			String nom,
-			Date data,
-			String arxiuNom,
-			String arxiuContentType,
-			byte[] arxiuContingut,
-			String ubicacio) {
+			DocumentDto document,
+			FitxerDto fitxer) {
 		logger.debug("Actualitzant el document (" +
 				"entitatId=" + entitatId + ", " +
 				"id=" + id + ", " +
-				"tipus=" + tipus + ", " +
-				"nom=" + nom + ", " +
-				"data=" + data + ", " +
-				"arxiuNom=" + arxiuNom + ", " +
-				"arxiuContentType=" + arxiuContentType + ", " +
-				"arxiuContingut=" + arxiuContingut + ", " +
-				"ubicacio=" + ubicacio + ")");
+				"document=" + document + ", " +
+				"fitxer=" + fitxer + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		DocumentEntity document = entityComprovarHelper.comprovarDocument(
+		DocumentEntity entity = entityComprovarHelper.comprovarDocument(
 				entitat,
 				null,
 				id,
@@ -329,16 +298,16 @@ public class DocumentServiceImpl implements DocumentService {
 		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
-				document);
+				entity);
 		// Comprova l'accés al path del document
 		contingutHelper.comprovarPermisosPathContingut(
-				document,
+				entity,
 				true,
 				false,
 				false,
 				true);
 		// Comprova que el nom sigui vàlid
-		if (!contingutHelper.isNomValid(nom)) {
+		if (!contingutHelper.isNomValid(document.getNom())) {
 			throw new ValidationException(
 					id,
 					DocumentEntity.class,
@@ -346,7 +315,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		// Comprova el permís de modificació a l'expedient superior
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
-				document,
+				entity,
 				true,
 				false,
 				false);
@@ -359,44 +328,53 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		// Comprova el permís de modificació del document
 		contingutHelper.comprovarPermisosContingut(
-				document,
+				entity,
 				false,
 				true,
 				false);
 		// Comprova el meta-expedient
 		MetaDocumentEntity metaDocument = null;
-		if (metaDocumentId != null) {
+		if (document.getMetaDocument() != null) {
 			metaDocument = entityComprovarHelper.comprovarMetaDocument(
 					entitat,
-					metaDocumentId,
+					document.getMetaDocument().getId(),
 					true);
-			cacheHelper.evictErrorsValidacioPerNode(document);
+			cacheHelper.evictErrorsValidacioPerNode(entity);
 		}
-		document.update(
+		entity.update(
 				metaDocument,
-				nom,
-				data,
-				ubicacio);
-		if (arxiuNom != null && arxiuContingut != null) {
+				document.getNom(),
+				document.getData(),
+				document.getUbicacio(),
+				document.getDataCaptura(),
+				document.getNtiOrgano(),
+				document.getNtiOrigen(),
+				document.getNtiEstadoElaboracion(),
+				document.getNtiTipoDocumental(),
+				document.getNtiIdDocumentoOrigen(),
+				document.getNtiTipoFirma(),
+				document.getNtiCsv(),
+				document.getNtiCsvRegulacion());
+		if (fitxer != null) {
 			int versio = document.getVersioDarrera().getVersio() + 1;
 			DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
-					document,
+					entity,
 					versio,
-					arxiuNom,
-					arxiuContentType,
-					arxiuContingut);
+					fitxer.getNom(),
+					fitxer.getContentType(),
+					fitxer.getContingut());
 			documentVersioRepository.save(documentVersio);
-			document.updateVersioDarrera(documentVersio);
+			entity.updateVersioDarrera(documentVersio);
 		}
 		// Registra al log la modificació del document
 		contingutLogHelper.log(
-				document,
+				entity,
 				LogTipusEnumDto.MODIFICACIO,
 				null,
 				null,
 				false,
 				false);
-		return toDocumentDto(document);
+		return toDocumentDto(entity);
 	}
 
 	@Transactional

@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
-import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
@@ -38,23 +37,11 @@ public interface DocumentService {
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param contenidorId
-	 *            Atribut id del contenidor del qual es vol consultar el contingut.
-	 * @param tipus
-	 *            Tipus de document que es vol crear.
-	 * @param metaDocumentId
-	 *            Atribut id del meta-document a partir del qual es vol crear el document.
-	 * @param nom
-	 *            Nom del document que es vol crear.
-	 * @param data
-	 *            Data del document que es vol crear.
-	 * @param arxiuNom
-	 *            Nom de l'arxiu del document.
-	 * @param arxiuContentType
-	 *            ContentType de l'arxiu del document.
-	 * @param arxiuContingut
-	 *            Contingut de l'arxiu del document.
-	 * @param ubicacio
-	 *            Ubicació del document quan es de tipus físic.
+	 *            Atribut id del contenidor a on es vol crear el document.
+	 * @param document
+	 *            Informació del document que es vol crear.
+	 * @param fitxer
+	 *            Informació del fitxer.
 	 * @return El document creat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -65,14 +52,8 @@ public interface DocumentService {
 	public DocumentDto create(
 			Long entitatId,
 			Long contenidorId,
-			DocumentTipusEnumDto tipus,
-			Long metaDocumentId,
-			String nom,
-			Date data,
-			String arxiuNom,
-			String arxiuContentType,
-			byte[] arxiuContingut,
-			String ubicacio) throws NotFoundException, ValidationException;
+			DocumentDto document,
+			FitxerDto fitxer) throws NotFoundException, ValidationException;
 
 	/**
 	 * Modifica un document.
@@ -81,22 +62,10 @@ public interface DocumentService {
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param id
 	 *            Atribut id del document que es vol modificar.
-	 * @param tipus
-	 *            Tipus de document que es vol crear.
-	 * @param metaDocumentId
-	 *            Atribut id del meta-document.
-	 * @param nom
-	 *            Nom del document.
-	 * @param data
-	 *            Data del document.
-	 * @param arxiuNom
-	 *            Nom de l'arxiu del document.
-	 * @param arxiuContentType
-	 *            ContentType de l'arxiu del document.
-	 * @param arxiuContingut
-	 *            Contingut de l'arxiu del document.
-	 * @param ubicacio
-	 *            Ubicació del document quan es de tipus físic.
+	 * @param document
+	 *            Informació del document que es vol crear.
+	 * @param fitxer
+	 *            Informació del fitxer.
 	 * @return El document modificat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -107,14 +76,8 @@ public interface DocumentService {
 	public DocumentDto update(
 			Long entitatId,
 			Long id,
-			DocumentTipusEnumDto tipus,
-			Long metaDocumentId,
-			String nom,
-			Date data,
-			String arxiuNom,
-			String arxiuContentType,
-			byte[] arxiuContingut,
-			String ubicacio) throws NotFoundException, ValidationException;
+			DocumentDto document,
+			FitxerDto fitxer) throws NotFoundException, ValidationException;
 
 	/**
 	 * Esborra un document.

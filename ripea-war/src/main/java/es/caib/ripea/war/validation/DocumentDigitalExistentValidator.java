@@ -28,12 +28,14 @@ public class DocumentDigitalExistentValidator implements ConstraintValidator<Doc
 			final ConstraintValidatorContext context) {
 		boolean valid = true;
 		if (DocumentFisicOrigenEnum.DISC.equals(command.getOrigen())) {
-			valid = command.getArxiu() != null && !command.getArxiu().isEmpty();
-			if (!valid) {
-				context.buildConstraintViolationWithTemplate(
-						MessageHelper.getInstance().getMessage("ArxiuNoBuit"))
-				.addNode("arxiu")
-				.addConstraintViolation();
+			if (command.getId() == null) {
+				valid = command.getArxiu() != null && !command.getArxiu().isEmpty();
+				if (!valid) {
+					context.buildConstraintViolationWithTemplate(
+							MessageHelper.getInstance().getMessage("ArxiuNoBuit"))
+					.addNode("arxiu")
+					.addConstraintViolation();
+				}
 			}
 		} else if (DocumentFisicOrigenEnum.ESCANER.equals(command.getOrigen())) {
 			if (command.getEscanejatTempId() == null || command.getEscanejatTempId().isEmpty()) {

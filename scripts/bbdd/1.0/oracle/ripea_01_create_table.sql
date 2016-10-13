@@ -319,11 +319,22 @@ CREATE TABLE IPA_DOCUMENT
   ESTAT                NUMBER(10)               NOT NULL,
   UBICACIO             VARCHAR2(255),
   VERSIO_DARRERA_ID    NUMBER(19),
-  DATA                 TIMESTAMP(6),
+  DATA                 TIMESTAMP(6)             NOT NULL,
+  DATA_CAPTURA         TIMESTAMP(6)             NOT NULL,
   EXPEDIENT_ID         NUMBER(19),
   CUSTODIA_DATA        TIMESTAMP(6),
   CUSTODIA_ID          VARCHAR2(256),
-  CUSTODIA_URL         VARCHAR2(1024)
+  CUSTODIA_URL         VARCHAR2(1024),
+  NTI_VERSION          VARCHAR2(5)              NOT NULL,
+  NTI_IDENTIF          VARCHAR2(48)             NOT NULL,
+  NTI_ORGANO           VARCHAR2(9)              NOT NULL,
+  NTI_ORIGEN           VARCHAR2(1)              NOT NULL,
+  NTI_ESTELA           VARCHAR2(4)              NOT NULL,
+  NTI_TIPDOC           VARCHAR2(4)              NOT NULL,
+  NTI_IDORIG           VARCHAR2(48),
+  NTI_TIPFIR           VARCHAR2(4),
+  NTI_CSV              VARCHAR2(256),
+  NTI_CSVREG           VARCHAR2(512)
 );
 
 

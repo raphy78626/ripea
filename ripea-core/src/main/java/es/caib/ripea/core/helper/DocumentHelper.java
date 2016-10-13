@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
+import es.caib.ripea.core.repository.DocumentRepository;
 
 /**
  * Mètodes per a gestionar els arxius associats a un document
@@ -22,7 +23,11 @@ import es.caib.ripea.core.entity.DocumentVersioEntity;
 public class DocumentHelper {
 
 	@Resource
+	private DocumentRepository documentRepository;
+
+	@Resource
 	private PluginHelper pluginHelper;
+
 
 
 	public DocumentVersioEntity crearVersioAmbFitxerAssociat(

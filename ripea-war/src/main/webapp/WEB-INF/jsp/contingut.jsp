@@ -274,7 +274,7 @@ $(document).ready(function() {
 				<div id="contenidor-info" class="well">
 					<h3>
 						<spring:message code="contingut.info.informacio"/>
-						<c:if test="${contingut.expedient}">
+						<c:if test="${contingut.expedient or contingut.document}">
 							<a href="../contingut/${contingut.id}/nti" class="btn btn-info btn-xs" data-toggle="modal">NTI</a>
 						</c:if>
 					</h3>
@@ -709,7 +709,7 @@ $(document).ready(function() {
 													<li><a href="../expedient/${contingut.id}/interessat/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
 													<li><a href="../expedient/${contingut.id}/interessat/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="contingut.confirmacio.esborrar.interessat"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 													{{if tipus != '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.ADMINISTRACIO%>'}}
-														<li><hr/></li>
+														<li class="divider" role="separator"></li>
 														{{if representantId}}
 															<li><a href="../expedient/${contingut.id}/interessat/{{:id}}/representant/{{:representantId}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.modificar.prepresentant"/></a></li>
 															<li><a href="../expedient/${contingut.id}/interessat/{{:id}}/representant/{{:representantId}}/delete" data-toggle="ajax" data-confirm="<spring:message code="contingut.confirmacio.esborrar.representant"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.borrar.representant"/></a></li>
