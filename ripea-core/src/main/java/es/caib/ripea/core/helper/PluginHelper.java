@@ -1319,7 +1319,6 @@ public class PluginHelper {
 			}
 			CiutadaNotificacioResultat resultat = getCiutadaPlugin().notificacioCrear(
 					expedient.getNtiIdentificador(),
-					expedient.getSistraClau(),
 					expedient.getSistraUnitatAdministrativa(),
 					metaExpedient.getNotificacioLlibreCodi(),
 					metaExpedient.getNotificacioOrganCodi(),

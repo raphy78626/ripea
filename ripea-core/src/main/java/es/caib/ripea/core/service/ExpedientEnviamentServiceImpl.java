@@ -577,6 +577,18 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				null,
 				publicacioId);
 		documentPublicacioRepository.delete(publicacio);
+		contingutLogHelper.log(
+				expedient,
+				LogTipusEnumDto.MODIFICACIO,
+				null,
+				null,
+				publicacio,
+				LogObjecteTipusEnumDto.PUBLICACIO,
+				LogTipusEnumDto.ELIMINACIO,
+				null,
+				null,
+				false,
+				false);
 		return conversioTipusHelper.convertir(
 				publicacio,
 				DocumentPublicacioDto.class);

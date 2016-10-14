@@ -67,7 +67,6 @@ public interface CiutadaPlugin {
 	 * Envia una notificació telemàtica al ciutadà.
 	 * 
 	 * @param expedientIdentificador
-	 * @param expedientClau
 	 * @param unitatAdministrativa
 	 * @param registreOficinaCodi
 	 * @param registreOrganCodi
@@ -87,7 +86,6 @@ public interface CiutadaPlugin {
 	 */
 	public CiutadaNotificacioResultat notificacioCrear(
 			String expedientIdentificador,
-			String expedientClau,
 			String unitatAdministrativa,
 			String registreOficinaCodi,
 			String registreOrganCodi,

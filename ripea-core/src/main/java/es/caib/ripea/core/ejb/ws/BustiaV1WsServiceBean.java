@@ -17,6 +17,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.service.ws.BustiaV1WsService;
+import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.service.ws.bustia.BustiaV1WsServiceImpl;
 
 /**
@@ -41,25 +42,24 @@ import es.caib.ripea.core.service.ws.bustia.BustiaV1WsServiceImpl;
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BustiaV1WsServiceBean implements BustiaV1WsService {
 
+	@Autowired
+	private BustiaV1WsServiceImpl delegate;
+
 	@Resource
 	private SessionContext sessionContext;
 	@Autowired
-	private BustiaV1WsServiceImpl delegate;
+	private UsuariHelper usuariHelper;
+
+
 
 	@Override
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
-		if (sessionContext != null) {
-			if (sessionContext.getCallerPrincipal() != null) {
-				System.out.println(">>> callerPrincipal: " + sessionContext.getCallerPrincipal().getName());
-			} else {
-				System.out.println(">>> callerPrincipal: <null>");
-			}
-		} else {
-			System.out.println(">>> sessionContext: <null>");
-		}
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
 		delegate.enviarAnotacioRegistreEntrada(
 				entitat,
 				unitatAdministrativa,

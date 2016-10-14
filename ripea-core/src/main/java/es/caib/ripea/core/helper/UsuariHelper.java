@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.ejb.SessionContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,17 @@ public class UsuariHelper {
 
 
 
+	public Authentication generarUsuariAutenticatEjb(
+			SessionContext sessionContext,
+			boolean establirComAUsuariActual) {
+		if (sessionContext != null && sessionContext.getCallerPrincipal() != null) {
+			return generarUsuariAutenticat(
+					sessionContext.getCallerPrincipal().getName(),
+					establirComAUsuariActual);
+		} else {
+			return null;
+		}
+	}
 	public Authentication generarUsuariAutenticat(
 			String usuariCodi,
 			boolean establirComAUsuariActual) {

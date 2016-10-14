@@ -3,10 +3,14 @@
  */
 package es.caib.ripea.core.ejb.ws;
 
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.jws.WebService;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
@@ -14,6 +18,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.portafib.ws.callback.api.v1.CallBackException;
 import es.caib.portafib.ws.callback.api.v1.PortaFIBCallBackWs;
 import es.caib.portafib.ws.callback.api.v1.PortaFIBEvent;
+import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWsImpl;
 
 /**
@@ -31,14 +36,23 @@ import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWsImpl;
 @WebContext(
 		contextRoot = "/ripea/ws",
 		urlPattern = "/portafibCallback",
-		//authMethod = "WSBASIC",
+		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
+@RolesAllowed({"IPA_CALBWS"})
+@SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class PortaFIBCallbackWsBean implements PortaFIBCallBackWs {
 
+	@Resource
+	private SessionContext sessionContext;
 	@Autowired
 	private PortaFIBCallBackWsImpl delegate;
+
+	@Autowired
+	private UsuariHelper usuariHelper;
+
+
 
 	@Override
 	public int getVersionWs() {
@@ -47,6 +61,9 @@ public class PortaFIBCallbackWsBean implements PortaFIBCallBackWs {
 
 	@Override
 	public void event(PortaFIBEvent event) throws CallBackException {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
 		delegate.event(event);
 	}
 

@@ -34,13 +34,13 @@ import es.caib.ripea.core.service.ws.callback.MCGDws;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class CallbackWsTest {
+public class CallbackMcgdWsTest {
 
 	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/MCGDws";
 
 	public static void main(String[] args) {
 		try {
-			double resposta = new CallbackWsTest().test(1);
+			double resposta = new CallbackMcgdWsTest().test(1);
 			System.out.println(">>> Resposta: " + resposta);
 		} catch (Exception ex) {
 			ex.printStackTrace();

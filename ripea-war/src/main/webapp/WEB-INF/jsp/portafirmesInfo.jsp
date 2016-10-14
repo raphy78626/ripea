@@ -88,7 +88,7 @@
 				<div class="alert well-sm alert-danger alert-dismissable">
 					<span class="fa fa-exclamation-triangle"></span>
 					<spring:message code="notificacio.info.errors.processament"/>
-					<a href="../portafirmes/" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="firma.info.errors.processament.reintentar"/></a>
+					<a href="../portafirmes/reintentar" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="firma.info.errors.processament.reintentar"/></a>
 				</div>
 				<div class="panel panel-default">
 					<div class="panel-heading">

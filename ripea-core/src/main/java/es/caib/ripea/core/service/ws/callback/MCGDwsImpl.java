@@ -28,8 +28,8 @@ import es.caib.ripea.core.helper.IntegracioHelper;
 		name = "MCGDws",
 		serviceName = "MCGDwsService",
 		portName = "MCGDwsServicePort",
-		endpointInterface = "es.caib.ripea.core.service.ws.callback.MCGDws",
-		targetNamespace = "http://www.indra.es/portafirmasmcgdws/mcgdws")
+		targetNamespace = "http://www.indra.es/portafirmasmcgdws/mcgdws",
+		endpointInterface = "es.caib.ripea.core.service.ws.callback.MCGDws")
 public class MCGDwsImpl implements MCGDws {
 
 	@Resource
@@ -128,5 +128,5 @@ public class MCGDwsImpl implements MCGDws {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(MCGDwsImpl.class);
-			
+
 }

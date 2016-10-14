@@ -132,7 +132,7 @@ public class DocumentPortafirmesEntity extends DocumentEnviamentEntity {
 		}
 		this.enviamentError = enviamentError;
 		if (enviamentErrorDescripcio != null) {
-			this.enviamentErrorDescripcio = enviamentErrorDescripcio.substring(0, ERROR_DESC_TAMANY - 1);
+			this.enviamentErrorDescripcio = enviamentErrorDescripcio.substring(0, ERROR_DESC_TAMANY - 10);
 		}
 		if (enviamentError) {
 			estat = DocumentEnviamentEstatEnumDto.ENVIAT_ERROR;
@@ -154,8 +154,8 @@ public class DocumentPortafirmesEntity extends DocumentEnviamentEntity {
 				this.processamentCount += 1;
 		}
 		this.processamentError = processamentError;
-		if (enviamentErrorDescripcio != null) {
-			this.processamentErrorDescripcio = processamentErrorDescripcio.substring(0, ERROR_DESC_TAMANY - 1);
+		if (processamentErrorDescripcio != null) {
+			this.processamentErrorDescripcio = processamentErrorDescripcio.substring(0, ERROR_DESC_TAMANY - 10);
 		}
 		if (processamentError) {
 			estat = DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR;

@@ -16,6 +16,7 @@ import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
+import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.war.command.DocumentCommand.CreateDigital;
 import es.caib.ripea.war.command.DocumentCommand.UpdateDigital;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
@@ -146,9 +147,15 @@ public class DocumentCommand extends ContenidorCommand {
 		return command;
 	}
 	public static DocumentDto asDto(DocumentCommand command) {
-		return ConversioTipusHelper.convertir(
+		DocumentDto dto = ConversioTipusHelper.convertir(
 				command,
 				DocumentDto.class);
+		if (command.getMetaNodeId() != null) {
+			MetaDocumentDto metaDocument = new MetaDocumentDto();
+			metaDocument.setId(command.getMetaNodeId());
+			dto.setMetaNode(metaDocument);
+		}
+		return dto;
 	}
 
 	public interface CreateDigital {}

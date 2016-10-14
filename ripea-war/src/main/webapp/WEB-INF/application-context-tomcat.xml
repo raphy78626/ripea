@@ -38,10 +38,10 @@
 			<ws:service bean="#MCGDwsImpl"/>
 		</wss:service>
 	</wss:binding>
-	<!--wss:binding url="/ws/portafibCallback">
+	<wss:binding url="/ws/portafibCallback">
 		<wss:service>
 			<ws:service bean="#portaFIBCallBackWsImpl"/>
 		</wss:service>
-	</wss:binding-->
+	</wss:binding>
 
 </beans>

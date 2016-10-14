@@ -789,11 +789,6 @@ public class DocumentServiceImpl implements DocumentService {
 					"(portafirmesId=" + portafirmesId + ")",
 					DocumentPortafirmesEntity.class);
 		}
-		// Establim l'usuari actual com a "portafirmesCallback" per a
-		// que apareixi als logs
-		usuariHelper.generarUsuariAutenticat(
-				"portafirmesCallback",
-				true);
 		boolean firmat = PortafirmesCallbackEstatEnum.DOCUMENT_FIRMAT.equals(estat);
 		boolean rebutjat = PortafirmesCallbackEstatEnum.DOCUMENT_REBUTJAT.equals(estat);
 		if (firmat) {
@@ -803,8 +798,8 @@ public class DocumentServiceImpl implements DocumentService {
 					LogTipusEnumDto.PFIRMA_FIRMA,
 					null,
 					null,
-					documentPortafirmes.getDocument().getId().toString(),
-					null,
+					documentPortafirmes.getPortafirmesId(),
+					estat.name(),
 					true,
 					true);
 		}
@@ -821,8 +816,8 @@ public class DocumentServiceImpl implements DocumentService {
 					LogTipusEnumDto.PFIRMA_REBUIG,
 					null,
 					null,
-					documentPortafirmes.getDocument().getId().toString(),
-					null,
+					documentPortafirmes.getPortafirmesId(),
+					estat.name(),
 					true,
 					true);
 		}

@@ -81,16 +81,17 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			String avisosEmail,
 			String avisosMobil) throws SistemaExternException {
 		comprovarZonaPersonalCreada(destinatari);
-		String expedientClau = "<buit>";
+		String clauSistra = "<buit>";
+		String identificadorSistra = "<buit>";
 		try {
-			expedientClau = getExpedientClau(
+			clauSistra = getExpedientClau(
 					expedientIdentificador,
 					unitatAdministrativa);
-			String identificadorSistra = getExpedientIdentificadorPerSistra(expedientIdentificador);
+			identificadorSistra = getExpedientIdentificadorPerSistra(expedientIdentificador);
 			Expediente expediente = new Expediente();
 			expediente.setIdentificadorExpediente(identificadorSistra);
 			expediente.setUnidadAdministrativa(new Long(unitatAdministrativa).longValue());
-			expediente.setClaveExpediente(expedientClau);
+			expediente.setClaveExpediente(clauSistra);
 			expediente.setIdioma(idioma);
 			expediente.setDescripcion(descripcio);
 			expediente.setAutenticado(true);
@@ -146,13 +147,13 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			getZonaperWs().altaExpediente(expediente);
 			return new CiutadaExpedientInformacio(
 					identificadorSistra,
-					expedientClau);
+					clauSistra);
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut crear l'expedient a la zona personal (" +
-					"expedientIdentificador=" + expedientIdentificador + ", " +
+					"identificadorSistra=" + identificadorSistra + ", " +
+					"clauSistra=" + clauSistra + ", " +
 					"unitatAdministrativa=" + unitatAdministrativa + ", " +
-					"expedientClau=" + expedientClau + ", " +
 					"descripcio=" + descripcio + ", " +
 					"destinatariNif=" + destinatari.getNif() + ")",
 					ex);
@@ -167,11 +168,13 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			String text,
 			String textSms,
 			List<CiutadaDocument> annexos) throws SistemaExternException {
-		String expedientClau = "<buit>";
+		String clauSistra = "<buit>";
+		String identificadorSistra = "<buit>";
 		try {
-			expedientClau = getExpedientClau(
+			clauSistra = getExpedientClau(
 					expedientIdentificador,
 					unitatAdministrativa);
+			identificadorSistra = getExpedientIdentificadorPerSistra(expedientIdentificador);
 			EventoExpediente evento = new EventoExpediente();
 			evento.setTitulo(titol);
 			evento.setTexto(text);
@@ -219,15 +222,15 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			}
 			getZonaperWs().altaEventoExpediente(
 					new Long(unitatAdministrativa).longValue(),
-					getExpedientIdentificadorPerSistra(expedientIdentificador),
-					expedientClau,
+					identificadorSistra,
+					clauSistra,
 					evento);
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut crear l'event a la zona personal (" +
-					"expedientIdentificador=" + expedientIdentificador + ", " +
+					"identificadorSistra=" + identificadorSistra + ", " +
+					"clauSistra=" + clauSistra + ", " +
 					"unitatAdministrativa=" + unitatAdministrativa + ", " +
-					"expedientClau=" + expedientClau + ", " +
 					"titol=" + titol + ")",
 					ex);
 		}
@@ -236,7 +239,6 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 	@Override
 	public CiutadaNotificacioResultat notificacioCrear(
 			String expedientIdentificador,
-			String expedientClau,
 			String unitatAdministrativa,
 			String registreOficinaCodi,
 			String registreOficinaOrganCodi,
@@ -250,13 +252,18 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 			String avisTextSms,
 			boolean confirmarRecepcio,
 			List<CiutadaDocument> annexos) throws SistemaExternException {
+		String clauSistra = "<buit>";
+		String identificadorSistra = "<buit>";
 		try {
+			clauSistra = getExpedientClau(
+					expedientIdentificador,
+					unitatAdministrativa);
+			identificadorSistra = getExpedientIdentificadorPerSistra(expedientIdentificador);
 			DatosRegistroSalida notificacion = new DatosRegistroSalida();
 			DatosExpediente datosExpediente = new DatosExpediente();
-			datosExpediente.setIdentificadorExpediente(
-					getExpedientIdentificadorPerSistra(expedientIdentificador));
+			datosExpediente.setIdentificadorExpediente(identificadorSistra);
 			datosExpediente.setUnidadAdministrativa(new Long(unitatAdministrativa).longValue());
-			datosExpediente.setClaveExpediente(expedientClau);
+			datosExpediente.setClaveExpediente(clauSistra);
 			notificacion.setDatosExpediente(datosExpediente);
 			OficinaRegistral oficinaRegistral = new OficinaRegistral();
 			oficinaRegistral.setCodigoOficina(registreOficinaCodi);
@@ -365,9 +372,9 @@ public class CiutadaPluginSistra implements CiutadaPlugin {
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut crear la notificació (" +
-							"expedientIdentificador=" + expedientIdentificador + ", " +
+							"identificadorSistra=" + identificadorSistra + ", " +
+							"clauSistra=" + clauSistra + ", " +
 							"unitatAdministrativa=" + unitatAdministrativa + ", " +
-							"expedientClau=" + expedientClau + ", " +
 							"oficiTitol=" + oficiTitol + ", " +
 							"destinatariNif=" + destinatari.getNif() + ")",
 					ex);
