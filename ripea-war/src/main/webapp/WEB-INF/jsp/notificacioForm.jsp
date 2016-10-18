@@ -15,6 +15,7 @@
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${requestLocale.language}.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<rip:modalHead/>
 <script>
 $(document).ready(function() {
@@ -74,7 +75,7 @@ $(document).ready(function() {
 						<rip:inputHidden name="tipus"/>
 					</c:otherwise>
 				</c:choose>
-				<rip:inputSelect name="estat" textKey="notificacio.form.camp.estat" optionItems="${enviamentEstatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
+				<rip:inputSelect name="estat" textKey="notificacio.form.camp.estat" optionItems="${notificacioEstatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 				<rip:inputSelect name="interessatId" textKey="notificacio.form.camp.destinatari" optionItems="${interessats}" optionValueAttribute="id" optionTextAttribute="identificador" placeholderKey="notificacio.form.camp.destinatari"/>
 				<rip:inputText name="assumpte" textKey="notificacio.form.camp.assumpte" required="true"/>
 				<rip:inputTextarea name="observacions" textKey="notificacio.form.camp.observacions"/>
@@ -87,7 +88,7 @@ $(document).ready(function() {
 				<rip:inputTextarea name="oficiText" textKey="notificacio.form.camp.ofici.text"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="annexos">
-				<br/>
+				<rip:inputSelect name="annexos" textKey="notificacio.form.camp.annexos" optionItems="${annexos}" emptyOption="true" optionValueAttribute="id" optionTextAttribute="nom" placeholderKey="notificacio.form.camp.annexos"/>
 			</div>
 		</div>
 		<c:choose>

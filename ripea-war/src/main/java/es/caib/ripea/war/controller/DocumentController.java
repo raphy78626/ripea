@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,9 +71,9 @@ public class DocumentController extends BaseUserController {
 	@Autowired
 	private AplicacioService aplicacioService;
 	@Autowired
-	private DocumentService documentService;
-	@Autowired
 	private ContingutService contingutService;
+	@Autowired
+	private DocumentService documentService;
 	@Autowired
 	private ExpedientEnviamentService expedientEnviamentService;
 	@Autowired
@@ -480,15 +482,28 @@ public class DocumentController extends BaseUserController {
 						DocumentNotificacioTipusEnumDto.class,
 						"notificacio.tipus.enum."));
 		model.addAttribute(
-				"enviamentEstatEnumOptions",
+				"notificacioEstatEnumOptions",
 				EnumHelper.getOptionsForEnum(
 						DocumentEnviamentEstatEnumDto.class,
-						"enviament.estat.enum."));
+						"notificacio.estat.enum.",
+						new Enum<?>[] {DocumentEnviamentEstatEnumDto.PUBLICAT}));
 		model.addAttribute(
 				"interessats",
 				expedientInteressatService.findAmbDocumentPerNotificacio(
 						entitatActual.getId(),
 						documentId));
+		List<DocumentDto> annexos = documentService.findAmbExpedientIPermisRead(
+				entitatActual.getId(),
+				document.getExpedientPare().getId());
+		Iterator<DocumentDto> it = annexos.iterator();
+		while (it.hasNext()) {
+			DocumentDto annex = it.next();
+			if (annex.getId().equals(documentId)) {
+				it.remove();
+				break;
+			}
+		}
+		model.addAttribute("annexos", annexos);
 		return document.getExpedientPare();
 	}
 
@@ -508,6 +523,16 @@ public class DocumentController extends BaseUserController {
 				EnumHelper.getOptionsForEnum(
 						DocumentPublicacioTipusEnumDto.class,
 						"publicacio.tipus.enum."));
+		model.addAttribute(
+				"publicacioEstatEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						DocumentEnviamentEstatEnumDto.class,
+						"publicacio.estat.enum.",
+						new Enum<?>[] {
+							DocumentEnviamentEstatEnumDto.ENVIAT_ERROR,
+							DocumentEnviamentEstatEnumDto.PROCESSAT_OK,
+							DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR,
+							DocumentEnviamentEstatEnumDto.CANCELAT}));
 	}
 
 }

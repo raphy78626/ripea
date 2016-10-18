@@ -17,5 +17,6 @@ public enum DocumentEnviamentEstatEnumDto {
 	PROCESSAT_OK,
 	PROCESSAT_REBUTJAT,
 	PROCESSAT_ERROR,
+	PUBLICAT,
 	CANCELAT
 }

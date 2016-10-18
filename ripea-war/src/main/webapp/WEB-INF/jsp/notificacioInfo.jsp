@@ -18,7 +18,7 @@
 			<a href="#avisofici" aria-controls="avisofici" role="tab" data-toggle="tab"><spring:message code="notificacio.info.pipella.avisofici"/></a>
 		</li>
 		<li role="presentation">
-			<a href="#annexos" aria-controls="annexos" role="tab" data-toggle="tab"><spring:message code="notificacio.info.pipella.annexos"/></a>
+			<a href="#annexos" aria-controls="annexos" role="tab" data-toggle="tab"><spring:message code="notificacio.info.pipella.annexos"/> <span class="badge">${fn:length(notificacio.annexos)}</span></a>
 		</li>
 		<c:if test="${notificacio.enviamentError || notificacio.processamentError}">
 			<li role="presentation">
@@ -37,7 +37,7 @@
 				<dt><spring:message code="notificacio.info.camp.tipus"/></dt>
 				<dd><spring:message code="notificacio.tipus.enum.${notificacio.tipus}"/></dd>
 				<dt><spring:message code="notificacio.info.camp.estat"/></dt>
-				<dd><spring:message code="enviament.estat.enum.${notificacio.estat}"/></dd>
+				<dd><spring:message code="notificacio.estat.enum.${notificacio.estat}"/></dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.document"/></dt>
 				<dd>${notificacio.destinatariDocumentNum}</dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.nom"/></dt>
@@ -77,6 +77,9 @@
 			</dl>
 		</div>
 		<div class="tab-pane" id="annexos" role="tabpanel">
+			<c:forEach var="annex" items="${notificacio.annexos}">
+				<p>${annex.nom}</p>
+			</c:forEach>
 		</div>
 		<div class="tab-pane" id="errors" role="tabpanel">
 			<c:if test="${notificacio.enviamentError}">

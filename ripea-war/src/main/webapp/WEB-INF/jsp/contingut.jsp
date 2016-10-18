@@ -179,9 +179,13 @@ var interessatTipusText = new Array();
 <c:forEach var="option" items="${interessatTipusEnumOptions}">
 interessatTipusText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </c:forEach>
-var enviamentEstatText = new Array();
-<c:forEach var="option" items="${enviamentEstatEnumOptions}">
-enviamentEstatText["${option.value}"] = "<spring:message code="${option.text}"/>";
+var notificacioEstatText = new Array();
+<c:forEach var="option" items="${notificacioEstatEnumOptions}">
+notificacioEstatText["${option.value}"] = "<spring:message code="${option.text}"/>";
+</c:forEach>
+var publicacioEstatText = new Array();
+<c:forEach var="option" items="${publicacioEstatEnumOptions}">
+publicacioEstatText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </c:forEach>
 $(document).ready(function() {
 	<c:if test="${contingut.carpeta and contingut.tipus == 'ESBORRANY'}">
@@ -737,7 +741,14 @@ $(document).ready(function() {
 						<%--                    --%>
 						<%-- Pipella enviaments --%>
 						<%--                    --%>
-						<table id="taulaEnviaments" data-toggle="datatable" data-url="<c:url value="/expedient/${contingut.id}/enviament/datatable"/>" data-paging-enabled="false" class="table table-bordered table-striped" style="width:100%">
+						<table
+							id="taulaEnviaments"
+							data-toggle="datatable"
+							data-url="<c:url value="/expedient/${contingut.id}/enviament/datatable"/>"
+							data-paging-enabled="false"
+							data-agrupar="5"
+							class="table table-bordered table-striped"
+							style="width:100%">
 							<thead>
 								<tr>
 									<th data-col-name="notificacio" data-visible="false"></th>
@@ -758,31 +769,36 @@ $(document).ready(function() {
 									</th>
 									<th data-col-name="dataEnviament" data-converter="datetime" data-orderable="false" width="20%"><spring:message code="contingut.enviament.columna.data"/></th>
 									<th data-col-name="assumpte" data-orderable="false" width="25%"><spring:message code="contingut.enviament.columna.assumpte"/></th>
-									<th data-col-name="destinatari" data-orderable="false" data-template="#cellEnviamentDestiTemplate" width="20%">
+									<th data-col-name="destinatari" data-orderable="false" data-visible="false" width="20%">
 										<spring:message code="contingut.enviament.columna.destinatari"/>
-										<script id="cellEnviamentDestiTemplate" type="text/x-jsrender">
-											{{if notificacio}}
-												{{:destinatari}}
-											{{else publicacio}}
-												{{:tipus}}
-											{{/if}}
-										</script>
 									</th>
 									<th data-col-name="estat" data-template="#cellEnviamentEstatTemplate" data-orderable="false" width="10%">
 										<spring:message code="contingut.enviament.columna.estat"/>
 										<script id="cellEnviamentEstatTemplate" type="text/x-jsrender">
-											{{if estat == 'PENDENT'}}
-												<span class="label label-warning"><span class="fa fa-clock-o"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
-											{{else estat == 'ENVIAT_OK'}}
-												<span class="label label-info"><span class="fa fa-envelope-o"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
-											{{else estat == 'ENVIAT_ERROR'}}
-												<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
-											{{else estat == 'PROCESSAT_OK'}}
-												<span class="label label-success"><span class="fa fa-check"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
-											{{else estat == 'PROCESSAT_REBUTJAT'}}
-												<span class="label label-default"><span class="fa fa-times"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
-											{{else estat == 'PROCESSAT_ERROR'}}
-												<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('enviamentEstatText["' + estat + '"]')}}</span>
+											{{if notificacio}}
+												{{if estat == 'PENDENT'}}
+													<span class="label label-warning"><span class="fa fa-clock-o"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+												{{else estat == 'ENVIAT_OK'}}
+													<span class="label label-info"><span class="fa fa-envelope-o"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+												{{else estat == 'ENVIAT_ERROR'}}
+													<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+												{{else estat == 'PROCESSAT_OK'}}
+													<span class="label label-success"><span class="fa fa-check"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+												{{else estat == 'PROCESSAT_REBUTJAT'}}
+													<span class="label label-default"><span class="fa fa-times"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+												{{else estat == 'PROCESSAT_ERROR'}}
+													<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+												{{/if}}
+											{{else publicacio}}
+												{{if estat == 'PENDENT'}}
+													<span class="label label-warning"><span class="fa fa-clock-o"></span> {{:~eval('publicacioEstatText["' + estat + '"]')}}</span>
+												{{else estat == 'ENVIAT_OK'}}
+													<span class="label label-info"><span class="fa fa-envelope-o"></span> {{:~eval('publicacioEstatText["' + estat + '"]')}}</span>
+												{{else estat == 'PROCESSAT_REBUTJAT'}}
+													<span class="label label-default"><span class="fa fa-times"></span> {{:~eval('publicacioEstatText["' + estat + '"]')}}</span>
+												{{else estat == 'PUBLICAT'}}
+													<span class="label label-danger"><span class="fa fa-check"></span> {{:~eval('publicacioEstatText["' + estat + '"]')}}</span>
+												{{/if}}
 											{{/if}}
 										</script>
 									</th>

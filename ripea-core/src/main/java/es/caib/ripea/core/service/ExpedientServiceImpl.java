@@ -62,7 +62,6 @@ import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
-import es.caib.ripea.core.repository.DocumentEnviamentRepository;
 import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
@@ -99,8 +98,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private BustiaRepository bustiaRepository;
 	@Resource
 	private InteressatRepository interessatRepository;
-	@Resource
-	private DocumentEnviamentRepository documentEnviamentRepository;
 	@Resource
 	private DocumentNotificacioRepository documentNotificacioRepository;
 	@Resource

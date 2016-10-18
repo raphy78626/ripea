@@ -292,7 +292,6 @@ public class ContingutHelper {
 			resposta.setLastModifiedDate(contingut.getLastModifiedDate().toDate());
 		}
 		if (resposta != null) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			if (ambPath) {
 				// Calcula el path
 				List<ContingutDto> path = getPathContingutComDto(
@@ -303,6 +302,7 @@ public class ContingutHelper {
 			}
 			if (ambFills) {
 				// Cerca els nodes fills
+				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				List<ContingutDto> contenidorDtos = new ArrayList<ContingutDto>();
 				List<ContingutEntity> fills = contingutRepository.findByPareAndEsborrat(
 						contingut,

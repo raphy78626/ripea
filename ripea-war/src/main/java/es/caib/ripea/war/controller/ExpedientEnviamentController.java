@@ -4,14 +4,19 @@
 package es.caib.ripea.war.controller;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -99,7 +104,7 @@ public class ExpedientEnviamentController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long expedientId,
 			@PathVariable Long notificacioId,
-			@Valid DocumentNotificacioCommand command,
+			@Validated({DocumentNotificacioCommand.Update.class}) DocumentNotificacioCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -202,7 +207,7 @@ public class ExpedientEnviamentController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long expedientId,
 			@PathVariable Long publicacioId,
-			@Valid DocumentPublicacioCommand command,
+			@Validated({DocumentPublicacioCommand.Update.class}) DocumentPublicacioCommand command,
 			BindingResult bindingResult,
 			Model model) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -238,6 +243,16 @@ public class ExpedientEnviamentController extends BaseUserController {
 				"expedient.controller.publicacio.esborrada.ok");
 	}
 
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+	    binder.registerCustomEditor(
+	    		Date.class,
+	    		new CustomDateEditor(
+	    				new SimpleDateFormat("dd/MM/yyyy"),
+	    				true));
+	}
+
+
 
 	private void emplenarModelNotificacio(
 			HttpServletRequest request,
@@ -250,10 +265,11 @@ public class ExpedientEnviamentController extends BaseUserController {
 						DocumentNotificacioTipusEnumDto.class,
 						"notificacio.tipus.enum."));
 		model.addAttribute(
-				"enviamentEstatEnumOptions",
+				"notificacioEstatEnumOptions",
 				EnumHelper.getOptionsForEnum(
 						DocumentEnviamentEstatEnumDto.class,
-						"enviament.estat.enum."));
+						"notificacio.estat.enum.",
+						new Enum<?>[] {DocumentEnviamentEstatEnumDto.PUBLICAT}));
 		model.addAttribute(
 				"interessats",
 				expedientInteressatService.findByExpedient(
@@ -272,6 +288,16 @@ public class ExpedientEnviamentController extends BaseUserController {
 				EnumHelper.getOptionsForEnum(
 						DocumentPublicacioTipusEnumDto.class,
 						"publicacio.tipus.enum."));
+		model.addAttribute(
+				"publicacioEstatEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						DocumentEnviamentEstatEnumDto.class,
+						"publicacio.estat.enum.",
+						new Enum<?>[] {
+							DocumentEnviamentEstatEnumDto.ENVIAT_ERROR,
+							DocumentEnviamentEstatEnumDto.PROCESSAT_OK,
+							DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR,
+							DocumentEnviamentEstatEnumDto.CANCELAT}));
 	}
 
 }

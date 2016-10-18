@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
@@ -28,7 +29,6 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ExpedientEnviamentService;
 import es.caib.ripea.core.entity.DocumentEntity;
-import es.caib.ripea.core.entity.DocumentEnviamentEntity;
 import es.caib.ripea.core.entity.DocumentNotificacioEntity;
 import es.caib.ripea.core.entity.DocumentPublicacioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -41,7 +41,6 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.ExpedientHelper;
-import es.caib.ripea.core.repository.DocumentEnviamentRepository;
 import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 
@@ -53,8 +52,6 @@ import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 @Service
 public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService {
 
-	@Resource
-	private DocumentEnviamentRepository documentEnviamentRepository;
 	@Resource
 	private DocumentNotificacioRepository documentNotificacioRepository;
 	@Resource
@@ -164,6 +161,20 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 		if (notificacioIdioma == null) {
 			notificacioIdioma = InteressatIdiomaEnumDto.CA;
 		}
+		List<DocumentEntity> annexos = null;
+		if (notificacio.getAnnexos() != null) {
+			annexos = new ArrayList<DocumentEntity>();
+			for (DocumentDto annex: notificacio.getAnnexos()) {
+				DocumentEntity annexEntity = entityComprovarHelper.comprovarDocument(
+						entitat,
+						null,
+						annex.getId(),
+						false,
+						false,
+						false);
+				annexos.add(annexEntity);
+			}
+		}
 		DocumentNotificacioEntity notificacioEntity = DocumentNotificacioEntity.getBuilder(
 				expedient,
 				(notificacio.getEstat() != null) ? notificacio.getEstat() : DocumentEnviamentEstatEnumDto.PENDENT,
@@ -191,7 +202,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				oficiTitol(notificacio.getOficiTitol()).
 				oficiText(notificacio.getOficiText()).
 				destinatariEmail(interessat.getEmail()).
-				// annexos().
+				annexos(annexos).
 				build();
 		if (DocumentNotificacioTipusEnumDto.ELECTRONICA.equals(notificacio.getTipus())) {
 			expedientHelper.ciutadaNotificacioEnviar(
@@ -642,21 +653,21 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				entitat,
 				null,
 				expedientId);
-		List<DocumentEnviamentEntity> enviaments = documentEnviamentRepository.findByExpedientOrderByDataEnviamentAsc(
-				expedient);
 		List<DocumentEnviamentDto> resposta = new ArrayList<DocumentEnviamentDto>();
-		for (DocumentEnviamentEntity enviament: enviaments) {
-			if (enviament instanceof DocumentNotificacioEntity) {
-				resposta.add(
-						conversioTipusHelper.convertir(
-								enviament,
-								DocumentNotificacioDto.class));
-			} else if (enviament instanceof DocumentPublicacioEntity) {
-				resposta.add(
-						conversioTipusHelper.convertir(
-								enviament,
-								DocumentPublicacioDto.class));
-			}
+		List<DocumentNotificacioEntity> notificacions = documentNotificacioRepository.findByExpedientOrderByDestinatariNomAscDestinatariLlinatge1AscDataEnviamentAsc(expedient);
+		for (DocumentNotificacioEntity notificacio: notificacions) {
+			resposta.add(
+					conversioTipusHelper.convertir(
+							notificacio,
+							DocumentNotificacioDto.class));
+		}
+		List<DocumentPublicacioEntity> publicacions = documentPublicacioRepository.findByExpedientOrderByDataEnviamentAsc(
+				expedient);
+		for (DocumentPublicacioEntity publicacio: publicacions) {
+			resposta.add(
+					conversioTipusHelper.convertir(
+							publicacio,
+							DocumentPublicacioDto.class));
 		}
 		return resposta;
 	}

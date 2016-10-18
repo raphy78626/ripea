@@ -163,6 +163,21 @@ public interface DocumentService {
 			int versio) throws NotFoundException;
 
 	/**
+	 * Consulta els documents d'un expedient.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contenidor.
+	 * @param expedientId
+	 *            Atribut id de l'expedient.
+	 * @return la llistat de documents.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	public List<DocumentDto> findAmbExpedientIPermisRead(
+			Long entitatId,
+			Long expedientId) throws NotFoundException;
+
+	/**
 	 * Descarrega el contingut d'un document.
 	 * 
 	 * @param entitatId

@@ -15,6 +15,9 @@
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${requestLocale.language}.js"/>"></script>
+	<script src="<c:url value="/js/bootstrap-datepicker.js"/>"></script>
+	<script src="<c:url value="/js/datepicker-locales/bootstrap-datepicker.${requestLocale.language}.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<rip:modalHead/>
 </head>
 <body>
@@ -27,7 +30,9 @@
 		<rip:inputHidden name="id"/>
 		<rip:inputHidden name="documentId"/>
 		<rip:inputSelect name="tipus" textKey="publicacio.form.camp.tipus" optionItems="${publicacioTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
+		<rip:inputSelect name="estat" textKey="publicacio.form.camp.estat" optionItems="${publicacioEstatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 		<rip:inputText name="assumpte" textKey="publicacio.form.camp.assumpte" required="true"/>
+		<rip:inputDate name="dataPublicacio" textKey="publicacio.form.camp.data.pub"/>
 		<rip:inputTextarea name="observacions" textKey="publicacio.form.camp.observacions"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-floppy-o"></span> <spring:message code="comu.boto.guardar"/></button>

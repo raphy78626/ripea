@@ -75,7 +75,7 @@ public class ExpedientHelper {
 						notificacio.getAvisTextSms(),
 						notificacio.getIdioma(),
 						true,
-						null); // annexos
+						notificacio.getAnnexos());
 				notificacio.updateEnviament(
 						true,
 						false,

@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.war.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
@@ -26,14 +28,15 @@ public class DocumentNotificacioCommand {
 	private Long id;
 	@NotNull(groups = {Create.class})
 	private Long documentId;
-	@NotNull
+	@NotNull(groups = {Create.class, Update.class})
 	private Long interessatId;
 	@NotNull
 	private DocumentNotificacioTipusEnumDto tipus;
 	private DocumentEnviamentEstatEnumDto estat;
-	@NotEmpty @Size(max = 64)
+	@NotEmpty(groups = {Create.class, Update.class})
+	@Size(max = 64, groups = {Create.class, Update.class})
 	private String assumpte;
-	@Size(max = 256)
+	@Size(groups = {Create.class, Update.class}, max = 256)
 	private String observacions;
 	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
 	private String avisTitol;
@@ -134,9 +137,19 @@ public class DocumentNotificacioCommand {
 				DocumentNotificacioCommand.class);
 	}
 	public static DocumentNotificacioDto asDto(DocumentNotificacioCommand command) {
-		return ConversioTipusHelper.convertir(
+		DocumentNotificacioDto dto = ConversioTipusHelper.convertir(
 				command,
 				DocumentNotificacioDto.class);
+		if (command.getAnnexos() != null) {
+			List<DocumentDto> annexos = new ArrayList<DocumentDto>();
+			for (Long annexId: command.getAnnexos()) {
+				DocumentDto annex = new DocumentDto();
+				annex.setId(annexId);
+				annexos.add(annex);
+			}
+			dto.setAnnexos(annexos);
+		}
+		return dto;
 	}
 
 	@Override
@@ -146,5 +159,6 @@ public class DocumentNotificacioCommand {
 
 	public interface Electronica {}
 	public interface Create {}
+	public interface Update {}
 
 }

@@ -18,6 +18,7 @@ import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.DocumentService;
 
 /**
@@ -104,6 +105,15 @@ public class DocumentServiceBean implements DocumentService {
 			Long id,
 			int versio) {
 		return delegate.findVersio(entitatId, id, versio);
+	}
+
+	@Override
+	public List<DocumentDto> findAmbExpedientIPermisRead(
+			Long entitatId,
+			Long expedientId) throws NotFoundException {
+		return delegate.findAmbExpedientIPermisRead(
+				entitatId,
+				expedientId);
 	}
 
 	@Override

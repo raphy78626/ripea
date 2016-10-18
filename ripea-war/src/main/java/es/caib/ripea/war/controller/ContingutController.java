@@ -713,10 +713,21 @@ public class ContingutController extends BaseUserController {
 						RegistreTipusEnum.class,
 						"registre.anotacio.tipus.enum."));
 		model.addAttribute(
-				"enviamentEstatEnumOptions",
+				"notificacioEstatEnumOptions",
 				EnumHelper.getOptionsForEnum(
 						DocumentEnviamentEstatEnumDto.class,
-						"enviament.estat.enum."));
+						"notificacio.estat.enum.",
+						new Enum<?>[] {DocumentEnviamentEstatEnumDto.PUBLICAT}));
+		model.addAttribute(
+				"publicacioEstatEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						DocumentEnviamentEstatEnumDto.class,
+						"publicacio.estat.enum.",
+						new Enum<?>[] {
+							DocumentEnviamentEstatEnumDto.ENVIAT_ERROR,
+							DocumentEnviamentEstatEnumDto.PROCESSAT_OK,
+							DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR,
+							DocumentEnviamentEstatEnumDto.CANCELAT}));
 		model.addAttribute(
 				"interessatTipusEnumOptions",
 				EnumHelper.getOptionsForEnum(

@@ -3,12 +3,15 @@
  */
 package es.caib.ripea.war.command;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioTipusEnumDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
@@ -23,11 +26,15 @@ public class DocumentPublicacioCommand {
 	private Long id;
 	@NotNull(groups = {Create.class})
 	private Long documentId;
-	@NotNull
+	@NotNull(groups = {Create.class, Update.class})
 	private DocumentPublicacioTipusEnumDto tipus;
-	@NotEmpty @Size(max=64)
+	@NotNull(groups = {Create.class, Update.class})
+	private DocumentEnviamentEstatEnumDto estat;
+	@NotEmpty(groups = {Create.class, Update.class})
+	@Size(max = 64, groups = {Create.class, Update.class})
 	private String assumpte;
-	@Size(max=256)
+	private Date dataPublicacio;
+	@Size(groups = {Create.class, Update.class}, max = 256)
 	private String observacions;
 
 
@@ -50,11 +57,23 @@ public class DocumentPublicacioCommand {
 	public void setTipus(DocumentPublicacioTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
+	public DocumentEnviamentEstatEnumDto getEstat() {
+		return estat;
+	}
+	public void setEstat(DocumentEnviamentEstatEnumDto estat) {
+		this.estat = estat;
+	}
 	public String getAssumpte() {
 		return assumpte;
 	}
 	public void setAssumpte(String assumpte) {
 		this.assumpte = assumpte;
+	}
+	public Date getDataPublicacio() {
+		return dataPublicacio;
+	}
+	public void setDataPublicacio(Date dataPublicacio) {
+		this.dataPublicacio = dataPublicacio;
 	}
 	public String getObservacions() {
 		return observacions;
@@ -69,9 +88,10 @@ public class DocumentPublicacioCommand {
 				DocumentPublicacioCommand.class);
 	}
 	public static DocumentPublicacioDto asDto(DocumentPublicacioCommand command) {
-		return ConversioTipusHelper.convertir(
+		DocumentPublicacioDto dto = ConversioTipusHelper.convertir(
 				command,
 				DocumentPublicacioDto.class);
+		return dto;
 	}
 
 	@Override
@@ -80,5 +100,6 @@ public class DocumentPublicacioCommand {
 	}
 
 	public interface Create {}
+	public interface Update {}
 
 }

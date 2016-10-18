@@ -250,6 +250,21 @@
 							return false;
 						});
 					}
+					if (plugin.settings.agrupar) {
+						var api = this.api();
+						var rows = api.rows( {page:'current'} ).nodes();
+						var last = null;
+						api.column(plugin.settings.agrupar, {page:'current'} ).data().each(function (group, i) {
+							if (last !== group) {
+								$(rows).eq(i).before('<tr class="group" style="background-color:#e6e6e6"><td colspan="' + $(rows).eq(i).closest('tr').children().length + '"><strong>' + group + '</strong></td></tr>');
+								last = group;
+							}
+						} );
+					}
+					$taulaBuida = $('td.dataTables_empty', $taula);
+					if ($taulaBuida.length > 0) {
+						$taulaBuida.attr('colspan', $('thead tr:first', $taula).children().length);
+					}
 				}
 			}
 			// Configuració de les columnes

@@ -9,8 +9,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -20,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
@@ -47,6 +50,7 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientMetaDocumentEntity;
+import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
@@ -66,6 +70,7 @@ import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.InteressatRepository;
 import es.caib.ripea.core.repository.MetaDocumentRepository;
 import es.caib.ripea.core.repository.MetaExpedientMetaDocumentRepository;
+import es.caib.ripea.core.security.ExtendedPermission;
 
 /**
  * Implementació dels mètodes per a gestionar documents.
@@ -571,6 +576,44 @@ public class DocumentServiceImpl implements DocumentService {
 				dto,
 				documentPortafirmesRepository.findByDocument(document));
 		return dto;
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<DocumentDto> findAmbExpedientIPermisRead(
+			Long entitatId,
+			Long expedientId) {
+		logger.debug("Obtenint els documents amb permis de lectura de l'expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "expedientId=" + expedientId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
+				entitat,
+				null,
+				expedientId);
+		List<DocumentEntity> documents = documentRepository.findByExpedient(expedient);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Iterator<DocumentEntity> it = documents.iterator();
+		while (it.hasNext()) {
+			DocumentEntity d = it.next();
+			if (d.getMetaDocument() != null && !permisosHelper.isGrantedAll(
+					d.getMetaDocument().getId(),
+					MetaNodeEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth)) {
+				it.remove();
+			}
+		}
+		List<DocumentDto> dtos = new ArrayList<DocumentDto>();
+		for (DocumentEntity document: documents) {
+			dtos.add(
+					(DocumentDto)contingutHelper.toContingutDto(document));
+		}
+		return dtos;
 	}
 
 	@Transactional(readOnly = true)

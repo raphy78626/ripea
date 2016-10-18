@@ -23,12 +23,32 @@ public class EnumHelper {
 	public static List<HtmlOption> getOptionsForEnum(
 			Class<?> enumeracio,
 			String textKeyPrefix) {
+		return getOptionsForEnum(
+				enumeracio,
+				textKeyPrefix,
+				null);
+	}
+	public static List<HtmlOption> getOptionsForEnum(
+			Class<?> enumeracio,
+			String textKeyPrefix,
+			Enum<?>[] ignores) {
 		List<HtmlOption> resposta = new ArrayList<HtmlOption>();
 		if (enumeracio.isEnum()) {
 			for (Object e: enumeracio.getEnumConstants()) {
-				resposta.add(new HtmlOption(
-						((Enum<?>)e).name(),
-						(textKeyPrefix != null) ? textKeyPrefix + ((Enum<?>)e).name() : ((Enum<?>)e).name()));
+				boolean incloure = true;
+				if (ignores != null) {
+					for (Enum<?> ignore: ignores) {
+						if (((Enum<?>)e).equals(ignore)) {
+							incloure = false;
+							break;
+						}
+					}
+				}
+				if (incloure) {
+					resposta.add(new HtmlOption(
+							((Enum<?>)e).name(),
+							(textKeyPrefix != null) ? textKeyPrefix + ((Enum<?>)e).name() : ((Enum<?>)e).name()));
+				}
 			}
 		}
 		return resposta;
