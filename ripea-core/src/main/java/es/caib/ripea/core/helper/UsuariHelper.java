@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.repository.UsuariRepository;
+import es.caib.ripea.plugin.usuari.DadesUsuari;
 
 
 /**
@@ -32,6 +33,9 @@ public class UsuariHelper {
  
 	@Resource
 	private UsuariRepository usuariRepository;
+
+	@Resource
+	private CacheHelper cacheHelper;
 
 
 
@@ -83,10 +87,21 @@ public class UsuariHelper {
 			return null;
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
-			logger.error("No s'ha trobat l'usuari (codi=" + auth.getName() + ")");
-			throw new NotFoundException(
-					auth.getName(),
-					UsuariEntity.class);
+			logger.debug("Consultant plugin de dades d'usuari (" +
+					"usuariCodi=" + auth.getName() + ")");
+			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
+			if (dadesUsuari != null) {
+				usuari = usuariRepository.save(
+						UsuariEntity.getBuilder(
+								dadesUsuari.getCodi(),
+								dadesUsuari.getNom(),
+								dadesUsuari.getNif(),
+								dadesUsuari.getEmail()).build());
+			} else {
+				throw new NotFoundException(
+						auth.getName(),
+						UsuariEntity.class);
+			}
 		}
 		return usuari;
 	}
