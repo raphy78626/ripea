@@ -12,7 +12,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,15 +32,12 @@ public class ContingutMovimentEntity extends RipeaAuditable<Long> {
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "contingut_id")
-	@ForeignKey(name = "ipa_contingut_contmov_fk")
 	protected ContingutEntity contingut;
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "origen_id")
-	@ForeignKey(name = "ipa_origen_contmov_fk")
 	protected ContingutEntity origen;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "desti_id")
-	@ForeignKey(name = "ipa_desti_contmov_fk")
 	protected ContingutEntity desti;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "remitent_codi")
@@ -49,8 +45,6 @@ public class ContingutMovimentEntity extends RipeaAuditable<Long> {
 	protected UsuariEntity remitent;
 	@Column(name = "comentari", length = 256)
 	protected String comentari;
-	@Version
-	private long version = 0;
 
 
 

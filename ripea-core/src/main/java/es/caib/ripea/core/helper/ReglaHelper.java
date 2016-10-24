@@ -115,7 +115,6 @@ public class ReglaHelper {
 				contingutLogHelper.log(
 						pendent,
 						LogTipusEnumDto.MOVIMENT,
-						null,
 						contingutMoviment,
 						true,
 						true);

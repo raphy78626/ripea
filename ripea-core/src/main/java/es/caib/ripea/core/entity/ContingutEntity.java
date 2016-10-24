@@ -76,12 +76,8 @@ public abstract class ContingutEntity extends RipeaAuditable<Long> {
 	protected ContingutMovimentEntity darrerMoviment;
 	@Version
 	private long version = 0;
-	
-	/** Per propagar l'esborrat en els logs.
-	 * TODO: s'ha de repensar per a que els logs es conservin i deixin esobrrar definitivament l'entitat.
-	 */
-	@OneToMany(mappedBy = "contingut", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-	protected Set<ContingutLogEntity> logs;
+
+
 
 	public String getNom() {
 		return nom;

@@ -215,13 +215,21 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
 				notificacioEntity,
 				LogObjecteTipusEnumDto.NOTIFICACIO,
 				LogTipusEnumDto.CREACIO,
-				dto.getAssumpte(),
 				dto.getDestinatariNomSencerRepresentantAmbDocument(),
+				notificacioEntity.getAssumpte(),
+				false,
+				false);
+		contingutLogHelper.log(
+				document,
+				LogTipusEnumDto.MODIFICACIO,
+				notificacioEntity,
+				LogObjecteTipusEnumDto.NOTIFICACIO,
+				LogTipusEnumDto.CREACIO,
+				dto.getDestinatariNomSencerRepresentantAmbDocument(),
+				notificacioEntity.getAssumpte(),
 				false,
 				false);
 		return dto;
@@ -282,21 +290,30 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				notificacio.getOficiTitol(),
 				notificacio.getOficiText(),
 				notificacio.getIdioma());
+		DocumentNotificacioDto dto = conversioTipusHelper.convertir(
+				entity,
+				DocumentNotificacioDto.class);
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
 				entity,
 				LogObjecteTipusEnumDto.NOTIFICACIO,
-				LogTipusEnumDto.CREACIO,
-				notificacio.getAssumpte(),
-				notificacio.getDestinatariNomSencerRepresentantAmbDocument(),
+				LogTipusEnumDto.MODIFICACIO,
+				null,
+				null,
 				false,
 				false);
-		return conversioTipusHelper.convertir(
+		contingutLogHelper.log(
+				entity.getDocument(),
+				LogTipusEnumDto.MODIFICACIO,
 				entity,
-				DocumentNotificacioDto.class);
+				LogObjecteTipusEnumDto.NOTIFICACIO,
+				LogTipusEnumDto.MODIFICACIO,
+				dto.getDestinatariNomSencerRepresentantAmbDocument(),
+				entity.getAssumpte(),
+				false,
+				false);
+		return dto;
 	}
 
 	@Transactional
@@ -332,9 +349,30 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 					"No es pot esborrar una notificació que no te el tipus " + DocumentNotificacioTipusEnumDto.MANUAL);
 		}
 		documentNotificacioRepository.delete(notificacio);
-		return conversioTipusHelper.convertir(
+		DocumentNotificacioDto dto = conversioTipusHelper.convertir(
 				notificacio,
 				DocumentNotificacioDto.class);
+		contingutLogHelper.log(
+				expedient,
+				LogTipusEnumDto.MODIFICACIO,
+				notificacio,
+				LogObjecteTipusEnumDto.NOTIFICACIO,
+				LogTipusEnumDto.ELIMINACIO,
+				null,
+				null,
+				false,
+				false);
+		contingutLogHelper.log(
+				notificacio.getDocument(),
+				LogTipusEnumDto.MODIFICACIO,
+				notificacio,
+				LogObjecteTipusEnumDto.NOTIFICACIO,
+				LogTipusEnumDto.ELIMINACIO,
+				dto.getDestinatariNomSencerRepresentantAmbDocument(),
+				notificacio.getAssumpte(),
+				false,
+				false);
+		return dto;
 	}
 
 	@Transactional
@@ -369,6 +407,29 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 					DocumentNotificacioEntity.class,
 					"Només es pot reintentar el processament d'una notificació del tipus " + DocumentNotificacioTipusEnumDto.ELECTRONICA);
 		}
+		DocumentNotificacioDto dto = conversioTipusHelper.convertir(
+				notificacio,
+				DocumentNotificacioDto.class);
+		contingutLogHelper.log(
+				expedient,
+				LogTipusEnumDto.MODIFICACIO,
+				notificacio,
+				LogObjecteTipusEnumDto.NOTIFICACIO,
+				LogTipusEnumDto.NOTIFICACIO_REINTENT,
+				dto.getDestinatariNomSencerRepresentantAmbDocument(),
+				notificacio.getAssumpte(),
+				false,
+				false);
+		contingutLogHelper.log(
+				notificacio.getDocument(),
+				LogTipusEnumDto.MODIFICACIO,
+				notificacio,
+				LogObjecteTipusEnumDto.NOTIFICACIO,
+				LogTipusEnumDto.NOTIFICACIO_REINTENT,
+				dto.getDestinatariNomSencerRepresentantAmbDocument(),
+				notificacio.getAssumpte(),
+				false,
+				false);
 		if (	DocumentEnviamentEstatEnumDto.PENDENT.equals(notificacio.getEstat()) ||
 				DocumentEnviamentEstatEnumDto.ENVIAT_ERROR.equals(notificacio.getEstat())) {
 			InteressatEntity destinatari = InteressatPersonaFisicaEntity.getBuilder(
@@ -501,12 +562,10 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
 				publicacioEntity,
 				LogObjecteTipusEnumDto.PUBLICACIO,
 				LogTipusEnumDto.CREACIO,
-				publicacio.getAssumpte(),
+				document.getNom(),
 				publicacio.getTipus().name(),
 				false,
 				false);
@@ -547,13 +606,11 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
 				entity,
 				LogObjecteTipusEnumDto.PUBLICACIO,
 				LogTipusEnumDto.MODIFICACIO,
-				publicacio.getAssumpte(),
-				publicacio.getTipus().name(),
+				null,
+				null,
 				false,
 				false);
 		return conversioTipusHelper.convertir(
@@ -591,8 +648,6 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
 				publicacio,
 				LogObjecteTipusEnumDto.PUBLICACIO,
 				LogTipusEnumDto.ELIMINACIO,

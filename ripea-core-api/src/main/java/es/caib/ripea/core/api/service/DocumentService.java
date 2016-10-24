@@ -347,7 +347,7 @@ public interface DocumentService {
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public void custodiarDocumentFirmaClient(
+	public void processarFirmaClient(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) throws NotFoundException, SistemaExternException;

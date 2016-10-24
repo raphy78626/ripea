@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
+import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
@@ -154,16 +155,13 @@ public class ContingutServiceImpl implements ContingutService {
 					"El nom del contingut no és vàlid (no pot començar amb \".\")");
 		}
 		// Canvia el nom del contingut
-		String nomAnterior = contingut.getNom();
 		contingut.update(nom);
 		// Registra al log la modificació del contingut
 		contingutLogHelper.log(
 				contingut,
 				LogTipusEnumDto.MODIFICACIO,
+				nom,
 				null,
-				null,
-				"Canvi de nom",
-				nomAnterior,
 				true,
 				true);
 		return contingutHelper.toContingutDto(
@@ -275,8 +273,6 @@ public class ContingutServiceImpl implements ContingutService {
 			contingutLogHelper.log(
 					contingut,
 					LogTipusEnumDto.MODIFICACIO,
-					null,
-					null,
 					dada,
 					LogObjecteTipusEnumDto.DADA,
 					LogTipusEnumDto.CREACIO,
@@ -354,15 +350,13 @@ public class ContingutServiceImpl implements ContingutService {
 			contingutLogHelper.log(
 					contingut,
 					LogTipusEnumDto.MODIFICACIO,
-					null,
-					null,
 					dada,
 					LogObjecteTipusEnumDto.DADA,
 					LogTipusEnumDto.MODIFICACIO,
 					dada.getMetaDada().getCodi(),
 					dada.getValor(),
-					true,
-					true);
+					false,
+					false);
 			return conversioTipusHelper.convertir(
 					dada,
 					DadaDto.class);
@@ -431,15 +425,13 @@ public class ContingutServiceImpl implements ContingutService {
 			contingutLogHelper.log(
 					contingut,
 					LogTipusEnumDto.MODIFICACIO,
-					null,
-					null,
 					dada,
 					LogObjecteTipusEnumDto.DADA,
 					LogTipusEnumDto.ELIMINACIO,
 					dada.getMetaDada().getCodi(),
-					null,
-					true,
-					true);
+					dada.getValor(),
+					false,
+					false);
 			return conversioTipusHelper.convertir(
 					dada,
 					DadaDto.class);
@@ -769,7 +761,6 @@ public class ContingutServiceImpl implements ContingutService {
 		contingutLogHelper.log(
 				contingutOrigen,
 				LogTipusEnumDto.MOVIMENT,
-				null,
 				contingutMoviment,
 				true,
 				true);
@@ -1136,6 +1127,59 @@ public class ContingutServiceImpl implements ContingutService {
 
 	@Transactional(readOnly = true)
 	@Override
+	public ContingutLogDetallsDto findLogDetallsPerContingutAdmin(
+			Long entitatId,
+			Long contingutId,
+			Long contingutLogId) {
+		logger.debug("Obtenint registre d'accions pel contingut usuari normal ("
+				+ "entitatId=" + entitatId + ", "
+				+ "nodeId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		return contingutLogHelper.findLogDetalls(
+				contingut,
+				contingutLogId);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public ContingutLogDetallsDto findLogDetallsPerContingutUser(
+			Long entitatId,
+			Long contingutId,
+			Long contingutLogId) {
+		logger.debug("Obtenint registre d'accions pel contingut usuari normal ("
+				+ "entitatId=" + entitatId + ", "
+				+ "nodeId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		// Comprova que l'usuari tengui accés al contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
+				false,
+				false,
+				false,
+				true);
+		return contingutLogHelper.findLogDetalls(
+				contingut,
+				contingutLogId);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
 	public List<ContingutMovimentDto> findMovimentsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) {
@@ -1153,6 +1197,8 @@ public class ContingutServiceImpl implements ContingutService {
 				null);
 		return contingutLogHelper.findMovimentsContingut(contingut);
 	}
+
+	
 
 	@Transactional(readOnly = true)
 	@Override

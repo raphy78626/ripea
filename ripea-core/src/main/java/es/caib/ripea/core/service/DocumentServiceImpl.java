@@ -266,11 +266,8 @@ public class DocumentServiceImpl implements DocumentService {
 			cacheHelper.evictErrorsValidacioPerNode(expedientSuperior);
 		}
 		// Registra al log la creació del document
-		contingutLogHelper.log(
+		contingutLogHelper.logCreacio(
 				entity,
-				LogTipusEnumDto.CREACIO,
-				null,
-				null,
 				true,
 				true);
 		return toDocumentDto(entity);
@@ -346,6 +343,7 @@ public class DocumentServiceImpl implements DocumentService {
 					true);
 			cacheHelper.evictErrorsValidacioPerNode(entity);
 		}
+		String nomOriginal = entity.getNom();
 		entity.update(
 				metaDocument,
 				document.getNom(),
@@ -375,8 +373,8 @@ public class DocumentServiceImpl implements DocumentService {
 		contingutLogHelper.log(
 				entity,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
+				(!nomOriginal.equals(document.getNom())) ? document.getNom() : null,
+				(fitxer != null) ? "VERSIO_NOVA" : null,
 				false,
 				false);
 		return toDocumentDto(entity);
@@ -753,12 +751,10 @@ public class DocumentServiceImpl implements DocumentService {
 		contingutLogHelper.log(
 				document,
 				LogTipusEnumDto.PFIRMA_ENVIAMENT,
-				null,
-				null,
-				document.getId().toString(),
-				null,
-				true,
-				true);
+				documentPortafirmes.getPortafirmesId(),
+				documentPortafirmes.getEstat().name(),
+				false,
+				false);
 	}
 
 	@Transactional
@@ -809,12 +805,10 @@ public class DocumentServiceImpl implements DocumentService {
 		contingutLogHelper.log(
 				document,
 				LogTipusEnumDto.PFIRMA_CANCELACIO,
-				null,
-				null,
-				document.getId().toString(),
-				null,
-				true,
-				true);
+				documentPortafirmes.getPortafirmesId(),
+				documentPortafirmes.getEstat().name(),
+				false,
+				false);
 	}
 
 	@Transactional
@@ -832,19 +826,24 @@ public class DocumentServiceImpl implements DocumentService {
 					"(portafirmesId=" + portafirmesId + ")",
 					DocumentPortafirmesEntity.class);
 		}
+		contingutLogHelper.log(
+				documentPortafirmes.getDocument(),
+				LogTipusEnumDto.PFIRMA_CALLBACK,
+				documentPortafirmes.getPortafirmesId(),
+				documentPortafirmes.getEstat().name(),
+				false,
+				false);
 		boolean firmat = PortafirmesCallbackEstatEnum.DOCUMENT_FIRMAT.equals(estat);
 		boolean rebutjat = PortafirmesCallbackEstatEnum.DOCUMENT_REBUTJAT.equals(estat);
 		if (firmat) {
-			expedientHelper.portafirmesProcessarFirma(documentPortafirmes);
 			contingutLogHelper.log(
 					documentPortafirmes.getDocument(),
 					LogTipusEnumDto.PFIRMA_FIRMA,
-					null,
-					null,
 					documentPortafirmes.getPortafirmesId(),
-					estat.name(),
-					true,
-					true);
+					null,
+					false,
+					false);
+			expedientHelper.portafirmesProcessarFirma(documentPortafirmes);
 		}
 		if (rebutjat) {
 			documentPortafirmes.getDocument().updateEstat(
@@ -857,12 +856,10 @@ public class DocumentServiceImpl implements DocumentService {
 			contingutLogHelper.log(
 					documentPortafirmes.getDocument(),
 					LogTipusEnumDto.PFIRMA_REBUIG,
-					null,
-					null,
 					documentPortafirmes.getPortafirmesId(),
-					estat.name(),
-					true,
-					true);
+					null,
+					false,
+					false);
 		}
 		return null;
 	}
@@ -872,7 +869,7 @@ public class DocumentServiceImpl implements DocumentService {
 	public void portafirmesReintentar(
 			Long entitatId,
 			Long documentId) {
-		logger.debug("Reintentant custòdia de document firmat amb portafirmes que ha donat error ("
+		logger.debug("Reintentant processament d'enviament a portafirmes amb error ("
 				+ "entitatId=" + entitatId + ", "
 				+ "documentId=" + documentId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -907,6 +904,13 @@ public class DocumentServiceImpl implements DocumentService {
 					"Aquest document no te enviaments a portafirmes pendents de processar");
 		}
 		DocumentPortafirmesEntity documentPortafirmes = enviamentsPendents.get(0);
+		contingutLogHelper.log(
+				documentPortafirmes.getDocument(),
+				LogTipusEnumDto.PFIRMA_REINTENT,
+				documentPortafirmes.getPortafirmesId(),
+				documentPortafirmes.getEstat().name(),
+				false,
+				false);
 		if (DocumentEnviamentEstatEnumDto.ENVIAT_ERROR.equals(documentPortafirmes.getEstat())) {
 			expedientHelper.portafirmesEnviar(documentPortafirmes);
 		} else if (DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR.equals(documentPortafirmes.getEstat())) {
@@ -1056,7 +1060,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Transactional
 	@Override
-	public void custodiarDocumentFirmaClient(
+	public void processarFirmaClient(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) {
@@ -1097,13 +1101,11 @@ public class DocumentServiceImpl implements DocumentService {
 			// Registra al log la firma del document
 			contingutLogHelper.log(
 					document,
-					LogTipusEnumDto.APPLET_FIRMA,
+					LogTipusEnumDto.FIRMA_CLIENT,
 					null,
 					null,
-					new Integer(document.getVersioDarrera().getVersio()).toString(),
-					null,
-					true,
-					true);
+					false,
+					false);
 			String custodiaDocumentId = pluginHelper.custodiaEnviarDocumentFirmat(
 					document,
 					document.getMetaDocument().getFirmaPassarelaCustodiaTipus(),
@@ -1118,13 +1120,11 @@ public class DocumentServiceImpl implements DocumentService {
 			// Registra al log la custòdia de la firma del document
 			contingutLogHelper.log(
 					document,
-					LogTipusEnumDto.CUSTODIA,
+					LogTipusEnumDto.CUSTODIA_CUSTODIAT,
+					custodiaDocumentId,
 					null,
-					null,
-					new Integer(document.getVersioDarrera().getVersio()).toString(),
-					null,
-					true,
-					true);
+					false,
+					false);
 		} else {
 			logger.error(
 					"No s'han trobat les dades del document amb identificador applet (" +
@@ -1172,6 +1172,14 @@ public class DocumentServiceImpl implements DocumentService {
 				document.getCustodiaData(),
 				document.getCustodiaId(),
 				document.getCustodiaUrl());
+		// Registra al log la cancel·lació de la custòdia
+		contingutLogHelper.log(
+				document,
+				LogTipusEnumDto.CUSTODIA_CANCELACIO,
+				document.getCustodiaId(),
+				null,
+				false,
+				false);
 	}
 
 

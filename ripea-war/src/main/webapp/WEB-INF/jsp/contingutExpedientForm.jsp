@@ -13,9 +13,10 @@
 <head>
 	<title>${titol}</title>
 	<rip:modalHead/>
-	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
-	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/select2.min.js"/>"></script>
+	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 <script>
 	$(document).ready(function() {
 		$("#metaNodeId").change(function() {

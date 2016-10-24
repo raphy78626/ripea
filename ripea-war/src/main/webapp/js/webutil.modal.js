@@ -157,8 +157,7 @@
 						var $pipelles = $('.nav-tabs', $(iframe).contents());
 						if ($pipelles.length) {
 							$('a[data-toggle="tab"]', $(iframe).contents()).on('click', function (e) {
-								setTimeout(
-										function(){webutilModalAdjustHeight($(iframe))}, 500);
+								webutilModalAdjustHeight($(iframe));
 							});
 						}
 						// Evaluar URL del formulari
@@ -198,7 +197,6 @@
 					});
 				});
 				iframe.on('load', function () {
-					console.log("Modal footer remove");
 					$('.modal-footer', modalobj).remove();
 					var pathname = this.contentDocument.location.pathname;
 					if (pathname == webutilModalTancarPath()) {

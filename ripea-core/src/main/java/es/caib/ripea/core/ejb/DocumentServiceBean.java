@@ -200,11 +200,11 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void custodiarDocumentFirmaClient(
+	public void processarFirmaClient(
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) {
-		delegate.custodiarDocumentFirmaClient(
+		delegate.processarFirmaClient(
 				identificador,
 				arxiuNom,
 				arxiuContingut);

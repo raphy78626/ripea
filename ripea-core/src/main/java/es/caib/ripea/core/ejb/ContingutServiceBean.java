@@ -15,6 +15,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
+import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
@@ -22,6 +23,7 @@ import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ContingutService;
 
 /**
@@ -197,6 +199,30 @@ public class ContingutServiceBean implements ContingutService {
 			Long entitatId,
 			Long contingutId) {
 		return delegate.findLogsPerContingutUser(entitatId, contingutId);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public ContingutLogDetallsDto findLogDetallsPerContingutAdmin(
+			Long entitatId,
+			Long contingutId,
+			Long contingutLogId) throws NotFoundException {
+		return delegate.findLogDetallsPerContingutAdmin(
+				entitatId,
+				contingutId,
+				contingutLogId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public ContingutLogDetallsDto findLogDetallsPerContingutUser(
+			Long entitatId,
+			Long contingutId,
+			Long contingutLogId) throws NotFoundException {
+		return delegate.findLogDetallsPerContingutUser(
+				entitatId,
+				contingutId,
+				contingutLogId);
 	}
 
 	@Override

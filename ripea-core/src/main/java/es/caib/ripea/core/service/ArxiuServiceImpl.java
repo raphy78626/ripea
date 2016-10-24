@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
@@ -32,6 +33,7 @@ import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
+import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
@@ -65,6 +67,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 	private PermisosHelper permisosHelper;
 	@Resource
 	private CacheHelper cacheHelper;
+	@Resource
+	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
@@ -112,6 +116,11 @@ public class ArxiuServiceImpl implements ArxiuService {
 				arxiu.getNom(),
 				arxiu.getUnitatCodi(),
 				arxiuPare).build();
+		// Registra al log la creació de l'arxiu
+		contingutLogHelper.logCreacio(
+				entity,
+				false,
+				false);
 		return toArxiuDto(
 				arxiuRepository.save(entity));
 	}
@@ -133,8 +142,17 @@ public class ArxiuServiceImpl implements ArxiuService {
 				entitat,
 				arxiu.getId(),
 				false);
+		String nomOriginal = entity.getNom();
 		entity.update(
 				arxiu.getNom());
+		// Registra al log la modificació de l'arxiu
+		contingutLogHelper.log(
+				entity,
+				LogTipusEnumDto.MODIFICACIO,
+				(!nomOriginal.equals(entity.getNom())) ? entity.getNom() : null,
+				null,
+				false,
+				false);
 		return toArxiuDto(entity);
 	}
 
@@ -158,6 +176,13 @@ public class ArxiuServiceImpl implements ArxiuService {
 				id,
 				false);
 		entity.updateActiu(actiu);
+		// Registra al log la modificació de l'arxiu
+		contingutLogHelper.log(
+				entity,
+				actiu ? LogTipusEnumDto.ACTIVACIO : LogTipusEnumDto.DESACTIVACIO,
+				null,
+				false,
+				false);
 		return toArxiuDto(entity);
 	}
 
@@ -179,6 +204,14 @@ public class ArxiuServiceImpl implements ArxiuService {
 				id,
 				false);
 		arxiuRepository.delete(arxiu);
+		// Registra al log l'eliminació de l'arxiu
+		contingutLogHelper.log(
+				arxiu,
+				LogTipusEnumDto.ELIMINACIO,
+				null,
+				null,
+				true,
+				true);
 		return toArxiuDto(arxiu);
 	}
 

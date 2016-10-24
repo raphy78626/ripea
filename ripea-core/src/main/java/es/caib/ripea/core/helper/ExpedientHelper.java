@@ -11,6 +11,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
+import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.DocumentEntity;
@@ -37,6 +39,8 @@ public class ExpedientHelper {
 	private PluginHelper pluginHelper;
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
+	@Resource
+	private ConversioTipusHelper conversioTipusHelper;
 
 
 
@@ -106,8 +110,38 @@ public class ExpedientHelper {
 					notificacio.getRegistreNumero());
 			boolean entregadaORebutjada = !ZonaperJustificantEstat.PENDENT.equals(notificacioEstat.getEstat());
 			Date recepcio = null;
-			if (ZonaperJustificantEstat.ENTREGADA.equals(notificacioEstat.getEstat())) {
-				recepcio = notificacioEstat.getData();
+			if (entregadaORebutjada) {
+				DocumentNotificacioDto dto = conversioTipusHelper.convertir(
+						notificacio,
+						DocumentNotificacioDto.class);
+				LogTipusEnumDto logTipus;
+				if (ZonaperJustificantEstat.ENTREGADA.equals(notificacioEstat.getEstat())) {
+					recepcio = notificacioEstat.getData();
+					logTipus = LogTipusEnumDto.NOTIFICACIO_ENTREGADA;
+					
+				} else {
+					logTipus = LogTipusEnumDto.NOTIFICACIO_REBUTJADA;
+				}
+				contingutLogHelper.log(
+						expedient,
+						LogTipusEnumDto.MODIFICACIO,
+						notificacio,
+						LogObjecteTipusEnumDto.NOTIFICACIO,
+						logTipus,
+						dto.getDestinatariNomSencerRepresentantAmbDocument(),
+						notificacio.getAssumpte(),
+						false,
+						false);
+				contingutLogHelper.log(
+						notificacio.getDocument(),
+						LogTipusEnumDto.MODIFICACIO,
+						notificacio,
+						LogObjecteTipusEnumDto.NOTIFICACIO,
+						logTipus,
+						dto.getDestinatariNomSencerRepresentantAmbDocument(),
+						notificacio.getAssumpte(),
+						false,
+						false);
 			}
 			notificacio.updateProcessament(
 					true,
@@ -140,6 +174,13 @@ public class ExpedientHelper {
 						document.getCustodiaData(),
 						document.getCustodiaId(),
 						custodiaUrl);
+				contingutLogHelper.log(
+						documentPortafirmes.getDocument(),
+						LogTipusEnumDto.CUSTODIA_URL,
+						custodiaUrl,
+						null,
+						false,
+						false);
 			} catch (Exception ex) {
 				Throwable rootCause = ExceptionUtils.getRootCause(ex);
 				if (rootCause == null) rootCause = ex;
@@ -236,13 +277,11 @@ public class ExpedientHelper {
 						DocumentEstatEnumDto.CUSTODIAT);
 				contingutLogHelper.log(
 						documentPortafirmes.getDocument(),
-						LogTipusEnumDto.CUSTODIA,
-						null,
-						null,
+						LogTipusEnumDto.CUSTODIA_CUSTODIAT,
 						custodiaDocumentId,
 						null,
-						true,
-						true);
+						false,
+						false);
 				return true;
 			} catch (SistemaExternException ex) {
 				Throwable rootCause = ExceptionUtils.getRootCause(ex);

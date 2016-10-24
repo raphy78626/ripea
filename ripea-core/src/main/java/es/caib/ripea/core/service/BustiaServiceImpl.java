@@ -114,13 +114,13 @@ public class BustiaServiceImpl implements BustiaService {
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Resource
 	private PaginacioHelper paginacioHelper;
-	
-	private Map<String, String[]> ordenacioMap;
-	
+
+	/*private Map<String, String[]> ordenacioMap;
+
 	public BustiaServiceImpl() {
 		this.ordenacioMap = new HashMap<String, String[]>();
 		ordenacioMap.put("pareNom", new String[] {"pare.nom"});
-	}
+	}*/
 
 	@Override
 	@Transactional
@@ -163,6 +163,11 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia.getNom(),
 				bustia.getUnitatCodi(),
 				bustiaPare).build();
+		// Registra al log la creació de la bústia
+		contingutLogHelper.logCreacio(
+				entity,
+				false,
+				false);
 		// Si no hi ha cap bústia per defecte a dins l'unitat configura
 		// la bústia actual com a bústia per defecte
 		BustiaEntity bustiaPerDefecte = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
@@ -170,6 +175,13 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia.getUnitatCodi());
 		if (bustiaPerDefecte == null) {
 			entity.updatePerDefecte(true);
+			contingutLogHelper.log(
+					entity,
+					LogTipusEnumDto.PER_DEFECTE,
+					"true",
+					null,
+					false,
+					false);
 		}
 		return toBustiaDto(
 				bustiaRepository.save(entity),
@@ -194,8 +206,17 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				bustia.getId(),
 				false);
+		String nomOriginal = entity.getNom();
 		entity.update(
 				bustia.getNom());
+		// Registra al log la modificació de la bústia
+		contingutLogHelper.log(
+				entity,
+				LogTipusEnumDto.MODIFICACIO,
+				(!nomOriginal.equals(entity.getNom())) ? entity.getNom() : null,
+				null,
+				false,
+				false);
 		return toBustiaDto(
 				entity,
 				false,
@@ -222,6 +243,13 @@ public class BustiaServiceImpl implements BustiaService {
 				id,
 				false);
 		entity.updateActiva(activa);
+		// Registra al log la modificació de la bústia
+		contingutLogHelper.log(
+				entity,
+				activa ? LogTipusEnumDto.ACTIVACIO : LogTipusEnumDto.DESACTIVACIO,
+				null,
+				false,
+				false);
 		return toBustiaDto(
 				entity,
 				false,
@@ -252,6 +280,14 @@ public class BustiaServiceImpl implements BustiaService {
 					BustiaEntity.class);
 		}
 		bustiaRepository.delete(bustia);
+		// Registra al log l'eliminació de la bústia
+		contingutLogHelper.log(
+				bustia,
+				LogTipusEnumDto.ELIMINACIO,
+				null,
+				null,
+				true,
+				true);
 		return toBustiaDto(
 				bustia,
 				false,
@@ -278,8 +314,27 @@ public class BustiaServiceImpl implements BustiaService {
 		List<BustiaEntity> bustiesMateixaUnitat = bustiaRepository.findByEntitatAndUnitatCodiAndPareNotNull(
 				entitat,
 				bustia.getUnitatCodi());
-		for (BustiaEntity bu: bustiesMateixaUnitat)
+		for (BustiaEntity bu: bustiesMateixaUnitat) {
+			if (bu.isPerDefecte()) {
+				// Registra al log la modificació de la bústia
+				contingutLogHelper.log(
+						bu,
+						LogTipusEnumDto.PER_DEFECTE,
+						"false",
+						null,
+						false,
+						false);
+			}
 			bu.updatePerDefecte(false);
+		}
+		// Registra al log la modificació de la bústia
+		contingutLogHelper.log(
+				bustia,
+				LogTipusEnumDto.PER_DEFECTE,
+				"true",
+				null,
+				false,
+				false);
 		bustia.updatePerDefecte(true);
 		return toBustiaDto(
 				bustia,
@@ -471,7 +526,6 @@ public class BustiaServiceImpl implements BustiaService {
 		contingutLogHelper.log(
 				contingut,
 				LogTipusEnumDto.ENVIAMENT,
-				null,
 				contingutMoviment,
 				true,
 				true);
@@ -557,7 +611,7 @@ public class BustiaServiceImpl implements BustiaService {
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
-				null,
+				anotacioEntity.getNom(),
 				null,
 				false,
 				false);
@@ -724,8 +778,7 @@ public class BustiaServiceImpl implements BustiaService {
 		// Registra al log l'enviament del contingut
 		contingutLogHelper.log(
 				contingut,
-				LogTipusEnumDto.MOVIMENT,
-				null,
+				LogTipusEnumDto.REENVIAMENT,
 				contingutMoviment,
 				true,
 				true);

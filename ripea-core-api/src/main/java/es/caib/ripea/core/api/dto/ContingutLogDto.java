@@ -3,9 +3,6 @@
  */
 package es.caib.ripea.core.api.dto;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 
@@ -14,19 +11,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ContingutLogDto implements Serializable {
+public class ContingutLogDto extends AuditoriaDto {
 
 	private Long id;
-	private Date data;
 	private LogTipusEnumDto tipus;
-	private UsuariDto usuari;
-	private ContingutMovimentDto contingutMoviment;
-	private Long objecteId;
+	private String objecteId;
 	private LogObjecteTipusEnumDto objecteTipus;
 	private LogTipusEnumDto objecteLogTipus;
 	private String param1;
 	private String param2;
-	protected Long pareId;
 
 
 
@@ -36,34 +29,16 @@ public class ContingutLogDto implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Date getData() {
-		return data;
-	}
-	public void setData(Date data) {
-		this.data = data;
-	}
 	public LogTipusEnumDto getTipus() {
 		return tipus;
 	}
 	public void setTipus(LogTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
-	public UsuariDto getUsuari() {
-		return usuari;
-	}
-	public void setUsuari(UsuariDto usuari) {
-		this.usuari = usuari;
-	}
-	public ContingutMovimentDto getContenidorMoviment() {
-		return contingutMoviment;
-	}
-	public void setContenidorMoviment(ContingutMovimentDto contingutMoviment) {
-		this.contingutMoviment = contingutMoviment;
-	}
-	public Long getObjecteId() {
+	public String getObjecteId() {
 		return objecteId;
 	}
-	public void setObjecteId(Long objecteId) {
+	public void setObjecteId(String objecteId) {
 		this.objecteId = objecteId;
 	}
 	public LogObjecteTipusEnumDto getObjecteTipus() {
@@ -90,11 +65,9 @@ public class ContingutLogDto implements Serializable {
 	public void setParam2(String param2) {
 		this.param2 = param2;
 	}
-	public Long getPareId() {
-		return pareId;
-	}
-	public void setPareId(Long pareId) {
-		this.pareId = pareId;
+
+	public boolean isSecundari() {
+		return tipus.equals(LogTipusEnumDto.MODIFICACIO) && objecteId != null;
 	}
 
 	@Override

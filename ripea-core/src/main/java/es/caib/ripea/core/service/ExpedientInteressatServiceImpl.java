@@ -207,12 +207,10 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
 				interessatEntity,
 				LogObjecteTipusEnumDto.INTERESSAT,
 				LogTipusEnumDto.CREACIO,
-				null,
+				interessatEntity.getIdentificador(),
 				null,
 				false,
 				false);
@@ -354,15 +352,13 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatAdministracioDto.getNotificacioAutoritzat());
 		}
 		interessatEntity = interessatRepository.save(interessatEntity);
-		// Registra al log la creació de l'interessat
+		// Registra al log la modificació de l'interessat
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
 				interessatEntity,
 				LogObjecteTipusEnumDto.INTERESSAT,
-				LogTipusEnumDto.CREACIO,
+				LogTipusEnumDto.MODIFICACIO,
 				null,
 				null,
 				false,
@@ -426,8 +422,6 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 			contingutLogHelper.log(
 					expedient,
 					LogTipusEnumDto.MODIFICACIO,
-					null,
-					null,
 					interessat,
 					LogObjecteTipusEnumDto.INTERESSAT,
 					LogTipusEnumDto.ELIMINACIO,
@@ -497,8 +491,6 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 				contingutLogHelper.log(
 						expedient,
 						LogTipusEnumDto.MODIFICACIO,
-						null,
-						null,
 						interessat,
 						LogObjecteTipusEnumDto.INTERESSAT,
 						LogTipusEnumDto.ELIMINACIO,

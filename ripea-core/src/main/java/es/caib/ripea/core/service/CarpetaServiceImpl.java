@@ -49,7 +49,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
-	private ContingutLogHelper contenidorLogHelper;
+	private ContingutLogHelper contingutLogHelper;
 
 
 
@@ -111,13 +111,9 @@ public class CarpetaServiceImpl implements CarpetaService {
 				contingut,
 				entitat).build();
 		carpeta = carpetaRepository.save(carpeta);
-		System.out.println(">>> Creacio CARPETA " + carpeta.getId() + " al pare " + carpeta.getPare().getId());
 		// Registra al log la creació de la carpeta
-		contenidorLogHelper.log(
+		contingutLogHelper.logCreacio(
 				carpeta,
-				LogTipusEnumDto.CREACIO,
-				null,
-				null,
 				true,
 				true);
 		return toCarpetaDto(carpeta);
@@ -174,14 +170,15 @@ public class CarpetaServiceImpl implements CarpetaService {
 					true,
 					false);
 		}
+		String nomOriginal = carpeta.getNom();
 		carpeta.update(
 				nom,
 				tipus);
 		// Registra al log la modificació de la carpeta
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				carpeta,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
+				(!nomOriginal.equals(carpeta.getNom())) ? carpeta.getNom() : null,
 				null,
 				false,
 				false);
@@ -230,7 +227,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 		}
 		carpetaRepository.delete(carpeta);
 		// Registra al log l'eliminació de la carpeta
-		contenidorLogHelper.log(
+		contingutLogHelper.log(
 				carpeta,
 				LogTipusEnumDto.ELIMINACIO,
 				null,

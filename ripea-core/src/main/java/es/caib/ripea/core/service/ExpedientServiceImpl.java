@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Persistable;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,7 +37,6 @@ import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
-import es.caib.ripea.core.entity.ContingutLogEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
@@ -236,11 +236,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 					contingutPendentId);
 		}
 		// Registra al log la creació de l'expedient
-		contingutLogHelper.log(
+		contingutLogHelper.logCreacio(
 				expedient,
-				LogTipusEnumDto.CREACIO,
-				null,
-				null,
 				false,
 				false);
 		return toExpedientDto(
@@ -313,6 +310,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 					ExpedientEntity.class,
 					"El nom de l'expedient no és vàlid (no pot començar amb \".\")");
 		}
+		String nomOriginal = expedient.getNom();
 		// Modifica l'expedient
 		expedient.update(
 				nom,
@@ -322,7 +320,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
+				(!nomOriginal.equals(expedient.getNom())) ? expedient.getNom() : null,
 				null,
 				false,
 				false);
@@ -530,10 +528,10 @@ public class ExpedientServiceImpl implements ExpedientService {
 					usuariOriginal,
 					usuariNou);
 		}
-		// Registra al log l'apropiació de l'expedient
+		// Registra al log l'accó d'agafar
 		contingutLogHelper.log(
 				expedient,
-				LogTipusEnumDto.RESERVA,
+				LogTipusEnumDto.AGAFAR,
 				null,
 				null,
 				false,
@@ -604,7 +602,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'apropiacio de l'expedient
 		contingutLogHelper.log(
 				expedient,
-				LogTipusEnumDto.RESERVA,
+				LogTipusEnumDto.AGAFAR,
 				null,
 				null,
 				false,
@@ -641,7 +639,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'alliberació de l'expedient
 		contingutLogHelper.log(
 				expedient,
-				LogTipusEnumDto.ALLIBERACIO,
+				LogTipusEnumDto.ALLIBERAR,
 				null,
 				null,
 				false,
@@ -674,7 +672,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		// Registra al log l'alliberació de l'expedient
 		contingutLogHelper.log(
 				expedient,
-				LogTipusEnumDto.ALLIBERACIO,
+				LogTipusEnumDto.ALLIBERAR,
 				null,
 				null,
 				false,
@@ -751,7 +749,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				acumulatId);
 		// Registra al log l'acumulació
-		ContingutLogEntity contenidorLog = contingutLogHelper.log(
+		contingutLogHelper.log(
 				expedientDesti,
 				LogTipusEnumDto.ACUMULACIO,
 				null,
@@ -767,7 +765,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 			contingutLogHelper.log(
 					contingut,
 					LogTipusEnumDto.MOVIMENT,
-					contenidorLog,
 					contenidorMoviment,
 					true,
 					true);
@@ -963,12 +960,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 		bustiaHelper.evictElementsPendentsBustia(entitat, bustia);
 	}
 
+	@SuppressWarnings("serial")
 	@Transactional
 	@Override
 	public void relacioCreate(
 			Long entitatId,
-			Long id,
-			Long relacionatId) {
+			final Long id,
+			final Long relacionatId) {
 		logger.debug("Relacionant l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
@@ -990,23 +988,31 @@ public class ExpedientServiceImpl implements ExpedientService {
 		contingutLogHelper.log(
 				expedient,
 				LogTipusEnumDto.MODIFICACIO,
-				null,
-				null,
-				relacionat,
+				new Persistable<String>() {
+					@Override
+					public String getId() {
+						return id + "#" + relacionatId;
+					}
+					@Override
+					public boolean isNew() {
+						return false;
+					}
+				},
 				LogObjecteTipusEnumDto.RELACIO,
 				LogTipusEnumDto.CREACIO,
+				id.toString(),
 				relacionatId.toString(),
-				null,
 				false,
 				false);
 	}
 
+	@SuppressWarnings("serial")
 	@Transactional
 	@Override
 	public boolean relacioDelete(
 			Long entitatId,
-			Long id,
-			Long relacionatId) {
+			final Long id,
+			final Long relacionatId) {
 		logger.debug("Esborrant la relació de l'expedient amb un altre expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
@@ -1036,13 +1042,20 @@ public class ExpedientServiceImpl implements ExpedientService {
 			contingutLogHelper.log(
 					expedient,
 					LogTipusEnumDto.MODIFICACIO,
-					null,
-					null,
-					relacionat,
+					new Persistable<String>() {
+						@Override
+						public String getId() {
+							return id + "#" + relacionatId;
+						}
+						@Override
+						public boolean isNew() {
+							return false;
+						}
+					},
 					LogObjecteTipusEnumDto.RELACIO,
 					LogTipusEnumDto.ELIMINACIO,
+					id.toString(),
 					relacionatId.toString(),
-					null,
 					false,
 					false);
 		}

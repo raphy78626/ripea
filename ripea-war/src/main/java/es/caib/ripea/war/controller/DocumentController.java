@@ -383,7 +383,7 @@ public class DocumentController extends BaseUserController {
 					String identificador = documentService.generarIdentificadorFirmaClient(
 							entitatActual.getId(),
 							documentId);
-					documentService.custodiarDocumentFirmaClient(
+					documentService.processarFirmaClient(
 							identificador,
 							firmaStatus.getSignedData().getName(),
 							IOUtils.toByteArray(fis));

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
+import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
@@ -34,6 +35,8 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.InteressatTipusEnumDto;
+import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
+import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
@@ -612,7 +615,6 @@ public class ContingutController extends BaseUserController {
 				request,
 				interessats);
 	}
-	
 
 	@RequestMapping(value = "/contingut/{contingutId}/log", method = RequestMethod.GET)
 	public String log(
@@ -636,7 +638,31 @@ public class ContingutController extends BaseUserController {
 				contingutService.findMovimentsPerContingutUser(
 						entitatActual.getId(),
 						contingutId));
+		model.addAttribute(
+				"logTipusEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						LogTipusEnumDto.class,
+						"log.tipus.enum."));
+		model.addAttribute(
+				"logObjecteTipusEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						LogObjecteTipusEnumDto.class,
+						"log.objecte.tipus.enum."));
 		return "contingutLog";
+	}
+
+	@RequestMapping(value = "/contingut/{contingutId}/log/{contingutLogId}/detalls", method = RequestMethod.GET)
+	@ResponseBody
+	public ContingutLogDetallsDto logDetalls(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			@PathVariable Long contingutLogId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return contingutService.findLogDetallsPerContingutUser(
+				entitatActual.getId(),
+				contingutId,
+				contingutLogId);
 	}
 
 	@RequestMapping(value = "/contingut/{contingutId}/nti")
@@ -653,8 +679,6 @@ public class ContingutController extends BaseUserController {
 						true));
 		return "contingutNti";
 	}
-
-
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {

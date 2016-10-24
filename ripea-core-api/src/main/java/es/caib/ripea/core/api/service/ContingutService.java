@@ -8,8 +8,9 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
+import es.caib.ripea.core.api.dto.ContingutFiltreDto;
+import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.DadaDto;
@@ -346,6 +347,44 @@ public interface ContingutService {
 	public List<ContingutLogDto> findLogsPerContingutUser(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
+
+	/**
+	 * Obté els detalls d'una acció realitzada damunt un contingut.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el registre.
+	 * @param contingutLogId
+	 *            Atribut id del log del qual es volen veure detalls.
+	 * @return Els detalls de l'acció.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public ContingutLogDetallsDto findLogDetallsPerContingutAdmin(
+			Long entitatId,
+			Long contingutId,
+			Long contingutLogId) throws NotFoundException;
+
+	/**
+	 * Obté els detalls d'una acció realitzada damunt un contingut.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut del qual es vol consultar el registre.
+	 * @param contingutLogId
+	 *            Atribut id del log del qual es volen veure detalls.
+	 * @return Els detalls de l'acció.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public ContingutLogDetallsDto findLogDetallsPerContingutUser(
+			Long entitatId,
+			Long contingutId,
+			Long contingutLogId) throws NotFoundException;
 
 	/**
 	 * Obté el registre d'accions realitzades damunt un contingut.

@@ -3,6 +3,9 @@
  */
 package es.caib.ripea.core.entity;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
@@ -10,6 +13,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ForeignKey;
@@ -32,6 +36,9 @@ public abstract class NodeEntity extends ContingutEntity {
 	@JoinColumn(name = "metanode_id")
 	@ForeignKey(name = "ipa_metanode_node_fk")
 	protected MetaNodeEntity metaNode;
+
+	@OneToMany(mappedBy = "node", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+	protected Set<DadaEntity> dades;
 
 
 
