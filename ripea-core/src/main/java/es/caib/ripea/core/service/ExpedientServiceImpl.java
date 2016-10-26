@@ -129,7 +129,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private EntityComprovarHelper entityComprovarHelper;
 
 	private Map<String, String[]> ordenacioMap;
-	
+
 	public ExpedientServiceImpl() {
 		this.ordenacioMap = new HashMap<String, String[]>();
 		ordenacioMap.put("numero", new String[] {"any", "sequencia"});
