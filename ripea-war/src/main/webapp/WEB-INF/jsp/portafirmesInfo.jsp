@@ -34,7 +34,7 @@
 				<dt><spring:message code="firma.info.camp.data.enviament"/></dt>
 				<dd><fmt:formatDate value="${portafirmes.dataEnviament}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
 				<dt><spring:message code="firma.info.camp.estat"/></dt>
-				<dd><spring:message code="enviament.estat.enum.${portafirmes.estat}"/></dd>
+				<dd><spring:message code="portafirmes.estat.enum.${portafirmes.estat}"/></dd>
 				<dt><spring:message code="firma.info.camp.prioritat"/></dt>
 				<dd><spring:message code="portafirmes.prioritat.enum.${portafirmes.prioritat}"/></dd>
 				<dt><spring:message code="firma.info.camp.data.cad"/></dt>

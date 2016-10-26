@@ -31,7 +31,6 @@ import es.caib.ripea.core.service.ws.callback.MCGDwsImpl;
 @WebContext(
 		contextRoot = "/ripea/ws",
 		urlPattern = "/MCGDws",
-		//authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
 @Interceptors(SpringBeanAutowiringInterceptor.class)

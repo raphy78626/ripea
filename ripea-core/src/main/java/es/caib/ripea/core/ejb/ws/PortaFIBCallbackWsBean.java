@@ -4,13 +4,11 @@
 package es.caib.ripea.core.ejb.ws;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.jws.WebService;
 
-import org.jboss.annotation.security.SecurityDomain;
 import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
@@ -36,11 +34,8 @@ import es.caib.ripea.core.service.ws.callbackportafib.PortaFIBCallBackWsImpl;
 @WebContext(
 		contextRoot = "/ripea/ws",
 		urlPattern = "/portafibCallback",
-		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-@RolesAllowed({"IPA_CALBWS"})
-@SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class PortaFIBCallbackWsBean implements PortaFIBCallBackWs {
 
