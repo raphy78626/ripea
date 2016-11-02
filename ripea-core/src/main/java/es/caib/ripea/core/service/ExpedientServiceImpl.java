@@ -3,7 +3,11 @@
  */
 package es.caib.ripea.core.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -12,7 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
+import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -27,6 +34,7 @@ import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -38,9 +46,11 @@ import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
+import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.MetaDadaEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
@@ -50,9 +60,11 @@ import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
+import es.caib.ripea.core.helper.CsvHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.ExpedientHelper;
+import es.caib.ripea.core.helper.MessageHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
@@ -62,6 +74,7 @@ import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
+import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
@@ -90,6 +103,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private CarpetaRepository carpetaRepository;
 	@Resource
 	private ArxiuRepository arxiuRepository;
+	@Resource
+	private DadaRepository dadaRepository;
 	@Resource
 	private UsuariRepository usuariRepository;
 	@Resource
@@ -124,16 +139,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 	@Resource
 	private PluginHelper pluginHelper;
 	@Resource
+	private CsvHelper csvHelper;
+	@Resource
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
-
-	private Map<String, String[]> ordenacioMap;
-
-	public ExpedientServiceImpl() {
-		this.ordenacioMap = new HashMap<String, String[]>();
-		ordenacioMap.put("numero", new String[] {"any", "sequencia"});
-	}
+	@Resource
+	private MessageHelper messageHelper;
 
 	@Transactional
 	@Override
@@ -423,19 +435,20 @@ public class ExpedientServiceImpl implements ExpedientService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<ExpedientDto> findPaginatAdmin(
+	public PaginaDto<ExpedientDto> findAmbFiltreAdmin(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consultant els expedients paginats per admins ("
+		logger.debug("Consultant els expedients segons el filtre per admins ("
 				+ "entitatId=" + entitatId + ", "
+				+ "filtre=" + filtre + ", "
 				+ "paginacioParams=" + paginacioParams + ")");
 		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		return findByArxiuPaginat(
+		return findAmbFiltrePaginat(
 				entitatId,
 				filtre,
 				paginacioParams,
@@ -445,22 +458,43 @@ public class ExpedientServiceImpl implements ExpedientService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<ExpedientDto> findPaginatUser(
+	public PaginaDto<ExpedientDto> findAmbFiltreUser(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consultant els expedients paginats per users ("
+		logger.debug("Consultant els expedients segons el filtre per usuaris ("
 				+ "entitatId=" + entitatId + ", "
+				+ "filtre=" + filtre + ", "
 				+ "paginacioParams=" + paginacioParams + ")");
 		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		return findByArxiuPaginat(
+		return findAmbFiltrePaginat(
 				entitatId,
 				filtre,
 				paginacioParams,
+				false,
+				true);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<Long> findIdsAmbFiltre(
+			Long entitatId,
+			ExpedientFiltreDto filtre) throws NotFoundException {
+		logger.debug("Consultant els ids d'expedient segons el filtre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "filtre=" + filtre + ")");
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		return findIdsAmbFiltrePaginat(
+				entitatId,
+				filtre,
 				false,
 				true);
 	}
@@ -803,7 +837,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 
 
 
-	private PaginaDto<ExpedientDto> findByArxiuPaginat(
+	private PaginaDto<ExpedientDto> findAmbFiltrePaginat(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams,
@@ -815,14 +849,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 				accesAdmin,
 				false);
 		ArxiuEntity arxiu = null;
-		List<ArxiuEntity> arxiusPermesos = null;
 		if (filtre.getArxiuId() != null) {
 			arxiu = entityComprovarHelper.comprovarArxiu(
 				entitat,
 				filtre.getArxiuId(),
 				(!accesAdmin));
-		} else {
-			arxiusPermesos = this.getArxiusPermesos(entitat);
 		}
 		MetaExpedientEntity metaExpedient = null;
 		if (filtre.getMetaExpedientId() != null) {
@@ -849,13 +880,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 					auth);
 		}
 		if (!metaExpedientsPermesos.isEmpty()) {
+			Map<String, String[]> ordenacioMap = new HashMap<String, String[]>();
+			ordenacioMap.put("numero", new String[] {"any", "sequencia"});
 			return paginacioHelper.toPaginaDto(
-					expedientRepository.findByEntitatAndArxiuFiltre(
+					expedientRepository.findByEntitatAndFiltre(
 							entitat,
 							arxiu == null,
 							arxiu,
-							arxiusPermesos == null,
-							arxiusPermesos,
 							metaExpedientsPermesos,
 							metaExpedient == null,
 							metaExpedient,
@@ -891,30 +922,72 @@ public class ExpedientServiceImpl implements ExpedientService {
 		}
 	}
 
-	private List<ArxiuEntity> getArxiusPermesos(EntitatEntity entitat) {
-		List<ArxiuEntity> arxius = arxiuRepository.findByEntitatAndPareNotNull(entitat);
-		List<ArxiuEntity> resultat = new ArrayList<ArxiuEntity>();
-		Permission[] permisos = new Permission[] {ExtendedPermission.READ};
-		// Filtra els meta-expedients dels arxius en el que l'usuari tingui permisos de lectura
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		// Afegeix les unitats dels arxius que estiguin relacionats amb algun meta-expedient amb permisos
-		for (ArxiuEntity arxiu: arxius) {
-			boolean granted = false;
-			// Comprova l'accés als meta-expedients
-			for (MetaExpedientEntity metaExpedient: arxiu.getMetaExpedients()) {
-				if (permisosHelper.isGrantedAll(
-						metaExpedient.getId(),
-						MetaNodeEntity.class,
-						permisos,
-						auth)) {
-					granted = true;
-					break;
-				}
-			}
-			if (granted)
-				resultat.add(arxiu);
+	private List<Long> findIdsAmbFiltrePaginat(
+			Long entitatId,
+			ExpedientFiltreDto filtre,
+			boolean accesAdmin,
+			boolean comprovarAccesMetaExpedients) {
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				(!accesAdmin),
+				accesAdmin,
+				false);
+		ArxiuEntity arxiu = null;
+		if (filtre.getArxiuId() != null) {
+			arxiu = entityComprovarHelper.comprovarArxiu(
+				entitat,
+				filtre.getArxiuId(),
+				(!accesAdmin));
 		}
-		return resultat;
+		MetaExpedientEntity metaExpedient = null;
+		if (filtre.getMetaExpedientId() != null) {
+			metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+					entitat,
+					filtre.getMetaExpedientId(),
+					false,
+					true);
+		}
+		List<MetaExpedientEntity> metaExpedientsPermesos = metaExpedientRepository.findByEntitatOrderByNomAsc(
+				entitat);
+		if (comprovarAccesMetaExpedients) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			permisosHelper.filterGrantedAll(
+					metaExpedientsPermesos,
+					new ObjectIdentifierExtractor<MetaExpedientEntity>() {
+						@Override
+						public Long getObjectIdentifier(MetaExpedientEntity metaExpedient) {
+							return metaExpedient.getId();
+						}
+					},
+					MetaNodeEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth);
+		}
+		if (!metaExpedientsPermesos.isEmpty()) {
+			return expedientRepository.findIdByEntitatAndFiltre(
+					entitat,
+					arxiu == null,
+					arxiu,
+					metaExpedientsPermesos,
+					metaExpedient == null,
+					metaExpedient,
+					filtre.getNumero() == null || "".equals(filtre.getNumero().trim()),
+					filtre.getNumero(),
+					filtre.getNom() == null || filtre.getNom().isEmpty(),
+					filtre.getNom(),
+					filtre.getDataCreacioInici() == null,
+					filtre.getDataCreacioInici(),
+					filtre.getDataCreacioFi() == null,
+					filtre.getDataCreacioFi(),
+					filtre.getDataTancatInici() == null,
+					filtre.getDataTancatInici(),
+					filtre.getDataTancatFi() == null,
+					filtre.getDataTancatFi(),
+					filtre.getEstat() == null,
+					filtre.getEstat());
+		} else {
+			return new ArrayList<Long>();
+		}
 	}
 
 	private ExpedientDto toExpedientDto(
@@ -1094,6 +1167,99 @@ public class ExpedientServiceImpl implements ExpedientService {
 		for (ExpedientEntity e: relacionats)
 			relacionatsDto.add(toExpedientDto(e, false));		
 		return relacionatsDto;
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public FitxerDto exportacio(
+			Long entitatId,
+			Long metaExpedientId,
+			Collection<Long> expedientIds,
+			String format) throws IOException {
+		logger.debug("Exportant informació dels expedients (" +
+				"entitatId=" + entitatId + ", " +
+				"metaExpedientId=" + metaExpedientId + ", " +
+				"expedientIds=" + expedientIds + ", " +
+				"format=" + format + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat,
+				metaExpedientId,
+				false,
+				true);
+		List<ExpedientEntity> expedients = expedientRepository.findByEntitatAndAndMetaNodeAndIdInOrderByIdAsc(
+				entitat,
+				metaExpedient,
+				expedientIds);
+		List<MetaDadaEntity> metaDades = dadaRepository.findDistinctMetaDadaByNodeIdInOrderByMetaDadaCodiAsc(expedientIds);
+		List<DadaEntity> dades = dadaRepository.findByNodeIdInOrderByNodeIdAscMetaDadaCodiAsc(expedientIds);
+		int numColumnes = 5 + metaDades.size();
+		String[] columnes = new String[numColumnes];
+		columnes[0] = messageHelper.getMessage("expedient.service.exportacio.numero");
+		columnes[1] = messageHelper.getMessage("expedient.service.exportacio.titol");
+		columnes[2] = messageHelper.getMessage("expedient.service.exportacio.estat");
+		columnes[3] = messageHelper.getMessage("expedient.service.exportacio.datcre");
+		columnes[4] = messageHelper.getMessage("expedient.service.exportacio.idnti");
+		for (int i = 0; i < metaDades.size(); i++) {
+			MetaDadaEntity metaDada = metaDades.get(i);
+			columnes[5 + i] = metaDada.getNom() + " (" + metaDada.getCodi() + ")";
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		List<String[]> files = new ArrayList<String[]>();
+		int dadesIndex = 0;
+		for (ExpedientEntity expedient: expedients) {
+			String[] fila = new String[numColumnes];
+			fila[0] = expedient.getNumero();
+			fila[1] = expedient.getNom();
+			fila[2] = expedient.getEstat().name();
+			fila[3] = sdf.format(expedient.getCreatedDate().toDate());
+			fila[4] = expedient.getNtiIdentificador();
+			if (!dades.isEmpty()) {
+				DadaEntity dadaActual = dades.get(dadesIndex);
+				if (dadaActual.getNode().getId().equals(expedient.getId())) {
+					for (int i = 0; i < metaDades.size(); i++) {
+						MetaDadaEntity metaDada = metaDades.get(i);
+						int dadesIndexIncrement = 1;
+						while (dadaActual.getNode().getId().equals(expedient.getId())) {
+							if (dadaActual.getMetaDada().getCodi().equals(metaDada.getCodi())) {
+								break;
+							}
+							dadaActual = dades.get(dadesIndex + dadesIndexIncrement++);
+						}
+						if (dadaActual.getMetaDada().getCodi().equals(metaDada.getCodi())) {
+							fila[5 + i] = dadaActual.getValor();
+						}
+					}
+				}
+			}
+			files.add(fila);
+		}
+		FitxerDto fitxer = new FitxerDto();
+		if ("ODS".equalsIgnoreCase(format)) {
+			Object[][] filesArray = files.toArray(new Object[files.size()][numColumnes]);
+			TableModel model = new DefaultTableModel(filesArray, columnes);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			SpreadSheet.createEmpty(model).getPackage().save(baos);
+			fitxer.setNom("exportacio.ods");
+			fitxer.setContentType("application/vnd.oasis.opendocument.spreadsheet");
+			fitxer.setContingut(baos.toByteArray());
+		} else if ("CSV".equalsIgnoreCase(format)) {
+			fitxer.setNom("exportacio.csv");
+			fitxer.setContentType("text/csv");
+			StringBuilder sb = new StringBuilder();
+			csvHelper.afegirLinia(sb, columnes, ';');
+			for (String[] fila: files) {
+				csvHelper.afegirLinia(sb, fila, ';');
+			}
+			fitxer.setContingut(sb.toString().getBytes());
+		} else {
+			throw new ValidationException("Format de fitxer no suportat: " + format);
+		}
+		return fitxer;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ExpedientServiceImpl.class);

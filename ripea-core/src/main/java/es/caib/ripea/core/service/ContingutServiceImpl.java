@@ -931,12 +931,20 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
-		contingutHelper.comprovarPermisosPathContingut(
-				contingut,
-				true,
-				false,
-				false,
-				true);
+		if (contingut instanceof ExpedientEntity) {
+			contingutHelper.comprovarPermisosContingut(
+					contingut,
+					true,
+					false,
+					false);
+		} else {
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
+					true,
+					false,
+					false,
+					true);
+		}
 		return contingutHelper.toContingutDto(
 				contingut,
 				true,

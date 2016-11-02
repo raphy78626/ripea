@@ -3,9 +3,7 @@
  */
 package es.caib.ripea.plugin.caib.unitat;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -72,7 +70,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					}
 				}
 			}
-			serialitzar(unitats);
 			return unitats;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
@@ -221,19 +218,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 	private String getServiceCercaUrl() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.unitats.cerca.dir3.service.url");
-	}
-
-	private void serialitzar(Object obj) {
-		try {
-			FileOutputStream fileOut = new FileOutputStream(
-					"/home/LIMIT_CECOMASA.LOCAL/josepg/unitats.ser");
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(obj);
-			out.close();
-			fileOut.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 	}
 
 	private UnitatOrganitzativa toUnitatOrganitzativa(UnidadTF unidad) {

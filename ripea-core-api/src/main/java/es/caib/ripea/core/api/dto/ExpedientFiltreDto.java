@@ -21,9 +21,7 @@ public class ExpedientFiltreDto implements Serializable {
 	private String nom;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
-	/** Formació de la cadena sequencia/any */
 	private String numero;
-	/** Tipus d'expedient */
 	private ExpedientEstatEnumDto estat;
 	private Date dataTancatInici;
 	private Date dataTancatFi;

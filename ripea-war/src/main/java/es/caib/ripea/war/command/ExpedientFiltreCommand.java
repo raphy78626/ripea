@@ -18,21 +18,13 @@ import es.caib.ripea.war.helper.ConversioTipusHelper;
  */
 public class ExpedientFiltreCommand {
 
-	public enum ExpedientFiltreOpcionsEstatEnum {
-		OBERTS,
-		TANCATS,
-		TOTS
-	};
-
 	private Long arxiuId;
 	private Long metaExpedientId;
 	private String nom;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
-	/** Formació de la cadena sequencia/any */
 	private String numero;
-	/** Tipus d'expedient */
-	private ExpedientFiltreOpcionsEstatEnum estatFiltre;
+	private ExpedientEstatEnumDto estat;
 	private Date dataTancatInici;
 	private Date dataTancatFi;
 
@@ -75,11 +67,11 @@ public class ExpedientFiltreCommand {
 	public void setNumero(String numero) {
 		this.numero = numero;
 	}
-	public ExpedientFiltreOpcionsEstatEnum getEstatFiltre() {
-		return estatFiltre;
+	public ExpedientEstatEnumDto getEstat() {
+		return estat;
 	}
-	public void setEstatFiltre(ExpedientFiltreOpcionsEstatEnum estat) {
-		this.estatFiltre = estat;
+	public void setEstat(ExpedientEstatEnumDto estat) {
+		this.estat = estat;
 	}
 	public Date getDataTancatInici() {
 		return dataTancatInici;
@@ -95,46 +87,15 @@ public class ExpedientFiltreCommand {
 	}
 	
 	public static ExpedientFiltreCommand asCommand(ExpedientFiltreDto dto) {
-		ExpedientFiltreCommand command = ConversioTipusHelper.convertir(
+		return ConversioTipusHelper.convertir(
 				dto,
 				ExpedientFiltreCommand.class);
-		if (dto.getEstat() != null)
-			switch(dto.getEstat()) {
-			case OBERT:
-				command.setEstatFiltre(ExpedientFiltreOpcionsEstatEnum.OBERTS);
-				break;
-			case TANCAT:
-				command.setEstatFiltre(ExpedientFiltreOpcionsEstatEnum.TANCATS);
-				break;
-			default:
-				command.setEstatFiltre(null);
-			}
-		else
-			command.setEstatFiltre(null);
-		return command;
 	}
 	
 	public static ExpedientFiltreDto asDto(ExpedientFiltreCommand command) {
-		ExpedientFiltreDto dto = ConversioTipusHelper.convertir(
+		return ConversioTipusHelper.convertir(
 				command,
 				ExpedientFiltreDto.class);
-		if (command.getEstatFiltre() != null) 
-			switch (command.getEstatFiltre()) {
-			case OBERTS:
-				dto.setEstat(ExpedientEstatEnumDto.OBERT);
-				break;
-			case TANCATS:
-				dto.setEstat(ExpedientEstatEnumDto.TANCAT);
-				break;
-			case TOTS:
-				dto.setEstat(null);
-				break;
-			default:
-				break;
-			}
-		else
-			dto.setEstat(null);
-		return dto;
 	}
 
 	@Override

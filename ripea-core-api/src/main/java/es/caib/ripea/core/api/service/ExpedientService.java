@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.api.service;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -119,12 +122,10 @@ public interface ExpedientService {
 			Long id) throws NotFoundException;
 
 	/**
-	 * Consulta els expedients donat un arxiu.
+	 * Consulta els expedients segons el filtre.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
-	 * @param arxiuId
-	 *            Atribut id de l'arxiu.
 	 * @param filtre
 	 *            Filtre per a la consulta.
 	 * @param paginacioParams
@@ -134,18 +135,16 @@ public interface ExpedientService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public PaginaDto<ExpedientDto> findPaginatAdmin(
+	public PaginaDto<ExpedientDto> findAmbFiltreAdmin(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 
 	/**
-	 * Consulta els expedients donat un arxiu.
+	 * Consulta els expedients segons el filtre.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
-	 * @param arxiuId
-	 *            Atribut id de l'arxiu.
 	 * @param filtre
 	 *            Filtre per a la consulta.
 	 * @param paginacioParams
@@ -155,10 +154,26 @@ public interface ExpedientService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public PaginaDto<ExpedientDto> findPaginatUser(
+	public PaginaDto<ExpedientDto> findAmbFiltreUser(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
+
+	/**
+	 * Consulta la llista d'ids d'expedient segons el filtre.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param filtre
+	 *            Filtre per a la consulta.
+	 * @return La llista amb els ids dels expedients.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<Long> findIdsAmbFiltre(
+			Long entitatId,
+			ExpedientFiltreDto filtre) throws NotFoundException;
 
 	/**
 	 * Posa un expedient a l'escriptori de l'usuari actual.
@@ -327,6 +342,7 @@ public interface ExpedientService {
 	 * especificat.
 	 * 
 	 * @param entitatId 
+	 *            Atribut id de l'entitat.
 	 * @param expedientId
 	 *            Atribut id de l'expedient que es vol consultar.
 	 * @return La llista d'expedients relacionats.
@@ -334,5 +350,28 @@ public interface ExpedientService {
 	public List<ExpedientDto> relacioFindAmbExpedient(
 			Long entitatId, 
 			Long expedientId);
+
+	/**
+	 * Genera un fitxer d'exportació amb la informació dels expedients.
+	 * 
+	 * @param entitatId 
+	 *            Atribut id de l'entitat.
+	 * @param metaExpedientId 
+	 *            Atribut id del meta-expedient.
+	 * @param expedientIds
+	 *            Atribut id dels expedients a exportar.
+	 * @param format
+	 *            Format pel fitxer d'exportació ("ODS" o "CSV").
+	 * @return El fitxer resultant de l'exportació.
+	 * @throws IOException
+	 *             Si ha sorgit algun problema exportant les dades.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	public FitxerDto exportacio(
+			Long entitatId,
+			Long metaExpedientId,
+			Collection<Long> expedientIds,
+			String format) throws IOException, NotFoundException;
 
 }

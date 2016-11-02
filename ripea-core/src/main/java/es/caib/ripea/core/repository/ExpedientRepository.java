@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -66,7 +67,6 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			"    e.esborrat = 0 " +
 			"and e.entitat = :entitat " +
 			"and (:esNullArxiu = true or e.arxiu = :arxiu) " +
-			"and (:esNullArxiusPermesos = true or e.arxiu in (:arxiusPermesos)) " +
 			"and (e.metaNode is null or e.metaNode in (:metaNodesPermesos)) " +
 			"and (:esNullNumero = true or lower(e.sequencia||'/'||e.any) like lower('%'||:numero||'%')) " +
 			"and (:esNullNom = true or lower(e.nom) like lower('%'||:nom||'%')) " +
@@ -76,12 +76,10 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			"and (:esNullTancatInici = true or e.createdDate >= :tancatInici) " +
 			"and (:esNullTancatFi = true or e.createdDate <= :tancatFi) " +
 			"and (:esNullEstat = true or e.estat = :estat)")
-	Page<ExpedientEntity> findByEntitatAndArxiuFiltre(
+	Page<ExpedientEntity> findByEntitatAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullArxiu") boolean esNullArxiu,
 			@Param("arxiu") ArxiuEntity arxiu,
-			@Param("esNullArxiusPermesos") boolean esNullArxiusPermesos,
-			@Param("arxiusPermesos") List<ArxiuEntity> arxiusPermesos,
 			@Param("metaNodesPermesos") List<? extends MetaNodeEntity> metaNodesPermesos,
 			@Param("esNullMetaNode") boolean esNullMetaNode,
 			@Param("metaNode") MetaNodeEntity metaNode,			
@@ -100,5 +98,49 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			@Param("esNullEstat") boolean esNullEstat,
 			@Param("estat") ExpedientEstatEnumDto estat,
 			Pageable pageable);
+
+	@Query(	"select" +
+			"    e.id " +
+			"from" +
+			"    ExpedientEntity e " +
+			"where " +
+			"    e.esborrat = 0 " +
+			"and e.entitat = :entitat " +
+			"and (:esNullArxiu = true or e.arxiu = :arxiu) " +
+			"and (e.metaNode is null or e.metaNode in (:metaNodesPermesos)) " +
+			"and (:esNullNumero = true or lower(e.sequencia||'/'||e.any) like lower('%'||:numero||'%')) " +
+			"and (:esNullNom = true or lower(e.nom) like lower('%'||:nom||'%')) " +
+			"and (:esNullMetaNode = true or e.metaNode = :metaNode) " +
+			"and (:esNullCreacioInici = true or e.createdDate >= :creacioInici) " +
+			"and (:esNullCreacioFi = true or e.createdDate <= :creacioFi) " +
+			"and (:esNullTancatInici = true or e.createdDate >= :tancatInici) " +
+			"and (:esNullTancatFi = true or e.createdDate <= :tancatFi) " +
+			"and (:esNullEstat = true or e.estat = :estat)")
+	List<Long> findIdByEntitatAndFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullArxiu") boolean esNullArxiu,
+			@Param("arxiu") ArxiuEntity arxiu,
+			@Param("metaNodesPermesos") List<? extends MetaNodeEntity> metaNodesPermesos,
+			@Param("esNullMetaNode") boolean esNullMetaNode,
+			@Param("metaNode") MetaNodeEntity metaNode,			
+			@Param("esNullNumero") boolean esNullNumero,
+			@Param("numero") String numero,
+			@Param("esNullNom") boolean esNullNom,
+			@Param("nom") String nom,
+			@Param("esNullCreacioInici") boolean esNullCreacioInici,
+			@Param("creacioInici") Date creacioInici,
+			@Param("esNullCreacioFi") boolean esNullCreacioFi,
+			@Param("creacioFi") Date creacioFi,
+			@Param("esNullTancatInici") boolean esNullTancatInici,
+			@Param("tancatInici") Date tancatInici,
+			@Param("esNullTancatFi") boolean esNullTancatFi,
+			@Param("tancatFi") Date tancatFi,
+			@Param("esNullEstat") boolean esNullEstat,
+			@Param("estat") ExpedientEstatEnumDto estat);
+
+	List<ExpedientEntity> findByEntitatAndAndMetaNodeAndIdInOrderByIdAsc(
+			EntitatEntity entitat,
+			MetaNodeEntity metaNode,
+			Collection<Long> id);
 
 }

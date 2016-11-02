@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.ejb;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -15,8 +17,10 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ExpedientService;
 
 /**
@@ -88,20 +92,28 @@ public class ExpedientServiceBean implements ExpedientService {
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public PaginaDto<ExpedientDto> findPaginatAdmin(
+	public PaginaDto<ExpedientDto> findAmbFiltreAdmin(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		return delegate.findPaginatAdmin(entitatId, filtre, paginacioParams);
+		return delegate.findAmbFiltreAdmin(entitatId, filtre, paginacioParams);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public PaginaDto<ExpedientDto> findPaginatUser(
+	public PaginaDto<ExpedientDto> findAmbFiltreUser(
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		return delegate.findPaginatUser(entitatId, filtre, paginacioParams);
+		return delegate.findAmbFiltreUser(entitatId, filtre, paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<Long> findIdsAmbFiltre(
+			Long entitatId,
+			ExpedientFiltreDto filtre) throws NotFoundException {
+		return delegate.findIdsAmbFiltre(entitatId, filtre);
 	}
 
 	@Override
@@ -205,6 +217,20 @@ public class ExpedientServiceBean implements ExpedientService {
 			Long entitatId, 
 			Long expedientId) {
 		return delegate.relacioFindAmbExpedient(entitatId, expedientId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public FitxerDto exportacio(
+			Long entitatId,
+			Long metaExpedientId,
+			Collection<Long> expedientIds,
+			String format) throws IOException {
+		return delegate.exportacio(
+				entitatId,
+				metaExpedientId,
+				expedientIds,
+				format);
 	}
 
 }

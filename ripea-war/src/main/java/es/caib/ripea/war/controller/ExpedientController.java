@@ -25,18 +25,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ExpedientAcumularCommand;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
-import es.caib.ripea.war.command.ExpedientFiltreCommand.ExpedientFiltreOpcionsEstatEnum;
 import es.caib.ripea.war.command.ExpedientRelacionarCommand;
 import es.caib.ripea.war.command.ExpedientRelacionarCommand.Relacionar;
 import es.caib.ripea.war.command.ExpedientTancarCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.EnumHelper;
 import es.caib.ripea.war.helper.MissatgesHelper;
 
 /**
@@ -155,7 +156,6 @@ public class ExpedientController extends BaseUserController {
 				escriptori);
 		model.addAttribute("expedientId", expedientId);
 		ExpedientFiltreCommand filtre = new ExpedientFiltreCommand();
-		filtre.setEstatFiltre(ExpedientFiltreOpcionsEstatEnum.TOTS);
 		model.addAttribute(filtre);
 		model.addAttribute(
 				"arxius",
@@ -165,6 +165,11 @@ public class ExpedientController extends BaseUserController {
 				"metaExpedients",
 				metaExpedientService.findAmbEntitatPerLectura(
 						entitatActual.getId()));
+		model.addAttribute(
+				"expedientEstatEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						ExpedientEstatEnumDto.class,
+						"expedient.estat.enum."));
 		return "expedientRelacionarForm";
 	}
 	@RequestMapping(value = "/{expedientId}/relacionar", method = RequestMethod.POST)
@@ -188,6 +193,11 @@ public class ExpedientController extends BaseUserController {
 					"contenidorOrigen",
 					escriptori);
 			model.addAttribute(filtre);
+			model.addAttribute(
+					"expedientEstatEnumOptions",
+					EnumHelper.getOptionsForEnum(
+							ExpedientEstatEnumDto.class,
+							"expedient.estat.enum."));
 			return "expedientRelacionarForm";
 		}
 		expedientService.relacioCreate(
@@ -232,7 +242,7 @@ public class ExpedientController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				expedientService.findPaginatUser(
+				expedientService.findAmbFiltreUser(
 						entitatActual.getId(), 
 						ExpedientFiltreCommand.asDto(filtre), 
 						DatatablesHelper.getPaginacioDtoFromRequest(request)));		

@@ -33,7 +33,7 @@ public class AplicacioInterceptor extends HandlerInterceptorAdapter {
 		AplicacioHelper.comprovarVersioActual(request, aplicacioService);
 		request.setAttribute(
 				"requestLocale",
-				RequestContextUtils.getLocale(request));
+				RequestContextUtils.getLocale(request).getLanguage());
 		return true;
 	}
 

@@ -297,7 +297,7 @@ public class ArxiuAdminController extends BaseAdminController {
 		ExpedientFiltreCommand filtreCommand = getFiltreCommand(request, arxiuId);
 		return PaginacioHelper.getPaginaPerDatatables(
 				request,
-				expedientService.findPaginatAdmin(
+				expedientService.findAmbFiltreAdmin(
 						entitatActual.getId(),
 						ExpedientFiltreCommand.asDto(filtreCommand),
 						PaginacioHelper.getPaginacioDtoFromDatatable(

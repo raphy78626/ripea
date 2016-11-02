@@ -7,6 +7,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,9 +32,12 @@ import es.caib.ripea.war.helper.AjaxHelper.AjaxFormResponse;
  */
 public class DatatablesHelper {
 
+	private static final String ATRIBUT_ID = "DT_Id";
 	private static final String ATRIBUT_ROW_ID = "DT_RowId";
 	//private static final String ATRIBUT_ROW_DATA = "DT_RowData";
-	private static final String ATRIBUT_ID = "DT_Id";
+	private static final String ATRIBUT_ROW_SELECTED = "DT_RowSelected";
+
+
 
 	public static PaginacioParamsDto getPaginacioDtoFromRequest(
 			HttpServletRequest request) {
@@ -98,25 +102,34 @@ public class DatatablesHelper {
 	public static <T> DatatablesResponse getDatatableResponse(
 			HttpServletRequest request,
 			PaginaDto<T> pagina) {
-		return getDatatableResponse(request, null, pagina, null);
+		return getDatatableResponse(request, null, pagina, null, null);
 	}
 	public static <T> DatatablesResponse getDatatableResponse(
 			HttpServletRequest request,
 			PaginaDto<T> pagina,
 			String atributId) {
-		return getDatatableResponse(request, null, pagina, atributId);
+		return getDatatableResponse(request, null, pagina, atributId, null);
+	}
+	public static <T> DatatablesResponse getDatatableResponse(
+			HttpServletRequest request,
+			PaginaDto<T> pagina,
+			String atributId,
+			String atributSeleccio) {
+		return getDatatableResponse(request, null, pagina, atributId, atributSeleccio);
 	}
 	public static <T> DatatablesResponse getDatatableResponse(
 			HttpServletRequest request,
 			BindingResult bindingResult,
 			PaginaDto<T> pagina) {
-		return getDatatableResponse(request, bindingResult, pagina, null);
+		return getDatatableResponse(request, bindingResult, pagina, null, null);
 	}
+	@SuppressWarnings("unchecked")
 	public static <T> DatatablesResponse getDatatableResponse(
 			HttpServletRequest request,
 			BindingResult bindingResult,
 			PaginaDto<T> pagina,
-			String atributId) {
+			String atributId,
+			String atributSeleccio) {
 		LOGGER.debug("Generant informació de resposta per datatable (" +
 				"numero=" + pagina.getNumero() + ", " +
 				"tamany=" + pagina.getTamany() + ", " +
@@ -134,8 +147,12 @@ public class DatatablesHelper {
 		response.setRecordsFiltered(pagina.getElementsTotal());
 		response.setRecordsTotal(pagina.getElementsTotal());
 		List<Map<String, Object>> dataMap = new ArrayList<Map<String, Object>>();
+		Collection<? extends Object> seleccio = null;
+		if (atributSeleccio != null) {
+			seleccio = (Collection<? extends Object>)request.getSession().getAttribute(atributSeleccio);
+		}
 		if (pagina.getContingut() != null) {
-			int index = 0;
+			long index = 0;
 			for (T registre: pagina.getContingut()) {
 				List<PropertyDescriptor> descriptors = getBeanPropertyDescriptors(registre);
 				Object[] dadesRegistre = new Object[params.getColumnsData().size()];
@@ -147,13 +164,6 @@ public class DatatablesHelper {
 							propietatNom = propietatNom.substring(0, propietatNom.indexOf("."));
 						}
 						Object valor = getPropietatValor(registre, propietatNom, descriptors);
-						/*if (valor instanceof Enum) {
-							// Tractament de l'enumerat
-							valor = MessageHelper.getInstance().getMessage(
-									"enum." + valor.getClass().getSimpleName() + "." + valor.toString(),
-									null,
-									new RequestContext(request).getLocale());
-						}*/
 						mapRegistre.put(
 								propietatNom,
 								valor);
@@ -166,34 +176,28 @@ public class DatatablesHelper {
 								ex);
 					}
 				}
+				Object valorId = null;
 				if (atributId != null) {
 					try {
-						Object valor = getPropietatValor(registre, atributId, descriptors);
-						mapRegistre.put(
-								ATRIBUT_ROW_ID,
-								"row_" + valor);
-						mapRegistre.put(
-								ATRIBUT_ID,
-								valor);
+						valorId = getPropietatValor(registre, atributId, descriptors);
 					} catch (Exception ex) {
 						LOGGER.error(
 								"No s'ha pogut llegir la propietat de l'objecte (" +
 										"propietatNom=" + atributId + ")",
 								ex);
 					}
-					/*mapRegistre.put(
-							ATRIBUT_ROW_DATA,
-							getRowData(
-									registre,
-									atributId));*/
 				} else {
-					mapRegistre.put(
-							ATRIBUT_ROW_ID,
-							"row_" + index);
-					mapRegistre.put(
-							ATRIBUT_ID,
-							index);
+					valorId = new Long(index);
 				}
+				mapRegistre.put(
+						ATRIBUT_ROW_ID,
+						"row_" + valorId);
+				mapRegistre.put(
+						ATRIBUT_ID,
+						valorId);
+				mapRegistre.put(
+						ATRIBUT_ROW_SELECTED,
+						(seleccio != null && seleccio.contains(valorId)));
 				dataMap.add(mapRegistre);
 				index++;
 			}
@@ -241,7 +245,7 @@ public class DatatablesHelper {
 		dto.setPosteriors(false);
 		dto.setDarrera(true);
 		dto.setContingut(llista);
-		return getDatatableResponse(request, bindingResult, dto, atributId);
+		return getDatatableResponse(request, bindingResult, dto, atributId, null);
 	}
 
 	/*public static <T> DatatablesResponse getDatatableResponse(

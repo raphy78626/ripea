@@ -3,7 +3,7 @@ CREATE TABLE IPA_USUARI
 (
   CODI          VARCHAR2(64)                    NOT NULL,
   INICIALITZAT  NUMBER(1),
-  NIF           VARCHAR2(9)                     NOT NULL,
+  NIF           VARCHAR2(9),
   NOM           VARCHAR2(200),
   EMAIL         VARCHAR2(200),
   VERSION       NUMBER(19)                      NOT NULL

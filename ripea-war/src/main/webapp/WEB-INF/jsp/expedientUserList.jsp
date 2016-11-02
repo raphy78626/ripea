@@ -4,33 +4,70 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<c:set var="idioma"><%=org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage()%></c:set>
-<%
-pageContext.setAttribute(
-		"expedientUsernOpcionsEstatEnumOptions",
-		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.war.command.ExpedientFiltreCommand.ExpedientFiltreOpcionsEstatEnum.class,
-				"expedient.user.opcions.estat.enum."));
-%>
 <html>
 <head>
 	<title><spring:message code="expedient.list.user.titol"/></title>
 	<script src="<c:url value="/webjars/datatables.net/1.10.11/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.11/js/dataTables.bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.11/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+	<link href="<c:url value="/webjars/datatables.net-bs/1.10.11/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+	<script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
+	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
+	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
-	<link href="<c:url value="/css/datepicker.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/bootstrap-datepicker.js"/>"></script>
-	<script src="<c:url value="/js/datepicker-locales/bootstrap-datepicker.${idioma}.js"/>"></script>
-	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
-	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/select2.min.js"/>"></script>
-	<script src="<c:url value="/js/select2-locales/select2_locale_${idioma}.js"/>"></script>
+<style>
+table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
+	background-color: #fcf8e3;
+	color: #666666;
+}
+table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr.selectable > :first-child {
+	cursor: pointer;
+}
+</style>
 <script>
 $(document).ready(function() {
+	$('#taulaDades').on('selectionchange.dataTable', function (e, accio, ids) {
+		$.get(
+				"expedient/" + accio,
+				{ids: ids},
+				function(data) {
+					$("#seleccioCount").html(data);
+				}
+		);
+	});
+	$('#taulaDades').on('draw.dt', function () {
+		$('#seleccioAll').on('click', function() {
+			$.get(
+					"expedient/select",
+					function(data) {
+						$("#seleccioCount").html(data);
+						$('#taulaDades').webutilDatatable('refresh');
+					}
+			);
+			return false;
+		});
+		$('#seleccioNone').on('click', function() {
+			$.get(
+					"expedient/deselect",
+					function(data) {
+						$("#seleccioCount").html(data);
+						$('#taulaDades').webutilDatatable('select-none');
+						$('#taulaDades').webutilDatatable('refresh');
+					}
+			);
+			return false;
+		});
+	});
+	
 });
 </script>
 </head>
@@ -50,7 +87,7 @@ $(document).ready(function() {
 				<rip:inputSelect name="arxiuId" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="expedient.list.user.placeholder.arxiu" inline="true"/>
 			</div>
 			<div class="col-md-2">
-				<rip:inputSelect name="estatFiltre" optionItems="${expedientUsernOpcionsEstatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" placeholderKey="expedient.list.user.placeholder.estat" inline="true"/>
+				<rip:inputSelect name="estat" optionItems="${expedientEstatEnumOptions}" optionValueAttribute="value" emptyOption="true" optionTextKeyAttribute="text" placeholderKey="expedient.list.user.placeholder.estat" inline="true"/>
 			</div>
 		</div>
 		<div class="row">
@@ -79,16 +116,31 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
+	<script id="botonsTemplate" type="text/x-jsrender">
+		<div class="btn-group pull-right">
+			<button type="button" id="seleccioAll"<c:if test="${empty expedientFiltreCommand.metaExpedientId}"> disabled="disabled"</c:if> title="<spring:message code="expedient.list.user.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></a>
+			<button type="button" id="seleccioNone"<c:if test="${empty expedientFiltreCommand.metaExpedientId}"> disabled="disabled"</c:if> title="<spring:message code="expedient.list.user.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></a>
+			<button type="button"<c:if test="${empty expedientFiltreCommand.metaExpedientId}"> disabled="disabled"</c:if> class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    			<span id="seleccioCount" class="badge">${fn:length(seleccio)}</span> <spring:message code="expedient.list.user.exportar"/> <span class="caret"></span>
+  			</button>
+			<ul class="dropdown-menu">
+				<li><a href="expedient/export/ODS"><spring:message code="expedient.list.user.exportar.ODS"/></a></li>
+				<li><a href="expedient/export/CSV"><spring:message code="expedient.list.user.exportar.CSV"/></a></li>
+			</ul>
+		</div>
+	</script>
 	<table id="taulaDades" 
 			data-toggle="datatable" 
 			data-url="<c:url value="/expedient/datatable"/>" 
 			class="table table-bordered table-striped" 
 			data-default-order="7" 
 			data-default-dir="desc"
+			data-botons-template="#botonsTemplate"
+			data-selection-enabled="true"
 			style="width:100%">
 		<thead>
 			<tr>
-				<th data-col-name="id" data-visible="false">Id</th>
+				<th data-col-name="id" data-visible="false"></th>
 				<th data-col-name="codiPropietariEscriptoriPare" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
 				<th data-col-name="numero"><spring:message code="expedient.list.user.columna.numero"/></th>

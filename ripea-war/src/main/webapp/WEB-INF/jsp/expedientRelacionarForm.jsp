@@ -4,14 +4,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
-<%
-pageContext.setAttribute(
-		"expedientUsernOpcionsEstatEnumOptions",
-		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.war.command.ExpedientFiltreCommand.ExpedientFiltreOpcionsEstatEnum.class,
-				"expedient.user.opcions.estat.enum."));
-%>
 <c:set var="idioma"><%=org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage()%></c:set>
 <c:set var="titol"><spring:message code="contingut.expedient.relacionar.form.titol"/></c:set>
 <html>
@@ -66,7 +58,7 @@ pageContext.setAttribute(
 					<rip:inputSelect name="arxiuId" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="expedient.list.user.placeholder.arxiu" inline="true"/>
 				</div>
 				<div class="col-sm-2">
-					<rip:inputSelect name="estatFiltre" optionItems="${expedientUsernOpcionsEstatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" placeholderKey="expedient.list.user.placeholder.estat" inline="true"/>
+					<rip:inputSelect name="estat" optionItems="${expedientEstatEnumOptions}" optionValueAttribute="value" emptyOption="true" optionTextKeyAttribute="text" placeholderKey="expedient.list.user.placeholder.estat" inline="true"/>
 				</div>
 			</div>
 			<div class="row">

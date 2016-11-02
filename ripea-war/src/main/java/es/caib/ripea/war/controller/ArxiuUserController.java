@@ -125,7 +125,7 @@ public class ArxiuUserController extends BaseUserController {
 		ExpedientFiltreCommand filtreCommand = getFiltreCommand(request, arxiuId);
 		return PaginacioHelper.getPaginaPerDatatables(
 				request,
-				expedientService.findPaginatUser(
+				expedientService.findAmbFiltreUser(
 						entitatActual.getId(),
 						ExpedientFiltreCommand.asDto(filtreCommand),
 						PaginacioHelper.getPaginacioDtoFromDatatable(

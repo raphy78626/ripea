@@ -25,6 +25,7 @@
 		var $element = $(element), element = element;
 		var $taula = $element;
 		var plugin = this;
+		var taulaInicialitzant;
 		plugin.settings = {}
 		plugin.serverParams = [];
 		plugin.init = function() {
@@ -116,8 +117,12 @@
 								'data-href',
 								$(plugin.settings.rowhrefTemplate).render(data));
 					}
+					if (data['DT_RowSelected']) {
+						$taula.dataTable().api().row(row).select();
+					}
 				},
 				preDrawCallback: function(settings_) {
+					taulaInicialitzant = true;
 					if (plugin.settings.botonsTemplate && plugin.settings.botonsTemplate.length > 0) {
 						$.templates("templateNew", $(plugin.settings.botonsTemplate).html());
 						var targetBotons = $('.botons', this.parent());
@@ -265,6 +270,8 @@
 					if ($taulaBuida.length > 0) {
 						$taulaBuida.attr('colspan', $('thead tr:first', $taula).children().length);
 					}
+					triggerSelectionChangeFunction();
+					taulaInicialitzant = false;
 				}
 			}
 			// Configuració de les columnes
@@ -402,7 +409,7 @@
 						info: false
 					}
 				}, dataTableOptions);
-				var triggerSelectionChangeFunction = function () {
+				var triggerSelectionChangeFunction = function (accio, ids) {
 					var api = $taula.dataTable().api();
 					var numRows = api.data().length;
 					var selectedRowsData = api.rows({
@@ -418,16 +425,15 @@
 					} else {
 						$cell.empty().append('<span class="fa fa-check-square-o"></span>');
 					}
-					var ids = [];
-					for (var d = 0; d < selectedRowsData.length; d++) {
-						ids.push(selectedRowsData[d]['DT_Id']);
+					if (!taulaInicialitzant) {
+						$taula.trigger(
+								'selectionchange.dataTable',
+								[accio, ids]);
 					}
-					$taula.trigger(
-							'selectionchange.dataTable',
-							[ids]);
 				};
 				$taula.on('select.dt', function (e, dt, type, indexes) {
 					if (indexes) {
+						ids = [];
 						for (var i = 0; i < indexes.length; i++) {
 							var $row = $taula.dataTable().api()[type](indexes[i]).nodes().to$();
 							var $cell = $('td:first', $row);
@@ -435,12 +441,15 @@
 							$('span', $cell).click(function() {
 								$(this).parent().trigger('click');
 							});
+							var rowData = $taula.dataTable().api()[type](indexes[i]).data();
+							ids.push(rowData['DT_Id']);
 						}
-						triggerSelectionChangeFunction();
+						triggerSelectionChangeFunction('select', ids);
 					}
 				});
 				$taula.on('deselect.dt', function (e, dt, type, indexes) {
 					if (indexes) {
+						ids = [];
 						for (var i = 0; i < indexes.length; i++) {
 							var $row = $taula.dataTable().api()[type](indexes[i]).nodes().to$();
 							var $cell = $('td:first', $row);
@@ -448,8 +457,10 @@
 							$('span', $cell).click(function() {
 								$(this).parent().trigger('click');
 							});
+							var rowData = $taula.dataTable().api()[type](indexes[i]).data();
+							ids.push(rowData['DT_Id']);
 						}
-						triggerSelectionChangeFunction();
+						triggerSelectionChangeFunction('deselect', ids);
 					}
 				});
 			}

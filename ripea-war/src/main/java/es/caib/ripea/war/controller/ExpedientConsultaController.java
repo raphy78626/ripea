@@ -3,11 +3,15 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +21,24 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
-import es.caib.ripea.war.command.ExpedientFiltreCommand.ExpedientFiltreOpcionsEstatEnum;
 import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.EnumHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
@@ -43,6 +51,8 @@ import es.caib.ripea.war.helper.RequestSessionHelper;
 public class ExpedientConsultaController extends BaseUserController {
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ExpedientUserController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_SELECCIO = "ExpedientUserController.session.seleccio";
+	private static final String SESSION_ATTRIBUTE_METAEXP_ID = "ExpedientUserController.session.metaExpedient.id";
 
 	@Autowired
 	private ArxiuService arxiuService;
@@ -68,21 +78,17 @@ public class ExpedientConsultaController extends BaseUserController {
 				"arxius",
 				arxiuService.findPermesosPerUsuari(
 						entitatActual.getId()));
+		model.addAttribute(
+				"seleccio",
+				RequestSessionHelper.obtenirObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_SELECCIO));
+		model.addAttribute(
+				"expedientEstatEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						ExpedientEstatEnumDto.class,
+						"expedient.estat.enum."));
 		return "expedientUserList";
-	}
-
-	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesResponse datatable(
-			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ExpedientFiltreCommand filtreCommand = getFiltreCommand(request);
-		return DatatablesHelper.getDatatableResponse(
-				request,
-				expedientService.findPaginatUser(
-						entitatActual.getId(), 
-						ExpedientFiltreCommand.asDto(filtreCommand), 
-						DatatablesHelper.getPaginacioDtoFromRequest(request)));		
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -97,15 +103,134 @@ public class ExpedientConsultaController extends BaseUserController {
 			RequestSessionHelper.esborrarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE);
+			RequestSessionHelper.esborrarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO);
 		} else {
 			if (!bindingResult.hasErrors()) {
 				RequestSessionHelper.actualitzarObjecteSessio(
 						request,
 						SESSION_ATTRIBUTE_FILTRE,
 						filtreCommand);
+				Long metaExpedientId = (Long)RequestSessionHelper.obtenirObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_METAEXP_ID);
+				if (metaExpedientId == null || !metaExpedientId.equals(filtreCommand.getMetaExpedientId())) {
+					RequestSessionHelper.esborrarObjecteSessio(
+							request,
+							SESSION_ATTRIBUTE_SELECCIO);
+					RequestSessionHelper.actualitzarObjecteSessio(
+							request,
+							SESSION_ATTRIBUTE_METAEXP_ID,
+							filtreCommand.getMetaExpedientId());
+				}
 			}
-		}		
+		}
 		return "redirect:expedient";
+	}
+
+	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse datatable(
+			HttpServletRequest request) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		ExpedientFiltreCommand filtreCommand = getFiltreCommand(request);
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				expedientService.findAmbFiltreUser(
+						entitatActual.getId(),
+						ExpedientFiltreCommand.asDto(filtreCommand),
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id",
+				SESSION_ATTRIBUTE_SELECCIO);
+	}
+
+	@RequestMapping(value = "/select", method = RequestMethod.GET)
+	@ResponseBody
+	public int select(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.add(id);
+			}
+		} else {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			ExpedientFiltreCommand filtreCommand = getFiltreCommand(request);
+			seleccio.addAll(
+					expedientService.findIdsAmbFiltre(
+							entitatActual.getId(),
+							ExpedientFiltreCommand.asDto(filtreCommand)));
+		}
+		return seleccio.size();
+	}
+	@RequestMapping(value = "/deselect", method = RequestMethod.GET)
+	@ResponseBody
+	public int deselect(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.remove(id);
+			}
+		} else {
+			seleccio.clear();
+		}
+		return seleccio.size();
+	}
+
+	@RequestMapping(value = "/export/{format}", method = RequestMethod.GET)
+	public String export(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable String format) throws IOException {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		ExpedientFiltreCommand command = getFiltreCommand(request);
+		if (seleccio == null || seleccio.isEmpty() || command == null) {
+			MissatgesHelper.error(
+					request, 
+					getMessage(
+							request, 
+							"expedient.controller.exportacio.seleccio.buida"));
+			return "redirect:../../expedient";
+		} else {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			FitxerDto fitxer = expedientService.exportacio(
+					entitatActual.getId(),
+					command.getMetaExpedientId(),
+					seleccio,
+					format);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+			return null;
+		}
 	}
 
 	@InitBinder
@@ -126,7 +251,6 @@ public class ExpedientConsultaController extends BaseUserController {
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
 			filtreCommand = new ExpedientFiltreCommand();
-			filtreCommand.setEstatFiltre(ExpedientFiltreOpcionsEstatEnum.OBERTS);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,

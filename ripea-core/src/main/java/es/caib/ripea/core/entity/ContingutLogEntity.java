@@ -12,7 +12,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.domain.Persistable;
@@ -56,8 +55,6 @@ public class ContingutLogEntity extends RipeaAuditable<Long> {
 	@JoinColumn(name = "pare_id")
 	@ForeignKey(name = "ipa_pare_contlog_fk")
 	protected ContingutLogEntity pare;
-	@Version
-	private long version = 0;
 
 
 

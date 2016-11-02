@@ -46,22 +46,23 @@ public class PaginacioHelper {
 		return new PageRequest(
 				dto.getPaginaNum(),
 				dto.getPaginaTamany(),
-				toSpringDataSort(dto, mapeigPropietatsOrdenacio));
+				toSpringDataSort(dto.getOrdres(), mapeigPropietatsOrdenacio));
 	}
 	public <T> Pageable toSpringDataPageable(
 			PaginacioParamsDto dto) {
 		return toSpringDataPageable(dto, null);
 	}
+
 	public <T> Sort toSpringDataSort(
 			PaginacioParamsDto dto) {
-		return toSpringDataSort(dto, null);
+		return toSpringDataSort(dto.getOrdres(), null);
 	}
 	public Sort toSpringDataSort(
-			PaginacioParamsDto dto,
+			List<OrdreDto> ordres,
 			Map<String, String[]> mapeigPropietatsOrdenacio) {
 		List<Order> orders = new ArrayList<Order>();
-		if (dto.getOrdres() != null) {
-			for (OrdreDto ordre: dto.getOrdres()) {
+		if (ordres != null) {
+			for (OrdreDto ordre: ordres) {
 				Direction direccio = OrdreDireccioDto.DESCENDENT.equals(ordre.getDireccio()) ? Sort.Direction.DESC : Sort.Direction.ASC;
 				if (mapeigPropietatsOrdenacio != null) {
 					String[] mapeig = mapeigPropietatsOrdenacio.get(ordre.getCamp());
