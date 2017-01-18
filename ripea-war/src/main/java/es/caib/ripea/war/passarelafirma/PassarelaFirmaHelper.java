@@ -153,13 +153,13 @@ public class PassarelaFirmaHelper {
 		String urlToPluginWebPage;
 		urlToPluginWebPage = signaturePlugin.signDocuments(
 				request,
-				getRequestPluginBasePath(
+				getRequestPluginBaseUrl(
 						getAbsoluteControllerBase(
 								request,
 								PassarelaFirmaHelper.CONTEXTWEB),
 						signaturesSetId,
 						-1),
-				getRequestPluginBasePath(
+				getRequestPluginBaseUrl(
 						getRelativeControllerBase(
 								request,
 								PassarelaFirmaHelper.CONTEXTWEB),
@@ -188,13 +188,13 @@ public class PassarelaFirmaHelper {
 			String msg = "plugin.signatureweb.noexist: " + String.valueOf(pluginId);
 			throw new Exception(msg);
 		}
-		String absoluteRequestPluginBasePath = getRequestPluginBasePath(
+		String absoluteRequestPluginBasePath = getRequestPluginBaseUrl(
 				getAbsoluteControllerBase(
 						request,
 						PassarelaFirmaHelper.CONTEXTWEB),
 				signaturesSetId,
 				signatureIndex);
-		String relativeRequestPluginBasePath = getRequestPluginBasePath(
+		String relativeRequestPluginBasePath = getRequestPluginBaseUrl(
 				getRelativeControllerBase(
 						request,
 						PassarelaFirmaHelper.CONTEXTWEB),
@@ -490,7 +490,7 @@ public class PassarelaFirmaHelper {
 		return null;
 	}
 
-	private String getRequestPluginBasePath(
+	private String getRequestPluginBaseUrl(
 			String base,
 			String signaturesSetId,
 			int signatureIndex) {
@@ -505,11 +505,24 @@ public class PassarelaFirmaHelper {
 	private String getAbsoluteControllerBase(
 			HttpServletRequest request,
 			String webContext) {
-		return	request.getScheme() + "://" +
-				request.getServerName() + ":" +
-				request.getServerPort() +
-				request.getContextPath() +
-				webContext;
+		String baseUrl = getBaseUrlProperty();
+		if (baseUrl != null && !baseUrl.isEmpty()) {
+			if (baseUrl.endsWith("/")) {
+				return baseUrl.substring(0, baseUrl.length() - 1) + webContext;
+			} else {
+				return baseUrl + webContext;
+			}
+		} else {
+			return	request.getScheme() + "://" +
+					request.getServerName() + ":" +
+					request.getServerPort() +
+					request.getContextPath() +
+					webContext;
+		}
+	}
+
+	private String getBaseUrlProperty() {
+		return aplicacioService.propertyGet("es.caib.ripea.base.url");
 	}
 
 	private static Logger log = LoggerFactory.getLogger(PassarelaFirmaHelper.class);
