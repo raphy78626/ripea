@@ -83,13 +83,26 @@ public class PropertiesHelper extends Properties {
 
 	public Map<String, String> findByPrefix(String prefix) {
 		Map<String, String> properties = new HashMap<String, String>();
-		for (Object key: this.keySet()) {
-			if (key instanceof String) {
-				String keystr = (String)key;
-				if (keystr.startsWith(prefix)) {
-					properties.put(
-							keystr,
-							getProperty(keystr));
+		if (llegirSystem) {
+			for (Object key: System.getProperties().keySet()) {
+				if (key instanceof String) {
+					String keystr = (String)key;
+					if (keystr.startsWith(prefix)) {
+						properties.put(
+								keystr,
+								System.getProperty(keystr));
+					}
+				}
+			}
+		} else {
+			for (Object key: this.keySet()) {
+				if (key instanceof String) {
+					String keystr = (String)key;
+					if (keystr.startsWith(prefix)) {
+						properties.put(
+								keystr,
+								getProperty(keystr));
+					}
 				}
 			}
 		}

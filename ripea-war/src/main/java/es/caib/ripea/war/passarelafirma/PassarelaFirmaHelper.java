@@ -412,9 +412,13 @@ public class PassarelaFirmaHelper {
 			for (String id: ids) {
 				String base = PROPERTIES_BASE + id + ".";
 				String nom = aplicacioService.propertyGet(base + "nom");
-				log.debug("Plugin a carregar NOM[" + base + "nom" + "]: " + nom);
 				String classe = aplicacioService.propertyGet(base + "class");
 				String descripcioCurta = aplicacioService.propertyGet(base + "desc");
+				log.debug("Configurant plugin a partir de les propietats (" +
+						"propertiesBase=" + base + ", " +
+						"class=" + classe + ", " +
+						"nom=" + nom + ", " +
+						"descripcioCurta=" + descripcioCurta + ")");
 				Map<String, String> pluginProperties = aplicacioService.propertyFindByPrefix(base);
 				Properties pluginPropertiesProcessat = new Properties();
 				for (String property: pluginProperties.keySet()) {
@@ -424,13 +428,14 @@ public class PassarelaFirmaHelper {
 						pluginPropertiesProcessat.put(
 								PROPERTIES_BASE + nomFinal,
 								value);
+						log.debug(
+								"Afegint propietat al plugin (" +
+								"pluginNom=" + nom + ", " +
+								"propertyOriginal=" + property + ", " +
+								"propertyProcessat=" + (PROPERTIES_BASE + nomFinal) + ", " +
+								"valor=" + value + ")");
 					}
 				}
-				log.debug(" -------------  PLUGIN " + id + "------------------");
-				log.debug("nom: " + nom);
-				log.debug("descripcioCurta: " + descripcioCurta);
-				log.debug("classe: " + classe);
-				log.debug("properties: " + pluginPropertiesProcessat);
 				plugins.add(
 						new PassarelaFirmaPlugin(
 								new Long(id),
