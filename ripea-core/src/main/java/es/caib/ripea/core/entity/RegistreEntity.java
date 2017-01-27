@@ -49,7 +49,7 @@ import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends ContingutEntity {
 
-	private static final int ERROR_MAX_LENGTH = 1024;
+	private static final int ERROR_MAX_LENGTH = 1000;
 
 	@Column(name = "tipus", length = 1, nullable = false)
 	private String registreTipus;
