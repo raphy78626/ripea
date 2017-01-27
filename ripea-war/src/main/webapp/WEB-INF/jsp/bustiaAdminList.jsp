@@ -65,14 +65,14 @@ function changedCallback(e, data) {
 								<div class="dropdown">
 									<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 									<ul class="dropdown-menu">
-										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
-										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/default" data-rdt-link-ajax="true"><span class="fa fa-check-square-o"></span>&nbsp;&nbsp;<spring:message code="bustia.list.accio.per.defecte"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/default" data-toggle="ajax"><span class="fa fa-check-square-o"></span>&nbsp;&nbsp;<spring:message code="bustia.list.accio.per.defecte"/></a></li>
 										{{if !activa}}
-										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/enable" data-rdt-link-ajax="true"><span class="fa fa-check"></span>&nbsp;&nbsp;<spring:message code="comu.boto.activar"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/enable" data-toggle="ajax"><span class="fa fa-check"></span>&nbsp;&nbsp;<spring:message code="comu.boto.activar"/></a></li>
 										{{else}}
-										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/disable" data-rdt-link-ajax="true"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/disable" data-toggle="ajax"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
 										{{/if}}
-										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="bustia.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="bustia.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 									</ul>
 								</div>
 							</script>

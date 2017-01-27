@@ -4,7 +4,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<c:set var="idioma"><%=org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage()%></c:set>
 <c:choose>
 	<c:when test="${empty reglaCommand.id}"><c:set var="titol"><spring:message code="regla.form.titol.crear"/></c:set></c:when>
 	<c:otherwise><c:set var="titol"><spring:message code="regla.form.titol.modificar"/></c:set></c:otherwise>
@@ -15,7 +14,8 @@
 	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
-	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${idioma}.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<rip:modalHead/>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -26,9 +26,9 @@ $(document).ready(function() {
 		$('div#camps_tipus_BUSTIA').css('display', 'none');
 		$('div#camps_tipus_BACKOFFICE').css('display', 'none');
 		$('div#camps_tipus_' + $(this).val()).css('display', '');
-		if ($(this).val().indexOf("EXP_") == 0)
+		if ($(this).val().indexOf("EXP_") == 0) {
 			$('div#camps_tipus_EXP_COMU').css('display', '');
-		
+		}
 	});
 	$('#tipus').trigger('change');
 });

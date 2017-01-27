@@ -16,7 +16,10 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 </head>
 <body>
-	<table id="meta-documents" data-toggle="datatable" data-url="<c:url value="/metaDocument/datatable"/>" data-search-enabled="false" data-default-order="2" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-striped table-bordered" style="width:100%">
+	<div class="text-right" data-toggle="botons-titol">
+		<a class="btn btn-default" href="metaDocument/new" data-toggle="modal" data-datatable-id="metadocuments"><span class="fa fa-plus"></span>&nbsp;<spring:message code="metadocument.list.boto.nou"/></a>
+	</div>
+	<table id="metadocuments" data-toggle="datatable" data-url="<c:url value="/metaDocument/datatable"/>" data-info-type="search" data-default-order="2" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false" width="4%">#</th>
@@ -63,7 +66,4 @@
 			</tr>
 		</thead>
 	</table>
-	<script id="botonsTemplate" type="text/x-jsrender">
-		<p style="text-align:right"><a class="btn btn-default" href="metaDocument/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="metadocument.list.boto.nou"/></a></p>
-	</script>
 </body>

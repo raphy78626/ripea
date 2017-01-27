@@ -3,7 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-
 <html>
 <head>
 	<title><spring:message code="regla.list.titol"/></title>
@@ -15,45 +14,25 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
-<style>
-a.drag-handle {
-	padding: 6px 4px;
-	margin-right: 4px;
-	cursor: move;
-	cursor: -webkit-grabbing;
-}
-</style>
 <script type="text/javascript">
 $(document).ready(function() {
-	$('#regles').on('draw.dt', function () {
-		Sortable.create(
-				$('#regles tbody')[0], {
-					handle: ".drag-handle",
-					onUpdate: function (event) {
-						var item = event.item;
-						var reglaId = item.id.substring("row_".length);
-						$.get(
-								"ajax/regla/" + reglaId + "/move/" + $(item).index(),
-								function() {
-									$('#regles').webutilDatatable('refresh');
-								});
-				    }
-				});
+	$('#regles').on('dragupdate.dataTable', function (event, itemId, index) {
+		$.ajax({
+			url: "ajax/regla/" + itemId + "/move/" + index,
+			async: false
+		});
 	});
 });
 </script>
 </head>
 <body>
 	<div class="text-right" data-toggle="botons-titol">
-		<a class="btn btn-default" href="regla/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a>
+		<a class="btn btn-default" href="regla/new" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a>
 	</div>
-	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-info-type="search" data-default-order="0" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-striped table-bordered" style="width:100%">
+	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-drag-enabled="true" data-info-type="search" data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%">
 		<thead>
 			<tr>
 				<th data-col-name="ordre" data-visible="false"></th>
-				<th data-col-name="ordre" data-template="#cellOrdreTemplate" data-orderable="false" width="1%">
-					<script id="cellOrdreTemplate" type="text/x-jsrender"><a class="btn btn-default drag-handle">::</a></script>
-				</th>
 				<th data-col-name="nom" data-orderable="false"><spring:message code="regla.list.columna.nom"/></th>
 				<th data-col-name="tipus" data-orderable="false" data-renderer="enum(ReglaTipusEnumDto)">
 					<spring:message code="regla.list.columna.tipus"/>
@@ -87,7 +66,4 @@ $(document).ready(function() {
 			</tr>
 		</thead>
 	</table>
-	<script id="botonsTemplate" type="text/x-jsrender">
-		<p style="text-align:right"><a class="btn btn-default" href="regla/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a></p>
-	</script>
 </body>

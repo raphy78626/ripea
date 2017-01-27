@@ -49,6 +49,8 @@ public class PassarelaFirmaController {
 			if (pluginsFiltered.size() == 1) {
 				PassarelaFirmaPlugin modul = pluginsFiltered.get(0);
 				long pluginID = modul.getPluginId();
+				log.debug("Seleccionant automàticament plugin de firma (" +
+						"signaturesSetId = " + signaturesSetId + ")");
 				return "redirect:" +
 						PassarelaFirmaHelper.CONTEXTWEB + "/showsignaturemodule/" +
 						pluginID + "/" + signaturesSetId;
@@ -68,27 +70,35 @@ public class PassarelaFirmaController {
 				sss.setErrorException(null);
 				sss.setStatus(StatusSignaturesSet.STATUS_FINAL_ERROR);
 			}
+			log.debug("Cap plugin de firma disponible (" +
+					"signaturesSetId = " + signaturesSetId + ")");
 			return "redirect:" + pfss.getUrlFinal();
 		}
 		model.addAttribute("signaturesSetId", signaturesSetId);
 		model.addAttribute("plugins", pluginsFiltered);
+		log.debug("Pantalla de selecció del plugin de firma (" +
+				"signaturesSetId = " + signaturesSetId + ")");
 		return "passarelaFirmaSeleccio";
 	}
 
-	@RequestMapping(value = "/showsignaturemodule/{pluginId}/{signaturesSetID}")
+	@RequestMapping(value = "/showsignaturemodule/{pluginId}/{signaturesSetId}")
 	public RedirectView showSignatureModule(
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable("pluginId") Long pluginId,
-			@PathVariable("signaturesSetID") String signaturesSetID) throws Exception {
+			@PathVariable("signaturesSetId") String signaturesSetId) throws Exception {
 		PassarelaFirmaConfig pfss = passarelaFirmaHelper.getSignaturesSet(
 				request,
-				signaturesSetID);
+				signaturesSetId);
 		pfss.setPluginId(pluginId);
-		String urlToPluginWebPage = passarelaFirmaHelper.signDocuments(
+		String pluginUrl = passarelaFirmaHelper.getPluginUrl(
 				request,
-				signaturesSetID);
-		return new RedirectView(urlToPluginWebPage, false);
+				signaturesSetId);
+		log.debug("Mostrant mòdul de signatura (" +
+				"pluginId = " + pluginId + ", " +
+				"signaturesSetId = " + signaturesSetId + ", " +
+				"pluginUrl = " + pluginUrl + ")");
+		return new RedirectView(pluginUrl, false);
 	}
 
 	private static final String REQUEST_PLUGIN_MAPPING = "/requestPlugin/{signaturesSetId}/{signatureIndex}/**";
@@ -106,6 +116,10 @@ public class PassarelaFirmaController {
 						PassarelaFirmaHelper.CONTEXTWEB + REQUEST_PLUGIN_MAPPING,
 						"/"));
 		String query = servletPath.substring(indexBarra + 1);
+		log.debug("Gestió de la petició al plugin (" +
+				"signaturesSetId = " + signaturesSetId + ", " +
+				"signatureIndex = " + signatureIndex + ", " +
+				"requestUri = " + request.getRequestURI() + ")");
 		passarelaFirmaHelper.requestPlugin(
 				request,
 				response,
@@ -122,6 +136,8 @@ public class PassarelaFirmaController {
 		PassarelaFirmaConfig pss = passarelaFirmaHelper.finalitzarProcesDeFirma(
 				request,
 				signaturesSetId);
+		log.debug("Final del procés de firma (" +
+				"signaturesSetId = " + signaturesSetId + ")");
 		return "redirect:" + pss.getUrlFinalRipea() + "?signaturesSetId=" + signaturesSetId;
 	}
 

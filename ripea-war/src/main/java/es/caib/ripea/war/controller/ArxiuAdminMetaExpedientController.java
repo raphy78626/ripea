@@ -24,13 +24,11 @@ import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ArxiuMetaExpedientCommand;
 import es.caib.ripea.war.command.ArxiuMetaExpedientCommand.Create;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 
 /**
- * Controlador per al manteniment de meta-expedients de l'entitat
- * actual per a l'usuari administrador.
- * Permet associar meta-expedients a un arxiu
+ * Controlador per al manteniment de meta-expedients permesos a un arxiu.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -58,19 +56,18 @@ public class ArxiuAdminMetaExpedientController extends BaseAdminController {
 	}
 	@RequestMapping(value = "/{arxiuId}/metaExpedient/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<MetaExpedientDto> datatable(
+	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			@PathVariable Long arxiuId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<MetaExpedientDto> metaExpedients = metaExpedientService.findAmbArxiu(
-				entitatActual.getId(),
-				arxiuId);
-		return PaginacioHelper.getPaginaPerDatatables(
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				metaExpedients);
-
-	
+				metaExpedientService.findAmbArxiu(
+						entitatActual.getId(),
+						arxiuId),
+				"id");
+		return dtr;
 	}
 
 	@RequestMapping(value = "/{arxiuId}/metaExpedient/new", method = RequestMethod.GET)

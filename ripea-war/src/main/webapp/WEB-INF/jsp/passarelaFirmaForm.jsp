@@ -4,19 +4,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
-<c:set var="titol"><spring:message code="passarelafirma.form.titol"/></c:set>
 <html>
 <head>
-	<title>${titol}</title>
+	<title><spring:message code="passarelafirma.form.titol"/></title>
+	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<rip:modalHead/>
-	<link href="<c:url value="/css/datepicker.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/bootstrap-datepicker.js"/>"></script>
-	<script src="<c:url value="/js/datepicker-locales/bootstrap-datepicker.${idioma}.js"/>"></script>
-	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
-	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/select2.min.js"/>"></script>
-	<script src="<c:url value="/js/select2-locales/select2_locale_${idioma}.js"/>"></script>
 </head>
 <body>
 	<c:if test="${documentVersio.arxiuNom != documentVersio.portafirmesConversioArxiuNom}">

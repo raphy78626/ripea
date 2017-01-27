@@ -6,7 +6,6 @@
 			adjustHeight: true,
 			maximized: false,
 			refreshMissatges: true,
-			reloadPage: false,
 			refreshDatatable: false,
 			elementBotons: "#modal-botons",
 			elementForm: "#modal-form",
@@ -55,19 +54,19 @@
 								'					<h4 class="modal-title"></h4>' +
 								'				</div>' +
 								'				<div class="modal-body" style="padding:0">' +
-								'					<iframe frameborder="0" height="10" width="100%"></iframe>' +
+								'					<iframe frameborder="0" height="100" width="100%"></iframe>' +
 								'				</div>' +
+								'				<div class="modal-footer"></div>' +
 								'			</div>' +
 								'		</div>' +
 								'	</div>' +
-								'</div>');
+								'</div>');						
 							elementPerEvaluar.data("modal-id", modalDivId);
 							$('#' + modalDivId).webutilModalShow({
 								adjustHeight: plugin.settings.adjustHeight,
 								maximized: plugin.settings.maximized,
 								refreshMissatges: plugin.settings.refreshMissatges,
 								refreshDatatable: plugin.settings.refreshDatatable,
-								reloadPage: plugin.settings.reloadPage,
 								elementBotons: plugin.settings.elementBotons,
 								elementForm: plugin.settings.elementForm,
 								elementTancarData: plugin.settings.elementTancarData,
@@ -80,7 +79,6 @@
 								maximized: plugin.settings.maximized,
 								refreshMissatges: plugin.settings.refreshMissatges,
 								refreshDatatable: plugin.settings.refreshDatatable,
-								reloadPage: plugin.settings.reloadPage,
 								elementBotons: plugin.settings.elementBotons,
 								elementForm: plugin.settings.elementForm,
 								elementTancarData: plugin.settings.elementTancarData,
@@ -123,13 +121,12 @@
 						// Copiar el titol de la modal
 						var titol = $(this).contents().find("title").html();
 						$('.modal-header h4', $(this).parent().parent()).html(titol);
-						// Afegir padding-top al body
-						$('body', $(iframe).contents()).css('padding-top', '12px');
 						// Copiar botons
+						$('.modal-footer', $(iframe).parent().parent()).empty();
 						var dataBotons = $('body', $(iframe).contents()).data('modal-botons');
 						var modalBotons = (dataBotons) ? $(dataBotons, $(iframe).contents()) : $(settings.elementBotons, $(iframe).contents());
 						if (modalBotons.length) {
-							$('.modal-body', $(iframe).parent().parent()).after('<div class="modal-footer"></div>');
+							$('.modal-footer *', $(this).parent().parent()).remove();
 							$('.btn', modalBotons).each(function(index) {
 								var element = $(this);
 								var clon = element.clone();
@@ -141,24 +138,13 @@
 									});
 								} else {
 									clon.on('click', function () {
-										if ($(this).prop("tagName") == 'A') {
-											$(iframe).attr('src', $(this).attr('href'));
-										} else {
-											element.click();
-										}
+										element.click();
 										return false;
 									});
 								}
 								$('.modal-footer', $(iframe).parent().parent()).append(clon);
 							});
 							modalBotons.hide();
-						}
-						// Ajustar alçada per canvi de pipella
-						var $pipelles = $('.nav-tabs', $(iframe).contents());
-						if ($pipelles.length) {
-							$('a[data-toggle="tab"]', $(iframe).contents()).on('click', function (e) {
-								webutilModalAdjustHeight($(iframe));
-							});
 						}
 						// Evaluar URL del formulari
 						var dataForm = $('body', $(iframe).contents()).data('modal-form');
@@ -179,45 +165,26 @@
 							$(iframe).height(maxBodyHeight + 'px');
 							$('.modal-body', modalobj).css('height', maxBodyHeight + 'px');
 							$(iframe).contents().find("body").css('height', maxBodyHeight + 'px');
-						} else if (settings.adjustHeight) {
-							var modalobj = $(iframe).parent().parent().parent();
-							var taraModal = $('.modal-header', modalobj).outerHeight() + $('.modal-footer', modalobj).outerHeight();
-							var maxBodyHeight = $(window.top).height() - taraModal - 62;
-							var height = $(this).contents().find("html").height();
-							if (height > maxBodyHeight) {
-								$(iframe).height(maxBodyHeight + 'px');
-								$('.modal-body', modalobj).css('height', maxBodyHeight + 'px');
-								$(iframe).contents().find("body").css('height', maxBodyHeight + 'px');
-							} else {
-								$(iframe).parent().css('height', height + 'px');
-								$(iframe).css('min-height', height + 'px');
-								$(iframe).closest('div.modal-body').height(height + 'px');
-							}
 						}
+						webutilModalAdjustHeight(iframe);
 					});
 				});
 				iframe.on('load', function () {
-					$('.modal-footer', modalobj).remove();
 					var pathname = this.contentDocument.location.pathname;
 					if (pathname == webutilModalTancarPath()) {
-						if (settings.reloadPage) {
-							modalobj.on('hide.bs.modal', function() {
-								window.location.reload(true);
-							});
-						} else {
-							if (settings.refreshMissatges) {
-								webutilRefreshMissatges();
-							}
-							if (settings.refreshDatatable) {
-								$('#' + settings.dataTableId).webutilDatatable('refresh');
-							}
-						}
 						$('button.close', $(this).closest('.modal-dialog')).trigger('click');
+						if (settings.refreshMissatges) {
+							webutilRefreshMissatges();
+						}
+						if (settings.refreshDatatable) {
+							$('#' + settings.dataTableId).webutilDatatable('refresh');
+						}
 					}
 				});
 				modalobj.data('modal-configurada', true);
 			}
 			$('.modal-body iframe *', modalobj).remove();
+			$('.modal-footer *', modalobj).remove();
 			modalobj.modal('show');
 		});
 	};

@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import javax.validation.Validator;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.fundaciobit.plugins.signature.api.FileInfoSignature;
 import org.fundaciobit.plugins.signature.api.StatusSignature;
 import org.fundaciobit.plugins.signature.api.StatusSignaturesSet;
@@ -126,20 +127,6 @@ public class DocumentController extends BaseUserController {
 				"document.controller.portafirmes.upload.ok");
 	}
 
-	@RequestMapping(value = "/{documentId}/firma/info", method = RequestMethod.GET)
-	public String portafirmesInfo(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"portafirmes",
-				documentService.portafirmesInfo(
-						entitatActual.getId(),
-						documentId));
-		return "portafirmesInfo";
-	}
-
 	@RequestMapping(value = "/{documentId}/portafirmes/reintentar", method = RequestMethod.GET)
 	public String portafirmesReintentar(
 			HttpServletRequest request,
@@ -165,6 +152,20 @@ public class DocumentController extends BaseUserController {
 				request,
 				"redirect:../../../contingut/" + documentId,
 				"document.controller.portafirmes.cancel.ok");
+	}
+
+	@RequestMapping(value = "/{documentId}/portafirmes/info", method = RequestMethod.GET)
+	public String portafirmesInfo(
+			HttpServletRequest request,
+			@PathVariable Long documentId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		model.addAttribute(
+				"portafirmes",
+				documentService.portafirmesInfo(
+						entitatActual.getId(),
+						documentId));
+		return "portafirmesInfo";
 	}
 
 	@RequestMapping(value = "/{documentId}/custodia/reintentar", method = RequestMethod.GET)
@@ -195,6 +196,18 @@ public class DocumentController extends BaseUserController {
 				request,
 				"redirect:../../../../../../../contingut/" + documentId,
 				"document.controller.custodia.esborrar.ok");
+	}
+
+	@RequestMapping(value = "/{documentId}/custodia/info", method = RequestMethod.GET)
+	public String custodiaInfo(
+			HttpServletRequest request,
+			@PathVariable Long documentId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		DocumentDto document = documentService.findById(
+				entitatActual.getId(),
+				documentId);
+		return "redirect:" + document.getCustodiaUrl();
 	}
 
 	@RequestMapping(value = "/{documentId}/pdf", method = RequestMethod.GET)
@@ -426,10 +439,27 @@ public class DocumentController extends BaseUserController {
 		passarelaFirmaHelper.closeSignaturesSet(
 				request,
 				signaturesSet);
-		return getModalControllerReturnValueSuccess(
-				request, 
-				"redirect:/contingut/" + documentId,
-				null);
+		boolean ignorarModal = false;
+		String ignorarModalIdsProperty = aplicacioService.propertyGet("es.caib.ripea.plugin.passarelafirma.ignorar.modal.ids");
+		if (ignorarModalIdsProperty != null && !ignorarModalIdsProperty.isEmpty()) {
+			String[] ignorarModalIds = ignorarModalIdsProperty.split(",");
+			for (String ignorarModalId: ignorarModalIds) {
+				if (StringUtils.isNumeric(ignorarModalId)) {
+					if (new Long(ignorarModalId).longValue() == signaturesSet.getPluginId().longValue()) {
+						ignorarModal = true;
+						break;
+					}
+				}
+			}
+		}
+		if (ignorarModal) {
+			return "redirect:/contingut/" + documentId;
+		} else {
+			return getModalControllerReturnValueSuccess(
+					request, 
+					"redirect:/contingut/" + documentId,
+					null);
+		}
 	}
 
 	@InitBinder

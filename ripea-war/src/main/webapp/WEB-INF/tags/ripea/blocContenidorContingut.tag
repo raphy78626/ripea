@@ -27,13 +27,16 @@
 								<c:choose>
 									<c:when test="${fill.expedient}"><span class="fa fa-briefcase fa-2x"></span></c:when>
 									<c:when test="${fill.carpeta}"><rip:blocIconaCarpeta carpeta="${fill}" petita="${false}"/></c:when>
-									<c:when test="${fill.document}"><span class="fa fa-file fa-2x"></span></c:when>
+									<c:when test="${fill.document}">
+										<span class="fa fa-file fa-2x"></span>
+									</c:when>
 								</c:choose>
 							</div>
 							<div class="caption">
 								<p class="text-center">
 									<c:if test="${fill.node and not fill.valid}"><span class="fa fa-exclamation-triangle text-warning"></span></c:if>
 									${fill.nom}
+									<c:if test="${fill.document && fill.estat == 'CUSTODIAT'}"><span class="fa fa-check text-success"></span></c:if>
 								</p>
 								<rip:blocContenidorAccions id="accions-fill-${fill.id}" className="botons-accions-element" modeLlistat="false" contingut="${fill}"/>
 							</div>

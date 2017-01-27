@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -75,7 +76,14 @@ public class AjaxUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable String enumClass) throws ClassNotFoundException {
 		Class<?> enumeracio = Class.forName("es.caib.ripea.core.api.dto." + enumClass);
-		String textKeyPrefix = "regla.tipus.enum.";
+		StringBuilder textKeyPrefix = new StringBuilder();
+		String[] textKeys = StringUtils.splitByCharacterTypeCamelCase(enumClass);
+		for (String textKey: textKeys) {
+			if (!"dto".equalsIgnoreCase(textKey)) {
+				textKeyPrefix.append(textKey.toLowerCase());
+				textKeyPrefix.append(".");
+			}
+		}
 		List<HtmlOption> resposta = new ArrayList<HtmlOption>();
 		if (enumeracio.isEnum()) {
 			for (Object e: enumeracio.getEnumConstants()) {
@@ -83,7 +91,7 @@ public class AjaxUserController extends BaseUserController {
 						((Enum<?>)e).name(),
 						getMessage(
 								request,
-								textKeyPrefix + ((Enum<?>)e).name(),
+								textKeyPrefix.toString() + ((Enum<?>)e).name(),
 								null)));
 			}
 		}

@@ -4,12 +4,13 @@
 	$.webutilDatatable = function(element, options) {
 		var defaults = {
 			pageLength: 10,
-			lengthMenu: [10, 50, 100],
+			lengthMenu: [10, 20, 50],
 			infoEnabled: true,
 			infoType: 'botons', // 'botons', 'search'
 			searchEnabled: true,
 			pagingEnabled: true,
 			selectionEnabled: false,
+			dragEnabled: false,
 			pagingStyle: 'page', // 'page', 'scroll'
 			scrollBuffer: 9,
 			scrollOverflow: 'fixed', // 'fixed', 'adaptMax', 'adapt'
@@ -25,12 +26,19 @@
 		var $element = $(element), element = element;
 		var $taula = $element;
 		var plugin = this;
-		var taulaInicialitzant;
 		plugin.settings = {}
 		plugin.serverParams = [];
 		plugin.init = function() {
 			plugin.settings = $.extend(defaults, $element.data(), options);
 			// Inicialització de les options per a crear la datatable
+			if (plugin.settings.dragEnabled) {
+				$('thead tr,tfoot tr', $taula).each(function() {
+					$(this).prepend($('<th width="1">&nbsp;</th>'));
+				});
+				$('tbody tr', $taula).each(function() {
+					$(this).prepend($('<td></td>'));
+				});
+			}
 			if (plugin.settings.selectionEnabled) {
 				$('thead tr,tfoot tr', $taula).each(function() {
 					$(this).prepend($('<th>&nbsp;</th>'));
@@ -54,7 +62,7 @@
 			}
 			if (plugin.settings.rowInfo) {
 				$('thead tr,tfoot tr', $taula).each(function() {
-					$(this).append($('<th>&nbsp;</th>'));
+					$(this).append($('<th width="1">&nbsp;</th>'));
 				});
 				$('tbody tr', $taula).each(function() {
 					$(this).append($('<td></td>'));
@@ -86,12 +94,8 @@
 						if (plugin.settings.filtre) {
 							data = $.extend(
 									data,
-									JSON.stringify($(plugin.settings.filtre).serializeArray()));
-							var valors = $(plugin.settings.filtre).serializeArray();
-							for (i=0; i<valors.length; i++) {
-								data[valors[i].name] = valors[i].value;
-							}
-						}						
+									$(plugin.settings.filtre).serializeObject());
+						}
 					}
 				},
 				rowCallback: function(row, data) {
@@ -102,6 +106,15 @@
 						$('span', $cell).click(function() {
 							$(this).parent().trigger('click');
 						});
+					}
+					if (plugin.settings.dragEnabled) {
+						var $cell;
+						if (plugin.settings.selectionEnabled) {
+							$cell = $('td:eq(1)', row);
+						} else {
+							$cell = $('td:first', row);
+						}
+						$cell.empty().append('<a class="btn btn-default drag-handle" style="padding: 6px 4px;margin-right: 4px;cursor: move;cursor: -webkit-grabbing;">::</a>');
 					}
 					if (plugin.settings.editable) {
 						var deleteUrl = getBaseUrl() + '/' + data['DT_Id'] + '/delete';
@@ -117,12 +130,8 @@
 								'data-href',
 								$(plugin.settings.rowhrefTemplate).render(data));
 					}
-					if (data['DT_RowSelected']) {
-						$taula.dataTable().api().row(row).select();
-					}
 				},
 				preDrawCallback: function(settings_) {
-					taulaInicialitzant = true;
 					if (plugin.settings.botonsTemplate && plugin.settings.botonsTemplate.length > 0) {
 						$.templates("templateNew", $(plugin.settings.botonsTemplate).html());
 						var targetBotons = $('.botons', this.parent());
@@ -255,23 +264,6 @@
 							return false;
 						});
 					}
-					if (plugin.settings.agrupar) {
-						var api = this.api();
-						var rows = api.rows( {page:'current'} ).nodes();
-						var last = null;
-						api.column(plugin.settings.agrupar, {page:'current'} ).data().each(function (group, i) {
-							if (last !== group) {
-								$(rows).eq(i).before('<tr class="group" style="background-color:#e6e6e6"><td colspan="' + $(rows).eq(i).closest('tr').children().length + '"><strong>' + group + '</strong></td></tr>');
-								last = group;
-							}
-						} );
-					}
-					$taulaBuida = $('td.dataTables_empty', $taula);
-					if ($taulaBuida.length > 0) {
-						$taulaBuida.attr('colspan', $('thead tr:first', $taula).children().length);
-					}
-					triggerSelectionChangeFunction();
-					taulaInicialitzant = false;
 				}
 			}
 			// Configuració de les columnes
@@ -281,10 +273,18 @@
 				if (typeof plugin.settings.defaultOrder != 'undefined' && plugin.settings.selectionEnabled) {
 					defaultOrder++;
 				}
+				if (typeof plugin.settings.defaultOrder != 'undefined' && plugin.settings.dragEnabled) {
+					defaultOrder++;
+				}
 				var defaultDir = plugin.settings.defaultDir;
 				dataTableOptions['ordering'] = plugin.settings.ordering;
 				$('thead th', $taula).each(function(index) {
 					if (plugin.settings.selectionEnabled && index == 0) {
+						columns.push({
+							data: '<null>',
+							orderable: false,
+							visible: true});
+					} if ((!plugin.settings.selectionEnabled && plugin.settings.dragEnabled && index == 0) || (plugin.settings.selectionEnabled && plugin.settings.dragEnabled && index == 1)) {
 						columns.push({
 							data: '<null>',
 							orderable: false,
@@ -344,14 +344,27 @@
 					$('tbody', $taula).append('<tr class="datatable-dades-carregant"><td colspan="8"><div><span class="fa fa-circle-o-notch fa-spin fa-3x"></span></div></td></tr>');
 				}
 				if (processing) {
-					$('tbody tr', $taula).not(".datatable-dades-carregant").each(function() {
-						$(this).remove();
-					});
 					$('tbody .datatable-dades-carregant', $taula).show();
 				} else {
 					$('tbody .datatable-dades-carregant', $taula).hide();
 				}
 			});
+			if (plugin.settings.dragEnabled) {
+				$taula.on('draw.dt', function () {
+					Sortable.create(
+							$('tbody', $taula)[0], {
+								handle: ".drag-handle",
+								onUpdate: function (event) {
+									var item = event.item;
+									var itemId = item.id.substring("row_".length);
+									$taula.trigger(
+											'dragupdate.dataTable',
+											[itemId, $(item).index()]);
+									$taula.dataTable().fnDraw();
+						    }
+						});
+				});
+			}
 			// Configuració de la paginació
 			if (plugin.settings.pagingEnabled) {
 				if (plugin.settings.pagingStyle == 'page') {
@@ -409,7 +422,7 @@
 						info: false
 					}
 				}, dataTableOptions);
-				var triggerSelectionChangeFunction = function (accio, ids) {
+				var triggerSelectionChangeFunction = function () {
 					var api = $taula.dataTable().api();
 					var numRows = api.data().length;
 					var selectedRowsData = api.rows({
@@ -425,15 +438,16 @@
 					} else {
 						$cell.empty().append('<span class="fa fa-check-square-o"></span>');
 					}
-					if (!taulaInicialitzant) {
-						$taula.trigger(
-								'selectionchange.dataTable',
-								[accio, ids]);
+					var ids = [];
+					for (var d = 0; d < selectedRowsData.length; d++) {
+						ids.push(selectedRowsData[d]['DT_Id']);
 					}
+					$taula.trigger(
+							'selectionchange.dataTable',
+							[ids]);
 				};
 				$taula.on('select.dt', function (e, dt, type, indexes) {
 					if (indexes) {
-						ids = [];
 						for (var i = 0; i < indexes.length; i++) {
 							var $row = $taula.dataTable().api()[type](indexes[i]).nodes().to$();
 							var $cell = $('td:first', $row);
@@ -441,15 +455,12 @@
 							$('span', $cell).click(function() {
 								$(this).parent().trigger('click');
 							});
-							var rowData = $taula.dataTable().api()[type](indexes[i]).data();
-							ids.push(rowData['DT_Id']);
 						}
-						triggerSelectionChangeFunction('select', ids);
+						triggerSelectionChangeFunction();
 					}
 				});
 				$taula.on('deselect.dt', function (e, dt, type, indexes) {
 					if (indexes) {
-						ids = [];
 						for (var i = 0; i < indexes.length; i++) {
 							var $row = $taula.dataTable().api()[type](indexes[i]).nodes().to$();
 							var $cell = $('td:first', $row);
@@ -457,10 +468,8 @@
 							$('span', $cell).click(function() {
 								$(this).parent().trigger('click');
 							});
-							var rowData = $taula.dataTable().api()[type](indexes[i]).data();
-							ids.push(rowData['DT_Id']);
 						}
-						triggerSelectionChangeFunction('deselect', ids);
+						triggerSelectionChangeFunction();
 					}
 				});
 			}
@@ -477,8 +486,6 @@
 					clickedButton = $(this);
 				});
 				filterForm.on('submit', function(event) {
-					if ($(clickedButton).val() === 'netejar')
-						$(this).webutilNetejarInputs();
 					var formData = $(this).serialize() + "&" + $(clickedButton).attr('name') + "=" + $(clickedButton).val();
 					$.ajax({
 						type: $(this).attr('method'),
@@ -488,6 +495,8 @@
 							$taula.DataTable().ajax.reload();
 						}
 					});
+					if ($(clickedButton).val() === 'netejar')
+						$(this).webutilNetejarInputs();
 					return false;
 				});
 			}
@@ -608,6 +617,9 @@
 		plugin.selection = function(ids) {
 			// TODO
 		}
+		plugin.changeUrl = function(url) {
+			$taula.dataTable().api().ajax.url(url).load();
+		}
 		// Mètodes privats
 		var headerTrFunction = function() {
 			return $('thead:first tr', $taula.closest('.dataTables_wrapper'));
@@ -692,7 +704,7 @@
 						renderHtml =  'enum(' + enumClass + ', ' + data + ')';
 						if (!renderEnums[enumClass]) {
 							$.ajax({
-								url: webutilContextPath() + '/userajax/enum/' + enumClass,
+								url: webutilAjaxEnumPath(enumClass),
 								async: false,
 								success: function(resposta) {
 									renderEnums[enumClass] = resposta;
@@ -977,7 +989,7 @@
             	if ('refresh' === options) {
             		$(this).data(pluginName).refresh(param1);
             	} else if ('refresh-url' === options) {
-            		$(this).data(pluginName).refreshUrl(param1);
+            		$(this).data(pluginName).changeUrl(param1);
             	} else if ('select-none' === options) {
             		$(this).data(pluginName).selectNone();
             	} else if ('select-all' === options) {

@@ -138,20 +138,19 @@ public class PassarelaFirmaHelper {
 		return pluginsFiltered;
 	}
 
-	public String signDocuments(
+	public String getPluginUrl(
 			HttpServletRequest request,
 			String signaturesSetId) throws Exception {
 		PassarelaFirmaConfig signaturesSet = getSignaturesSet(request, signaturesSetId);
 		Long pluginId = signaturesSet.getPluginId();
 		// El plugin existeix?
-		ISignatureWebPlugin signaturePlugin;
-		signaturePlugin = getInstanceByPluginId(pluginId);
+		ISignatureWebPlugin signaturePlugin = getInstanceByPluginId(pluginId);
 		if (signaturePlugin == null) {
 			String msg = "plugin.signatureweb.noexist: " + String.valueOf(pluginId);
 			throw new Exception(msg);
 		}
-		String urlToPluginWebPage;
-		urlToPluginWebPage = signaturePlugin.signDocuments(
+		String pluginUrl;
+		pluginUrl = signaturePlugin.signDocuments(
 				request,
 				getRequestPluginBaseUrl(
 						getAbsoluteControllerBase(
@@ -166,7 +165,7 @@ public class PassarelaFirmaHelper {
 						signaturesSetId,
 						-1),
 				signaturesSet);
-		return urlToPluginWebPage;
+		return pluginUrl;
 	}
 
 	public void requestPlugin(
@@ -481,6 +480,7 @@ public class PassarelaFirmaHelper {
 			return pluginsCache.get(pluginId);
 		}
 	}
+
 	private PassarelaFirmaPlugin getPluginById(long pluginId) {
 		for (PassarelaFirmaPlugin plugin: getAllPluginsFromProperties()) {
 			if (plugin.getPluginId() == pluginId) {

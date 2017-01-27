@@ -16,7 +16,6 @@
 	<script src="<c:url value="/js/select2-locales/select2_locale_${idioma}.js"/>"></script>
 </head>
 <body>
-
 	<c:set var="formAction"><rip:modalUrl value="/arxiuAdmin/${arxiuExpedientAgafarCommand.arxiuId}/expedient/${arxiuExpedientAgafarCommand.expedientId}/agafar"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="arxiuExpedientAgafarCommand" role="form">
 		<form:hidden path="arxiuId"/>
@@ -29,6 +28,5 @@
 			<a href="<c:url value="/arxiuAdmin/${arxiu.id}/expedient"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
-
 </body>
 </html>

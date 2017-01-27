@@ -27,10 +27,8 @@ import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.war.command.MetaDocumentCommand;
 import es.caib.ripea.war.command.MetaNodeMetaDadaCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.PaginacioHelper;
 
 /**
  * Controlador per al manteniment de meta-documents.
@@ -213,7 +211,7 @@ public class MetaDocumentController extends BaseAdminController {
 	}
 	@RequestMapping(value = "/{metaDocumentId}/metaDada/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<MetaNodeMetaDadaDto> metaDadaDatatable(
+	public DatatablesResponse metaDadaDatatable(
 			HttpServletRequest request,
 			@PathVariable Long metaDocumentId,
 			Model model) {
@@ -221,9 +219,11 @@ public class MetaDocumentController extends BaseAdminController {
 		MetaDocumentDto metaDocument = metaDocumentService.findById(
 				entitatActual.getId(),
 				metaDocumentId);
-		return PaginacioHelper.getPaginaPerDatatables(
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				metaDocument.getMetaDades());
+				metaDocument.getMetaDades(),
+				"id");
+		return dtr;
 	}
 
 	@RequestMapping(value = "/{metaDocumentId}/metaDada/new", method = RequestMethod.GET)

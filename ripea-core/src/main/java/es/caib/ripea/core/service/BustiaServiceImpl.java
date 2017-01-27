@@ -384,10 +384,12 @@ public class BustiaServiceImpl implements BustiaService {
 				true,
 				false);
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatCodiAndPareNotNull(entitat, unitatCodi);
-		return toBustiaDto(
+		List<BustiaDto> resposta = toBustiaDto(
 				busties,
 				true,
 				false);
+		omplirPermisosPerBusties(resposta, true);
+		return resposta;
 	}
 
 	@Override

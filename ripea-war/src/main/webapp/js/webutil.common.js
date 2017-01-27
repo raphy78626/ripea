@@ -5,34 +5,28 @@ function webutilContextPath() {
 function webutilModalTancarPath() {
 	return webutilContextPath() + '/modal/tancar';
 }
+function webutilAjaxEnumPath(enumClass) {
+	return webutilContextPath() + '/userajax/enum/' + enumClass;
+}
 function webutilRefreshMissatges() {
 	$('#contingut-missatges').load(webutilContextPath() + "/nodeco/missatges");
 }
 
 function webutilModalAdjustHeight(iframe) {
-	setTimeout(function() {
-		var $iframe;
-		if (!iframe) {
-			if ($(window.frameElement).length) {
-				$iframe = $(window.frameElement);
-			}
-		} else {
-			$iframe = $(iframe);
-		}
-		if ($iframe) {
-			var modalobj = $iframe.parent().parent().parent();
-			var taraModal = $('.modal-header', modalobj).outerHeight() + $('.modal-footer', modalobj).outerHeight();
-			var maxBodyHeight = $(window.top).height() - taraModal - 62;
-			var height = $('html', $iframe[0].contentWindow.document).height();
-			if (height < 200)
-				height = 200;
-			if (height > maxBodyHeight)
-				height = maxBodyHeight;
-			$(iframe).css('height', height + 'px');
-			$iframe.parent().css('height', height + 'px');
-			$iframe.css('min-height', height + 'px');
-		}
-	}, 100);
+	var $iframe = (iframe) ? $(iframe) : $(window.frameElement);
+	var modalobj = $iframe.parent().parent().parent();
+	var taraModal = $('.modal-header', modalobj).outerHeight() + $('.modal-footer', modalobj).outerHeight();
+	var maxBodyHeight = $(window.top).height() - taraModal - 62;
+	var htmlHeight = (iframe) ? $(iframe).contents().find("html").height() : $(document.documentElement).height();
+	if (htmlHeight > maxBodyHeight) {
+		$iframe.height(maxBodyHeight + 'px');
+		$('.modal-body', modalobj).css('height', maxBodyHeight + 'px');
+		$iframe.contents().find("body").css('height', maxBodyHeight + 'px');
+	} else {
+		$iframe.parent().css('height', htmlHeight + 'px');
+		$iframe.css('min-height', htmlHeight + 'px');
+		$iframe.closest('div.modal-body').height(htmlHeight + 'px');
+	}
 }
 
 function webutilUrlAmbPrefix(url, prefix) {
@@ -96,8 +90,12 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		return $contingutClonat;
 	};
 	$.fn.webutilDestroyInputComponents = function() {
+		/*$(this).limitSelect2Destroy();
+		$(this).limitDatepickerDestroy();*/
 	};
 	$.fn.webutilEvalInputComponents = function() {
+		/*$(this).limitSelect2Eval();
+		$(this).limitDatepickerEval();*/
 	};
 
 	$.fn.webutilMostrarErrorsCamps = function(errors) {
@@ -264,16 +262,36 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 	}
 
 	$.fn.webutilInputSelect2 = function() {
+		if ($(this).data('enum')) {
+			var enumValue = $(this).data('enum-value');
+			var $select = $(this);
+			$.ajax({
+				url: webutilAjaxEnumPath($(this).data('enum')),
+				async: false,
+				success: function(resposta) {
+					for (var i = 0; i < resposta.length; i++) {
+						var enumItem = resposta[i];
+						$select.append(
+								$('<option>', {
+									value: enumItem['value'],
+									text: enumItem['text'],
+									selected: enumValue == enumItem['value']
+								}));
+							
+					}
+				}
+			});
+		}
 		$(this).select2({
 		    placeholder: $(this).data('placeholder'),
 		    theme: "bootstrap",
 		    allowClear: $(this).data('placeholder') ? true : false,
 		    minimumResultsForSearch: $(this).data('minimumresults')
 		});
-		$(this).on('select2-open', function() {
+		$(this).on('select2:open', function() {
 			webutilModalAdjustHeight();
 		});
-		$(this).on('select2-close', function() {
+		$(this).on('select2:close', function() {
 			webutilModalAdjustHeight();
 		});
 	}
@@ -298,6 +316,9 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 			webutilModalAdjustHeight();
 		}).on('hide', function() {
 			webutilModalAdjustHeight();
+		});
+		$('.input-group-addon', $('[data-toggle="datepicker"]').parent()).click(function() {
+			$('[data-toggle="datepicker"]', $(this).parent()).datepicker('show');
 		});
 	}
 	$.fn.webutilDatepickerEval = function() {

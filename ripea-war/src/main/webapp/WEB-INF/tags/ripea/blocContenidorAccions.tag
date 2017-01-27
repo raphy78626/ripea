@@ -69,10 +69,18 @@
 					<li><a href="../document/${contingut.id}/portafirmes/upload" data-toggle="modal" data-reload-page="true"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/>...</a></li>
 				</c:if>
 				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPassarelaActiva}">
-					<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal" data-reload-page="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/></a></li>
+					<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal" data-reload-page="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/>...</a></li>
 				</c:if>
 				<c:if test="${contingut.estat != 'REDACCIO'}">
-					<li><a href="../document/${contingut.id}/firma/info" data-toggle="modal" data-reload-page="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.firma.detalls"/></a></li>
+					<c:choose>
+						<c:when test="${contingut.estat != 'CUSTODIAT'}">
+							<li><a href="../document/${contingut.id}/portafirmes/info" data-toggle="modal" data-reload-page="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.firma.portafirmes.info"/></a></li>
+						</c:when>
+						<c:otherwise>
+							<li><a href="../document/${contingut.id}/custodia/info" target="_blank"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.firma.custodia"/>&nbsp;<small><i class="fa fa-external-link"></i></small></a></li>
+						</c:otherwise>
+					</c:choose>
+					
 				</c:if>
 			</c:if>
 			

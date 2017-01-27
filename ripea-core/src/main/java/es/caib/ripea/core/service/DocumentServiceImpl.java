@@ -1106,6 +1106,16 @@ public class DocumentServiceImpl implements DocumentService {
 					null,
 					false,
 					false);
+			// Obté la URL de custòdia
+			String custodiaUrl = pluginHelper.custodiaReservarUrl(document);
+			contingutLogHelper.log(
+					document,
+					LogTipusEnumDto.CUSTODIA_URL,
+					custodiaUrl,
+					null,
+					false,
+					false);
+			// Custodia el document firmat
 			String custodiaDocumentId = pluginHelper.custodiaEnviarDocumentFirmat(
 					document,
 					document.getMetaDocument().getFirmaPassarelaCustodiaTipus(),
@@ -1116,7 +1126,7 @@ public class DocumentServiceImpl implements DocumentService {
 			document.updateInformacioCustodia(
 					new Date(),
 					custodiaDocumentId,
-					document.getCustodiaUrl());
+					custodiaUrl);
 			// Registra al log la custòdia de la firma del document
 			contingutLogHelper.log(
 					document,

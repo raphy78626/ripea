@@ -25,8 +25,8 @@ import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.MetaExpedientArxiuCommand;
 import es.caib.ripea.war.command.MetaExpedientArxiuCommand.Create;
-import es.caib.ripea.war.datatable.DatatablesPagina;
-import es.caib.ripea.war.helper.PaginacioHelper;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 
 /**
  * Controlador per al manteniment d'arxius per a un meta-expedient.
@@ -58,20 +58,20 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 	}
 	@RequestMapping(value = "/{metaExpedientId}/arxiu/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<ArxiuDto> datatable(
+	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			@PathVariable Long metaExpedientId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<ArxiuDto> arxius = arxiuService.findAmbMetaExpedient(
-				entitatActual.getId(),
-				metaExpedientId);
-		return PaginacioHelper.getPaginaPerDatatables(
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				arxius);
+				arxiuService.findAmbMetaExpedient(
+						entitatActual.getId(),
+						metaExpedientId),
+				"id");
+		return dtr;
 	}
 
-	/** Mètode Ajax per obtenir tots els arxius per a un node. */
 	@RequestMapping(value = "/{metaExpedientId}/unitat/{unitatCodi}/arxiu/findAll", method = RequestMethod.GET)
 	@ResponseBody
 	public List<ArxiuDto> findAllArxius(
@@ -90,7 +90,6 @@ public class MetaExpedientArxiuController extends BaseAdminController {
 			return new ArrayList<ArxiuDto>();
 		}
 	}
-
 
 	@RequestMapping(value = "/{metaExpedientId}/arxiu/new", method = RequestMethod.GET)
 	public String getNew(

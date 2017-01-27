@@ -41,8 +41,7 @@ function changedCallback(e, data) {
 			<table id="arxius" data-toggle="datatable" data-url="<c:url value="/arxiuAdmin/unitat/${unitatCodiPerUrl}/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-striped table-bordered" style="width:100%">
 				<thead>
 					<tr>
-						<th data-col-name="id" width="4%" data-visible="false">#</th>
-						<th data-col-name="nom" data-rdt-sorting="desc"><spring:message code="arxiu.list.columna.nom"/></th>
+						<th data-col-name="nom"><spring:message code="arxiu.list.columna.nom"/></th>
 						<th data-col-name="actiu" data-template="#cellActiuTemplate">
 							<spring:message code="arxiu.list.columna.actiu"/>
 							<script id="cellActiuTemplate" type="text/x-jsrender">
@@ -64,13 +63,13 @@ function changedCallback(e, data) {
 								<div class="dropdown">
 									<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 									<ul class="dropdown-menu">
-										<li><a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
 										{{if !actiu}}
-										<li><a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}/enable" data-rdt-link-ajax="true"><span class="fa fa-check"></span>&nbsp;&nbsp;<spring:message code="comu.boto.activar"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}/enable" data-toggle="ajax"><span class="fa fa-check"></span>&nbsp;&nbsp;<spring:message code="comu.boto.activar"/></a></li>
 										{{else}}
-										<li><a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}/disable" data-rdt-link-ajax="true"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}/disable" data-toggle="ajax"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
 										{{/if}}
-										<li><a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="arxiu.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+										<li><a href="${unitatCodiUrlPrefix}arxiuAdmin/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="arxiu.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 									</ul>
 								</div>
 							</script>

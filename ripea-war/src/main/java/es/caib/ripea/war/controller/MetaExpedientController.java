@@ -29,9 +29,9 @@ import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.MetaExpedientCommand;
 import es.caib.ripea.war.command.MetaExpedientMetaDocumentCommand;
 import es.caib.ripea.war.command.MetaNodeMetaDadaCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
+import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.MissatgesHelper;
-import es.caib.ripea.war.helper.PaginacioHelper;
 
 /**
  * Controlador per al manteniment de meta-expedients.
@@ -59,17 +59,17 @@ public class MetaExpedientController extends BaseAdminController {
 	}
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<MetaExpedientDto> datatable(
+	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return PaginacioHelper.getPaginaPerDatatables(
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				metaExpedientService.findByEntitatPaginat(
 						entitatActual.getId(),
-						PaginacioHelper.getPaginacioDtoFromDatatable(
-								request,
-								null)));
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id");
+		return dtr;
 	}
 
 	@RequestMapping(value = "/new", method = RequestMethod.GET)
@@ -200,7 +200,7 @@ public class MetaExpedientController extends BaseAdminController {
 	}
 	@RequestMapping(value = "/{metaExpedientId}/metaDada/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<MetaNodeMetaDadaDto> metaDadaDatatable(
+	public DatatablesResponse metaDadaDatatable(
 			HttpServletRequest request,
 			@PathVariable Long metaExpedientId,
 			Model model) {
@@ -208,9 +208,11 @@ public class MetaExpedientController extends BaseAdminController {
 		MetaExpedientDto metaExpedient = metaExpedientService.findById(
 				entitatActual.getId(),
 				metaExpedientId);
-		return PaginacioHelper.getPaginaPerDatatables(
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				metaExpedient.getMetaDades());
+				metaExpedient.getMetaDades(),
+				"id");
+		return dtr;
 	}
 
 	@RequestMapping(value = "/{metaExpedientId}/metaDada/new", method = RequestMethod.GET)
@@ -343,7 +345,7 @@ public class MetaExpedientController extends BaseAdminController {
 	}
 	@RequestMapping(value = "/{metaExpedientId}/metaDocument/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<MetaExpedientMetaDocumentDto> metaDocumentDatatable(
+	public DatatablesResponse metaDocumentDatatable(
 			HttpServletRequest request,
 			@PathVariable Long metaExpedientId,
 			Model model) {
@@ -351,10 +353,12 @@ public class MetaExpedientController extends BaseAdminController {
 		MetaExpedientDto metaExpedient = metaExpedientService.findById(
 				entitatActual.getId(),
 				metaExpedientId);
-		return PaginacioHelper.getPaginaPerDatatables(
+		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				metaExpedient.getMetaDocuments());
-	}	
+				metaExpedient.getMetaDocuments(),
+				"id");
+		return dtr;
+	}
 
 	@RequestMapping(value = "/{metaExpedientId}/metaDocument/new", method = RequestMethod.GET)
 	public String metaDocumentGetNew(

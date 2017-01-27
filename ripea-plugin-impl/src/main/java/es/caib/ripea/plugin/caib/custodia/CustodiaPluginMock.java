@@ -22,7 +22,7 @@ public class CustodiaPluginMock implements CustodiaPlugin {
 			String documentTipus,
 			String arxiuNom,
 			InputStream arxiuContingut) throws SistemaExternException {
-		throw new SistemaExternException("Això no acaba d'anar be");
+		//throw new SistemaExternException("Això no acaba d'anar be");
 	}
 
 	@Override

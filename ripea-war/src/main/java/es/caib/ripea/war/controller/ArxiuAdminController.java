@@ -84,26 +84,6 @@ public class ArxiuAdminController extends BaseAdminController {
 		return "arxiuAdminList";
 	}
 
-	/*@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesPagina<ArxiuDto> datatable(
-			HttpServletRequest request,
-			@PathVariable String unitatCodi,
-			Model model) {
-		if (!"null".equalsIgnoreCase(unitatCodi)) {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			List<ArxiuDto> arxius = arxiuService.findByUnitatCodiAdmin(
-					entitatActual.getId(),
-					unitatCodi);
-			return PaginacioHelper.getPaginaPerDatatables(
-					request,
-					arxius);
-		} else {
-			return PaginacioHelper.getPaginaPerDatatables(
-					request,
-					new ArrayList<ArxiuDto>());
-		}
-	}*/
 	@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
@@ -141,15 +121,17 @@ public class ArxiuAdminController extends BaseAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ArxiuDto arxiu = null;
-		if (arxiuId != null)
+		if (arxiuId != null) {
 			arxiu = arxiuService.findById(
 					entitatActual.getId(),
 					arxiuId);
+		}
 		ArxiuCommand command = null;
-		if (arxiu != null)
+		if (arxiu != null) {
 			command = ArxiuCommand.asCommand(arxiu);
-		else
+		} else {
 			command = new ArxiuCommand();
+		}
 		model.addAttribute(command);
 		command.setEntitatId(entitatActual.getId());
 		return "arxiuAdminForm";
@@ -170,7 +152,7 @@ public class ArxiuAdminController extends BaseAdminController {
 					ArxiuCommand.asDto(command));
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:arxiuAdmin",
+					"redirect:arxiuAdmin/unitat/" + command.getUnitatCodi(),
 					"arxiu.controller.modificat.ok");
 		} else {
 			arxiuService.create(
@@ -178,7 +160,7 @@ public class ArxiuAdminController extends BaseAdminController {
 					ArxiuCommand.asDto(command));
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:arxiuAdmin",
+					"redirect:arxiuAdmin/unitat/" + command.getUnitatCodi(),
 					"arxiu.controller.creat.ok");
 		}
 	}
