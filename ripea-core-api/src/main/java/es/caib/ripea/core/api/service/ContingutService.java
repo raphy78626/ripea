@@ -5,6 +5,7 @@ package es.caib.ripea.core.api.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -13,7 +14,6 @@ import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
-import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -48,88 +48,22 @@ public interface ContingutService {
 			String nom) throws NotFoundException;
 
 	/**
-	 * Crea una nova dada a dins el node.
+	 * Modifica els valors de les dades d'un node.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contingut.
 	 * @param contingutId
 	 *            Atribut id del contingut del qual es vol consultar el contingut.
-	 * @param metaDadaId
-	 *            Atribut id de la meta-dada a partir del qual es vol crear aquesta dada.
-	 * @param valor
-	 *            Valor de la dada que es vol crear.
-	 * @return La dada creada.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws ValidationException
-	 *             Si es volen afegir al node més dades de les permeses.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public DadaDto dadaCreate(
-			Long entitatId,
-			Long contingutId,
-			Long metaDadaId,
-			Object valor) throws NotFoundException, ValidationException;
-
-	/**
-	 * Modifica una dada a dins el node.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contingut.
-	 * @param contingutId
-	 *            Atribut id del contingut del qual es vol consultar el contingut.
-	 * @param dadaId
-	 *            Atribut id de la meta-dada a partir del qual es vol crear aquesta dada.
-	 * @param valor
-	 *            Valor de la dada que es vol modificar.
-	 * @return La dada modificada.
+	 * @param valors
+	 *            Valors de les dades.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public DadaDto dadaUpdate(
+	public void dadaSave(
 			Long entitatId,
 			Long contingutId,
-			Long dadaId,
-			Object valor) throws NotFoundException;
-
-	/**
-	 * Esborra una dada a dins el node.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contingut.
-	 * @param contingutId
-	 *            Atribut id del contingut del qual es vol consultar el contingut.
-	 * @param dadaId
-	 *            Atribut id de la meta-dada a partir del qual es vol crear aquesta dada.
-	 * @return La dada esborrada.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public DadaDto dadaDelete(
-			Long entitatId,
-			Long contingutId,
-			Long dadaId) throws NotFoundException;
-
-	/**
-	 * Obté una dada de dins el node.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contingut.
-	 * @param contingutId
-	 *            Atribut id del contingut del qual es vol consultar el contingut.
-	 * @param dadaId
-	 *            Atribut id de la meta-dada a partir del qual es vol crear aquesta dada.
-	 * @return La dada esborrada.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public DadaDto dadaFindById(
-			Long entitatId,
-			Long contingutId,
-			Long dadaId) throws NotFoundException;
+			Map<String, Object> valors) throws NotFoundException;
 
 	/**
 	 * Marca un contingut com a esborrat. Posteriorment un administrador

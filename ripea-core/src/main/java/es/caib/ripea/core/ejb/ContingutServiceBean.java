@@ -5,6 +5,7 @@ package es.caib.ripea.core.ejb;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -18,7 +19,6 @@ import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
-import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -55,44 +55,14 @@ public class ContingutServiceBean implements ContingutService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public DadaDto dadaCreate(
+	public void dadaSave(
 			Long entitatId,
 			Long contingutId,
-			Long metaDadaId,
-			Object valor) {
-		return delegate.dadaCreate(
+			Map<String, Object> valors) {
+		delegate.dadaSave(
 				entitatId,
 				contingutId,
-				metaDadaId,
-				valor);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public DadaDto dadaUpdate(
-			Long entitatId,
-			Long contingutId,
-			Long dadaId,
-			Object valor) {
-		return delegate.dadaUpdate(entitatId, contingutId, dadaId, valor);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public DadaDto dadaDelete(
-			Long entitatId,
-			Long contingutId,
-			Long dadaId) {
-		return delegate.dadaDelete(entitatId, contingutId, dadaId);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public DadaDto dadaFindById(
-			Long entitatId,
-			Long contingutId,
-			Long dadaId) {
-		return delegate.dadaFindById(entitatId, contingutId, dadaId);
+				valors);
 	}
 
 	@Override

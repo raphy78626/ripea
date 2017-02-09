@@ -3,11 +3,11 @@
  */
 package es.caib.ripea.core.service;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -24,12 +24,9 @@ import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
-import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
-import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
-import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
@@ -62,6 +59,8 @@ import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
+import es.caib.ripea.core.repository.MetaDadaRepository;
+import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 
@@ -79,6 +78,10 @@ public class ContingutServiceImpl implements ContingutService {
 	private EscriptoriRepository escriptoriRepository;
 	@Resource
 	private ContingutRepository contingutRepository;
+	@Resource
+	private MetaNodeMetaDadaRepository metaNodeMetaDadaRepository;
+	@Resource
+	private MetaDadaRepository metaDadaRepository;
 	@Resource
 	private DadaRepository dadaRepository;
 	@Resource
@@ -176,17 +179,14 @@ public class ContingutServiceImpl implements ContingutService {
 
 	@Transactional
 	@Override
-	@CacheEvict(value = "errorsValidacioNode", key = "#contingutId")
-	public DadaDto dadaCreate(
+	public void dadaSave(
 			Long entitatId,
 			Long contingutId,
-			Long metaDadaId,
-			Object valor) {
-		logger.debug("Creant nova dada ("
-				+ "entitatId=" + entitatId + ", "
-				+ "contingutId=" + contingutId + ", "
-				+ "metaDadaId=" + metaDadaId + ", "
-				+ "valor=" + valor + ")");
+			Map<String, Object> valors) throws NotFoundException {
+		logger.debug("Guardant dades del node (" +
+				"entitatId=" + entitatId + ", " +
+				"contingutId=" + contingutId + ", " +
+				"valors=" + valors + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -196,296 +196,48 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
-		if (contingut instanceof NodeEntity) {
-			// Comprova que el contingut arrel és l'escriptori de l'usuari actual
-			contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
-					entitat,
-					contingut);
-			// Comprova l'accés al path del contingut pare
-			contingutHelper.comprovarPermisosPathContingut(
-					contingut,
-					true,
-					false,
-					false,
-					true);
-			// Comprova el permís de modificació de l'expedient superior
-			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
-					contingut,
-					true,
-					false,
-					false);
-			if (expedientSuperior != null) {
-				contingutHelper.comprovarPermisosContingut(
-						expedientSuperior,
-						false,
-						true,
-						false);
-			}
-			NodeEntity node = (NodeEntity)contingut;
-			MetaDadaEntity metaDada = entityComprovarHelper.comprovarMetaDada(
-					entitat,
-					metaDadaId);
-			List<DadaEntity> dades = dadaRepository.findByNodeAndMetaDada(node, metaDada);
-			boolean global = 
-					(node instanceof ExpedientEntity && metaDada.isGlobalExpedient()) ||
-					(node instanceof DocumentEntity && metaDada.isGlobalDocument());
-			if (!global) {
-				MetaNodeMetaDadaEntity metaNodeMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
-						entitat,
-						node.getMetaNode(),
-						metaDada);
-				// Comprova que no s'afegeixin més dades de les permeses
-				if (dades.size() > 0 && (metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaNodeMetaDada.getMultiplicitat().equals(MultiplicitatEnumDto.M_1))) {
-					throw new ValidationException(
-							contingutId,
-							ContingutEntity.class,
-							"La multiplicitat del meta-node no permet afegir més dades d'aquest tipus (" +
-							"metaNodeId=" + metaNodeMetaDada.getMetaNode().getId() + ", " +
-							"metaNodeCodi=" + metaNodeMetaDada.getMetaNode().getCodi() + ", " +
-							"metaNodeTipus=" + metaNodeMetaDada.getMetaNode().getClass().getName() + ", " +
-							"metaDadaId=" + metaDada.getId() + ", " +
-							"metaDadaCodi=" + metaDada.getCodi() + ", " +
-							"multiplicitat=" + metaNodeMetaDada.getMultiplicitat() + ")");
-				}
-			} else {
-				if (dades.size() > 0 && (metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_0_1) || metaDada.getGlobalMultiplicitat().equals(MultiplicitatEnumDto.M_1))) {
-					throw new ValidationException(
-							contingutId,
-							ContingutEntity.class,
-							"La multiplicitat global no permet afegir més dades d'aquest tipus (" +
-							"metaDadaId=" + metaDada.getId() + ", " +
-							"metaDadaCodi=" + metaDada.getCodi() + ", " +
-							"multiplicitat=" + metaDada.getGlobalMultiplicitat() + ")");
-				}
-			}
-			int ordre = dades.size();
-			DadaEntity dada = DadaEntity.getBuilder(
-					metaDada,
-					node,
-					getDadaValorPerGuardar(
-							metaDada,
-							valor),
-					ordre).build();
-			dadaRepository.save(dada);
-			// Refresca la validesa del node
-			cacheHelper.evictErrorsValidacioPerNode(node);
-			// Registra al log la creació de la dada
-			contingutLogHelper.log(
-					contingut,
-					LogTipusEnumDto.MODIFICACIO,
-					dada,
-					LogObjecteTipusEnumDto.DADA,
-					LogTipusEnumDto.CREACIO,
-					metaDada.getCodi(),
-					dada.getValor(),
-					false,
-					false);
-			return conversioTipusHelper.convertir(
-					dada,
-					DadaDto.class);
-		} else {
-			logger.error("El contingut no és un node (contingutId=" + contingutId + ")");
+		if (!(contingut instanceof NodeEntity)) {
 			throw new ValidationException(
 					contingutId,
 					ContingutEntity.class,
 					"El contingut no és un node");
 		}
-	}
-
-	@Transactional
-	@Override
-	public DadaDto dadaUpdate(
-			Long entitatId,
-			Long contingutId,
-			Long dadaId,
-			Object valor) {
-		logger.debug("Modificant dada ("
-				+ "entitatId=" + entitatId + ", "
-				+ "contingutId=" + contingutId + ", "
-				+ "dadaId=" + dadaId + ", "
-				+ "valor=" + valor + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+		// Comprova que el contingut arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+				entitat,
+				contingut);
+		// Comprova el permis d'escriptura al node
+		NodeEntity node = entityComprovarHelper.comprovarNode(
 				entitat,
 				contingutId,
-				null);
-		if (contingut instanceof NodeEntity) {
-			// Comprova que el contingut arrel és l'escriptori de l'usuari actual
-			contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
-					entitat,
-					contingut);
-			// Comprova l'accés al path del contingut pare
-			contingutHelper.comprovarPermisosPathContingut(
-					contingut,
-					true,
-					false,
-					false,
-					true);
-			// Comprova el permís de modificació de l'expedient superior
-			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
-					contingut,
-					true,
-					false,
-					false);
-			if (expedientSuperior != null) {
-				contingutHelper.comprovarPermisosContingut(
-						expedientSuperior,
-						false,
-						true,
-						false);
-			}
-			NodeEntity node = (NodeEntity)contingut;
-			DadaEntity dada = entityComprovarHelper.comprovarDada(
-					node,
-					dadaId);
-			dada.update(
-					getDadaValorPerGuardar(
-							dada.getMetaDada(),
-							valor));
-			// Registra al log la modificació de la dada
-			contingutLogHelper.log(
-					contingut,
-					LogTipusEnumDto.MODIFICACIO,
-					dada,
-					LogObjecteTipusEnumDto.DADA,
-					LogTipusEnumDto.MODIFICACIO,
-					dada.getMetaDada().getCodi(),
-					dada.getValor(),
-					false,
-					false);
-			return conversioTipusHelper.convertir(
-					dada,
-					DadaDto.class);
-		} else {
-			logger.error("El contingut no és un node (contingutId=" + contingutId + ")");
-			throw new ValidationException(
-					contingutId,
-					ContingutEntity.class,
-					"El contingut no és un node");
-		}
-	}
-
-	@Transactional
-	@Override
-	@CacheEvict(value = "errorsValidacioNode", key = "#contingutId")
-	public DadaDto dadaDelete(
-			Long entitatId,
-			Long contingutId,
-			Long dadaId) {
-		logger.debug("Esborrant la dada ("
-				+ "entitatId=" + entitatId + ", "
-				+ "contingutId=" + contingutId + ", "
-				+ "dadaId=" + dadaId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
 				false,
-				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
-				entitat,
-				contingutId,
-				null);
-		if (contingut instanceof NodeEntity) {
-			// Comprova que el contingut arrel és l'escriptori de l'usuari actual
-			contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
-					entitat,
-					contingut);
-			// Comprova l'accés al path del contingut pare
-			contingutHelper.comprovarPermisosPathContingut(
-					contingut,
-					true,
-					false,
-					false,
-					true);
-			// Comprova el permís de modificació de l'expedient superior
-			ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
-					contingut,
-					true,
-					false,
-					false);
-			if (expedientSuperior != null) {
-				contingutHelper.comprovarPermisosContingut(
-						expedientSuperior,
-						false,
-						true,
-						false);
-			}
-			NodeEntity node = (NodeEntity)contingut;
-			DadaEntity dada = entityComprovarHelper.comprovarDada(
-					node,
-					dadaId);
-			dadaRepository.delete(dada);
-			// Refresca la validesa del node
-			cacheHelper.evictErrorsValidacioPerNode(node);
-			// Registra al log la eliminació de la dada
-			contingutLogHelper.log(
-					contingut,
-					LogTipusEnumDto.MODIFICACIO,
-					dada,
-					LogObjecteTipusEnumDto.DADA,
-					LogTipusEnumDto.ELIMINACIO,
-					dada.getMetaDada().getCodi(),
-					dada.getValor(),
-					false,
-					false);
-			return conversioTipusHelper.convertir(
-					dada,
-					DadaDto.class);
-		} else {
-			logger.error("El contingut no és un node (contingutId=" + contingutId + ")");
-			throw new ValidationException(
-					contingutId,
-					ContingutEntity.class,
-					"El contingut no és un node");
-		}
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public DadaDto dadaFindById(
-			Long entitatId,
-			Long contingutId,
-			Long dadaId) {
-		logger.debug("Obtenint la dada ("
-				+ "entitatId=" + entitatId + ", "
-				+ "contingutId=" + contingutId + ", "
-				+ "dadaId=" + dadaId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
 				true,
-				false,
 				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
-				entitat,
-				contingutId,
-				null);
-		if (contingut instanceof NodeEntity) {
-			// Per a consultes no es comprova el contingut arrel
-			// Comprova l'accés al path del contingut pare
-			contingutHelper.comprovarPermisosPathContingut(
-					contingut,
-					true,
-					false,
-					false,
-					true);
-			NodeEntity node = (NodeEntity)contingut;
-			DadaEntity dada = entityComprovarHelper.comprovarDada(
-					node,
-					dadaId);
-			return conversioTipusHelper.convertir(
-					dada,
-					DadaDto.class);
-		} else {
-			logger.error("El contingut no és un node (contingutId=" + contingutId + ")");
-			throw new ValidationException(
-					contingutId,
-					ContingutEntity.class,
-					"El contingut no és un node");
+		// Esborra les dades no especificades
+		for (DadaEntity dada: dadaRepository.findByNode(node)) {
+			if (!valors.keySet().contains(dada.getMetaDada().getCodi())) {
+				dadaRepository.delete(dada);
+			}
 		}
+		// Obté les metaDades del node (globals i específiques)
+		List<MetaNodeMetaDadaEntity> metaNodeMetaDades = metaNodeMetaDadaRepository.findByMetaNodeAndActivaTrue(node.getMetaNode());
+		List<MetaDadaEntity> metaDadesGlobals = null;
+		if (node instanceof ExpedientEntity) {
+			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalExpedientTrueAndActivaTrueOrderByIdAsc(entitat);
+		} else if (node instanceof DocumentEntity) {
+			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalDocumentTrueAndActivaTrueOrderByIdAsc(entitat);
+		}
+		// Modifica les dades existents
+		for (String dadaCodi: valors.keySet()) {
+			nodeDadaGuardar(
+					node,
+					dadaCodi,
+					valors.get(dadaCodi),
+					metaNodeMetaDades,
+					metaDadesGlobals);
+			
+		}
+		cacheHelper.evictErrorsValidacioPerNode(node);
 	}
 
 	@Transactional
@@ -1495,48 +1247,85 @@ public class ContingutServiceImpl implements ContingutService {
 		return creat;
 	}
 
-	private String getDadaValorPerGuardar(
-			MetaDadaEntity metaDada,
-			Object valor) {
-		if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.TEXT)) {
-			if (valor instanceof String) {
-				return (String)valor;
-			} else {
-				throw new RuntimeException();
-			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.DATA)) {
-			if (valor instanceof Date) {
-				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-				return sdf.format((Date)valor);
-			} else {
-				throw new RuntimeException();
-			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.SENCER)) {
-			if (valor instanceof Long) {
-				return ((Long)valor).toString();
-			} else {
-				throw new RuntimeException();
-			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.FLOTANT)) {
-			if (valor instanceof Double) {
-				return ((Double)valor).toString();
-			} else {
-				throw new RuntimeException();
-			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.IMPORT)) {
-			if (valor instanceof BigDecimal) {
-				return ((BigDecimal)valor).toString();
-			} else {
-				throw new RuntimeException();
-			}
-		} else if (metaDada.getTipus().equals(MetaDadaTipusEnumDto.BOOLEA)) {
-			if (valor instanceof Boolean) {
-				return ((Boolean)valor).toString();
-			} else {
-				throw new RuntimeException();
+	private void nodeDadaGuardar(
+			NodeEntity node,
+			String dadaCodi,
+			Object dadaValor,
+			List<MetaNodeMetaDadaEntity> metaNodeMetaDades,
+			List<MetaDadaEntity> metaDadesGlobals) {
+		MetaDadaEntity metaDada = null;
+		for (MetaNodeMetaDadaEntity metaNodeMetaDada: metaNodeMetaDades) {
+			if (metaNodeMetaDada.getMetaDada().getCodi().equals(dadaCodi)) {
+				metaDada = metaNodeMetaDada.getMetaDada();
+				break;
 			}
 		}
-		throw new RuntimeException();
+		if (metaDada == null) {
+			for (MetaDadaEntity metaDadaGlobal: metaDadesGlobals) {
+				if (metaDadaGlobal.getCodi().equals(dadaCodi)) {
+					metaDada = metaDadaGlobal;
+					break;
+				}
+			}
+		}
+		if (metaDada == null) {
+			throw new ValidationException(
+					node.getId(),
+					NodeEntity.class,
+					"No s'ha trobat la metaDada amb el codi " + dadaCodi);
+		}
+		List<DadaEntity> dades = dadaRepository.findByNodeAndMetaDadaOrderByOrdreAsc(
+				node,
+				metaDada);
+		Object[] valors = (dadaValor instanceof Object[]) ? (Object[])dadaValor : new Object[] {dadaValor};
+		// Esborra els valors nulls
+		List<Object> valorsSenseNull = new ArrayList<Object>();
+		for (Object o: valors) {
+			if (o != null)
+				valorsSenseNull.add(o);
+		}
+		// Esborra les dades ja creades que sobren
+		if (dades.size() > valorsSenseNull.size()) {
+			for (int i = valorsSenseNull.size(); i < dades.size(); i++) {
+				dadaRepository.delete(dades.get(i));
+			}
+		}
+		// Modifica o crea les dades
+		for (int i = 0; i < valorsSenseNull.size(); i++) {
+			DadaEntity dada = (i < dades.size()) ? dades.get(i) : null;
+			if (dada != null) {
+				dada.update(
+						valorsSenseNull.get(i),
+						i);
+				contingutLogHelper.log(
+						node,
+						LogTipusEnumDto.MODIFICACIO,
+						dada,
+						LogObjecteTipusEnumDto.DADA,
+						LogTipusEnumDto.MODIFICACIO,
+						dadaCodi,
+						dada.getValorComString(),
+						false,
+						false);
+			} else {
+				dada = DadaEntity.getBuilder(
+						metaDada,
+						node,
+						valorsSenseNull.get(i),
+						i).build();
+				dadaRepository.save(dada);
+				contingutLogHelper.log(
+						node,
+						LogTipusEnumDto.MODIFICACIO,
+						dada,
+						LogObjecteTipusEnumDto.DADA,
+						LogTipusEnumDto.CREACIO,
+						dadaCodi,
+						dada.getValorComString(),
+						false,
+						false);
+			}
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);

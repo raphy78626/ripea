@@ -1231,7 +1231,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 							dadaActual = dades.get(dadesIndex + dadesIndexIncrement++);
 						}
 						if (dadaActual.getMetaDada().getCodi().equals(metaDada.getCodi())) {
-							fila[5 + i] = dadaActual.getValor();
+							fila[5 + i] = dadaActual.getValorComString();
 						}
 					}
 				}

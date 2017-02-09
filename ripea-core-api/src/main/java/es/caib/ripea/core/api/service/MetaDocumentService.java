@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.FitxerDto;
+import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
@@ -258,7 +259,7 @@ public interface MetaDocumentService {
 	 *            Id de l'entitat.
 	 * @param id
 	 *            Atribut id del meta-document.
-	 * @param metaDocumentMetaDada
+	 * @param metaDocumentMetaDadaId
 	 *            Id de la meta-dada a esborrar.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -267,7 +268,43 @@ public interface MetaDocumentService {
 	public void metaDadaDelete(
 			Long entitatId,
 			Long id,
-			Long metaDocumentMetaDada) throws NotFoundException;
+			Long metaDocumentMetaDadaId) throws NotFoundException;
+
+	/**
+	 * Mou una meta-dada del meta-expedient una posició cap amunt.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param id
+	 *            Atribut id del meta-expedient.
+	 * @param metaDocumentMetaDadaId
+	 *            Id de la meta-dada a moure.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public void metaDadaMoveUp(
+			Long entitatId,
+			Long id,
+			Long metaDocumentMetaDadaId) throws NotFoundException;
+
+	/**
+	 * Mou una meta-dada del meta-expedient una posició cap avall.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param id
+	 *            Atribut id del meta-expedient.
+	 * @param metaDocumentMetaDadaId
+	 *            Id de la meta-dada a moure.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public void metaDadaMoveDown(
+			Long entitatId,
+			Long id,
+			Long metaDocumentMetaDadaId) throws NotFoundException;
 
 	/**
 	 * Mou una meta-dada del meta-document a una altra posició i reorganitza.
@@ -284,7 +321,7 @@ public interface MetaDocumentService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public void metaDadaMove(
+	public void metaDadaMoveTo(
 			Long entitatId,
 			Long id,
 			Long metaDocumentMetaDada,
@@ -305,10 +342,23 @@ public interface MetaDocumentService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public MetaNodeMetaDadaDto findMetaDada(
+	public MetaNodeMetaDadaDto metaDadaFind(
 			Long entitatId,
 			Long id,
 			Long metaNodeMetaDadaId) throws NotFoundException;
+
+	/**
+	 * Cerca les meta-dades globals pels meta-documents.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @return Les meta-dades globals.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public List<MetaDadaDto> metaDadaFindGlobals(
+			Long entitatId) throws NotFoundException;
 
 	/**
 	 * Consulta els permisos del meta-document.

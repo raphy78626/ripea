@@ -52,20 +52,6 @@ public class MetaDocumentController extends BaseAdminController {
 		getEntitatActualComprovantPermisos(request);
 		return "metaDocumentList";
 	}
-	/*@RequestMapping(value = "/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesPagina<MetaDocumentDto> datatable(
-			HttpServletRequest request,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return PaginacioHelper.getPaginaPerDatatables(
-				request,
-				metaDocumentService.findByEntitatPaginat(
-						entitatActual.getId(),
-						PaginacioHelper.getPaginacioDtoFromDatatable(
-								request,
-								COLUMNES_MAPEIG_ORDENACIO)));
-	}*/
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
@@ -191,7 +177,7 @@ public class MetaDocumentController extends BaseAdminController {
 	}
 
 	@RequestMapping(value = "/{metaDocumentId}/metaDada", method = RequestMethod.GET)
-	public String metaDada(
+	public String metaDadaList(
 			HttpServletRequest request,
 			@PathVariable Long metaDocumentId,
 			Model model) {
@@ -201,12 +187,10 @@ public class MetaDocumentController extends BaseAdminController {
 				metaDocumentService.findById(
 						entitatActual.getId(),
 						metaDocumentId));
-		/*model.addAttribute(
-				"metaDadesEntitat",
-				metaDadaService.findActiveByEntitat(
-						entitatActual.getId(),
-						true,
-						false));*/
+		model.addAttribute(
+				"metaDadesGlobals",
+				metaDocumentService.metaDadaFindGlobals(
+						entitatActual.getId()));
 		return "metaDocumentMetaDada";
 	}
 	@RequestMapping(value = "/{metaDocumentId}/metaDada/datatable", method = RequestMethod.GET)
@@ -251,7 +235,7 @@ public class MetaDocumentController extends BaseAdminController {
 				model);
 		MetaNodeMetaDadaCommand command = null;
 		if (metaNodeMetaDadaId != null) {
-			MetaNodeMetaDadaDto metaNodeMetaDada = metaDocumentService.findMetaDada(
+			MetaNodeMetaDadaDto metaNodeMetaDada = metaDocumentService.metaDadaFind(
 					entitatActual.getId(),
 					metaDocumentId,
 					metaNodeMetaDadaId);
@@ -320,7 +304,41 @@ public class MetaDocumentController extends BaseAdminController {
 				"metadocument.controller.metadada.esborrada.ok");
 	}
 
-	@RequestMapping(value = "/{metaDocumentId}/metaDada/move/{metaDadaId}/{posicio}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{metaDocumentId}/metaDada/{metaDadaId}/up", method = RequestMethod.GET)
+	public String metaDadaUp(
+			HttpServletRequest request,
+			@PathVariable Long metaDocumentId,
+			@PathVariable Long metaDadaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		metaDocumentService.metaDadaMoveUp(
+				entitatActual.getId(),
+				metaDocumentId,
+				metaDadaId);
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../../metaDada",
+				null);
+	}
+
+	@RequestMapping(value = "/{metaDocumentId}/metaDada/{metaDadaId}/down", method = RequestMethod.GET)
+	public String metaDadaDown(
+			HttpServletRequest request,
+			@PathVariable Long metaDocumentId,
+			@PathVariable Long metaDadaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		metaDocumentService.metaDadaMoveDown(
+				entitatActual.getId(),
+				metaDocumentId,
+				metaDadaId);
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../../metaDada",
+				null);
+	}
+
+	@RequestMapping(value = "/{metaDocumentId}/metaDada/{metaDadaId}/move/{posicio}", method = RequestMethod.GET)
 	public String metaDadaMove(
 			HttpServletRequest request,
 			@PathVariable Long metaDocumentId,
@@ -328,7 +346,7 @@ public class MetaDocumentController extends BaseAdminController {
 			@PathVariable int posicio,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		metaDocumentService.metaDadaMove(
+		metaDocumentService.metaDadaMoveTo(
 				entitatActual.getId(),
 				metaDocumentId,
 				metaDadaId,

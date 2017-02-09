@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaExpedientMetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
@@ -424,7 +425,67 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 
 	@Transactional
 	@Override
-	public void metaDadaMove(
+	public void metaDadaMoveUp(
+			Long entitatId,
+			Long id,
+			Long metaExpedientMetaDadaId) {
+		logger.debug("Movent meta-dada al meta-expedient cap amunt ("
+				+ "entitatId=" + entitatId +  ", "
+				+ "id=" + id +  ", "
+				+ "metaExpedientMetaDadaId=" + metaExpedientMetaDadaId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat,
+				id,
+				false,
+				false);
+		MetaNodeMetaDadaEntity metaExpedientMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
+				entitat,
+				metaExpedient,
+				metaExpedientMetaDadaId);
+		metaNodeHelper.moureMetaNodeMetaDada(
+				metaExpedient,
+				metaExpedientMetaDada,
+				metaExpedientMetaDada.getOrdre() - 1);
+	}
+
+	@Transactional
+	@Override
+	public void metaDadaMoveDown(
+			Long entitatId,
+			Long id,
+			Long metaExpedientMetaDadaId) {
+		logger.debug("Movent meta-dada al meta-expedient cap avall ("
+				+ "entitatId=" + entitatId +  ", "
+				+ "id=" + id +  ", "
+				+ "metaExpedientMetaDadaId=" + metaExpedientMetaDadaId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+				entitat,
+				id,
+				false,
+				false);
+		MetaNodeMetaDadaEntity metaExpedientMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
+				entitat,
+				metaExpedient,
+				metaExpedientMetaDadaId);
+		metaNodeHelper.moureMetaNodeMetaDada(
+				metaExpedient,
+				metaExpedientMetaDada,
+				metaExpedientMetaDada.getOrdre() + 1);
+	}
+
+	@Transactional
+	@Override
+	public void metaDadaMoveTo(
 			Long entitatId,
 			Long id,
 			Long metaExpedientMetaDadaId,
@@ -456,7 +517,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public MetaNodeMetaDadaDto findMetaDada(
+	public MetaNodeMetaDadaDto metaDadaFind(
 			Long entitatId,
 			Long id,
 			Long metaNodeMetaDadaId) {
@@ -481,6 +542,20 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 		return conversioTipusHelper.convertir(
 				metaNodeMetaDada,
 				MetaNodeMetaDadaDto.class);
+	}
+
+	public List<MetaDadaDto> metaDadaFindGlobals(
+			Long entitatId) throws NotFoundException {
+		logger.debug("Cercant les meta-dades globals del meta-expedient ("
+				+ "entitatId=" + entitatId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		return conversioTipusHelper.convertirList(
+				metaDadaRepository.findByEntitatAndGlobalExpedientTrueOrderByIdAsc(entitat),
+				MetaDadaDto.class);
 	}
 
 	@Transactional

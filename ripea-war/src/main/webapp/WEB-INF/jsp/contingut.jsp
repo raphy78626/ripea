@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <c:set var="potModificarContingut" value="${false}"/>
 <c:if test="${contingut.node}"><c:set var="potModificarContingut" value="${empty contingut.metaNode or contingut.metaNode.usuariActualWrite}"/></c:if>
@@ -29,6 +30,10 @@
 	<script src="<c:url value="/webjars/datatables.net/1.10.11/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.11/js/dataTables.bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.11/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
+	<script src="<c:url value="/webjars/autoNumeric/1.9.30/autoNumeric.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
@@ -79,7 +84,6 @@
 	margin: 0;
 	padding: 0;
 }
-
 #contenidor-info h3 {
 	font-weight: bold;
 	margin-top: 0;
@@ -127,6 +131,17 @@ ul.interessats {
 	padding-right: 5px;
     padding-left: 6px;
 }
+
+#nodeDades .form-group {
+	margin-bottom: 6px;
+}
+#nodeDades input.form-control {
+	width: 322px;
+}
+#nodeDades input.multiple {
+	width: 280px; !important
+}
+
 </style>
 <c:if test="${edicioOnlineActiva and contingut.document and not empty contingut.escriptoriPare}">
 	<script src="http://www.java.com/js/deployJava.js"></script>
@@ -261,6 +276,67 @@ $(document).ready(function() {
 			var destiId = $(this).data('contenidor-id');
 			window.location = origenId + "/moure/" + destiId;
 		}
+	});
+	var nodeDadesInputChange = function() {
+		var $pare = $(this).parent();
+		$pare.removeClass('has-success');
+		$pare.removeClass('has-warning');
+		$pare.removeClass('has-error');
+		$pare.addClass('has-warning has-feedback');
+		$(this).next().removeClass().addClass('glyphicon glyphicon-pencil form-control-feedback');
+		$(this).attr('title', 'Valor modificat pendent de guardar');
+	}
+	$('#nodeDades input').change(nodeDadesInputChange);
+	$('form#nodeDades').submit(function() {
+		$.post(
+				'../ajax/contingutDada/${contingut.id}/save',
+				$('#nodeDades').serialize(),
+				function (data) {
+					if (data.estatOk) {
+						$('#nodeDades input').each(function() {
+							var $pare = $(this).parent();
+							if ($pare.hasClass('has-warning') || $pare.hasClass('has-error')) {
+								$pare.removeClass('has-success');
+								$pare.removeClass('has-warning');
+								$pare.removeClass('has-error');
+								$pare.addClass('has-success has-feedback');
+								$(this).next().removeClass().addClass('glyphicon glyphicon-ok form-control-feedback');
+								$(this).attr('title', 'Valor guardat correctament');
+							} else {
+								$pare.removeClass('has-success');
+								$pare.removeClass('has-feedback');
+								$(this).next().removeClass();
+								$(this).removeAttr('title');
+							}
+						});
+						$.get(
+								'../ajax/contingutDada/${contingut.id}/count',
+								function (data) {
+									$('#dades-count').html(data);
+								});
+					} else {
+						$('#nodeDades input').each(function() {
+							for (var i = 0; i < data.errorsCamps.length; i++) {
+								var error = data.errorsCamps[i];
+								if (error.camp == $(this).attr('name')) {
+									var $pare = $(this).parent();
+									$pare.removeClass('has-success');
+									$pare.removeClass('has-warning');
+									$pare.removeClass('has-error');
+									$pare.addClass('has-error has-feedback');
+									$(this).next().removeClass().addClass('glyphicon glyphicon-warning-sign form-control-feedback');
+									$(this).attr('title', error.missatge);
+									break;
+								}
+							}
+						});
+					}
+					webutilRefreshMissatges();
+				});
+		return false;
+	});
+	$('form#nodeDades td .form-group').on('clone.multifield', function(event, clon) {
+		$('input', clon).change(nodeDadesInputChange);
 	});
 });
 </script>
@@ -521,31 +597,68 @@ $(document).ready(function() {
 						<%--               --%>
 						<%-- Pipella dades --%>
 						<%--               --%>
-						<table id="taulaDades" data-toggle="datatable" data-url="<c:url value="/contingut/${contingut.id}/dada/datatable"/>" data-paging-enabled="false" data-botons-template="#taulaDadesBotonsTemplate" class="table table-striped table-bordered" style="width:100%">
-							<thead>
-								<tr>
-									<th data-col-name="id" data-visible="false" width="4%">#</th>
-									<th data-col-name="metaDada.nom" data-orderable="false"><spring:message code="contingut.dades.columna.dada"/></th>
-									<th data-col-name="valorMostrar" data-orderable="false"><spring:message code="contingut.dades.columna.valor"/></th>
-									<c:if test="${not empty contingut.escriptoriPare and potModificarContingut}">
-										<th data-col-name="id" data-orderable="false" data-template="#cellAccionsTemplate" width="10%">
-											<script id="cellAccionsTemplate" type="text/x-jsrender">
-												<div class="dropdown">
-													<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-													<ul class="dropdown-menu">
-														<li><a href="../contingut/${contingut.id}/dada/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
-														<li><a href="../contingut/${contingut.id}/dada/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="contingut.confirmacio.esborrar.dada"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
-													</ul>
-												</div>
-											</script>
-										</th>
-									</c:if>
-								</tr>
-							</thead>
-						</table>
-						<script id="taulaDadesBotonsTemplate" type="text/x-jsrender">
-							<p style="text-align:right"><a href="../contingut/${contingut.id}/dada/new" class="btn btn-default" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contingut.boto.nova.dada"/></a></p>
-						</script>
+						<c:choose>
+							<c:when test="${not empty metaDades}">
+								<form:form id="nodeDades" commandName="dadesCommand" cssClass="form-inline">
+									<button type="submit" class="btn btn-default pull-right" style="margin-bottom: 6px"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+									<table class="table table-striped table-bordered" style="width:100%">
+									<thead>
+										<tr>
+											<th><spring:message code="contingut.dades.columna.dada"/></th>
+											<th width="340"><spring:message code="contingut.dades.columna.valor"/></th>
+										</tr>
+									</thead>
+									<tbody>
+										<c:forEach var="metaNodeMetaDada" items="${metaDades}">
+											<c:set var="dadaValor"></c:set>
+											<c:forEach var="dada" items="${contingut.dades}">
+												<c:if test="${dada.metaDada.codi == metaNodeMetaDada.metaDada.codi}">
+													<c:set var="dadaValor">${dada.valorMostrar}</c:set>
+												</c:if>
+											</c:forEach>
+											<c:set var="isMultiple" value="${metaNodeMetaDada.multiplicitat == 'M_0_N' or metaNodeMetaDada.multiplicitat == 'M_1_N'}"/>
+											<c:set var="multipleClass" value=""/>
+											<c:if test="${isMultiple}"><c:set var="multipleClass" value=" multiple"/></c:if>
+											<tr>
+												<td>${metaNodeMetaDada.metaDada.nom}</td>
+												<td>
+													<div class="form-group"<c:if test="${isMultiple}"> data-toggle="multifield" data-nou="true"</c:if>>
+														<label class="hidden" for="${metaNodeMetaDada.metaDada.codi}"></label>
+														<div>
+															<c:choose>
+																<c:when test="${metaNodeMetaDada.metaDada.tipus == 'DATA'}">
+																	<form:input path="${metaNodeMetaDada.metaDada.codi}" id="${metaNodeMetaDada.metaDada.codi}" data-toggle="datepicker" data-idioma="${requestLocale}" cssClass="form-control text-right${multipleClass}"></form:input>
+																</c:when>
+																<c:when test="${metaNodeMetaDada.metaDada.tipus == 'IMPORT'}">
+																	<form:input path="${metaNodeMetaDada.metaDada.codi}" id="${metaNodeMetaDada.metaDada.codi}" data-toggle="autonumeric" data-a-dec="," data-a-sep="." data-m-dec="2" class="form-control text-right${multipleClass}"></form:input>
+																</c:when>
+																<c:when test="${metaNodeMetaDada.metaDada.tipus == 'SENCER'}">
+																	<form:input path="${metaNodeMetaDada.metaDada.codi}" id="${metaNodeMetaDada.metaDada.codi}" data-toggle="autonumeric" data-a-dec="," data-a-sep="" data-m-dec="0" class="form-control text-right${multipleClass}"></form:input>
+																</c:when>
+																<c:when test="${metaNodeMetaDada.metaDada.tipus == 'FLOTANT'}">
+																	<form:input path="${metaNodeMetaDada.metaDada.codi}" id="${metaNodeMetaDada.metaDada.codi}" data-toggle="autonumeric" data-a-dec="," data-a-sep="" data-m-dec="10" data-a-pad="false" class="form-control text-right${multipleClass}"></form:input>
+																</c:when>
+																<c:when test="${metaNodeMetaDada.metaDada.tipus == 'BOOLEA'}">
+																	<form:checkbox path="${metaNodeMetaDada.metaDada.codi}" id="${metaNodeMetaDada.metaDada.codi}" name="${metaNodeMetaDada.metaDada.codi}"></form:checkbox>
+																</c:when>
+																<c:otherwise>
+																	<form:input path="${metaNodeMetaDada.metaDada.codi}" id="${metaNodeMetaDada.metaDada.codi}" cssClass="form-control${multipleClass}"></form:input>
+																</c:otherwise>
+															</c:choose>
+															<span class="" aria-hidden="true"></span>
+														</div>
+													</div>
+												</td>
+											</tr>
+										</c:forEach>
+									</tbody>
+									</table>
+									<button type="submit" class="btn btn-default pull-right" style="margin-top: -14px"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+								</form:form>
+							</c:when>
+							<c:otherwise>
+							</c:otherwise>
+						</c:choose>
 						<%--                --%>
 						<%-- /Pipella dades --%>
 						<%--                --%>

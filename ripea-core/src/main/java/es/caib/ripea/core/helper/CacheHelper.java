@@ -139,10 +139,10 @@ public class CacheHelper {
 		// Valida dades globals
 		List<MetaDadaEntity> metaDadesGlobals = null;
 		if (node instanceof ExpedientEntity)
-			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalExpedientTrueAndActivaTrueOrderByNomAsc(
+			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalExpedientTrueAndActivaTrueOrderByIdAsc(
 					node.getEntitat());
 		else
-			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalDocumentTrueAndActivaTrueOrderByNomAsc(
+			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalDocumentTrueAndActivaTrueOrderByIdAsc(
 					node.getEntitat());
 		if (metaDadesGlobals != null) {
 			for (MetaDadaEntity metaDada: metaDadesGlobals) {

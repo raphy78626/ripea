@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.MetaDadaDto;
+import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -247,6 +248,50 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 
 	@Transactional(readOnly=true)
 	@Override
+	public List<MetaNodeMetaDadaDto> findByNode(
+			Long entitatId,
+			Long nodeId) {
+		logger.debug("Consulta de les meta-dades disponibles al node ("
+				+ "entitatId=" + entitatId + ", "
+				+ "nodeId=" + nodeId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		NodeEntity node = entityComprovarHelper.comprovarNode(
+				entitat,
+				nodeId,
+				false,
+				false,
+				false);
+		List<MetaNodeMetaDadaDto> metaNodeMetaDades = new ArrayList<MetaNodeMetaDadaDto>();
+		List<MetaDadaEntity> metaDadesGlobals = null;
+		if (node instanceof ExpedientEntity) {
+			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalExpedientTrueAndActivaTrueOrderByIdAsc(entitat);
+		} else if (node instanceof DocumentEntity) {
+			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalDocumentTrueAndActivaTrueOrderByIdAsc(entitat);
+		}
+		for (MetaDadaEntity metaDada: metaDadesGlobals) {
+			MetaNodeMetaDadaDto dto = new MetaNodeMetaDadaDto();
+			dto.setMetaDada(conversioTipusHelper.convertir(
+					metaDada,
+					MetaDadaDto.class));
+			dto.setMultiplicitat(metaDada.getGlobalMultiplicitat());
+			dto.setReadOnly(metaDada.isGlobalReadOnly());
+			dto.setGlobal(true);
+			metaNodeMetaDades.add(dto);
+		}
+		metaNodeMetaDades.addAll(
+				conversioTipusHelper.convertirList(
+						metaNodeMetaDadaRepository.findByMetaNodeAndActivaTrue(
+								node.getMetaNode()),
+						MetaNodeMetaDadaDto.class));
+		return metaNodeMetaDades;
+	}
+
+	@Transactional(readOnly=true)
+	@Override
 	public List<MetaDadaDto> findByNodePerCreacio(
 			Long entitatId,
 			Long nodeId) {
@@ -258,7 +303,12 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 				true,
 				false,
 				false);
-		NodeEntity node = entityComprovarHelper.comprovarNode(entitat, nodeId);
+		NodeEntity node = entityComprovarHelper.comprovarNode(
+				entitat,
+				nodeId,
+				true,
+				false,
+				false);
 		List<MetaDadaEntity> metaDades = new ArrayList<MetaDadaEntity>();
 		// De les meta-dades actives pel meta-node només deixa les que encara
 		// es poden afegir al node especificat segons la multiplicitat.
@@ -279,11 +329,11 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 		// Afegeix les meta-dades globals actives
 		List<MetaDadaEntity> metaDadesGlobals = null;
 		if (node instanceof ExpedientEntity) {
-			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalExpedientTrueAndActivaTrueOrderByNomAsc(
+			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalExpedientTrueAndActivaTrueOrderByIdAsc(
 							entitat);
 		}
 		if (node instanceof DocumentEntity) {
-			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalDocumentTrueAndActivaTrueOrderByNomAsc(
+			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalDocumentTrueAndActivaTrueOrderByIdAsc(
 							entitat);
 		}
 		if (metaDadesGlobals != null) {

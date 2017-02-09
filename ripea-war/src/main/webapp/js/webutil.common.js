@@ -125,6 +125,18 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		$(this).find('select.select2-hidden-accessible').select2({theme: "bootstrap"}).trigger("change");
 	}
 
+	$.fn.webutilClonar = function() {
+		var $clon = $(this).clone();
+		$('[data-confirm-eval]', $clon).removeAttr('data-confirm-eval');
+		$('[data-ajax-eval]', $clon).removeAttr('data-ajax-eval');
+		$('[data-multifield-eval]', $clon).removeAttr('data-multifield-eval');
+		$('[data-botons-titol-eval]', $clon).removeAttr('data-botons-titol-eval');
+		$('[data-select2-eval]', $clon).removeAttr('data-select2-eval');
+		$('[data-datepicker-eval]', $clon).removeAttr('data-datepicker-eval');
+		$('[data-autonumeric-eval]', $clon).removeAttr('data-autonumeric-eval');
+		return $clon;
+	}
+
 	$.fn.webutilConfirm = function() {
 		$(this).click(function(e) {
 			if (confirm($(this).data('confirm'))) {
@@ -173,9 +185,10 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 
 	$.fn.webutilMultifield = function() {
 		var $multifield = $(this);
-		var multifieldAfegirClick = function(inputValor) {
-			var $clon = $multifield.clone();
+		var multifieldAfegirAnticClick = function(inputValor) {
+			var $clon = $multifield.webutilClonar();
 			$clon.css('display', '');
+			$clon.removeAttr('data-toggle');
 			$clon.attr('data-multifield-clon', 'true');
 			var $buttonAfegir = $('<button class="btn btn-default pull-right"><span class="fa fa-plus"></span></button>');
 			$('div', $clon).append($buttonAfegir);
@@ -197,7 +210,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 					$puntInsercio.css('margin-bottom', '4px');
 					$('button', $puntInsercio).unbind('click');
 					$('button span', $puntInsercio).removeClass('fa-plus').addClass('fa-trash-o');
-					$('button', $puntInsercio).on('click', multifieldEliminarClick);
+					$('button', $puntInsercio).on('click', multifieldEliminarAnticClick);
 				}
 			} while ($next.length);
 			if (!esPrimer) {
@@ -205,32 +218,81 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 			}
 			$puntInsercio.after($clon);
 			$buttonAfegir.on('click', function() {
-				multifieldAfegirClick();
+				multifieldAfegirAnticClick();
 				webutilModalAdjustHeight();
 				return false;
 			});
+			$clon.webutilTogglesEval();
+			$multifield.trigger('clone.multifield', $clon.parent);
 		}
-		var multifieldEliminarClick = function() {
+		var multifieldEliminarAnticClick = function() {
 			$(this).closest('div[data-multifield-clon="true"]').remove();
 			$('label', $multifield.next('div[data-multifield-clon="true"]')).text($('label', $multifield).text());
+			webutilModalAdjustHeight();
+			return false;
+		}
+		var multifieldAfegirNouClick = function(inputValor) {
+			var $clon = $multifield.webutilClonar();
+			$clon.css('display', '');
+			$clon.removeAttr('data-toggle');
+			$clon.attr('data-multifield-clon', 'true');
+			var $fieldInput = $(':input:first', $clon);
+			$fieldInput.prop('disabled', '');
+			if (inputValor) {
+				$fieldInput.val(inputValor);
+			}
+			var $puntInsercio = $multifield;
+			do {
+				$next = $puntInsercio.next('[data-multifield-clon="true"]');
+				if ($next.length) {
+					$puntInsercio = $next.next();
+					$('button', $puntInsercio).unbind('click');
+					$('button span', $puntInsercio).removeClass('fa-plus').addClass('fa-trash-o');
+					$('button', $puntInsercio).on('click', multifieldEliminarNouClick);
+				}
+			} while ($next.length);
+			$puntInsercio.after($clon);
+			var $buttonAfegir = $('<div class="form-group"><button class="btn btn-default"><span class="fa fa-plus"></span></button></div>');
+			$buttonAfegir.css('margin-left', '4px');
+			$clon.after($buttonAfegir);
+			$('button', $buttonAfegir).on('click', function() {
+				multifieldAfegirNouClick();
+				webutilModalAdjustHeight();
+				return false;
+			});
+			$clon.webutilTogglesEval();
+			$multifield.trigger('clone.multifield', $clon);
+		}
+		var multifieldEliminarNouClick = function() {
+			$(this).parent().prev().remove();
+			$(this).parent().remove();
 			webutilModalAdjustHeight();
 			return false;
 		}
 		$multifield.css('display', 'none');
 		var $multifieldInput = $(':input:first', $multifield);
 		$multifieldInput.prop('disabled', 'disabled');
+		var multifieldAfegirClick = multifieldAfegirAnticClick;
+		if ($multifield.data('nou')) {
+			multifieldAfegirClick = multifieldAfegirNouClick;
+		}
 		var valor = $multifieldInput.val();
 		var separador = ',';
 		if (valor && valor.indexOf(separador) != -1) {
 			var parts = valor.split(separador);
-			var i;
-			for (i = 0; i < parts.length; i++) {
-				multifieldAfegirClick(parts[i]);
+			var partValor;
+			for (var i = 0; i < parts.length; i++) {
+				partValor = parts[i];
+				if (i < (parts.length - 1) && parts[i + 1].length == 0 && i < parts.length - 2) {
+					partValor += ',' + parts[i + 2];
+					i += 2;
+				}
+				multifieldAfegirClick(partValor);
 			}
 		} else {
 			multifieldAfegirClick();
 		}
-		$multifieldInput.val('')
+		$multifieldInput.val('');
 	}
 	$.fn.webutilMultifieldEval = function() {
 		$('[data-toggle="multifield"]', $(this)).each(function() {
@@ -277,7 +339,6 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 									text: enumItem['text'],
 									selected: enumValue == enumItem['value']
 								}));
-							
 					}
 				}
 			});
@@ -296,7 +357,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		});
 	}
 	$.fn.webutilInputSelect2Eval = function() {
-		$('[data-toggle="select2"]', $(this)).each(function() {
+		$('[data-toggle="select2"]', this).each(function() {
 			if (!$(this).attr('data-select2-eval')) {
 				$(this).webutilInputSelect2();
 				$(this).attr('data-select2-eval', 'true');
@@ -305,8 +366,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 	}
 
 	$.fn.webutilDatepicker = function() {
-		$('[data-toggle="datepicker"]').
-		datepicker({
+		$(this).datepicker({
 			format: 'dd/mm/yyyy',
 			weekStart: 1,
 			autoclose: true,
@@ -317,12 +377,12 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		}).on('hide', function() {
 			webutilModalAdjustHeight();
 		});
-		$('.input-group-addon', $('[data-toggle="datepicker"]').parent()).click(function() {
+		$('.input-group-addon', $(this).parent()).click(function() {
 			$('[data-toggle="datepicker"]', $(this).parent()).datepicker('show');
 		});
 	}
 	$.fn.webutilDatepickerEval = function() {
-		$('[data-toggle="datepicker"]', $(this)).each(function() {
+		$('[data-toggle="datepicker"]', this).each(function() {
 			if (!$(this).attr('data-datepicker-eval')) {
 				$(this).webutilDatepicker();
 				$(this).attr('data-datepicker-eval', 'true');
@@ -330,43 +390,70 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		});
 	}
 
-	$(document).ready(function() {
-		$('[data-confirm]', $(this)).each(function() {
+	$.fn.webutilAutonumeric = function() {
+		if (!$(this).data('a-dec')) {
+			$(this).attr('data-a-dec', '');
+		}
+		if (!$(this).data('a-sep')) {
+			$(this).attr('data-a-sep', '');
+		}
+		$(this).autoNumeric('init');
+	}
+	$.fn.webutilAutonumericEval = function() {
+		$('[data-toggle="autonumeric"]', this).each(function() {
+			if (!$(this).attr('data-autonumeric-eval')) {
+				$(this).webutilAutonumeric();
+				$(this).attr('data-autonumeric-eval', 'true');
+			}
+		});
+	}
+
+	$.fn.webutilTogglesEval = function() {
+		$('[data-confirm]', this).each(function() {
 			if (!$(this).attr('data-confirm-eval')) {
 				$(this).webutilConfirm();
 				$(this).attr('data-confirm-eval', 'true');
 			}
 		});
-		$('[data-toggle="ajax"]', $(this)).each(function() {
+		$('[data-toggle="ajax"]', this).each(function() {
 			if (!$(this).attr('data-ajax-eval')) {
 				$(this).webutilAjax();
 				$(this).attr('data-ajax-eval', 'true');
 			}
 		});
-		$('[data-toggle="multifield"]', $(this)).each(function() {
+		$('[data-toggle="multifield"]', this).each(function() {
 			if (!$(this).attr('data-multifield-eval')) {
 				$(this).webutilMultifield();
 				$(this).attr('data-multifield-eval', 'true');
 			}
 		});
-		$('[data-toggle="botons-titol"]', $(this)).each(function() {
+		$('[data-toggle="botons-titol"]', this).each(function() {
 			if (!$(this).attr('data-botons-titol-eval')) {
 				$(this).webutilBotonsTitol();
 				$(this).attr('data-botons-titol-eval', 'true');
 			}
 		});
-		$('[data-toggle="select2"]', $(this)).each(function() {
+		$('[data-toggle="select2"]', this).each(function() {
 			if (!$(this).attr('data-select2-eval')) {
 				$(this).webutilInputSelect2();
 				$(this).attr('data-select2-eval', 'true');
 			}
 		});
-		$('[data-toggle="datepicker"]', $(this)).each(function() {
+		$('[data-toggle="datepicker"]', this).each(function() {
 			if (!$(this).attr('data-datepicker-eval')) {
 				$(this).webutilDatepicker();
 				$(this).attr('data-datepicker-eval', 'true');
 			}
 		});
+		$('[data-toggle="autonumeric"]', this).each(function() {
+			if (!$(this).attr('data-autonumeric-eval')) {
+				$(this).webutilAutonumeric();
+				$(this).attr('data-autonumeric-eval', 'true');
+			}
+		});
+	}
+	$(document).ready(function() {
+		$(this).webutilTogglesEval();
 	});
 
 }(jQuery));

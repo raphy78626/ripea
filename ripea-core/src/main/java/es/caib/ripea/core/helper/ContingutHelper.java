@@ -53,6 +53,7 @@ import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
+import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -356,14 +357,15 @@ public class ContingutHelper {
 				}
 				resposta.setFills(contenidorDtos);
 			}
-			if (ambDades) {
-				// Omple les dades
-				if (contingut instanceof NodeEntity) {
-					NodeEntity node = (NodeEntity)contingut;
-					((NodeDto)resposta).setDades(
-							conversioTipusHelper.convertirList(
-									dadaRepository.findByNode(node),
-									DadaDto.class));
+			if (ambDades && contingut instanceof NodeEntity) {
+				NodeEntity node = (NodeEntity)contingut;
+				List<DadaEntity> dades = dadaRepository.findByNode(node);
+				((NodeDto)resposta).setDades(
+						conversioTipusHelper.convertirList(
+								dades,
+								DadaDto.class));
+				for (int i = 0; i < dades.size(); i++) {
+					((NodeDto)resposta).getDades().get(i).setValor(dades.get(i).getValor());
 				}
 			}
 		}

@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.MetaDadaDto;
+import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -155,6 +156,22 @@ public interface MetaDadaService {
 			Long entitatId,
 			boolean incloureGlobalsExpedient,
 			boolean incloureGlobalsDocument) throws NotFoundException;
+
+	/**
+	 * Llistat amb les meta-dades d'un node.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param nodeId
+	 *            Id del node.
+	 * @return la llista amb les meta-dades del node.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<MetaNodeMetaDadaDto> findByNode(
+			Long entitatId,
+			Long nodeId) throws NotFoundException;
 
 	/**
 	 * Llistat amb les meta-dades actives donat un meta-node.

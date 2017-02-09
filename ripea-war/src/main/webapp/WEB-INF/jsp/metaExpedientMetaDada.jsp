@@ -18,11 +18,10 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	$('#metadades').on('dragupdate.dataTable', function (event, itemId, index) {
-		alert('Drag update ' + itemId + ', ' + index);
-		/*$.ajax({
-			url: "ajax/regla/" + itemId + "/move/" + index,
+		$.ajax({
+			url: "../../ajax/metaExpedient/${metaExpedient.id}/metaDada/" + itemId + "/move/" + index,
 			async: false
-		});*/
+		});
 	});
 });
 </script>
@@ -39,12 +38,20 @@ $(document).ready(function() {
 				<th data-col-name="metaDada.nom" data-orderable="false"><spring:message code="metaexpedient.metadada.columna.nom"/></th>
 				<th data-col-name="metaDada.tipus" data-renderer="enum(MetaDadaTipusEnumDto)" data-orderable="false"><spring:message code="metaexpedient.metadada.columna.tipus"/></th>
 				<th data-col-name="multiplicitat" data-renderer="enum(MultiplicitatEnumDto)" data-orderable="false"><spring:message code="metaexpedient.metadada.columna.multiplicitat"/></th>
+				<th data-col-name="metaDada.activa" data-template="#cellActivaTemplate" data-orderable="false">
+					<spring:message code="metaexpedient.metadada.columna.activa"/>
+					<script id="cellActivaTemplate" type="text/x-jsrender">
+						{{if metaDada.activa}}<span class="fa fa-check"></span>{{/if}}
+					</script>
+				</th>
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								<li><a href="metaDada/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+								<li><a href="metaDada/{{:id}}/up" data-toggle="ajax"><span class="fa fa-arrow-up"></span>&nbsp;&nbsp;<spring:message code="comu.boto.amunt"/></a></li>
+								<li><a href="metaDada/{{:id}}/down" data-toggle="ajax"><span class="fa fa-arrow-down"></span>&nbsp;&nbsp;<spring:message code="comu.boto.avall"/></a></li>
 								<li><a href="metaDada/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="metaexpedient.metadada.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 							</ul>
 						</div>
@@ -53,5 +60,34 @@ $(document).ready(function() {
 			</tr>
 		</thead>
 	</table>
+	<c:if test="${not empty metaDadesGlobals}">
+		<div class="panel panel-default">
+			<div class="panel-heading" data-toggle="collapse" data-target="#metadadesGlobalsTable">
+				<spring:message code="metaexpedient.metadada.globals"/> <span class="badge">${fn:length(metaDadesGlobals)}</span>
+			</div>
+  			<table id="metadadesGlobalsTable" class="table table-striped table-bordered collapse" style="width:100%">
+  			<thead>
+  				<tr>
+  					<th><spring:message code="metaexpedient.metadada.columna.codi"/></th>
+  					<th><spring:message code="metaexpedient.metadada.columna.nom"/></th>
+  					<th><spring:message code="metaexpedient.metadada.columna.tipus"/></th>
+  					<th><spring:message code="metaexpedient.metadada.columna.multiplicitat"/></th>
+  					<th><spring:message code="metaexpedient.metadada.columna.activa"/></th>
+  				</tr>
+  			</thead>
+  			<tbody>
+  				<c:forEach var="metaDada" items="${metaDadesGlobals}">
+	  				<tr>
+	  					<td>${metaDada.codi}</td>
+	  					<td>${metaDada.nom}</td>
+	  					<td><spring:message code="meta.dada.tipus.enum.${metaDada.tipus}"/></td>
+	  					<td><spring:message code="multiplicitat.enum.${metaDada.globalMultiplicitat}"/></td>
+	  					<td><c:if test="${metaDada.activa}"><span class="fa fa-check"></span></c:if></td>
+	  				</tr>
+  				</c:forEach>
+  			</tbody>
+  			</table>
+  		</div>
+	</c:if>
 	<a href="<c:url value="/metaExpedient"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span> <spring:message code="comu.boto.tornar"/></a>
 </body>

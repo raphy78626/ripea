@@ -357,7 +357,10 @@ public class EntityComprovarHelper {
 
 	public NodeEntity comprovarNode(
 			EntitatEntity entitat,
-			Long nodeId) {
+			Long nodeId,
+			boolean comprovarPermisRead,
+			boolean comprovarPermisWrite,
+			boolean comprovarPermisDelete) {
 		NodeEntity node = nodeRepository.findOne(nodeId);
 		if (node == null) {
 			throw new NotFoundException(
@@ -369,6 +372,41 @@ public class EntityComprovarHelper {
 					nodeId,
 					NodeEntity.class,
 					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat del node");
+		}
+		if (comprovarPermisRead || comprovarPermisWrite || comprovarPermisDelete) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			List<Permission> permisos = new ArrayList<Permission>();
+			StringBuilder permisosStr = new StringBuilder();
+			if (comprovarPermisRead) {
+				permisos.add(ExtendedPermission.READ);
+				if (permisosStr.length() > 0)
+					permisosStr.append(" && ");
+				permisosStr.append("READ");
+			}
+			if (comprovarPermisWrite) {
+				permisos.add(ExtendedPermission.WRITE);
+				if (permisosStr.length() > 0)
+					permisosStr.append(" && ");
+				permisosStr.append("WRITE");
+			}
+			if (comprovarPermisDelete) {
+				permisos.add(ExtendedPermission.DELETE);
+				if (permisosStr.length() > 0)
+					permisosStr.append(" && ");
+				permisosStr.append("DELETE");
+			}
+			boolean granted = permisosHelper.isGrantedAll(
+					node.getMetaNode().getId(),
+					MetaNodeEntity.class,
+					permisos.toArray(new Permission[permisos.size()]),
+					auth);
+			if (!granted) {
+				throw new PermissionDeniedException(
+						nodeId,
+						node.getClass(),
+						auth.getName(),
+						permisosStr.toString());
+			}
 		}
 		return node;
 	}

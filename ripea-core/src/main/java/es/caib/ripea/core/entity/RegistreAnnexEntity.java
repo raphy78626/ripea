@@ -141,7 +141,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	public String getFirmaFitxerNom() {
 		return firmaFitxerNom;
 	}
-	public int getFirmaFitxerTamany() {
+	public Integer getFirmaFitxerTamany() {
 		return firmaFitxerTamany;
 	}
 	public String getFirmaFitxerTipusMime() {

@@ -23,7 +23,7 @@ import es.caib.ripea.core.entity.NodeEntity;
 public interface DadaRepository extends JpaRepository<DadaEntity, Long> {
 
 	List<DadaEntity> findByNode(NodeEntity node);
-	List<DadaEntity> findByNodeAndMetaDada(NodeEntity node, MetaDadaEntity metaDada);
+	List<DadaEntity> findByNodeAndMetaDadaOrderByOrdreAsc(NodeEntity node, MetaDadaEntity metaDada);
 	List<DadaEntity> findByNodeIdInOrderByNodeIdAscMetaDadaCodiAsc(Collection<Long> nodeIds);
 	@Query(	"select" +
 			"    distinct d.metaDada " +

@@ -196,6 +196,10 @@ public class MetaExpedientController extends BaseAdminController {
 				metaExpedientService.findById(
 						entitatActual.getId(),
 						metaExpedientId));
+		model.addAttribute(
+				"metaDadesGlobals",
+				metaExpedientService.metaDadaFindGlobals(
+						entitatActual.getId()));
 		return "metaExpedientMetaDada";
 	}
 	@RequestMapping(value = "/{metaExpedientId}/metaDada/datatable", method = RequestMethod.GET)
@@ -240,7 +244,7 @@ public class MetaExpedientController extends BaseAdminController {
 				model);
 		MetaNodeMetaDadaCommand command = null;
 		if (metaNodeMetaDadaId != null) {
-			MetaNodeMetaDadaDto metaNodeMetaDada = metaExpedientService.findMetaDada(
+			MetaNodeMetaDadaDto metaNodeMetaDada = metaExpedientService.metaDadaFind(
 					entitatActual.getId(),
 					metaExpedientId,
 					metaNodeMetaDadaId);
@@ -292,6 +296,60 @@ public class MetaExpedientController extends BaseAdminController {
 					"metaexpedient.controller.metadada.modificada.ok");
 		}
 	}
+
+	@RequestMapping(value = "/{metaExpedientId}/metaDada/{metaDadaId}/up", method = RequestMethod.GET)
+	public String metaDadaUp(
+			HttpServletRequest request,
+			@PathVariable Long metaExpedientId,
+			@PathVariable Long metaDadaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		metaExpedientService.metaDadaMoveUp(
+				entitatActual.getId(),
+				metaExpedientId,
+				metaDadaId);
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../../metaDada",
+				null);
+	}
+
+	@RequestMapping(value = "/{metaExpedientId}/metaDada/{metaDadaId}/down", method = RequestMethod.GET)
+	public String metaDadaDown(
+			HttpServletRequest request,
+			@PathVariable Long metaExpedientId,
+			@PathVariable Long metaDadaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		metaExpedientService.metaDadaMoveDown(
+				entitatActual.getId(),
+				metaExpedientId,
+				metaDadaId);
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../../metaDada",
+				null);
+	}
+
+	@RequestMapping(value = "/{metaExpedientId}/metaDada/{metaDadaId}/move/{posicio}", method = RequestMethod.GET)
+	public String metaDadaMove(
+			HttpServletRequest request,
+			@PathVariable Long metaExpedientId,
+			@PathVariable Long metaDadaId,
+			@PathVariable int posicio,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		metaExpedientService.metaDadaMoveTo(
+				entitatActual.getId(),
+				metaExpedientId,
+				metaDadaId,
+				posicio);
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../../metaDada",
+				null);
+	}
+
 	@RequestMapping(value = "/{metaExpedientId}/metaDada/{metaDadaId}/delete", method = RequestMethod.GET)
 	public String metaDadaDelete(
 			HttpServletRequest request,
@@ -309,25 +367,6 @@ public class MetaExpedientController extends BaseAdminController {
 						request, 
 						"metaexpedient.controller.metadada.esborrada.ok"));
 		return "redirect:../../metaDada";
-	}
-
-	@RequestMapping(value = "/{metaExpedientId}/metaDada/move/{metaDadaId}/{posicio}", method = RequestMethod.GET)
-	public String metaDadaMove(
-			HttpServletRequest request,
-			@PathVariable Long metaExpedientId,
-			@PathVariable Long metaDadaId,
-			@PathVariable int posicio,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		metaExpedientService.metaDadaMove(
-				entitatActual.getId(),
-				metaExpedientId,
-				metaDadaId,
-				posicio);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../../metaDada",
-				null);
 	}
 
 	@RequestMapping(value = "/{metaExpedientId}/metaDocument", method = RequestMethod.GET)

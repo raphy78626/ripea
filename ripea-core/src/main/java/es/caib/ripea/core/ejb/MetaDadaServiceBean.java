@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.MetaDadaDto;
+import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.service.MetaDadaService;
@@ -101,6 +102,14 @@ public class MetaDadaServiceBean implements MetaDadaService {
 				entitatId,
 				incloureGlobalsExpedient,
 				incloureGlobalsDocument);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<MetaNodeMetaDadaDto> findByNode(
+			Long entitatId,
+			Long nodeId) {
+		return delegate.findByNode(entitatId, nodeId);
 	}
 
 	@Override

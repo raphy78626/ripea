@@ -12,6 +12,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.MetaExpedientMetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
@@ -129,21 +130,46 @@ public class MetaExpedientServiceBean implements MetaExpedientService {
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public void metaDadaMove(
+	public void metaDadaMoveUp(
 			Long entitatId,
 			Long id,
-			Long metaDadaId,
-			int posicio) {
-		delegate.metaDadaMove(entitatId, id, metaDadaId, posicio);
+			Long metaDadaId) {
+		delegate.metaDadaMoveUp(entitatId, id, metaDadaId);
 	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")
-	public MetaNodeMetaDadaDto findMetaDada(
+	public void metaDadaMoveDown(
+			Long entitatId,
+			Long id,
+			Long metaDadaId) {
+		delegate.metaDadaMoveDown(entitatId, id, metaDadaId);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public void metaDadaMoveTo(
+			Long entitatId,
+			Long id,
+			Long metaDadaId,
+			int posicio) {
+		delegate.metaDadaMoveTo(entitatId, id, metaDadaId, posicio);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public MetaNodeMetaDadaDto metaDadaFind(
 			Long entitatId,
 			Long id,
 			Long metaNodeMetaDadaId) {
-		return delegate.findMetaDada(entitatId, id, metaNodeMetaDadaId);
+		return delegate.metaDadaFind(entitatId, id, metaNodeMetaDadaId);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public List<MetaDadaDto> metaDadaFindGlobals(
+			Long entitatId) {
+		return delegate.metaDadaFindGlobals(entitatId);
 	}
 
 	@Override

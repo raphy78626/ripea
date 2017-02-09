@@ -440,16 +440,14 @@ public class DocumentController extends BaseUserController {
 				request,
 				signaturesSet);
 		boolean ignorarModal = false;
-		if (signaturesSet != null && signaturesSet.getPluginId() != null) {
-			String ignorarModalIdsProperty = aplicacioService.propertyGet("es.caib.ripea.plugin.passarelafirma.ignorar.modal.ids");
-			if (ignorarModalIdsProperty != null && !ignorarModalIdsProperty.isEmpty()) {
-				String[] ignorarModalIds = ignorarModalIdsProperty.split(",");
-				for (String ignorarModalId: ignorarModalIds) {
-					if (StringUtils.isNumeric(ignorarModalId)) {
-						if (new Long(ignorarModalId).longValue() == signaturesSet.getPluginId().longValue()) {
-							ignorarModal = true;
-							break;
-						}
+		String ignorarModalIdsProperty = aplicacioService.propertyGet("es.caib.ripea.plugin.passarelafirma.ignorar.modal.ids");
+		if (ignorarModalIdsProperty != null && !ignorarModalIdsProperty.isEmpty()) {
+			String[] ignorarModalIds = ignorarModalIdsProperty.split(",");
+			for (String ignorarModalId: ignorarModalIds) {
+				if (StringUtils.isNumeric(ignorarModalId)) {
+					if (new Long(ignorarModalId).longValue() == signaturesSet.getPluginId().longValue()) {
+						ignorarModal = true;
+						break;
 					}
 				}
 			}

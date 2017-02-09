@@ -59,20 +59,20 @@ public class PassarelaFirmaController {
 		// Si cap modul compleix llavors mostrar missatge
 		if (pluginsFiltered.size() == 0) {
 			String msg = "No existeix cap mòdul de firma que passi els filtres";
-			PassarelaFirmaConfig pfc = passarelaFirmaHelper.getSignaturesSet(
+			PassarelaFirmaConfig pfss = passarelaFirmaHelper.getSignaturesSet(
 					request,
 					signaturesSetId);
-			if (pfc == null) {
+			if (pfss == null) {
 				MissatgesHelper.error(request, msg);
 			} else {
-				StatusSignaturesSet sss = pfc.getStatusSignaturesSet();
+				StatusSignaturesSet sss = pfss.getStatusSignaturesSet();
 				sss.setErrorMsg(msg);
 				sss.setErrorException(null);
 				sss.setStatus(StatusSignaturesSet.STATUS_FINAL_ERROR);
 			}
 			log.debug("Cap plugin de firma disponible (" +
 					"signaturesSetId = " + signaturesSetId + ")");
-			return "redirect:" + pfc.getUrlFinalRipea() + "?signaturesSetId=" + signaturesSetId;
+			return "redirect:" + pfss.getUrlFinal();
 		}
 		model.addAttribute("signaturesSetId", signaturesSetId);
 		model.addAttribute("plugins", pluginsFiltered);
@@ -133,12 +133,12 @@ public class PassarelaFirmaController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable("signaturesSetId") String signaturesSetId) throws Exception {
-		PassarelaFirmaConfig pfc = passarelaFirmaHelper.finalitzarProcesDeFirma(
+		PassarelaFirmaConfig pss = passarelaFirmaHelper.finalitzarProcesDeFirma(
 				request,
 				signaturesSetId);
 		log.debug("Final del procés de firma (" +
 				"signaturesSetId = " + signaturesSetId + ")");
-		return "redirect:" + pfc.getUrlFinalRipea() + "?signaturesSetId=" + signaturesSetId;
+		return "redirect:" + pss.getUrlFinalRipea() + "?signaturesSetId=" + signaturesSetId;
 	}
 
 

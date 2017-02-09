@@ -21,6 +21,9 @@
 .navbar-app .navbar-nav {
 	padding-top: 16px;
 }
+.navbar-app .navbar-right {
+	margin-right: 0;
+}
 
 #govern-logo {
 	border-right: 1px solid #FFFFFF;

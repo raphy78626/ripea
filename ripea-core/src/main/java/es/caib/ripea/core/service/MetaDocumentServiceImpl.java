@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.FitxerDto;
+import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
@@ -24,6 +25,7 @@ import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
@@ -458,7 +460,65 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 
 	@Transactional
 	@Override
-	public void metaDadaMove(
+	public void metaDadaMoveUp(
+			Long entitatId,
+			Long id,
+			Long metaDocumentMetaDadaId) {
+		logger.debug("Movent meta-dada al meta-document cap amunt ("
+				+ "entitatId=" + entitatId +  ", "
+				+ "id=" + id +  ", "
+				+ "metaDocumentMetaDadaId=" + metaDocumentMetaDadaId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaDocumentEntity metaDocument = entityComprovarHelper.comprovarMetaDocument(
+				entitat,
+				id,
+				false);
+		MetaNodeMetaDadaEntity metaDocumentMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
+				entitat,
+				metaDocument,
+				metaDocumentMetaDadaId);
+		metaNodeHelper.moureMetaNodeMetaDada(
+				metaDocument,
+				metaDocumentMetaDada,
+				metaDocumentMetaDada.getOrdre() - 1);
+	}
+
+	@Transactional
+	@Override
+	public void metaDadaMoveDown(
+			Long entitatId,
+			Long id,
+			Long metaDocumentMetaDadaId) {
+		logger.debug("Movent meta-dada al meta-document cap avall ("
+				+ "entitatId=" + entitatId +  ", "
+				+ "id=" + id +  ", "
+				+ "metaDocumentMetaDadaId=" + metaDocumentMetaDadaId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		MetaDocumentEntity metaDocument = entityComprovarHelper.comprovarMetaDocument(
+				entitat,
+				id,
+				false);
+		MetaNodeMetaDadaEntity metaDocumentMetaDada = entityComprovarHelper.comprovarMetaNodeMetaDada(
+				entitat,
+				metaDocument,
+				metaDocumentMetaDadaId);
+		metaNodeHelper.moureMetaNodeMetaDada(
+				metaDocument,
+				metaDocumentMetaDada,
+				metaDocumentMetaDada.getOrdre() + 1);
+	}
+
+	@Transactional
+	@Override
+	public void metaDadaMoveTo(
 			Long entitatId,
 			Long id,
 			Long metaDocumentMetaDadaId,
@@ -489,7 +549,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public MetaNodeMetaDadaDto findMetaDada(
+	public MetaNodeMetaDadaDto metaDadaFind(
 			Long entitatId,
 			Long id,
 			Long metaNodeMetaDadaId) {
@@ -513,6 +573,20 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 		return conversioTipusHelper.convertir(
 				metaNodeMetaDada,
 				MetaNodeMetaDadaDto.class);
+	}
+
+	public List<MetaDadaDto> metaDadaFindGlobals(
+			Long entitatId) throws NotFoundException {
+		logger.debug("Cercant les meta-dades globals del meta-document ("
+				+ "entitatId=" + entitatId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		return conversioTipusHelper.convertirList(
+				metaDadaRepository.findByEntitatAndGlobalDocumentTrueOrderByIdAsc(entitat),
+				MetaDadaDto.class);
 	}
 
 	@Transactional
