@@ -50,8 +50,8 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "arxiu_contingut")
 	private byte[] arxiuContingut;
-	@Column(name = "arxiu_gesdoc_id", length = 100)
-	private String arxiuGesdocId;
+	@Column(name = "arxiu_uuid", length = 36)
+	private String arxiuUuid;
 	@Version
 	private long version = 0;
 
@@ -75,8 +75,8 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 	public byte[] getArxiuContingut() {
 		return arxiuContingut;
 	}
-	public String getArxiuGesdocId() {
-		return arxiuGesdocId;
+	public String getArxiuUuid() {
+		return arxiuUuid;
 	}
 
 	public void updateArxiu(
@@ -89,21 +89,11 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 		this.arxiuContentLength = arxiuContingut.length;
 	}
 
-	/**
-	 * Obté el Builder per a crear objectes de tipus meta-dada.
-	 * 
-	 * @param document
-	 *            El document al qual pertany aquesta versió.
-	 * @param versio
-	 *            El número de versió.
-	 * @param arxiuNom
-	 *            El nom de l'arxiu per aquesta versió.
-	 * @param arxiuContentType
-	 *            El contentType de l'arxiu per aquesta versió.
-	 * @param arxiuContingut
-	 *            El contingut de l'arxiu per aquesta versió.
-	 * @return Una nova instància del Builder.
-	 */
+	public void updateArxiuUuid(
+			String arxiuUuid) {
+		this.arxiuUuid = arxiuUuid;
+	}
+
 	public static Builder getBuilder(
 			DocumentEntity document,
 			int versio,
@@ -117,44 +107,20 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 				arxiuContentType,
 				arxiuContingut);
 	}
-	/**
-	 * Obté el Builder per a crear objectes de tipus meta-dada.
-	 * 
-	 * @param document
-	 *            El document al qual pertany aquesta versió.
-	 * @param versio
-	 *            El número de versió.
-	 * @param arxiuNom
-	 *            El nom de l'arxiu per aquesta versió.
-	 * @param arxiuContentType
-	 *            El contentType de l'arxiu per aquesta versió.
-	 * @param arxiuContentLength
-	 *            El tamany de l'arxiu per aquesta versió.
-	 * @param arxiuGesdocId
-	 *            L'id del plugin gesdoc de l'arxiu per aquesta versió.
-	 * @return Una nova instància del Builder.
-	 */
 	public static Builder getBuilder(
 			DocumentEntity document,
 			int versio,
 			String arxiuNom,
 			String arxiuContentType,
-			long arxiuContentLength,
-			String arxiuGesdocId) {
+			long arxiuContentLength) {
 		return new Builder(
 				document,
 				versio,
 				arxiuNom,
 				arxiuContentType,
-				arxiuContentLength,
-				arxiuGesdocId);
+				arxiuContentLength);
 	}
 
-	/**
-	 * Builder per a crear noves instàncies d'aquesta classe.
-	 * 
-	 * @author Limit Tecnologies <limit@limit.es>
-	 */
 	public static class Builder {
 		DocumentVersioEntity built;
 		Builder(
@@ -176,15 +142,13 @@ public class DocumentVersioEntity extends RipeaAuditable<Long> {
 				int versio,
 				String arxiuNom,
 				String arxiuContentType,
-				long arxiuContentLength,
-				String arxiuGesdocId) {
+				long arxiuContentLength) {
 			built = new DocumentVersioEntity();
 			built.document = document;
 			built.versio = versio;
 			built.arxiuNom = arxiuNom;
 			built.arxiuContentType = arxiuContentType;
 			built.arxiuContentLength = arxiuContentLength;
-			built.arxiuGesdocId = arxiuGesdocId;
 		}
 		public DocumentVersioEntity build() {
 			return built;

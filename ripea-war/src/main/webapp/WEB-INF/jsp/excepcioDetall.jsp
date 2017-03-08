@@ -12,7 +12,6 @@
 	<rip:modalHead/>
 </head>
 <body>
-
 	<c:if test="${not empty excepcio}">
 		<dl class="dl-horizontal">
 			<dt><spring:message code="excepcio.detall.camp.data"/></dt>
@@ -49,5 +48,4 @@
 	<div id="modal-botons">
 		<a href="<c:url value="/excepcio"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
-
 </body>

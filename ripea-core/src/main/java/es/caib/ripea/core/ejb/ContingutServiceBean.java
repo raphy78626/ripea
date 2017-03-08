@@ -14,6 +14,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
@@ -239,6 +240,16 @@ public class ContingutServiceBean implements ContingutService {
 				dataInici,
 				dataFi,
 				paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public ArxiuPluginInfoDto getArxiuInfo(
+			Long entitatId,
+			Long contingutId) {
+		return delegate.getArxiuInfo(
+				entitatId,
+				contingutId);
 	}
 
 }

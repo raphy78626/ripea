@@ -3,16 +3,12 @@
  */
 package es.caib.ripea.core.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 
 /**
@@ -25,31 +21,17 @@ import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 @EntityListeners(AuditingEntityListener.class)
 public class CarpetaEntity extends ContingutEntity {
 
-	@Column(name = "tipus", nullable = false)
-	@Enumerated(EnumType.STRING)
-	private CarpetaTipusEnumDto carpetaTipus;
-
-
-
-	public CarpetaTipusEnumDto getCarpetaTipus() {
-		return carpetaTipus;
-	}
-
 	public void update(
-			String nom,
-			CarpetaTipusEnumDto carpetaTipus) {
+			String nom) {
 		this.nom = nom;
-		this.carpetaTipus = carpetaTipus;
 	}
 
 	public static Builder getBuilder(
 			String nom,
-			CarpetaTipusEnumDto tipus,
 			ContingutEntity pare,
 			EntitatEntity entitat) {
 		return new Builder(
 				nom,
-				tipus,
 				pare,
 				entitat);
 	}
@@ -57,12 +39,10 @@ public class CarpetaEntity extends ContingutEntity {
 		CarpetaEntity built;
 		Builder(
 				String nom,
-				CarpetaTipusEnumDto carpetaTipus,
 				ContingutEntity pare,
 				EntitatEntity entitat) {
 			built = new CarpetaEntity();
 			built.nom = nom;
-			built.carpetaTipus = carpetaTipus;
 			built.pare = pare;
 			built.entitat = entitat;
 			built.tipus = ContingutTipusEnumDto.CARPETA;

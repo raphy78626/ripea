@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriUtils;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
-import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
@@ -284,8 +283,7 @@ public class RipeaFolderResource implements FolderResource {
 		CarpetaDto carpeta = getCarpetaService().create(
 				contingut.getEntitat().getId(),
 				contingut.getId(),
-				newName,
-				CarpetaTipusEnumDto.ESBORRANY);
+				newName);
 		return contenidorToResource(carpeta);
 	}
 

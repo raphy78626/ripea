@@ -101,8 +101,7 @@ public class ContingutCarpetaController extends BaseUserController {
 			carpetaService.create(
 					entitatActual.getId(),
 					contingutId,
-					command.getNom(),
-					command.getTipus());
+					command.getNom());
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../contingut/" + contingutId,
@@ -111,8 +110,7 @@ public class ContingutCarpetaController extends BaseUserController {
 			carpetaService.update(
 					entitatActual.getId(),
 					command.getId(),
-					command.getNom(),
-					command.getTipus());
+					command.getNom());
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../contingut/" + command.getPareId(),

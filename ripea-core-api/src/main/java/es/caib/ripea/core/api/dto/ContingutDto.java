@@ -23,6 +23,8 @@ public abstract class ContingutDto extends AuditoriaDto {
 	protected List<ContingutDto> path;
 	protected EntitatDto entitat;
 	protected int esborrat;
+	protected String arxiuUuid;
+	protected Date arxiuDataActualitzacio;
 	protected Date darrerMovimentData;
 	protected UsuariDto darrerMovimentUsuari;
 	protected String darrerMovimentComentari;
@@ -66,6 +68,18 @@ public abstract class ContingutDto extends AuditoriaDto {
 	}
 	public void setEsborrat(int esborrat) {
 		this.esborrat = esborrat;
+	}
+	public String getArxiuUuid() {
+		return arxiuUuid;
+	}
+	public void setArxiuUuid(String arxiuUuid) {
+		this.arxiuUuid = arxiuUuid;
+	}
+	public Date getArxiuDataActualitzacio() {
+		return arxiuDataActualitzacio;
+	}
+	public void setArxiuDataActualitzacio(Date arxiuDataActualitzacio) {
+		this.arxiuDataActualitzacio = arxiuDataActualitzacio;
 	}
 	public Date getDarrerMovimentData() {
 		return darrerMovimentData;
@@ -292,6 +306,10 @@ public abstract class ContingutDto extends AuditoriaDto {
 
 	public boolean isCrearExpedients() {
 		return isEscriptori();
+	}
+
+	public boolean isReplicatDinsArxiu() {
+		return arxiuUuid != null;
 	}
 
 	public boolean isExpedient() {

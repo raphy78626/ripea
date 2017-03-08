@@ -485,6 +485,26 @@ public class ContingutController extends BaseUserController {
 		return "contingutNti";
 	}
 
+	@RequestMapping(value = "/contingut/{contingutId}/arxiu")
+	public String arxiu(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		model.addAttribute(
+				"contingut",
+				contingutService.findAmbIdUser(
+						entitatActual.getId(),
+						contingutId,
+						false));
+		model.addAttribute(
+				"arxiuInfo",
+				contingutService.getArxiuInfo(
+						entitatActual.getId(),
+						contingutId));
+		return "contingutArxiu";
+	}
+
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 	    binder.registerCustomEditor(

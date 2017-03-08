@@ -252,9 +252,14 @@ public class ExpedientServiceImpl implements ExpedientService {
 				expedient,
 				false,
 				false);
-		return toExpedientDto(
+		ExpedientDto dto = toExpedientDto(
 				expedient,
 				false);
+		contingutHelper.arxiuPropagarModificacio(
+				expedient,
+				null,
+				null);
+		return dto;
 	}
 
 	@Transactional
@@ -336,9 +341,14 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				false,
 				false);
-		return toExpedientDto(
+		ExpedientDto dto = toExpedientDto(
 				expedient,
 				false);
+		contingutHelper.arxiuPropagarModificacio(
+				expedient,
+				null,
+				null);
+		return dto;
 	}
 
 	@Transactional
@@ -398,9 +408,13 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				true,
 				true);
-		return toExpedientDto(
+		ExpedientDto dto = toExpedientDto(
 				expedient,
 				false);
+		contingutHelper.arxiuPropagarEliminacio(
+				expedient,
+				null);
+		return dto;
 	}
 
 	@Transactional(readOnly = true)
@@ -1261,6 +1275,23 @@ public class ExpedientServiceImpl implements ExpedientService {
 		}
 		return fitxer;
 	}
+
+
+
+	/*private void propagarModificacioArxiu(
+			ExpedientEntity expedient) {
+		if (pluginHelper.isArxiuPluginActiu()) {
+			// Propaga la modificació de l'expedient a l'arxiu
+			pluginHelper.arxiuExpedientActualitzar(expedient);
+		}
+	}
+	private void propagarEliminacioArxiu(
+			ExpedientEntity expedient) {
+		if (pluginHelper.isArxiuPluginActiu() && expedient.getArxiuUuid() != null) {
+			// Propaga l'eliminacio de l'expedient a l'arxiu
+			pluginHelper.arxiuExpedientEsborrar(expedient);
+		}
+	}*/
 
 	private static final Logger logger = LoggerFactory.getLogger(ExpedientServiceImpl.class);
 

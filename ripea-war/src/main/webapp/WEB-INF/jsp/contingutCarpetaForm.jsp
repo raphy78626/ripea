@@ -5,15 +5,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%
-java.util.List<es.caib.ripea.war.helper.EnumHelper.HtmlOption> options = es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-		es.caib.ripea.core.api.dto.CarpetaTipusEnumDto.class,
-		"carpeta.tipus.enum.");
-java.util.Iterator<es.caib.ripea.war.helper.EnumHelper.HtmlOption> it = options.iterator();
-pageContext.setAttribute(
-		"carpetaTipusEnumOptions",
-		options);
-%>
 <c:choose>
 	<c:when test="${empty carpetaCommand.id}"><c:set var="titol"><spring:message code="contingut.carpeta.form.titol.crear"/></c:set></c:when>
 	<c:otherwise><c:set var="titol"><spring:message code="contingut.carpeta.form.titol.modificar"/></c:set></c:otherwise>
@@ -32,10 +23,11 @@ pageContext.setAttribute(
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
 		<form:hidden path="pareId"/>
-		<rip:inputSelect name="tipus" textKey="contingut.carpeta.form.camp.tipus" optionItems="${carpetaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
+		<br/>
 		<rip:inputText name="nom" textKey="contingut.carpeta.form.camp.nom" required="true"/>
+		<br/>
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/contingut/${carpetaCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

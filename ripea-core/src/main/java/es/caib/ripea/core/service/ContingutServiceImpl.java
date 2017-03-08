@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
@@ -54,6 +55,7 @@ import es.caib.ripea.core.helper.DocumentHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
+import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
@@ -63,6 +65,9 @@ import es.caib.ripea.core.repository.MetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
+import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
+import es.caib.ripea.plugin.arxiu.ArxiuDocument;
+import es.caib.ripea.plugin.arxiu.ArxiuExpedient;
 
 /**
  * Implementació dels mètodes per a gestionar continguts.
@@ -103,6 +108,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
+	@Resource
+	private PluginHelper pluginHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 
@@ -1180,6 +1187,86 @@ public class ContingutServiceImpl implements ContingutService {
 				});
 	}
 
+	public ArxiuPluginInfoDto getArxiuInfo(
+			Long entitatId,
+			Long contingutId) {
+		logger.debug("Obtenint informació de l'arxiu pel contingut ("
+				+ "entitatId=" + entitatId + ", "
+				+ "contingutId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		if (contingut instanceof ExpedientEntity) {
+			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
+			ArxiuExpedient arxiuExpedient = pluginHelper.arxiuExpedientConsultar(
+					(ExpedientEntity)contingut);
+			arxiuInfo.setNodeId(arxiuExpedient.getNodeId());
+			arxiuInfo.setNom(arxiuExpedient.getTitol());
+			arxiuInfo.setDescripcio(arxiuExpedient.getDescripcio());
+			arxiuInfo.setEniVersio(arxiuExpedient.getEniVersio());
+			arxiuInfo.setEniIdentificador(arxiuExpedient.getEniIdentificador());
+			if (arxiuExpedient.getEniOrigen() != null)
+				arxiuInfo.setEniOrigen(arxiuExpedient.getEniOrigen().getValor());
+			arxiuInfo.setEniDataInicial(arxiuExpedient.getEniDataObertura());
+			if (arxiuExpedient.getEniEstat() != null)
+				arxiuInfo.setEniEstat(arxiuExpedient.getEniEstat().getValor());
+			arxiuInfo.setEniOrgans(arxiuExpedient.getEniOrgans());
+			arxiuInfo.setEniInteressats(arxiuExpedient.getEniInteressats());
+			arxiuInfo.setSerieDocumental(arxiuExpedient.getSerieDocumental());
+			arxiuInfo.setAplicacioCreacio(arxiuExpedient.getAplicacioCreacio());
+			arxiuInfo.setSuport(arxiuExpedient.getSuport());
+			arxiuInfo.setJson(arxiuExpedient.getJson());
+			return arxiuInfo;
+		} else if (contingut instanceof DocumentEntity) {
+			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
+			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
+					(DocumentEntity)contingut,
+					false);
+			arxiuInfo.setNodeId(arxiuDocument.getNodeId());
+			arxiuInfo.setNom(arxiuDocument.getTitol());
+			arxiuInfo.setDescripcio(arxiuDocument.getDescripcio());
+			arxiuInfo.setEniVersio(arxiuDocument.getEniVersio());
+			arxiuInfo.setEniIdentificador(arxiuDocument.getEniIdentificador());
+			if (arxiuDocument.getEniOrigen() != null)
+				arxiuInfo.setEniOrigen(arxiuDocument.getEniOrigen().getValor());
+			arxiuInfo.setEniDataInicial(arxiuDocument.getEniDataCaptura());
+			if (arxiuDocument.getEniEstatElaboracio() != null)
+				arxiuInfo.setEniEstatElaboracio(arxiuDocument.getEniEstatElaboracio().getValor());
+			if (arxiuDocument.getEniTipusDocumental() != null)
+				arxiuInfo.setEniTipusDocumental(arxiuDocument.getEniTipusDocumental().getValor());
+			if (arxiuDocument.getEniFormatNom() != null)
+				arxiuInfo.setEniFormatNom(arxiuDocument.getEniFormatNom().getValor());
+			if (arxiuDocument.getEniFormatExtensio() != null)
+				arxiuInfo.setEniFormatExtensio(arxiuDocument.getEniFormatExtensio().getValor());
+			arxiuInfo.setEniOrgans(arxiuDocument.getEniOrgans());
+			arxiuInfo.setEniDocumentOrigenId(arxiuDocument.getEniDocumentOrigenId());
+			arxiuInfo.setSerieDocumental(arxiuDocument.getSerieDocumental());
+			arxiuInfo.setAplicacioCreacio(arxiuDocument.getAplicacioCreacio());
+			arxiuInfo.setSuport(arxiuDocument.getSuport());
+			arxiuInfo.setJson(arxiuDocument.getJson());
+			return arxiuInfo;
+		} else if (contingut instanceof CarpetaEntity) {
+			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
+			ArxiuCarpeta arxiuCarpeta = pluginHelper.arxiuCarpetaConsultar(
+					(CarpetaEntity)contingut);
+			arxiuInfo.setNodeId(arxiuCarpeta.getNodeId());
+			arxiuInfo.setNom(arxiuCarpeta.getNom());
+			arxiuInfo.setJson(arxiuCarpeta.getJson());
+			return arxiuInfo;
+		} else {
+			throw new ValidationException(
+					contingutId,
+					ContingutEntity.class,
+					"El contingut no és del tipus expedient, document o carpeta");
+		}
+	}
+
 
 
 	private ContingutEntity copiarContingut(
@@ -1187,18 +1274,20 @@ public class ContingutServiceImpl implements ContingutService {
 			ContingutEntity contingutOrigen,
 			ContingutEntity contingutDesti,
 			boolean recursiu) {
+		// TODO Refer copiar contingut per a replicar els cavis a l'arxiu de forma
+		// correcta tentint en compte la transaccionalitat (posar les operacions amb
+		// l'arxiu al final de tot)
 		ContingutEntity creat = null;
 		if (contingutOrigen instanceof CarpetaEntity) {
 			CarpetaEntity carpetaOrigen = (CarpetaEntity)contingutOrigen;
 			CarpetaEntity carpetaNova = CarpetaEntity.getBuilder(
 					carpetaOrigen.getNom(),
-					carpetaOrigen.getCarpetaTipus(),
 					contingutDesti,
 					entitat).build();
 			creat = contingutRepository.save(carpetaNova);
 		} else if (contingutOrigen instanceof DocumentEntity) {
 			DocumentEntity documentOrigen = (DocumentEntity)contingutOrigen;
-			creat = contingutHelper.crearNouDocument(
+			creat = documentHelper.crearNouDocument(
 					documentOrigen.getDocumentTipus(),
 					documentOrigen.getNom(),
 					documentOrigen.getData(),
@@ -1212,8 +1301,7 @@ public class ContingutServiceImpl implements ContingutService {
 					contingutDesti,
 					entitat,
 					documentOrigen.getUbicacio(),
-					documentHelper.getFitxerAssociat(
-							documentOrigen.getVersioDarrera()));
+					documentHelper.getFitxerAssociat(documentOrigen));
 		} else if (contingutOrigen instanceof ExpedientEntity) {
 			ExpedientEntity expedientOrigen = (ExpedientEntity)contingutOrigen;
 			creat = contingutHelper.crearNouExpedient(

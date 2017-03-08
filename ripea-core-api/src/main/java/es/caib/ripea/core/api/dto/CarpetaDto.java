@@ -5,24 +5,14 @@ package es.caib.ripea.core.api.dto;
 
 
 /**
- * Informació d'un document.
+ * Informació d'una carpeta.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class CarpetaDto extends ContingutDto {
 
-	private CarpetaTipusEnumDto tipus;
-
-
-
-	public CarpetaTipusEnumDto getTipus() {
-		return tipus;
-	}
-	public void setTipus(CarpetaTipusEnumDto tipus) {
-		this.tipus = tipus;
-	}
 	// Per evitar errors en el cercador de contenedors per admins
-	public CarpetaTipusEnumDto getMetaNode() {
+	public String getMetaNode() {
 		return null;
 	}
 

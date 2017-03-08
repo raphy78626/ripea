@@ -203,9 +203,6 @@ var publicacioEstatText = new Array();
 publicacioEstatText["${option.value}"] = "<spring:message code="${option.text}"/>";
 </c:forEach>
 $(document).ready(function() {
-	<c:if test="${contingut.carpeta and contingut.tipus == 'ESBORRANY'}">
-		$('.container-main .panel-heading h2 span.fa').replaceWith('<rip:blocIconaCarpeta carpeta="${contingut}" petita="${true}"/>');
-	</c:if>
 	$('#contenidor-contingut li').mouseover(function() {
 		$('a.btn', this).removeClass('hidden');
 	});
@@ -354,25 +351,21 @@ $(document).ready(function() {
 				<div id="contenidor-info" class="well">
 					<h3>
 						<spring:message code="contingut.info.informacio"/>
-						<c:if test="${contingut.expedient or contingut.document}">
-							<a href="../contingut/${contingut.id}/nti" class="btn btn-info btn-xs" data-toggle="modal">NTI</a>
-						</c:if>
+						<c:choose>
+							<c:when test="${contingut.replicatDinsArxiu}">
+								<a href="../contingut/${contingut.id}/arxiu" class="btn btn-info btn-xs" data-toggle="modal">Arxiu</a>
+							</c:when>
+							<c:otherwise>
+								<c:if test="${contingut.expedient or contingut.document}">
+									<a href="../contingut/${contingut.id}/nti" class="btn btn-info btn-xs" data-toggle="modal">NTI</a>
+								</c:if>
+							</c:otherwise>
+						</c:choose>
 					</h3>
 					<dl>
 						<c:if test="${contingut.expedient}">
 							<dt><spring:message code="contingut.info.numero"/></dt>
 							<dd>${contingut.sequencia}/${contingut.any}</dd>
-						</c:if>
-						<c:if test="${contingut.carpeta or contingut.node and not empty contingut.metaNode}">
-							<dt><spring:message code="contingut.info.tipus"/></dt>
-							<c:choose>
-								<c:when test="${contingut.expedient or contingut.document}">
-									<dd>${contingut.metaNode.nom}</dd>
-								</c:when>
-								<c:otherwise>
-									<dd><spring:message code="carpeta.tipus.enum.${contingut.tipus}"/></dd>
-								</c:otherwise>
-							</c:choose>
 						</c:if>
 						<c:if test="${contingut.expedient}">
 							<dt><spring:message code="contingut.info.arxiu"/></dt>
@@ -576,10 +569,10 @@ $(document).ready(function() {
 									<div id="botons-crear-contingut" class="btn-group">
 										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contingut.boto.crear.contingut"/>&nbsp;<span class="caret"></span></button>
 										<ul class="dropdown-menu text-left" role="menu">
-											<li><a href="../contingut/${contingut.id}/carpeta/new" data-toggle="modal" data-reload-page="true"><span class="fa fa-folder"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.carpeta"/>...</a></li>
-											<li><a href="../contingut/${contingut.id}/document/new" data-toggle="modal" data-reload-page="true"><span class="fa fa-file"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.document"/>...</a></li>
+											<li><a href="../contingut/${contingut.id}/carpeta/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-folder"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.carpeta"/>...</a></li>
+											<li><a href="../contingut/${contingut.id}/document/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-file"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.document"/>...</a></li>
 											<c:if test="${contingut.crearExpedients and not empty metaExpedients}">
-												<li><a href="../contingut/${contingut.id}/expedient/new" data-toggle="modal" data-reload-page="true"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="contingut.boto.crear.expedient"/>...</a></li>
+												<li><a href="../contingut/${contingut.id}/expedient/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="contingut.boto.crear.expedient"/>...</a></li>
 											</c:if>
 										</ul>
 									</div>

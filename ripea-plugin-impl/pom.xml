@@ -152,6 +152,11 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>es.caib.arxiudigital</groupId>
+			<artifactId>arxiudigital-apirest</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jcl</artifactId>
 			<version>${slf4j.version}</version>

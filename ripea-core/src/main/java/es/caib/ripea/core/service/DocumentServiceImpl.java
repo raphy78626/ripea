@@ -247,7 +247,10 @@ public class DocumentServiceImpl implements DocumentService {
 				throw new SecurityException("No es pot crear un document amb meta-document fora d'un expedient");
 			}
 		}
-		DocumentEntity entity = contingutHelper.crearNouDocument(
+		if (expedientSuperior != null) {
+			cacheHelper.evictErrorsValidacioPerNode(expedientSuperior);
+		}
+		DocumentEntity entity = documentHelper.crearNouDocument(
 				document.getDocumentTipus(),
 				document.getNom(),
 				document.getData(),
@@ -262,15 +265,17 @@ public class DocumentServiceImpl implements DocumentService {
 				entitat,
 				document.getUbicacio(),
 				fitxer);
-		if (expedientSuperior != null) {
-			cacheHelper.evictErrorsValidacioPerNode(expedientSuperior);
-		}
 		// Registra al log la creació del document
 		contingutLogHelper.logCreacio(
 				entity,
 				true,
 				true);
-		return toDocumentDto(entity);
+		DocumentDto dto = toDocumentDto(entity);
+		contingutHelper.arxiuPropagarModificacio(
+				entity,
+				expedientSuperior,
+				fitxer);
+		return dto;
 	}
 
 	@Transactional
@@ -358,6 +363,14 @@ public class DocumentServiceImpl implements DocumentService {
 				document.getNtiTipoFirma(),
 				document.getNtiCsv(),
 				document.getNtiCsvRegulacion());
+		// Registra al log la modificació del document
+		contingutLogHelper.log(
+				entity,
+				LogTipusEnumDto.MODIFICACIO,
+				(!nomOriginal.equals(document.getNom())) ? document.getNom() : null,
+				(fitxer != null) ? "VERSIO_NOVA" : null,
+				false,
+				false);
 		if (fitxer != null) {
 			int versio = document.getVersioDarrera().getVersio() + 1;
 			DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
@@ -369,15 +382,12 @@ public class DocumentServiceImpl implements DocumentService {
 			documentVersioRepository.save(documentVersio);
 			entity.updateVersioDarrera(documentVersio);
 		}
-		// Registra al log la modificació del document
-		contingutLogHelper.log(
+		DocumentDto dto = toDocumentDto(entity);
+		contingutHelper.arxiuPropagarModificacio(
 				entity,
-				LogTipusEnumDto.MODIFICACIO,
-				(!nomOriginal.equals(document.getNom())) ? document.getNom() : null,
-				(fitxer != null) ? "VERSIO_NOVA" : null,
-				false,
-				false);
-		return toDocumentDto(entity);
+				expedientSuperior,
+				fitxer);
+		return dto;
 	}
 
 	@Transactional
@@ -386,7 +396,7 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentDto delete(
 			Long entitatId,
 			Long id) {
-		logger.debug("Actualitzant el document ("
+		logger.debug("Esborrant el document ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -431,11 +441,11 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				true);
-		// Esborra els arxius de la gestió documental
-		List<DocumentVersioEntity> versions = documentVersioRepository.findByDocumentOrderByVersioDesc(document);
+		// Esborra les versions del document
+		/*List<DocumentVersioEntity> versions = documentVersioRepository.findByDocumentOrderByVersioDesc(document);
 		for (DocumentVersioEntity versio: versions) {
 			documentHelper.deleteFitxerAssociatSiNhiHa(versio);
-		}
+		}*/
 		// Esborra el document
 		documentRepository.delete(document);
 		if (expedientSuperior != null)
@@ -448,7 +458,11 @@ public class DocumentServiceImpl implements DocumentService {
 				null,
 				true,
 				true);
-		return toDocumentDto(document);
+		DocumentDto dto = toDocumentDto(document);
+		contingutHelper.arxiuPropagarEliminacio(
+				document,
+				expedientSuperior);
+		return dto;
 	}
 
 	@Transactional(readOnly = true)
@@ -649,7 +663,8 @@ public class DocumentServiceImpl implements DocumentService {
 				versio);
 		if (documentVersio != null) {
 			return documentHelper.getFitxerAssociat(
-					documentVersio);
+					document,
+					new Integer(versio));
 		} else {
 			throw new NotFoundException(
 					"(documentId=" + document.getId() + ", versio=" + versio + ")",
@@ -986,17 +1001,8 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				true);
-		DocumentVersioEntity documentVersio = document.getVersioDarrera();
-		if (documentVersio == null) {
-			logger.error("No s'ha trobat la darrera versió del document (" +
-					"documentId=" + id + ")");
-			throw new NotFoundException(
-					"(documentId=" + id + ", versio=darrera)",
-					DocumentVersioEntity.class);
-		}
 		return pluginHelper.conversioConvertirPdfIEstamparUrl(
-				documentHelper.getFitxerAssociat(
-						documentVersio),
+				documentHelper.getFitxerAssociat(document),
 				null);
 	}
 
@@ -1357,6 +1363,43 @@ public class DocumentServiceImpl implements DocumentService {
 		key = Arrays.copyOf(key, 16);
 		return new SecretKeySpec(key, "AES");
 	}
+
+	/*private void propagarModificacioArxiu(
+			DocumentEntity document,
+			FitxerDto fitxer,
+			ExpedientEntity expedientSuperior) {
+		if (pluginHelper.isArxiuPluginActiu()) {
+			if (!pluginHelper.arxiuDocumentExtensioPermesa(fitxer.getExtensio())) {
+				throw new ValidationException("Extensió d'arxiu no permesa: " + fitxer.getExtensio());
+			}
+			// Propaga la creació del document a l'arxiu
+			if (expedientSuperior != null) {
+				// Si el document s'ha creat a dins un expedient
+				pluginHelper.arxiuDocumentActualitzar(
+						document,
+						fitxer,
+						document.getPare(),
+						expedientSuperior);
+			} else {
+				// TODO Si el document s'ha creat a dins un escriptori
+			}
+		}
+	}
+	private void propagarEliminacioArxiu(
+			DocumentEntity document,
+			ExpedientEntity expedientSuperior) {
+		if (pluginHelper.isArxiuPluginActiu() && document.getArxiuUuid() != null) {
+			// Propaga l'eliminació del document a l'arxiu
+			if (expedientSuperior != null) {
+				// Si el document s'ha eliminat de dins un expedient
+				pluginHelper.arxiuDocumentEsborrar(
+						document,
+						expedientSuperior);
+			} else {
+				// TODO Si el document s'ha eliminat de dins un escriptori
+			}
+		}
+	}*/
 
 	public class ObjecteFirmaApplet implements Serializable {
 		private Long sysdate;

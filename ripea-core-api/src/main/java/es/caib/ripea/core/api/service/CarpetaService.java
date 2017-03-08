@@ -6,7 +6,6 @@ package es.caib.ripea.core.api.service;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
-import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 
@@ -26,8 +25,6 @@ public interface CarpetaService {
 	 *            Atribut id del pare dins el qual es vol crear la carpeta.
 	 * @param nom
 	 *            Nom de la carpeta que es vol crear.
-	 * @param tipus
-	 *            Tipus de la carpeta.
 	 * @return La carpeta creada.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -38,8 +35,7 @@ public interface CarpetaService {
 	public CarpetaDto create(
 			Long entitatId,
 			Long contingutId,
-			String nom,
-			CarpetaTipusEnumDto tipus) throws NotFoundException, ValidationException;
+			String nom) throws NotFoundException, ValidationException;
 
 	/**
 	 * Modifica una carpeta.
@@ -50,8 +46,6 @@ public interface CarpetaService {
 	 *            Atribut id de la carpeta que es vol modificar.
 	 * @param nom
 	 *            Nom de la carpeta.
-	 * @param tipus
-	 *            Tipus de la carpeta.
 	 * @return La carpeta modificada.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -62,8 +56,7 @@ public interface CarpetaService {
 	public CarpetaDto update(
 			Long entitatId,
 			Long id,
-			String nom,
-			CarpetaTipusEnumDto tipus) throws NotFoundException, ValidationException;
+			String nom) throws NotFoundException, ValidationException;
 
 	/**
 	 * Esborra una carpeta.

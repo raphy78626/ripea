@@ -47,16 +47,9 @@
 							tooltipTitle += '<dt><spring:message code="contingut.info.numero"/></dt>';
 							tooltipTitle += '<dd>${fill.sequencia}/${fill.any}</dd>';
 							</c:if>
-							<c:if test="${fill.carpeta or fill.node and not empty fill.metaNode}">
+							<c:if test="${fill.node and not empty fill.metaNode}">
 							tooltipTitle += '<dt><spring:message code="contingut.info.tipus"/></dt>';
-							<c:choose>
-								<c:when test="${fill.carpeta}">
-							tooltipTitle += '<dd><spring:message code="carpeta.tipus.enum.${fill.tipus}"/></dd>';
-								</c:when>
-								<c:when test="${fill.expedient or fill.document}">
 							tooltipTitle += '<dd>${fn:escapeXml(fill.metaNode.nom)}</dd>';
-								</c:when>
-							</c:choose>
 							</c:if>
 							<c:if test="${fill.expedient}">
 							tooltipTitle += '<dt><spring:message code="contingut.info.arxiu"/></dt>' +
@@ -133,10 +126,7 @@
 							&nbsp;${fill.nom}
 						</td>
 						<td>
-							<c:choose>
-								<c:when test="${fill.carpeta}"><spring:message code="carpeta.tipus.enum.${fill.tipus}"/></c:when>
-								<c:otherwise>${fill.metaNode.nom}</c:otherwise>
-							</c:choose>
+							<c:if test="${not fill.carpeta}">${fill.metaNode.nom}</c:if>
 						</td>
 						<td><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></td>
 						<td>${fill.createdBy.nom}</td>
@@ -145,14 +135,10 @@
 						</td>
 					</tr>
 					<script>
-						var tooltipTitle = '<dl class="text-left" style="min-width:120px">' +
-								'<dt><spring:message code="contingut.info.tipus"/></dt>';
+						var tooltipTitle = '<dl class="text-left" style="min-width:120px">';
 						<c:choose>
 							<c:when test="${fill.expedient or fill.document}">
-						tooltipTitle += '<dd>${fn:escapeXml(fill.metaNode.nom)}</dd>';
-							</c:when>
-							<c:when test="${fill.carpeta}">
-						tooltipTitle += '<dd><spring:message code="carpeta.tipus.enum.${fill.tipus}"/></dd>';
+						tooltipTitle += '<dt><spring:message code="contingut.info.tipus"/></dt><dd>${fn:escapeXml(fill.metaNode.nom)}</dd>';
 							</c:when>
 						</c:choose>
 						<c:if test="${fill.expedient}">

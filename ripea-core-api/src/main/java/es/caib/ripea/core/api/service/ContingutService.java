@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
@@ -400,5 +401,21 @@ public interface ContingutService {
 			Date dataInici,
 			Date dataFi,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
+
+	/**
+	 * Obté la informació del contingut emmagatzemada a l'arxiu digital.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol consultar.
+	 * @return Les dades de dins l'arxiu.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public ArxiuPluginInfoDto getArxiuInfo(
+			Long entitatId,
+			Long contingutId) throws NotFoundException;
 
 }

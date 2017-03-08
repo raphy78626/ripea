@@ -13,5 +13,6 @@ public enum DocumentNtiEstadoElaboracionEnumDto {
 	EE01, // Original
 	EE02, // Copia electrònica autèntica amb canvi de format
 	EE03, // Copia electrònica autèntica de documento paper
-	EE04  // Copia electrònica parcial autèntica
+	EE04, // Copia electrònica parcial autèntica
+	EE99  // Otros
 }

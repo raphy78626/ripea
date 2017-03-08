@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
-import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.service.CarpetaService;
 
 /**
@@ -34,13 +33,11 @@ public class CarpetaServiceBean implements CarpetaService {
 	public CarpetaDto create(
 			Long entitatId,
 			Long contenidorId,
-			String nom,
-			CarpetaTipusEnumDto tipus) {
+			String nom) {
 		return delegate.create(
 				entitatId,
 				contenidorId,
-				nom,
-				tipus);
+				nom);
 	}
 
 	@Override
@@ -48,13 +45,11 @@ public class CarpetaServiceBean implements CarpetaService {
 	public CarpetaDto update(
 			Long entitatId,
 			Long id,
-			String nom,
-			CarpetaTipusEnumDto tipus) {
+			String nom) {
 		return delegate.update(
 				entitatId,
 				id,
-				nom,
-				tipus);
+				nom);
 	}
 
 	@Override

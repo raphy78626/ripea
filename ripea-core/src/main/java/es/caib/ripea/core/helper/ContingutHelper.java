@@ -25,15 +25,9 @@ import org.springframework.stereotype.Component;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.CarpetaDto;
-import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
-import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
-import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
@@ -48,6 +42,7 @@ import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.exception.PermissionDeniedException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
@@ -55,11 +50,9 @@ import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
-import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.MetaExpedientSequenciaEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
@@ -196,9 +189,7 @@ public class ContingutHelper {
 					cacheHelper.findErrorsValidacioPerNode(expedient).isEmpty());
 			resposta = dto;
 		} else if (deproxied instanceof CarpetaEntity) {
-			CarpetaEntity carpeta = (CarpetaEntity)deproxied;
 			CarpetaDto dto = new CarpetaDto();
-			dto.setTipus(CarpetaTipusEnumDto.valueOf(carpeta.getCarpetaTipus().name()));
 			resposta = dto;
 		} else if (deproxied instanceof DocumentEntity) {
 			DocumentEntity document = (DocumentEntity)deproxied;
@@ -262,6 +253,8 @@ public class ContingutHelper {
 		resposta.setId(contingut.getId());
 		resposta.setNom(contingut.getNom());
 		resposta.setEsborrat(contingut.getEsborrat());
+		resposta.setArxiuUuid(contingut.getArxiuUuid());
+		resposta.setArxiuDataActualitzacio(contingut.getArxiuDataActualitzacio());
 		resposta.setEntitat(
 				conversioTipusHelper.convertir(
 						contingut.getEntitat(),
@@ -693,67 +686,6 @@ public class ContingutHelper {
 		expedient.updateNtiIdentificador(ntiIdentificador);
 	}
 
-	public DocumentEntity crearNouDocument(
-			DocumentTipusEnumDto documentTipus,
-			String nom,
-			Date data,
-			Date dataCaptura,
-			String ntiOrgano,
-			DocumentNtiOrigenEnumDto ntiOrigen,
-			DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion,
-			DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental,
-			ExpedientEntity expedient,
-			MetaDocumentEntity metaDocument,
-			ContingutEntity pare,
-			EntitatEntity entitat,
-			String ubicacio,
-			FitxerDto fitxer) {
-		DocumentEntity documentCrear = DocumentEntity.getBuilder(
-				documentTipus,
-				DocumentEstatEnumDto.REDACCIO,
-				nom,
-				data,
-				dataCaptura,
-				"1.0",
-				ntiOrgano,
-				ntiOrigen,
-				ntiEstadoElaboracion,
-				ntiTipoDocumental,
-				expedient,
-				metaDocument,
-				pare,
-				entitat).
-				ubicacio(ubicacio).
-				build();
-		DocumentEntity documentCreat = documentRepository.save(documentCrear);
-		calcularIdentificadorDocument(
-				documentCreat,
-				entitat.getUnitatArrel());
-		if (DocumentTipusEnumDto.DIGITAL.equals(documentTipus)) {
-			int versio = 1;
-			DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
-					documentCreat,
-					versio,
-					fitxer.getNom(),
-					fitxer.getContentType(),
-					fitxer.getContingut());
-			documentVersioRepository.save(documentVersio);
-			documentCreat.updateVersioDarrera(documentVersio);
-		}
-		if (expedient != null) {
-			cacheHelper.evictErrorsValidacioPerNode(expedient);
-		}
-		return documentCreat;
-	}
-
-	public void calcularIdentificadorDocument(
-			DocumentEntity document,
-			String organCodi) {
-		int any = Calendar.getInstance().get(Calendar.YEAR);
-		String ntiIdentificador = "ES_" + organCodi + "_" + any + "_RIP" + String.format("%027d", document.getId());
-		document.updateNtiIdentificador(ntiIdentificador);
-	}
-
 	public EscriptoriEntity getEscriptoriPerUsuari(
 			EntitatEntity entitat,
 			UsuariEntity usuari) {
@@ -887,6 +819,66 @@ public class ContingutHelper {
 
 	public boolean isNomValid(String nom) {
 		return !nom.startsWith(".");
+	}
+
+	public void arxiuPropagarModificacio(
+			ContingutEntity contingut,
+			ExpedientEntity expedientSuperior,
+			FitxerDto fitxer) {
+		String classificacioDocumental = null;
+		if (expedientSuperior != null) {
+			classificacioDocumental = expedientSuperior.getMetaExpedient().getClassificacioDocumental();
+		}
+		if (pluginHelper.isArxiuPluginActiu()) {
+			if (contingut instanceof ExpedientEntity) {
+				pluginHelper.arxiuExpedientActualitzar(
+						(ExpedientEntity)contingut);
+			} else if (contingut instanceof DocumentEntity) {
+				pluginHelper.arxiuDocumentActualitzar(
+						(DocumentEntity)contingut,
+						fitxer,
+						contingut.getPare(),
+						classificacioDocumental);
+			} else if (contingut instanceof CarpetaEntity) {
+				pluginHelper.arxiuCarpetaActualitzar(
+						(CarpetaEntity)contingut,
+						contingut.getPare());
+			} else {
+				throw new ValidationException(
+						contingut.getId(),
+						ContingutEntity.class,
+						"El contingut que es vol propagar a l'arxiu no és del tipus expedient, document o carpeta");
+			}
+		}
+	}
+
+	public void arxiuPropagarEliminacio(
+			ContingutEntity contingut,
+			ExpedientEntity expedientSuperior) {
+		if (contingut.getArxiuUuid() != null) {
+			if (pluginHelper.isArxiuPluginActiu()) {
+				if (contingut instanceof ExpedientEntity) {
+					pluginHelper.arxiuExpedientEsborrar(
+							(ExpedientEntity)contingut);
+				} else if (contingut instanceof DocumentEntity) {
+					pluginHelper.arxiuDocumentEsborrar(
+							(DocumentEntity)contingut);
+				} else if (contingut instanceof CarpetaEntity) {
+					pluginHelper.arxiuCarpetaEsborrar(
+							(CarpetaEntity)contingut);
+				} else {
+					throw new ValidationException(
+							contingut.getId(),
+							ContingutEntity.class,
+							"El contingut que es vol esborrar de l'arxiu no és del tipus expedient, document o carpeta");
+				}
+			} else {
+				throw new ValidationException(
+						contingut.getId(),
+						ContingutEntity.class,
+						"S'ha d'esborrar un contingut de l'arxiu però el plugin no està habilitat");
+			}
+		}
 	}
 
 

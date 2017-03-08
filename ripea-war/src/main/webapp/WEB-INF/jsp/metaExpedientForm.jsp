@@ -33,11 +33,11 @@
 				<rip:inputText name="codi" textKey="metaexpedient.form.camp.codi" required="true"/>
 				<rip:inputText name="nom" textKey="metaexpedient.form.camp.nom" required="true"/>
 				<rip:inputTextarea name="descripcio" textKey="metaexpedient.form.camp.descripcio"/>
-				<rip:inputText name="classificacioDocumental" textKey="metaexpedient.form.camp.classificacio.doc" required="true"/>
 				<rip:inputText name="classificacioSia" textKey="metaexpedient.form.camp.classificacio.sia" required="true"/>
-				<rip:inputText name="unitatAdministrativa" textKey="metaexpedient.form.camp.unitat.adm"/>
+				<rip:inputText name="classificacioDocumental" textKey="metaexpedient.form.camp.classificacio.doc" required="true"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="notificacions">
+				<rip:inputText name="unitatAdministrativa" textKey="metaexpedient.form.camp.unitat.adm"/>
 				<rip:inputCheckbox name="notificacioActiva" textKey="metaexpedient.form.camp.notificacio.activa"/>
 				<rip:inputText name="notificacioOrganCodi" textKey="metaexpedient.form.camp.notificacio.organ"/>
 				<rip:inputText name="notificacioLlibreCodi" textKey="metaexpedient.form.camp.notificacio.llibre"/>

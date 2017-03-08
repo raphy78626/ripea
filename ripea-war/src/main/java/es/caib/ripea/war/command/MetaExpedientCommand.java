@@ -31,12 +31,12 @@ public class MetaExpedientCommand {
 	private String nom;
 	@Size(max=1024)
 	private String descripcio;
-	@NotEmpty @Size(max = 30)
-	private String classificacioDocumental;
 	@NotEmpty @Size(max = 6)
 	private String classificacioSia;
 	@Size(max = 9)
 	private String unitatAdministrativa;
+	@Size(max = 30)
+	private String classificacioDocumental;
 	private boolean notificacioActiva;
 	@Size(max = 9)
 	private String notificacioOrganCodi;
@@ -81,12 +81,6 @@ public class MetaExpedientCommand {
 	public void setDescripcio(String descripcio) {
 		this.descripcio = descripcio;
 	}
-	public String getClassificacioDocumental() {
-		return classificacioDocumental;
-	}
-	public void setClassificacioDocumental(String classificacioDocumental) {
-		this.classificacioDocumental = classificacioDocumental;
-	}
 	public String getClassificacioSia() {
 		return classificacioSia;
 	}
@@ -98,6 +92,12 @@ public class MetaExpedientCommand {
 	}
 	public void setUnitatAdministrativa(String unitatAdministrativa) {
 		this.unitatAdministrativa = unitatAdministrativa;
+	}
+	public String getClassificacioDocumental() {
+		return classificacioDocumental;
+	}
+	public void setClassificacioDocumental(String classificacioDocumental) {
+		this.classificacioDocumental = classificacioDocumental;
 	}
 	public boolean isNotificacioActiva() {
 		return notificacioActiva;

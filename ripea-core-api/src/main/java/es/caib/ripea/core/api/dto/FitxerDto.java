@@ -50,6 +50,15 @@ public class FitxerDto implements Serializable {
 		this.tamany = tamany;
 	}
 
+	public String getExtensio() {
+		int indexPunt = nom.lastIndexOf(".");
+		if (indexPunt != -1 && indexPunt < nom.length() - 1) {
+			return nom.substring(indexPunt + 1);
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

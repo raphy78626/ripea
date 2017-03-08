@@ -35,10 +35,10 @@ import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 @EntityListeners(AuditingEntityListener.class)
 public class MetaExpedientEntity extends MetaNodeEntity {
 
-	@Column(name = "clasif_doc", length = 30)
-	private String classificacioDocumental;
-	@Column(name = "clasif_sia", length = 6)
+	@Column(name = "clasif_sia", length = 6, nullable = false)
 	private String classificacioSia;
+	@Column(name = "clasif_doc", length = 30, nullable = false)
+	private String classificacioDocumental;
 	@Column(name = "unitat_adm", length = 9)
 	private String unitatAdministrativa;
 	@Column(name = "notif_activa", nullable = false)
@@ -77,9 +77,6 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			inverseJoinColumns = {@JoinColumn(name = "arxiu_id")})
 	protected List<ArxiuEntity> arxius;
 	
-	public String getClassificacioDocumental() {
-		return classificacioDocumental;
-	}
 	public String getClassificacioSia() {
 		return classificacioSia;
 	}
@@ -91,6 +88,9 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 	}
 	public String getUnitatAdministrativa() {
 		return unitatAdministrativa;
+	}
+	public String getClassificacioDocumental() {
+		return classificacioDocumental;
 	}
 	public boolean isNotificacioActiva() {
 		return notificacioActiva;

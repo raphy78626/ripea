@@ -28,12 +28,13 @@ public class IntegracioHelper {
 
 	public static final int DEFAULT_MAX_ACCIONS = 20;
 
+	public static final String INTCODI_REGISTRE = "REGISTRE";
 	public static final String INTCODI_USUARIS = "USUARIS";
 	public static final String INTCODI_UNITATS = "UNITATS";
 	public static final String INTCODI_CIUTADA = "CIUTADA";
 	public static final String INTCODI_PFIRMA = "PFIRMA";
+	public static final String INTCODI_ARXIU = "ARXIU";
 	public static final String INTCODI_CUSTODIA = "CUSTODIA";
-	public static final String INTCODI_REGISTRE = "REGISTRE";
 	public static final String INTCODI_GESDOC = "GESDOC";
 	public static final String INTCODI_CONVERT = "CONVERT";
 	public static final String INTCODI_CALLBACK = "CALLBACK";
@@ -58,6 +59,9 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_CALLBACK));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_ARXIU));
 		integracions.add(
 				novaIntegracio(
 						INTCODI_CUSTODIA));
@@ -199,6 +203,8 @@ public class IntegracioHelper {
 			integracio.setNom("Registre");
 		} else if (INTCODI_PFIRMA.equals(codi)) {
 			integracio.setNom("Portafirmes");
+		} else if (INTCODI_ARXIU.equals(codi)) {
+			integracio.setNom("Arxiu digital");
 		} else if (INTCODI_CUSTODIA.equals(codi)) {
 			integracio.setNom("Custòdia doc.");
 		} else if (INTCODI_GESDOC.equals(codi)) {

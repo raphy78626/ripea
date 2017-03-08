@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.entity;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +18,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -66,6 +69,11 @@ public abstract class ContingutEntity extends RipeaAuditable<Long> {
 	 */
 	@Column(name = "esborrat")
 	protected int esborrat = 0;
+	@Column(name = "arxiu_uuid", length = 36)
+	protected String arxiuUuid;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "arxiu_data_act", nullable = false)
+	protected Date arxiuDataActualitzacio;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "entitat_id")
 	@ForeignKey(name = "ipa_entitat_contingut_fk")
@@ -94,6 +102,12 @@ public abstract class ContingutEntity extends RipeaAuditable<Long> {
 	public int getEsborrat() {
 		return esborrat;
 	}
+	public String getArxiuUuid() {
+		return arxiuUuid;
+	}
+	public Date getArxiuDataActualitzacio() {
+		return arxiuDataActualitzacio;
+	}
 	public EntitatEntity getEntitat() {
 		return entitat;
 	}
@@ -112,6 +126,17 @@ public abstract class ContingutEntity extends RipeaAuditable<Long> {
 	}
 	public void updateDarrerMoviment(ContingutMovimentEntity darrerMoviment) {
 		this.darrerMoviment = darrerMoviment;
+	}
+	public void updateArxiu(
+			String arxiuUuid) {
+		if (arxiuUuid != null) {
+			this.arxiuUuid = arxiuUuid;
+		}
+		this.arxiuDataActualitzacio = new Date();
+	}
+	public void updateArxiuEsborrat() {
+		this.arxiuUuid = null;
+		this.arxiuDataActualitzacio = null;
 	}
 
 	@Override

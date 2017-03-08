@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.CarpetaDto;
-import es.caib.ripea.core.api.dto.CarpetaTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.CarpetaService;
@@ -24,6 +23,7 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
+import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.repository.CarpetaRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 
@@ -47,6 +47,8 @@ public class CarpetaServiceImpl implements CarpetaService {
 	@Resource
 	private ContingutHelper contingutHelper;
 	@Resource
+	private PluginHelper pluginHelper;
+	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
@@ -58,13 +60,11 @@ public class CarpetaServiceImpl implements CarpetaService {
 	public CarpetaDto create(
 			Long entitatId,
 			Long contingutId,
-			String nom,
-			CarpetaTipusEnumDto tipus) {
+			String nom) {
 		logger.debug("Creant nova carpeta ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ", "
-				+ "nom=" + nom + ", "
-				+ "tipus=" + tipus + ")");
+				+ "nom=" + nom + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -107,7 +107,6 @@ public class CarpetaServiceImpl implements CarpetaService {
 		}
 		CarpetaEntity carpeta = CarpetaEntity.getBuilder(
 				nom,
-				tipus,
 				contingut,
 				entitat).build();
 		carpeta = carpetaRepository.save(carpeta);
@@ -116,7 +115,12 @@ public class CarpetaServiceImpl implements CarpetaService {
 				carpeta,
 				true,
 				true);
-		return toCarpetaDto(carpeta);
+		CarpetaDto dto = toCarpetaDto(carpeta);
+		contingutHelper.arxiuPropagarModificacio(
+				carpeta,
+				expedientSuperior,
+				null);
+		return dto;
 	}
 
 	@Transactional
@@ -124,13 +128,11 @@ public class CarpetaServiceImpl implements CarpetaService {
 	public CarpetaDto update(
 			Long entitatId,
 			Long id,
-			String nom,
-			CarpetaTipusEnumDto tipus) {
+			String nom) {
 		logger.debug("Actualitzant dades de la carpeta ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
-				+ "nom=" + nom + ", "
-				+ "tipus=" + tipus + ")");
+				+ "nom=" + nom + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -172,8 +174,7 @@ public class CarpetaServiceImpl implements CarpetaService {
 		}
 		String nomOriginal = carpeta.getNom();
 		carpeta.update(
-				nom,
-				tipus);
+				nom);
 		// Registra al log la modificació de la carpeta
 		contingutLogHelper.log(
 				carpeta,
@@ -182,7 +183,12 @@ public class CarpetaServiceImpl implements CarpetaService {
 				null,
 				false,
 				false);
-		return toCarpetaDto(carpeta);
+		CarpetaDto dto = toCarpetaDto(carpeta);
+		contingutHelper.arxiuPropagarModificacio(
+				carpeta,
+				expedientSuperior,
+				null);
+		return dto;
 	}
 
 	@Transactional
@@ -234,7 +240,11 @@ public class CarpetaServiceImpl implements CarpetaService {
 				null,
 				true,
 				true);
-		return toCarpetaDto(carpeta);
+		CarpetaDto dto = toCarpetaDto(carpeta);
+		contingutHelper.arxiuPropagarEliminacio(
+				carpeta,
+				expedientSuperior);
+		return dto;
 	}
 
 	@Transactional(readOnly = true)
@@ -265,6 +275,38 @@ public class CarpetaServiceImpl implements CarpetaService {
 	}
 
 
+
+	/*private void propagarModificacioArxiu(
+			CarpetaEntity carpeta,
+			ExpedientEntity expedientSuperior) {
+		if (pluginHelper.isArxiuPluginActiu()) {
+			// Propaga la creació de la carpeta a l'arxiu
+			if (expedientSuperior != null) {
+				// Si la carpeta s'ha creat a dins un expedient
+				pluginHelper.arxiuCarpetaActualitzar(
+						carpeta,
+						carpeta.getPare(),
+						expedientSuperior);
+			} else {
+				// TODO Si la carpeta s'ha creat a dins un escriptori
+			}
+		}
+	}
+	private void propagarEliminacioArxiu(
+			CarpetaEntity carpeta,
+			ExpedientEntity expedientSuperior) {
+		if (pluginHelper.isArxiuPluginActiu() && carpeta.getArxiuUuid() != null) {
+			// Propaga l'esborrat de la carpeta a l'arxiu
+			if (expedientSuperior != null) {
+				// Si la carpeta s'ha esborrat a dins un expedient
+				pluginHelper.arxiuCarpetaEsborrar(
+						carpeta,
+						expedientSuperior);
+			} else {
+				// TODO Si la carpeta s'ha esborrat a dins un escriptori
+			}
+		}
+	}*/
 
 	private CarpetaDto toCarpetaDto(
 			CarpetaEntity carpeta) {
