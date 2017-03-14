@@ -30,7 +30,9 @@ public class DocumentDto extends NodeDto {
 	private DocumentNtiTipoFirmaEnumDto ntiTipoFirma;
 	private String ntiCsv;
 	private String ntiCsvRegulacion;
-	private DocumentVersioDto versioDarrera;
+	private String versioDarrera;
+	private int versioCount;
+	private String[] versions;
 
 	public DocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
@@ -140,11 +142,23 @@ public class DocumentDto extends NodeDto {
 	public void setNtiCsvRegulacion(String ntiCsvRegulacion) {
 		this.ntiCsvRegulacion = ntiCsvRegulacion;
 	}
-	public DocumentVersioDto getVersioDarrera() {
+	public String getVersioDarrera() {
 		return versioDarrera;
 	}
-	public void setVersioDarrera(DocumentVersioDto versioDarrera) {
+	public void setVersioDarrera(String versioDarrera) {
 		this.versioDarrera = versioDarrera;
+	}
+	public int getVersioCount() {
+		return versioCount;
+	}
+	public void setVersioCount(int versioCount) {
+		this.versioCount = versioCount;
+	}
+	public String[] getVersions() {
+		return versions;
+	}
+	public void setVersions(String[] versions) {
+		this.versions = versions;
 	}
 
 	public MetaDocumentDto getMetaDocument() {

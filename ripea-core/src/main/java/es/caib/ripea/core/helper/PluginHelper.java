@@ -42,7 +42,6 @@ import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
-import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
@@ -742,6 +741,25 @@ public class PluginHelper {
 						interessats,
 						metaExpedient.getClassificacioDocumental(),
 						generarCapsaleraArxiu(expedient));
+				StringBuilder organsSb = null;
+				if (arxiuExpedient.getEniOrgans() != null && !arxiuExpedient.getEniOrgans().isEmpty()) {
+					organsSb = new StringBuilder();
+					boolean primer = true;
+					for (String organ: arxiuExpedient.getEniOrgans()) {
+						if (primer) {
+							primer = false;
+						} else {
+							organsSb.append(",");
+						}
+						organsSb.append(organ);
+					}
+				}
+				expedient.updateNti(
+						arxiuExpedient.getEniVersio(),
+						arxiuExpedient.getEniIdentificador(),
+						(organsSb != null) ? organsSb.toString() : null,
+						arxiuExpedient.getEniDataObertura(),
+						arxiuExpedient.getEniClassificacio());
 				expedient.updateArxiu(
 						arxiuExpedient.getNodeId());
 			} else {
@@ -1108,47 +1126,87 @@ public class PluginHelper {
 		return getArxiuFormatExtensio(extensio) != null;
 	}
 
-	public void arxiuDocumentConsolidarVersions(
-			DocumentEntity document,
-			List<DocumentVersioEntity> versions) {
-		if (versions != null && versions.size() > 0) {
-			String accioDescripcio = "Consolidació de les versions d'un document";
-			Map<String, String> accioParams = new HashMap<String, String>();
-			accioParams.put("id", document.getId().toString());
-			accioParams.put("títol", document.getNom());
-			long t0 = System.currentTimeMillis();
-			try {
-				List<ArxiuDocumentVersio> arxiuVersions = getArxiuPlugin().documentObtenirVersions(
-						document.getArxiuUuid(),
-						generarCapsaleraArxiu(document));
-				for (int i = 0; i < versions.size(); i++) {
-					DocumentVersioEntity versio = versions.get(i);
-					if (i < arxiuVersions.size()) {
-						ArxiuDocumentVersio arxiuVersio = arxiuVersions.get(i);
-						versio.updateArxiuUuid(arxiuVersio.getNodeId());
-					}
-				}
-				integracioHelper.addAccioOk(
-						IntegracioHelper.INTCODI_ARXIU,
-						accioDescripcio,
-						accioParams,
-						IntegracioAccioTipusEnumDto.ENVIAMENT,
-						System.currentTimeMillis() - t0);
-			} catch (Exception ex) {
-				String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-				integracioHelper.addAccioError(
-						IntegracioHelper.INTCODI_ARXIU,
-						accioDescripcio,
-						accioParams,
-						IntegracioAccioTipusEnumDto.ENVIAMENT,
-						System.currentTimeMillis() - t0,
-						errorDescripcio,
-						ex);
-				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_ARXIU,
-						errorDescripcio,
-						ex);
+	public String arxiuDocumentObtenirDarreraVersio(
+			DocumentEntity document) {
+		String accioDescripcio = "Obtenir darrera versió del document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", document.getId().toString());
+		accioParams.put("títol", document.getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			List<ArxiuDocumentVersio> arxiuVersions = getArxiuPlugin().documentObtenirVersions(
+					document.getArxiuUuid(),
+					generarCapsaleraArxiu(document));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			if (arxiuVersions != null && !arxiuVersions.isEmpty()) {
+				ArxiuDocumentVersio darreraVersio = arxiuVersions.get(arxiuVersions.size() - 1);
+				return darreraVersio.getId();
+			} else {
+				return null;
 			}
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public String[] arxiuDocumentObtenirVersions(
+			DocumentEntity document) {
+		String accioDescripcio = "Obtenir versions del document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", document.getId().toString());
+		accioParams.put("títol", document.getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			List<ArxiuDocumentVersio> arxiuVersions = getArxiuPlugin().documentObtenirVersions(
+					document.getArxiuUuid(),
+					generarCapsaleraArxiu(document));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			if (arxiuVersions != null && !arxiuVersions.isEmpty()) {
+				String[] versions = new String[arxiuVersions.size()];
+				int i = 0;
+				for (ArxiuDocumentVersio arxiuVersio: arxiuVersions) {
+					versions[i++] = arxiuVersio.getId();
+				}
+				return versions;
+			} else {
+				return null;
+			}
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
 		}
 	}
 
@@ -1170,6 +1228,7 @@ public class PluginHelper {
 						generarCapsaleraArxiu(carpeta));
 				carpeta.updateArxiu(
 						arxiuCarpeta.getNodeId());
+			
 			} else {
 				getArxiuPlugin().carpetaModificar(
 						carpeta.getArxiuUuid(),

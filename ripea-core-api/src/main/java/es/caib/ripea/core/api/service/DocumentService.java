@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
-import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -122,10 +121,10 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	/*@PreAuthorize("hasRole('tothom')")
 	public List<DocumentVersioDto> findVersionsByDocument(
 			Long entitatId,
-			Long id) throws NotFoundException;
+			Long id) throws NotFoundException;*/
 
 	/**
 	 * Consulta la darrera versió del document.
@@ -138,10 +137,10 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	/*@PreAuthorize("hasRole('tothom')")
 	public DocumentVersioDto findDarreraVersio(
 			Long entitatId,
-			Long id) throws NotFoundException;
+			Long id) throws NotFoundException;*/
 
 	/**
 	 * Consulta una versió del document.
@@ -156,11 +155,11 @@ public interface DocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	/*@PreAuthorize("hasRole('tothom')")
 	public DocumentVersioDto findVersio(
 			Long entitatId,
 			Long id,
-			int versio) throws NotFoundException;
+			int versio) throws NotFoundException;*/
 
 	/**
 	 * Consulta els documents d'un expedient.
@@ -194,7 +193,7 @@ public interface DocumentService {
 	public FitxerDto descarregar(
 			Long entitatId,
 			Long id,
-			int versio) throws NotFoundException;
+			String versio) throws NotFoundException;
 
 	/**
 	 * Envia un document a firmar al portafirmes.

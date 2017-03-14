@@ -28,7 +28,6 @@ import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
-import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
@@ -64,7 +63,6 @@ import es.caib.ripea.core.repository.ContingutMovimentRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
-import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.MetaDadaRepository;
@@ -98,8 +96,6 @@ public class ContingutHelper {
 	private DocumentRepository documentRepository;
 	@Resource
 	private ExpedientRepository expedientRepository;
-	@Resource
-	private DocumentVersioRepository documentVersioRepository;
 	@Resource
 	private MetaDadaRepository metaDadaRepository;
 	@Resource
@@ -145,6 +141,7 @@ public class ContingutHelper {
 				false,
 				false,
 				false,
+				false,
 				false);
 	}
 	public ContingutDto toContingutDto(
@@ -154,7 +151,8 @@ public class ContingutHelper {
 			boolean filtrarFillsSegonsPermisRead,
 			boolean ambDades,
 			boolean ambPath,
-			boolean pathNomesFinsExpedientArrel) {
+			boolean pathNomesFinsExpedientArrel,
+			boolean ambVersions) {
 		ContingutDto resposta = null;
 		MetaNodeDto metaNode = null;
 		// Crea el contenidor del tipus correcte
@@ -202,6 +200,12 @@ public class ContingutHelper {
 			dto.setCustodiaId(document.getCustodiaId());
 			dto.setCustodiaUrl(document.getCustodiaUrl());
 			dto.setDataCaptura(document.getDataCaptura());
+			dto.setVersioDarrera(document.getVersioDarrera());
+			dto.setVersioCount(document.getVersioCount());
+			if (ambVersions && pluginHelper.isArxiuPluginActiu()) {
+				dto.setVersions(
+						pluginHelper.arxiuDocumentObtenirVersions(document));
+			}
 			dto.setNtiVersion(document.getNtiVersion());
 			dto.setNtiIdentificador(document.getNtiIdentificador());
 			dto.setNtiOrgano(document.getNtiOrgano());
@@ -212,12 +216,6 @@ public class ContingutHelper {
 			dto.setNtiTipoFirma(document.getNtiTipoFirma());
 			dto.setNtiCsv(document.getNtiCsv());
 			dto.setNtiCsvRegulacion(document.getNtiCsvRegulacion());
-			if (document.getVersioDarrera() != null) {
-				dto.setVersioDarrera(
-						conversioTipusHelper.convertir(
-								document.getVersioDarrera(),
-								DocumentVersioDto.class));
-			}
 			metaNode = conversioTipusHelper.convertir(
 					document.getMetaNode(),
 					MetaDocumentDto.class);
@@ -331,6 +329,7 @@ public class ContingutHelper {
 							false,
 							false,
 							false,
+							false,
 							false));
 				}
 				for (ContingutEntity fill: fills) {
@@ -338,6 +337,7 @@ public class ContingutHelper {
 						ContingutDto fillDto = toContingutDto(
 								fill,
 								ambPermisos,
+								false,
 								false,
 								false,
 								false,
@@ -839,6 +839,18 @@ public class ContingutHelper {
 						fitxer,
 						contingut.getPare(),
 						classificacioDocumental);
+				try {
+					String versio = pluginHelper.arxiuDocumentObtenirDarreraVersio(
+						(DocumentEntity)contingut);
+					((DocumentEntity)contingut).updateVersio(versio);
+				} catch (Exception ex) {
+					logger.error(
+							"Error al actualitzar les versions del document (" + 
+							"entitatId=" + contingut.getEntitat().getId() + ", " +
+							"documentId=" + contingut.getId() + ", " +
+							"documentTitol=" + contingut.getNom() + ")",
+							ex);
+				}
 			} else if (contingut instanceof CarpetaEntity) {
 				pluginHelper.arxiuCarpetaActualitzar(
 						(CarpetaEntity)contingut,
@@ -917,6 +929,7 @@ public class ContingutHelper {
 						toContingutDto(
 								contingutPath,
 								ambPermisos,
+								false,
 								false,
 								false,
 								false,

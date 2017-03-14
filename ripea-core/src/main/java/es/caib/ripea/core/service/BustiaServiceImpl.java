@@ -547,6 +547,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				false,
+				false,
 				false);
 	}
 
@@ -891,6 +892,7 @@ public class BustiaServiceImpl implements BustiaService {
 				filtrarFillsSegonsPermisRead,
 				false,
 				true,
+				false,
 				false);
 	}
 	private List<BustiaDto> toBustiaDto(

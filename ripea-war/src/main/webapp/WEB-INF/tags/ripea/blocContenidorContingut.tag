@@ -63,7 +63,7 @@
 									'<dt><spring:message code="contingut.info.data"/></dt>' +
 									'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
 									'<dt><spring:message code="contingut.info.versio"/></dt>' +
-									'<dd>${fill.versioDarrera.versio}</dd>';
+									'<dd>${fill.versioDarrera}</dd>';
 							</c:if>
 							tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
 									'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
@@ -153,7 +153,7 @@
 								'<dt><spring:message code="contingut.info.data"/></dt>' +
 								'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
 								'<dt><spring:message code="contingut.info.versio"/></dt>' +
-								'<dd>${fill.versioDarrera.versio}</dd>';
+								'<dd>${fill.versioDarrera}</dd>';
 						</c:if>
 						tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
 						'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +

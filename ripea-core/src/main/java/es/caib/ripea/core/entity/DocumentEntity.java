@@ -4,9 +4,8 @@
 package es.caib.ripea.core.entity;
 
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -14,8 +13,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -64,6 +63,18 @@ public class DocumentEntity extends NodeEntity {
 	private String custodiaId;
 	@Column(name = "custodia_url", length = 1024)
 	private String custodiaUrl;
+	@Column(name = "fitxer_nom", length = 256, nullable = false)
+	private String fitxerNom;
+	@Column(name = "fitxer_content_type", length = 256, nullable = false)
+	private String fitxerContentType;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name = "fitxer_contingut")
+	private byte[] fitxerContingut;
+	@Column(name = "versio_darrera", length = 32, nullable = false)
+	private String versioDarrera;
+	@Column(name = "versio_count", nullable = false)
+	private int versioCount;
 	@Column(name = "nti_version", length = 5, nullable = false)
 	private String ntiVersion;
 	@Column(name = "nti_identif", length = 48, nullable = false)
@@ -88,16 +99,6 @@ public class DocumentEntity extends NodeEntity {
 	private String ntiCsv;
 	@Column(name = "nti_csvreg", length = 512)
 	private String ntiCsvRegulacion;
-	@ManyToOne(optional = true)
-	@JoinColumn(name = "versio_darrera_id")
-	@ForeignKey(name = "ipa_verdarrera_document_fk")
-	private DocumentVersioEntity versioDarrera;
-	@OneToMany(
-			mappedBy = "document",
-			fetch = FetchType.LAZY,
-			cascade = CascadeType.ALL,
-			orphanRemoval = true)
-	private List<DocumentVersioEntity> versions;
 
 
 
@@ -128,6 +129,21 @@ public class DocumentEntity extends NodeEntity {
 	public String getCustodiaUrl() {
 		return custodiaUrl;
 	}
+	public String getFitxerNom() {
+		return fitxerNom;
+	}
+	public String getFitxerContentType() {
+		return fitxerContentType;
+	}
+	public byte[] getFitxerContingut() {
+		return fitxerContingut;
+	}
+	public String getVersioDarrera() {
+		return versioDarrera;
+	}
+	public int getVersioCount() {
+		return versioCount;
+	}
 	public String getNtiVersion() {
 		return ntiVersion;
 	}
@@ -157,9 +173,6 @@ public class DocumentEntity extends NodeEntity {
 	}
 	public String getNtiCsvRegulacion() {
 		return ntiCsvRegulacion;
-	}
-	public DocumentVersioEntity getVersioDarrera() {
-		return versioDarrera;
 	}
 
 	public MetaDocumentEntity getMetaDocument() {
@@ -202,11 +215,6 @@ public class DocumentEntity extends NodeEntity {
 			DocumentEstatEnumDto estat) {
 		this.estat = estat;
 	}
-	public void updateVersioDarrera(
-			DocumentVersioEntity versioDarrera) {
-		this.versioDarrera = versioDarrera;
-	}
-
 	public void updateInformacioCustodia(
 			Date custodiaData,
 			String custodiaId,
@@ -214,6 +222,23 @@ public class DocumentEntity extends NodeEntity {
 		this.custodiaData = custodiaData;
 		this.custodiaId = custodiaId;
 		this.custodiaUrl = custodiaUrl;
+	}
+	public void updateFitxer(
+			String fitxerNom,
+			String fitxerContentType,
+			byte[] fitxerContingut) {
+		this.fitxerNom = fitxerNom;
+		this.fitxerContentType = fitxerContentType;
+		this.fitxerContingut = fitxerContingut;
+	}
+	public void updateVersio(
+			String versioDarrera) {
+		if (versioDarrera != null) {
+			this.versioDarrera = versioDarrera;
+			this.versioCount++;
+		} else {
+			this.versioDarrera = "<null>";
+		}
 	}
 
 	public static Builder getBuilder(

@@ -286,7 +286,7 @@ public class RegistreHelper {
 				registreAnnex.getTitol(),
 				registreAnnex.getFitxerNom(),
 				registreAnnex.getFitxerTamany(),
-				registreAnnex.getFitxerGestioDocumentalId(),
+				registreAnnex.getFitxerArxiuId(),
 				registreAnnex.getDataCaptura(),
 				RegistreAnnexOrigenEnum.valorAsEnum(registreAnnex.getOrigenCiutadaAdmin()),
 				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getNtiTipusDocument()),

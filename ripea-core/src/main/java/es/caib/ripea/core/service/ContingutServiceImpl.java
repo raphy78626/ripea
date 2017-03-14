@@ -59,7 +59,6 @@ import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
-import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
 import es.caib.ripea.core.repository.MetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
@@ -89,8 +88,6 @@ public class ContingutServiceImpl implements ContingutService {
 	private MetaDadaRepository metaDadaRepository;
 	@Resource
 	private DadaRepository dadaRepository;
-	@Resource
-	private DocumentVersioRepository documentVersioRepository;
 	@Resource
 	private MetaNodeRepository metaNodeRepository;
 
@@ -179,6 +176,7 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				true,
 				true,
+				false,
 				false,
 				false,
 				false);
@@ -301,6 +299,7 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false,
 				false,
+				false,
 				false);
 		// Comprova que el contingut no estigui esborrat
 		if (contingut.getEsborrat() > 0) {
@@ -365,6 +364,7 @@ public class ContingutServiceImpl implements ContingutService {
 		ContingutDto dto = contingutHelper.toContingutDto(
 				contingut,
 				true,
+				false,
 				false,
 				false,
 				false,
@@ -439,6 +439,7 @@ public class ContingutServiceImpl implements ContingutService {
 		return contingutHelper.toContingutDto(
 				contingut,
 				true,
+				false,
 				false,
 				false,
 				false,
@@ -526,6 +527,7 @@ public class ContingutServiceImpl implements ContingutService {
 		return contingutHelper.toContingutDto(
 				contingutOrigen,
 				true,
+				false,
 				false,
 				false,
 				false,
@@ -642,6 +644,7 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false,
 				false,
+				false,
 				false);
 	}
 
@@ -664,6 +667,7 @@ public class ContingutServiceImpl implements ContingutService {
 		return (EscriptoriDto)contingutHelper.toContingutDto(
 				escriptori,
 				true,
+				false,
 				false,
 				false,
 				false,
@@ -711,7 +715,8 @@ public class ContingutServiceImpl implements ContingutService {
 				ambFills,
 				true,
 				true,
-				false);
+				false,
+				true);
 	}
 
 	@Transactional(readOnly = true)
@@ -740,7 +745,8 @@ public class ContingutServiceImpl implements ContingutService {
 				ambFills,
 				true,
 				true,
-				false);
+				false,
+				true);
 	}
 
 	@Transactional(readOnly = true)
@@ -806,7 +812,8 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				true,
 				true,
-				false);
+				false,
+				true);
 	}
 
 	@Transactional(readOnly = true)
@@ -1106,6 +1113,7 @@ public class ContingutServiceImpl implements ContingutService {
 								false,
 								false,
 								true,
+								false,
 								false);
 					}
 				});
@@ -1177,6 +1185,7 @@ public class ContingutServiceImpl implements ContingutService {
 					public ContingutDto convert(ContingutEntity source) {
 						return contingutHelper.toContingutDto(
 								source,
+								false,
 								false,
 								false,
 								false,
@@ -1300,8 +1309,7 @@ public class ContingutServiceImpl implements ContingutService {
 					documentOrigen.getMetaDocument(),
 					contingutDesti,
 					entitat,
-					documentOrigen.getUbicacio(),
-					documentHelper.getFitxerAssociat(documentOrigen));
+					documentOrigen.getUbicacio());
 		} else if (contingutOrigen instanceof ExpedientEntity) {
 			ExpedientEntity expedientOrigen = (ExpedientEntity)contingutOrigen;
 			creat = contingutHelper.crearNouExpedient(

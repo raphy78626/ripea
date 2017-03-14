@@ -348,13 +348,12 @@ public class ContingutDocumentController extends BaseUserController {
 		return "contingutDocumentForm";
 	}
 
-	@RequestMapping(value = "/{contingutId}/document/{documentId}/descarregar/{versio}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/descarregar", method = RequestMethod.GET)
 	public String descarregar(
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable Long contingutId,
-			@PathVariable Long documentId,
-			@PathVariable int versio) throws IOException {
+			@PathVariable Long documentId) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ContingutDto contingut = contingutService.findAmbIdUser(
 				entitatActual.getId(),
@@ -364,7 +363,7 @@ public class ContingutDocumentController extends BaseUserController {
 			FitxerDto fitxer = documentService.descarregar(
 					entitatActual.getId(),
 					documentId,
-					versio);
+					null);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
@@ -388,7 +387,7 @@ public class ContingutDocumentController extends BaseUserController {
 			HttpServletResponse response,
 			@PathVariable Long contingutId,
 			@PathVariable Long documentId,
-			@PathVariable int versio) throws IOException {
+			@PathVariable String versio) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		FitxerDto fitxer = documentService.descarregar(
 				entitatActual.getId(),

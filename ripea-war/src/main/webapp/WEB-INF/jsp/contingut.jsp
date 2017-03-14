@@ -380,7 +380,7 @@ $(document).ready(function() {
 							<dd><fmt:formatDate value="${contingut.data}" pattern="dd/MM/yyyy"/></dd>
 							<c:if test="${contingut.documentTipus != 'FISIC'}">
 								<dt><spring:message code="contingut.info.versio"/></dt>
-								<dd>${contingut.versioDarrera.versio}</dd>
+								<dd>${contingut.versioDarrera}</dd>
 							</c:if>
 						</c:if>
 						<dt><spring:message code="contingut.info.createl"/></dt>
@@ -438,7 +438,7 @@ $(document).ready(function() {
 						<c:choose>
 							<c:when test="${contingut.documentTipus != 'FISIC'}">
 								<li class="active"><a href="#contingut" data-toggle="tab">
-									<spring:message code="contingut.tab.versions"/>&nbsp;<span class="badge">${fn:length(documentVersions)}</span></a>
+									<spring:message code="contingut.tab.versions"/>&nbsp;<span class="badge">${contingut.versioCount}</span></a>
 								</li>
 							</c:when>
 							<c:otherwise>
@@ -446,7 +446,7 @@ $(document).ready(function() {
 									<spring:message code="contingut.tab.ubicacio"/></a>
 								</li>
 							</c:otherwise>
-						</c:choose>			
+						</c:choose>
 					</c:when>
 					<c:otherwise>
 						<li class="active"><a href="#contingut" data-toggle="tab">
@@ -489,7 +489,7 @@ $(document).ready(function() {
 												<div class="panel-heading">
 													<h4 class="panel-title">
 														<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_${versio.id}">
-															<spring:message code="contingut.versions.versio"/> ${versio.versio}
+															<spring:message code="contingut.versions.versio"/> ${versio}
 														</a>
 													</h4>
 												</div>
@@ -529,7 +529,7 @@ $(document).ready(function() {
 																	<a href="../webdav${contingut.pathAsString}/${contingut.nom}/${contingut.versioDarrera.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contingut.boto.editar.office"/></a>
 																</c:if>
 															</c:if>
-															<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar/${versio.versio}" class="btn btn-default"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
+															<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar/${versio}" class="btn btn-default"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
 														</div>
 													</div>
 												</div>

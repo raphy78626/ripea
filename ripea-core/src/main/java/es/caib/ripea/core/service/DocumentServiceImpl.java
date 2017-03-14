@@ -34,7 +34,6 @@ import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
-import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
@@ -45,7 +44,6 @@ import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
-import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
@@ -65,7 +63,6 @@ import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPortafirmesRepository;
 import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 import es.caib.ripea.core.repository.DocumentRepository;
-import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.InteressatRepository;
 import es.caib.ripea.core.repository.MetaDocumentRepository;
@@ -86,8 +83,6 @@ public class DocumentServiceImpl implements DocumentService {
 	private MetaDocumentRepository metaDocumentRepository;
 	@Resource
 	private DocumentRepository documentRepository;
-	@Resource
-	private DocumentVersioRepository documentVersioRepository;
 	@Resource
 	private MetaExpedientMetaDocumentRepository metaExpedientMetaDocumentRepository;
 	@Resource
@@ -263,8 +258,12 @@ public class DocumentServiceImpl implements DocumentService {
 				metaDocument,
 				contingut,
 				entitat,
-				document.getUbicacio(),
-				fitxer);
+				document.getUbicacio());
+		if (fitxer != null) {
+			documentHelper.actualitzarFitxerDocument(
+					entity,
+					fitxer);
+		}
 		// Registra al log la creació del document
 		contingutLogHelper.logCreacio(
 				entity,
@@ -363,6 +362,11 @@ public class DocumentServiceImpl implements DocumentService {
 				document.getNtiTipoFirma(),
 				document.getNtiCsv(),
 				document.getNtiCsvRegulacion());
+		if (fitxer != null) {
+			documentHelper.actualitzarFitxerDocument(
+					entity,
+					fitxer);
+		}
 		// Registra al log la modificació del document
 		contingutLogHelper.log(
 				entity,
@@ -371,17 +375,6 @@ public class DocumentServiceImpl implements DocumentService {
 				(fitxer != null) ? "VERSIO_NOVA" : null,
 				false,
 				false);
-		if (fitxer != null) {
-			int versio = document.getVersioDarrera().getVersio() + 1;
-			DocumentVersioEntity documentVersio = documentHelper.crearVersioAmbFitxerAssociat(
-					entity,
-					versio,
-					fitxer.getNom(),
-					fitxer.getContentType(),
-					fitxer.getContingut());
-			documentVersioRepository.save(documentVersio);
-			entity.updateVersioDarrera(documentVersio);
-		}
 		DocumentDto dto = toDocumentDto(entity);
 		contingutHelper.arxiuPropagarModificacio(
 				entity,
@@ -496,7 +489,7 @@ public class DocumentServiceImpl implements DocumentService {
 		return toDocumentDto(document);
 	}
 
-	@Transactional(readOnly = true)
+	/*@Transactional(readOnly = true)
 	@Override
 	public List<DocumentVersioDto> findVersionsByDocument(
 			Long entitatId,
@@ -588,7 +581,7 @@ public class DocumentServiceImpl implements DocumentService {
 				dto,
 				documentPortafirmesRepository.findByDocument(document));
 		return dto;
-	}
+	}*/
 
 	@Transactional(readOnly = true)
 	@Override
@@ -633,7 +626,7 @@ public class DocumentServiceImpl implements DocumentService {
 	public FitxerDto descarregar(
 			Long entitatId,
 			Long id,
-			int versio) {
+			String versio) {
 		logger.debug("Descarregant contingut del document ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ", "
@@ -658,18 +651,9 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				true);
-		DocumentVersioEntity documentVersio = documentVersioRepository.findByDocumentAndVersio(
+		return documentHelper.getFitxerAssociat(
 				document,
 				versio);
-		if (documentVersio != null) {
-			return documentHelper.getFitxerAssociat(
-					document,
-					new Integer(versio));
-		} else {
-			throw new NotFoundException(
-					"(documentId=" + document.getId() + ", versio=" + versio + ")",
-					DocumentVersioEntity.class);
-		}
 	}
 
 	@Transactional
@@ -1011,7 +995,7 @@ public class DocumentServiceImpl implements DocumentService {
 	public String generarIdentificadorFirmaClient(
 			Long entitatId,
 			Long id) {
-		logger.debug("Generar identificador firma applet ("
+		logger.debug("Generar identificador firma al navegador ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -1034,7 +1018,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				true);
-		DocumentVersioEntity documentVersio = document.getVersioDarrera();
+		/*DocumentVersioEntity documentVersio = document.getVersioDarrera();
 		if (documentVersio == null) {
 			logger.error("No s'ha trobat la darrera versió del document (" +
 					"documentId=" + id + ")");
@@ -1042,24 +1026,23 @@ public class DocumentServiceImpl implements DocumentService {
 					"(documentId=" + id + ", versio=darrera)",
 					DocumentVersioEntity.class);
 		}
-		int versio = documentVersio.getVersio();
+		int versio = documentVersio.getVersio();*/
 		try {
-			return firmaAppletXifrar(
+			return firmaClientXifrar(
 					new ObjecteFirmaApplet( 
 							new Long(System.currentTimeMillis()),
 							entitatId,
-							id,
-							versio));
+							id));
 		} catch (Exception ex) {
 			logger.error(
-					"Error al generar l'identificador per la firma via applet (" +
-					"documentId=" + id + ", " +
-					"versio=" + versio + ")",
+					"Error al generar l'identificador per la firma al navegador (" +
+					"entitatId=" + entitatId + ", " +
+					"documentId=" + id + ")",
 					ex);
 			throw new RuntimeException(
-					"Error al generar l'identificador per la firma via applet (" +
-					"documentId=" + id + ", " +
-					"versio=" + versio + ")",
+					"Error al generar l'identificador per la firma al navegador (" +
+					"entitatId=" + entitatId + ", " +
+					"documentId=" + id + ")",
 					ex);
 		}
 	}
@@ -1209,6 +1192,7 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				false,
+				false,
 				false);
 	}
 
@@ -1272,12 +1256,12 @@ public class DocumentServiceImpl implements DocumentService {
 		return exception;
 	}*/
 
-	private void emplenarDadesPortafirmes(
+	/*private void emplenarDadesPortafirmes(
 			DocumentVersioDto documentVersio,
 			List<DocumentPortafirmesEntity> documentsPortafirmes) {
 		documentVersio.setPortafirmesConversioArxiuNom(
 				pluginHelper.conversioConvertirPdfArxiuNom(
-						documentVersio.getArxiuNom()));
+						documentVersio.getArxiuNom()));*/
 		/*for (DocumentPortafirmesEntity documentPortafirmes: documentsPortafirmes) {
 			if (documentVersio.getVersio() == documentPortafirmes.getVersio()) {
 				PortafirmesEnviamentDto portafirmesEnviament = new PortafirmesEnviamentDto();
@@ -1304,7 +1288,7 @@ public class DocumentServiceImpl implements DocumentService {
 				documentVersio.addPortafirmesEnviament(portafirmesEnviament);
 			}
 		}*/
-	}
+	/*}*/
 
 	/*private DocumentPortafirmesEntity findDocumentPortafirmesDarrer(
 			EntitatEntity entitat,
@@ -1319,15 +1303,14 @@ public class DocumentServiceImpl implements DocumentService {
 	}*/
 
 	private static final String CLAU_SECRETA = "R1p3AR1p3AR1p3AR";
-	private String firmaAppletXifrar(
+	private String firmaClientXifrar(
 			ObjecteFirmaApplet objecte) throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream os = new ObjectOutputStream(baos);
 		Long[] array = new Long[] {
 				objecte.getSysdate(),
 				objecte.getEntitatId(),
-				objecte.getDocumentId(),
-				new Long(objecte.getVersio())};
+				objecte.getDocumentId()};
 		os.writeObject(array);
 		os.close();
 		Cipher cipher = Cipher.getInstance("AES");
@@ -1352,8 +1335,7 @@ public class DocumentServiceImpl implements DocumentService {
 		ObjecteFirmaApplet objecte = new ObjecteFirmaApplet(
 				array[0],
 				array[1],
-				array[2],
-				array[3].intValue());
+				array[2]);
 		is.close();
 		return objecte;
 	}
@@ -1364,57 +1346,17 @@ public class DocumentServiceImpl implements DocumentService {
 		return new SecretKeySpec(key, "AES");
 	}
 
-	/*private void propagarModificacioArxiu(
-			DocumentEntity document,
-			FitxerDto fitxer,
-			ExpedientEntity expedientSuperior) {
-		if (pluginHelper.isArxiuPluginActiu()) {
-			if (!pluginHelper.arxiuDocumentExtensioPermesa(fitxer.getExtensio())) {
-				throw new ValidationException("Extensió d'arxiu no permesa: " + fitxer.getExtensio());
-			}
-			// Propaga la creació del document a l'arxiu
-			if (expedientSuperior != null) {
-				// Si el document s'ha creat a dins un expedient
-				pluginHelper.arxiuDocumentActualitzar(
-						document,
-						fitxer,
-						document.getPare(),
-						expedientSuperior);
-			} else {
-				// TODO Si el document s'ha creat a dins un escriptori
-			}
-		}
-	}
-	private void propagarEliminacioArxiu(
-			DocumentEntity document,
-			ExpedientEntity expedientSuperior) {
-		if (pluginHelper.isArxiuPluginActiu() && document.getArxiuUuid() != null) {
-			// Propaga l'eliminació del document a l'arxiu
-			if (expedientSuperior != null) {
-				// Si el document s'ha eliminat de dins un expedient
-				pluginHelper.arxiuDocumentEsborrar(
-						document,
-						expedientSuperior);
-			} else {
-				// TODO Si el document s'ha eliminat de dins un escriptori
-			}
-		}
-	}*/
-
 	public class ObjecteFirmaApplet implements Serializable {
 		private Long sysdate;
 		private Long entitatId;
 		private Long documentId;
-		private int versio;
 		public ObjecteFirmaApplet(
 				Long sysdate,
 				Long entitatId,
-				Long documentId,
-				int versio) {
+				Long documentId) {
 			this.sysdate = sysdate;
 			this.entitatId = entitatId;
 			this.documentId = documentId;
-			this.versio = versio;
 		}
 		public Long getSysdate() {
 			return sysdate;
@@ -1433,12 +1375,6 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		public void setDocumentId(Long documentId) {
 			this.documentId = documentId;
-		}
-		public int getVersio() {
-			return versio;
-		}
-		public void setVersio(int versio) {
-			this.versio = versio;
 		}
 		private static final long serialVersionUID = -6929597339153341365L;
 	}

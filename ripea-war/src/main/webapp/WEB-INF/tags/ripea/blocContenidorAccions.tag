@@ -59,7 +59,7 @@
 			</c:if>
 			<c:if test="${contingut.document}">
 				<c:if test="${contingut.documentTipus != 'FISIC'}">
-					<li><a href="../contingut/${contingut.pare.id}/document/${contingut.id}/descarregar/${contingut.versioDarrera.versio}"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a></li>
+					<li><a href="../contingut/${contingut.pare.id}/document/${contingut.id}/descarregar"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a></li>
 				</c:if>
 				<c:if test="${contingut.estat == 'CUSTODIAT'}">
 					<li><a href="../document/${contingut.id}/notificar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="comu.boto.notificar"/>...</a></li>

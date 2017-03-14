@@ -19,12 +19,10 @@ import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
-import es.caib.ripea.core.entity.DocumentVersioEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.repository.DocumentRepository;
-import es.caib.ripea.core.repository.DocumentVersioRepository;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
 
 /**
@@ -39,8 +37,6 @@ public class DocumentHelper {
 
 	@Resource
 	private DocumentRepository documentRepository;
-	@Resource
-	private DocumentVersioRepository documentVersioRepository;
 
 	@Resource
 	private ContingutHelper contingutHelper;
@@ -64,8 +60,7 @@ public class DocumentHelper {
 			MetaDocumentEntity metaDocument,
 			ContingutEntity pare,
 			EntitatEntity entitat,
-			String ubicacio,
-			FitxerDto fitxer) {
+			String ubicacio) {
 		DocumentEntity documentCrear = DocumentEntity.getBuilder(
 				documentTipus,
 				DocumentEstatEnumDto.REDACCIO,
@@ -87,46 +82,26 @@ public class DocumentHelper {
 		calcularIdentificadorDocument(
 				documentCreat,
 				entitat.getUnitatArrel());
-		if (DocumentTipusEnumDto.DIGITAL.equals(documentTipus)) {
-			int versio = 1;
-			DocumentVersioEntity documentVersio = crearVersioAmbFitxerAssociat(
-					documentCreat,
-					versio,
-					fitxer.getNom(),
-					fitxer.getContentType(),
-					fitxer.getContingut());
-			documentVersioRepository.save(documentVersio);
-			documentCreat.updateVersioDarrera(documentVersio);
-		}
 		if (expedient != null) {
 			cacheHelper.evictErrorsValidacioPerNode(expedient);
 		}
 		return documentCreat;
 	}
 
-	public DocumentVersioEntity crearVersioAmbFitxerAssociat(
+	public void actualitzarFitxerDocument(
 			DocumentEntity document,
-			int versio,
-			String fitxerNom,
-			String fitxerContentType,
-			byte[] fitxerContingut) {
-		DocumentVersioEntity documentVersio;
+			FitxerDto fitxer) {
 		if (pluginHelper.isArxiuPluginActiu()) {
-			documentVersio = DocumentVersioEntity.getBuilder(
-					document,
-					versio,
-					fitxerNom,
-					fitxerContentType,
-					fitxerContingut.length).build();
+			document.updateFitxer(
+					fitxer.getNom(),
+					fitxer.getContentType(),
+					null);
 		} else {
-			documentVersio = DocumentVersioEntity.getBuilder(
-					document,
-					versio,
-					fitxerNom,
-					fitxerContentType,
-					fitxerContingut).build();
+			document.updateFitxer(
+					fitxer.getNom(),
+					fitxer.getContentType(),
+					fitxer.getContingut());
 		}
-		return documentVersio;
 	}
 
 	public FitxerDto getFitxerAssociat(
@@ -135,35 +110,33 @@ public class DocumentHelper {
 	}
 	public FitxerDto getFitxerAssociat(
 			DocumentEntity document,
-			Integer versio) {
+			String versio) {
 		FitxerDto fitxer = null;
-		DocumentVersioEntity documentVersio;
-		if (versio == null) {
-			documentVersio = document.getVersioDarrera();
-		} else {
-			documentVersio = documentVersioRepository.findByDocumentAndVersio(
-					document,
-					versio);
-		}
 		if (document.getArxiuUuid() != null) {
-			if (pluginHelper.isArxiuPluginActiu()) {
-				ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
-						document,
-						true);
-				fitxer = new FitxerDto();
-				fitxer.setNom(documentVersio.getArxiuNom());
-				fitxer.setContentType(arxiuDocument.getContingut().getContentType());
-				fitxer.setContingut(arxiuDocument.getContingut().getContingut());
+			if (versio == null) {
+				if (pluginHelper.isArxiuPluginActiu()) {
+					ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
+							document,
+							true);
+					fitxer = new FitxerDto();
+					fitxer.setNom(arxiuDocument.getTitol());
+					fitxer.setContentType(arxiuDocument.getContingut().getContentType());
+					fitxer.setContingut(arxiuDocument.getContingut().getContingut());
+				} else {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_ARXIU,
+							"S'està intentant obtenir l'arxiu associat a un document pujat a l'arxiu i el plugin d'arxiu no està activat");
+				}
 			} else {
 				throw new SistemaExternException(
 						IntegracioHelper.INTCODI_ARXIU,
-						"S'està intentant consultar el contingut d'un document de l'arxiu i el plugin d'accés a l'arxiu no esta configurat");
+						"Consulta de versions de documents no suportada");
 			}
 		} else {
 			fitxer = new FitxerDto();
-			fitxer.setNom(documentVersio.getArxiuNom());
-			fitxer.setContentType(documentVersio.getArxiuContentType());
-			fitxer.setContingut(documentVersio.getArxiuContingut());
+			fitxer.setNom(document.getFitxerNom());
+			fitxer.setContentType(document.getFitxerContentType());
+			fitxer.setContingut(document.getFitxerContingut());
 		}
 		return fitxer;
 	}

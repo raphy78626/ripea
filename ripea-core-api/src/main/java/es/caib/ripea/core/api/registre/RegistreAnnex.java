@@ -17,7 +17,8 @@ public class RegistreAnnex {
 	private String fitxerNom;
 	private int fitxerTamany;
 	private String fitxerTipusMime;
-	private String fitxerGestioDocumentalId;
+	private String fitxerArxiuId;
+	private String fitxerContingutBase64;
 	private Date dataCaptura;
 	private String localitzacio;
 	private String origenCiutadaAdmin;
@@ -60,11 +61,17 @@ public class RegistreAnnex {
 	public void setFitxerTipusMime(String fitxerTipusMime) {
 		this.fitxerTipusMime = fitxerTipusMime;
 	}
-	public String getFitxerGestioDocumentalId() {
-		return fitxerGestioDocumentalId;
+	public String getFitxerArxiuId() {
+		return fitxerArxiuId;
 	}
-	public void setFitxerGestioDocumentalId(String fitxerGestioDocumentalId) {
-		this.fitxerGestioDocumentalId = fitxerGestioDocumentalId;
+	public void setFitxerArxiuId(String fitxerArxiuId) {
+		this.fitxerArxiuId = fitxerArxiuId;
+	}
+	public String getFitxerContingutBase64() {
+		return fitxerContingutBase64;
+	}
+	public void setFitxerContingutBase64(String fitxerContingutBase64) {
+		this.fitxerContingutBase64 = fitxerContingutBase64;
 	}
 	public Date getDataCaptura() {
 		return dataCaptura;

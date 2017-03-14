@@ -201,6 +201,18 @@ public class ExpedientEntity extends NodeEntity {
 			String ntiIdentificador) {
 		this.ntiIdentificador = ntiIdentificador;
 	}
+	public void updateNti(
+			String ntiVersion,
+			String ntiIdentificador,
+			String ntiOrgano,
+			Date ntiFechaApertura,
+			String ntiClasificacionSia) {
+		this.ntiVersion = ntiVersion;
+		this.ntiIdentificador = ntiIdentificador;
+		this.ntiOrgano = ntiOrgano;
+		this.ntiFechaApertura = ntiFechaApertura;
+		this.ntiClasificacionSia = ntiClasificacionSia;
+	}
 	public void updateEstat(
 			ExpedientEstatEnumDto estat,
 			String tancatMotiu) {

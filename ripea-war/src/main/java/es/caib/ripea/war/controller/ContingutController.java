@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
-import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
@@ -39,7 +38,6 @@ import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
-import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.ExpedientInteressatService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaDadaService;
@@ -72,8 +70,8 @@ public class ContingutController extends BaseUserController {
 	private MetaExpedientService metaExpedientService;
 	@Autowired
 	private MetaDocumentService metaDocumentService;
-	@Autowired
-	private DocumentService documentService;
+	/*@Autowired
+	private DocumentService documentService;*/
 	@Autowired
 	private ExpedientInteressatService interessatService;
 	@Autowired
@@ -540,13 +538,13 @@ public class ContingutController extends BaseUserController {
 					entitatActual.getId(),
 					contingut.getId()));
 		}
-		if (contingut instanceof DocumentDto) {
+		/*if (contingut instanceof DocumentDto) {
 			model.addAttribute(
 					"documentVersions",
 					documentService.findVersionsByDocument(
 							entitatActual.getId(),
 							contingut.getId()));
-		}
+		}*/
 		if (contingut instanceof NodeDto) {
 			model.addAttribute(
 					"metaDades",

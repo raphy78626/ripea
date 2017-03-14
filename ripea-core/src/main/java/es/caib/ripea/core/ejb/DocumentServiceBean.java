@@ -15,7 +15,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
-import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -82,7 +81,7 @@ public class DocumentServiceBean implements DocumentService {
 		return delegate.findById(entitatId, id);
 	}
 
-	@Override
+	/*@Override
 	@RolesAllowed("tothom")
 	public List<DocumentVersioDto> findVersionsByDocument(
 			Long entitatId,
@@ -105,7 +104,7 @@ public class DocumentServiceBean implements DocumentService {
 			Long id,
 			int versio) {
 		return delegate.findVersio(entitatId, id, versio);
-	}
+	}*/
 
 	@Override
 	public List<DocumentDto> findAmbExpedientIPermisRead(
@@ -121,8 +120,11 @@ public class DocumentServiceBean implements DocumentService {
 	public FitxerDto descarregar(
 			Long entitatId,
 			Long id,
-			int versio) {
-		return delegate.descarregar(entitatId, id, versio);
+			String versio) {
+		return delegate.descarregar(
+				entitatId,
+				id,
+				versio);
 	}
 
 	@Override
