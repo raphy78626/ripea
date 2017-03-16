@@ -1050,19 +1050,28 @@ public class PluginHelper {
 	}
 
 	public ArxiuDocument arxiuDocumentConsultar(
-			DocumentEntity document,
+			ContingutEntity contingut,
+			String arxiuUuidParam,
 			boolean ambContingut) {
+		String arxiuUuid = null;
+		
+		if (contingut instanceof DocumentEntity)
+			arxiuUuid = contingut.getArxiuUuid();
+		else
+			arxiuUuid = arxiuUuidParam;
+		
+		
 		String accioDescripcio = "Consulta d'un document";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("id", document.getId().toString());
-		accioParams.put("títol", document.getNom());
-		accioParams.put("arxiuUuid", document.getArxiuUuid());
+		accioParams.put("contingutId", contingut.getId().toString());
+		accioParams.put("contingutNom", contingut.getNom());
+		accioParams.put("arxiuUuid", arxiuUuid);
 		long t0 = System.currentTimeMillis();
 		try {
 			ArxiuDocument arxiuDocument = getArxiuPlugin().documentObtenirAmbId(
-					document.getArxiuUuid(),
+					arxiuUuid,
 					ambContingut,
-					generarCapsaleraArxiu(document));
+					generarCapsaleraArxiu(contingut));
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,

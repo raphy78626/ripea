@@ -1236,6 +1236,7 @@ public class ContingutServiceImpl implements ContingutService {
 			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
 			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
 					(DocumentEntity)contingut,
+					null,
 					false);
 			arxiuInfo.setNodeId(arxiuDocument.getNodeId());
 			arxiuInfo.setNom(arxiuDocument.getTitol());

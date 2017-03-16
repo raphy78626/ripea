@@ -17,7 +17,7 @@ public class RegistreAnnex {
 	private String fitxerNom;
 	private int fitxerTamany;
 	private String fitxerTipusMime;
-	private String fitxerArxiuId;
+	private String fitxerArxiuUuid;
 	private String fitxerContingutBase64;
 	private Date dataCaptura;
 	private String localitzacio;
@@ -30,7 +30,8 @@ public class RegistreAnnex {
 	private String firmaFitxerNom;
 	private int firmaFitxerTamany;
 	private String firmaFitxerTipusMime;
-	private String firmaFitxerGestioDocumentalId;
+	private String firmaFitxerArxiuUuid;
+	private String firmaFitxerContingutBase64;
 	private String firmaCsv;
 	private String timestamp;
 	private String validacioOCSP;
@@ -61,11 +62,11 @@ public class RegistreAnnex {
 	public void setFitxerTipusMime(String fitxerTipusMime) {
 		this.fitxerTipusMime = fitxerTipusMime;
 	}
-	public String getFitxerArxiuId() {
-		return fitxerArxiuId;
+	public String getFitxerArxiuUuid() {
+		return fitxerArxiuUuid;
 	}
-	public void setFitxerArxiuId(String fitxerArxiuId) {
-		this.fitxerArxiuId = fitxerArxiuId;
+	public void setFitxerArxiuUuid(String fitxerArxiuUuid) {
+		this.fitxerArxiuUuid = fitxerArxiuUuid;
 	}
 	public String getFitxerContingutBase64() {
 		return fitxerContingutBase64;
@@ -139,11 +140,17 @@ public class RegistreAnnex {
 	public void setFirmaFitxerTipusMime(String firmaFitxerTipusMime) {
 		this.firmaFitxerTipusMime = firmaFitxerTipusMime;
 	}
-	public String getFirmaFitxerGestioDocumentalId() {
-		return firmaFitxerGestioDocumentalId;
+	public String getFirmaFitxerArxiuUuid() {
+		return firmaFitxerArxiuUuid;
 	}
-	public void setFirmaFitxerGestioDocumentalId(String firmaFitxerGestioDocumentalId) {
-		this.firmaFitxerGestioDocumentalId = firmaFitxerGestioDocumentalId;
+	public void setFirmaFitxerArxiuUuid(String firmaFitxerArxiuUuid) {
+		this.firmaFitxerArxiuUuid = firmaFitxerArxiuUuid;
+	}
+	public String getFirmaFitxerContingutBase64() {
+		return firmaFitxerContingutBase64;
+	}
+	public void setFirmaFitxerContingutBase64(String firmaFitxerContingutBase64) {
+		this.firmaFitxerContingutBase64 = firmaFitxerContingutBase64;
 	}
 	public String getFirmaCsv() {
 		return firmaCsv;

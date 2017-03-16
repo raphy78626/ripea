@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
-import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.service.DocumentService;
@@ -64,7 +63,7 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 	@Override
 	public String getName() {
 		//logger.debug("[A] getName " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getArxiuNom());
-		return document.getVersioDarrera().getArxiuNom();
+		return document.getFitxerNom();
 	}
 
 	@Override
@@ -88,7 +87,7 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 	@Override
 	public Date getModifiedDate() {
 		//logger.debug("[A] getModifiedDate " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getLastModifiedDate());
-		return document.getVersioDarrera().getLastModifiedDate();
+		return document.getLastModifiedDate();
 	}
 
 	@Override
@@ -101,7 +100,7 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 	@Override
 	public Date getCreateDate() {
 		//logger.debug("[A] getCreateDate " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getCreatedDate());
-		return document.getVersioDarrera().getCreatedDate();
+		return document.getCreatedDate();
 	}
 
 	@Override
@@ -124,13 +123,13 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 	@Override
 	public String getContentType(String accepts) {
 		//logger.debug("[A] getContentType " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getArxiuContentType());
-		return document.getVersioDarrera().getArxiuContentType();
+		return document.getFitxerContentType();
 	}
 
 	@Override
 	public Long getContentLength() {
 		//logger.debug("[A] getContentLength " + getIdentificadorPerLog() + ": " + document.getDarreraVersio().getArxiuContentLength());
-		return document.getVersioDarrera().getArxiuContentLength();
+		return new Long(document.getFitxerContingut().length);
 	}
 
 	@Override
@@ -170,13 +169,13 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 			InputStream in,
 			Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
 		logger.debug("[A] replaceContent " + getIdentificadorPerLog() + " (entitatId=" + document.getEntitat().getId() + ", documentId=" + document.getId() + ")");
-		DocumentVersioDto darreraVersio = getDocumentService().findDarreraVersio(
-				document.getEntitat().getId(),
-				document.getId());
+//		DocumentVersioDto darreraVersio = getDocumentService().findDarreraVersio(
+//				document.getEntitat().getId(),
+//				document.getId());
 		try {
 			FitxerDto fitxer = new FitxerDto();
-			fitxer.setNom(darreraVersio.getArxiuNom());
-			fitxer.setContentType(darreraVersio.getArxiuContentType());
+			fitxer.setNom(document.getFitxerNom());
+			fitxer.setContentType(document.getFitxerContentType());
 			fitxer.setContingut(IOUtils.toByteArray(in));
 			getDocumentService().update(
 					document.getEntitat().getId(),
@@ -195,7 +194,7 @@ public class RipeaFileResource implements ReplaceableResource, FileResource {
 			fitxer = getDocumentService().descarregar(
 					entitat.getId(),
 					document.getId(),
-					document.getVersioDarrera().getVersio());
+					document.getVersioDarrera());
 		}
 		return fitxer;
 	}

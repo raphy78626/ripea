@@ -117,6 +117,7 @@ public class DocumentHelper {
 				if (pluginHelper.isArxiuPluginActiu()) {
 					ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
 							document,
+							null,
 							true);
 					fitxer = new FitxerDto();
 					fitxer.setNom(arxiuDocument.getTitol());
