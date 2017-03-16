@@ -3,6 +3,9 @@
  */
 package es.caib.ripea.core.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +13,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.axis.encoding.Base64;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -40,6 +45,7 @@ import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.ReglaEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
@@ -54,6 +60,7 @@ import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
@@ -65,6 +72,7 @@ import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.ReglaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
+import es.caib.ripea.plugin.arxiu.ArxiuDocument;
 import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 
 /**
@@ -163,11 +171,7 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia.getNom(),
 				bustia.getUnitatCodi(),
 				bustiaPare).build();
-		// Registra al log la creació de la bústia
-		contingutLogHelper.logCreacio(
-				entity,
-				false,
-				false);
+		
 		// Si no hi ha cap bústia per defecte a dins l'unitat configura
 		// la bústia actual com a bústia per defecte
 		BustiaEntity bustiaPerDefecte = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
@@ -183,8 +187,17 @@ public class BustiaServiceImpl implements BustiaService {
 					false,
 					false);
 		}
+		
+		bustiaRepository.saveAndFlush(entity);
+		
+		// Registra al log la creació de la bústia
+		contingutLogHelper.logCreacio(
+				entity,
+				false,
+				false);
+		
 		return toBustiaDto(
-				bustiaRepository.save(entity),
+				entity,
 				false,
 				false);
 	}
@@ -610,7 +623,12 @@ public class BustiaServiceImpl implements BustiaService {
 				unitatAdministrativa,
 				anotacio,
 				reglaAplicable);
-		registreRepository.save(anotacioEntity);
+		
+		registreRepository.saveAndFlush(anotacioEntity);
+		
+		//recorrem els annexos per a guardar el document
+		processarAnnexos(anotacioEntity, bustia);
+		
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
@@ -971,6 +989,69 @@ public class BustiaServiceImpl implements BustiaService {
 			pendent.setComentari(contingut.getDarrerMoviment().getComentari());
 		}
 		return pendent;
+	}
+	
+	private void processarAnnexos(RegistreEntity anotacio, BustiaEntity bustia) {
+		//recorrem els annexos per a guardar el document
+		try {
+			for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
+				//si tenim contingut de fitxer i també referència del registre, hem de tornar una excepció
+				if ((annex.getFitxerArxiuUuid() == null && annex.getFitxerContingutBase64() == null) ||
+					(annex.getFitxerArxiuUuid() != null && annex.getFitxerContingutBase64() != null)) {
+					throw new ValidationException(
+							"S'ha d'especificar o bé la referència del document o el contingut del document");
+				} else {
+					guardarDocumentAnnex (annex, bustia);
+					guardarFirmaAnnex(annex, bustia);
+				}
+			}
+		} catch (Exception e) {
+			//borrar possibles documents i firmes guardats
+			try {
+				eliminarContingutExistent(anotacio);
+			} catch (Exception e1) {
+				throw new ValidationException("Error eliminants documents en els directoris del servidor");
+			}
+			/////
+			throw new ValidationException("Error al guardar el document en els directoris del servidor");
+		}
+	}
+	
+	private void guardarDocumentAnnex (RegistreAnnexEntity annex, BustiaEntity bustia) throws IOException {
+		byte[] contingut = null;
+		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
+		if (annex.getFitxerContingutBase64() != null) {
+			contingut = Base64.decode(annex.getFitxerContingutBase64());
+		} else {
+			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(bustia, annex.getFitxerArxiuUuid(), true);
+			contingut = arxiuDocument.getContingut().getContingut();
+		}
+		
+		FileUtils.writeByteArrayToFile(new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime()), contingut);
+		
+	}
+	
+	private void guardarFirmaAnnex (RegistreAnnexEntity annex, BustiaEntity bustia) throws IOException {
+		byte[] contingut = null;
+		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
+		if (annex.getFirmaFitxerContingutBase64() != null) {
+			contingut = Base64.decode(annex.getFirmaFitxerContingutBase64());
+			FileUtils.writeByteArrayToFile(new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime()), contingut);
+		}
+	}
+	
+	private void eliminarContingutExistent (RegistreEntity anotacio) throws IOException {
+		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
+		
+		for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
+			File doc = new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime());
+			File fir = new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime());
+			
+			if (doc != null)
+				Files.deleteIfExists(doc.toPath());
+			if (fir != null)
+				Files.deleteIfExists(fir.toPath());
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);

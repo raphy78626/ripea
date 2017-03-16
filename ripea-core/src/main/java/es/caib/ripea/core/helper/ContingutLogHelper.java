@@ -388,7 +388,7 @@ public class ContingutLogHelper {
 				"tipus=" + tipus + ", " +
 				"logPareId=" + ((pare != null) ? pare.getId() : null) + ", " +
 				"contingutMovimentId=" + ((contingutMoviment != null) ? contingutMoviment.getId() : null) + ", " +
-				"objecte=" + ((objecte != null) ? objecte.getId().toString() : "null") + ", " +
+				"objecte=" + ((objecte != null) ? objecte.getId() : "null") + ", " +
 				"objecteLogTipus=" + ((objecteLogTipus != null) ? objecteLogTipus.name() : "null") + ", " +
 				"param1=" + param1 + ", " +
 				"param2=" + param2 + ")");
