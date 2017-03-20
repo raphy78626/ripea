@@ -696,6 +696,16 @@ public class PluginHelper {
 	public boolean isArxiuPluginActiu() {
 		return getArxiuPlugin() != null;
 	}
+	public boolean arxiuPotGestionarExpedients() {
+		return getPropertyPluginArxiuGestionarExpedients();
+	}
+	public boolean arxiuPotGestionarDocuments() {
+		return getPropertyPluginArxiuGestionarDocuments();
+	}
+	public boolean arxiuPotGestionarCarpetes() {
+		return getPropertyPluginArxiuGestionarCarpetes();
+	}
+
 	public void arxiuExpedientActualitzar(
 			ExpedientEntity expedient) {
 		String accioDescripcio = "Actualització de les dades d'un expedient";
@@ -2591,6 +2601,16 @@ public class PluginHelper {
 	}
 	private String getPropertyPluginDadesExternes() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.dadesext.class");
+	}
+
+	private boolean getPropertyPluginArxiuGestionarExpedients() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.gestionar.expedients");
+	}
+	private boolean getPropertyPluginArxiuGestionarDocuments() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.gestionar.documents");
+	}
+	private boolean getPropertyPluginArxiuGestionarCarpetes() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.gestionar.carpetes");
 	}
 
 }
