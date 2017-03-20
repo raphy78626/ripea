@@ -91,7 +91,7 @@ public class DocumentHelper {
 	public void actualitzarFitxerDocument(
 			DocumentEntity document,
 			FitxerDto fitxer) {
-		if (pluginHelper.isArxiuPluginActiu()) {
+		if (pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuPotGestionarDocuments()) {
 			document.updateFitxer(
 					fitxer.getNom(),
 					fitxer.getContentType(),
