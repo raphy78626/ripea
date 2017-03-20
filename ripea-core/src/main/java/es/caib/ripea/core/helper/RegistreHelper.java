@@ -33,7 +33,7 @@ import es.caib.ripea.core.entity.ReglaEntity;
  */
 @Component
 public class RegistreHelper {
-
+	
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
 		RegistreAnotacio anotacio = new RegistreAnotacio();
@@ -154,8 +154,6 @@ public class RegistreHelper {
 		return entity;
 	}
 
-
-
 	private RegistreInteressat fromInteressatEntity(
 			RegistreInteressatEntity interessatEntity) {
 		RegistreInteressat interessat = new RegistreInteressat();
@@ -194,7 +192,7 @@ public class RegistreHelper {
 		annex.setFitxerNom(annexEntity.getFitxerNom());
 		annex.setFitxerTamany(annexEntity.getFitxerTamany());
 		annex.setFitxerTipusMime(annexEntity.getFitxerTipusMime());
-		annex.setFirmaFitxerGestioDocumentalId(annexEntity.getFirmaFitxerGestioDocumentalId());
+		annex.setFitxerArxiuUuid(annexEntity.getFitxerArxiuUuid());
 		annex.setDataCaptura(annexEntity.getDataCaptura());
 		annex.setLocalitzacio(annexEntity.getLocalitzacio());
 		if (annexEntity.getOrigenCiutadaAdmin() != null)
@@ -210,7 +208,7 @@ public class RegistreHelper {
 		annex.setFirmaFitxerNom(annexEntity.getFirmaFitxerNom());
 		annex.setFirmaFitxerTamany(annexEntity.getFirmaFitxerTamany());
 		annex.setFirmaFitxerTipusMime(annexEntity.getFitxerTipusMime());
-		annex.setFirmaFitxerGestioDocumentalId(annexEntity.getFitxerGestioDocumentalId());
+		annex.setFirmaFitxerArxiuUuid(annexEntity.getFirmaFitxerArxiuUuid());
 		annex.setFirmaCsv(annexEntity.getFirmaCsv());
 		annex.setTimestamp(annexEntity.getTimestamp());
 		annex.setValidacioOCSP(annexEntity.getValidacioOCSP());
@@ -286,12 +284,14 @@ public class RegistreHelper {
 				registreAnnex.getTitol(),
 				registreAnnex.getFitxerNom(),
 				registreAnnex.getFitxerTamany(),
-				registreAnnex.getFitxerArxiuId(),
+				registreAnnex.getFitxerArxiuUuid(),
 				registreAnnex.getDataCaptura(),
 				RegistreAnnexOrigenEnum.valorAsEnum(registreAnnex.getOrigenCiutadaAdmin()),
 				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getNtiTipusDocument()),
 				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(registreAnnex.getSicresTipusDocument()),
-				registre).
+				registre,
+				registreAnnex.getFitxerContingutBase64(),
+				registreAnnex.getFirmaFitxerContingutBase64()).
 				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
 				localitzacio(registreAnnex.getLocalitzacio()).
 				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getNtiElaboracioEstat())).

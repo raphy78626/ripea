@@ -143,6 +143,17 @@
 			<version>${ripea.version}</version>
 			<type>pom</type>
 		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>axis-jaxrpc</artifactId>
+					<groupId>org.apache.axis</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

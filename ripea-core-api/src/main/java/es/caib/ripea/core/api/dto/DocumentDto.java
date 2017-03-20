@@ -19,6 +19,9 @@ public class DocumentDto extends NodeDto {
 	private Date custodiaData;
 	private String custodiaId;
 	private String custodiaUrl;
+	private String fitxerNom;
+	private String fitxerContentType;
+	private byte[] fitxerContingut;
 	private Date dataCaptura;
 	private String ntiVersion;
 	private String ntiIdentificador;
@@ -75,6 +78,24 @@ public class DocumentDto extends NodeDto {
 	}
 	public void setCustodiaUrl(String custodiaUrl) {
 		this.custodiaUrl = custodiaUrl;
+	}
+	public String getFitxerNom() {
+		return fitxerNom;
+	}
+	public void setFitxerNom(String fitxerNom) {
+		this.fitxerNom = fitxerNom;
+	}
+	public String getFitxerContentType() {
+		return fitxerContentType;
+	}
+	public void setFitxerContentType(String fitxerContentType) {
+		this.fitxerContentType = fitxerContentType;
+	}
+	public byte[] getFitxerContingut() {
+		return fitxerContingut;
+	}
+	public void setFitxerContingut(byte[] fitxerContingut) {
+		this.fitxerContingut = fitxerContingut;
 	}
 	public Date getDataCaptura() {
 		return dataCaptura;

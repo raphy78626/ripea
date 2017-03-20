@@ -1202,79 +1202,74 @@ public class ContingutServiceImpl implements ContingutService {
 		logger.debug("Obtenint informació de l'arxiu pel contingut ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ")");
-		if (pluginHelper.isArxiuPluginActiu()) {
-			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-					entitatId,
-					false,
-					false,
-					true);
-			ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
-					entitat,
-					contingutId,
-					null);
-			if (contingut instanceof ExpedientEntity) {
-				ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
-				ArxiuExpedient arxiuExpedient = pluginHelper.arxiuExpedientConsultar(
-						(ExpedientEntity)contingut);
-				arxiuInfo.setNodeId(arxiuExpedient.getNodeId());
-				arxiuInfo.setNom(arxiuExpedient.getTitol());
-				arxiuInfo.setDescripcio(arxiuExpedient.getDescripcio());
-				arxiuInfo.setEniVersio(arxiuExpedient.getEniVersio());
-				arxiuInfo.setEniIdentificador(arxiuExpedient.getEniIdentificador());
-				if (arxiuExpedient.getEniOrigen() != null)
-					arxiuInfo.setEniOrigen(arxiuExpedient.getEniOrigen().getValor());
-				arxiuInfo.setEniDataInicial(arxiuExpedient.getEniDataObertura());
-				if (arxiuExpedient.getEniEstat() != null)
-					arxiuInfo.setEniEstat(arxiuExpedient.getEniEstat().getValor());
-				arxiuInfo.setEniOrgans(arxiuExpedient.getEniOrgans());
-				arxiuInfo.setEniInteressats(arxiuExpedient.getEniInteressats());
-				arxiuInfo.setSerieDocumental(arxiuExpedient.getSerieDocumental());
-				arxiuInfo.setAplicacioCreacio(arxiuExpedient.getAplicacioCreacio());
-				arxiuInfo.setSuport(arxiuExpedient.getSuport());
-				arxiuInfo.setJson(arxiuExpedient.getJson());
-				return arxiuInfo;
-			} else if (contingut instanceof DocumentEntity) {
-				ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
-				ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
-						(DocumentEntity)contingut,
-						false);
-				arxiuInfo.setNodeId(arxiuDocument.getNodeId());
-				arxiuInfo.setNom(arxiuDocument.getTitol());
-				arxiuInfo.setDescripcio(arxiuDocument.getDescripcio());
-				arxiuInfo.setEniVersio(arxiuDocument.getEniVersio());
-				arxiuInfo.setEniIdentificador(arxiuDocument.getEniIdentificador());
-				if (arxiuDocument.getEniOrigen() != null)
-					arxiuInfo.setEniOrigen(arxiuDocument.getEniOrigen().getValor());
-				arxiuInfo.setEniDataInicial(arxiuDocument.getEniDataCaptura());
-				if (arxiuDocument.getEniEstatElaboracio() != null)
-					arxiuInfo.setEniEstatElaboracio(arxiuDocument.getEniEstatElaboracio().getValor());
-				if (arxiuDocument.getEniTipusDocumental() != null)
-					arxiuInfo.setEniTipusDocumental(arxiuDocument.getEniTipusDocumental().getValor());
-				if (arxiuDocument.getEniFormatNom() != null)
-					arxiuInfo.setEniFormatNom(arxiuDocument.getEniFormatNom().getValor());
-				if (arxiuDocument.getEniFormatExtensio() != null)
-					arxiuInfo.setEniFormatExtensio(arxiuDocument.getEniFormatExtensio().getValor());
-				arxiuInfo.setEniOrgans(arxiuDocument.getEniOrgans());
-				arxiuInfo.setEniDocumentOrigenId(arxiuDocument.getEniDocumentOrigenId());
-				arxiuInfo.setSerieDocumental(arxiuDocument.getSerieDocumental());
-				arxiuInfo.setAplicacioCreacio(arxiuDocument.getAplicacioCreacio());
-				arxiuInfo.setSuport(arxiuDocument.getSuport());
-				arxiuInfo.setJson(arxiuDocument.getJson());
-				return arxiuInfo;
-			} else if (contingut instanceof CarpetaEntity) {
-				ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
-				ArxiuCarpeta arxiuCarpeta = pluginHelper.arxiuCarpetaConsultar(
-						(CarpetaEntity)contingut);
-				arxiuInfo.setNodeId(arxiuCarpeta.getNodeId());
-				arxiuInfo.setNom(arxiuCarpeta.getNom());
-				arxiuInfo.setJson(arxiuCarpeta.getJson());
-				return arxiuInfo;
-			} else {
-				throw new ValidationException(
-						contingutId,
-						ContingutEntity.class,
-						"El contingut no és del tipus expedient, document o carpeta");
-			}
+
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		if (contingut instanceof ExpedientEntity) {
+			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
+			ArxiuExpedient arxiuExpedient = pluginHelper.arxiuExpedientConsultar(
+					(ExpedientEntity)contingut);
+			arxiuInfo.setNodeId(arxiuExpedient.getNodeId());
+			arxiuInfo.setNom(arxiuExpedient.getTitol());
+			arxiuInfo.setDescripcio(arxiuExpedient.getDescripcio());
+			arxiuInfo.setEniVersio(arxiuExpedient.getEniVersio());
+			arxiuInfo.setEniIdentificador(arxiuExpedient.getEniIdentificador());
+			if (arxiuExpedient.getEniOrigen() != null)
+				arxiuInfo.setEniOrigen(arxiuExpedient.getEniOrigen().getValor());
+			arxiuInfo.setEniDataInicial(arxiuExpedient.getEniDataObertura());
+			if (arxiuExpedient.getEniEstat() != null)
+				arxiuInfo.setEniEstat(arxiuExpedient.getEniEstat().getValor());
+			arxiuInfo.setEniOrgans(arxiuExpedient.getEniOrgans());
+			arxiuInfo.setEniInteressats(arxiuExpedient.getEniInteressats());
+			arxiuInfo.setSerieDocumental(arxiuExpedient.getSerieDocumental());
+			arxiuInfo.setAplicacioCreacio(arxiuExpedient.getAplicacioCreacio());
+			arxiuInfo.setSuport(arxiuExpedient.getSuport());
+			arxiuInfo.setJson(arxiuExpedient.getJson());
+			return arxiuInfo;
+		} else if (contingut instanceof DocumentEntity) {
+			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
+			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
+					(DocumentEntity)contingut,
+					null,
+					false);
+			arxiuInfo.setNodeId(arxiuDocument.getNodeId());
+			arxiuInfo.setNom(arxiuDocument.getTitol());
+			arxiuInfo.setDescripcio(arxiuDocument.getDescripcio());
+			arxiuInfo.setEniVersio(arxiuDocument.getEniVersio());
+			arxiuInfo.setEniIdentificador(arxiuDocument.getEniIdentificador());
+			if (arxiuDocument.getEniOrigen() != null)
+				arxiuInfo.setEniOrigen(arxiuDocument.getEniOrigen().getValor());
+			arxiuInfo.setEniDataInicial(arxiuDocument.getEniDataCaptura());
+			if (arxiuDocument.getEniEstatElaboracio() != null)
+				arxiuInfo.setEniEstatElaboracio(arxiuDocument.getEniEstatElaboracio().getValor());
+			if (arxiuDocument.getEniTipusDocumental() != null)
+				arxiuInfo.setEniTipusDocumental(arxiuDocument.getEniTipusDocumental().getValor());
+			if (arxiuDocument.getEniFormatNom() != null)
+				arxiuInfo.setEniFormatNom(arxiuDocument.getEniFormatNom().getValor());
+			if (arxiuDocument.getEniFormatExtensio() != null)
+				arxiuInfo.setEniFormatExtensio(arxiuDocument.getEniFormatExtensio().getValor());
+			arxiuInfo.setEniOrgans(arxiuDocument.getEniOrgans());
+			arxiuInfo.setEniDocumentOrigenId(arxiuDocument.getEniDocumentOrigenId());
+			arxiuInfo.setSerieDocumental(arxiuDocument.getSerieDocumental());
+			arxiuInfo.setAplicacioCreacio(arxiuDocument.getAplicacioCreacio());
+			arxiuInfo.setSuport(arxiuDocument.getSuport());
+			arxiuInfo.setJson(arxiuDocument.getJson());
+			return arxiuInfo;
+		} else if (contingut instanceof CarpetaEntity) {
+			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
+			ArxiuCarpeta arxiuCarpeta = pluginHelper.arxiuCarpetaConsultar(
+					(CarpetaEntity)contingut);
+			arxiuInfo.setNodeId(arxiuCarpeta.getNodeId());
+			arxiuInfo.setNom(arxiuCarpeta.getNom());
+			arxiuInfo.setJson(arxiuCarpeta.getJson());
+			return arxiuInfo;
 		} else {
 			throw new ValidationException(
 					contingutId,

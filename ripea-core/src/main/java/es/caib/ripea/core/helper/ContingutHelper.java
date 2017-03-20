@@ -199,6 +199,9 @@ public class ContingutHelper {
 			dto.setCustodiaData(document.getCustodiaData());
 			dto.setCustodiaId(document.getCustodiaId());
 			dto.setCustodiaUrl(document.getCustodiaUrl());
+			dto.setFitxerNom(document.getFitxerNom());
+			dto.setFitxerContentType(document.getFitxerContentType());
+			dto.setFitxerContingut(document.getFitxerContingut());
 			dto.setDataCaptura(document.getDataCaptura());
 			dto.setVersioDarrera(document.getVersioDarrera());
 			dto.setVersioCount(document.getVersioCount());

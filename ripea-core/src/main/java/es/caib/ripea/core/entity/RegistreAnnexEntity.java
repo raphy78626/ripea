@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -40,7 +41,7 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 						columnNames = {
 								"registre_id",
 								"titol",
-								"fitxer_gesdoc_id",
+								"fitxer_arxiu_uuid",
 								"data_captura",
 								"origen_ciuadm",
 								"nti_tipus_doc"})})
@@ -55,8 +56,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	private int fitxerTamany;
 	@Column(name = "fitxer_mime", length = 30)
 	private String fitxerTipusMime;
-	@Column(name = "fitxer_gesdoc_id", length = 100, nullable = false)
-	private String fitxerGestioDocumentalId;
+	@Column(name = "fitxer_arxiu_uuid", length = 100)
+	private String fitxerArxiuUuid;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data_captura", nullable = false)
 	private Date dataCaptura;
@@ -80,8 +81,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	private Integer firmaFitxerTamany;
 	@Column(name = "firma_fitxer_mime", length = 30)
 	private String firmaFitxerTipusMime;
-	@Column(name = "firma_fitxer_gesdoc", length = 100)
-	private String firmaFitxerGestioDocumentalId;
+	@Column(name = "firma_fitxer_arxiu_uuid", length = 100)
+	private String firmaFitxerArxiuUuid;
 	@Column(name = "firma_csv", length = 100)
 	private String firmaCsv;
 	@Column(name = "timestamp", length = 100)
@@ -97,7 +98,10 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	@Version
 	private long version = 0;
 
-
+	@Transient
+	private String fitxerContingutBase64;
+	@Transient
+	private String firmaFitxerContingutBase64;
 
 	public String getTitol() {
 		return titol;
@@ -111,8 +115,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	public String getFitxerTipusMime() {
 		return fitxerTipusMime;
 	}
-	public String getFitxerGestioDocumentalId() {
-		return fitxerGestioDocumentalId;
+	public String getFitxerArxiuUuid() {
+		return fitxerArxiuUuid;
 	}
 	public Date getDataCaptura() {
 		return dataCaptura;
@@ -147,8 +151,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	public String getFirmaFitxerTipusMime() {
 		return firmaFitxerTipusMime;
 	}
-	public String getFirmaFitxerGestioDocumentalId() {
-		return firmaFitxerGestioDocumentalId;
+	public String getFirmaFitxerArxiuUuid() {
+		return firmaFitxerArxiuUuid;
 	}
 	public String getFirmaCsv() {
 		return firmaCsv;
@@ -167,22 +171,26 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			String titol,
 			String fitxerNom,
 			int fitxerTamany,
-			String fitxerGestioDocumentalId,
+			String fitxerArxiuUuid,
 			Date dataCaptura,
 			RegistreAnnexOrigenEnum origenCiutadaAdmin,
 			RegistreAnnexNtiTipusDocumentEnum ntiTipusDocument,
 			RegistreAnnexSicresTipusDocumentEnum sicresTipusDocument,
-			RegistreEntity registre) {
+			RegistreEntity registre,
+			String fitxerContingutBase64,
+			String firmaFitxerContingutBase64) {
 		return new Builder(
 				titol,
 				fitxerNom,
 				fitxerTamany,
-				fitxerGestioDocumentalId,
+				fitxerArxiuUuid,
 				dataCaptura,
 				origenCiutadaAdmin,
 				ntiTipusDocument,
 				sicresTipusDocument,
-				registre);
+				registre,
+				fitxerContingutBase64,
+				firmaFitxerContingutBase64);
 	}
 	public static class Builder {
 		RegistreAnnexEntity built;
@@ -190,17 +198,19 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 				String titol,
 				String fitxerNom,
 				int fitxerTamany,
-				String fitxerGestioDocumentalId,
+				String fitxerArxiuUuid,
 				Date dataCaptura,
 				RegistreAnnexOrigenEnum origenCiutadaAdmin,
 				RegistreAnnexNtiTipusDocumentEnum ntiTipusDocument,
 				RegistreAnnexSicresTipusDocumentEnum sicresTipusDocument,
-				RegistreEntity registre) {
+				RegistreEntity registre,
+				String fitxerContingutBase64,
+				String firmaFitxerContingutBase64) {
 			built = new RegistreAnnexEntity();
 			built.titol = titol;
 			built.fitxerNom = fitxerNom;
 			built.fitxerTamany = fitxerTamany;
-			built.fitxerGestioDocumentalId = fitxerGestioDocumentalId;
+			built.fitxerArxiuUuid = fitxerArxiuUuid;
 			built.dataCaptura = dataCaptura;
 			if (origenCiutadaAdmin != null)
 				built.origenCiutadaAdmin = origenCiutadaAdmin.getValor();
@@ -209,6 +219,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			if (sicresTipusDocument != null)
 				built.sicresTipusDocument = sicresTipusDocument.getValor();
 			built.registre = registre;
+			built.fitxerContingutBase64 = fitxerContingutBase64;
+			built.firmaFitxerContingutBase64 = firmaFitxerContingutBase64;
 		}
 		public Builder fitxerTipusMime(String fitxerTipusMime) {
 			built.fitxerTipusMime = fitxerTipusMime;
@@ -243,8 +255,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			built.firmaFitxerTipusMime = firmaFitxerTipusMime;
 			return this;
 		}
-		public Builder firmaFitxerGestioDocumentalId(String firmaFitxerGestioDocumentalId) {
-			built.firmaFitxerGestioDocumentalId = firmaFitxerGestioDocumentalId;
+		public Builder firmaFitxerArxiuUuid(String firmaFitxerArxiuUuid) {
+			built.firmaFitxerArxiuUuid = firmaFitxerArxiuUuid;
 			return this;
 		}
 		public Builder firmaCsv(String firmaCsv) {
@@ -269,7 +281,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((dataCaptura == null) ? 0 : dataCaptura.hashCode());
-		result = prime * result + ((fitxerGestioDocumentalId == null) ? 0 : fitxerGestioDocumentalId.hashCode());
+		result = prime * result + ((fitxerArxiuUuid == null) ? 0 : fitxerArxiuUuid.hashCode());
 		result = prime * result + ((fitxerNom == null) ? 0 : fitxerNom.hashCode());
 		result = prime * result + fitxerTamany;
 		result = prime * result + ((ntiTipusDocument == null) ? 0 : ntiTipusDocument.hashCode());
@@ -293,10 +305,10 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 				return false;
 		} else if (!dataCaptura.equals(other.dataCaptura))
 			return false;
-		if (fitxerGestioDocumentalId == null) {
-			if (other.fitxerGestioDocumentalId != null)
+		if (fitxerArxiuUuid == null) {
+			if (other.fitxerArxiuUuid != null)
 				return false;
-		} else if (!fitxerGestioDocumentalId.equals(other.fitxerGestioDocumentalId))
+		} else if (!fitxerArxiuUuid.equals(other.fitxerArxiuUuid))
 			return false;
 		if (fitxerNom == null) {
 			if (other.fitxerNom != null)
@@ -334,5 +346,12 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
+
+	public String getFitxerContingutBase64() {
+		return fitxerContingutBase64;
+	}
+	public String getFirmaFitxerContingutBase64() {
+		return firmaFitxerContingutBase64;
+	}
 
 }
