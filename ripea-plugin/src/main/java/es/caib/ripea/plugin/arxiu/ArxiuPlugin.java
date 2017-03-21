@@ -84,7 +84,7 @@ public interface ArxiuPlugin {
 	 * @param capsalera
 	 * @throws SistemaExternException
 	 */
-	public ArxiuExpedient expedientObtenirAmbId(
+	public ArxiuExpedient expedientConsultar(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException;
 
@@ -122,7 +122,7 @@ public interface ArxiuPlugin {
 			ArxiuCapsalera capsalera) throws SistemaExternException;
 
 	/**
-	 * Modifica un document ja existent a l'arxiu digital.
+	 * Modifica un esborrany ja existent a l'arxiu digital.
 	 * 
 	 * @param nodeId
 	 * @param titol
@@ -139,7 +139,7 @@ public interface ArxiuPlugin {
 	 * @param capsalera
 	 * @throws SistemaExternException
 	 */
-	public void documentModificar(
+	public void documentEsborranyModificar(
 			String nodeId,
 			String titol,
 			ArxiuOrigenContingut origen,
@@ -169,42 +169,19 @@ public interface ArxiuPlugin {
 	 * Consulta un document previament creat donat el seu id.
 	 * 
 	 * @param nodeId
+	 * @param versio
 	 * @param ambContingut
 	 * @param capsalera
 	 * @throws SistemaExternException
 	 */
-	public ArxiuDocument documentObtenirAmbId(
+	public ArxiuDocument documentConsultar(
 			String nodeId,
+			String versio,
 			boolean ambContingut,
 			ArxiuCapsalera capsalera) throws SistemaExternException;
 
 	/**
-	 * Genera el CSV associat a un document donat el seu id.
-	 * 
-	 * @param nodeId
-	 * @param capsalera
-	 * @return
-	 * @throws SistemaExternException
-	 */
-	public String documentGenerarCsv(
-			String nodeId,
-			ArxiuCapsalera capsalera) throws SistemaExternException;
-
-	/**
-	 * Consulta un document previament creat donat el seu CSV.
-	 * 
-	 * @param csv
-	 * @param ambContingut
-	 * @param capsalera
-	 * @throws SistemaExternException
-	 */
-	public ArxiuDocument documentObtenirAmbCsv(
-			String csv,
-			boolean ambContingut,
-			ArxiuCapsalera capsalera) throws SistemaExternException;
-
-	/**
-	 * Consulta les versions disponibles d'un document
+	 * Consulta les versions disponibles d'un document.
 	 * 
 	 * @param nodeId
 	 * @param capsalera
@@ -214,6 +191,43 @@ public interface ArxiuPlugin {
 	public List<ArxiuDocumentVersio> documentObtenirVersions(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
+	 * Genera el CSV associat a un document donat el seu id.
+	 * 
+	 * @param nodeId
+	 * @param capsalera
+	 * @param valcertDocumentId
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public String documentGenerarCsv(
+			String nodeId,
+			ArxiuCapsalera capsalera,
+			String valcertDocumentId) throws SistemaExternException;
+
+	/**
+	 * Guarda un document PDF firmat i configura el document com
+	 * a definitiu.
+	 * 
+	 * @param nodeId
+	 * @param firmaPdfContingut
+	 * @param csv
+	 * @param capsalera
+	 * @param valcertArxiuNom
+	 * @param valcertDocumentId
+	 * @param valcertDocumentTipus
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public void documentDefinitiuGuardarPdfFirmat(
+			String nodeId,
+			InputStream firmaPdfContingut,
+			String csv,
+			ArxiuCapsalera capsalera,
+			String valcertArxiuNom,
+			String valcertDocumentId,
+			String valcertDocumentTipus) throws SistemaExternException;
 
 	/**
 	 * Crea una nova carpeta a l'arxiu digital.
@@ -261,7 +275,7 @@ public interface ArxiuPlugin {
 	 * @param capsalera
 	 * @throws SistemaExternException
 	 */
-	public ArxiuCarpeta carpetaObtenirAmbId(
+	public ArxiuCarpeta carpetaConsultar(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException;
 

@@ -212,7 +212,7 @@ public class DocumentServiceBean implements DocumentService {
 				arxiuContingut);
 	}
 
-	@Override
+	/*@Override
 	@RolesAllowed("tothom")
 	public void custodiaEsborrar(
 			Long entitatId,
@@ -220,6 +220,6 @@ public class DocumentServiceBean implements DocumentService {
 		delegate.custodiaEsborrar(
 				entitatId,
 				id);
-	}
+	}*/
 
 }

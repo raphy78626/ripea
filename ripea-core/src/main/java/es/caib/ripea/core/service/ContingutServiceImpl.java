@@ -1202,7 +1202,6 @@ public class ContingutServiceImpl implements ContingutService {
 		logger.debug("Obtenint informació de l'arxiu pel contingut ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ")");
-
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -1236,7 +1235,8 @@ public class ContingutServiceImpl implements ContingutService {
 		} else if (contingut instanceof DocumentEntity) {
 			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
 			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
-					(DocumentEntity)contingut,
+					contingut,
+					null,
 					null,
 					false);
 			arxiuInfo.setNodeId(arxiuDocument.getNodeId());

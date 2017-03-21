@@ -985,6 +985,11 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				true);
+		String custodiaCsv = pluginHelper.arxiuDocumentGenerarCsv(document);
+		document.updateInformacioCustodia(
+				document.getCustodiaData(),
+				document.getCustodiaId(),
+				custodiaCsv);
 		return pluginHelper.conversioConvertirPdfIEstamparUrl(
 				documentHelper.getFitxerAssociat(document),
 				null);
@@ -1095,27 +1100,21 @@ public class DocumentServiceImpl implements DocumentService {
 					null,
 					false,
 					false);
-			// Obté la URL de custòdia
-			String custodiaUrl = pluginHelper.custodiaReservarUrl(document);
-			contingutLogHelper.log(
-					document,
-					LogTipusEnumDto.CUSTODIA_URL,
-					custodiaUrl,
-					null,
-					false,
-					false);
 			// Custodia el document firmat
-			String custodiaDocumentId = pluginHelper.custodiaEnviarDocumentFirmat(
+			FitxerDto fitxer = new FitxerDto();
+			fitxer.setNom(arxiuNom);
+			fitxer.setContingut(arxiuContingut);
+			fitxer.setContentType("application/pdf");
+			String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
 					document,
-					document.getMetaDocument().getFirmaPassarelaCustodiaTipus(),
-					arxiuNom,
-					arxiuContingut);
+					fitxer,
+					document.getMetaDocument().getPortafirmesCustodiaTipus());
 			document.updateEstat(
 					DocumentEstatEnumDto.CUSTODIAT);
 			document.updateInformacioCustodia(
 					new Date(),
 					custodiaDocumentId,
-					custodiaUrl);
+					document.getCustodiaCsv());
 			// Registra al log la custòdia de la firma del document
 			contingutLogHelper.log(
 					document,
@@ -1134,7 +1133,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 
-	@Transactional
+	/*@Transactional
 	@Override
 	public void custodiaEsborrar(
 			Long entitatId,
@@ -1170,7 +1169,7 @@ public class DocumentServiceImpl implements DocumentService {
 		document.updateInformacioCustodia(
 				document.getCustodiaData(),
 				document.getCustodiaId(),
-				document.getCustodiaUrl());
+				document.getCustodiaCsv());
 		// Registra al log la cancel·lació de la custòdia
 		contingutLogHelper.log(
 				document,
@@ -1179,7 +1178,7 @@ public class DocumentServiceImpl implements DocumentService {
 				null,
 				false,
 				false);
-	}
+	}*/
 
 
 

@@ -26,15 +26,18 @@ import es.caib.ripea.plugin.arxiu.ArxiuFormatNom;
 import es.caib.ripea.plugin.arxiu.ArxiuOrigenContingut;
 import es.caib.ripea.plugin.arxiu.ArxiuPlugin;
 import es.caib.ripea.plugin.arxiu.ArxiuTipusDocumental;
+import es.caib.ripea.plugin.caib.custodia.ClienteCustodia;
+import es.caib.ripea.plugin.caib.custodia.ClienteCustodia.CustodiaResponse;
 import es.caib.ripea.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin d'arxiu per a emmagatzemar els arxius
- * a dins una carpeta del servidor.
+ * a dins una carpeta del servidor i per a emmagatzemar els documents
+ * firmats a dins l'aplicació de custòdia de la CAIB (ValCert).
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuPluginFilesystem implements ArxiuPlugin {
+public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 
 	@Override
 	public ArxiuExpedient expedientCrear(
@@ -73,7 +76,7 @@ public class ArxiuPluginFilesystem implements ArxiuPlugin {
 	}
 
 	@Override
-	public ArxiuExpedient expedientObtenirAmbId(
+	public ArxiuExpedient expedientConsultar(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		throw new SistemaExternException("Mètode no suportat");
@@ -107,7 +110,7 @@ public class ArxiuPluginFilesystem implements ArxiuPlugin {
 	}
 
 	@Override
-	public void documentModificar(
+	public void documentEsborranyModificar(
 			String nodeId,
 			String titol,
 			ArxiuOrigenContingut origen,
@@ -150,10 +153,14 @@ public class ArxiuPluginFilesystem implements ArxiuPlugin {
 	}
 
 	@Override
-	public ArxiuDocument documentObtenirAmbId(
+	public ArxiuDocument documentConsultar(
 			String nodeId,
+			String versio,
 			boolean ambContingut,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
+		if (versio != null) {
+			throw new SistemaExternException("Versionat de documents no suportat");
+		}
 		try {
 			ArxiuDocument document = readWithId(nodeId);
 			if (document == null) {
@@ -170,25 +177,71 @@ public class ArxiuPluginFilesystem implements ArxiuPlugin {
 	}
 
 	@Override
-	public String documentGenerarCsv(
-			String nodeId,
-			ArxiuCapsalera capsalera) throws SistemaExternException {
-		throw new SistemaExternException("Mètode no suportat");
-	}
-
-	@Override
-	public ArxiuDocument documentObtenirAmbCsv(
-			String csv,
-			boolean ambContingut,
-			ArxiuCapsalera capsalera) throws SistemaExternException {
-		throw new SistemaExternException("Mètode no suportat");
-	}
-
-	@Override
 	public List<ArxiuDocumentVersio> documentObtenirVersions(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
+	public String documentGenerarCsv(
+			String nodeId,
+			ArxiuCapsalera capsalera,
+			String valcertDocumentId) throws SistemaExternException {
+		String errorDescripcio = "No s'ha pogut reservar la URL (" +
+				"nodeId=" + nodeId + ", " +
+				"valcertDocumentId=" + valcertDocumentId + ")";
+		try {
+			CustodiaResponse response = getClienteCustodia().reservarDocumento(
+					valcertDocumentId);
+			detectarErrorCustodiaResponse(
+					response,
+					errorDescripcio,
+					null);
+			return response.getBytesAsString();
+		} catch (SistemaExternException sex) {
+			throw sex;
+		} catch (Exception ex) {
+			throw new SistemaExternException(
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	@Override
+	public void documentDefinitiuGuardarPdfFirmat(
+			String nodeId,
+			InputStream firmaContingut,
+			String csv,
+			ArxiuCapsalera capsalera,
+			String valcertArxiuNom,
+			String valcertDocumentId,
+			String valcertDocumentTipus) throws SistemaExternException {
+		String errorDescripcio = "No s'ha pogut custodiar el PDF firmat (" +
+				"valcertDocumentId=" + valcertDocumentId + ", " +
+				"valcertDocumentTipus=" + valcertDocumentTipus + ", " +
+				"valcertArxiuNom=" + valcertArxiuNom + ")";
+		if (valcertDocumentTipus == null || valcertDocumentTipus.isEmpty()) {
+			throw new SistemaExternException(
+					errorDescripcio + ": no s'ha especificat el tipus de document");
+		}
+		try {
+			CustodiaResponse response = getClienteCustodia().custodiarPDFFirmado(
+					firmaContingut,
+					valcertArxiuNom,
+					valcertDocumentId,
+					valcertDocumentTipus);
+			detectarErrorCustodiaResponse(
+					response,
+					errorDescripcio,
+					null);
+		} catch (SistemaExternException sex) {
+			throw sex;
+		} catch (Exception ex) {
+			throw new SistemaExternException(
+					errorDescripcio,
+					ex);
+		}
 	}
 
 	@Override
@@ -215,7 +268,7 @@ public class ArxiuPluginFilesystem implements ArxiuPlugin {
 	}
 
 	@Override
-	public ArxiuCarpeta carpetaObtenirAmbId(
+	public ArxiuCarpeta carpetaConsultar(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		throw new SistemaExternException("Mètode no suportat");
@@ -287,6 +340,51 @@ public class ArxiuPluginFilesystem implements ArxiuPlugin {
 	private String getBaseDir() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.arxiu.filesystem.base.dir");
+	}
+
+	private ClienteCustodia clienteCustodia;
+	private ClienteCustodia getClienteCustodia() {
+		if (clienteCustodia == null) {
+			clienteCustodia = new ClienteCustodia(
+					getServiceUrl(),
+					getUsername(),
+					getPassword());
+		}
+		return clienteCustodia;
+	}
+
+	private void detectarErrorCustodiaResponse(
+			CustodiaResponse response,
+			String errorDescripcio,
+			String[] resulMinorIgnorats) throws SistemaExternException {
+		if (response.isError()) {
+			boolean ignorar = false;
+			if (resulMinorIgnorats != null) {
+				for (String rmi: resulMinorIgnorats) {
+					if (rmi.equals(response.getResultMinor())) {
+						ignorar = true;
+						break;
+					}
+				}
+			}
+			if (!ignorar) {
+				throw new SistemaExternException(
+						errorDescripcio + ": " + response.errorToString());
+			}
+		}
+	}
+
+	private String getServiceUrl() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.custodia.caib.service.url");
+	}
+	private String getUsername() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.custodia.caib.username");
+	}
+	private String getPassword() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.custodia.caib.password");
 	}
 
 }

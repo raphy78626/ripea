@@ -372,21 +372,45 @@ $(document).ready(function() {
 							<dd>${contingut.arxiu.nom}</dd>
 							<dt><spring:message code="contingut.info.estat"/></dt>
 							<dd><spring:message code="expedient.estat.enum.${contingut.estat}"/></dd>
+							<dt><spring:message code="contingut.info.nti.identificador"/></dt>
+							<dd style="overflow:hidden;text-overflow:ellipsis" title="${contingut.ntiIdentificador}">${contingut.ntiIdentificador}</dd>
+							<dt><spring:message code="contingut.info.nti.organ"/></dt>
+							<dd>${contingut.ntiOrganoDescripcio}</dd>
+							<dt><spring:message code="contingut.info.nti.data.obertura"/></dt>
+							<dd><fmt:formatDate value="${contingut.ntiFechaApertura}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+							<dt><spring:message code="contingut.info.nti.classificacio"/></dt>
+							<dd>${contingut.ntiClasificacionSia}</dd>
 						</c:if>
 						<c:if test="${contingut.document}">
-							<dt><spring:message code="contingut.info.estat"/></dt>
-							<dd><spring:message code="document.estat.enum.${contingut.estat}"/></dd>
 							<dt><spring:message code="contingut.info.data"/></dt>
 							<dd><fmt:formatDate value="${contingut.data}" pattern="dd/MM/yyyy"/></dd>
-							<c:if test="${contingut.documentTipus != 'FISIC'}">
+							<dt><spring:message code="contingut.info.estat"/></dt>
+							<dd><spring:message code="document.estat.enum.${contingut.estat}"/></dd>
+							<c:if test="${contingut.versioCount gt 0}">
 								<dt><spring:message code="contingut.info.versio"/></dt>
 								<dd>${contingut.versioDarrera}</dd>
 							</c:if>
+							<dt><spring:message code="contingut.info.nti.identificador"/></dt>
+							<dd style="overflow:hidden;text-overflow:ellipsis" title="${contingut.ntiIdentificador}">${contingut.ntiIdentificador}</dd>
+							<dt><spring:message code="contingut.info.nti.organ"/></dt>
+							<dd>${contingut.ntiOrganoDescripcio}</dd>
+							<dt><spring:message code="contingut.info.nti.data.captura"/></dt>
+							<dd><fmt:formatDate value="${contingut.dataCaptura}" pattern="dd/MM/yyyy"/></dd>
+							<dt><spring:message code="contingut.info.nti.origen"/></dt>
+							<dd><spring:message code="document.nti.origen.enum.${contingut.ntiOrigen}"/></dd>
+							<dt><spring:message code="contingut.info.nti.estat.elab"/></dt>
+							<dd><spring:message code="document.nti.estela.enum.${contingut.ntiEstadoElaboracion}"/></dd>
+							<dt><spring:message code="contingut.info.nti.tipus.doc"/></dt>
+							<dd><spring:message code="document.nti.tipdoc.enum.${contingut.ntiTipoDocumental}"/></dd>
+							<c:if test="${not empty contingut.ntiIdDocumentoOrigen}">
+								<dt><spring:message code="contingut.info.nti.doc.origen.id"/></dt>
+								<dd>${contingut.ntiIdDocumentoOrigen}</dd>
+							</c:if>
 						</c:if>
-						<dt><spring:message code="contingut.info.createl"/></dt>
+						<%--dt><spring:message code="contingut.info.createl"/></dt>
 						<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
 						<dt><spring:message code="contingut.info.creatper"/></dt>
-						<dd>${contingut.createdBy.nom}</dd>
+						<dd>${contingut.createdBy.nom}</dd--%>
 						<c:if test="${not empty relacionats}">
 							<h4 id="expedient-info-relacionats" style="padding-bottom: 0 !important;margin-bottom: 4px !important; border-bottom: 1px solid #e3e3e3">
 								<spring:message code="contingut.info.relacionats"/>
@@ -436,29 +460,37 @@ $(document).ready(function() {
 				<c:choose>
 					<c:when test="${contingut.document}">
 						<c:choose>
-							<c:when test="${contingut.documentTipus != 'FISIC'}">
-								<li class="active"><a href="#contingut" data-toggle="tab">
-									<spring:message code="contingut.tab.versions"/>&nbsp;<span class="badge">${contingut.versioCount}</span></a>
-								</li>
-							</c:when>
-							<c:otherwise>
+							<c:when test="${contingut.documentTipus == 'FISIC'}">
 								<li class="active"><a href="#ubicacio" data-toggle="tab">
 									<spring:message code="contingut.tab.ubicacio"/></a>
 								</li>
+								<li>
+									<a href="#dades" data-toggle="tab"><spring:message code="contingut.tab.dades"/>&nbsp;<span class="badge" id="dades-count">${contingut.dadesCount}</span></a>
+								</li>
+							</c:when>
+							<c:otherwise>
+								<li class="active">
+									<a href="#dades" data-toggle="tab"><spring:message code="contingut.tab.dades"/>&nbsp;<span class="badge" id="dades-count">${contingut.dadesCount}</span></a>
+								</li>
 							</c:otherwise>
 						</c:choose>
+						<c:if test="${contingut.versioCount gt 0}">
+							<li>
+								<a href="#contingut" data-toggle="tab"><spring:message code="contingut.tab.versions"/>&nbsp;<span class="badge" id="versions-count">${contingut.versioCount}</span></a>
+							</li>
+						</c:if>
 					</c:when>
 					<c:otherwise>
 						<li class="active"><a href="#contingut" data-toggle="tab">
 							<spring:message code="contingut.tab.contingut"/>&nbsp;<span class="badge">${contingut.fillsNoRegistresCount}</span></a>
 						</li>
+						<c:if test="${contingut.expedient}">
+							<li>
+								<a href="#dades" data-toggle="tab"><spring:message code="contingut.tab.dades"/>&nbsp;<span class="badge" id="dades-count">${contingut.dadesCount}</span></a>
+							</li>
+						</c:if>
 					</c:otherwise>
 				</c:choose>
-				<c:if test="${contingut.node}">
-					<li>
-						<a href="#dades" data-toggle="tab"><spring:message code="contingut.tab.dades"/>&nbsp;<span class="badge" id="dades-count">${contingut.dadesCount}</span></a>
-					</li>
-				</c:if>
 				<c:if test="${contingut.expedient}">
 					<li>
 						<a href="#registres" data-toggle="tab"><spring:message code="contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contingut.fillsRegistresCount}</span></a>
@@ -586,7 +618,7 @@ $(document).ready(function() {
 					</c:otherwise>
 				</c:choose>
 				<c:if test="${contingut.node}">
-					<div class="tab-pane" id="dades">
+					<div class="tab-pane<c:if test="${contingut.document and contingut.documentTipus != 'FISIC'}"> active in</c:if>" id="dades">
 						<%--               --%>
 						<%-- Pipella dades --%>
 						<%--               --%>

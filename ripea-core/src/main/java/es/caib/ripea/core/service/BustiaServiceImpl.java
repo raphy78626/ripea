@@ -1023,7 +1023,11 @@ public class BustiaServiceImpl implements BustiaService {
 		if (annex.getFitxerContingutBase64() != null) {
 			contingut = Base64.decode(annex.getFitxerContingutBase64());
 		} else {
-			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(bustia, annex.getFitxerArxiuUuid(), true);
+			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
+					bustia,
+					annex.getFitxerArxiuUuid(),
+					null,
+					true);
 			contingut = arxiuDocument.getContingut().getContingut();
 		}
 		

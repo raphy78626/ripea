@@ -17,7 +17,6 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocumentNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.RespuestaGenerica;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateDraftDocumentResult;
 import es.caib.arxiudigital.apirest.constantes.EstadosElaboracion;
-import es.caib.arxiudigital.apirest.constantes.MimeTypes;
 import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
 import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
 import es.caib.arxiudigital.apirest.facade.pojos.CabeceraPeticion;
@@ -49,11 +48,11 @@ public class ArxiuDigitalApiTest {
 	private static final String NOMBRE_PROCEDIMIENTO = "Proves amb RIPEA";
 
 	private static final String SERIE_DOCUMENTAL = "S0001";
-	private static final String CODIGO_PROCEDIMIENTO = "organo1_PRO_123456789";
+	//private static final String CODIGO_PROCEDIMIENTO = "organo1_PRO_123456789";
 	private static final String ORGANO = "A04013511";
 	private static final String ENCODING = "UTF-8";
 	
-	private static final String EXPEDIENT_ID = "9cf1dc75-470a-4151-b3fc-94a1489d6f1e";
+	//private static final String EXPEDIENT_ID = "9cf1dc75-470a-4151-b3fc-94a1489d6f1e";
 
 	public static void main(String[] args) {
 		ArxiuDigitalApiTest apiTest = new ArxiuDigitalApiTest();
@@ -136,6 +135,7 @@ public class ArxiuDigitalApiTest {
 				"resultatMissatge=" + resultado.getMsjResultado() + ")");
 	}
 
+	@SuppressWarnings("unused")
 	private String crearDocumentTest(
 			String expedientId) throws IOException {
 		String documentNom = "DocumentTestRipea_" + System.currentTimeMillis();
@@ -156,7 +156,7 @@ public class ArxiuDigitalApiTest {
 				documentNom,
 				contingutBase64,
 				ENCODING,
-				MimeTypes.TEXTO_PLANO,
+				"text/plain",
 				metadades,
 				null);
 		CreateDraftDocumentResult res = getApiArxiu().crearDraftDocument(
@@ -188,6 +188,7 @@ public class ArxiuDigitalApiTest {
 		return (documentCreat != null) ? documentCreat.getId() : null;
 	}
 
+	@SuppressWarnings("unused")
 	private void esborrarDocumentTest(String documentId) throws IOException {
 		ResultadoSimple resultado = getApiArxiu().eliminarDocumento(documentId);
 		System.out.println(">>> Document esborrat (" +

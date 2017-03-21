@@ -47,7 +47,6 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.ServiceHeader;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.ServiceSecurityInfo;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.SummaryInfoNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.VersionNode;
-import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateDraftDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateFile;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateFolder;
@@ -56,7 +55,6 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamNodeId
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamSetDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamSetFile;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamSetFolder;
-import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateDraftDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateFolderResult;
@@ -66,7 +64,6 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetDocVersionListR
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetFolderResult;
-import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateDraftDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateFolder;
@@ -81,6 +78,7 @@ import es.caib.arxiudigital.apirest.CSGD.peticiones.RemoveFolder;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.Request;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFile;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFinalDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFolder;
 import es.caib.arxiudigital.apirest.constantes.Aspectos;
 import es.caib.arxiudigital.apirest.constantes.EstadosElaboracion;
@@ -91,7 +89,9 @@ import es.caib.arxiudigital.apirest.constantes.MetadatosDocumento;
 import es.caib.arxiudigital.apirest.constantes.MetadatosExpediente;
 import es.caib.arxiudigital.apirest.constantes.MetadatosFirma;
 import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
+import es.caib.arxiudigital.apirest.constantes.PerfilesFirma;
 import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
+import es.caib.arxiudigital.apirest.constantes.TiposFirma;
 import es.caib.arxiudigital.apirest.facade.pojos.Documento;
 import es.caib.arxiudigital.apirest.facade.pojos.Expediente;
 import es.caib.arxiudigital.apirest.facade.pojos.FirmaDocumento;
@@ -396,6 +396,66 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
+	public void fileEasySearch() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileLink() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileLock() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileUnlock() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileVersionList() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void filePermissionsGrant() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void filePermissionsCancel() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileIndexGenerate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileChildCreate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileChildMove() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public ArxiuDocument documentDraftCreate(
 			String titol,
 			OrigenesContenido origen,
@@ -434,6 +494,9 @@ public class ArxiuClientImpl implements ArxiuClient {
 					formatExtensio,
 					organs,
 					serieDocumental,
+					null,
+					null,
+					null,
 					metode);
 			CreateDraftDocument createDraftDocument = new CreateDraftDocument();
 			Request<ParamCreateDraftDocument> request = new Request<ParamCreateDraftDocument>();
@@ -479,7 +542,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 
 	@Override
 	public ArxiuDocument documentCreate(
-			String titol,
+			/*String titol,
 			OrigenesContenido origen,
 			Date dataCaptura,
 			EstadosElaboracion estatElaboracio,
@@ -491,8 +554,8 @@ public class ArxiuClientImpl implements ArxiuClient {
 			InputStream contingut,
 			String tipusMime,
 			String pareNodeId,
-			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_CREATE;
+			ArxiuHeader capsalera*/) {
+		/*String metode = ArxiuMetodes.DOCUMENT_CREATE;
 		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
 				"titol=" + titol + ", " +
 				"origen=" + origen + ", " +
@@ -556,7 +619,8 @@ public class ArxiuClientImpl implements ArxiuClient {
 					metode,
 					"S'ha produit un error cridant el mètode " + metode,
 					ex);
-		}
+		}*/
+		return null;
 	}
 
 	@Override
@@ -598,6 +662,9 @@ public class ArxiuClientImpl implements ArxiuClient {
 					formatExtensio,
 					organs,
 					serieDocumental,
+					null,
+					null,
+					null,
 					metode);
 			SetDocument setDocument = new SetDocument();
 			Request<ParamSetDocument> request = new Request<ParamSetDocument>();
@@ -809,6 +876,88 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
+	public void documentFinalSet(
+			String nodeId,
+			String titol,
+			OrigenesContenido origen,
+			Date dataCaptura,
+			EstadosElaboracion estatElaboracio,
+			TiposDocumentosENI documentTipus,
+			FormatosFichero formatNom,
+			ExtensionesFichero formatExtensio,
+			List<String> organs,
+			String serieDocumental,
+			InputStream contingut,
+			TiposFirma firmaTipus,
+			PerfilesFirma firmaPerfil,
+			String csv,
+			String tipusMime,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMetodes.DOCUMENT_SET_FINAL;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"titol=" + titol + ", " +
+				"origen=" + origen + ", " +
+				"dataCaptura=" + dataCaptura + ", " +
+				"estatElaboracio=" + estatElaboracio + ", " +
+				"documentTipus=" + documentTipus + ", " +
+				"formatNom=" + formatNom + ", " +
+				"formatExtensio=" + formatExtensio + ", " +
+				"organs=" + organs + ", " +
+				"serieDocumental=" + serieDocumental + ", " +
+				"firmaTipus=" + firmaTipus + ", " +
+				"firmaPerfil=" + firmaPerfil + ", " +
+				"csv=" + csv + ", " +
+				"tipusMime=" + tipusMime + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			Map<String, Object> metadades = crearMetadadesDocument(
+					origen,
+					dataCaptura,
+					estatElaboracio,
+					documentTipus,
+					formatNom,
+					formatExtensio,
+					organs,
+					serieDocumental,
+					firmaTipus,
+					firmaPerfil,
+					csv,
+					metode);
+			SetFinalDocument setFinalDocument = new SetFinalDocument();
+			Request<ParamSetDocument> request = new Request<ParamSetDocument>();
+			ParamSetDocument param = new ParamSetDocument();
+			param.setDocument(toDocumentNode(
+					nodeId,
+					titol,
+					metadades,
+					contingut,
+					tipusMime));
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			setFinalDocument.setSetFinalDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					setFinalDocument);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
 	public void documentEniGet(
 			String nodeId,
 			ArxiuHeader capsalera) {
@@ -872,12 +1021,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 
 	@Override
 	public void documentDispatch() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void documentFinalSet() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -1204,23 +1347,34 @@ public class ArxiuClientImpl implements ArxiuClient {
 			ExtensionesFichero formatExtensio,
 			List<String> organs,
 			String serieDocumental,
+			TiposFirma firmaTipus,
+			PerfilesFirma firmaPerfil,
+			String csv,
 			String metode) {
 		Map<String, Object> metadades  = new HashMap<String, Object>();
 		metadades.put(
 				MetadatosDocumento.CODIGO_APLICACION_TRAMITE,
 				aplicacioCodi);
-		metadades.put(
-				MetadatosDocumento.CODIGO_CLASIFICACION,
-				serieDocumental);
-		metadades.put(
-				MetadatosDocumento.ORIGEN,
-				origen);
-		metadades.put(
-				MetadatosDocumento.ESTADO_ELABORACION,
-				estatElaboracio);
-		metadades.put(
-				MetadatosDocumento.TIPO_DOC_ENI,
-				documentTipus);
+		if (origen != null) {
+			metadades.put(
+					MetadatosDocumento.ORIGEN,
+					origen);
+		}
+		if (dataCaptura != null){
+			metadades.put(
+					MetadatosDocumento.FECHA_INICIO,
+					formatDateIso8601(dataCaptura));
+		}
+		if (estatElaboracio != null) {
+			metadades.put(
+					MetadatosDocumento.ESTADO_ELABORACION,
+					estatElaboracio);
+		}
+		if (documentTipus != null) {
+			metadades.put(
+					MetadatosDocumento.TIPO_DOC_ENI,
+					documentTipus);
+		}
 		if (formatNom != null) {
 			metadades.put(
 					MetadatosDocumento.NOMBRE_FORMATO,
@@ -1236,10 +1390,25 @@ public class ArxiuClientImpl implements ArxiuClient {
 					MetadatosDocumento.ORGANO,
 					organs);
 		}
-		if (dataCaptura != null){
+		if (serieDocumental != null) {
 			metadades.put(
-					MetadatosDocumento.FECHA_INICIO,
-					formatDateIso8601(dataCaptura));
+					MetadatosDocumento.CODIGO_CLASIFICACION,
+					serieDocumental);
+		}
+		if (firmaTipus != null) {
+			metadades.put(
+					MetadatosDocumento.TIPO_FIRMA,
+					firmaTipus);
+		}
+		if (firmaPerfil != null) {
+			metadades.put(
+					MetadatosDocumento.PERFIL_FIRMA,
+					firmaPerfil);
+		}
+		if (csv != null) {
+			metadades.put(
+					MetadatosDocumento.CSV,
+					csv);
 		}
 		return metadades;
 	}

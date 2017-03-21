@@ -61,8 +61,8 @@ public class DocumentEntity extends NodeEntity {
 	private Date custodiaData;
 	@Column(name = "custodia_id", length = 256)
 	private String custodiaId;
-	@Column(name = "custodia_url", length = 1024)
-	private String custodiaUrl;
+	@Column(name = "custodia_csv", length = 256)
+	private String custodiaCsv;
 	@Column(name = "fitxer_nom", length = 256, nullable = false)
 	private String fitxerNom;
 	@Column(name = "fitxer_content_type", length = 256, nullable = false)
@@ -71,7 +71,7 @@ public class DocumentEntity extends NodeEntity {
 	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "fitxer_contingut")
 	private byte[] fitxerContingut;
-	@Column(name = "versio_darrera", length = 32, nullable = false)
+	@Column(name = "versio_darrera", length = 32)
 	private String versioDarrera;
 	@Column(name = "versio_count", nullable = false)
 	private int versioCount;
@@ -126,8 +126,8 @@ public class DocumentEntity extends NodeEntity {
 	public String getCustodiaId() {
 		return custodiaId;
 	}
-	public String getCustodiaUrl() {
-		return custodiaUrl;
+	public String getCustodiaCsv() {
+		return custodiaCsv;
 	}
 	public String getFitxerNom() {
 		return fitxerNom;
@@ -207,10 +207,34 @@ public class DocumentEntity extends NodeEntity {
 		this.ntiCsv = ntiCsv;
 		this.ntiCsvRegulacion = ntiCsvRegulacion;
 	}
+
 	public void updateNtiIdentificador(
 			String ntiIdentificador) {
 		this.ntiIdentificador = ntiIdentificador;
 	}
+	public void updateNti(
+			String ntiVersion,
+			String ntiIdentificador,
+			String ntiOrgano,
+			DocumentNtiOrigenEnumDto ntiOrigen,
+			DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion,
+			DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental,
+			String ntiIdDocumentoOrigen,
+			DocumentNtiTipoFirmaEnumDto ntiTipoFirma,
+			String ntiCsv,
+			String ntiCsvRegulacion) {
+		this.ntiVersion = ntiVersion;
+		this.ntiIdentificador = ntiIdentificador;
+		this.ntiOrgano = ntiOrgano;
+		this.ntiOrigen = ntiOrigen;
+		this.ntiEstadoElaboracion = ntiEstadoElaboracion;
+		this.ntiTipoDocumental = ntiTipoDocumental;
+		this.ntiIdDocumentoOrigen = ntiIdDocumentoOrigen;
+		this.ntiTipoFirma = ntiTipoFirma;
+		this.ntiCsv = ntiCsv;
+		this.ntiCsvRegulacion = ntiCsvRegulacion;
+	}
+
 	public void updateEstat(
 			DocumentEstatEnumDto estat) {
 		this.estat = estat;
@@ -218,10 +242,10 @@ public class DocumentEntity extends NodeEntity {
 	public void updateInformacioCustodia(
 			Date custodiaData,
 			String custodiaId,
-			String custodiaUrl) {
+			String custodiaCsv) {
 		this.custodiaData = custodiaData;
 		this.custodiaId = custodiaId;
-		this.custodiaUrl = custodiaUrl;
+		this.custodiaCsv = custodiaCsv;
 	}
 	public void updateFitxer(
 			String fitxerNom,
@@ -233,12 +257,8 @@ public class DocumentEntity extends NodeEntity {
 	}
 	public void updateVersio(
 			String versioDarrera) {
-		if (versioDarrera != null) {
-			this.versioDarrera = versioDarrera;
-			this.versioCount++;
-		} else {
-			this.versioDarrera = "<null>";
-		}
+		this.versioDarrera = versioDarrera;
+		this.versioCount++;
 	}
 
 	public static Builder getBuilder(
@@ -306,6 +326,7 @@ public class DocumentEntity extends NodeEntity {
 			built.pare = pare;
 			built.entitat = entitat;
 			built.tipus = ContingutTipusEnumDto.DOCUMENT;
+			built.versioCount = 0;
 		}
 		public Builder ubicacio(String ubicacio) {
 			built.ubicacio = ubicacio;

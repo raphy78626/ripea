@@ -16,8 +16,10 @@ import es.caib.arxiudigital.apirest.constantes.EstadosExpediente;
 import es.caib.arxiudigital.apirest.constantes.ExtensionesFichero;
 import es.caib.arxiudigital.apirest.constantes.FormatosFichero;
 import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
+import es.caib.arxiudigital.apirest.constantes.PerfilesFirma;
 import es.caib.arxiudigital.apirest.constantes.TiposContenidosBinarios;
 import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
+import es.caib.arxiudigital.apirest.constantes.TiposFirma;
 import es.caib.ripea.plugin.SistemaExternCodiMissatgeException;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.SistemaExternNoTrobatException;
@@ -139,7 +141,7 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 	}
 
 	@Override
-	public ArxiuExpedient expedientObtenirAmbId(
+	public ArxiuExpedient expedientConsultar(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
@@ -195,7 +197,7 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 	}
 
 	@Override
-	public void documentModificar(
+	public void documentEsborranyModificar(
 			String nodeId,
 			String titol,
 			ArxiuOrigenContingut origen,
@@ -255,13 +257,15 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 	}
 
 	@Override
-	public ArxiuDocument documentObtenirAmbId(
+	public ArxiuDocument documentConsultar(
 			String nodeId,
+			String versio,
 			boolean ambContingut,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
+			String nodeIdAmbVersio = (versio != null) ? versio + "@" + nodeId : nodeId;
 			es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocument document = getArxiuClient().documentGet(
-					nodeId,
+					nodeIdAmbVersio,
 					null,
 					ambContingut,
 					toArxiuHeader(capsalera));
@@ -269,48 +273,6 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
 					nodeId,
-					nfex.getArxiuCodi(),
-					nfex.getArxiuDescripcio(),
-					nfex);
-		} catch (ArxiuException aex) {
-			throw processarArxiuException(aex);
-		}
-	}
-
-	@Override
-	public String documentGenerarCsv(
-			String nodeId,
-			ArxiuCapsalera capsalera) throws SistemaExternException {
-		try {
-			return getArxiuClient().documentCsvGenerate(
-					nodeId,
-					toArxiuHeader(capsalera));
-		} catch (ArxiuNotFoundException nfex) {
-			throw new SistemaExternNoTrobatException(
-					nodeId,
-					nfex.getArxiuCodi(),
-					nfex.getArxiuDescripcio(),
-					nfex);
-		} catch (ArxiuException aex) {
-			throw processarArxiuException(aex);
-		}
-	}
-
-	@Override
-	public ArxiuDocument documentObtenirAmbCsv(
-			String csv,
-			boolean ambContingut,
-			ArxiuCapsalera capsalera) throws SistemaExternException {
-		try {
-			es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocument document = getArxiuClient().documentGet(
-					null,
-					csv,
-					ambContingut,
-					toArxiuHeader(capsalera));
-			return toArxiuDocument(document);
-		} catch (ArxiuNotFoundException nfex) {
-			throw new SistemaExternNoTrobatException(
-					"csv:" + csv,
 					nfex.getArxiuCodi(),
 					nfex.getArxiuDescripcio(),
 					nfex);
@@ -336,6 +298,64 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 				versions.add(versio);
 			}
 			return versions;
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
+	public String documentGenerarCsv(
+			String nodeId,
+			ArxiuCapsalera capsalera,
+			String valcertDocumentId) throws SistemaExternException {
+		try {
+			return getArxiuClient().documentCsvGenerate(
+					nodeId,
+					toArxiuHeader(capsalera));
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
+	public void documentDefinitiuGuardarPdfFirmat(
+			String nodeId,
+			InputStream firmaPdfContingut,
+			String csv,
+			ArxiuCapsalera capsalera,
+			String valcertArxiuNom,
+			String valcertDocumentId,
+			String valcertDocumentTipus) throws SistemaExternException {
+		try {
+			getArxiuClient().documentFinalSet(
+					nodeId,
+					null, // titol,
+					null, // toOrigenesContenido(origen),
+					null, // dataCaptura,
+					null, // toEstadosElaboracion(estatElaboracio),
+					null, // toTiposDocumentosEni(documentTipus),
+					null, // toFormatosFichero(formatNom),
+					null, // toExtensionesFichero(formatExtensio),
+					null, // organs,
+					null, // serieDocumental,
+					firmaPdfContingut,
+					TiposFirma.CSV,
+					PerfilesFirma.EPES,
+					csv,
+					"application/pdf", // tipusMime,
+					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
 					nodeId,
@@ -404,7 +424,7 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 	}
 
 	@Override
-	public ArxiuCarpeta carpetaObtenirAmbId(
+	public ArxiuCarpeta carpetaConsultar(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {

@@ -363,9 +363,9 @@ public interface DocumentService {
 	 * @throws SistemaExternException
 	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	/*@PreAuthorize("hasRole('tothom')")
 	public void custodiaEsborrar(
 			Long entitatId,
-			Long id) throws NotFoundException, SistemaExternException;
+			Long id) throws NotFoundException, SistemaExternException;*/
 
 }

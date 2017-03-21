@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
@@ -166,18 +167,18 @@ public class ExpedientHelper {
 	public boolean portafirmesEnviar(
 			DocumentPortafirmesEntity documentPortafirmes) {
 		DocumentEntity document = documentPortafirmes.getDocument();
-		boolean estampatCorrecte = true;
-		if (pluginHelper.portafirmesEnviarDocumentEstampat() && document.getCustodiaUrl() == null) {
+		boolean generacioCsvCorrecte = true;
+		if (pluginHelper.portafirmesEnviarDocumentEstampat() && document.getCustodiaCsv() == null) {
 			try {
-				String custodiaUrl = pluginHelper.custodiaReservarUrl(document);
+				String csv = pluginHelper.arxiuDocumentGenerarCsv(document);
 				document.updateInformacioCustodia(
 						document.getCustodiaData(),
 						document.getCustodiaId(),
-						custodiaUrl);
+						csv);
 				contingutLogHelper.log(
 						documentPortafirmes.getDocument(),
 						LogTipusEnumDto.CUSTODIA_URL,
-						custodiaUrl,
+						csv,
 						null,
 						false,
 						false);
@@ -189,10 +190,10 @@ public class ExpedientHelper {
 						true,
 						ExceptionUtils.getStackTrace(rootCause),
 						null);
-				estampatCorrecte = false;
+				generacioCsvCorrecte = false;
 			}
 		}
-		if (estampatCorrecte) {
+		if (generacioCsvCorrecte) {
 			try {
 				String portafirmesId = pluginHelper.portafirmesUpload(
 						document,
@@ -259,15 +260,18 @@ public class ExpedientHelper {
 		} else {
 			// Envia el document a custòdia
 			try {
-				String custodiaDocumentId = pluginHelper.custodiaEnviarDocumentFirmat(
+				FitxerDto fitxer = new FitxerDto();
+				fitxer.setNom(portafirmesDocument.getArxiuNom());
+				fitxer.setContingut(portafirmesDocument.getArxiuContingut());
+				fitxer.setContentType("application/pdf");
+				String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
 						document,
-						document.getMetaDocument().getPortafirmesCustodiaTipus(),
-						portafirmesDocument.getArxiuNom(),
-						portafirmesDocument.getArxiuContingut());
+						fitxer,
+						document.getMetaDocument().getPortafirmesCustodiaTipus());
 				document.updateInformacioCustodia(
 						new Date(),
 						portafirmesDocument.getCustodiaId(),
-						document.getCustodiaUrl());
+						document.getCustodiaCsv());
 				documentPortafirmes.updateProcessament(
 						true,
 						false,

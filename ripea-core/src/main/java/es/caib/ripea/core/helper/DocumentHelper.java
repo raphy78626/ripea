@@ -118,10 +118,11 @@ public class DocumentHelper {
 					ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
 							document,
 							null,
+							versio,
 							true);
 					fitxer = new FitxerDto();
-					fitxer.setNom(arxiuDocument.getTitol());
-					fitxer.setContentType(arxiuDocument.getContingut().getContentType());
+					fitxer.setNom(document.getFitxerNom());
+					fitxer.setContentType(document.getFitxerContentType());
 					fitxer.setContingut(arxiuDocument.getContingut().getContingut());
 				} else {
 					throw new SistemaExternException(

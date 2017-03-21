@@ -24,6 +24,11 @@ import org.springframework.stereotype.Component;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.ComunitatDto;
+import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
@@ -68,7 +73,6 @@ import es.caib.ripea.plugin.ciutada.CiutadaPersona;
 import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
-import es.caib.ripea.plugin.custodia.CustodiaPlugin;
 import es.caib.ripea.plugin.dadesext.Comunitat;
 import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.Municipi;
@@ -98,9 +102,9 @@ public class PluginHelper {
 	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
 	boolean gestioDocumentalPluginConfigurat = false;
 	//private GestioDocumentalPlugin gestioDocumentalPlugin;
+	//private CustodiaPlugin custodiaPlugin;
 	private PortafirmesPlugin portafirmesPlugin;
 	private ConversioPlugin conversioPlugin;
-	private CustodiaPlugin custodiaPlugin;
 	private RegistrePlugin registrePlugin;
 	private CiutadaPlugin ciutadaPlugin;
 	private DadesExternesPlugin dadesExternesPlugin;
@@ -691,6 +695,125 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 		}
+	}
+
+	public String custodiaReservarUrl(
+			DocumentEntity document) {
+		if (document.getCustodiaUrl() != null)
+			return document.getCustodiaUrl();
+		String accioDescripcio = "Reservar URL";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put(
+				"documentId",
+				document.getId().toString());
+		long t0 = System.currentTimeMillis();
+		try {
+			String url = getCustodiaPlugin().reservarUrl(
+					document.getId().toString());
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return url;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					errorDescripcio,
+					ex);
+		}
+	}
+	public String custodiaEnviarDocumentFirmat(
+			DocumentEntity document,
+			String custodiaTipus,
+			String arxiuNom,
+			byte[] arxiuContingut) {
+		String accioDescripcio = "Custodiar document firmat";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put(
+				"documentId",
+				document.getId().toString());
+		accioParams.put(
+				"arxiuNom",
+				arxiuNom);
+		accioParams.put(
+				"arxiuTamany",
+				new Integer(arxiuContingut.length).toString());
+		long t0 = System.currentTimeMillis();
+		try {
+			getCustodiaPlugin().custodiarPdfFirmat(
+					document.getId().toString(),
+					custodiaTipus,
+					arxiuNom,
+					new ByteArrayInputStream(arxiuContingut));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return document.getId().toString();
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					errorDescripcio,
+					ex);
+		}
+	}
+	public void custodiaEsborrar(DocumentEntity document) {
+		String accioDescripcio = "Esborrar document custodiat";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put(
+				"documentId",
+				document.getId().toString());
+		accioParams.put(
+				"custodiaId",
+				document.getCustodiaId());
+		long t0 = System.currentTimeMillis();
+		try {
+			getCustodiaPlugin().esborrarDocumentCustodiat(
+					document.getCustodiaId(),
+					false);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CUSTODIA,
+					errorDescripcio,
+					ex);
+		}
 	}*/
 
 	public boolean isArxiuPluginActiu() {
@@ -704,6 +827,12 @@ public class PluginHelper {
 	}
 	public boolean arxiuPotGestionarCarpetes() {
 		return getPropertyPluginArxiuGestionarCarpetes();
+	}
+	public boolean arxiuSuportaVersionsDocuments() {
+		return getPropertyPluginArxiuDocumentVersionable();
+	}
+	public boolean arxiuSuportaMetadades() {
+		return getPropertyPluginArxiuSuportaMetadades();
 	}
 
 	public void arxiuExpedientActualitzar(
@@ -764,12 +893,11 @@ public class PluginHelper {
 						organsSb.append(organ);
 					}
 				}
-				expedient.updateNti(
-						arxiuExpedient.getEniVersio(),
-						arxiuExpedient.getEniIdentificador(),
-						(organsSb != null) ? organsSb.toString() : null,
-						arxiuExpedient.getEniDataObertura(),
-						arxiuExpedient.getEniClassificacio());
+				if (getPropertyPluginArxiuSuportaMetadades()) {
+					propagarMetadadesExpedient(
+							arxiuExpedient,
+							expedient);
+				}
 				expedient.updateArxiu(
 						arxiuExpedient.getNodeId());
 			} else {
@@ -819,7 +947,7 @@ public class PluginHelper {
 		accioParams.put("tipus", expedient.getMetaExpedient().getNom());
 		long t0 = System.currentTimeMillis();
 		try {
-			ArxiuExpedient arxiuExpedient = getArxiuPlugin().expedientObtenirAmbId(
+			ArxiuExpedient arxiuExpedient = getArxiuPlugin().expedientConsultar(
 					expedient.getArxiuUuid(),
 					generarCapsaleraArxiu(expedient));
 			integracioHelper.addAccioOk(
@@ -1017,10 +1145,15 @@ public class PluginHelper {
 						contentType,
 						contingutPare.getArxiuUuid(),
 						generarCapsaleraArxiu(document));
+				if (getPropertyPluginArxiuSuportaMetadades()) {
+					propagarMetadadesDocument(
+							arxiuDocument,
+							document);
+				}
 				document.updateArxiu(
 						arxiuDocument.getNodeId());
 			} else {
-				getArxiuPlugin().documentModificar(
+				getArxiuPlugin().documentEsborranyModificar(
 						document.getArxiuUuid(),
 						document.getNom(),
 						origen,
@@ -1061,25 +1194,27 @@ public class PluginHelper {
 
 	public ArxiuDocument arxiuDocumentConsultar(
 			ContingutEntity contingut,
-			String arxiuUuidParam,
+			String nodeId,
+			String versio,
 			boolean ambContingut) {
-		String arxiuUuid = null;
-		
-		if (contingut instanceof DocumentEntity)
-			arxiuUuid = contingut.getArxiuUuid();
-		else
-			arxiuUuid = arxiuUuidParam;
-		
-		
 		String accioDescripcio = "Consulta d'un document";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("contingutId", contingut.getId().toString());
 		accioParams.put("contingutNom", contingut.getNom());
-		accioParams.put("arxiuUuid", arxiuUuid);
+		accioParams.put("nodeId", nodeId);
+		String arxiuUuid = null;
+		if (contingut instanceof DocumentEntity) {
+			arxiuUuid = contingut.getArxiuUuid();
+		} else {
+			arxiuUuid = nodeId;
+		}
+		accioParams.put("arxiuUuidCalculat", arxiuUuid);
+		accioParams.put("versio", versio);
 		long t0 = System.currentTimeMillis();
 		try {
-			ArxiuDocument arxiuDocument = getArxiuPlugin().documentObtenirAmbId(
+			ArxiuDocument arxiuDocument = getArxiuPlugin().documentConsultar(
 					arxiuUuid,
+					versio,
 					ambContingut,
 					generarCapsaleraArxiu(contingut));
 			integracioHelper.addAccioOk(
@@ -1145,6 +1280,50 @@ public class PluginHelper {
 		return getArxiuFormatExtensio(extensio) != null;
 	}
 
+	public String[] arxiuDocumentObtenirVersions(
+			DocumentEntity document) {
+		String accioDescripcio = "Obtenir versions del document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", document.getId().toString());
+		accioParams.put("títol", document.getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			List<ArxiuDocumentVersio> arxiuVersions = getArxiuPlugin().documentObtenirVersions(
+					document.getArxiuUuid(),
+					generarCapsaleraArxiu(document));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			if (arxiuVersions != null && !arxiuVersions.isEmpty()) {
+				String[] versions = new String[arxiuVersions.size()];
+				int i = 0;
+				for (ArxiuDocumentVersio arxiuVersio: arxiuVersions) {
+					versions[i++] = arxiuVersio.getId();
+				}
+				return versions;
+			} else {
+				return null;
+			}
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
 	public String arxiuDocumentObtenirDarreraVersio(
 			DocumentEntity document) {
 		String accioDescripcio = "Obtenir darrera versió del document";
@@ -1185,33 +1364,84 @@ public class PluginHelper {
 		}
 	}
 
-	public String[] arxiuDocumentObtenirVersions(
+	public String arxiuDocumentGenerarCsv(
 			DocumentEntity document) {
-		String accioDescripcio = "Obtenir versions del document";
+		String accioDescripcio = "Generar CSV pel document";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("id", document.getId().toString());
 		accioParams.put("títol", document.getNom());
 		long t0 = System.currentTimeMillis();
 		try {
-			List<ArxiuDocumentVersio> arxiuVersions = getArxiuPlugin().documentObtenirVersions(
+			String csv = getArxiuPlugin().documentGenerarCsv(
 					document.getArxiuUuid(),
-					generarCapsaleraArxiu(document));
+					generarCapsaleraArxiu(document),
+					document.getId().toString());
+			accioParams.put("csvGenerat", csv);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
-			if (arxiuVersions != null && !arxiuVersions.isEmpty()) {
-				String[] versions = new String[arxiuVersions.size()];
-				int i = 0;
-				for (ArxiuDocumentVersio arxiuVersio: arxiuVersions) {
-					versions[i++] = arxiuVersio.getId();
-				}
-				return versions;
-			} else {
-				return null;
+			return csv;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public String arxiuDocumentGenerarUrlPerCsv(
+			String csv) {
+		return getPropertyPluginArxiuCsvBaseUrl() + csv;
+	}
+
+	public String arxiuDocumentGuardarPdfFirmat(
+			DocumentEntity document,
+			FitxerDto fitxer,
+			String custodiaTipus) {
+		// El paràmetre custodiaTipus es reb sempre com a paràmetre però només te
+		// sentit quan s'empra el plugin d'arxiu que accedeix a valcert.
+		String accioDescripcio = "Guardar PDF firmat com a document definitiu";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", document.getId().toString());
+		accioParams.put("títol", document.getNom());
+		accioParams.put("fitxerNom", fitxer.getNom());
+		accioParams.put("fitxerTamany", new Long(fitxer.getTamany()).toString());
+		accioParams.put("fitxerContentType", fitxer.getContentType());
+		long t0 = System.currentTimeMillis();
+		try {
+			InputStream is = null;
+			if (fitxer != null && DocumentTipusEnumDto.DIGITAL.equals(document.getDocumentTipus())) {
+				is = new ByteArrayInputStream(fitxer.getContingut());
 			}
+			getArxiuPlugin().documentDefinitiuGuardarPdfFirmat(
+					document.getArxiuUuid(),
+					is,
+					document.getCustodiaCsv(),
+					generarCapsaleraArxiu(document),
+					fitxer.getNom(),
+					document.getId().toString(),
+					custodiaTipus);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			document.updateEstat(
+					DocumentEstatEnumDto.CUSTODIAT);
+			return document.getId().toString();
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
@@ -1286,7 +1516,7 @@ public class PluginHelper {
 		accioParams.put("nom", carpeta.getNom());
 		long t0 = System.currentTimeMillis();
 		try {
-			ArxiuCarpeta arxiuCarpeta = getArxiuPlugin().carpetaObtenirAmbId(
+			ArxiuCarpeta arxiuCarpeta = getArxiuPlugin().carpetaConsultar(
 					carpeta.getArxiuUuid(),
 					generarCapsaleraArxiu(carpeta));
 			integracioHelper.addAccioOk(
@@ -1394,7 +1624,7 @@ public class PluginHelper {
 				false);
 		String urlCustodia = null;
 		if (portafirmesEnviarDocumentEstampat()) {
-			urlCustodia = document.getCustodiaUrl();
+			urlCustodia = arxiuDocumentGenerarUrlPerCsv(document.getCustodiaCsv());
 		}
 		FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(document);
 		FitxerDto fitxerConvertit = conversioConvertirPdfIEstamparUrl(
@@ -1643,127 +1873,6 @@ public class PluginHelper {
 					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_CONVERT,
-					errorDescripcio,
-					ex);
-		}
-	}
-
-	public String custodiaReservarUrl(
-			DocumentEntity document) {
-		if (document.getCustodiaUrl() != null)
-			return document.getCustodiaUrl();
-		String accioDescripcio = "Reservar URL";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put(
-				"documentId",
-				document.getId().toString());
-		long t0 = System.currentTimeMillis();
-		try {
-			String url = getCustodiaPlugin().reservarUrl(
-					document.getId().toString());
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_CUSTODIA,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return url;
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_CUSTODIA,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_CUSTODIA,
-					errorDescripcio,
-					ex);
-		}
-	}
-
-	public String custodiaEnviarDocumentFirmat(
-			DocumentEntity document,
-			String custodiaTipus,
-			String arxiuNom,
-			byte[] arxiuContingut) {
-		String accioDescripcio = "Custodiar document firmat";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put(
-				"documentId",
-				document.getId().toString());
-		accioParams.put(
-				"arxiuNom",
-				arxiuNom);
-		accioParams.put(
-				"arxiuTamany",
-				new Integer(arxiuContingut.length).toString());
-		long t0 = System.currentTimeMillis();
-		try {
-			getCustodiaPlugin().custodiarPdfFirmat(
-					document.getId().toString(),
-					custodiaTipus,
-					arxiuNom,
-					new ByteArrayInputStream(arxiuContingut));
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_CUSTODIA,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return document.getId().toString();
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_CUSTODIA,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_CUSTODIA,
-					errorDescripcio,
-					ex);
-		}
-	}
-
-	public void custodiaEsborrar(DocumentEntity document) {
-		String accioDescripcio = "Esborrar document custodiat";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put(
-				"documentId",
-				document.getId().toString());
-		accioParams.put(
-				"custodiaId",
-				document.getCustodiaId());
-		long t0 = System.currentTimeMillis();
-		try {
-			getCustodiaPlugin().esborrarDocumentCustodiat(
-					document.getCustodiaId(),
-					false);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_CUSTODIA,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de custòdia de documents";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_CUSTODIA,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_CUSTODIA,
 					errorDescripcio,
 					ex);
 		}
@@ -2173,7 +2282,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
+
 //	public List<Municipi> dadesExternesMunicipisFindAll() {
 //		String accioDescripcio = "Consulta de tots els municipis";
 //		long t0 = System.currentTimeMillis();
@@ -2401,6 +2510,192 @@ public class PluginHelper {
 		return capsaleraTest;
 	}
 
+	private void propagarMetadadesExpedient(
+			ArxiuExpedient arxiuExpedient,
+			ExpedientEntity expedient) {
+		String organs = null;
+		if (arxiuExpedient.getEniOrgans() != null) {
+			StringBuilder organsSb = new StringBuilder();
+			boolean primer = true;
+			for (String organ: arxiuExpedient.getEniOrgans()) {
+				organsSb.append(organ);
+				if (primer || arxiuExpedient.getEniOrgans().size() == 1) {
+					primer = false;
+				} else {
+					organsSb.append(",");
+				}
+			}
+			organs = organsSb.toString();
+		}
+		expedient.updateNti(
+				obtenirNumeroVersioEniExpedient(arxiuExpedient.getEniVersio()),
+				arxiuExpedient.getEniIdentificador(),
+				organs,
+				arxiuExpedient.getEniDataObertura(),
+				arxiuExpedient.getEniClassificacio());
+	}
+	private static final String ENI_EXPEDIENT_PREFIX = "http://administracionelectronica.gob.es/ENI/XSD/v";
+	private String obtenirNumeroVersioEniExpedient(String versio) {
+		if (versio != null) {
+			if (versio.startsWith(ENI_EXPEDIENT_PREFIX)) {
+				int indexBarra = versio.indexOf("/", ENI_EXPEDIENT_PREFIX.length());
+				return versio.substring(ENI_EXPEDIENT_PREFIX.length(), indexBarra);
+			}
+		}
+		return null;
+	}
+
+	private void propagarMetadadesDocument(
+			ArxiuDocument arxiuDocument,
+			DocumentEntity document) {
+		String organs = null;
+		if (arxiuDocument.getEniOrgans() != null) {
+			StringBuilder organsSb = new StringBuilder();
+			boolean primer = true;
+			for (String organ: arxiuDocument.getEniOrgans()) {
+				organsSb.append(organ);
+				if (primer || arxiuDocument.getEniOrgans().size() == 1) {
+					primer = false;
+				} else {
+					organsSb.append(",");
+				}
+			}
+			organs = organsSb.toString();
+		}
+		DocumentNtiOrigenEnumDto ntiOrigen = null;
+		if (arxiuDocument.getEniOrigen() != null) {
+			switch (arxiuDocument.getEniOrigen()) {
+			case CIUTADA:
+				ntiOrigen = DocumentNtiOrigenEnumDto.O0;
+				break;
+			case ADMINISTRACIO:
+				ntiOrigen = DocumentNtiOrigenEnumDto.O1;
+				break;
+			}
+		}
+		DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion = null;
+		if (arxiuDocument.getEniEstatElaboracio() != null) {
+			switch (arxiuDocument.getEniEstatElaboracio()) {
+			case ORIGINAL:
+				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE01;
+				break;
+			case COPIA_AUTENTICA_FORMAT:
+				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE02;
+				break;
+			case COPIA_AUTENTICA_PAPER:
+				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE03;
+				break;
+			case COPIA_AUTENTICA_PARCIAL:
+				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE04;
+				break;
+			case ALTRES:
+				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE99;
+				break;
+			}
+		}
+		DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental = null;
+		if (arxiuDocument.getEniTipusDocumental() != null) {
+			switch (arxiuDocument.getEniTipusDocumental()) {
+			case RESOLUCIO:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD01;
+				break;
+			case ACORD:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD02;
+				break;
+			case CONTRACTE:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD03;
+				break;
+			case CONVENI:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD04;
+				break;
+			case DECLARACIO:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD05;
+				break;
+			case COMUNICACIO:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD06;
+				break;
+			case NOTIFICACIO:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD07;
+				break;
+			case PUBLICACIO:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD08;
+				break;
+			case JUSTIFICANT_RECEPCIO:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD09;
+				break;
+			case ACTA:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD10;
+				break;
+			case CERTIFICAT:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD11;
+				break;
+			case DILIGENCIA:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD12;
+				break;
+			case INFORME:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD13;
+				break;
+			case SOLICITUD:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD14;
+				break;
+			case DENUNCIA:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD15;
+				break;
+			case ALEGACIO:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD16;
+				break;
+			case RECURSOS:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD17;
+				break;
+			case COMUNICACIO_CIUTADA:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD18;
+				break;
+			case FACTURA:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD19;
+				break;
+			case ALTRES_INCAUTATS:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD20;
+				break;
+			case ALTRES:
+				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD99;
+				break;
+			}
+		}
+		DocumentNtiTipoFirmaEnumDto ntiTipoFirma = null;
+		if (arxiuDocument.getEniFirmaTipus() != null) {
+			// TODO
+		}
+		String firmaCsv = null;
+		if (arxiuDocument.getEniFirmaCsv() != null) {
+			// TODO
+		}
+		String firmaCsvDefinicio = null;
+		if (arxiuDocument.getEniFirmaCsvDefinicio() != null) {
+			// TODO
+		}
+		document.updateNti(
+				obtenirNumeroVersioEniDocument(arxiuDocument.getEniVersio()),
+				arxiuDocument.getEniIdentificador(),
+				organs,
+				ntiOrigen,
+				ntiEstadoElaboracion,
+				ntiTipoDocumental,
+				arxiuDocument.getEniDocumentOrigenId(),
+				ntiTipoFirma,
+				firmaCsv,
+				firmaCsvDefinicio);
+	}
+	private static final String ENI_DOCUMENT_PREFIX = "http://administracionelectronica.gob.es/ENI/XSD/v";
+	private String obtenirNumeroVersioEniDocument(String versio) {
+		if (versio != null) {
+			if (versio.startsWith(ENI_DOCUMENT_PREFIX)) {
+				int indexBarra = versio.indexOf("/", ENI_DOCUMENT_PREFIX.length());
+				return versio.substring(ENI_DOCUMENT_PREFIX.length(), indexBarra);
+			}
+		}
+		return null;
+	}
+
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
 		if (dadesUsuariPlugin == null) {
 			String pluginClass = getPropertyPluginDadesUsuari();
@@ -2512,7 +2807,7 @@ public class PluginHelper {
 		}
 		return conversioPlugin;
 	}
-	private CustodiaPlugin getCustodiaPlugin() {
+	/*private CustodiaPlugin getCustodiaPlugin() {
 		if (custodiaPlugin == null) {
 			String pluginClass = getPropertyPluginCustodia();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -2528,7 +2823,7 @@ public class PluginHelper {
 			}
 		}
 		return custodiaPlugin;
-	}
+	}*/
 	private RegistrePlugin getRegistrePlugin() {
 		if (registrePlugin == null) {
 			String pluginClass = getPropertyPluginRegistre();
@@ -2589,6 +2884,9 @@ public class PluginHelper {
 	}
 	/*private String getPropertyPluginGestioDocumental() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.gesdoc.class");
+	}
+	private String getPropertyPluginCustodia() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.custodia.class");
 	}*/
 	private String getPropertyPluginArxiu() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.class");
@@ -2598,9 +2896,6 @@ public class PluginHelper {
 	}
 	private String getPropertyPluginConversio() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.conversio.class");
-	}
-	private String getPropertyPluginCustodia() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.custodia.class");
 	}
 	private String getPropertyPluginRegistre() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.registre.class");
@@ -2620,6 +2915,15 @@ public class PluginHelper {
 	}
 	private boolean getPropertyPluginArxiuGestionarCarpetes() {
 		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.gestionar.carpetes");
+	}
+	private boolean getPropertyPluginArxiuDocumentVersionable() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.document.versionable");
+	}
+	private boolean getPropertyPluginArxiuSuportaMetadades() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.suporta.metadades");
+	}
+	private boolean getPropertyPluginArxiuCsvBaseUrl() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.csv.base.url");
 	}
 
 }

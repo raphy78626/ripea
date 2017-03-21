@@ -198,20 +198,22 @@ public class ContingutHelper {
 			dto.setData(document.getData());
 			dto.setCustodiaData(document.getCustodiaData());
 			dto.setCustodiaId(document.getCustodiaId());
-			dto.setCustodiaUrl(document.getCustodiaUrl());
+			dto.setCustodiaUrl(
+					pluginHelper.arxiuDocumentGenerarUrlPerCsv(document.getCustodiaCsv()));
 			dto.setFitxerNom(document.getFitxerNom());
 			dto.setFitxerContentType(document.getFitxerContentType());
 			dto.setFitxerContingut(document.getFitxerContingut());
 			dto.setDataCaptura(document.getDataCaptura());
 			dto.setVersioDarrera(document.getVersioDarrera());
 			dto.setVersioCount(document.getVersioCount());
-			if (ambVersions && pluginHelper.isArxiuPluginActiu()) {
+			if (ambVersions && pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuSuportaVersionsDocuments()) {
 				dto.setVersions(
 						pluginHelper.arxiuDocumentObtenirVersions(document));
 			}
 			dto.setNtiVersion(document.getNtiVersion());
 			dto.setNtiIdentificador(document.getNtiIdentificador());
 			dto.setNtiOrgano(document.getNtiOrgano());
+			dto.setNtiOrganoDescripcio(document.getNtiOrgano());
 			dto.setNtiOrigen(document.getNtiOrigen());
 			dto.setNtiEstadoElaboracion(document.getNtiEstadoElaboracion());
 			dto.setNtiTipoDocumental(document.getNtiTipoDocumental());
@@ -845,17 +847,19 @@ public class ContingutHelper {
 							fitxer,
 							contingut.getPare(),
 							classificacioDocumental);
-					try {
-						String versio = pluginHelper.arxiuDocumentObtenirDarreraVersio(
-							(DocumentEntity)contingut);
-						((DocumentEntity)contingut).updateVersio(versio);
-					} catch (Exception ex) {
-						logger.error(
-								"Error al actualitzar les versions del document (" + 
-								"entitatId=" + contingut.getEntitat().getId() + ", " +
-								"documentId=" + contingut.getId() + ", " +
-								"documentTitol=" + contingut.getNom() + ")",
-								ex);
+					if (pluginHelper.arxiuSuportaVersionsDocuments()) {
+						try {
+							String versio = pluginHelper.arxiuDocumentObtenirDarreraVersio(
+								(DocumentEntity)contingut);
+							((DocumentEntity)contingut).updateVersio(versio);
+						} catch (Exception ex) {
+							logger.error(
+									"Error al actualitzar les versions del document (" + 
+									"entitatId=" + contingut.getEntitat().getId() + ", " +
+									"documentId=" + contingut.getId() + ", " +
+									"documentTitol=" + contingut.getNom() + ")",
+									ex);
+						}
 					}
 				}
 			} else if (contingut instanceof CarpetaEntity) {

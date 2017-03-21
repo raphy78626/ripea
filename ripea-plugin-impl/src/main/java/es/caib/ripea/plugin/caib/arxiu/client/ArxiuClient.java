@@ -12,7 +12,9 @@ import es.caib.arxiudigital.apirest.constantes.EstadosExpediente;
 import es.caib.arxiudigital.apirest.constantes.ExtensionesFichero;
 import es.caib.arxiudigital.apirest.constantes.FormatosFichero;
 import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
+import es.caib.arxiudigital.apirest.constantes.PerfilesFirma;
 import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
+import es.caib.arxiudigital.apirest.constantes.TiposFirma;
 
 /**
  * Interfície del client per a accedir a la funcionalitat de
@@ -49,7 +51,6 @@ public interface ArxiuClient {
 	public ArxiuFile fileGet(
 			String nodeId,
 			ArxiuHeader capsalera);
-	/*
 	public void fileEasySearch();
 	public void fileLink();
 	public void fileLock();
@@ -60,7 +61,6 @@ public interface ArxiuClient {
 	public void fileIndexGenerate();
 	public void fileChildCreate();
 	public void fileChildMove();
-	*/
 	public void fileClose();
 	public void fileReopen();
 	public void fileExport();
@@ -79,20 +79,7 @@ public interface ArxiuClient {
 			String tipusMime,
 			String pareNodeId,
 			ArxiuHeader capsalera);
-	public ArxiuDocument documentCreate(
-			String titol,
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
-			List<String> organs,
-			String serieDocumental,
-			InputStream contingut,
-			String tipusMime,
-			String pareNodeId,
-			ArxiuHeader capsalera);
+	public ArxiuDocument documentCreate();
 	public void documentUpdate(
 			String nodeId,
 			String titol,
@@ -124,6 +111,23 @@ public interface ArxiuClient {
 	public String documentCsvGenerate(
 			String nodeId,
 			ArxiuHeader capsalera);
+	public void documentFinalSet(
+			String nodeId,
+			String titol,
+			OrigenesContenido origen,
+			Date dataCaptura,
+			EstadosElaboracion estatElaboracio,
+			TiposDocumentosENI documentTipus,
+			FormatosFichero formatNom,
+			ExtensionesFichero formatExtensio,
+			List<String> organs,
+			String serieDocumental,
+			InputStream contingut,
+			TiposFirma firmaTipus,
+			PerfilesFirma firmaPerfil,
+			String csv,
+			String tipusMime,
+			ArxiuHeader capsalera);
 	public void documentSearch();
 	public void documentCopy();
 	public void documentMove();
@@ -134,7 +138,6 @@ public interface ArxiuClient {
 	public void documentPermissionsCancel();
 	public void documentValidate();
 	public void documentDispatch();
-	public void documentFinalSet();
 
 	public ArxiuFolder folderCreate(
 			String name,
