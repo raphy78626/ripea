@@ -38,6 +38,7 @@ public class BustiaV1Test {
 	private static final String PASSWORD = null;
 
 
+
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
 		RegistreAnotacio anotacio = new RegistreAnotacio(); 

@@ -183,21 +183,6 @@ public class DocumentController extends BaseUserController {
 				"document.controller.custodia.reintentar.ok");
 	}
 
-	@RequestMapping(value = "/{documentId}/custodia/esborrar", method = RequestMethod.GET)
-	public String custodiaEsborrar(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		documentService.custodiaEsborrar(
-				entitatActual.getId(),
-				documentId);
-		return this.getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../../../../../../contingut/" + documentId,
-				"document.controller.custodia.esborrar.ok");
-	}
-
 	@RequestMapping(value = "/{documentId}/custodia/info", method = RequestMethod.GET)
 	public String custodiaInfo(
 			HttpServletRequest request,
