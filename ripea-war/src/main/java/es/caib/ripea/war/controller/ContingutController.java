@@ -3,12 +3,14 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.InteressatTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
@@ -342,8 +346,36 @@ public class ContingutController extends BaseUserController {
 						entitatActual.getId(),
 						contingutId,
 						registreId));
+		
+		model.addAttribute(
+				"annexos",
+				registreService.getAnnexosAmbArxiu(
+						entitatActual.getId(),
+						contingutId,
+						registreId));
+		
 		return "registreDetall";
 	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", method = RequestMethod.GET)
+	public String descarregar(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
+			@PathVariable Long annexId,
+			@PathVariable String tipus) throws IOException {
+		FitxerDto fitxer = registreService.getArxiuAnnex(
+				annexId, 
+				AnnexArxiuTipusEnumDto.valueOf(tipus));
+		writeFileToResponse(
+				fitxer.getNom(),
+				fitxer.getContingut(),
+				response);
+		return null;
+	}
+	
+	
 	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,

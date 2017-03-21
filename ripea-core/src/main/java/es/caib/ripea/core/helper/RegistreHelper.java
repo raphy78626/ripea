@@ -3,11 +3,17 @@
  */
 package es.caib.ripea.core.helper;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
 import es.caib.ripea.core.api.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -152,6 +158,30 @@ public class RegistreHelper {
 			}
 		}
 		return entity;
+	}
+	
+	public void comprovarDocumentsFirmesPerAnnex(RegistreAnnexDetallDto annex) {
+		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
+		
+		File doc = new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime());
+		File fir = new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime());
+		
+		if (doc != null && doc.exists() && !doc.isDirectory())
+			annex.setAmbDocument(true);
+		if (fir != null && fir.exists() && !fir.isDirectory())
+			annex.setAmbFirma(true);
+	}
+	
+	public byte[] getAnnexArxiuContingut(String nomArxiu) {
+		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
+		
+		Path path = Paths.get(pathName + "/" + nomArxiu);
+		try {
+			byte[] data = Files.readAllBytes(path);
+			return data;
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	private RegistreInteressat fromInteressatEntity(

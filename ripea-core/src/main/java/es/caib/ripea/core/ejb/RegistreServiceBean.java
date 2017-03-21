@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.ejb;
 
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -10,7 +12,11 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
+import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.RegistreService;
 
 /**
@@ -77,6 +83,25 @@ public class RegistreServiceBean implements RegistreService {
 				entitatId,
 				bustiaId,
 				registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<RegistreAnnexDetallDto> getAnnexosAmbArxiu(
+			Long entitatId, 
+			Long contingutId, 
+			Long registreId)
+			throws NotFoundException {
+		return delegate.getAnnexosAmbArxiu(
+				entitatId, 
+				contingutId, 
+				registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public FitxerDto getArxiuAnnex(Long annexId, AnnexArxiuTipusEnumDto tipus) throws NotFoundException {
+		return delegate.getArxiuAnnex(annexId, tipus);
 	}
 
 }

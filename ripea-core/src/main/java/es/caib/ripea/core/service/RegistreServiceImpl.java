@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -15,7 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ScheduledTaskException;
@@ -25,15 +29,18 @@ import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
+import es.caib.ripea.core.repository.RegistreAnnexRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 
 /**
@@ -51,6 +58,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private ExpedientRepository expedientRepository;
 	@Resource
 	private BustiaRepository bustiaRepository;
+	@Resource
+	private RegistreAnnexRepository registreAnnexRepository;
 
 	@Resource
 	private ContingutHelper contingutHelper;
@@ -64,6 +73,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private ReglaHelper reglaHelper;
 	@Resource
 	private BustiaHelper bustiaHelper;
+	@Resource
+	private RegistreHelper registreHelper;
 
 
 
@@ -229,8 +240,80 @@ public class RegistreServiceImpl implements RegistreService {
 					"L'estat de l'anotació no és PENDENT o ERROR");
 		}
 	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public FitxerDto getArxiuAnnex(
+			Long annexId, 
+			AnnexArxiuTipusEnumDto tipus) {
+		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
+		String nomArxiu = annex.getId().toString();
+		String contentType = "";
+		String nomFinal = "";
+		if (tipus == AnnexArxiuTipusEnumDto.DOCUMENT) {
+			nomArxiu += "_d";
+			contentType = annex.getFitxerTipusMime();
+			nomFinal = annex.getFitxerNom();
+		} else {
+			nomArxiu += "_f";
+			contentType = annex.getFirmaFitxerTipusMime();
+			nomFinal = annex.getFirmaFitxerNom();
+		}
+		byte[] contingutArxiu = registreHelper.getAnnexArxiuContingut(nomArxiu + "." + contentType);
+			
+		FitxerDto arxiu = new FitxerDto();
+		arxiu.setNom(nomFinal);
+		arxiu.setContentType(contentType);
+		arxiu.setContingut(contingutArxiu);
+		return arxiu;
+	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public List<RegistreAnnexDetallDto> getAnnexosAmbArxiu(
+			Long entitatId,
+			Long contingutId,
+			Long registreId) throws NotFoundException {
+		logger.debug("Obtenint anotació de registre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "contingutId=" + contingutId + ", "
+				+ "registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		if (contingut instanceof BustiaEntity) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					contingutId,
+					true);
+		} else {
+			// Comprova l'accés al path del contenidor pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
+					true,
+					false,
+					false,
+					true);
+		}
+		RegistreEntity registre = registreRepository.findByPareAndId(
+				contingut,
+				registreId);
 
+		List<RegistreAnnexDetallDto> annexos = new ArrayList<RegistreAnnexDetallDto>();
+		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
+			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(annexEntity, RegistreAnnexDetallDto.class);
+			registreHelper.comprovarDocumentsFirmesPerAnnex(annex);
+			annexos.add(annex);
+		}
+		
+		return annexos;
+	}
 
 	private boolean reglaAplicar(
 			RegistreEntity anotacio) {
