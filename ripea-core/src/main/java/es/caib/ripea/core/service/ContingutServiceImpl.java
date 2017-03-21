@@ -1202,6 +1202,7 @@ public class ContingutServiceImpl implements ContingutService {
 		logger.debug("Obtenint informació de l'arxiu pel contingut ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ")");
+
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -1273,7 +1274,7 @@ public class ContingutServiceImpl implements ContingutService {
 			throw new ValidationException(
 					contingutId,
 					ContingutEntity.class,
-					"El contingut no és del tipus expedient, document o carpeta");
+					"El plugin d'arxiu no està actiu");
 		}
 	}
 

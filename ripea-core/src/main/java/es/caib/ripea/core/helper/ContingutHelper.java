@@ -834,30 +834,36 @@ public class ContingutHelper {
 		}
 		if (pluginHelper.isArxiuPluginActiu()) {
 			if (contingut instanceof ExpedientEntity) {
-				pluginHelper.arxiuExpedientActualitzar(
-						(ExpedientEntity)contingut);
+				if (pluginHelper.arxiuPotGestionarExpedients()) {
+					pluginHelper.arxiuExpedientActualitzar(
+							(ExpedientEntity)contingut);
+				}
 			} else if (contingut instanceof DocumentEntity) {
-				pluginHelper.arxiuDocumentActualitzar(
-						(DocumentEntity)contingut,
-						fitxer,
-						contingut.getPare(),
-						classificacioDocumental);
-				try {
-					String versio = pluginHelper.arxiuDocumentObtenirDarreraVersio(
-						(DocumentEntity)contingut);
-					((DocumentEntity)contingut).updateVersio(versio);
-				} catch (Exception ex) {
-					logger.error(
-							"Error al actualitzar les versions del document (" + 
-							"entitatId=" + contingut.getEntitat().getId() + ", " +
-							"documentId=" + contingut.getId() + ", " +
-							"documentTitol=" + contingut.getNom() + ")",
-							ex);
+				if (pluginHelper.arxiuPotGestionarDocuments()) {
+					pluginHelper.arxiuDocumentActualitzar(
+							(DocumentEntity)contingut,
+							fitxer,
+							contingut.getPare(),
+							classificacioDocumental);
+					try {
+						String versio = pluginHelper.arxiuDocumentObtenirDarreraVersio(
+							(DocumentEntity)contingut);
+						((DocumentEntity)contingut).updateVersio(versio);
+					} catch (Exception ex) {
+						logger.error(
+								"Error al actualitzar les versions del document (" + 
+								"entitatId=" + contingut.getEntitat().getId() + ", " +
+								"documentId=" + contingut.getId() + ", " +
+								"documentTitol=" + contingut.getNom() + ")",
+								ex);
+					}
 				}
 			} else if (contingut instanceof CarpetaEntity) {
-				pluginHelper.arxiuCarpetaActualitzar(
-						(CarpetaEntity)contingut,
-						contingut.getPare());
+				if (pluginHelper.arxiuPotGestionarCarpetes()) {
+					pluginHelper.arxiuCarpetaActualitzar(
+							(CarpetaEntity)contingut,
+							contingut.getPare());
+				}
 			} else {
 				throw new ValidationException(
 						contingut.getId(),
@@ -873,14 +879,20 @@ public class ContingutHelper {
 		if (contingut.getArxiuUuid() != null) {
 			if (pluginHelper.isArxiuPluginActiu()) {
 				if (contingut instanceof ExpedientEntity) {
-					pluginHelper.arxiuExpedientEsborrar(
-							(ExpedientEntity)contingut);
+					if (pluginHelper.arxiuPotGestionarExpedients()) {
+						pluginHelper.arxiuExpedientEsborrar(
+								(ExpedientEntity)contingut);
+					}
 				} else if (contingut instanceof DocumentEntity) {
-					pluginHelper.arxiuDocumentEsborrar(
-							(DocumentEntity)contingut);
+					if (pluginHelper.arxiuPotGestionarDocuments()) {
+						pluginHelper.arxiuDocumentEsborrar(
+								(DocumentEntity)contingut);
+					}
 				} else if (contingut instanceof CarpetaEntity) {
-					pluginHelper.arxiuCarpetaEsborrar(
-							(CarpetaEntity)contingut);
+					if (pluginHelper.arxiuPotGestionarCarpetes()) {
+						pluginHelper.arxiuCarpetaEsborrar(
+								(CarpetaEntity)contingut);
+					}
 				} else {
 					throw new ValidationException(
 							contingut.getId(),
