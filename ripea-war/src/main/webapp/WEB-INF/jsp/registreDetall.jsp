@@ -16,6 +16,9 @@
 .tab-content {
     margin-top: 0.8em;
 }
+.icona-doc {
+	color: #666666
+}
 </style>
 </head>
 <body>
@@ -104,7 +107,60 @@
 			</table>
 		</div>
 		<div class="tab-pane" id="annexos" role="tabpanel">
+			<div class="panel-group" id="annexos_accordion" role="tablist" aria-multiselectable="true">
 			
+			<c:forEach var="annex" items="${annexos}">
+			  <div class="panel panel-default">
+			    <div class="panel-heading" role="tab" id="heading-${annex.titol}">
+			      <h4 class="panel-title">
+			        <a role="button" data-toggle="collapse" data-parent="#annexos_accordion" href="#collapse-${annex.titol}" aria-expanded="false" aria-controls="collapse-${annex.titol}">
+			          ${annex.titol}
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapse-${annex.titol}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-${annex.titol}">
+			      <div class="panel-body">
+			      	<div class="row">
+		        		<div class="col-xs-6">
+			        		<dl class="dl-horizontal">
+								<dt><spring:message code="registre.annex.detalls.camp.titol"/></dt><dd>${annex.titol}</dd>
+								<dt><spring:message code="registre.annex.detalls.camp.dataCaptura"/></dt><dd><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+								<dt><spring:message code="registre.annex.detalls.camp.localitzacio"/></dt><dd>${annex.localitzacio}</dd>
+								<dt><spring:message code="registre.annex.detalls.camp.origenCiutadaAdmin"/></dt><dd>${annex.origenCiutadaAdmin}</dd>
+								<dt><spring:message code="registre.annex.detalls.camp.observacions"/></dt><dd>${annex.observacions}</dd>
+							</dl>
+		        		</div>
+		        		<div class="col-xs-6">
+			        		<dl class="dl-horizontal">
+								<dt><spring:message code="registre.annex.detalls.camp.firmaMode"/></dt><dd>${annex.firmaMode}</dd>
+								<dt><spring:message code="registre.annex.detalls.camp.firmaCsv"/></dt><dd>${annex.firmaCsv}</dd>
+								<dt><spring:message code="registre.annex.detalls.camp.validacioOCSP"/></dt><dd>${annex.validacioOCSP}</dd>
+								
+								<c:if test="${annex.ambDocument}">
+									<dt><spring:message code="registre.annex.detalls.camp.fitxerNom"/></dt>
+									<dd>
+										<a href="${registre.id}/annex/${annex.id}/arxiu/DOCUMENT">
+				        					<span class="fa fa-download icona-doc"  title="Descarregar document"></span> ${annex.fitxerNom}
+										</a>
+									</dd>
+								</c:if>
+								<c:if test="${annex.ambFirma}">
+									<dt><spring:message code="registre.annex.detalls.camp.firmaFitxerNom"/></dt>
+									<dd>
+										<a href="${registre.id}/annex/${annex.id}/arxiu/FIRMA">
+				        					<span class="fa fa-download icona-doc"  title="Descarregar firma"></span> ${annex.firmaFitxerNom}
+										</a>
+									</dd>
+								</c:if>
+							</dl>
+		        		</div>
+		        	</div>
+			      </div>
+			    </div>
+			  </div>
+			</c:forEach>
+			  
+			</div>
 		</div>
 		<div class="tab-pane" id="proces" role="tabpanel">
 			<c:if test="${registre.procesEstat == 'ERROR'}">

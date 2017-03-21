@@ -3,8 +3,13 @@
  */
 package es.caib.ripea.core.api.service;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
+import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
@@ -98,6 +103,30 @@ public interface RegistreService {
 	public boolean reglaReintentarUser(
 			Long entitatId,
 			Long bustiaId,
+			Long registreId) throws NotFoundException;
+	
+	@PreAuthorize("hasRole('tothom')")
+	public FitxerDto getArxiuAnnex(
+			Long annexId,
+			AnnexArxiuTipusEnumDto tipus) throws NotFoundException;
+	
+	/**
+	 * Retorna una llista d'annexos amb els les rutes dels fitxers asiciats
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param contingutId
+	 *            Atribut id del contingut pare a on està situada l'anotació.
+	 * @param registreId
+	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
+	 * @return Llista d'annexos
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<RegistreAnnexDetallDto> getAnnexosAmbArxiu(
+			Long entitatId,
+			Long contingutId,
 			Long registreId) throws NotFoundException;
 
 }

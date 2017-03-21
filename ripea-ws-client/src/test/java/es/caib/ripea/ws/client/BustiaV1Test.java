@@ -8,13 +8,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.Handler;
 
@@ -62,7 +60,7 @@ public class BustiaV1Test {
         anotacio.setNumero(28);
         anotacio.setIdiomaCodi("1");
         anotacio.setIdiomaDescripcio("Català");
-        anotacio.setIdentificador("13/10/2015");
+        anotacio.setIdentificador("15/10/2015");
         
         File file = new File("c:/Feina/RIPEA/annexos/annex1.pdf");
         byte[] encodedContingut = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
@@ -72,11 +70,7 @@ public class BustiaV1Test {
         annex1.setFitxerTipusMime(FilenameUtils.getExtension(file.getName()));
         annex1.setFitxerContingutBase64(new String(encodedContingut));
         annex1.setFitxerTamany((int)(file.length()));
-        
-        GregorianCalendar c = new GregorianCalendar();
-        c.setTime(new Date());
-        XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-        annex1.setDataCaptura(date);
+        annex1.setDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         
         annex1.setOrigenCiutadaAdmin("0");
         annex1.setNtiTipusDocument("TD01");
@@ -86,16 +80,12 @@ public class BustiaV1Test {
         File file2 = new File("c:/Feina/RIPEA/annexos/annex2.pdf");
         byte[] encodedContingut2 = Base64.encodeBase64(FileUtils.readFileToByteArray(file2));
         RegistreAnnex annex2 = new RegistreAnnex();
-        annex2.setTitol("annexproves1");
+        annex2.setTitol("annexproves2");
         annex2.setFitxerNom(file2.getName());
         annex2.setFitxerTipusMime(FilenameUtils.getExtension(file2.getName()));
         annex2.setFitxerContingutBase64(new String(encodedContingut2));
         annex2.setFitxerTamany((int)(file.length()));
-        
-        GregorianCalendar c2 = new GregorianCalendar();
-        c.setTime(new Date());
-        XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c2);
-        annex2.setDataCaptura(date2);
+        annex2.setDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         
         annex2.setOrigenCiutadaAdmin("1");
         annex2.setNtiTipusDocument("TD02");
