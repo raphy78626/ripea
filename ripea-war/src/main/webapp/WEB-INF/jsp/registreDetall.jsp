@@ -19,6 +19,12 @@
 .icona-doc {
 	color: #666666
 }
+.file-dt {
+	margin-top: 9px;
+}
+.file-dd {
+	margin-top: 3px;
+}
 </style>
 </head>
 <body>
@@ -137,18 +143,20 @@
 								<dt><spring:message code="registre.annex.detalls.camp.validacioOCSP"/></dt><dd>${annex.validacioOCSP}</dd>
 								
 								<c:if test="${annex.ambDocument}">
-									<dt><spring:message code="registre.annex.detalls.camp.fitxerNom"/></dt>
-									<dd>
-										<a href="${registre.id}/annex/${annex.id}/arxiu/DOCUMENT">
-				        					<span class="fa fa-download icona-doc"  title="Descarregar document"></span> ${annex.fitxerNom}
+									<dt class="file-dt"><spring:message code="registre.annex.detalls.camp.fitxerNom"/></dt>
+									<dd class="file-dd">
+										${annex.fitxerNom}
+										<a href="${registre.id}/annex/${annex.id}/arxiu/DOCUMENT" class="btn btn-default">
+				        					<span class="fa fa-download icona-doc"  title="Descarregar document"></span> <spring:message code="comu.boto.descarregar"/>
 										</a>
 									</dd>
 								</c:if>
 								<c:if test="${annex.ambFirma}">
-									<dt><spring:message code="registre.annex.detalls.camp.firmaFitxerNom"/></dt>
-									<dd>
-										<a href="${registre.id}/annex/${annex.id}/arxiu/FIRMA">
-				        					<span class="fa fa-download icona-doc"  title="Descarregar firma"></span> ${annex.firmaFitxerNom}
+									<dt class="file-dt"><spring:message code="registre.annex.detalls.camp.firmaFitxerNom"/></dt>
+									<dd class="file-dd">
+										${annex.firmaFitxerNom}
+										<a href="${registre.id}/annex/${annex.id}/arxiu/FIRMA" class="btn btn-default">
+				        					<span class="fa fa-download icona-doc"  title="Descarregar firma"></span> <spring:message code="comu.boto.descarregar"/>
 										</a>
 									</dd>
 								</c:if>
