@@ -376,15 +376,15 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 
 	private String getServiceUrl() {
 		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.custodia.caib.service.url");
+				"es.caib.ripea.plugin.arxiu.custodia.service.url");
 	}
 	private String getUsername() {
 		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.custodia.caib.username");
+				"es.caib.ripea.plugin.arxiu.custodia.username");
 	}
 	private String getPassword() {
 		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.custodia.caib.password");
+				"es.caib.ripea.plugin.arxiu.custodia.password");
 	}
 
 }
