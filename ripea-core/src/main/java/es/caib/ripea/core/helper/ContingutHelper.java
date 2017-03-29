@@ -784,7 +784,7 @@ public class ContingutHelper {
 				usuaris.add(permis.getPrincipalNom());
 				break;
 			case ROL:
-				List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariConsultarAmbGrup(
+				List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(
 						permis.getPrincipalNom());
 				if (usuarisGrup != null) {
 					for (DadesUsuari usuariGrup: usuarisGrup) {

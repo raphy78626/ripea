@@ -231,7 +231,7 @@ public class CacheHelper {
 	@Cacheable(value = "usuariAmbCodi", key="#usuariCodi")
 	public DadesUsuari findUsuariAmbCodi(
 			String usuariCodi) {
-		return pluginHelper.dadesUsuariConsultarAmbCodi(
+		return pluginHelper.dadesUsuariFindAmbCodi(
 				usuariCodi);
 	}
 

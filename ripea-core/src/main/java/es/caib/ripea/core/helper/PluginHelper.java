@@ -101,8 +101,6 @@ public class PluginHelper {
 	private DadesUsuariPlugin dadesUsuariPlugin;
 	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
 	boolean gestioDocumentalPluginConfigurat = false;
-	//private GestioDocumentalPlugin gestioDocumentalPlugin;
-	//private CustodiaPlugin custodiaPlugin;
 	private PortafirmesPlugin portafirmesPlugin;
 	private ConversioPlugin conversioPlugin;
 	private RegistrePlugin registrePlugin;
@@ -120,14 +118,14 @@ public class PluginHelper {
 	private static final Pattern MOBIL_PATTERN = Pattern.compile("(\\+34|0034|34)?[ -]*(6|7)([0-9]){2}[ -]?(([0-9]){2}[ -]?([0-9]){2}[ -]?([0-9]){2}|([0-9]){3}[ -]?([0-9]){3})");
 
 
-	public DadesUsuari dadesUsuariConsultarAmbCodi(
+	public DadesUsuari dadesUsuariFindAmbCodi(
 			String usuariCodi) {
 		String accioDescripcio = "Consulta d'usuari amb codi";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("codi", usuariCodi);
 		long t0 = System.currentTimeMillis();
 		try {
-			DadesUsuari dadesUsuari = getDadesUsuariPlugin().consultarAmbUsuariCodi(
+			DadesUsuari dadesUsuari = getDadesUsuariPlugin().findAmbCodi(
 					usuariCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_USUARIS,
@@ -152,46 +150,14 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	public DadesUsuari dadesUsuariConsultarAmbNif(
-			String usuariNif) {
-		String accioDescripcio = "Consulta d'usuari amb NIF";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("nif", usuariNif);
-		long t0 = System.currentTimeMillis();
-		try {
-			DadesUsuari dadesUsuari = getDadesUsuariPlugin().consultarAmbUsuariNif(
-					usuariNif);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return dadesUsuari;
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_USUARIS,
-					errorDescripcio,
-					ex);
-		}
-	}
-	public List<DadesUsuari> dadesUsuariConsultarAmbGrup(
+	public List<DadesUsuari> dadesUsuariFindAmbGrup(
 			String grupCodi) {
 		String accioDescripcio = "Consulta d'usuaris d'un grup";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("grup", grupCodi);
 		long t0 = System.currentTimeMillis();
 		try {
-			List<DadesUsuari> dadesUsuari = getDadesUsuariPlugin().findUsuarisPerGrup(
+			List<DadesUsuari> dadesUsuari = getDadesUsuariPlugin().findAmbGrup(
 					grupCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_USUARIS,
