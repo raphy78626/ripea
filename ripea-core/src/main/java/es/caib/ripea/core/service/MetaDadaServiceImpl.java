@@ -266,6 +266,11 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 				false,
 				false);
 		List<MetaNodeMetaDadaDto> metaNodeMetaDades = new ArrayList<MetaNodeMetaDadaDto>();
+		metaNodeMetaDades.addAll(
+				conversioTipusHelper.convertirList(
+						metaNodeMetaDadaRepository.findByMetaNodeAndActivaTrue(
+								node.getMetaNode()),
+						MetaNodeMetaDadaDto.class));
 		List<MetaDadaEntity> metaDadesGlobals = null;
 		if (node instanceof ExpedientEntity) {
 			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalExpedientTrueAndActivaTrueOrderByIdAsc(entitat);
@@ -273,20 +278,24 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 			metaDadesGlobals = metaDadaRepository.findByEntitatAndGlobalDocumentTrueAndActivaTrueOrderByIdAsc(entitat);
 		}
 		for (MetaDadaEntity metaDada: metaDadesGlobals) {
-			MetaNodeMetaDadaDto dto = new MetaNodeMetaDadaDto();
-			dto.setMetaDada(conversioTipusHelper.convertir(
-					metaDada,
-					MetaDadaDto.class));
-			dto.setMultiplicitat(metaDada.getGlobalMultiplicitat());
-			dto.setReadOnly(metaDada.isGlobalReadOnly());
-			dto.setGlobal(true);
-			metaNodeMetaDades.add(dto);
+			boolean afegida = false;
+			for (MetaNodeMetaDadaDto metaNodeMetaDada: metaNodeMetaDades) {
+				if (metaNodeMetaDada.getMetaDada().getCodi().equals(metaDada.getCodi())) {
+					afegida = true;
+					break;
+				}
+			}
+			if (!afegida) {
+				MetaNodeMetaDadaDto dto = new MetaNodeMetaDadaDto();
+				dto.setMetaDada(conversioTipusHelper.convertir(
+						metaDada,
+						MetaDadaDto.class));
+				dto.setMultiplicitat(metaDada.getGlobalMultiplicitat());
+				dto.setReadOnly(metaDada.isGlobalReadOnly());
+				dto.setGlobal(true);
+				metaNodeMetaDades.add(dto);
+			}
 		}
-		metaNodeMetaDades.addAll(
-				conversioTipusHelper.convertirList(
-						metaNodeMetaDadaRepository.findByMetaNodeAndActivaTrue(
-								node.getMetaNode()),
-						MetaNodeMetaDadaDto.class));
 		return metaNodeMetaDades;
 	}
 
