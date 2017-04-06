@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.service;
+package es.caib.ripea.core.service.ws;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,63 +22,68 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import es.caib.ripea.core.service.ws.callback.Application;
-import es.caib.ripea.core.service.ws.callback.Attributes;
-import es.caib.ripea.core.service.ws.callback.CallbackRequest;
-import es.caib.ripea.core.service.ws.callback.CallbackResponse;
-import es.caib.ripea.core.service.ws.callback.Document;
-import es.caib.ripea.core.service.ws.callback.MCGDws;
+import es.caib.portafib.ws.callback.api.v1.PortaFIBCallBackWs;
+import es.caib.portafib.ws.callback.api.v1.PortaFIBEvent;
+import es.caib.portafib.ws.callback.api.v1.SigningRequest;
 
 /**
- * Classe de proves pel servei web de callback de portafirmes MCGDws.
+ * Classe de proves pel servei web de callback de portafirmes amb interfície
+ * PortaFIB.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class CallbackMcgdWsTest {
+public class CallbackPortafibTest {
 
-	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/MCGDws";
+	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/portafibCallback";
+	private static final String USERNAME = "tomeud";
+	private static final String PASSWORD = "tomeud15";
 
 	public static void main(String[] args) {
 		try {
-			double resposta = new CallbackMcgdWsTest().test(1);
-			System.out.println(">>> Resposta: " + resposta);
+			// Estats:
+			//   0  - DOCUMENT_PENDENT;
+			//   50 - DOCUMENT_PENDENT;
+			//   60 - DOCUMENT_FIRMAT;
+			//   70 - DOCUMENT_REBUTJAT;
+			//   80 - DOCUMENT_PAUSAT;
+			new CallbackPortafibTest().test(
+					1476364060818L,
+					60);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	private double test(int documentId) throws Exception {
-		CallbackRequest callbackRequest = new CallbackRequest();
-		Application application = new Application();
-		Document document = new Document();
-		document.setId(documentId);
-		Attributes attributes = new Attributes();
-		// 0 - DOCUMENT_PAUSAT;
-		// 1 - DOCUMENT_PENDENT;
-		// 2 - DOCUMENT_FIRMAT;
-		// 3 - DOCUMENT_REBUTJAT;
-		attributes.setState(new Integer(2));
-		document.setAttributes(attributes);
-		application.setDocument(document);
-		callbackRequest.setApplication(application);
-		CallbackResponse callbackResponse = getMCGDService().callback(
-				callbackRequest);
-		return callbackResponse.getReturn();
+	private void test(
+			long documentId,
+			int estat) throws Exception {
+		PortaFIBEvent event = new PortaFIBEvent();
+		SigningRequest signingRequest = new SigningRequest();
+		signingRequest.setID(documentId);
+		event.setSigningRequest(signingRequest);
+		event.setEventTypeID(estat);
+		getCallbackService().event(event);
 	}
 
-	private MCGDws getMCGDService() throws Exception {
+	private PortaFIBCallBackWs getCallbackService() throws Exception {
 		URL url = new URL(ENDPOINT_ADDRESS + "?wsdl");
 		QName qname = new QName(
-				"http://www.indra.es/portafirmasmcgdws/mcgdws",
-				"MCGDwsService");
+				"http://v1.server.callback.ws.portafib.caib.es/",
+				"PortaFIBCallBackWsService");
 		Service service = Service.create(url, qname);
-		MCGDws mcgd = service.getPort(MCGDws.class);
-		BindingProvider bp = (BindingProvider)mcgd;
+		PortaFIBCallBackWs callback = service.getPort(PortaFIBCallBackWs.class);
+		BindingProvider bp = (BindingProvider)callback;
+		bp.getRequestContext().put(
+				BindingProvider.USERNAME_PROPERTY,
+				USERNAME);
+		bp.getRequestContext().put(
+				BindingProvider.PASSWORD_PROPERTY,
+				PASSWORD);
 		@SuppressWarnings("rawtypes")
 		List<Handler> handlerChain = new ArrayList<Handler>();
 		handlerChain.add(new LogMessageHandler());
 		bp.getBinding().setHandlerChain(handlerChain);
-		return mcgd;
+		return callback;
 	}
 
 	private class LogMessageHandler implements SOAPHandler<SOAPMessageContext> {

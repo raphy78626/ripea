@@ -143,12 +143,16 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	public EntitatDto findById(Long id) {
 		logger.debug("Consulta de l'entitat (id=" + id + ")");
-		EntitatDto entitat = conversioTipusHelper.convertir(
-				entitatRepository.findOne(id),
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				id,
+				false,
+				false,
+				false);
+		EntitatDto dto = conversioTipusHelper.convertir(
+				entitat,
 				EntitatDto.class);
-		if (entitat != null)
-			permisosEntitatHelper.omplirPermisosPerEntitat(entitat);
-		return entitat;
+		permisosEntitatHelper.omplirPermisosPerEntitat(dto);
+		return dto;
 	}
 
 	@Transactional(readOnly = true)

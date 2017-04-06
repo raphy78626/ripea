@@ -233,7 +233,7 @@ public class EntityComprovarHelper {
 			if (!granted) {
 				throw new PermissionDeniedException(
 						id,
-						MetaDocumentEntity.class,
+						MetaExpedientEntity.class,
 						auth.getName(),
 						"CREATE");
 			}
@@ -454,6 +454,11 @@ public class EntityComprovarHelper {
 					expedientId,
 					ExpedientEntity.class);
 		}
+		if (expedient.getEsborrat() != 0) {
+			throw new NotFoundException(
+					expedientId,
+					ExpedientEntity.class);
+		}
 		if (!entitat.getId().equals(expedient.getEntitat().getId())) {
 			throw new ValidationException(
 					expedientId,
@@ -638,7 +643,9 @@ public class EntityComprovarHelper {
 		if (comprovarAcces) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			List<MetaExpedientEntity> metaExpedientsPermesos = new ArrayList<MetaExpedientEntity>();
-			metaExpedientsPermesos.addAll(arxiu.getMetaExpedients());
+			if (arxiu.getMetaExpedients() != null) {
+				metaExpedientsPermesos.addAll(arxiu.getMetaExpedients());
+			}
 			permisosHelper.filterGrantedAny(
 					metaExpedientsPermesos,
 					new ObjectIdentifierExtractor<MetaNodeEntity>() {

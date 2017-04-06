@@ -201,9 +201,10 @@ public class DocumentController extends BaseUserController {
 			HttpServletResponse response,
 			@PathVariable Long documentId) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		FitxerDto convertit = documentService.convertirPdfPerFirma(
+		FitxerDto convertit = documentService.convertirPdfPerFirmaClient(
 				entitatActual.getId(),
-				documentId);
+				documentId,
+				false);
 		writeFileToResponse(
 				convertit.getNom(),
 				convertit.getContingut(),
@@ -333,9 +334,10 @@ public class DocumentController extends BaseUserController {
 					model);
 			return "passarelaFirmaForm";
 		}
-		FitxerDto fitxerPerFirmar = documentService.convertirPdfPerFirma(
+		FitxerDto fitxerPerFirmar = documentService.convertirPdfPerFirmaClient(
 				entitatActual.getId(),
-				documentId);
+				documentId,
+				true);
 		UsuariDto usuariActual = aplicacioService.getUsuariActual();
 		String modalStr = (ModalHelper.isModal(request)) ? "/modal" : "";
 		String procesFirmaUrl = passarelaFirmaHelper.iniciarProcesDeFirma(

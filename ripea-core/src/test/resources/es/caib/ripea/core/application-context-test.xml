@@ -6,11 +6,18 @@
 	xmlns:sec="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/jdbc
-		http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
 		http://www.springframework.org/schema/security
-		http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+		http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:es/caib/ripea/core/test.properties" />
+		<property name="placeholderPrefix" value="${config:" />
+		<property name="ignoreResourceNotFound" value="false" />
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+	</bean>
 
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basenames">
@@ -21,7 +28,7 @@
 	</bean>
 
 	<jdbc:embedded-database id="dataSource" type="HSQL">
-		<jdbc:script location="classpath:/es/caib/ripea/core/testdb/schema.sql"/>
+		<jdbc:script location="classpath:/es/caib/ripea/core/hsql_schema.sql"/>
 	</jdbc:embedded-database>
 
 	<bean id="testSmtpServer" class="com.dumbster.smtp.SimpleSmtpServer" destroy-method="stop" factory-method="start">
@@ -50,8 +57,6 @@
 		<constructor-arg ref="dataSource" />
 		<constructor-arg ref="lookupStrategy" />
 		<constructor-arg ref="aclCache" />
-		<property name="classIdentityQuery" value="call identity()"/>
-		<property name="sidIdentityQuery" value="call identity()"/>
 	</bean>
 	<bean id="lookupStrategy" class="es.caib.ripea.core.security.BasicLookupStrategy">
 		<constructor-arg ref="dataSource" />
@@ -85,7 +90,33 @@
 		</constructor-arg>
 	</bean>
 	<bean id="auditLogger" class="org.springframework.security.acls.domain.ConsoleAuditLogger" />
-	
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+				<value>es.caib.ripea.core.entity</value>
+			</list>
+		</property>
+		<property name="jpaDialect">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+		</property>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">${config:es.caib.ripea.hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${config:es.caib.ripea.hibernate.show_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${config:es.caib.ripea.hibernate.hbm2ddl.auto}</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
 	<import resource="classpath:es/caib/ripea/core/context/application-context-model.xml" />
 	<import resource="classpath:es/caib/ripea/core/context/application-context-model-security.xml" />
 

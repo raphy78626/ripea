@@ -3,8 +3,7 @@
  */
 package es.caib.ripea.plugin.caib.unitat;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import es.caib.ripea.plugin.SistemaExternException;
@@ -13,38 +12,42 @@ import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
+ * La estructura d'unitats és la següent:
+ *   arrel: Limit Tecnologies (00000000T)
+ *   filla: Departament de programari (12345678Z)
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlugin {
 
-	@SuppressWarnings("unchecked")
+	private static final String CODI_UNITAT_ARREL = "00000000T";
+	private static final String CODI_UNITAT_FILLA = "12345678Z";
+
+	private List<UnitatOrganitzativa> unitats;
+
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(
 			String pareCodi) throws SistemaExternException {
-		try {
-			return (List<UnitatOrganitzativa>)deserialize(
-					"/es/caib/ripea/plugin/unitat/ArbreUnitatsCaib.ser");
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'han pogut consultar les unitats organitzatives via WS (" +
-					"pareCodi=" + pareCodi + ")",
-					ex);
+		List<UnitatOrganitzativa> resposta = new ArrayList<UnitatOrganitzativa>();
+		resposta.add(findAmbCodi(pareCodi));
+		for (UnitatOrganitzativa unitat: getUnitats()) {
+			if (unitat.getCodiUnitatSuperior() != null && unitat.getCodiUnitatSuperior().equals(pareCodi)) {
+				resposta.add(unitat);
+			}
 		}
+		return resposta;
 	}
 
 	@Override
 	public UnitatOrganitzativa findAmbCodi(
 			String codi) throws SistemaExternException {
-		List<UnitatOrganitzativa> unitats = findAmbPare(null);
-		for (UnitatOrganitzativa unitat: unitats) {
+		for (UnitatOrganitzativa unitat: getUnitats()) {
 			if (unitat.getCodi().equals(codi))
 				return unitat;
 		}
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<UnitatOrganitzativa> cercaUnitats(
 			String codiUnitat, 
@@ -55,30 +58,24 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 			Boolean esUnitatArrel,
 			Long codiProvincia, 
 			String codiLocalitat) throws SistemaExternException {
-		try {
-			return (List<UnitatOrganitzativa>)deserialize(
-					"/es/caib/ripea/plugin/unitat/ArbreUnitatsCaib.ser");
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'han pogut consultar les unitats organitzatives via REST (" +
-					"codiUnitat=" + codiUnitat + ", " +
-					"denominacioUnitat=" + denominacioUnitat + ", " +
-					"codiNivellAdministracio=" + codiNivellAdministracio + ", " +
-					"codiComunitat=" + codiComunitat + ", " +
-					"ambOficines=" + ambOficines + ", " +
-					"esUnitatArrel=" + esUnitatArrel + ", " +
-					"codiProvincia=" + codiProvincia + ", " +
-					"codiLocalitat=" + codiLocalitat + ")",
-					ex);
-		}
+		throw new SistemaExternException("Mètode no implementat");
 	}
 
-	public Object deserialize(String resource) throws IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(
-				getClass().getResourceAsStream(resource));
-		Object obj = ois.readObject();
-		ois.close();
-		return obj;
+	private List<UnitatOrganitzativa> getUnitats() {
+		if (unitats == null) {
+			unitats = new ArrayList<UnitatOrganitzativa>();
+			UnitatOrganitzativa pare = new UnitatOrganitzativa();
+			pare.setCodi(CODI_UNITAT_ARREL);
+			pare.setDenominacio("Límit Tecnologies");
+			unitats.add(pare);
+			UnitatOrganitzativa fill = new UnitatOrganitzativa();
+			fill.setCodi(CODI_UNITAT_FILLA);
+			fill.setDenominacio("Departament de programari");
+			fill.setCodiUnitatArrel(CODI_UNITAT_ARREL);
+			fill.setCodiUnitatSuperior(CODI_UNITAT_ARREL);
+			unitats.add(fill);
+		}
+		return unitats;
 	}
 
 }

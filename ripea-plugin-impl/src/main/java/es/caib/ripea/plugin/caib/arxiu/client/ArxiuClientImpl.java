@@ -51,6 +51,7 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreate
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateFile;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateFolder;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamGetDocument;
+import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamNodeID_TargetParent;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamNodeId;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamSetDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamSetFile;
@@ -59,22 +60,32 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateDraftDocumen
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateFolderResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.ExceptionResult;
+import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.ExportFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GenerateDocCSVResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetDocVersionListResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetDocumentResult;
+import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetENIDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetFolderResult;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.CloseFile;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.CopyDocument;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.CopyFolder;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateDraftDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.ExportFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GenerateDocCSV;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetDocVersionList;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetDocument;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.GetENIDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.MoveDocument;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.MoveFolder;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.RemoveDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.RemoveFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.RemoveFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.ReopenFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.Request;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFile;
@@ -87,14 +98,12 @@ import es.caib.arxiudigital.apirest.constantes.ExtensionesFichero;
 import es.caib.arxiudigital.apirest.constantes.FormatosFichero;
 import es.caib.arxiudigital.apirest.constantes.MetadatosDocumento;
 import es.caib.arxiudigital.apirest.constantes.MetadatosExpediente;
-import es.caib.arxiudigital.apirest.constantes.MetadatosFirma;
 import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
 import es.caib.arxiudigital.apirest.constantes.PerfilesFirma;
 import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
 import es.caib.arxiudigital.apirest.constantes.TiposFirma;
 import es.caib.arxiudigital.apirest.facade.pojos.Documento;
 import es.caib.arxiudigital.apirest.facade.pojos.Expediente;
-import es.caib.arxiudigital.apirest.facade.pojos.FirmaDocumento;
 import es.caib.arxiudigital.apirest.facade.pojos.Nodo;
 import es.caib.arxiudigital.apirest.utils.MetadataUtils;
 
@@ -213,9 +222,14 @@ public class ArxiuClientImpl implements ArxiuClient {
 				CreateFileResult result = mapper.readValue(
 						resposta.getJson(),
 						CreateFileResult.class);
-				return toArxiuFile(
-						result.getCreateFileResult().getResParam(),
-						resposta.getJson());
+				FileNode fileNode = result.getCreateFileResult().getResParam();
+				return new ArxiuFile(
+						fileNode.getId(),
+						fileNode.getName(),
+						fileNode.getChildObjects(),
+						fileNode.getMetadataCollection(),
+						fileNode.getAspects(),
+						extreureResParamJson(resposta.getJson()));
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -359,9 +373,14 @@ public class ArxiuClientImpl implements ArxiuClient {
 				GetFileResult result = mapper.readValue(
 						resposta.getJson(),
 						GetFileResult.class);
-				return toArxiuFile(
-						result.getGetFileResult().getResParam(),
-						resposta.getJson());
+				FileNode fileNode = result.getGetFileResult().getResParam();
+				return new ArxiuFile(
+						fileNode.getId(),
+						fileNode.getName(),
+						fileNode.getChildObjects(),
+						fileNode.getMetadataCollection(),
+						fileNode.getAspects(),
+						extreureResParamJson(resposta.getJson()));
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -378,21 +397,125 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
-	public void fileClose() {
-		// TODO Auto-generated method stub
-		
+	public void fileClose(
+			String nodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMetodes.FILE_CLOSE;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			CloseFile closeFile = new CloseFile();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			ParamNodeId paramNodeId = new ParamNodeId();
+			paramNodeId.setNodeId(nodeId);
+			request.setParam(paramNodeId);
+			closeFile.setCloseFileRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					closeFile);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void fileReopen() {
-		// TODO Auto-generated method stub
-		
+	public void fileReopen(
+			String nodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMetodes.FILE_REOPEN;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			ReopenFile reopenFile = new ReopenFile();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			ParamNodeId paramNodeId = new ParamNodeId();
+			paramNodeId.setNodeId(nodeId);
+			request.setParam(paramNodeId);
+			reopenFile.setReopenFileRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					reopenFile);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void fileExport() {
-		// TODO Auto-generated method stub
-		
+	public String fileExport(
+			String nodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMetodes.FILE_EXPORT;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			ExportFile exportFile = new ExportFile();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			ParamNodeId paramNodeId = new ParamNodeId();
+			paramNodeId.setNodeId(nodeId);
+			request.setParam(paramNodeId);
+			exportFile.setExportFileRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					exportFile);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() == 200) {
+				ExportFileResult result = mapper.readValue(
+						resposta.getJson(),
+						ExportFileResult.class);
+				String exportBase64 = result.getExportFileResult().getResParam();
+				if (exportBase64 != null) {
+					return new String(
+							Base64.decodeBase64(exportBase64));
+				} else {
+					return null;
+				}
+			} else {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
@@ -522,9 +645,14 @@ public class ArxiuClientImpl implements ArxiuClient {
 				CreateDraftDocumentResult result = mapper.readValue(
 						resposta.getJson(),
 						CreateDraftDocumentResult.class);
-				return toArxiuDocument(
-						result.getCreateDraftDocumentResult().getResParam(),
-						resposta.getJson());
+				DocumentNode documentNode = result.getCreateDraftDocumentResult().getResParam();
+				return new ArxiuDocument(
+						documentNode.getId(),
+						documentNode.getName(),
+						documentNode.getBinaryContents(),
+						documentNode.getMetadataCollection(),
+						documentNode.getAspects(),
+						extreureResParamJson(resposta.getJson()));
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -768,9 +896,14 @@ public class ArxiuClientImpl implements ArxiuClient {
 				GetDocumentResult result = mapper.readValue(
 						resposta.getJson(),
 						GetDocumentResult.class);
-				return toArxiuDocument(
-						result.getGetDocumentResult().getResParam(),
-						resposta.getJson());
+				DocumentNode documentNode = result.getGetDocumentResult().getResParam();
+				return new ArxiuDocument(
+						documentNode.getId(),
+						documentNode.getName(),
+						documentNode.getBinaryContents(),
+						documentNode.getMetadataCollection(),
+						documentNode.getAspects(),
+						extreureResParamJson(resposta.getJson()));
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -958,27 +1091,134 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
-	public void documentEniGet(
+	public String documentEniGet(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		// TODO Auto-generated method stub
-		
+		String metode = ArxiuMetodes.DOCUMENT_GET_ENIDOC;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			GetENIDocument getEniDocument = new GetENIDocument();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			getEniDocument.setGetENIDocRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					getEniDocument);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() == 200) {
+				GetENIDocumentResult result = mapper.readValue(
+						resposta.getJson(),
+						GetENIDocumentResult.class);
+				String exportBase64 = result.getGetENIDocResult().getResParam();
+				if (exportBase64 != null) {
+					return new String(
+							Base64.decodeBase64(exportBase64));
+				} else {
+					return null;
+				}
+			} else {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public void documentCopy(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMetodes.DOCUMENT_COPY;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			CopyDocument copyDocument = new CopyDocument();
+			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
+			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
+			paramTarget.setNodeId(nodeId);
+			paramTarget.setTargetParent(nodeDestiId);
+			request.setParam(paramTarget);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			copyDocument.setCopyDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					copyDocument);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public void documentMove(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMetodes.DOCUMENT_MOVE;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			MoveDocument moveDocument = new MoveDocument();
+			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
+			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
+			paramTarget.setNodeId(nodeId);
+			paramTarget.setTargetParent(nodeDestiId);
+			request.setParam(paramTarget);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			moveDocument.setMoveDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					moveDocument);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
 	public void documentSearch() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void documentCopy() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void documentMove() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -1056,9 +1296,12 @@ public class ArxiuClientImpl implements ArxiuClient {
 				CreateFolderResult result = mapper.readValue(
 						resposta.getJson(),
 						CreateFolderResult.class);
-				return toArxiuFolder(
-						result.getCreateFolderResult().getResParam(),
-						resposta.getJson());
+				FolderNode folderNode = result.getCreateFolderResult().getResParam();
+				return new ArxiuFolder(
+						folderNode.getId(),
+						folderNode.getName(),
+						folderNode.getChildObjects(),
+						extreureResParamJson(resposta.getJson()));
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -1179,9 +1422,12 @@ public class ArxiuClientImpl implements ArxiuClient {
 				GetFolderResult result = mapper.readValue(
 						resposta.getJson(),
 						GetFolderResult.class);
-				return toArxiuFolder(
-						result.getGetFolderResult().getResParam(),
-						resposta.getJson());
+				FolderNode folderNode = result.getGetFolderResult().getResParam();
+				return new ArxiuFolder(
+						folderNode.getId(),
+						folderNode.getName(),
+						folderNode.getChildObjects(),
+						extreureResParamJson(resposta.getJson()));
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -1198,9 +1444,81 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
-	public void folderMove() {
-		// TODO Auto-generated method stub
-		
+	public void folderCopy(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMetodes.FOLDER_COPY;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			CopyFolder copyFolder = new CopyFolder();
+			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
+			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
+			paramTarget.setNodeId(nodeId);
+			paramTarget.setTargetParent(nodeDestiId);
+			request.setParam(paramTarget);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			copyFolder.setCopyDocumentFolder(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					copyFolder);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public void folderMove(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMetodes.FOLDER_MOVE;
+		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
+				"nodeId=" + nodeId + ", " +
+				"capsalera=" + capsalera + ")");
+		try {
+			MoveFolder moveFolder = new MoveFolder();
+			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
+			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
+			paramTarget.setNodeId(nodeId);
+			paramTarget.setTargetParent(nodeDestiId);
+			request.setParam(paramTarget);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			moveFolder.setMoveFolderRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					moveFolder);
+			logger.debug("Rebuda resposta mètode " + metode + " (" +
+					"status=" + resposta.getStatus() + ", " +
+					"contingut=" + resposta.getJson() + ")");
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
@@ -1497,9 +1815,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 				tipusMime);
 		DocumentNode nodo = new DocumentNode();
 		Content contenido = new Content();
-		Content contenidofirma = new Content();
 		List<Content> listaContenidos = new ArrayList<Content>();
-		FirmaDocumento firma = doc.getFirma();
 		// Si no se envía el contenido del documento, no se añade el objeto CONTENT
 		// del documento
 		if (doc != null && doc.getContent() != null) {
@@ -1509,9 +1825,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 			contenido.setMimetype(doc.getMimetype());
 			listaContenidos.add(contenido);
 		}
-		// Si no se envía el contenido del documento, no se añade el objeto CONTENT
-		// del documento
-		if (firma != null && firma.getContent() != null) {
+		/*if (firma != null && firma.getContent() != null) {
 			contenidofirma.setBinaryType(firma.getBinarytype());
 			contenidofirma.setContent(firma.getContent());
 			contenidofirma.setEncoding(firma.getEncoding());
@@ -1522,7 +1836,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 			// Añadimos los metadatos sobre la firma al documento
 			doc.getMetadataCollection().put(MetadatosFirma.PERFIL_FIRMA, firma.getPerfil_firma());
 			doc.getMetadataCollection().put(MetadatosFirma.TIPO_FIRMA, firma.getTipoFirma());
-		}
+		}*/
 		nodo.setId(doc.getId());
 		nodo.setName(doc.getName());
 		nodo.setType(doc.getType());
@@ -1530,261 +1844,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 		nodo.setAspects(doc.getAspects());
 		nodo.setBinaryContents(listaContenidos);
 		return nodo;
-	}
-
-	private ArxiuFile toArxiuFile(
-			FileNode fileNode,
-			String respostaJson) throws ParseException {
-		ArxiuFile file = new ArxiuFile();
-		file.setNodeId(fileNode.getId());
-		file.setTitol(fileNode.getName());
-		if (fileNode.getMetadataCollection() != null) {
-			for (Metadata metaData: fileNode.getMetadataCollection()) {
-				if ("eni:v_nti".equals(metaData.getQname())) {
-					file.setEniVersio(getMetadataValueAsString(getMetadataValueAsString(metaData.getValue())));
-				} else if (MetadatosExpediente.DESCRIPCION.equals(metaData.getQname())) {
-					file.setDescripcio(getMetadataValueAsString(metaData.getValue()));
-				} else if ("eni:id".equals(metaData.getQname())) {
-					file.setEniIdentificador(getMetadataValueAsString(getMetadataValueAsString(metaData.getValue())));
-				} else if (MetadatosExpediente.ORIGEN.equals(metaData.getQname())) {
-					if (OrigenesContenido.CIUDADANO.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						file.setEniOrigen(OrigenesContenido.CIUDADANO);
-					} else if (OrigenesContenido.ADMINISTRACION.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						file.setEniOrigen(OrigenesContenido.ADMINISTRACION);
-					}
-				} else if (MetadatosExpediente.ORGANO.equals(metaData.getQname())) {
-					file.setEniOrgans(getMetadataValueAsListString(metaData.getValue()));
-				} else if (MetadatosExpediente.FECHA_INICIO.equals(metaData.getQname())) {
-					file.setEniDataObertura(getMetadataValueAsDate(metaData.getValue()));
-				} else if (MetadatosExpediente.IDENTIFICADOR_PROCEDIMIENTO.equals(metaData.getQname())) {
-					file.setEniClassificacio(getMetadataValueAsString(metaData.getValue()));
-				} else if (MetadatosExpediente.ESTADO_EXPEDIENTE.equals(metaData.getQname())) {
-					if (EstadosExpediente.ABIERTO.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						file.setEniEstat(EstadosExpediente.ABIERTO);
-					} else if (EstadosExpediente.CERRADO.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						file.setEniEstat(EstadosExpediente.CERRADO);
-					} else if (EstadosExpediente.INDICE_REMISION.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						file.setEniEstat(EstadosExpediente.INDICE_REMISION);
-					}
-				} else if (MetadatosExpediente.INTERESADOS.equals(metaData.getQname())) {
-					file.setEniInteressats(getMetadataValueAsListString(metaData.getValue()));
-				} else if ("eni:tipoFirma".equals(metaData.getQname())) {
-					file.setEniFirmaTipus(getMetadataValueAsListString(metaData.getValue()));
-				} else if ("eni:csv".equals(metaData.getQname())) {
-					file.setEniFirmaCsv(getMetadataValueAsListString(metaData.getValue()));
-				} else if ("eni:def_csv".equals(metaData.getQname())) {
-					file.setEniFirmaCsvDefinicio(getMetadataValueAsListString(metaData.getValue()));
-				} else if (MetadatosExpediente.CODIGO_CLASIFICACION.equals(metaData.getQname())) {
-					file.setSerieDocumental(getMetadataValueAsString(metaData.getValue()));
-				} else if (MetadatosExpediente.CODIGO_APLICACION_TRAMITE.equals(metaData.getQname())) {
-					file.setAplicacioCreacio(getMetadataValueAsString(metaData.getValue()));
-				} else if ("eni:soporte".equals(metaData.getQname())) {
-					file.setSuport(getMetadataValueAsString(metaData.getValue()));
-				}
-			}
-		}
-		file.setJson(extreureResParamJson(respostaJson));
-		return file;
-	}
-
-	private ArxiuDocument toArxiuDocument(
-			DocumentNode documentNode,
-			String respostaJson) throws ParseException {
-		ArxiuDocument document = new ArxiuDocument();
-		document.setNodeId(documentNode.getId());
-		document.setTitol(documentNode.getName());
-		document.setContinguts(documentNode.getBinaryContents());
-		if (documentNode.getMetadataCollection() != null) {
-			for (Metadata metaData: documentNode.getMetadataCollection()) {
-				if ("eni:v_nti".equals(metaData.getQname())) {
-					document.setEniVersio(getMetadataValueAsString(getMetadataValueAsString(metaData.getValue())));
-				} else if (MetadatosDocumento.DESCRIPCION_DOCUMENTO.equals(metaData.getQname())) {
-					document.setDescripcio(getMetadataValueAsString(metaData.getValue()));
-				} else if (MetadatosDocumento.ID_ENI.equals(metaData.getQname())) {
-					document.setEniIdentificador(getMetadataValueAsString(getMetadataValueAsString(metaData.getValue())));
-				} else if (MetadatosDocumento.ORIGEN.equals(metaData.getQname())) {
-					if (OrigenesContenido.CIUDADANO.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniOrigen(OrigenesContenido.CIUDADANO);
-					} else if (OrigenesContenido.ADMINISTRACION.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniOrigen(OrigenesContenido.ADMINISTRACION);
-					}
-				} else if (MetadatosDocumento.ESTADO_ELABORACION.equals(metaData.getQname())) {
-					if (EstadosElaboracion.ORIGINAL.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniEstatElaboracio(EstadosElaboracion.ORIGINAL);
-					} else if (EstadosElaboracion.COPIA_AUTENTICA_PAPEL.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniEstatElaboracio(EstadosElaboracion.COPIA_AUTENTICA_PAPEL);
-					} else if (EstadosElaboracion.COPIA_AUTENTICA_FORMATO.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniEstatElaboracio(EstadosElaboracion.COPIA_AUTENTICA_FORMATO);
-					} else if (EstadosElaboracion.COPIA_AUTENTICA_PARCIAL.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniEstatElaboracio(EstadosElaboracion.COPIA_AUTENTICA_PARCIAL);
-					} else if (EstadosElaboracion.OTROS.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniEstatElaboracio(EstadosElaboracion.OTROS);
-					}
-				} else if (MetadatosDocumento.TIPO_DOC_ENI.equals(metaData.getQname())) {
-					if (TiposDocumentosENI.RESOLUCION.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniTipusDocumental(TiposDocumentosENI.RESOLUCION);
-					} else if (TiposDocumentosENI.ACUERDO.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniTipusDocumental(TiposDocumentosENI.ACUERDO);
-					} else if (TiposDocumentosENI.CONTRATO.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniTipusDocumental(TiposDocumentosENI.CONTRATO);
-					} else if (TiposDocumentosENI.CONVENIO.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniTipusDocumental(TiposDocumentosENI.CONVENIO);
-					} else if (TiposDocumentosENI.NOTIFICACION.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniTipusDocumental(TiposDocumentosENI.NOTIFICACION);
-					} else if (TiposDocumentosENI.SOLICITUD.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniTipusDocumental(TiposDocumentosENI.SOLICITUD);
-					} else if (TiposDocumentosENI.OTROS.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniTipusDocumental(TiposDocumentosENI.OTROS);
-					}
-				} else if (MetadatosDocumento.NOMBRE_FORMATO.equals(metaData.getQname())) {
-					if (FormatosFichero.GML.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.GML);
-					} else if (FormatosFichero.WFS.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.WFS);
-					} else if (FormatosFichero.WMS.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.WMS);
-					} else if (FormatosFichero.GZIP.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.GZIP);
-					} else if (FormatosFichero.ZIP.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.ZIP);
-					} else if (FormatosFichero.AVI.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.AVI);
-					} else if (FormatosFichero.MP4A.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.MP4A);
-					} else if (FormatosFichero.CSV.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.CSV);
-					} else if (FormatosFichero.HTML.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.HTML);
-					} else if (FormatosFichero.CSS.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.CSS);
-					} else if (FormatosFichero.JPEG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.JPEG);
-					} else if (FormatosFichero.MHTML.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.MHTML);
-					} else if (FormatosFichero.OASIS12.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.OASIS12);
-					} else if (FormatosFichero.SOXML.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.SOXML);
-					} else if (FormatosFichero.PDF.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.PDF);
-					} else if (FormatosFichero.PDFA.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.PDFA);
-					} else if (FormatosFichero.PNG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.PNG);
-					} else if (FormatosFichero.RTF.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.RTF);
-					} else if (FormatosFichero.SVG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.SVG);
-					} else if (FormatosFichero.TIFF.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.TIFF);
-					} else if (FormatosFichero.TXT.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.TXT);
-					} else if (FormatosFichero.XHTML.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.XHTML);
-					} else if (FormatosFichero.MP3.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.MP3);
-					} else if (FormatosFichero.OGG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.OGG);
-					} else if (FormatosFichero.MP4V.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.MP4V);
-					} else if (FormatosFichero.WEBM.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatNom(FormatosFichero.WEBM);
-					}
-				} else if (MetadatosDocumento.EXTENSION_FORMATO.equals(metaData.getQname())) {
-					if (ExtensionesFichero.GML.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.GML);
-					} else if (ExtensionesFichero.GZ.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.GZ);
-					} else if (ExtensionesFichero.ZIP.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.ZIP);
-					} else if (ExtensionesFichero.AVI.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.AVI);
-					} else if (ExtensionesFichero.CSV.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.CSV);
-					} else if (ExtensionesFichero.HTML.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.HTML);
-					} else if (ExtensionesFichero.HTM.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.HTM);
-					} else if (ExtensionesFichero.CSS.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.CSS);
-					} else if (ExtensionesFichero.JPG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.JPG);
-					} else if (ExtensionesFichero.JPEG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.JPEG);
-					} else if (ExtensionesFichero.MHTML.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.MHTML);
-					} else if (ExtensionesFichero.MHT.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.MHT);
-					} else if (ExtensionesFichero.ODT.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.ODT);
-					} else if (ExtensionesFichero.ODS.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.ODS);
-					} else if (ExtensionesFichero.ODP.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.ODP);
-					} else if (ExtensionesFichero.ODG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.ODG);
-					} else if (ExtensionesFichero.DOCX.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.DOCX);
-					} else if (ExtensionesFichero.XLSX.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.XLSX);
-					} else if (ExtensionesFichero.PPTX.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.PPTX);
-					} else if (ExtensionesFichero.PDF.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.PDF);
-					} else if (ExtensionesFichero.PNG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.PNG);
-					} else if (ExtensionesFichero.RTF.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.RTF);
-					} else if (ExtensionesFichero.SVG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.SVG);
-					} else if (ExtensionesFichero.TIFF.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.TIFF);
-					} else if (ExtensionesFichero.TXT.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.TXT);
-					} else if (ExtensionesFichero.MP3.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.MP3);
-					} else if (ExtensionesFichero.OGG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.OGG);
-					} else if (ExtensionesFichero.OGA.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.OGA);
-					} else if (ExtensionesFichero.MPEG.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.MPEG);
-					} else if (ExtensionesFichero.MP4.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.MP4);
-					} else if (ExtensionesFichero.WEBM.getValue().equals(getMetadataValueAsString(metaData.getValue()))) {
-						document.setEniFormatExtensio(ExtensionesFichero.WEBM);
-					}
-				} else if (MetadatosDocumento.ORGANO.equals(metaData.getQname())) {
-					document.setEniOrgans(getMetadataValueAsListString(metaData.getValue()));
-				} else if (MetadatosDocumento.FECHA_INICIO.equals(metaData.getQname())) {
-					document.setEniDataCaptura(getMetadataValueAsDate(metaData.getValue()));
-				} else if (MetadatosDocumento.TIPO_FIRMA.equals(metaData.getQname())) {
-					document.setEniFirmaTipus(getMetadataValueAsListString(metaData.getValue()));
-				} else if (MetadatosDocumento.CSV.equals(metaData.getQname())) {
-					document.setEniFirmaCsv(getMetadataValueAsListString(metaData.getValue()));
-				} else if (MetadatosDocumento.DEF_CSV.equals(metaData.getQname())) {
-					document.setEniFirmaCsvDefinicio(getMetadataValueAsListString(metaData.getValue()));
-				} else if (MetadatosDocumento.CODIGO_CLASIFICACION.equals(metaData.getQname())) {
-					document.setSerieDocumental(getMetadataValueAsString(metaData.getValue()));
-				} else if (MetadatosDocumento.CODIGO_APLICACION_TRAMITE.equals(metaData.getQname())) {
-					document.setAplicacioCreacio(getMetadataValueAsString(metaData.getValue()));
-				} else if (MetadatosDocumento.SOPORTE.equals(metaData.getQname())) {
-					document.setSuport(getMetadataValueAsString(metaData.getValue()));
-				}
-			}
-		}
-		document.setJson(extreureResParamJson(respostaJson));
-		return document;
-	}
-
-	private ArxiuFolder toArxiuFolder(
-			FolderNode folderNode,
-			String respostaJson) throws ParseException {
-		ArxiuFolder folder = new ArxiuFolder();
-		folder.setNodeId(folderNode.getId());
-		folder.setName(folderNode.getName());
-		folder.setJson(extreureResParamJson(respostaJson));
-		return folder;
 	}
 
 	private static final String JSON_RES_PARAM = "\"resParam\":";
@@ -1800,32 +1859,11 @@ public class ArxiuClientImpl implements ArxiuClient {
 		return respostaJson;
 	}
 
-	private String getMetadataValueAsString(Object value) {
-		if (value == null) {
-			return null;
-		}
-		return value.toString();
-	}
-
 	private Date getMetadataValueAsDate(Object value) throws ParseException {
 		if (value == null) {
 			return null;
 		}
 		return parseDateIso8601((String)value);
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<String> getMetadataValueAsListString(Object value) throws ParseException {
-		if (value == null) {
-			return null;
-		}
-		if (value instanceof List) {
-			return (List<String>)value;
-		} else {
-			List<String> resultat = new ArrayList<String>();
-			resultat.add(getMetadataValueAsString(value));
-			return resultat;
-		}
 	}
 
 	private String formatDateIso8601(Date date) {

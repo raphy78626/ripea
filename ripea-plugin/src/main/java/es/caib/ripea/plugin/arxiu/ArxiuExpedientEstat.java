@@ -16,7 +16,7 @@ public enum ArxiuExpedientEstat {
 
 	OBERT("E01"),
 	TANCAT("E02"),
-	INDEX_REMISSIO_TANCAT("E03");
+	INDEX_REMISSIO("E03");
 
 	private final String valor;
 	private ArxiuExpedientEstat(String valor) {

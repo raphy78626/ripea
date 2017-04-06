@@ -21,7 +21,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -380,81 +379,6 @@ public class DocumentServiceImpl implements DocumentService {
 				entity,
 				expedientSuperior,
 				fitxer);
-		return dto;
-	}
-
-	@Transactional
-	@Override
-	@CacheEvict(value = "errorsValidacioNode", key = "#id")
-	public DocumentDto delete(
-			Long entitatId,
-			Long id) {
-		logger.debug("Esborrant el document ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		DocumentEntity document = entityComprovarHelper.comprovarDocument(
-				entitat,
-				null,
-				id,
-				false,
-				false,
-				true);
-		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
-				entitat,
-				document);
-		// Comprova l'accés al path del document
-		contingutHelper.comprovarPermisosPathContingut(
-				document,
-				true,
-				false,
-				false,
-				true);
-		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
-				document,
-				false,
-				false,
-				false);
-		if (expedientSuperior != null) {
-			contingutHelper.comprovarPermisosContingut(
-					expedientSuperior,
-					false,
-					true,
-					false);
-		}
-		// Comprova el permís d'esborrar del document actual
-		contingutHelper.comprovarPermisosContingut(
-				document,
-				false,
-				false,
-				true);
-		// Esborra les versions del document
-		/*List<DocumentVersioEntity> versions = documentVersioRepository.findByDocumentOrderByVersioDesc(document);
-		for (DocumentVersioEntity versio: versions) {
-			documentHelper.deleteFitxerAssociatSiNhiHa(versio);
-		}*/
-		// Esborra el document
-		documentRepository.delete(document);
-		if (expedientSuperior != null)
-			cacheHelper.evictErrorsValidacioPerNode(expedientSuperior);
-		// Registra al log l'eliminació del document
-		contingutLogHelper.log(
-				document,
-				LogTipusEnumDto.ELIMINACIO,
-				null,
-				null,
-				true,
-				true);
-		DocumentDto dto = toDocumentDto(document);
-		contingutHelper.arxiuPropagarEliminacio(
-				document,
-				expedientSuperior);
 		return dto;
 	}
 
@@ -959,12 +883,14 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Transactional
 	@Override
-	public FitxerDto convertirPdfPerFirma(
+	public FitxerDto convertirPdfPerFirmaClient(
 			Long entitatId,
-			Long id) {
-		logger.debug("Convertint document a format PDF per firmar ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ")");
+			Long id,
+			boolean estamparUrl) {
+		logger.debug("Convertint document a format PDF per firmar (" +
+				"entitatId=" + entitatId + ", " +
+				"id=" + id + ", " +
+				"estamparUrl=" + estamparUrl + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -985,14 +911,27 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				true);
-		String custodiaCsv = pluginHelper.arxiuDocumentGenerarCsv(document);
-		document.updateInformacioCustodia(
-				document.getCustodiaData(),
-				document.getCustodiaId(),
-				custodiaCsv);
+		if (estamparUrl && document.getCustodiaCsv() == null) {
+			String csv = pluginHelper.arxiuDocumentGenerarCsv(document);
+			document.updateInformacioCustodia(
+					document.getCustodiaData(),
+					document.getCustodiaId(),
+					csv);
+			contingutLogHelper.log(
+					document,
+					LogTipusEnumDto.ARXIU_CSV,
+					csv,
+					null,
+					false,
+					false);
+		}
+		String url = null;
+		if (document.getCustodiaCsv() != null) {
+			url = pluginHelper.arxiuDocumentGenerarUrlPerCsv(document.getCustodiaCsv());
+		}
 		return pluginHelper.conversioConvertirPdfIEstamparUrl(
 				documentHelper.getFitxerAssociat(document),
-				null);
+				url);
 	}
 
 	@Transactional
@@ -1105,12 +1044,12 @@ public class DocumentServiceImpl implements DocumentService {
 			fitxer.setNom(arxiuNom);
 			fitxer.setContingut(arxiuContingut);
 			fitxer.setContentType("application/pdf");
+			document.updateEstat(
+					DocumentEstatEnumDto.CUSTODIAT);
 			String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
 					document,
 					fitxer,
 					document.getMetaDocument().getPortafirmesCustodiaTipus());
-			document.updateEstat(
-					DocumentEstatEnumDto.CUSTODIAT);
 			document.updateInformacioCustodia(
 					new Date(),
 					custodiaDocumentId,
@@ -1118,7 +1057,7 @@ public class DocumentServiceImpl implements DocumentService {
 			// Registra al log la custòdia de la firma del document
 			contingutLogHelper.log(
 					document,
-					LogTipusEnumDto.CUSTODIA_CUSTODIAT,
+					LogTipusEnumDto.ARXIU_CUSTODIAT,
 					custodiaDocumentId,
 					null,
 					false,
@@ -1132,53 +1071,6 @@ public class DocumentServiceImpl implements DocumentService {
 					"identificador=" + identificador + ")");
 		}
 	}
-
-	/*@Transactional
-	@Override
-	public void custodiaEsborrar(
-			Long entitatId,
-			Long id) {
-		logger.debug("Esborrar document de custòdia ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		DocumentEntity document = entityComprovarHelper.comprovarDocument(
-				entitat,
-				null,
-				id,
-				true,
-				false,
-				false);
-		// Per a consultes no es comprova el contenidor arrel
-		// Comprova l'accés al path del document
-		contingutHelper.comprovarPermisosPathContingut(
-				document,
-				true,
-				false,
-				false,
-				true);
-		// Esborra el document de la custòdia
-		pluginHelper.custodiaEsborrar(document);
-		// Actualitza l'estat de custòdia del document
-		document.updateEstat(
-				DocumentEstatEnumDto.REDACCIO);
-		document.updateInformacioCustodia(
-				document.getCustodiaData(),
-				document.getCustodiaId(),
-				document.getCustodiaCsv());
-		// Registra al log la cancel·lació de la custòdia
-		contingutLogHelper.log(
-				document,
-				LogTipusEnumDto.CUSTODIA_CANCELACIO,
-				document.getCustodiaId(),
-				null,
-				false,
-				false);
-	}*/
 
 
 

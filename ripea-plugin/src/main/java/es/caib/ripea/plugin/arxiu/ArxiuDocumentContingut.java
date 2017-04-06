@@ -10,20 +10,28 @@ package es.caib.ripea.plugin.arxiu;
  */
 public class ArxiuDocumentContingut {
 
+	private ArxiuContingutTipusEnum tipus;
 	private String contentType;
 	private byte[] contingut;
 
+	public ArxiuDocumentContingut(
+			ArxiuContingutTipusEnum tipus,
+			String contentType,
+			byte[] contingut) {
+		super();
+		this.tipus = tipus;
+		this.contentType = contentType;
+		this.contingut = contingut;
+	}
+
+	public ArxiuContingutTipusEnum getTipus() {
+		return tipus;
+	}
 	public String getContentType() {
 		return contentType;
 	}
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
 	public byte[] getContingut() {
 		return contingut;
-	}
-	public void setContingut(byte[] contingut) {
-		this.contingut = contingut;
 	}
 
 }

@@ -76,14 +76,6 @@ public class ExpedientServiceBean implements ExpedientService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public ExpedientDto delete(
-			Long entitatId,
-			Long expedientId) {
-		return delegate.delete(entitatId, expedientId);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public ExpedientDto findById(
 			Long entitatId,
 			Long id) {
@@ -157,6 +149,14 @@ public class ExpedientServiceBean implements ExpedientService {
 			Long id,
 			String motiu) {
 		delegate.tancar(entitatId, id, motiu);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void reobrir(
+			Long entitatId,
+			Long id) throws NotFoundException {
+		delegate.reobrir(entitatId, id);
 	}
 
 	@Override

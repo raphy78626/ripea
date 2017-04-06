@@ -826,6 +826,9 @@ public class PluginHelper {
 			case TANCAT:
 				estat = ArxiuExpedientEstat.TANCAT;
 				break;
+			case INDEX_REMISSIO:
+				estat = ArxiuExpedientEstat.INDEX_REMISSIO;
+				break;
 			}
 			List<String> organs = new ArrayList<String>();
 			organs.add(expedient.getArxiu().getUnitatCodi());
@@ -960,6 +963,115 @@ public class PluginHelper {
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public void arxiuExpedientTancar(
+			ExpedientEntity expedient) {
+		String accioDescripcio = "Tancament d'un expedient";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", expedient.getId().toString());
+		accioParams.put("títol", expedient.getNom());
+		accioParams.put("número", expedient.getNumero());
+		accioParams.put("tipus", expedient.getMetaExpedient().getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().expedientTancar(
+					expedient.getArxiuUuid(),
+					generarCapsaleraArxiu(expedient));
+			expedient.updateArxiuEsborrat();
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public void arxiuExpedientReobrir(
+			ExpedientEntity expedient) {
+		String accioDescripcio = "Reobertura d'un expedient";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", expedient.getId().toString());
+		accioParams.put("títol", expedient.getNom());
+		accioParams.put("número", expedient.getNumero());
+		accioParams.put("tipus", expedient.getMetaExpedient().getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().expedientReobrir(
+					expedient.getArxiuUuid(),
+					generarCapsaleraArxiu(expedient));
+			expedient.updateArxiuEsborrat();
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public String arxiuExpedientExportar(
+			ExpedientEntity expedient) {
+		String accioDescripcio = "Exportar expedient en format ENI";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", expedient.getId().toString());
+		accioParams.put("títol", expedient.getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			String exportacio = getArxiuPlugin().expedientExportar(
+					expedient.getArxiuUuid(),
+					generarCapsaleraArxiu(expedient));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return exportacio;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
@@ -1176,6 +1288,7 @@ public class PluginHelper {
 		}
 		accioParams.put("arxiuUuidCalculat", arxiuUuid);
 		accioParams.put("versio", versio);
+		accioParams.put("ambContingut", new Boolean(ambContingut).toString());
 		long t0 = System.currentTimeMillis();
 		try {
 			ArxiuDocument arxiuDocument = getArxiuPlugin().documentConsultar(
@@ -1246,7 +1359,7 @@ public class PluginHelper {
 		return getArxiuFormatExtensio(extensio) != null;
 	}
 
-	public String[] arxiuDocumentObtenirVersions(
+	public List<ArxiuDocumentVersio> arxiuDocumentObtenirVersions(
 			DocumentEntity document) {
 		String accioDescripcio = "Obtenir versions del document";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -1263,56 +1376,7 @@ public class PluginHelper {
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
-			if (arxiuVersions != null && !arxiuVersions.isEmpty()) {
-				String[] versions = new String[arxiuVersions.size()];
-				int i = 0;
-				for (ArxiuDocumentVersio arxiuVersio: arxiuVersions) {
-					versions[i++] = arxiuVersio.getId();
-				}
-				return versions;
-			} else {
-				return null;
-			}
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_ARXIU,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_ARXIU,
-					errorDescripcio,
-					ex);
-		}
-	}
-
-	public String arxiuDocumentObtenirDarreraVersio(
-			DocumentEntity document) {
-		String accioDescripcio = "Obtenir darrera versió del document";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("id", document.getId().toString());
-		accioParams.put("títol", document.getNom());
-		long t0 = System.currentTimeMillis();
-		try {
-			List<ArxiuDocumentVersio> arxiuVersions = getArxiuPlugin().documentObtenirVersions(
-					document.getArxiuUuid(),
-					generarCapsaleraArxiu(document));
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_ARXIU,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			if (arxiuVersions != null && !arxiuVersions.isEmpty()) {
-				ArxiuDocumentVersio darreraVersio = arxiuVersions.get(arxiuVersions.size() - 1);
-				return darreraVersio.getId();
-			} else {
-				return null;
-			}
+			return arxiuVersions;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
@@ -1408,6 +1472,115 @@ public class PluginHelper {
 			document.updateEstat(
 					DocumentEstatEnumDto.CUSTODIAT);
 			return document.getId().toString();
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public void arxiuDocumentCopiar(
+			DocumentEntity document,
+			String arxiuUuidDesti) {
+		String accioDescripcio = "Copiar document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", document.getId().toString());
+		accioParams.put("títol", document.getNom());
+		accioParams.put("arxiuUuidDesti", arxiuUuidDesti);
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().documentCopiar(
+					document.getArxiuUuid(),
+					arxiuUuidDesti,
+					generarCapsaleraArxiu(document));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public void arxiuDocumentMoure(
+			DocumentEntity document,
+			String arxiuUuidDesti) {
+		String accioDescripcio = "Moure document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", document.getId().toString());
+		accioParams.put("títol", document.getNom());
+		accioParams.put("arxiuUuidDesti", arxiuUuidDesti);
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().documentMoure(
+					document.getArxiuUuid(),
+					arxiuUuidDesti,
+					generarCapsaleraArxiu(document));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public String arxiuDocumentExportar(
+			DocumentEntity document) {
+		String accioDescripcio = "Exportar document en format ENI";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", document.getId().toString());
+		accioParams.put("títol", document.getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			String exportacio = getArxiuPlugin().documentExportar(
+					document.getArxiuUuid(),
+					generarCapsaleraArxiu(document));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return exportacio;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
@@ -1521,6 +1694,80 @@ public class PluginHelper {
 					carpeta.getArxiuUuid(),
 					generarCapsaleraArxiu(carpeta));
 			carpeta.updateArxiuEsborrat();
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public void arxiuCarpetaCopiar(
+			CarpetaEntity carpeta,
+			String arxiuUuidDesti) {
+		String accioDescripcio = "Copiar carpeta";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", carpeta.getId().toString());
+		accioParams.put("nom", carpeta.getNom());
+		accioParams.put("arxiuUuidDesti", arxiuUuidDesti);
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().carpetaCopiar(
+					carpeta.getArxiuUuid(),
+					arxiuUuidDesti,
+					generarCapsaleraArxiu(carpeta));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public void arxiuCarpetaMoure(
+			CarpetaEntity carpeta,
+			String arxiuUuidDesti) {
+		String accioDescripcio = "Moure carpeta";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", carpeta.getId().toString());
+		accioParams.put("nom", carpeta.getNom());
+		accioParams.put("arxiuUuidDesti", arxiuUuidDesti);
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().carpetaMoure(
+					carpeta.getArxiuUuid(),
+					arxiuUuidDesti,
+					generarCapsaleraArxiu(carpeta));
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,

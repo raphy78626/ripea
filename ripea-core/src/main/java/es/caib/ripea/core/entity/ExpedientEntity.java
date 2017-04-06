@@ -50,7 +50,6 @@ public class ExpedientEntity extends NodeEntity {
 	@OneToMany(
 			mappedBy = "expedient",
 			fetch = FetchType.LAZY,
-			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	protected Set<InteressatEntity> interessats = new HashSet<InteressatEntity>();
 	@Column(name = "estat", nullable = false)

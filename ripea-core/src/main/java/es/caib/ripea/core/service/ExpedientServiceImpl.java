@@ -22,7 +22,6 @@ import javax.swing.table.TableModel;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Persistable;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
@@ -351,72 +350,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 		return dto;
 	}
 
-	@Transactional
-	@Override
-	@CacheEvict(value = "errorsValidacioNode", key = "#id")
-	public ExpedientDto delete(
-			Long entitatId,
-			Long id) {
-		logger.debug("Esborrant l'expedient ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
-				entitat,
-				null,
-				id);
-		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
-				entitat,
-				expedient);
-		// Comprova l'accés al path de l'expedient
-		contingutHelper.comprovarPermisosPathContingut(
-				expedient,
-				true,
-				false,
-				false,
-				true);
-		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
-				expedient,
-				false,
-				false,
-				false);
-		if (expedientSuperior != null) {
-			contingutHelper.comprovarPermisosContingut(
-					expedientSuperior,
-					false,
-					true,
-					false);
-		}
-		// Comprova el permís d'esborrar de l'expedient actual
-		contingutHelper.comprovarPermisosContingut(
-				expedient,
-				false,
-				false,
-				true);
-		expedientRepository.delete(expedient);
-		// Registra al log l'eliminació de l'expedient
-		contingutLogHelper.log(
-				expedient,
-				LogTipusEnumDto.ELIMINACIO,
-				null,
-				null,
-				true,
-				true);
-		ExpedientDto dto = toExpedientDto(
-				expedient,
-				false);
-		contingutHelper.arxiuPropagarEliminacio(
-				expedient,
-				null);
-		return dto;
-	}
-
 	@Transactional(readOnly = true)
 	@Override
 	public ExpedientDto findById(
@@ -736,7 +669,50 @@ public class ExpedientServiceImpl implements ExpedientService {
 		logger.debug("Tancant l'expedient ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ","
-				+ "mootiu=" + motiu + ")");
+				+ "motiu=" + motiu + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ExpedientEntity expedient = entityComprovarHelper.comprovarExpedient(
+				entitat,
+				null,
+				id);
+		// Comprova que l'usuari tengui permisos d'escriptura a damunt l'expedient
+		contingutHelper.comprovarPermisosContingut(
+				expedient,
+				false,
+				true,
+				false);
+		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
+		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
+				entitat,
+				expedient);
+		// Finalitza l'expedient
+		expedient.updateEstat(
+				ExpedientEstatEnumDto.TANCAT,
+				motiu);
+		contingutLogHelper.log(
+				expedient,
+				LogTipusEnumDto.TANCAMENT,
+				null,
+				null,
+				false,
+				false);
+		if (pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuPotGestionarExpedients()) {
+			pluginHelper.arxiuExpedientTancar(expedient);
+		}
+	}
+
+	@Transactional
+	@Override
+	public void reobrir(
+			Long entitatId,
+			Long id) {
+		logger.debug("Reobrint l'expedient ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -763,15 +739,18 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null);
 		// Finalitza l'expedient
 		expedient.updateEstat(
-				ExpedientEstatEnumDto.TANCAT,
-				motiu);
+				ExpedientEstatEnumDto.OBERT,
+				null);
 		contingutLogHelper.log(
 				expedient,
-				LogTipusEnumDto.TANCAMENT,
+				LogTipusEnumDto.REOBERTURA,
 				null,
 				null,
 				false,
 				false);
+		if (pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuPotGestionarExpedients()) {
+			pluginHelper.arxiuExpedientReobrir(expedient);
+		}
 	}
 
 	@Transactional
@@ -1276,23 +1255,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 		}
 		return fitxer;
 	}
-
-
-
-	/*private void propagarModificacioArxiu(
-			ExpedientEntity expedient) {
-		if (pluginHelper.isArxiuPluginActiu()) {
-			// Propaga la modificació de l'expedient a l'arxiu
-			pluginHelper.arxiuExpedientActualitzar(expedient);
-		}
-	}
-	private void propagarEliminacioArxiu(
-			ExpedientEntity expedient) {
-		if (pluginHelper.isArxiuPluginActiu() && expedient.getArxiuUuid() != null) {
-			// Propaga l'eliminacio de l'expedient a l'arxiu
-			pluginHelper.arxiuExpedientEsborrar(expedient);
-		}
-	}*/
 
 	private static final Logger logger = LoggerFactory.getLogger(ExpedientServiceImpl.class);
 

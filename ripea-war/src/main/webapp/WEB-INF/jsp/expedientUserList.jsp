@@ -67,7 +67,6 @@ $(document).ready(function() {
 			return false;
 		});
 	});
-	
 });
 </script>
 </head>
@@ -133,14 +132,13 @@ $(document).ready(function() {
 			data-toggle="datatable" 
 			data-url="<c:url value="/expedient/datatable"/>" 
 			class="table table-bordered table-striped" 
-			data-default-order="7" 
+			data-default-order="6" 
 			data-default-dir="desc"
 			data-botons-template="#botonsTemplate"
 			data-selection-enabled="true"
 			style="width:100%">
 		<thead>
 			<tr>
-				<th data-col-name="id" data-visible="false"></th>
 				<th data-col-name="codiPropietariEscriptoriPare" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
 				<th data-col-name="numero"><spring:message code="expedient.list.user.columna.numero"/></th>
@@ -151,7 +149,11 @@ $(document).ready(function() {
 				<th data-col-name="estat" data-template="#cellEstatTemplate" width="10%">
 					<spring:message code="expedient.list.user.columna.estat"/>
 					<script id="cellEstatTemplate" type="text/x-jsrender">
-						{{if estat == 'OBERT'}}<span class="fa fa-folder-open" title="Obert"></span>{{else}}<span class="fa fa-folder" title="Tancat">{{/if}}
+						{{if estat == 'OBERT'}}
+							<span class="label label-default"><span class="fa fa-folder-open"></span> <spring:message code="expedient.estat.enum.OBERT"/></span>
+						{{else}}
+							<span class="label label-success"><span class="fa fa-folder"></span> <spring:message code="expedient.estat.enum.TANCAT"/></span>
+						{{/if}}
 					</script>
 				</th>
 				<th data-col-name="nomPropietariEscriptoriPare" data-orderable="false" width="20%"><spring:message code="expedient.list.user.columna.agafatper"/></th>

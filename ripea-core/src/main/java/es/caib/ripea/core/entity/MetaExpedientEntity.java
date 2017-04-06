@@ -68,9 +68,7 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private Set<MetaExpedientMetaDocumentEntity> metaDocuments = new HashSet<MetaExpedientMetaDocumentEntity>();
-	@ManyToMany(
-			cascade = CascadeType.ALL,
-			fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "ipa_metaexpedient_arxiu",
 			joinColumns = {@JoinColumn(name = "metaexpedient_id")},

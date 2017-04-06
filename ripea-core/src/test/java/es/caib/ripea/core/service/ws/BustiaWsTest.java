@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.ripea.core.service;
+package es.caib.ripea.core.service.ws;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,68 +22,55 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import es.caib.portafib.ws.callback.api.v1.PortaFIBCallBackWs;
-import es.caib.portafib.ws.callback.api.v1.PortaFIBEvent;
-import es.caib.portafib.ws.callback.api.v1.SigningRequest;
+import es.caib.ripea.core.api.service.ws.BustiaV0WsService;
+import es.caib.ripea.core.api.service.ws.BustiaV0WsService.BustiaContingutTipus;
 
 /**
- * Classe de proves pel servei web de callback de portafirmes amb interfície
- * PortaFIB.
+ * Classe de proves pel registre.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class CallbackPortafibTest {
+public class BustiaWsTest {
 
-	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/portafibCallback";
+	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/bustia";
 	private static final String USERNAME = "tomeud";
-	private static final String PASSWORD = "tomeud15";
+	private static final String PASSWORD = "tomeud";
 
 	public static void main(String[] args) {
 		try {
-			// Estats:
-			//   0  - DOCUMENT_PENDENT;
-			//   50 - DOCUMENT_PENDENT;
-			//   60 - DOCUMENT_FIRMAT;
-			//   70 - DOCUMENT_REBUTJAT;
-			//   80 - DOCUMENT_PAUSAT;
-			new CallbackPortafibTest().test(
-					1476364060818L,
-					60);
+			new BustiaWsTest().provaEnviamentContingut();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	private void test(
-			long documentId,
-			int estat) throws Exception {
-		PortaFIBEvent event = new PortaFIBEvent();
-		SigningRequest signingRequest = new SigningRequest();
-		signingRequest.setID(documentId);
-		event.setSigningRequest(signingRequest);
-		event.setEventTypeID(estat);
-		getCallbackService().event(event);
+	private void provaEnviamentContingut() throws Exception {
+		getBustiaService().enviarContingut(
+				"ENTITAT_CODI",
+				"UNITAT_ADM_CODI",
+				BustiaContingutTipus.REGISTRE_ENTRADA,
+				"REGISTRE_REF");
 	}
 
-	private PortaFIBCallBackWs getCallbackService() throws Exception {
+	private BustiaV0WsService getBustiaService() throws Exception {
 		URL url = new URL(ENDPOINT_ADDRESS + "?wsdl");
 		QName qname = new QName(
-				"http://v1.server.callback.ws.portafib.caib.es/",
-				"PortaFIBCallBackWsService");
+				"http://www.caib.es/ripea/ws/bustia",
+				"BustiaService");
 		Service service = Service.create(url, qname);
-		PortaFIBCallBackWs callback = service.getPort(PortaFIBCallBackWs.class);
-		BindingProvider bp = (BindingProvider)callback;
+		BustiaV0WsService bustiaWs = service.getPort(BustiaV0WsService.class);
+		BindingProvider bp = (BindingProvider)bustiaWs;
+		@SuppressWarnings("rawtypes")
+		List<Handler> handlerChain = new ArrayList<Handler>();
+		handlerChain.add(new LogMessageHandler());
+		bp.getBinding().setHandlerChain(handlerChain);
 		bp.getRequestContext().put(
 				BindingProvider.USERNAME_PROPERTY,
 				USERNAME);
 		bp.getRequestContext().put(
 				BindingProvider.PASSWORD_PROPERTY,
 				PASSWORD);
-		@SuppressWarnings("rawtypes")
-		List<Handler> handlerChain = new ArrayList<Handler>();
-		handlerChain.add(new LogMessageHandler());
-		bp.getBinding().setHandlerChain(handlerChain);
-		return callback;
+		return bustiaWs;
 	}
 
 	private class LogMessageHandler implements SOAPHandler<SOAPMessageContext> {

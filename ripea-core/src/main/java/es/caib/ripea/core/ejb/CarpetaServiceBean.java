@@ -54,14 +54,6 @@ public class CarpetaServiceBean implements CarpetaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public CarpetaDto delete(
-			Long entitatId,
-			Long id) {
-		return delegate.delete(entitatId, id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public CarpetaDto findById(
 			Long entitatId,
 			Long id) {

@@ -118,7 +118,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 			return null;
 	}
 
-	public String getPathAsString() {
+	public String getPathAsStringWebdav() {
 		if (getPath() == null)
 			return null;
 		StringBuilder pathString = new StringBuilder();
@@ -135,8 +135,41 @@ public abstract class ContingutDto extends AuditoriaDto {
 		}
 		return pathString.toString();
 	}
-	public String getPathAsStringAmbNomContenidor() {
-		return getPathAsString() + "/" + nom;
+	public String getPathAsStringWebdavAmbNom() {
+		return getPathAsStringWebdav() + "/" + nom;
+	}
+	public String getPathAsStringExplorador() {
+		if (getPath() == null)
+			return null;
+		StringBuilder pathString = new StringBuilder();
+		for (ContingutDto pathElement: getPath()) {
+			if (pathString.length() > 0)
+				pathString.append(" / ");
+			if (pathElement.isEscriptori()) {
+				pathString.append("#E# ");
+			} else {
+				if (pathElement.isExpedient()) {
+					pathString.append("#X# ");
+				} else if (pathElement.isCarpeta()) {
+					pathString.append("#C# ");
+				} else if (pathElement.isDocument()) {
+					pathString.append("#D# ");
+				}
+				pathString.append(pathElement.getNom());
+			}
+		}
+		return pathString.toString();
+	}
+	public String getPathAsStringExploradorAmbNom() {
+		if (isExpedient()) {
+			return getPathAsStringExplorador() + " / #X# " + nom;
+		} else if (isCarpeta()) {
+			return getPathAsStringExplorador() + " / #C# " + nom;
+		} else if (isDocument()) {
+			return getPathAsStringExplorador() + " / #D# " + nom;
+		} else {
+			return getPathAsStringExplorador() + " / " + nom;
+		}
 	}
 
 	public ExpedientDto getExpedientPare() {
@@ -335,6 +368,26 @@ public abstract class ContingutDto extends AuditoriaDto {
 	}
 	public boolean isRegistre() {
 		return this instanceof RegistreAnotacioDto;
+	}
+
+	public ContingutTipusEnumDto getTipus() {
+		if (isExpedient()) {
+			return ContingutTipusEnumDto.EXPEDIENT;
+		} else if (isDocument()) {
+			return ContingutTipusEnumDto.DOCUMENT;
+		} else if (isCarpeta()) {
+			return ContingutTipusEnumDto.CARPETA;
+		} else if (isEscriptori()) {
+			return ContingutTipusEnumDto.ESCRIPTORI;
+		} else if (isArxiv()) {
+			return ContingutTipusEnumDto.ARXIU;
+		} else if (isBustia()) {
+			return ContingutTipusEnumDto.BUSTIA;
+		} else if (isRegistre()) {
+			return ContingutTipusEnumDto.REGISTRE;
+		} else {
+			return null;
+		}
 	}
 
 	@Override

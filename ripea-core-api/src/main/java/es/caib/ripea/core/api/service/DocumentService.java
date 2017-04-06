@@ -79,22 +79,6 @@ public interface DocumentService {
 			FitxerDto fitxer) throws NotFoundException, ValidationException;
 
 	/**
-	 * Esborra un document.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param id
-	 *            Atribut id del document que es vol esborrar.
-	 * @return El document esborrat.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public DocumentDto delete(
-			Long entitatId,
-			Long id) throws NotFoundException;
-
-	/**
 	 * Consulta un document donat el seu id.
 	 * 
 	 * @param entitatId
@@ -295,12 +279,14 @@ public interface DocumentService {
 			Long documentId) throws NotFoundException;
 
 	/**
-	 * Converteix el document a format PDF per a firmar-lo.
+	 * Converteix el document a format PDF per a firmar-lo al navegador.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param id
 	 *            Atribut id del document que es vol convertir.
+	 * @param estamparUrl
+	 *            Indica si el document PDF s'ha de generar amb URL del CSV estampada.
 	 * @return el fitxer convertit.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -308,9 +294,10 @@ public interface DocumentService {
 	 *             Hi ha hagut algun error en la comunicació amb el portafirmes.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public FitxerDto convertirPdfPerFirma(
+	public FitxerDto convertirPdfPerFirmaClient(
 			Long entitatId,
-			Long id) throws NotFoundException, SistemaExternException;
+			Long id,
+			boolean estamparUrl) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Genera un identificador del document per firmar en el navegador
@@ -350,22 +337,5 @@ public interface DocumentService {
 			String identificador,
 			String arxiuNom,
 			byte[] arxiuContingut) throws NotFoundException, SistemaExternException;
-
-	/**
-	 * Esborrar un document custodiat.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param id
-	 *            Atribut id del document que es vol custodiar.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 * @throws SistemaExternException
-	 *             Hi ha hagut algun error en la comunicació amb la custòdia.
-	 */
-	/*@PreAuthorize("hasRole('tothom')")
-	public void custodiaEsborrar(
-			Long entitatId,
-			Long id) throws NotFoundException, SistemaExternException;*/
 
 }

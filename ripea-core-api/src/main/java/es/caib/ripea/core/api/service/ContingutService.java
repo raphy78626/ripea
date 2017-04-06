@@ -16,6 +16,7 @@ import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
@@ -415,6 +416,22 @@ public interface ContingutService {
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public ArxiuPluginInfoDto getArxiuInfo(
+			Long entitatId,
+			Long contingutId) throws NotFoundException;
+
+	/**
+	 * Genera l'exportació en format ENI d'un document o expedient.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol exportar.
+	 * @return El fitxer amb l'exportació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public FitxerDto exportacioEni(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
 

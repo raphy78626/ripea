@@ -249,7 +249,11 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 					metaExpedient,
 					resposta);
 		}
-		resposta.setArxiusCount(metaExpedient.getArxius().size());
+		if (metaExpedient.getArxius() != null) {
+			resposta.setArxiusCount(metaExpedient.getArxius().size());
+		} else {
+			resposta.setArxiusCount(0);
+		}
 		return resposta;
 	}
 

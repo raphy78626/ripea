@@ -65,16 +65,6 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public DocumentDto delete(
-			Long entitatId,
-			Long id) {
-		return delegate.delete(
-				entitatId,
-				id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public DocumentDto findById(
 			Long entitatId,
 			Long id) {
@@ -182,12 +172,14 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public FitxerDto convertirPdfPerFirma(
+	public FitxerDto convertirPdfPerFirmaClient(
 			Long entitatId,
-			Long id) {
-		return delegate.convertirPdfPerFirma(
+			Long id,
+			boolean estamparUrl) {
+		return delegate.convertirPdfPerFirmaClient(
 				entitatId,
-				id);
+				id,
+				estamparUrl);
 	}
 
 	@Override
@@ -211,15 +203,5 @@ public class DocumentServiceBean implements DocumentService {
 				arxiuNom,
 				arxiuContingut);
 	}
-
-	/*@Override
-	@RolesAllowed("tothom")
-	public void custodiaEsborrar(
-			Long entitatId,
-			Long id) {
-		delegate.custodiaEsborrar(
-				entitatId,
-				id);
-	}*/
 
 }

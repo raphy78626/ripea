@@ -17,13 +17,16 @@ import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.repository.DocumentRepository;
+import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
+import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
 
 /**
  * Mètodes per a gestionar els arxius associats a un document
@@ -113,32 +116,45 @@ public class DocumentHelper {
 			String versio) {
 		FitxerDto fitxer = null;
 		if (document.getArxiuUuid() != null) {
-			if (versio == null) {
-				if (pluginHelper.isArxiuPluginActiu()) {
-					ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
-							document,
-							null,
-							versio,
-							true);
-					fitxer = new FitxerDto();
-					fitxer.setNom(document.getFitxerNom());
-					fitxer.setContentType(document.getFitxerContentType());
-					fitxer.setContingut(arxiuDocument.getContingut().getContingut());
-				} else {
-					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_ARXIU,
-							"S'està intentant obtenir l'arxiu associat a un document pujat a l'arxiu i el plugin d'arxiu no està activat");
+			if (pluginHelper.isArxiuPluginActiu()) {
+				ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
+						document,
+						null,
+						versio,
+						true);
+				fitxer = new FitxerDto();
+				fitxer.setContentType(document.getFitxerContentType());
+				fitxer.setNom(document.getFitxerNom());
+				byte[] contingut = null;
+				if (arxiuDocument.getContinguts() != null) {
+					for (ArxiuDocumentContingut arxiuContingut: arxiuDocument.getContinguts()) {
+						if (ArxiuContingutTipusEnum.CONTINGUT.equals(arxiuContingut.getTipus())) {
+							contingut = arxiuContingut.getContingut();
+							break;
+						}
+					}
 				}
+				if (contingut == null) {
+					throw new ValidationException(
+							"No s'ha trobat cap contingut pel document de l'arxiu(" +
+							"uuid=" + document.getArxiuUuid() + ")");
+				}
+				fitxer.setContingut(contingut);
 			} else {
 				throw new SistemaExternException(
 						IntegracioHelper.INTCODI_ARXIU,
-						"Consulta de versions de documents no suportada");
+						"S'està intentant obtenir l'arxiu associat a un document pujat a l'arxiu i el plugin d'arxiu no està activat");
 			}
 		} else {
 			fitxer = new FitxerDto();
 			fitxer.setNom(document.getFitxerNom());
 			fitxer.setContentType(document.getFitxerContentType());
 			fitxer.setContingut(document.getFitxerContingut());
+		}
+		if (DocumentEstatEnumDto.CUSTODIAT.equals(document.getEstat())) {
+			fitxer.setNom(
+					pluginHelper.conversioConvertirPdfArxiuNom(
+							document.getFitxerNom()));
 		}
 		return fitxer;
 	}

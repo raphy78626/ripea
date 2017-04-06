@@ -89,6 +89,40 @@ public interface ArxiuPlugin {
 			ArxiuCapsalera capsalera) throws SistemaExternException;
 
 	/**
+	 * Tanca un expedient donat el seu id.
+	 * 
+	 * @param nodeId
+	 * @param capsalera
+	 * @throws SistemaExternException
+	 */
+	public void expedientTancar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
+	 * Reobre un expedient prèviament tancat donat el seu id.
+	 * 
+	 * @param nodeId
+	 * @param capsalera
+	 * @throws SistemaExternException
+	 */
+	public void expedientReobrir(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
+	 * Exporta un expedient a format ENI.
+	 * 
+	 * @param nodeId
+	 * @param capsalera
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public String expedientExportar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
 	 * Crea un nou esborrany de document a l'arxiu digital.
 	 * 
 	 * @param titol
@@ -230,6 +264,46 @@ public interface ArxiuPlugin {
 			String valcertDocumentTipus) throws SistemaExternException;
 
 	/**
+	 * Copia un document a un altre expedient o carpeta destí.
+	 * 
+	 * @param nodeId
+	 * @param nodeDestiId
+	 * @param capsalera
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public void documentCopiar(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
+	 * Mou un document a un altre expedient o carpeta destí.
+	 * 
+	 * @param nodeId
+	 * @param nodeDestiId
+	 * @param capsalera
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public void documentMoure(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
+	 * Exporta un document a format ENI.
+	 * 
+	 * @param nodeId
+	 * @param capsalera
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public String documentExportar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
 	 * Crea una nova carpeta a l'arxiu digital.
 	 * 
 	 * @param nom
@@ -277,6 +351,34 @@ public interface ArxiuPlugin {
 	 */
 	public ArxiuCarpeta carpetaConsultar(
 			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
+	 * Copia una carpeta a un altre expedient o carpeta destí.
+	 * 
+	 * @param nodeId
+	 * @param nodeDestiId
+	 * @param capsalera
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public void carpetaCopiar(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException;
+
+	/**
+	 * Mou una carpeta a un altre expedient o carpeta destí.
+	 * 
+	 * @param nodeId
+	 * @param nodeDestiId
+	 * @param capsalera
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public void carpetaMoure(
+			String nodeId,
+			String nodeDestiId,
 			ArxiuCapsalera capsalera) throws SistemaExternException;
 
 }

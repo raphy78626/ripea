@@ -177,7 +177,7 @@ public class ExpedientHelper {
 						csv);
 				contingutLogHelper.log(
 						documentPortafirmes.getDocument(),
-						LogTipusEnumDto.CUSTODIA_URL,
+						LogTipusEnumDto.ARXIU_CSV,
 						csv,
 						null,
 						false,
@@ -264,24 +264,24 @@ public class ExpedientHelper {
 				fitxer.setNom(portafirmesDocument.getArxiuNom());
 				fitxer.setContingut(portafirmesDocument.getArxiuContingut());
 				fitxer.setContentType("application/pdf");
+				document.updateEstat(
+						DocumentEstatEnumDto.CUSTODIAT);
+				documentPortafirmes.updateProcessament(
+						true,
+						false,
+						null,
+						false);
 				String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
 						document,
 						fitxer,
 						document.getMetaDocument().getPortafirmesCustodiaTipus());
 				document.updateInformacioCustodia(
 						new Date(),
-						portafirmesDocument.getCustodiaId(),
+						custodiaDocumentId,
 						document.getCustodiaCsv());
-				documentPortafirmes.updateProcessament(
-						true,
-						false,
-						null,
-						false);
-				document.updateEstat(
-						DocumentEstatEnumDto.CUSTODIAT);
 				contingutLogHelper.log(
 						documentPortafirmes.getDocument(),
-						LogTipusEnumDto.CUSTODIA_CUSTODIAT,
+						LogTipusEnumDto.ARXIU_CUSTODIAT,
 						custodiaDocumentId,
 						null,
 						false,

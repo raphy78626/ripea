@@ -4,20 +4,31 @@
 package es.caib.ripea.plugin.caib.arxiu;
 
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.axis.encoding.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.Content;
+import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.Metadata;
+import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.SummaryInfoNode;
+import es.caib.arxiudigital.apirest.constantes.Aspectos;
 import es.caib.arxiudigital.apirest.constantes.EstadosElaboracion;
 import es.caib.arxiudigital.apirest.constantes.EstadosExpediente;
 import es.caib.arxiudigital.apirest.constantes.ExtensionesFichero;
 import es.caib.arxiudigital.apirest.constantes.FormatosFichero;
+import es.caib.arxiudigital.apirest.constantes.MetadatosDocumento;
+import es.caib.arxiudigital.apirest.constantes.MetadatosExpediente;
 import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
 import es.caib.arxiudigital.apirest.constantes.PerfilesFirma;
-import es.caib.arxiudigital.apirest.constantes.TiposContenidosBinarios;
 import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
 import es.caib.arxiudigital.apirest.constantes.TiposFirma;
 import es.caib.ripea.plugin.SistemaExternCodiMissatgeException;
@@ -25,12 +36,15 @@ import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.SistemaExternNoTrobatException;
 import es.caib.ripea.plugin.arxiu.ArxiuCapsalera;
 import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
+import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentVersio;
 import es.caib.ripea.plugin.arxiu.ArxiuEstatElaboracio;
 import es.caib.ripea.plugin.arxiu.ArxiuExpedient;
 import es.caib.ripea.plugin.arxiu.ArxiuExpedientEstat;
+import es.caib.ripea.plugin.arxiu.ArxiuFill;
+import es.caib.ripea.plugin.arxiu.ArxiuFillTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuFormatExtensio;
 import es.caib.ripea.plugin.arxiu.ArxiuFormatNom;
 import es.caib.ripea.plugin.arxiu.ArxiuOrigenContingut;
@@ -50,7 +64,7 @@ import es.caib.ripea.plugin.utils.PropertiesHelper;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuPluginImpl implements ArxiuPlugin {
+public class ArxiuPluginCaib implements ArxiuPlugin {
 
 	private static final String SERVEI_VERSIO = "1.0";
 
@@ -149,6 +163,63 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 					nodeId,
 					toArxiuHeader(capsalera));
 			return toArxiuExpedient(file);
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
+	public void expedientTancar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		try {
+			getArxiuClient().fileClose(
+					nodeId,
+					toArxiuHeader(capsalera));
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
+	public void expedientReobrir(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		try {
+			getArxiuClient().fileReopen(
+					nodeId,
+					toArxiuHeader(capsalera));
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
+	public String expedientExportar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		try {
+			return getArxiuClient().fileExport(
+					nodeId,
+					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
 					nodeId,
@@ -368,6 +439,67 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 	}
 
 	@Override
+	public void documentCopiar(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		try {
+			getArxiuClient().documentCopy(
+					nodeId,
+					nodeDestiId,
+					toArxiuHeader(capsalera));
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
+	public void documentMoure(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		try {
+			getArxiuClient().documentMove(
+					nodeId,
+					nodeDestiId,
+					toArxiuHeader(capsalera));
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
+	public String documentExportar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		try {
+			return getArxiuClient().documentEniGet(
+					nodeId,
+					toArxiuHeader(capsalera));
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
 	public ArxiuCarpeta carpetaCrear(
 			String nom,
 			String pareNodeId,
@@ -443,6 +575,48 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 		}
 	}
 
+	@Override
+	public void carpetaCopiar(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		try {
+			getArxiuClient().folderCopy(
+					nodeId,
+					nodeDestiId,
+					toArxiuHeader(capsalera));
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
+	@Override
+	public void carpetaMoure(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		try {
+			getArxiuClient().folderMove(
+					nodeId,
+					nodeDestiId,
+					toArxiuHeader(capsalera));
+		} catch (ArxiuNotFoundException nfex) {
+			throw new SistemaExternNoTrobatException(
+					nodeId,
+					nfex.getArxiuCodi(),
+					nfex.getArxiuDescripcio(),
+					nfex);
+		} catch (ArxiuException aex) {
+			throw processarArxiuException(aex);
+		}
+	}
+
 
 
 	private ArxiuHeader toArxiuHeader(ArxiuCapsalera capsalera) {
@@ -459,224 +633,170 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 	}
 
 	private ArxiuExpedient toArxiuExpedient(ArxiuFile arxiuFile) {
-		ArxiuExpedient expedient = new ArxiuExpedient();
-		expedient.setNodeId(arxiuFile.getNodeId());
-		expedient.setTitol(arxiuFile.getTitol());
-		expedient.setDescripcio(arxiuFile.getDescripcio());
-		expedient.setEniVersio(arxiuFile.getEniVersio());
-		expedient.setEniIdentificador(arxiuFile.getEniIdentificador());
-		if (OrigenesContenido.CIUDADANO.equals(arxiuFile.getEniOrigen())) {
-			expedient.setEniOrigen(ArxiuOrigenContingut.CIUTADA);
-		} else if (OrigenesContenido.ADMINISTRACION.equals(arxiuFile.getEniOrigen())) {
-			expedient.setEniOrigen(ArxiuOrigenContingut.ADMINISTRACIO);
+		Map<String, Object> metadades = toMetadadesPerRetornar(
+				arxiuFile.getMetadades());
+		ArxiuExpedient expedient = new ArxiuExpedient(
+				arxiuFile.getNodeId(),
+				arxiuFile.getTitol(),
+				toFillsPerRetornar(arxiuFile.getFills()),
+				metadades,
+				toAspectesPerRetornar(arxiuFile.getAspectes()),
+				arxiuFile.getJson());
+		expedient.setEniVersio(
+				getMetadataValueAsString(
+						metadades,
+						"eni:v_nti"));
+		expedient.setEniIdentificador(
+				getMetadataValueAsString(
+						metadades,
+						"eni:id"));
+		expedient.setEniOrigen(
+				ArxiuOrigenContingut.valorAsEnum(
+						getMetadataValueAsString(
+								metadades,
+								MetadatosExpediente.ORIGEN)));
+		try {
+			expedient.setEniDataObertura(
+					getMetadataValueAsDate(
+							metadades,
+							MetadatosExpediente.FECHA_INICIO));
+		} catch (ParseException ex) {
+			logger.error("Error al obtenir la data d'obertura de l'expedient", ex);
 		}
-		expedient.setEniOrgans(arxiuFile.getEniOrgans());
-		expedient.setEniDataObertura(arxiuFile.getEniDataObertura());
-		expedient.setEniClassificacio(arxiuFile.getEniClassificacio());
-		if (EstadosExpediente.ABIERTO.equals(arxiuFile.getEniEstat())) {
-			expedient.setEniEstat(ArxiuExpedientEstat.OBERT);
-		} else if (EstadosExpediente.CERRADO.equals(arxiuFile.getEniEstat())) {
-			expedient.setEniEstat(ArxiuExpedientEstat.TANCAT);
-		} else if (EstadosExpediente.INDICE_REMISION.equals(arxiuFile.getEniEstat())) {
-			expedient.setEniEstat(ArxiuExpedientEstat.INDEX_REMISSIO_TANCAT);
-		}
-		expedient.setEniInteressats(arxiuFile.getEniInteressats());
-		expedient.setEniFirmaTipus(arxiuFile.getEniFirmaTipus());
-		expedient.setEniFirmaCsv(arxiuFile.getEniFirmaCsv());
-		expedient.setEniFirmaCsvDefinicio(arxiuFile.getEniFirmaCsvDefinicio());
-		expedient.setSerieDocumental(arxiuFile.getSerieDocumental());
-		expedient.setAplicacioCreacio(arxiuFile.getAplicacioCreacio());
-		expedient.setSuport(arxiuFile.getSuport());
-		expedient.setJson(arxiuFile.getJson());
+		expedient.setEniClassificacio(
+				getMetadataValueAsString(
+						metadades,
+						MetadatosExpediente.IDENTIFICADOR_PROCEDIMIENTO));
+		expedient.setEniEstat(
+				ArxiuExpedientEstat.valorAsEnum(
+						getMetadataValueAsString(
+								metadades,
+								MetadatosExpediente.ESTADO_EXPEDIENTE)));
+		expedient.setEniOrgans(
+				getMetadataValueAsListString(
+						metadades,
+						MetadatosExpediente.ORGANO));
+		expedient.setEniInteressats(
+				getMetadataValueAsListString(
+						metadades,
+						MetadatosExpediente.INTERESADOS));
+		expedient.setEniFirmaTipus(
+				getMetadataValueAsListString(
+						metadades,
+						"eni:tipoFirma"));
+		expedient.setEniFirmaCsv(
+				getMetadataValueAsListString(
+						metadades,
+						"eni:csv"));
+		expedient.setEniFirmaCsvDefinicio(
+				getMetadataValueAsListString(
+						metadades,
+						"eni:def_csv"));
+		expedient.setDescripcio(
+				getMetadataValueAsString(
+						metadades,
+						MetadatosExpediente.DESCRIPCION));
+		expedient.setSerieDocumental(
+				getMetadataValueAsString(
+						metadades,
+						MetadatosExpediente.CODIGO_CLASIFICACION));
+		expedient.setAplicacio(
+				getMetadataValueAsString(
+						metadades,
+						MetadatosExpediente.CODIGO_APLICACION_TRAMITE));
 		return expedient;
 	}
 
 	private ArxiuDocument toArxiuDocument(
 			es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocument arxiuDocument) {
-		ArxiuDocument document = new ArxiuDocument();
-		document.setNodeId(arxiuDocument.getNodeId());
-		document.setTitol(arxiuDocument.getTitol());
-		document.setDescripcio(arxiuDocument.getDescripcio());
-		document.setEniVersio(arxiuDocument.getEniVersio());
-		document.setEniIdentificador(arxiuDocument.getEniIdentificador());
-		if (OrigenesContenido.CIUDADANO.equals(arxiuDocument.getEniOrigen())) {
-			document.setEniOrigen(ArxiuOrigenContingut.CIUTADA);
-		} else if (OrigenesContenido.ADMINISTRACION.equals(arxiuDocument.getEniOrigen())) {
-			document.setEniOrigen(ArxiuOrigenContingut.ADMINISTRACIO);
+		Map<String, Object> metadades = toMetadadesPerRetornar(
+				arxiuDocument.getMetadades());
+		ArxiuDocument document = new ArxiuDocument(
+				arxiuDocument.getNodeId(),
+				arxiuDocument.getTitol(),
+				toContingutsPerRetornar(arxiuDocument.getContinguts()),
+				metadades,
+				toAspectesPerRetornar(arxiuDocument.getAspectes()),
+				arxiuDocument.getJson());
+		document.setEniVersio(
+				getMetadataValueAsString(
+						metadades,
+						"eni:v_nti"));
+		document.setEniIdentificador(
+				getMetadataValueAsString(
+						metadades,
+						"eni:id"));
+		document.setEniOrigen(
+				ArxiuOrigenContingut.valorAsEnum(
+						getMetadataValueAsString(
+								metadades,
+								MetadatosDocumento.ORIGEN)));
+		try {
+			document.setEniDataCaptura(
+					getMetadataValueAsDate(
+							metadades,
+							MetadatosDocumento.FECHA_INICIO));
+		} catch (ParseException ex) {
+			logger.error("Error al obtenir la data de captura del document", ex);
 		}
-		document.setEniDataCaptura(arxiuDocument.getEniDataCaptura());
-		if (EstadosElaboracion.ORIGINAL.equals(arxiuDocument.getEniEstatElaboracio())) {
-			document.setEniEstatElaboracio(ArxiuEstatElaboracio.ORIGINAL);
-		} else if (EstadosElaboracion.COPIA_AUTENTICA_PAPEL.equals(arxiuDocument.getEniEstatElaboracio())) {
-			document.setEniEstatElaboracio(ArxiuEstatElaboracio.COPIA_AUTENTICA_PAPER);
-		} else if (EstadosElaboracion.COPIA_AUTENTICA_PARCIAL.equals(arxiuDocument.getEniEstatElaboracio())) {
-			document.setEniEstatElaboracio(ArxiuEstatElaboracio.COPIA_AUTENTICA_PARCIAL);
-		} else if (EstadosElaboracion.COPIA_AUTENTICA_FORMATO.equals(arxiuDocument.getEniEstatElaboracio())) {
-			document.setEniEstatElaboracio(ArxiuEstatElaboracio.COPIA_AUTENTICA_FORMAT);
-		} else if (EstadosElaboracion.OTROS.equals(arxiuDocument.getEniEstatElaboracio())) {
-			document.setEniEstatElaboracio(ArxiuEstatElaboracio.ALTRES);
-		}
-		if (TiposDocumentosENI.RESOLUCION.equals(arxiuDocument.getEniTipusDocumental())) {
-			document.setEniTipusDocumental(ArxiuTipusDocumental.RESOLUCIO);
-		} else if (TiposDocumentosENI.ACUERDO.equals(arxiuDocument.getEniTipusDocumental())) {
-			document.setEniTipusDocumental(ArxiuTipusDocumental.ACORD);
-		} else if (TiposDocumentosENI.CONTRATO.equals(arxiuDocument.getEniTipusDocumental())) {
-			document.setEniTipusDocumental(ArxiuTipusDocumental.CONTRACTE);
-		} else if (TiposDocumentosENI.CONVENIO.equals(arxiuDocument.getEniTipusDocumental())) {
-			document.setEniTipusDocumental(ArxiuTipusDocumental.CONVENI);
-		} else if (TiposDocumentosENI.NOTIFICACION.equals(arxiuDocument.getEniTipusDocumental())) {
-			document.setEniTipusDocumental(ArxiuTipusDocumental.NOTIFICACIO);
-		} else if (TiposDocumentosENI.SOLICITUD.equals(arxiuDocument.getEniTipusDocumental())) {
-			document.setEniTipusDocumental(ArxiuTipusDocumental.SOLICITUD);
-		} else if (TiposDocumentosENI.OTROS.equals(arxiuDocument.getEniTipusDocumental())) {
-			document.setEniTipusDocumental(ArxiuTipusDocumental.ALTRES);
-		}
-		if (FormatosFichero.GML.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.GML);
-		} else if (FormatosFichero.WFS.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.WFS);
-		} else if (FormatosFichero.WMS.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.WMS);
-		} else if (FormatosFichero.GZIP.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.GZIP);
-		} else if (FormatosFichero.ZIP.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.ZIP);
-		} else if (FormatosFichero.AVI.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.AVI);
-		} else if (FormatosFichero.MP4A.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.MP4A);
-		} else if (FormatosFichero.CSV.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.CSV);
-		} else if (FormatosFichero.HTML.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.HTML);
-		} else if (FormatosFichero.CSS.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.CSS);
-		} else if (FormatosFichero.JPEG.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.JPEG);
-		} else if (FormatosFichero.MHTML.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.MHTML);
-		} else if (FormatosFichero.OASIS12.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.OASIS12);
-		} else if (FormatosFichero.SOXML.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.SOXML);
-		} else if (FormatosFichero.PDF.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.PDF);
-		} else if (FormatosFichero.PDFA.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.PDFA);
-		} else if (FormatosFichero.PNG.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.PNG);
-		} else if (FormatosFichero.RTF.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.RTF);
-		} else if (FormatosFichero.SVG.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.SVG);
-		} else if (FormatosFichero.TIFF.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.TIFF);
-		} else if (FormatosFichero.TXT.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.TXT);
-		} else if (FormatosFichero.XHTML.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.XHTML);
-		} else if (FormatosFichero.MP3.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.MP3);
-		} else if (FormatosFichero.OGG.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.OGG);
-		} else if (FormatosFichero.MP4V.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.MP4V);
-		} else if (FormatosFichero.WEBM.equals(arxiuDocument.getEniFormatNom())) {
-			document.setEniFormatNom(ArxiuFormatNom.WEBM);
-		}
-		if (ExtensionesFichero.GML.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.GML);
-		} else if (ExtensionesFichero.GZ.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.GZ);
-		} else if (ExtensionesFichero.ZIP.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.ZIP);
-		} else if (ExtensionesFichero.AVI.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.AVI);
-		} else if (ExtensionesFichero.CSV.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.CSV);
-		} else if (ExtensionesFichero.HTML.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.HTML);
-		} else if (ExtensionesFichero.HTM.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.HTM);
-		} else if (ExtensionesFichero.CSS.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.CSS);
-		} else if (ExtensionesFichero.JPG.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.JPG);
-		} else if (ExtensionesFichero.JPEG.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.JPEG);
-		} else if (ExtensionesFichero.MHTML.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.MHTML);
-		} else if (ExtensionesFichero.MHT.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.MHT);
-		} else if (ExtensionesFichero.ODT.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.ODT);
-		} else if (ExtensionesFichero.ODS.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.ODS);
-		} else if (ExtensionesFichero.ODP.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.ODP);
-		} else if (ExtensionesFichero.ODG.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.ODG);
-		} else if (ExtensionesFichero.DOCX.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.DOCX);
-		} else if (ExtensionesFichero.XLSX.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.XLSX);
-		} else if (ExtensionesFichero.PPTX.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.PPTX);
-		} else if (ExtensionesFichero.PDF.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.PDF);
-		} else if (ExtensionesFichero.PNG.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.PNG);
-		} else if (ExtensionesFichero.RTF.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.RTF);
-		} else if (ExtensionesFichero.SVG.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.SVG);
-		} else if (ExtensionesFichero.TIFF.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.TIFF);
-		} else if (ExtensionesFichero.TXT.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.TXT);
-		} else if (ExtensionesFichero.MP3.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.MP3);
-		} else if (ExtensionesFichero.OGG.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.OGG);
-		} else if (ExtensionesFichero.OGA.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.OGA);
-		} else if (ExtensionesFichero.MPEG.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.MPEG);
-		} else if (ExtensionesFichero.MP4.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.MP4);
-		} else if (ExtensionesFichero.WEBM.equals(arxiuDocument.getEniFormatExtensio())) {
-			document.setEniFormatExtensio(ArxiuFormatExtensio.WEBM);
-		}
-		document.setEniOrgans(arxiuDocument.getEniOrgans());
-		document.setEniFirmaTipus(arxiuDocument.getEniFirmaTipus());
-		document.setEniFirmaCsv(arxiuDocument.getEniFirmaCsv());
-		document.setEniFirmaCsvDefinicio(arxiuDocument.getEniFirmaCsvDefinicio());
-		document.setSerieDocumental(arxiuDocument.getSerieDocumental());
-		document.setAplicacioCreacio(arxiuDocument.getAplicacioCreacio());
-		document.setSuport(arxiuDocument.getSuport());
-		document.setJson(arxiuDocument.getJson());
-		if (arxiuDocument.getContinguts() != null) {
-			for (Content content: arxiuDocument.getContinguts()) {
-				if (TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
-					ArxiuDocumentContingut contingut = new ArxiuDocumentContingut();
-					if (content.getMimetype() != null) {
-						contingut.setContentType(content.getMimetype());
-					}
-					contingut.setContingut(Base64.decode(content.getContent()));
-					document.setContingut(contingut);
-					break;
-				}
-			}
-		}
+		document.setEniEstatElaboracio(
+				ArxiuEstatElaboracio.valorAsEnum(
+						getMetadataValueAsString(
+								metadades,
+								MetadatosDocumento.ESTADO_ELABORACION)));
+		document.setEniTipusDocumental(
+				ArxiuTipusDocumental.valorAsEnum(
+						getMetadataValueAsString(
+								metadades,
+								MetadatosDocumento.TIPO_DOC_ENI)));
+		document.setEniFormatNom(
+				ArxiuFormatNom.valorAsEnum(
+						getMetadataValueAsString(
+								metadades,
+								MetadatosDocumento.NOMBRE_FORMATO)));
+		document.setEniFormatExtensio(
+				ArxiuFormatExtensio.valorAsEnum(
+						getMetadataValueAsString(
+								metadades,
+								MetadatosDocumento.EXTENSION_FORMATO)));
+		document.setEniOrgans(
+				getMetadataValueAsListString(
+						metadades,
+						MetadatosDocumento.ORGANO));
+		document.setEniFirmaTipus(
+				getMetadataValueAsListString(
+						metadades,
+						"eni:tipoFirma"));
+		document.setEniFirmaCsv(
+				getMetadataValueAsListString(
+						metadades,
+						"eni:csv"));
+		document.setEniFirmaCsvDefinicio(
+				getMetadataValueAsListString(
+						metadades,
+						"eni:def_csv"));
+		document.setDescripcio(
+				getMetadataValueAsString(
+						metadades,
+						MetadatosExpediente.DESCRIPCION));
+		document.setSerieDocumental(
+				getMetadataValueAsString(
+						metadades,
+						MetadatosExpediente.CODIGO_CLASIFICACION));
+		document.setAplicacio(
+				getMetadataValueAsString(
+						metadades,
+						MetadatosExpediente.CODIGO_APLICACION_TRAMITE));
 		return document;
 	}
 
 	private ArxiuCarpeta toArxiuCarpeta(
 			es.caib.ripea.plugin.caib.arxiu.client.ArxiuFolder arxiuFolder) {
-		ArxiuCarpeta carpeta = new ArxiuCarpeta();
-		carpeta.setNodeId(arxiuFolder.getNodeId());
-		carpeta.setNom(arxiuFolder.getName());
-		carpeta.setJson(arxiuFolder.getJson());
+		ArxiuCarpeta carpeta = new ArxiuCarpeta(
+				arxiuFolder.getNodeId(),
+				arxiuFolder.getTitol(),
+				toFillsPerRetornar(arxiuFolder.getFills()),
+				arxiuFolder.getJson());
 		return carpeta;
 	}
 
@@ -703,7 +823,7 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 			return null;
 		}
 		switch (estat) {
-		case INDEX_REMISSIO_TANCAT:
+		case INDEX_REMISSIO:
 			return EstadosExpediente.INDICE_REMISION;
 		case OBERT:
 			return EstadosExpediente.ABIERTO;
@@ -906,6 +1026,140 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 		}
 	}
 
+	private Map<String, Object> toMetadadesPerRetornar(List<Metadata> ms) {
+		Map<String, Object> metadades = null;
+		if (ms != null) {
+			metadades = new HashMap<String, Object>();
+			for (Metadata m: ms) {
+				metadades.put(
+						m.getQname(),
+						m.getValue());
+			}
+		}
+		return metadades;
+	}
+	private List<String> toAspectesPerRetornar(List<Aspectos> as) {
+		List<String> aspectes = null;
+		if (as != null) {
+			aspectes = new ArrayList<String>();
+			for (Aspectos a: as) {
+				aspectes.add(a.getValue());
+			}
+		}
+		return aspectes;
+	}
+	private List<ArxiuFill> toFillsPerRetornar(List<SummaryInfoNode> ns) {
+		List<ArxiuFill> fills = null;
+		if (ns != null) {
+			fills = new ArrayList<ArxiuFill>();
+			for (SummaryInfoNode n: ns) {
+				ArxiuFillTipusEnum tipus = null;
+				if (n.getType() != null) {
+					switch (n.getType()) {
+					case EXPEDIENTE:
+						tipus = ArxiuFillTipusEnum.EXPEDIENT;
+						break;
+					case DOCUMENTO:
+						tipus = ArxiuFillTipusEnum.DOCUMENT;
+						break;
+					case DIRECTORIO:
+						tipus = ArxiuFillTipusEnum.CARPETA;
+						break;
+					case DOCUMENTO_MIGRADO:
+						tipus = ArxiuFillTipusEnum.DOCUMENT_MIGRAT;
+						break;
+					}
+				}
+				fills.add(
+						new ArxiuFill(
+								n.getId(),
+								tipus,
+								n.getName()));
+			}
+		}
+		return fills;
+	}
+	private List<ArxiuDocumentContingut> toContingutsPerRetornar(List<Content> cs) {
+		List<ArxiuDocumentContingut> continguts = null;
+		if (cs != null) {
+			continguts = new ArrayList<ArxiuDocumentContingut>();
+			for (Content c: cs) {
+				ArxiuContingutTipusEnum tipus = null;
+				if (c.getBinaryType() != null) {
+					switch (c.getBinaryType()) {
+					case CONTENT:
+						tipus = ArxiuContingutTipusEnum.CONTINGUT;
+						break;
+					case SIGNATURE:
+						tipus = ArxiuContingutTipusEnum.FIRMA;
+						break;
+					case VALCERT_SIGNATURE:
+						tipus = ArxiuContingutTipusEnum.FIRMA_VALCERT;
+						break;
+					case MIGRATION_SIGNATURE:
+						tipus = ArxiuContingutTipusEnum.MIGRACIO_FIRMA;
+						break;
+					case MIGRATION_ZIP:
+						tipus = ArxiuContingutTipusEnum.MIGRACIO_ZIP;
+						break;
+					}
+				}
+				continguts.add(
+						new ArxiuDocumentContingut(
+								tipus,
+								c.getMimetype(),
+								Base64.decode(c.getContent())));
+			}
+		}
+		return continguts;
+	}
+
+	private String getMetadataValueAsString(
+			Map<String, Object> metadades,
+			String qname) {
+		if (metadades == null) {
+			return null;
+		}
+		if (metadades.get(qname) == null) {
+			return null;
+		}
+		return metadades.get(qname).toString();
+	}
+	private Date getMetadataValueAsDate(
+			Map<String, Object> metadades,
+			String qname) throws ParseException {
+		if (metadades == null) {
+			return null;
+		}
+		if (metadades.get(qname) == null) {
+			return null;
+		}
+		return parseDateIso8601(metadades.get(qname).toString());
+	}
+	@SuppressWarnings("unchecked")
+	private List<String> getMetadataValueAsListString(
+			Map<String, Object> metadades,
+			String qname) {
+		if (metadades == null) {
+			return null;
+		}
+		if (metadades.get(qname) == null) {
+			return null;
+		}
+		if (metadades.get(qname) instanceof List) {
+			return (List<String>)metadades.get(qname);
+		} else {
+			List<String> resultat = new ArrayList<String>();
+			resultat.add(metadades.get(qname).toString());
+			return resultat;
+		}
+	}
+
+	private Date parseDateIso8601(String date) throws ParseException {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+		return df.parse(date);
+	}
+
 	private ArxiuClient getArxiuClient() {
 		if (arxiuClient == null) {
 			arxiuClient = new ArxiuClientImpl(
@@ -944,5 +1198,7 @@ public class ArxiuPluginImpl implements ArxiuPlugin {
 	private String getContrasenya() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.caib.contrasenya");
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(ArxiuPluginCaib.class);
 
 }

@@ -256,9 +256,10 @@ public class DocumentEntity extends NodeEntity {
 		this.fitxerContingut = fitxerContingut;
 	}
 	public void updateVersio(
-			String versioDarrera) {
+			String versioDarrera,
+			int versioCount) {
 		this.versioDarrera = versioDarrera;
-		this.versioCount++;
+		this.versioCount = versioCount;
 	}
 
 	public static Builder getBuilder(

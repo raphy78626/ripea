@@ -25,13 +25,17 @@ public class PropertiesHelper extends Properties {
 	private boolean llegirSystem = true;
 
 
-
 	public static PropertiesHelper getProperties() {
+		return getProperties(null);
+	}
+	public static PropertiesHelper getProperties(String path) {
+		String propertiesPath = path;
+		if (propertiesPath == null) {
+			propertiesPath = System.getProperty(APPSERV_PROPS_PATH);
+		}
 		if (instance == null) {
 			instance = new PropertiesHelper();
-			String propertiesPath = System.getProperty(APPSERV_PROPS_PATH);
 			if (propertiesPath != null) {
-				instance.llegirSystem = false;
 				logger.info("Llegint les propietats de l'aplicació del path: " + propertiesPath);
 				try {
 					if (propertiesPath.startsWith("classpath:")) {
@@ -46,6 +50,7 @@ public class PropertiesHelper extends Properties {
 						FileInputStream fis = new FileInputStream(propertiesPath);
 						instance.load(fis);
 					}
+					instance.llegirSystem = false;
 				} catch (Exception ex) {
 					logger.error("No s'han pogut llegir els properties", ex);
 				}

@@ -72,7 +72,7 @@ public abstract class ContingutEntity extends RipeaAuditable<Long> {
 	@Column(name = "arxiu_uuid", length = 36)
 	protected String arxiuUuid;
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "arxiu_data_act", nullable = false)
+	@Column(name = "arxiu_data_act")
 	protected Date arxiuDataActualitzacio;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "entitat_id")

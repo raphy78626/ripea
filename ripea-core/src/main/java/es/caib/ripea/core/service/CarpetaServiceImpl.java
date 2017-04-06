@@ -191,62 +191,6 @@ public class CarpetaServiceImpl implements CarpetaService {
 		return dto;
 	}
 
-	@Transactional
-	@Override
-	public CarpetaDto delete(
-			Long entitatId,
-			Long id) {
-		logger.debug("Esborrant la carpeta ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		CarpetaEntity carpeta = entityComprovarHelper.comprovarCarpeta(
-				entitat,
-				id);
-		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
-		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
-				entitat,
-				carpeta);
-		// Comprova l'accés al path de la carpeta
-		contingutHelper.comprovarPermisosPathContingut(
-				carpeta,
-				true,
-				false,
-				false,
-				true);
-		// Comprova el permís de modificació de l'expedient superior
-		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
-				carpeta,
-				false,
-				false,
-				false);
-		if (expedientSuperior != null) {
-			contingutHelper.comprovarPermisosContingut(
-					expedientSuperior,
-					false,
-					true,
-					false);
-		}
-		carpetaRepository.delete(carpeta);
-		// Registra al log l'eliminació de la carpeta
-		contingutLogHelper.log(
-				carpeta,
-				LogTipusEnumDto.ELIMINACIO,
-				null,
-				null,
-				true,
-				true);
-		CarpetaDto dto = toCarpetaDto(carpeta);
-		contingutHelper.arxiuPropagarEliminacio(
-				carpeta,
-				expedientSuperior);
-		return dto;
-	}
-
 	@Transactional(readOnly = true)
 	@Override
 	public CarpetaDto findById(

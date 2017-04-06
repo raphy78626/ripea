@@ -70,7 +70,7 @@ public interface MetaExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public MetaExpedientDto updateActiu(
 			Long entitatId,
 			Long id,

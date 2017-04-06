@@ -3,9 +3,9 @@
  */
 package es.caib.ripea.core.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -33,14 +33,12 @@ public class ArxiuEntity extends ContingutEntity {
 	protected String unitatCodi;
 	@Column(name = "actiu")
 	protected boolean actiu;
-	@ManyToMany(
-			cascade = CascadeType.ALL,
-			fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "ipa_metaexpedient_arxiu",
 			joinColumns = {@JoinColumn(name = "arxiu_id")},
 			inverseJoinColumns = {@JoinColumn(name = "metaexpedient_id")})
-	protected List<MetaExpedientEntity> metaExpedients;
+	protected List<MetaExpedientEntity> metaExpedients = new ArrayList<MetaExpedientEntity>();
 		
 	public String getUnitatCodi() {
 		return unitatCodi;

@@ -20,17 +20,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
+import es.caib.ripea.core.api.dto.ArxiuPluginNodeFillDto;
+import es.caib.ripea.core.api.dto.ArxiuPluginNodeFillTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
+import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
+import es.caib.ripea.core.api.exception.ConteDocumentsDefinitiusException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ContingutService;
@@ -53,6 +62,7 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.DocumentHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.HibernateHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PluginHelper;
@@ -67,6 +77,7 @@ import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
 import es.caib.ripea.plugin.arxiu.ArxiuExpedient;
+import es.caib.ripea.plugin.arxiu.ArxiuFill;
 
 /**
  * Implementació dels mètodes per a gestionar continguts.
@@ -118,7 +129,7 @@ public class ContingutServiceImpl implements ContingutService {
 			Long entitatId,
 			Long contingutId,
 			String nom) {
-		logger.debug("Renombrant contingut ("
+		logger.debug("Canviant el nom del contingut ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ", "
 				+ "nom=" + nom + ")");
@@ -247,6 +258,7 @@ public class ContingutServiceImpl implements ContingutService {
 
 	@Transactional
 	@Override
+	@CacheEvict(value = "errorsValidacioNode", key = "#contingutId")
 	public ContingutDto deleteReversible(
 			Long entitatId,
 			Long contingutId) {
@@ -309,28 +321,18 @@ public class ContingutServiceImpl implements ContingutService {
 					ContingutEntity.class,
 					"Aquest contingut ja està esborrat");
 		}
-		// Marca el contingut com a esborrat
-		List<ContingutEntity> continguts = contingutRepository.findByPareAndNomOrderByEsborratAsc(
-				contingut.getPare(),
-				contingut.getNom());
-		int index = 1;
-		for (ContingutEntity c: continguts) {
-			if (c.getEsborrat() > 0) {
-				if (index < c.getEsborrat()) {
-					break;
-				}
-				index++;
-			}
+		// Valida si conté documents definitius
+		if (conteDocumentsDefinitius(contingut)) {
+			throw new ConteDocumentsDefinitiusException(
+					contingutId,
+					ContingutEntity.class);
 		}
-		contingut.updateEsborrat(continguts.size() + 1);
-		// Registra al log l'eliminació del contingut
-		contingutLogHelper.log(
+		// Marca el contingut com a esborrat
+		marcarEsborrat(contingut);
+		// Propaga l'acció a l'arxiu
+		contingutHelper.arxiuPropagarEliminacio(
 				contingut,
-				LogTipusEnumDto.ELIMINACIO,
-				null,
-				null,
-				true,
-				true);
+				expedientSuperior);
 		return dto;
 	}
 
@@ -352,14 +354,6 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
-		// Comprova que el contingut estigui esborrat
-		if (contingut.getEsborrat() == 0) {
-			logger.error("Aquest contingut no està esborrat (contingutId=" + contingutId + ")");
-			throw new ValidationException(
-					contingutId,
-					ContingutEntity.class,
-					"Aquest contingut no està esborrat");
-		}
 		// Esborra definitivament el contingut
 		ContingutDto dto = contingutHelper.toContingutDto(
 				contingut,
@@ -373,15 +367,24 @@ public class ContingutServiceImpl implements ContingutService {
 		if (contingut.getPare() != null) {
 			contingut.getPare().getFills().remove(contingut);
 		}
-		//TODO: es comenta perquè no es pot afegir contingut amb FK sobre quelcom que ja no existeix
-//		// Registra al log l'eliminació definitiva del contingut
-//		contingutLogHelper.log(
-//				contingut,
-//				LogTipusEnumDto.ELIMINACIODEF,
-//				null,
-//				null,
-//				true,
-//				true);
+		// Propaga l'acció a l'arxiu
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+				contingut,
+				false,
+				false,
+				false);
+		contingutRepository.delete(contingut);
+		contingutHelper.arxiuPropagarEliminacio(
+				contingut,
+				expedientSuperior);
+		// Registra al log l'eliminació definitiva del contingut
+		contingutLogHelper.log(
+				contingut,
+				LogTipusEnumDto.ELIMINACIODEF,
+				null,
+				null,
+				true,
+				true);
 		return dto;
 	}
 
@@ -466,14 +469,11 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutOrigenId,
 				null);
-		if (contingutOrigen instanceof ExpedientEntity) {
-			logger.error("Els expedients no es poden moure ("
-					+ "entitatId=" + entitatId + ", "
-					+ "expedientId=" + contingutOrigenId + ")");
+		if (!(contingutOrigen instanceof DocumentEntity) && !(contingutOrigen instanceof CarpetaEntity)) {
 			throw new ValidationException(
 					contingutOrigenId,
-					ExpedientEntity.class,
-					"Els expedients no es poden moure");
+					contingutOrigen.getClass(),
+					"Només es poden moure documents i carpetes");
 		}
 		// Comprova que el contingutOrigen arrel és l'escriptori de l'usuari actual
 		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
@@ -486,19 +486,19 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false,
 				true);
+		// Comprova que el contingutDesti arrel és l'escriptori de l'usuari actual
 		ContingutEntity contingutDesti = entityComprovarHelper.comprovarContingut(
 				entitat,
 				contingutDestiId,
 				null);
-		// Comprova que el contingutDesti arrel és l'escriptori de l'usuari actual
 		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				contingutDesti);
 		// Comprova l'accés al path del contingutDesti
 		contingutHelper.comprovarPermisosPathContingut(
 				contingutDesti,
-				true,
 				false,
+				true,
 				false,
 				true);
 		// Comprova que el nom no sigui duplicat
@@ -513,18 +513,20 @@ public class ContingutServiceImpl implements ContingutService {
 					"Ja existeix un altre contingut amb el mateix nom dins el contingut destí ("
 							+ "contingutDestiId=" + contingutDestiId + ")");
 		}
+		// Comprova que la sèrie documental sigui la mateixa
+		// TODO comprovació sèrie documental
+		// Realitza el moviment del contingut
 		ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 				contingutOrigen,
 				contingutDesti,
 				null);
-		// Registra al log el moviment del node
 		contingutLogHelper.log(
 				contingutOrigen,
 				LogTipusEnumDto.MOVIMENT,
 				contingutMoviment,
 				true,
 				true);
-		return contingutHelper.toContingutDto(
+		ContingutDto dto = contingutHelper.toContingutDto(
 				contingutOrigen,
 				true,
 				false,
@@ -533,6 +535,10 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false,
 				false);
+		contingutHelper.arxiuPropagarMoviment(
+				contingutOrigen,
+				contingutDesti);
+		return dto;
 	}
 
 	@Transactional
@@ -556,14 +562,11 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutOrigenId,
 				null);
-		if (contingutOrigen instanceof ExpedientEntity) {
-			logger.error("Els expedients no es poden copiar ("
-					+ "entitatId=" + entitatId + ", "
-					+ "expedientId=" + contingutOrigenId + ")");
+		if (!(contingutOrigen instanceof DocumentEntity) && !(contingutOrigen instanceof CarpetaEntity)) {
 			throw new ValidationException(
 					contingutOrigenId,
-					ExpedientEntity.class,
-					"Els expedients no es poden copiar");
+					contingutOrigen.getClass(),
+					"Només es poden copiar documents i carpetes");
 		}
 		// Comprova que el contingutOrigen arrel és l'escriptori de l'usuari actual
 		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
@@ -587,30 +590,10 @@ public class ContingutServiceImpl implements ContingutService {
 		// Comprova l'accés al path del contingutDesti
 		contingutHelper.comprovarPermisosPathContingut(
 				contingutDesti,
-				true,
 				false,
+				true,
 				false,
 				true);
-		// Comprova si pertanyen al mateix expedient o si no pertanyen a cap
-		ExpedientEntity expedientSuperiorOrigen = contingutHelper.getExpedientSuperior(
-				contingutOrigen,
-				true,
-				false,
-				false);
-		ExpedientEntity expedientSuperiorDesti = contingutHelper.getExpedientSuperior(
-				contingutDesti,
-				true,
-				false,
-				false);
-		if (	(expedientSuperiorOrigen != null && expedientSuperiorDesti == null) ||
-				(expedientSuperiorOrigen == null && expedientSuperiorDesti != null)) {
-			logger.error("Els continguts origen i destí no pertanyen al mateix expedient ("
-					+ "contingutOrigenId=" + contingutOrigenId + ", "
-					+ "contingutDestiId=" + contingutDestiId + ")");
-			throw new SecurityException("Els continguts origen i destí no pertanyen al mateix expedient ("
-					+ "contingutOrigenId=" + contingutOrigenId + ", "
-					+ "contingutDestiId=" + contingutDestiId + ")");
-		}
 		// Comprova que el nom no sigui duplicat
 		boolean nomDuplicat = contingutRepository.findByPareAndNomAndEsborrat(
 				contingutDesti,
@@ -623,13 +606,14 @@ public class ContingutServiceImpl implements ContingutService {
 					"Ja existeix un altre contingut amb el mateix nom dins el contingut destí ("
 							+ "contingutDestiId=" + contingutDestiId + ")");
 		}
-		// Fa la còpia del contingut
+		// Comprova que la sèrie documental sigui la mateixa
+		// TODO comprovació sèrie documental
+		// Realitza la còpia del contingut
 		ContingutEntity contingutCopia = copiarContingut(
 				entitat,
 				contingutOrigen,
 				contingutDesti,
 				recursiu);
-		// Registra al log la còpia del node
 		contingutLogHelper.log(
 				contingutCopia,
 				LogTipusEnumDto.COPIA,
@@ -637,7 +621,7 @@ public class ContingutServiceImpl implements ContingutService {
 				null,
 				true,
 				true);
-		return contingutHelper.toContingutDto(
+		ContingutDto dto = contingutHelper.toContingutDto(
 				contingutOrigen,
 				true,
 				false,
@@ -646,6 +630,10 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false,
 				false);
+		contingutHelper.arxiuPropagarCopia(
+				contingutOrigen,
+				contingutDesti);
+		return dto;
 	}
 
 	@Transactional
@@ -716,7 +704,7 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				true,
 				false,
-				true);
+				false);
 	}
 
 	@Transactional(readOnly = true)
@@ -1212,24 +1200,49 @@ public class ContingutServiceImpl implements ContingutService {
 				contingutId,
 				null);
 		if (contingut instanceof ExpedientEntity) {
-			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
 			ArxiuExpedient arxiuExpedient = pluginHelper.arxiuExpedientConsultar(
 					(ExpedientEntity)contingut);
+			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
 			arxiuInfo.setNodeId(arxiuExpedient.getNodeId());
 			arxiuInfo.setNom(arxiuExpedient.getTitol());
 			arxiuInfo.setDescripcio(arxiuExpedient.getDescripcio());
+			arxiuInfo.setSerieDocumental(arxiuExpedient.getSerieDocumental());
+			arxiuInfo.setAplicacio(arxiuExpedient.getAplicacio());
 			arxiuInfo.setEniVersio(arxiuExpedient.getEniVersio());
 			arxiuInfo.setEniIdentificador(arxiuExpedient.getEniIdentificador());
-			if (arxiuExpedient.getEniOrigen() != null)
-				arxiuInfo.setEniOrigen(arxiuExpedient.getEniOrigen().getValor());
-			arxiuInfo.setEniDataInicial(arxiuExpedient.getEniDataObertura());
-			if (arxiuExpedient.getEniEstat() != null)
-				arxiuInfo.setEniEstat(arxiuExpedient.getEniEstat().getValor());
-			arxiuInfo.setEniOrgans(arxiuExpedient.getEniOrgans());
+			if (arxiuExpedient.getEniOrigen() != null) {
+				switch (arxiuExpedient.getEniOrigen()) {
+				case CIUTADA:
+					arxiuInfo.setEniOrigen(DocumentNtiOrigenEnumDto.O0);
+					break;
+				case ADMINISTRACIO:
+					arxiuInfo.setEniOrigen(DocumentNtiOrigenEnumDto.O1);
+					break;
+				}
+			}
+			arxiuInfo.setEniDataObertura(arxiuExpedient.getEniDataObertura());
+			arxiuInfo.setEniClassificacio(arxiuExpedient.getEniClassificacio());
+			if (arxiuExpedient.getEniEstat() != null) {
+				switch (arxiuExpedient.getEniEstat()) {
+				case OBERT:
+					arxiuInfo.setEniEstat(ExpedientEstatEnumDto.OBERT);
+					break;
+				case TANCAT:
+					arxiuInfo.setEniEstat(ExpedientEstatEnumDto.TANCAT);
+					break;
+				case INDEX_REMISSIO:
+					arxiuInfo.setEniEstat(ExpedientEstatEnumDto.INDEX_REMISSIO);
+					break;
+				}
+			}
 			arxiuInfo.setEniInteressats(arxiuExpedient.getEniInteressats());
-			arxiuInfo.setSerieDocumental(arxiuExpedient.getSerieDocumental());
-			arxiuInfo.setAplicacioCreacio(arxiuExpedient.getAplicacioCreacio());
-			arxiuInfo.setSuport(arxiuExpedient.getSuport());
+			arxiuInfo.setEniFirmaTipus(arxiuExpedient.getEniFirmaTipus());
+			arxiuInfo.setEniFirmaCsv(arxiuExpedient.getEniFirmaCsv());
+			arxiuInfo.setEniFirmaCsvDefinicio(arxiuExpedient.getEniFirmaCsvDefinicio());
+			arxiuInfo.setEniOrgans(arxiuExpedient.getEniOrgans());
+			arxiuInfo.setMetadades(arxiuExpedient.getMetadades());
+			arxiuInfo.setAspectes(arxiuExpedient.getAspectes());
+			arxiuInfo.setFills(arxiuConvertirFills(arxiuExpedient.getFills()));
 			arxiuInfo.setJson(arxiuExpedient.getJson());
 			return arxiuInfo;
 		} else if (contingut instanceof DocumentEntity) {
@@ -1242,24 +1255,120 @@ public class ContingutServiceImpl implements ContingutService {
 			arxiuInfo.setNodeId(arxiuDocument.getNodeId());
 			arxiuInfo.setNom(arxiuDocument.getTitol());
 			arxiuInfo.setDescripcio(arxiuDocument.getDescripcio());
+			arxiuInfo.setSerieDocumental(arxiuDocument.getSerieDocumental());
+			arxiuInfo.setAplicacio(arxiuDocument.getAplicacio());
+			arxiuInfo.setDocumentVersioId(arxiuDocument.getVersioId());
+			arxiuInfo.setDocumentVersioNodeId(arxiuDocument.getVersioNodeId());
 			arxiuInfo.setEniVersio(arxiuDocument.getEniVersio());
 			arxiuInfo.setEniIdentificador(arxiuDocument.getEniIdentificador());
-			if (arxiuDocument.getEniOrigen() != null)
-				arxiuInfo.setEniOrigen(arxiuDocument.getEniOrigen().getValor());
-			arxiuInfo.setEniDataInicial(arxiuDocument.getEniDataCaptura());
-			if (arxiuDocument.getEniEstatElaboracio() != null)
-				arxiuInfo.setEniEstatElaboracio(arxiuDocument.getEniEstatElaboracio().getValor());
-			if (arxiuDocument.getEniTipusDocumental() != null)
-				arxiuInfo.setEniTipusDocumental(arxiuDocument.getEniTipusDocumental().getValor());
+			if (arxiuDocument.getEniOrigen() != null) {
+				switch (arxiuDocument.getEniOrigen()) {
+				case CIUTADA:
+					arxiuInfo.setEniOrigen(DocumentNtiOrigenEnumDto.O0);
+					break;
+				case ADMINISTRACIO:
+					arxiuInfo.setEniOrigen(DocumentNtiOrigenEnumDto.O1);
+					break;
+				}
+			}
+			arxiuInfo.setEniDataCaptura(arxiuDocument.getEniDataCaptura());
+			if (arxiuDocument.getEniEstatElaboracio() != null) {
+				switch (arxiuDocument.getEniEstatElaboracio()) {
+				case ORIGINAL:
+					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE01);
+					break;
+				case COPIA_AUTENTICA_FORMAT:
+					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE02);
+					break;
+				case COPIA_AUTENTICA_PAPER:
+					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE03);
+					break;
+				case COPIA_AUTENTICA_PARCIAL:
+					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE04);
+					break;
+				case ALTRES:
+					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE99);
+					break;
+				}
+			}
+			if (arxiuDocument.getEniTipusDocumental() != null) {
+				switch (arxiuDocument.getEniTipusDocumental()) {
+				case RESOLUCIO:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD01);
+					break;
+				case ACORD:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD02);
+					break;
+				case CONTRACTE:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD03);
+					break;
+				case CONVENI:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD04);
+					break;
+				case DECLARACIO:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD05);
+					break;
+				case COMUNICACIO:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD06);
+					break;
+				case NOTIFICACIO:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD07);
+					break;
+				case PUBLICACIO:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD08);
+					break;
+				case JUSTIFICANT_RECEPCIO:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD09);
+					break;
+				case ACTA:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD10);
+					break;
+				case CERTIFICAT:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD11);
+					break;
+				case DILIGENCIA:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD12);
+					break;
+				case INFORME:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD13);
+					break;
+				case SOLICITUD:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD14);
+					break;
+				case DENUNCIA:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD15);
+					break;
+				case ALEGACIO:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD16);
+					break;
+				case RECURSOS:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD17);
+					break;
+				case COMUNICACIO_CIUTADA:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD18);
+					break;
+				case FACTURA:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD19);
+					break;
+				case ALTRES_INCAUTATS:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD20);
+					break;
+				case ALTRES:
+					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD99);
+					break;
+				}
+			}
 			if (arxiuDocument.getEniFormatNom() != null)
 				arxiuInfo.setEniFormatNom(arxiuDocument.getEniFormatNom().getValor());
 			if (arxiuDocument.getEniFormatExtensio() != null)
 				arxiuInfo.setEniFormatExtensio(arxiuDocument.getEniFormatExtensio().getValor());
 			arxiuInfo.setEniOrgans(arxiuDocument.getEniOrgans());
 			arxiuInfo.setEniDocumentOrigenId(arxiuDocument.getEniDocumentOrigenId());
-			arxiuInfo.setSerieDocumental(arxiuDocument.getSerieDocumental());
-			arxiuInfo.setAplicacioCreacio(arxiuDocument.getAplicacioCreacio());
-			arxiuInfo.setSuport(arxiuDocument.getSuport());
+			arxiuInfo.setEniFirmaTipus(arxiuDocument.getEniFirmaTipus());
+			arxiuInfo.setEniFirmaCsv(arxiuDocument.getEniFirmaCsv());
+			arxiuInfo.setEniFirmaCsvDefinicio(arxiuDocument.getEniFirmaCsvDefinicio());
+			arxiuInfo.setMetadades(arxiuDocument.getMetadades());
+			arxiuInfo.setAspectes(arxiuDocument.getAspectes());
 			arxiuInfo.setJson(arxiuDocument.getJson());
 			return arxiuInfo;
 		} else if (contingut instanceof CarpetaEntity) {
@@ -1268,6 +1377,12 @@ public class ContingutServiceImpl implements ContingutService {
 					(CarpetaEntity)contingut);
 			arxiuInfo.setNodeId(arxiuCarpeta.getNodeId());
 			arxiuInfo.setNom(arxiuCarpeta.getNom());
+			arxiuInfo.setDescripcio(arxiuCarpeta.getDescripcio());
+			arxiuInfo.setSerieDocumental(arxiuCarpeta.getSerieDocumental());
+			arxiuInfo.setAplicacio(arxiuCarpeta.getAplicacio());
+			arxiuInfo.setMetadades(arxiuCarpeta.getMetadades());
+			arxiuInfo.setAspectes(arxiuCarpeta.getAspectes());
+			arxiuInfo.setFills(arxiuConvertirFills(arxiuCarpeta.getFills()));
 			arxiuInfo.setJson(arxiuCarpeta.getJson());
 			return arxiuInfo;
 		} else {
@@ -1278,6 +1393,50 @@ public class ContingutServiceImpl implements ContingutService {
 		}
 	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public FitxerDto exportacioEni(
+			Long entitatId,
+			Long contingutId) {
+		logger.debug("Exportant document a format ENI (" +
+				"entitatId=" + entitatId + ", " +
+				"contingutId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		// Comprova l'accés al path del document
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
+				true,
+				false,
+				false,
+				true);
+		String exportacio;
+		if (contingut instanceof ExpedientEntity) {
+			exportacio = pluginHelper.arxiuExpedientExportar(
+					(ExpedientEntity)contingut);
+		} else if (contingut instanceof DocumentEntity) {
+			exportacio = pluginHelper.arxiuDocumentExportar(
+					(DocumentEntity)contingut);
+		} else {
+			throw new ValidationException(
+					contingutId,
+					ContingutEntity.class,
+					"El contingut a exportar ha de ser un expedient o un document");
+		}
+		FitxerDto fitxer = new FitxerDto();
+		fitxer.setNom("exportacio_ENI.xml");
+		fitxer.setContentType("application/xml");
+		fitxer.setContingut(exportacio.getBytes());
+		return fitxer;
+	}
+
 
 
 	private ContingutEntity copiarContingut(
@@ -1285,9 +1444,6 @@ public class ContingutServiceImpl implements ContingutService {
 			ContingutEntity contingutOrigen,
 			ContingutEntity contingutDesti,
 			boolean recursiu) {
-		// TODO Refer copiar contingut per a replicar els cavis a l'arxiu de forma
-		// correcta tentint en compte la transaccionalitat (posar les operacions amb
-		// l'arxiu al final de tot)
 		ContingutEntity creat = null;
 		if (contingutOrigen instanceof CarpetaEntity) {
 			CarpetaEntity carpetaOrigen = (CarpetaEntity)contingutOrigen;
@@ -1312,18 +1468,6 @@ public class ContingutServiceImpl implements ContingutService {
 					contingutDesti,
 					entitat,
 					documentOrigen.getUbicacio());
-		} else if (contingutOrigen instanceof ExpedientEntity) {
-			ExpedientEntity expedientOrigen = (ExpedientEntity)contingutOrigen;
-			creat = contingutHelper.crearNouExpedient(
-					expedientOrigen.getNom(),
-					expedientOrigen.getMetaExpedient(),
-					expedientOrigen.getArxiu(),
-					contingutDesti,
-					entitat,
-					expedientOrigen.getNtiVersion(),
-					expedientOrigen.getNtiOrgano(),
-					new Date(),
-					null);
 		}
 		if (creat != null) {
 			if (creat instanceof NodeEntity) {
@@ -1339,7 +1483,15 @@ public class ContingutServiceImpl implements ContingutService {
 				}
 			}
 			if (recursiu) {
-				// TODO copiar contingut recursivament
+				for (ContingutEntity fill: contingutOrigen.getFills()) {
+					if (fill instanceof CarpetaEntity || fill instanceof DocumentEntity) {
+						copiarContingut(
+								entitat,
+								fill,
+								creat,
+								recursiu);
+					}
+				}
 			}
 		}
 		return creat;
@@ -1424,6 +1576,80 @@ public class ContingutServiceImpl implements ContingutService {
 						false);
 			}
 		}
+	}
+
+	private boolean conteDocumentsDefinitius(ContingutEntity contingut) {
+		boolean conteDefinitius = false;
+		ContingutEntity deproxied = HibernateHelper.deproxy(contingut);
+		if (deproxied instanceof ExpedientEntity || deproxied instanceof CarpetaEntity) {
+			for (ContingutEntity contingutFill: contingut.getFills()) {
+				conteDefinitius = conteDocumentsDefinitius(contingutFill);
+				if (conteDefinitius)
+					break;
+			}
+		} else if (deproxied instanceof DocumentEntity) {
+			DocumentEntity document = (DocumentEntity)deproxied;
+			conteDefinitius = !DocumentEstatEnumDto.REDACCIO.equals(document.getEstat());
+		}
+		return conteDefinitius;
+	}
+
+	private void marcarEsborrat(ContingutEntity contingut) {
+		for (ContingutEntity contingutFill: contingut.getFills()) {
+			marcarEsborrat(contingutFill);
+		}
+		List<ContingutEntity> continguts = contingutRepository.findByPareAndNomOrderByEsborratAsc(
+				contingut.getPare(),
+				contingut.getNom());
+		// Per evitar errors de restricció única violada hem de
+		// posar al camp esborrat un nombre != 0 i que sigui diferent
+		// dels altres fills esborrats amb el mateix nom.
+		int index = 1;
+		for (ContingutEntity c: continguts) {
+			if (c.getEsborrat() > 0) {
+				if (index < c.getEsborrat()) {
+					break;
+				}
+				index++;
+			}
+		}
+		contingut.updateEsborrat(continguts.size() + 1);
+		contingutLogHelper.log(
+				contingut,
+				LogTipusEnumDto.ELIMINACIO,
+				null,
+				null,
+				true,
+				true);
+	}
+
+	private List<ArxiuPluginNodeFillDto> arxiuConvertirFills(
+			List<ArxiuFill> arxiuFills) {
+		List<ArxiuPluginNodeFillDto> fills = null;
+		if (arxiuFills != null) {
+			fills = new ArrayList<ArxiuPluginNodeFillDto>();
+			for (ArxiuFill fill: arxiuFills) {
+				ArxiuPluginNodeFillDto arxiuFill = new ArxiuPluginNodeFillDto();
+				arxiuFill.setNodeId(fill.getNodeId());
+				arxiuFill.setNom(fill.getNom());
+				switch (fill.getTipus()) {
+				case EXPEDIENT:
+					arxiuFill.setTipus(ArxiuPluginNodeFillTipusEnumDto.EXPEDIENT);
+					break;
+				case DOCUMENT:
+					arxiuFill.setTipus(ArxiuPluginNodeFillTipusEnumDto.DOCUMENT);
+					break;
+				case CARPETA:
+					arxiuFill.setTipus(ArxiuPluginNodeFillTipusEnumDto.CARPETA);
+					break;
+				case DOCUMENT_MIGRAT:
+					arxiuFill.setTipus(ArxiuPluginNodeFillTipusEnumDto.DOCUMENT_MIGRAT);
+					break;
+				}
+				fills.add(arxiuFill);
+			}
+		}
+		return fills;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);

@@ -3,35 +3,36 @@
  */
 package es.caib.ripea.plugin.arxiu;
 
+import java.util.List;
+
 /**
  * Estructura que representa un document de l'arxiu.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuCarpeta {
+public class ArxiuCarpeta extends ArxiuContingut {
 
-	private String nodeId;
-	private String nom;
+	private List<ArxiuFill> fills;
 
-	private String json;
-
-	public String getNodeId() {
-		return nodeId;
+	public ArxiuCarpeta(
+			String nodeId,
+			String titol,
+			List<ArxiuFill> fills,
+			String json) {
+		super(
+				nodeId,
+				titol,
+				null,
+				null,
+				json);
+		this.fills = fills;
 	}
-	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
+
+	public List<ArxiuFill> getFills() {
+		return fills;
 	}
 	public String getNom() {
-		return nom;
-	}
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-	public String getJson() {
-		return json;
-	}
-	public void setJson(String json) {
-		this.json = json;
+		return titol;
 	}
 
 }

@@ -47,7 +47,7 @@ public class ContingutLogEntity extends RipeaAuditable<Long> {
 	private String param1;
 	@Column(name = "param2", length = 256)
 	private String param2;
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "contmov_id")
 	@ForeignKey(name = "ipa_contmov_contlog_fk")
 	protected ContingutMovimentEntity contingutMoviment;

@@ -51,6 +51,15 @@ public interface ArxiuClient {
 	public ArxiuFile fileGet(
 			String nodeId,
 			ArxiuHeader capsalera);
+	public void fileClose(
+			String nodeId,
+			ArxiuHeader capsalera);
+	public void fileReopen(
+			String nodeId,
+			ArxiuHeader capsalera);
+	public String fileExport(
+			String nodeId,
+			ArxiuHeader capsalera);
 	public void fileEasySearch();
 	public void fileLink();
 	public void fileLock();
@@ -61,9 +70,6 @@ public interface ArxiuClient {
 	public void fileIndexGenerate();
 	public void fileChildCreate();
 	public void fileChildMove();
-	public void fileClose();
-	public void fileReopen();
-	public void fileExport();
 
 	public ArxiuDocument documentDraftCreate(
 			String titol,
@@ -105,9 +111,6 @@ public interface ArxiuClient {
 	public List<ArxiuDocumentVersio> documentVersionList(
 			String nodeId,
 			ArxiuHeader capsalera);
-	public void documentEniGet(
-			String nodeId,
-			ArxiuHeader capsalera);
 	public String documentCsvGenerate(
 			String nodeId,
 			ArxiuHeader capsalera);
@@ -128,9 +131,18 @@ public interface ArxiuClient {
 			String csv,
 			String tipusMime,
 			ArxiuHeader capsalera);
+	public String documentEniGet(
+			String nodeId,
+			ArxiuHeader capsalera);
+	public void documentCopy(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera);
+	public void documentMove(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera);
 	public void documentSearch();
-	public void documentCopy();
-	public void documentMove();
 	public void documentLink();
 	public void documentLock();
 	public void documentUnlock();
@@ -153,8 +165,14 @@ public interface ArxiuClient {
 	public ArxiuFolder folderGet(
 			String nodeId,
 			ArxiuHeader capsalera);
-	
-	public void folderMove();
+	public void folderCopy(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera);
+	public void folderMove(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera);
 	public void folderLink();
 	public void folderLock();
 	public void folderUnlock();

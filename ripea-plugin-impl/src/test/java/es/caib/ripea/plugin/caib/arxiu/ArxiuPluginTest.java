@@ -58,7 +58,7 @@ public class ArxiuPluginTest {
 		System.setProperty(
 				"es.caib.ripea.plugin.arxiu.caib.contrasenya",
 				"app1");
-		plugin = new ArxiuPluginImpl();
+		plugin = new ArxiuPluginCaib();
 		capsaleraTest = new ArxiuCapsalera();
 		capsaleraTest.setInteressatNom("Limit Tecnologies");
 		capsaleraTest.setInteressatNif("123456789Z");

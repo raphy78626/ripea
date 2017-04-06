@@ -90,22 +90,6 @@ public interface ExpedientService {
 			String nom) throws NotFoundException, ValidationException;
 
 	/**
-	 * Esborra un expedient.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany l'expedient.
-	 * @param id
-	 *            Atribut id de l'expedient que es vol esborrar.
-	 * @return L'expedient a esborrar.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public ExpedientDto delete(
-			Long entitatId,
-			Long id) throws NotFoundException;
-
-	/**
 	 * Consulta un expedient donat el seu id.
 	 * 
 	 * @param entitatId
@@ -260,6 +244,21 @@ public interface ExpedientService {
 			String motiu) throws NotFoundException;
 
 	/**
+	 * Torna a l'estat obert un expedient tancat.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany l'expedient.
+	 * @param id
+	 *            Atribut id de l'expedient.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public void reobrir(
+			Long entitatId,
+			Long id) throws NotFoundException;
+
+	/**
 	 * Acumula les dades d'un expedient a dins un altre.
 	 * 
 	 * @param entitatId
@@ -347,6 +346,7 @@ public interface ExpedientService {
 	 *            Atribut id de l'expedient que es vol consultar.
 	 * @return La llista d'expedients relacionats.
 	 */
+	@PreAuthorize("hasRole('tothom')")
 	public List<ExpedientDto> relacioFindAmbExpedient(
 			Long entitatId, 
 			Long expedientId);
@@ -368,6 +368,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
+	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto exportacio(
 			Long entitatId,
 			Long metaExpedientId,

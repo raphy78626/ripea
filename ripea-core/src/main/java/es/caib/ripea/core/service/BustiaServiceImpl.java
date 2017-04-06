@@ -72,7 +72,9 @@ import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.ReglaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
+import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
+import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
 import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 
 /**
@@ -990,7 +992,7 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 		return pendent;
 	}
-	
+
 	private void processarAnnexos(RegistreEntity anotacio, BustiaEntity bustia) {
 		//recorrem els annexos per a guardar el document
 		try {
@@ -1016,8 +1018,10 @@ public class BustiaServiceImpl implements BustiaService {
 			throw new ValidationException("Error al guardar el document en els directoris del servidor");
 		}
 	}
-	
-	private void guardarDocumentAnnex (RegistreAnnexEntity annex, BustiaEntity bustia) throws IOException {
+
+	private void guardarDocumentAnnex(
+			RegistreAnnexEntity annex,
+			BustiaEntity bustia) throws IOException {
 		byte[] contingut = null;
 		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
 		if (annex.getFitxerContingutBase64() != null) {
@@ -1028,14 +1032,26 @@ public class BustiaServiceImpl implements BustiaService {
 					annex.getFitxerArxiuUuid(),
 					null,
 					true);
-			contingut = arxiuDocument.getContingut().getContingut();
+			if (arxiuDocument.getContinguts() != null) {
+				for (ArxiuDocumentContingut arxiuContingut: arxiuDocument.getContinguts()) {
+					if (ArxiuContingutTipusEnum.CONTINGUT.equals(arxiuContingut.getTipus())) {
+						contingut = arxiuContingut.getContingut();
+						break;
+					}
+				}
+			}
+			if (contingut == null) {
+				throw new ValidationException(
+						"No s'ha trobat cap contingut per l'annex (" +
+						"uuid=" + annex.getFitxerArxiuUuid() + ")");
+			}
 		}
-		
 		FileUtils.writeByteArrayToFile(new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime()), contingut);
-		
 	}
-	
-	private void guardarFirmaAnnex (RegistreAnnexEntity annex, BustiaEntity bustia) throws IOException {
+
+	private void guardarFirmaAnnex(
+			RegistreAnnexEntity annex,
+			BustiaEntity bustia) throws IOException {
 		byte[] contingut = null;
 		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
 		if (annex.getFirmaFitxerContingutBase64() != null) {
@@ -1043,14 +1059,13 @@ public class BustiaServiceImpl implements BustiaService {
 			FileUtils.writeByteArrayToFile(new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime()), contingut);
 		}
 	}
-	
-	private void eliminarContingutExistent (RegistreEntity anotacio) throws IOException {
+
+	private void eliminarContingutExistent(
+			RegistreEntity anotacio) throws IOException {
 		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
-		
 		for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 			File doc = new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime());
 			File fir = new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime());
-			
 			if (doc != null)
 				Files.deleteIfExists(doc.toPath());
 			if (fir != null)

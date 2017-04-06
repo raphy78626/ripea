@@ -94,7 +94,11 @@
 						if (plugin.settings.filtre) {
 							data = $.extend(
 									data,
-									$(plugin.settings.filtre).serializeObject());
+									JSON.stringify($(plugin.settings.filtre).serializeArray()));
+							var valors = $(plugin.settings.filtre).serializeArray();
+							for (i=0; i<valors.length; i++) {
+								data[valors[i].name] = valors[i].value;
+							}
 						}
 					}
 				},
@@ -129,6 +133,9 @@
 						$(row).attr(
 								'data-href',
 								$(plugin.settings.rowhrefTemplate).render(data));
+					}
+					if (data['DT_RowSelected']) {
+						$taula.dataTable().api().row(row).select();
 					}
 				},
 				preDrawCallback: function(settings_) {
@@ -284,7 +291,7 @@
 							data: '<null>',
 							orderable: false,
 							visible: true});
-					} if ((!plugin.settings.selectionEnabled && plugin.settings.dragEnabled && index == 0) || (plugin.settings.selectionEnabled && plugin.settings.dragEnabled && index == 1)) {
+					} else if ((!plugin.settings.selectionEnabled && plugin.settings.dragEnabled && index == 0) || (plugin.settings.selectionEnabled && plugin.settings.dragEnabled && index == 1)) {
 						columns.push({
 							data: '<null>',
 							orderable: false,
@@ -422,7 +429,7 @@
 						info: false
 					}
 				}, dataTableOptions);
-				var triggerSelectionChangeFunction = function () {
+				var triggerSelectionChangeFunction = function (accio, indexosAfectats) {
 					var api = $taula.dataTable().api();
 					var numRows = api.data().length;
 					var selectedRowsData = api.rows({
@@ -438,13 +445,17 @@
 					} else {
 						$cell.empty().append('<span class="fa fa-check-square-o"></span>');
 					}
-					var ids = [];
+					var afectatIds = [];
+					for (var d = 0; d < indexosAfectats.length; d++) {
+						afectatIds.push(api.row(indexosAfectats[d]).data()['DT_Id']);
+					}
+					var selectedIds = [];
 					for (var d = 0; d < selectedRowsData.length; d++) {
-						ids.push(selectedRowsData[d]['DT_Id']);
+						selectedIds.push(selectedRowsData[d]['DT_Id']);
 					}
 					$taula.trigger(
 							'selectionchange.dataTable',
-							[ids]);
+							[accio, afectatIds, selectedIds]);
 				};
 				$taula.on('select.dt', function (e, dt, type, indexes) {
 					if (indexes) {
@@ -456,7 +467,7 @@
 								$(this).parent().trigger('click');
 							});
 						}
-						triggerSelectionChangeFunction();
+						triggerSelectionChangeFunction('select', indexes);
 					}
 				});
 				$taula.on('deselect.dt', function (e, dt, type, indexes) {
@@ -469,7 +480,7 @@
 								$(this).parent().trigger('click');
 							});
 						}
-						triggerSelectionChangeFunction();
+						triggerSelectionChangeFunction('deselect', indexes);
 					}
 				});
 			}

@@ -21,6 +21,7 @@ import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
@@ -248,6 +249,16 @@ public class ContingutServiceBean implements ContingutService {
 			Long entitatId,
 			Long contingutId) {
 		return delegate.getArxiuInfo(
+				entitatId,
+				contingutId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public FitxerDto exportacioEni(
+			Long entitatId,
+			Long contingutId) {
+		return delegate.exportacioEni(
 				entitatId,
 				contingutId);
 	}

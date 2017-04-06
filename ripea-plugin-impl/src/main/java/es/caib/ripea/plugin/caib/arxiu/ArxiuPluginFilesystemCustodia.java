@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.arxiu.ArxiuCapsalera;
 import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
+import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentVersio;
@@ -83,6 +85,27 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 	}
 
 	@Override
+	public void expedientTancar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
+	public void expedientReobrir(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
+	public String expedientExportar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
 	public ArxiuDocument documentEsborranyCrear(
 			String titol,
 			ArxiuOrigenContingut origen,
@@ -98,10 +121,11 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 			String pareNodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
-			ArxiuDocument arxiuDocument = new ArxiuDocument();
 			String id = saveWithNewId(contingut);
-			arxiuDocument.setNodeId(id);
-			return arxiuDocument;
+			return new ArxiuDocument(
+					id,
+					titol,
+					null);
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'ha pogut crear l'arxiu",
@@ -245,6 +269,29 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 	}
 
 	@Override
+	public void documentCopiar(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
+	public void documentMoure(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
+	public String documentExportar(
+			String nodeId,
+			ArxiuCapsalera capsalera) throws SistemaExternException {
+		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
 	public ArxiuCarpeta carpetaCrear(
 			String nom,
 			String pareNodeId,
@@ -271,6 +318,18 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 	public ArxiuCarpeta carpetaConsultar(
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
+		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
+	public void carpetaCopiar(String nodeId, String nodeDestiId, ArxiuCapsalera capsalera)
+			throws SistemaExternException {
+		throw new SistemaExternException("Mètode no suportat");
+	}
+
+	@Override
+	public void carpetaMoure(String nodeId, String nodeDestiId, ArxiuCapsalera capsalera)
+			throws SistemaExternException {
 		throw new SistemaExternException("Mètode no suportat");
 	}
 
@@ -326,12 +385,16 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 			byte fileContent[] = new byte[(int)fContent.length()];
 			inContent.read(fileContent);
 			inContent.close();
-			ArxiuDocument arxiuDocument = new ArxiuDocument();
-			arxiuDocument.setNodeId(id);
-			ArxiuDocumentContingut contingut = new ArxiuDocumentContingut();
-			contingut.setContingut(fileContent);
-			arxiuDocument.setContingut(contingut);
-			return arxiuDocument;
+			ArxiuDocumentContingut contingut = new ArxiuDocumentContingut(
+					ArxiuContingutTipusEnum.CONTINGUT,
+					null,
+					fileContent);
+			List<ArxiuDocumentContingut> continguts = new ArrayList<ArxiuDocumentContingut>();
+			continguts.add(contingut);
+			return new ArxiuDocument(
+					id,
+					null,
+					continguts);
 		} else {
 			return null;
 		}

@@ -6,7 +6,7 @@ package es.caib.ripea.core.api.dto;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Map;
 
 /**
  * Informació d'un contingut emmagatzemat amb el plugin d'arxiu.
@@ -16,52 +16,44 @@ import java.util.List;
 public class ArxiuPluginInfoDto implements Serializable {
 
 	private String nodeId;
-
-	private String versioId;
-	private String versioNodeId;
 	private String nom;
 	private String descripcio;
+	private String serieDocumental;
+	private String aplicacio;
+
+	private String documentVersioId;
+	private String documentVersioNodeId;
 
 	private String eniVersio;
 	private String eniIdentificador;
-	private String eniOrigen;
-	private Date eniDataInicial;
-	private String eniEstatElaboracio;
-	private String eniTipusDocumental;
+	private DocumentNtiOrigenEnumDto eniOrigen;
+	private Date eniDataObertura;
+	private String eniClassificacio;
+	private ExpedientEstatEnumDto eniEstat;
+	private List<String> eniInteressats;
+	private Date eniDataCaptura;
+	private DocumentNtiEstadoElaboracionEnumDto eniEstatElaboracio;
+	private DocumentNtiTipoDocumentalEnumDto eniTipusDocumental;
 	private String eniFormatNom;
 	private String eniFormatExtensio;
-	private String eniClassificacio;
-	private String eniEstat;
+	private String eniDocumentOrigenId;
 	private List<String> eniOrgans;
-	private List<String> eniInteressats;
 	private List<String> eniFirmaTipus;
 	private List<String> eniFirmaCsv;
 	private List<String> eniFirmaCsvDefinicio;
-	private String eniDocumentOrigenId;
 
-	private String serieDocumental;
-	private String aplicacioCreacio;
-	private String suport;
-
+	protected Map<String, Object> metadades;
+	protected List<String> aspectes;
+	protected List<ArxiuPluginNodeFillDto> fills;
 	private String json;
+
+
 
 	public String getNodeId() {
 		return nodeId;
 	}
 	public void setNodeId(String nodeId) {
 		this.nodeId = nodeId;
-	}
-	public String getVersioId() {
-		return versioId;
-	}
-	public void setVersioId(String versioId) {
-		this.versioId = versioId;
-	}
-	public String getVersioNodeId() {
-		return versioNodeId;
-	}
-	public void setVersioNodeId(String versioNodeId) {
-		this.versioNodeId = versioNodeId;
 	}
 	public String getNom() {
 		return nom;
@@ -75,6 +67,30 @@ public class ArxiuPluginInfoDto implements Serializable {
 	public void setDescripcio(String descripcio) {
 		this.descripcio = descripcio;
 	}
+	public String getSerieDocumental() {
+		return serieDocumental;
+	}
+	public void setSerieDocumental(String serieDocumental) {
+		this.serieDocumental = serieDocumental;
+	}
+	public String getAplicacio() {
+		return aplicacio;
+	}
+	public void setAplicacio(String aplicacio) {
+		this.aplicacio = aplicacio;
+	}
+	public String getDocumentVersioId() {
+		return documentVersioId;
+	}
+	public void setDocumentVersioId(String documentVersioId) {
+		this.documentVersioId = documentVersioId;
+	}
+	public String getDocumentVersioNodeId() {
+		return documentVersioNodeId;
+	}
+	public void setDocumentVersioNodeId(String documentVersioNodeId) {
+		this.documentVersioNodeId = documentVersioNodeId;
+	}
 	public String getEniVersio() {
 		return eniVersio;
 	}
@@ -87,28 +103,52 @@ public class ArxiuPluginInfoDto implements Serializable {
 	public void setEniIdentificador(String eniIdentificador) {
 		this.eniIdentificador = eniIdentificador;
 	}
-	public String getEniOrigen() {
+	public DocumentNtiOrigenEnumDto getEniOrigen() {
 		return eniOrigen;
 	}
-	public void setEniOrigen(String eniOrigen) {
+	public void setEniOrigen(DocumentNtiOrigenEnumDto eniOrigen) {
 		this.eniOrigen = eniOrigen;
 	}
-	public Date getEniDataInicial() {
-		return eniDataInicial;
+	public Date getEniDataObertura() {
+		return eniDataObertura;
 	}
-	public void setEniDataInicial(Date eniDataInicial) {
-		this.eniDataInicial = eniDataInicial;
+	public void setEniDataObertura(Date eniDataObertura) {
+		this.eniDataObertura = eniDataObertura;
 	}
-	public String getEniEstatElaboracio() {
+	public String getEniClassificacio() {
+		return eniClassificacio;
+	}
+	public void setEniClassificacio(String eniClassificacio) {
+		this.eniClassificacio = eniClassificacio;
+	}
+	public ExpedientEstatEnumDto getEniEstat() {
+		return eniEstat;
+	}
+	public void setEniEstat(ExpedientEstatEnumDto eniEstat) {
+		this.eniEstat = eniEstat;
+	}
+	public List<String> getEniInteressats() {
+		return eniInteressats;
+	}
+	public void setEniInteressats(List<String> eniInteressats) {
+		this.eniInteressats = eniInteressats;
+	}
+	public Date getEniDataCaptura() {
+		return eniDataCaptura;
+	}
+	public void setEniDataCaptura(Date eniDataCaptura) {
+		this.eniDataCaptura = eniDataCaptura;
+	}
+	public DocumentNtiEstadoElaboracionEnumDto getEniEstatElaboracio() {
 		return eniEstatElaboracio;
 	}
-	public void setEniEstatElaboracio(String eniEstatElaboracio) {
+	public void setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto eniEstatElaboracio) {
 		this.eniEstatElaboracio = eniEstatElaboracio;
 	}
-	public String getEniTipusDocumental() {
+	public DocumentNtiTipoDocumentalEnumDto getEniTipusDocumental() {
 		return eniTipusDocumental;
 	}
-	public void setEniTipusDocumental(String eniTipusDocumental) {
+	public void setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto eniTipusDocumental) {
 		this.eniTipusDocumental = eniTipusDocumental;
 	}
 	public String getEniFormatNom() {
@@ -123,29 +163,17 @@ public class ArxiuPluginInfoDto implements Serializable {
 	public void setEniFormatExtensio(String eniFormatExtensio) {
 		this.eniFormatExtensio = eniFormatExtensio;
 	}
-	public String getEniClassificacio() {
-		return eniClassificacio;
+	public String getEniDocumentOrigenId() {
+		return eniDocumentOrigenId;
 	}
-	public void setEniClassificacio(String eniClassificacio) {
-		this.eniClassificacio = eniClassificacio;
-	}
-	public String getEniEstat() {
-		return eniEstat;
-	}
-	public void setEniEstat(String eniEstat) {
-		this.eniEstat = eniEstat;
+	public void setEniDocumentOrigenId(String eniDocumentOrigenId) {
+		this.eniDocumentOrigenId = eniDocumentOrigenId;
 	}
 	public List<String> getEniOrgans() {
 		return eniOrgans;
 	}
 	public void setEniOrgans(List<String> eniOrgans) {
 		this.eniOrgans = eniOrgans;
-	}
-	public List<String> getEniInteressats() {
-		return eniInteressats;
-	}
-	public void setEniInteressats(List<String> eniInteressats) {
-		this.eniInteressats = eniInteressats;
 	}
 	public List<String> getEniFirmaTipus() {
 		return eniFirmaTipus;
@@ -165,29 +193,23 @@ public class ArxiuPluginInfoDto implements Serializable {
 	public void setEniFirmaCsvDefinicio(List<String> eniFirmaCsvDefinicio) {
 		this.eniFirmaCsvDefinicio = eniFirmaCsvDefinicio;
 	}
-	public String getEniDocumentOrigenId() {
-		return eniDocumentOrigenId;
+	public Map<String, Object> getMetadades() {
+		return metadades;
 	}
-	public void setEniDocumentOrigenId(String eniDocumentOrigenId) {
-		this.eniDocumentOrigenId = eniDocumentOrigenId;
+	public void setMetadades(Map<String, Object> metadades) {
+		this.metadades = metadades;
 	}
-	public String getSerieDocumental() {
-		return serieDocumental;
+	public List<String> getAspectes() {
+		return aspectes;
 	}
-	public void setSerieDocumental(String serieDocumental) {
-		this.serieDocumental = serieDocumental;
+	public void setAspectes(List<String> aspectes) {
+		this.aspectes = aspectes;
 	}
-	public String getAplicacioCreacio() {
-		return aplicacioCreacio;
+	public List<ArxiuPluginNodeFillDto> getFills() {
+		return fills;
 	}
-	public void setAplicacioCreacio(String aplicacioCreacio) {
-		this.aplicacioCreacio = aplicacioCreacio;
-	}
-	public String getSuport() {
-		return suport;
-	}
-	public void setSuport(String suport) {
-		this.suport = suport;
+	public void setFills(List<ArxiuPluginNodeFillDto> fills) {
+		this.fills = fills;
 	}
 	public String getJson() {
 		return json;

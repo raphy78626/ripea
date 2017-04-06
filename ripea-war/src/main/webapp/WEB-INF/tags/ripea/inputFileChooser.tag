@@ -23,7 +23,6 @@
 	<c:when test="${not empty contingutOrigen.pare}"><c:set var="contenidorInicialId" value="${contingutOrigen.pare.id}"/></c:when>
 	<c:otherwise><c:set var="contenidorInicialId" value="${contingutOrigen.id}"/></c:otherwise>
 </c:choose>
-
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
 	<label class="control-label col-xs-${campLabelSize}" for="${campPath}">
 		<c:choose>
@@ -59,6 +58,10 @@
 }
 </style>
 <script>
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
 function refrescarFileChooser(campPath, contenidorId) {
 	$.ajax({
 		type: "GET",
@@ -73,13 +76,16 @@ function refrescarFileChooser(campPath, contenidorId) {
 			var path = "";
 			if (data.id == '${contenidorBaseId}') {
 				if (data.escriptori)
-					path += "Escriptori";
+					path += '<span class="fa fa-desktop"></span> Escriptori';
 				if (data.expedient)
 					path += data.nom;
 			} else {
-				path += data.pathAsString.substring(1);
-				path += "/" + data.nom;
+				path += data.pathAsStringExploradorAmbNom;
 			}
+			path = path.replaceAll('#E#', '<span class="fa fa-desktop"></span> Escriptori');
+			path = path.replaceAll('#X#', '<span class="fa fa-briefcase"></span>');
+			path = path.replaceAll('#C#', '<span class="fa fa-folder"></span>');
+			path = path.replaceAll('#D#', '<span class="fa fa-file"></span>');
 			$("#file-chooser-" + campPath + "-path").html(path);
 			$("#file-chooser-" + campPath + "-content").html('');
 			$('<div class="list-group">').appendTo("#file-chooser-" + campPath + "-content");

@@ -35,8 +35,8 @@
 							<div class="caption">
 								<p class="text-center">
 									<c:if test="${fill.node and not fill.valid}"><span class="fa fa-exclamation-triangle text-warning"></span></c:if>
+									<c:if test="${fill.document && fill.estat == 'CUSTODIAT'}"><span class="fa fa-certificate text-danger"></span></c:if>
 									${fill.nom}
-									<c:if test="${fill.document && fill.estat == 'CUSTODIAT'}"><span class="fa fa-check text-success"></span></c:if>
 								</p>
 								<rip:blocContenidorAccions id="accions-fill-${fill.id}" className="botons-accions-element" modeLlistat="false" contingut="${fill}"/>
 							</div>

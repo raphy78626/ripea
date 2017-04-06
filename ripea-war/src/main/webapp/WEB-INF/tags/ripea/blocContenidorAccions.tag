@@ -38,7 +38,9 @@
 					</c:if>
 				</c:if>
 			</c:if>
-			<li role="separator" class="divider"></li>
+			<c:if test="${contingut.expedient or contingut.document}">
+				<li role="separator" class="divider"></li>
+			</c:if>
 			<c:if test="${contingut.expedient}">
 				<li><a href="../expedient/${contingut.id}/alliberar"><span class="fa fa-unlock"></span>&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
 				<c:if test="${contingut.metaNode.usuariActualWrite or empty contingut.metaNode}">
@@ -56,6 +58,7 @@
 						</c:otherwise>
 					</c:choose>
 				</c:if>
+				<li><a href="../contingut/${contingut.id}/exportar"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.exportar"/></a></li>
 			</c:if>
 			<c:if test="${contingut.document}">
 				<c:if test="${contingut.documentTipus != 'FISIC'}">
@@ -82,6 +85,7 @@
 					</c:choose>
 					
 				</c:if>
+				<li><a href="../contingut/${contingut.id}/exportar"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.exportar"/></a></li>
 			</c:if>
 			
 		</c:if>

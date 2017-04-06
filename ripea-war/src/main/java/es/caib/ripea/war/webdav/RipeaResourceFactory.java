@@ -148,7 +148,7 @@ public class RipeaResourceFactory implements ResourceFactory {
 			return resource;
 		} else if (contenidor instanceof DocumentDto) {
 			DocumentDto document = (DocumentDto)contenidor;
-			String contenidorPath = contenidor.getPathAsStringAmbNomContenidor();
+			String contenidorPath = contenidor.getPathAsStringWebdavAmbNom();
 			if (path.endsWith("/"))
 				contenidorPath += "/";
 			if (path.endsWith(contenidorPath)) {

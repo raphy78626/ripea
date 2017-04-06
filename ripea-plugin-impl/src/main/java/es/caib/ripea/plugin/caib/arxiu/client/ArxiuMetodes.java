@@ -53,6 +53,7 @@ public abstract class ArxiuMetodes {
 	public static final String FOLDER_CREATE			= "createFolder";
 	public static final String FOLDER_LINK 				= "linkFolder";
 	public static final String FOLDER_LOCK 				= "lockFolder";
+	public static final String FOLDER_COPY				= "copyFolder";
 	public static final String FOLDER_MOVE 				= "moveFolder";
 	public static final String FOLDER_SET 				= "setFolder";
 	public static final String FOLDER_GET				= "getFolder";

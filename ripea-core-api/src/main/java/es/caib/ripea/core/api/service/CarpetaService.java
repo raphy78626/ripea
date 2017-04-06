@@ -59,22 +59,6 @@ public interface CarpetaService {
 			String nom) throws NotFoundException, ValidationException;
 
 	/**
-	 * Esborra una carpeta.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat a la qual pertany el contenidor.
-	 * @param id
-	 *           Atribut id de la carpeta que es vol esborrar.
-	 * @return La carpeta esborrada.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public CarpetaDto delete(
-			Long entitatId,
-			Long id) throws NotFoundException;
-
-	/**
 	 * Consulta una carpeta donat el seu id.
 	 * 
 	 * @param entitatId

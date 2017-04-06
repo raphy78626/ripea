@@ -182,7 +182,9 @@ public class CacheHelper {
 		}
 		if (node instanceof ExpedientEntity) {
 			ExpedientEntity expedient = (ExpedientEntity)node;
-			List<DocumentEntity> documents = documentRepository.findByExpedient(expedient);
+			List<DocumentEntity> documents = documentRepository.findByExpedientAndEsborrat(
+					expedient,
+					0);
 			// Valida documents globals
 			List<MetaDocumentEntity> metaDocumentsGlobals = metaDocumentRepository.findByEntitatAndGlobalExpedientTrueAndActiuTrueOrderByNomAsc(
 					node.getEntitat());

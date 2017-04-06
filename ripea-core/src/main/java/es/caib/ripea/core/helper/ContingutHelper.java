@@ -28,6 +28,7 @@ import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DadaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentVersioDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
@@ -74,6 +75,7 @@ import es.caib.ripea.core.repository.MetaNodeRepository;
 import es.caib.ripea.core.repository.NodeRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
+import es.caib.ripea.plugin.arxiu.ArxiuDocumentVersio;
 import es.caib.ripea.plugin.usuari.DadesUsuari;
 
 /**
@@ -186,9 +188,6 @@ public class ContingutHelper {
 			dto.setValid(
 					cacheHelper.findErrorsValidacioPerNode(expedient).isEmpty());
 			resposta = dto;
-		} else if (deproxied instanceof CarpetaEntity) {
-			CarpetaDto dto = new CarpetaDto();
-			resposta = dto;
 		} else if (deproxied instanceof DocumentEntity) {
 			DocumentEntity document = (DocumentEntity)deproxied;
 			DocumentDto dto = new DocumentDto();
@@ -207,8 +206,18 @@ public class ContingutHelper {
 			dto.setVersioDarrera(document.getVersioDarrera());
 			dto.setVersioCount(document.getVersioCount());
 			if (ambVersions && pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuSuportaVersionsDocuments()) {
-				dto.setVersions(
-						pluginHelper.arxiuDocumentObtenirVersions(document));
+				List<ArxiuDocumentVersio> arxiuVersions = pluginHelper.arxiuDocumentObtenirVersions(document);
+				if (arxiuVersions != null) {
+					List<DocumentVersioDto> versions = new ArrayList<DocumentVersioDto>();
+					for (ArxiuDocumentVersio arxiuVersio: arxiuVersions) {
+						DocumentVersioDto versio = new DocumentVersioDto();
+						versio.setArxiuUuid(arxiuVersio.getNodeId());
+						versio.setId(arxiuVersio.getId());
+						versio.setData(arxiuVersio.getData());
+						versions.add(versio);
+					}
+					dto.setVersions(versions);
+				}
 			}
 			dto.setNtiVersion(document.getNtiVersion());
 			dto.setNtiIdentificador(document.getNtiIdentificador());
@@ -227,6 +236,9 @@ public class ContingutHelper {
 			dto.setMetaNode(metaNode);
 			dto.setValid(
 					cacheHelper.findErrorsValidacioPerNode(document).isEmpty());
+			resposta = dto;
+		} else if (deproxied instanceof CarpetaEntity) {
+			CarpetaDto dto = new CarpetaDto();
 			resposta = dto;
 		} else if (deproxied instanceof ArxiuEntity) {
 			ArxiuEntity arxiu = (ArxiuEntity)deproxied;
@@ -558,7 +570,7 @@ public class ContingutHelper {
 				escriptori.getUsuari() == null ||
 				!escriptori.getUsuari().getCodi().equals(auth.getName()) ||
 				!escriptori.getEntitat().equals(entitat)) {
-			throw new SecurityException("El contingut no pertany a l'escriptori ("
+			throw new SecurityException("El contingut no està situat a l'escriptori de l'usuari actual ("
 						+ "id=" + contingut.getId() + ", "
 						+ "entitatId=" + entitat.getId() + ", "
 						+ "usuari=" + auth.getName() + ")");
@@ -849,9 +861,21 @@ public class ContingutHelper {
 							classificacioDocumental);
 					if (pluginHelper.arxiuSuportaVersionsDocuments()) {
 						try {
-							String versio = pluginHelper.arxiuDocumentObtenirDarreraVersio(
+							List<ArxiuDocumentVersio> versions = pluginHelper.arxiuDocumentObtenirVersions(
 								(DocumentEntity)contingut);
-							((DocumentEntity)contingut).updateVersio(versio);
+							if (versions != null) {
+								ArxiuDocumentVersio darreraVersio = null;
+								Date versioData = null;
+								for (ArxiuDocumentVersio versio: versions) {
+									if (versioData == null || versio.getData().after(versioData)) {
+										versioData = versio.getData();
+										darreraVersio = versio;
+									}
+								}
+								((DocumentEntity)contingut).updateVersio(
+										darreraVersio.getId(),
+										versions.size());
+							}
 						} catch (Exception ex) {
 							logger.error(
 									"Error al actualitzar les versions del document (" + 
@@ -909,6 +933,34 @@ public class ContingutHelper {
 						ContingutEntity.class,
 						"S'ha d'esborrar un contingut de l'arxiu però el plugin no està habilitat");
 			}
+		}
+	}
+
+	public void arxiuPropagarCopia(
+			ContingutEntity contingut,
+			ContingutEntity desti) {
+		if (contingut instanceof DocumentEntity) {
+			pluginHelper.arxiuDocumentCopiar(
+					(DocumentEntity)contingut,
+					desti.getArxiuUuid());
+		} else if (contingut instanceof CarpetaEntity) {
+			pluginHelper.arxiuCarpetaCopiar(
+					(CarpetaEntity)contingut,
+					desti.getArxiuUuid());
+		}
+	}
+
+	public void arxiuPropagarMoviment(
+			ContingutEntity contingut,
+			ContingutEntity desti) {
+		if (contingut instanceof DocumentEntity) {
+			pluginHelper.arxiuDocumentMoure(
+					(DocumentEntity)contingut,
+					desti.getArxiuUuid());
+		} else if (contingut instanceof CarpetaEntity) {
+			pluginHelper.arxiuCarpetaMoure(
+					(CarpetaEntity)contingut,
+					desti.getArxiuUuid());
 		}
 	}
 

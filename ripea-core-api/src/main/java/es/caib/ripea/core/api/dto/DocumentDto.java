@@ -4,6 +4,7 @@
 package es.caib.ripea.core.api.dto;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Informació d'un document.
@@ -36,7 +37,7 @@ public class DocumentDto extends NodeDto {
 	private String ntiCsvRegulacion;
 	private String versioDarrera;
 	private int versioCount;
-	private String[] versions;
+	private List<DocumentVersioDto> versions;
 
 	public DocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
@@ -182,10 +183,10 @@ public class DocumentDto extends NodeDto {
 	public void setVersioCount(int versioCount) {
 		this.versioCount = versioCount;
 	}
-	public String[] getVersions() {
+	public List<DocumentVersioDto> getVersions() {
 		return versions;
 	}
-	public void setVersions(String[] versions) {
+	public void setVersions(List<DocumentVersioDto> versions) {
 		this.versions = versions;
 	}
 

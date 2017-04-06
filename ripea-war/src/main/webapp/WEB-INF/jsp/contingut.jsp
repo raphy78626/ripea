@@ -363,6 +363,19 @@ $(document).ready(function() {
 						</c:choose>
 					</h3>
 					<dl>
+						<dt>
+							<c:choose>
+								<c:when test="${contingut.expedient or contingut.document}">
+									<spring:message code="contingut.info.titol"/>
+								</c:when>
+								<c:otherwise>
+									<spring:message code="contingut.info.nom"/>
+								</c:otherwise>
+							</c:choose>
+						</dt>
+						<dd>${contingut.nom}</dd>
+						<dt><spring:message code="contingut.info.tipus"/></dt>
+						<dd><spring:message code="contingut.tipus.enum.${contingut.tipus}"/></dd>
 						<c:if test="${contingut.expedient}">
 							<dt><spring:message code="contingut.info.numero"/></dt>
 							<dd>${contingut.sequencia}/${contingut.any}</dd>
@@ -514,8 +527,31 @@ $(document).ready(function() {
 						<%--          --%>
 						<c:choose>
 							<c:when test="${contingut.documentTipus != 'FISIC'}">
-								<div class="tab-pane active in" id="contingut">
+								<div class="tab-pane" id="contingut">
 									<div id="document-versions" class="panel-group" id="accordion">
+										<table class="table table-bordered table-striped">
+										<thead>
+											<tr>
+												<th>Id</th>
+												<th>Data</th>
+												<th width="1%"></th>
+											</tr>
+										</thead>
+										<tbody>
+										<c:forEach var="versio" items="${contingut.versions}">
+											<tr>
+												<td>${versio.id}</td>
+												<td><fmt:formatDate value="${versio.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+												<td>
+													<a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.id}/descarregar" class="btn btn-default">
+														<span class="fa fa-download"></span>&nbsp;
+														<spring:message code="comu.boto.descarregar"/>
+													</a>
+												</td>
+											</tr>
+										</c:forEach>
+										</tbody>
+										</table>
 										<c:forEach var="versio" items="${documentVersions}" varStatus="status">
 											<div class="panel panel-default">
 												<div class="panel-heading">

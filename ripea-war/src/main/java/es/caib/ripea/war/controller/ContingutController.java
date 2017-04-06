@@ -535,6 +535,22 @@ public class ContingutController extends BaseUserController {
 		return "contingutArxiu";
 	}
 
+	@RequestMapping(value = "/contingut/{contingutId}/exportar", method = RequestMethod.GET)
+	public String exportar(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long contingutId) throws IOException {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		FitxerDto fitxer = contingutService.exportacioEni(
+				entitatActual.getId(),
+				contingutId);
+		writeFileToResponse(
+				fitxer.getNom(),
+				fitxer.getContingut(),
+				response);
+		return null;
+	}
+
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 	    binder.registerCustomEditor(

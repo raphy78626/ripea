@@ -116,13 +116,13 @@ public class ArxiuServiceImpl implements ArxiuService {
 				arxiu.getNom(),
 				arxiu.getUnitatCodi(),
 				arxiuPare).build();
+		arxiuRepository.save(entity);
 		// Registra al log la creació de l'arxiu
 		contingutLogHelper.logCreacio(
 				entity,
 				false,
 				false);
-		return toArxiuDto(
-				arxiuRepository.save(entity));
+		return toArxiuDto(entity);
 	}
 
 	@Override
@@ -244,8 +244,9 @@ public class ArxiuServiceImpl implements ArxiuService {
 				break;
 			}
 		}
-		
-		resposta.setMetaExpedientsCount(arxiu.getMetaExpedients().size());
+		if (arxiu.getMetaExpedients() != null) {
+			resposta.setMetaExpedientsCount(arxiu.getMetaExpedients().size());
+		}
 		return resposta;
 	}
 
