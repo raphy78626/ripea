@@ -29,17 +29,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ArxiuCommand;
 import es.caib.ripea.war.command.ArxiuExpedientAgafarCommand;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
-import es.caib.ripea.war.datatable.DatatablesPagina;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.PaginacioHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
@@ -272,19 +269,18 @@ public class ArxiuAdminController extends BaseAdminController {
 
 	@RequestMapping(value = "/{arxiuId}/expedient/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesPagina<ExpedientDto> datatable(
+	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			@PathVariable Long arxiuId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ExpedientFiltreCommand filtreCommand = getFiltreCommand(request, arxiuId);
-		return PaginacioHelper.getPaginaPerDatatables(
+		return DatatablesHelper.getDatatableResponse(
 				request,
 				expedientService.findAmbFiltreAdmin(
 						entitatActual.getId(),
 						ExpedientFiltreCommand.asDto(filtreCommand),
-						PaginacioHelper.getPaginacioDtoFromDatatable(
-								request,
-								null)));
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id");
 	}
 
 	@RequestMapping(value = "/{arxiuId}/expedient/netejar", method = RequestMethod.GET)

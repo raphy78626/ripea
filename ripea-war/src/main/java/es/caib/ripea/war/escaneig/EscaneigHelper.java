@@ -303,26 +303,23 @@ public class EscaneigHelper {
 	private static final String PROPERTIES_BASE = "es.caib.ripea.plugin.escaneig.";
 	private List<EscaneigPlugin> getAllPluginsFromProperties() {
 		if (plugins == null) {
-			String idsStr = aplicacioService.propertyGet(
-					PROPERTIES_BASE + "ids");
+			String idsStr = aplicacioService.propertyPluginEscaneigIds();
 			String[] ids = idsStr.split(",");
 			plugins = new ArrayList<EscaneigPlugin>();
 			for (String id: ids) {
 				String base = PROPERTIES_BASE + id + ".";
-				String nom = aplicacioService.propertyGet(base + "nom");
-				log.debug("Carregant plugin escaneig [" + base + "nom" + "]: " + nom);
-				String classe = aplicacioService.propertyGet(base + "class");
-				String descripcioCurta = aplicacioService.propertyGet(base + "desc");
 				Map<String, String> pluginProperties = aplicacioService.propertyFindByPrefix(base);
+				String nom = pluginProperties.get(base + "nom");
+				log.debug("Carregant plugin escaneig [" + base + "nom" + "]: " + nom);
+				String classe = pluginProperties.get(base + "class");
+				String descripcioCurta = pluginProperties.get(base + "desc");
 				Properties pluginPropertiesProcessat = new Properties();
 				for (String property: pluginProperties.keySet()) {
-					if (property.startsWith(base)) {
-						String value = aplicacioService.propertyGet(property);
-						String nomFinal = property.substring(base.length());
-						pluginPropertiesProcessat.put(
-								PROPERTIES_BASE + nomFinal,
-								value);
-					}
+					String value = pluginProperties.get(property);
+					String nomFinal = property.substring(base.length());
+					pluginPropertiesProcessat.put(
+							PROPERTIES_BASE + nomFinal,
+							value);
 				}
 				log.debug("  descripcioCurta: " + descripcioCurta);
 				log.debug("  classe: " + classe);

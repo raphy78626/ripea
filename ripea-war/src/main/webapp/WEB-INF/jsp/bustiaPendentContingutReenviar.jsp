@@ -17,12 +17,7 @@
 	<form:form action="" class="form-horizontal" commandName="contenidorMoureCopiarEnviarCommand">
 		<form:hidden path="origenId"/>
 		<rip:inputFixed textKey="contenidor.enviar.camp.origen">
-			<c:choose>
-				<c:when test="${contingutPendent.tipus == EXPEDIENT}"><span class="fa fa-briefcase"></span></c:when>
-				<c:when test="${contingutPendent.tipus == CARPETA}"><rip:blocIconaCarpeta carpeta="${contingutOrigen}" petita="${true}"/></c:when>
-				<c:when test="${contingutPendent.tipus == DOCUMENT}"><span class="fa fa-file"></span></c:when>
-				<c:when test="${contingutPendent.tipus == REGISTRE_ENTRADA}"><span class="fa fa-file"></span></c:when>
-			</c:choose>
+			<rip:blocIconaContingut contingut="${contingutPendent}"/>
 			${contingutOrigen.nom}
 		</rip:inputFixed>
 		<rip:inputArbre name="destiId" textKey="contenidor.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>

@@ -179,6 +179,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 			List<String> organs,
 			List<String> interessats,
 			String serieDocumental,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera) throws ArxiuException {
 		String metode = ArxiuMetodes.FILE_CREATE;
 		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
@@ -200,6 +201,9 @@ public class ArxiuClientImpl implements ArxiuClient {
 					organs,
 					interessats,
 					serieDocumental);
+			if (metadadesAddicionals != null) {
+				metadades.putAll(metadadesAddicionals);
+			}
 			CreateFile createFile = new CreateFile();
 			Request<ParamCreateFile> request = new Request<ParamCreateFile>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
@@ -256,6 +260,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 			List<String> organs,
 			List<String> interessats,
 			String serieDocumental,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera) {
 		String metode = ArxiuMetodes.FILE_SET;
 		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
@@ -278,6 +283,9 @@ public class ArxiuClientImpl implements ArxiuClient {
 					organs,
 					interessats,
 					serieDocumental);
+			if (metadadesAddicionals != null) {
+				metadades.putAll(metadadesAddicionals);
+			}
 			SetFile setFile = new SetFile();
 			Request<ParamSetFile> request = new Request<ParamSetFile>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
@@ -586,12 +594,13 @@ public class ArxiuClientImpl implements ArxiuClient {
 			EstadosElaboracion estatElaboracio,
 			TiposDocumentosENI documentTipus,
 			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
-			String tipusMime,
 			String pareNodeId,
+			ExtensionesFichero formatExtensio,
+			String tipusMime,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera) {
 		String metode = ArxiuMetodes.DOCUMENT_CREATE_DRAFT;
 		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
@@ -601,11 +610,11 @@ public class ArxiuClientImpl implements ArxiuClient {
 				"estatElaboracio=" + estatElaboracio + ", " +
 				"documentTipus=" + documentTipus + ", " +
 				"formatNom=" + formatNom + ", " +
-				"formatExtensio=" + formatExtensio + ", " +
 				"organs=" + organs + ", " +
 				"serieDocumental=" + serieDocumental + ", " +
-				"tipusMime=" + tipusMime + ", " +
 				"pareNodeId=" + pareNodeId + ", " +
+				"formatExtensio=" + formatExtensio + ", " +
+				"tipusMime=" + tipusMime + ", " +
 				"capsalera=" + capsalera + ")");
 		try {
 			Map<String, Object> metadades = crearMetadadesDocument(
@@ -621,6 +630,9 @@ public class ArxiuClientImpl implements ArxiuClient {
 					null,
 					null,
 					metode);
+			if (metadadesAddicionals != null) {
+				metadades.putAll(metadadesAddicionals);
+			}
 			CreateDraftDocument createDraftDocument = new CreateDraftDocument();
 			Request<ParamCreateDraftDocument> request = new Request<ParamCreateDraftDocument>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
@@ -760,11 +772,12 @@ public class ArxiuClientImpl implements ArxiuClient {
 			EstadosElaboracion estatElaboracio,
 			TiposDocumentosENI documentTipus,
 			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
+			ExtensionesFichero formatExtensio,
 			String tipusMime,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera) {
 		String metode = ArxiuMetodes.DOCUMENT_SET;
 		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
@@ -775,9 +788,9 @@ public class ArxiuClientImpl implements ArxiuClient {
 				"estatElaboracio=" + estatElaboracio + ", " +
 				"documentTipus=" + documentTipus + ", " +
 				"formatNom=" + formatNom + ", " +
-				"formatExtensio=" + formatExtensio + ", " +
 				"organs=" + organs + ", " +
 				"serieDocumental=" + serieDocumental + ", " +
+				"formatExtensio=" + formatExtensio + ", " +
 				"tipusMime=" + tipusMime + ", " +
 				"capsalera=" + capsalera + ")");
 		try {
@@ -794,6 +807,9 @@ public class ArxiuClientImpl implements ArxiuClient {
 					null,
 					null,
 					metode);
+			if (metadadesAddicionals != null) {
+				metadades.putAll(metadadesAddicionals);
+			}
 			SetDocument setDocument = new SetDocument();
 			Request<ParamSetDocument> request = new Request<ParamSetDocument>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
@@ -1017,14 +1033,15 @@ public class ArxiuClientImpl implements ArxiuClient {
 			EstadosElaboracion estatElaboracio,
 			TiposDocumentosENI documentTipus,
 			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
 			TiposFirma firmaTipus,
 			PerfilesFirma firmaPerfil,
 			String csv,
+			ExtensionesFichero formatExtensio,
 			String tipusMime,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera) {
 		String metode = ArxiuMetodes.DOCUMENT_SET_FINAL;
 		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
@@ -1057,6 +1074,9 @@ public class ArxiuClientImpl implements ArxiuClient {
 					firmaPerfil,
 					csv,
 					metode);
+			if (metadadesAddicionals != null) {
+				metadades.putAll(metadadesAddicionals);
+			}
 			SetFinalDocument setFinalDocument = new SetFinalDocument();
 			Request<ParamSetDocument> request = new Request<ParamSetDocument>();
 			ParamSetDocument param = new ParamSetDocument();
@@ -1562,10 +1582,10 @@ public class ArxiuClientImpl implements ArxiuClient {
 				"url=" + urlAmbMetode + ", " +
 				"tipus=application/json, " +
 				"body=" + body + ")");
-		/*System.out.println(">>> Enviant petició POST a l'arxiu (" +
+		System.out.println(">>> Enviant petició POST a l'arxiu (" +
 				"url=" + urlAmbMetode + ", " +
 				"tipus=application/json, " +
-				"body=" + body + ")");*/
+				"body=" + body + ")");
 		ClientResponse response = jerseyClient.
 				resource(urlAmbMetode).
 				type("application/json").

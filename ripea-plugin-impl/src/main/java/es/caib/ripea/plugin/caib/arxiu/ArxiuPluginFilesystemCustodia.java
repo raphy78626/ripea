@@ -339,6 +339,7 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 			InputStream contingut) throws Exception {
 		String id = new Long(System.currentTimeMillis()).toString();
 		File fContent = new File(getBaseDir() + "/" + id);
+		fContent.getParentFile().mkdirs();
 		while (fContent.exists()) {
 			try {
 				Thread.sleep(1);
@@ -356,6 +357,7 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 			String id,
 			InputStream contingut) throws Exception {
 		File fContent = new File(getBaseDir() + "/" + id);
+		fContent.getParentFile().mkdirs();
 		if (fContent.exists()) {
 			FileOutputStream outContent = new FileOutputStream(fContent, false);
 			IOUtils.copy(contingut, outContent);
@@ -369,6 +371,7 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 	private boolean deleteWithId(
 			String id) throws Exception {
 		File fContent = new File(getBaseDir() + "/" + id);
+		fContent.getParentFile().mkdirs();
 		if (fContent.exists()) {
 			fContent.delete();
 			return true;
@@ -380,6 +383,7 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 	private ArxiuDocument readWithId(
 			String id) throws Exception {
 		File fContent = new File(getBaseDir() + "/" + id);
+		fContent.getParentFile().mkdirs();
 		if (fContent.exists()) {
 			FileInputStream inContent = new FileInputStream(fContent);
 			byte fileContent[] = new byte[(int)fContent.length()];
@@ -402,7 +406,7 @@ public class ArxiuPluginFilesystemCustodia implements ArxiuPlugin {
 
 	private String getBaseDir() {
 		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.arxiu.filesystem.base.dir");
+				"es.caib.ripea.app.data.dir") + "/plugin-filesystem-custodia";
 	}
 
 	private ClienteCustodia clienteCustodia;

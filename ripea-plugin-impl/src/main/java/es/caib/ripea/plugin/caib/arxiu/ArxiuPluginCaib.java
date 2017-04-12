@@ -93,6 +93,7 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 					organs,
 					interessats,
 					serieDocumental,
+					null,
 					toArxiuHeader(capsalera));
 			return toArxiuExpedient(file);
 		} catch (ArxiuException aex) {
@@ -123,6 +124,7 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 					organs,
 					interessats,
 					serieDocumental,
+					null,
 					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
@@ -254,12 +256,13 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 					toEstadosElaboracion(estatElaboracio),
 					toTiposDocumentosEni(documentTipus),
 					toFormatosFichero(formatNom),
-					toExtensionesFichero(formatExtensio),
 					organs,
 					serieDocumental,
 					contingut,
-					tipusMime,
 					pareNodeId,
+					toExtensionesFichero(formatExtensio),
+					tipusMime,
+					null,
 					toArxiuHeader(capsalera));
 			return toArxiuDocument(document);
 		} catch (ArxiuException aex) {
@@ -291,11 +294,12 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 					toEstadosElaboracion(estatElaboracio),
 					toTiposDocumentosEni(documentTipus),
 					toFormatosFichero(formatNom),
-					toExtensionesFichero(formatExtensio),
 					organs,
 					serieDocumental,
 					contingut,
+					toExtensionesFichero(formatExtensio),
 					tipusMime,
+					null,
 					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
@@ -418,14 +422,15 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 					null, // toEstadosElaboracion(estatElaboracio),
 					null, // toTiposDocumentosEni(documentTipus),
 					null, // toFormatosFichero(formatNom),
-					null, // toExtensionesFichero(formatExtensio),
 					null, // organs,
 					null, // serieDocumental,
 					firmaPdfContingut,
 					TiposFirma.CSV,
 					PerfilesFirma.EPES,
 					csv,
+					null, // toExtensionesFichero(formatExtensio),
 					"application/pdf", // tipusMime,
+					null,
 					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(

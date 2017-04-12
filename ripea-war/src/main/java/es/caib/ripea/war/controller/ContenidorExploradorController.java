@@ -42,7 +42,8 @@ public class ContenidorExploradorController extends BaseUserController {
 		ContingutDto contenidor = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorId,
-				true);
+				true,
+				false);
 		contenidor.setContenidorArrelIdPerPath(contenidorArrelId);
 		contenidor.setPerConvertirJson(true);
 		return contenidor;

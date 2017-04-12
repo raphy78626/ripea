@@ -170,7 +170,8 @@ public class RipeaFolderResource implements FolderResource {
 					ContingutDto contingut = getContenidorService().findAmbIdUser(
 							entitat.getId(),
 							c.getId(),
-							true);
+							true,
+							false);
 					return contenidorToResource(contingut);
 				}
 			}
@@ -271,9 +272,13 @@ public class RipeaFolderResource implements FolderResource {
 	@Override
 	public void delete() throws NotAuthorizedException, ConflictException, BadRequestException {
 		logger.debug("[C] delete " + getIdentificadorPerLog() + "");
-		getContenidorService().deleteReversible(
-				contingut.getEntitat().getId(),
-				contingut.getId());
+		try {
+			getContenidorService().deleteReversible(
+					contingut.getEntitat().getId(),
+					contingut.getId());
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Override

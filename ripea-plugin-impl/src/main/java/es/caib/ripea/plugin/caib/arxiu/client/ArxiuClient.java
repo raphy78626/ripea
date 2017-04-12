@@ -6,6 +6,7 @@ package es.caib.ripea.plugin.caib.arxiu.client;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import es.caib.arxiudigital.apirest.constantes.EstadosElaboracion;
 import es.caib.arxiudigital.apirest.constantes.EstadosExpediente;
@@ -33,6 +34,7 @@ public interface ArxiuClient {
 			List<String> organs,
 			List<String> interessats,
 			String serieDocumental,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera) throws ArxiuException;
 	public void fileUpdate(
 			String nodeId,
@@ -44,6 +46,7 @@ public interface ArxiuClient {
 			List<String> organs,
 			List<String> interessats,
 			String serieDocumental,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera);
 	public void fileDelete(
 			String nodeId,
@@ -78,12 +81,13 @@ public interface ArxiuClient {
 			EstadosElaboracion estatElaboracio,
 			TiposDocumentosENI documentTipus,
 			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
-			String tipusMime,
 			String pareNodeId,
+			ExtensionesFichero formatExtensio,
+			String tipusMime,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera);
 	public ArxiuDocument documentCreate();
 	public void documentUpdate(
@@ -94,11 +98,12 @@ public interface ArxiuClient {
 			EstadosElaboracion estatElaboracio,
 			TiposDocumentosENI documentTipus,
 			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
+			ExtensionesFichero formatExtensio,
 			String tipusMime,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera);
 	public void documentDelete(
 			String nodeId,
@@ -122,14 +127,15 @@ public interface ArxiuClient {
 			EstadosElaboracion estatElaboracio,
 			TiposDocumentosENI documentTipus,
 			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
 			TiposFirma firmaTipus,
 			PerfilesFirma firmaPerfil,
 			String csv,
+			ExtensionesFichero formatExtensio,
 			String tipusMime,
+			Map<String, Object> metadadesAddicionals,
 			ArxiuHeader capsalera);
 	public String documentEniGet(
 			String nodeId,

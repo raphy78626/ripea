@@ -51,7 +51,7 @@
 	<meta name="author" content=""/>
 	<!-- Estils CSS -->
 	<link href="<c:url value="/webjars/bootstrap/3.3.6/dist/css/bootstrap.min.css"/>" rel="stylesheet"/>
-	<link href="<c:url value="/webjars/font-awesome/4.5.0/css/font-awesome.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/estils.css"/>" rel="stylesheet">
 	<link rel="shortcut icon" href="<c:url value="/img/favicon.png"/>" type="image/x-icon" />
 	<script src="<c:url value="/webjars/jquery/1.12.0/dist/jquery.min.js"/>"></script>
@@ -95,7 +95,7 @@ body {
 						<c:if test="${hiHaEntitats}">
 							<li class="dropdown">
 								<c:if test="${hiHaMesEntitats}"><a href="#" data-toggle="dropdown"></c:if>
-		         				<span class="fa fa-home"></span> ${entitatActual.nom} <c:if test="${hiHaMesEntitats}"><b class="caret caret-white"></b></c:if>
+		         				<span class="fa fa-institution"></span> ${entitatActual.nom} <c:if test="${hiHaMesEntitats}"><b class="caret caret-white"></b></c:if>
 								<c:if test="${hiHaMesEntitats}"></a></c:if>
 								<c:if test="${hiHaMesEntitats}">
 									<ul class="dropdown-menu">
@@ -115,9 +115,9 @@ body {
 							<c:choose>
 								<c:when test="${fn:length(rolsUsuariActual) > 1}">
 									<a href="#" data-toggle="dropdown">
-										<span class="fa fa-bookmark"></span>
+										<span class="fa fa-id-card-o"></span>
 										<spring:message code="decorator.menu.rol.${rolActual}"/>
-										<b class="caret caret-white"></b>
+										<span class="caret caret-white"></span>
 									</a>
 									<ul class="dropdown-menu">
 										<c:forEach var="rol" items="${rolsUsuariActual}">
@@ -133,7 +133,7 @@ body {
 									</ul>
 								</c:when>
 								<c:otherwise>
-									<c:if test="${not empty rolActual}"><span class="fa fa-bookmark"></span>&nbsp;<spring:message code="decorator.menu.rol.${rolActual}"/></c:if>
+									<c:if test="${not empty rolActual}"><span class="fa fa-id-card-o"></span>&nbsp;<spring:message code="decorator.menu.rol.${rolActual}"/></c:if>
 								</c:otherwise>
 							</c:choose>
 						</li>

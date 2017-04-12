@@ -14,7 +14,7 @@ public class ArxiuPluginNodeFillDto implements Serializable {
 
 	private String nodeId;
 	private String nom;
-	private ArxiuPluginNodeFillTipusEnumDto tipus;
+	private ArxiuPluginNodeTipusEnumDto tipus;
 
 
 
@@ -30,10 +30,10 @@ public class ArxiuPluginNodeFillDto implements Serializable {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	public ArxiuPluginNodeFillTipusEnumDto getTipus() {
+	public ArxiuPluginNodeTipusEnumDto getTipus() {
 		return tipus;
 	}
-	public void setTipus(ArxiuPluginNodeFillTipusEnumDto tipus) {
+	public void setTipus(ArxiuPluginNodeTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
 

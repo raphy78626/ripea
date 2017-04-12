@@ -6,16 +6,12 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%
 pageContext.setAttribute(
-		"contingutTipusEnumOptions",
-		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.dto.ContingutTipusEnumDto.class,
-				"contingut.tipus.enum."));
-pageContext.setAttribute(
 		"contingutAdminOpcionsEsborratEnumOptions",
 		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum.class,
 				"contingut.admin.opcions.esborrat.enum."));
 %>
+<rip:blocIconaContingutNoms/>
 <html>
 <head>
 	<title><spring:message code="contingut.admin.titol"/></title>
@@ -68,7 +64,7 @@ $(document).ready(function() {
 				<rip:inputText name="nom" inline="true" placeholderKey="contingut.admin.filtre.nom"/>
 			</div>
 			<div class="col-md-2">
-				<rip:inputSelect name="tipus" optionItems="${contingutTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" emptyOption="true" placeholderKey="contingut.admin.filtre.tipus" inline="true"/>
+				<rip:inputSelect name="tipus" optionEnum="ContingutTipusEnumDto" emptyOption="true" placeholderKey="contingut.admin.filtre.tipus" inline="true"/>
 			</div>
 			<div class="col-md-3">
 				<rip:inputSelect name="metaNodeId" optionItems="${metaNodes}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="contingut.admin.filtre.metanode" inline="true"/>
@@ -92,7 +88,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
-	<table id="taulaDades" class="table table-bordered table-striped" data-toggle="datatable" data-url="<c:url value="/contingutAdmin/datatable"/>" data-filter="#contingutFiltreCommand" data-default-order="11" data-default-dir="asc">
+	<table id="taulaDades" data-toggle="datatable" data-url="<c:url value="/contingutAdmin/datatable"/>" data-filter="#contingutFiltreCommand" data-default-order="11" data-default-dir="asc" class="table table-bordered table-striped">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>
@@ -107,7 +103,7 @@ $(document).ready(function() {
 				<th data-col-name="nom" data-template="#cellNomTemplate" width="25%">
 					<spring:message code="contingut.admin.columna.nom"/>
 					<script id="cellNomTemplate" type="text/x-jsrender">
-						{{if expedient}}<span class="fa fa-briefcase"></span>{{else document}}<span class="fa fa-file"></span>{{else carpeta}}<span class="fa fa-folder"></span>{{else registre}}<span class="fa fa-book"></span>{{else arxiv}}<span class="fa fa-archive"></span>{{else bustia}}<span class="fa fa-inbox"></span>{{/if}}
+						{{if expedient}}<span class="fa ${iconaExpedient}"></span>{{else document}}<span class="fa ${iconaDocument}"></span>{{else carpeta}}<span class="fa ${iconaCarpeta}"></span>{{else registre}}<span class="fa ${iconaAnotacioRegistre}"></span>{{else arxiv}}<span class="fa ${iconaArxiu}"></span>{{else bustia}}<span class="fa ${iconaBustia}"></span>{{/if}}
 						{{:nom}}
 						{{if esborrat}}<span class="fa fa-trash-o pull-right" title="<spring:message code="contingut.admin.columna.esborrat"/>"></span>{{/if}}
 					</script>
@@ -119,14 +115,13 @@ $(document).ready(function() {
 					<spring:message code="contingut.admin.columna.situacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{for path}}/
-							{{if escriptori}}<span class="fa fa-desktop" title="<spring:message code="contingut.path.escriptori"/>"></span>
-							{{else expedient}}<span class="fa fa-briefcase" title="<spring:message code="contingut.icona.expedient"/>"></span>
-							{{else carpeta}}<span class="fa fa-folder" title="<spring:message code="contingut.icona.carpeta"/>"></span>
-							{{else document}}<span class="fa fa-file" title="<spring:message code="contingut.icona.document"/>"></span>
-							{{else arxiv}}{{if #getIndex() == 0}}<span class="fa fa-sitemap" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa fa-archive" title="<spring:message code="contingut.icona.arxiu"/>"></span>{{/if}}
-							{{else bustia}}{{if #getIndex() == 0}}<span class="fa fa-sitemap" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa fa-inbox" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
+							{{if escriptori}}<span class="fa ${iconaEscriptori}" title="<spring:message code="contingut.path.escriptori"/>"></span>
+							{{else expedient}}<span class="fa ${iconaExpedient}" title="<spring:message code="contingut.icona.expedient"/>"></span>
+							{{else carpeta}}<span class="fa ${iconaCarpeta}" title="<spring:message code="contingut.icona.carpeta"/>"></span>
+							{{else document}}<span class="fa ${iconaDocument}" title="<spring:message code="contingut.icona.document"/>"></span>
+							{{else arxiv}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaArxiu}" title="<spring:message code="contingut.icona.arxiu"/>"></span>{{/if}}
+							{{else bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
 							{{if escriptori}}{{:createdBy.nom}}{{else}}{{:nom}}{{/if}}
-							<%--{{if #getIndex() != #get("array").data.length - 1}}, {{/if}}--%>
 						{{/for}}
 					</script>
 				</th>

@@ -427,7 +427,7 @@ public class DocumentController extends BaseUserController {
 				request,
 				signaturesSet);
 		boolean ignorarModal = false;
-		String ignorarModalIdsProperty = aplicacioService.propertyGet("es.caib.ripea.plugin.passarelafirma.ignorar.modal.ids");
+		String ignorarModalIdsProperty = aplicacioService.propertyPluginPassarelaFirmaIgnorarModalIds();
 		if (ignorarModalIdsProperty != null && !ignorarModalIdsProperty.isEmpty()) {
 			String[] ignorarModalIds = ignorarModalIdsProperty.split(",");
 			for (String ignorarModalId: ignorarModalIds) {
@@ -489,6 +489,7 @@ public class DocumentController extends BaseUserController {
 		DocumentDto document = (DocumentDto)contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				documentId,
+				false,
 				false);
 		model.addAttribute(
 				"document",
@@ -534,6 +535,7 @@ public class DocumentController extends BaseUserController {
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						documentId,
+						false,
 						false));
 		model.addAttribute(
 				"publicacioTipusEnumOptions",

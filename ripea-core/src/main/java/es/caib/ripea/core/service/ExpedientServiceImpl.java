@@ -253,7 +253,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				false);
 		ExpedientDto dto = toExpedientDto(
 				expedient,
-				false);
+				true);
 		contingutHelper.arxiuPropagarModificacio(
 				expedient,
 				null,
@@ -342,7 +342,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				false);
 		ExpedientDto dto = toExpedientDto(
 				expedient,
-				false);
+				true);
 		contingutHelper.arxiuPropagarModificacio(
 				expedient,
 				null,
@@ -377,7 +377,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				true);
 		return toExpedientDto(
 				expedient,
-				false);
+				true);
 	}
 
 	@Transactional(readOnly = true)

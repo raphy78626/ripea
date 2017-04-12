@@ -205,7 +205,7 @@ public class ContingutHelper {
 			dto.setDataCaptura(document.getDataCaptura());
 			dto.setVersioDarrera(document.getVersioDarrera());
 			dto.setVersioCount(document.getVersioCount());
-			if (ambVersions && pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuSuportaVersionsDocuments()) {
+			if (ambVersions && pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuSuportaVersionsDocuments() && document.getEsborrat() == 0) {
 				List<ArxiuDocumentVersio> arxiuVersions = pluginHelper.arxiuDocumentObtenirVersions(document);
 				if (arxiuVersions != null) {
 					List<DocumentVersioDto> versions = new ArrayList<DocumentVersioDto>();
@@ -715,6 +715,7 @@ public class ContingutHelper {
 					EscriptoriEntity.getBuilder(
 							usuari,
 							entitat).build());
+			pluginHelper.arxiuEscriptoriCrear(escriptori);
 		}
 		return escriptori;
 	}

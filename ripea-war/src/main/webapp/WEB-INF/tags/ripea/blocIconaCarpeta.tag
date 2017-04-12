@@ -1,2 +1,0 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%><%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%><%@ attribute name="carpeta" required="true" rtexprvalue="true" type="java.lang.Object"%><%@ attribute name="petita" required="false" rtexprvalue="true" type="java.lang.Boolean"%>
-<c:set var="textStyle2x"><c:if test="${not petita}"> fa-2x</c:if></c:set><span class="fa fa-folder ${textStyle2x}" title="<spring:message code="contingut.icona.carpeta"/>"></span>

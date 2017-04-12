@@ -451,6 +451,14 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 				$(this).attr('data-autonumeric-eval', 'true');
 			}
 		});
+		$('ul.nav-tabs li a').each(function() {
+			var href = $(this).attr('href');
+			if (!href.startsWith('http://') && !href.startsWith('/')) {
+				if ($('div.has-error', href).length) {
+					$(this).prepend('<span class="fa fa-warning text-danger"></span> ');
+				}
+			}
+		});
 	}
 	$(document).ready(function() {
 		$(this).webutilTogglesEval();

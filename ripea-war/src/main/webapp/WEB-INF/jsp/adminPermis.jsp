@@ -21,9 +21,7 @@
 	<table id="permisos" data-toggle="datatable" data-url="<c:url value="/permis/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" class="table table-striped table-bordered">
 		<thead>
 			<tr>
-				<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)">
-					<spring:message code="permis.list.columna.tipus"/>
-				</th>
+				<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="permis.list.columna.tipus"/></th>
 				<th data-col-name="principalNom"><spring:message code="entitat.permis.columna.principal"/></th>
 				<th data-col-name="administration" data-template="#cellAdministrationTemplate">
 					<spring:message code="permis.list.columna.administracio"/>

@@ -24,6 +24,8 @@ import es.caib.ripea.plugin.arxiu.ArxiuDocumentVersio;
 import es.caib.ripea.plugin.arxiu.ArxiuEstatElaboracio;
 import es.caib.ripea.plugin.arxiu.ArxiuExpedient;
 import es.caib.ripea.plugin.arxiu.ArxiuExpedientEstat;
+import es.caib.ripea.plugin.arxiu.ArxiuFill;
+import es.caib.ripea.plugin.arxiu.ArxiuFillTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuFormatExtensio;
 import es.caib.ripea.plugin.arxiu.ArxiuFormatNom;
 import es.caib.ripea.plugin.arxiu.ArxiuOrigenContingut;
@@ -147,7 +149,7 @@ public class ArxiuPluginTest {
 			throw ex;
 		} finally {
 			if (creatNodeId != null) {
-				System.out.print("  - Esborrant expedient degut a errors (nodeId=" + creatNodeId + ")... ");
+				System.out.print("  - Esborrant expedient (nodeId=" + creatNodeId + ")... ");
 				try {
 					plugin.documentEsborrar(creatNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -350,7 +352,7 @@ public class ArxiuPluginTest {
 			throw ex;
 		} finally {
 			if (docCreatNodeId != null) {
-				System.out.print("  - Esborrant document degut a errors (nodeId=" + docCreatNodeId + ")... ");
+				System.out.print("  - Esborrant document (nodeId=" + docCreatNodeId + ")... ");
 				try {
 					plugin.documentEsborrar(docCreatNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -359,7 +361,7 @@ public class ArxiuPluginTest {
 				}
 			}
 			if (expCreatNodeId != null) {
-				System.out.print("  - Esborrant expedient degut a errors (nodeId=" + expCreatNodeId + ")... ");
+				System.out.print("  - Esborrant expedient (nodeId=" + expCreatNodeId + ")... ");
 				try {
 					plugin.expedientEsborrar(expCreatNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -370,7 +372,7 @@ public class ArxiuPluginTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void documentFirmat() throws Exception {
 		System.out.println("TEST: GESTIO DOCUMENTS FIRMATS");
 		String titolExp = "RIPEA_prova_exp_" + System.currentTimeMillis();
@@ -472,7 +474,7 @@ public class ArxiuPluginTest {
 			throw ex;
 		} finally {
 			if (docCreatNodeId != null) {
-				System.out.print("  - Esborrant document degut a errors (nodeId=" + docCreatNodeId + ")... ");
+				System.out.print("  - Esborrant document (nodeId=" + docCreatNodeId + ")... ");
 				try {
 					plugin.documentEsborrar(docCreatNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -481,7 +483,81 @@ public class ArxiuPluginTest {
 				}
 			}
 			if (expCreatNodeId != null) {
-				System.out.print("  - Esborrant expedient degut a errors (nodeId=" + expCreatNodeId + ")... ");
+				System.out.print("  - Esborrant expedient (nodeId=" + expCreatNodeId + ")... ");
+				try {
+					plugin.expedientEsborrar(expCreatNodeId, capsaleraTest);
+					System.out.println("Ok");
+				} catch (Exception ex) {
+					System.out.println("Error: " + ex.getLocalizedMessage());
+				}
+			}
+		}
+	}
+
+	//@Test
+	public void documentFisic() throws Exception {
+		System.out.println("TEST: GESTIO DOCUMENTS FISICS");
+		String titolExp = "RIPEA_prova_exp_" + System.currentTimeMillis();
+		String titolDoc = "RIPEA_prova_doc_" + System.currentTimeMillis();
+		ArxiuOrigenContingut origen = ArxiuOrigenContingut.ADMINISTRACIO;
+		Date dataCaptura = new Date();
+		Date dataObertura = new Date();
+		String classificacio = "organo1_PRO_123456789";
+		ArxiuExpedientEstat estat = ArxiuExpedientEstat.OBERT;
+		ArxiuEstatElaboracio estatElaboracio = ArxiuEstatElaboracio.ORIGINAL;
+		ArxiuTipusDocumental tipusDocumental1 = ArxiuTipusDocumental.ALTRES;
+		ArxiuFormatNom formatNom = ArxiuFormatNom.OASIS12;
+		ArxiuFormatExtensio formatExtensio = ArxiuFormatExtensio.ODT;
+		String serieDocumental = "S0001";
+		String expCreatNodeId = null;
+		String docCreatNodeId = null;
+		try {
+			System.out.print("1.- Crear expedient... ");
+			ArxiuExpedient expedientCreat = plugin.expedientCrear(
+					titolExp,
+					origen,
+					dataObertura,
+					classificacio,
+					estat,
+					organsTest,
+					interessatsTest,
+					serieDocumental,
+					capsaleraTest);
+			assertNotNull(expedientCreat);
+			expCreatNodeId = expedientCreat.getNodeId();
+			System.out.println("Ok");
+			System.out.print("2.- Crear document... ");
+			ArxiuDocument documentCreat = plugin.documentEsborranyCrear(
+					titolDoc,
+					origen,
+					dataCaptura,
+					estatElaboracio,
+					tipusDocumental1,
+					formatNom,
+					formatExtensio,
+					organsTest,
+					serieDocumental,
+					null,
+					"application/vnd.oasis.opendocument.text",
+					expCreatNodeId,
+					capsaleraTest);
+			assertNotNull(documentCreat);
+			docCreatNodeId = documentCreat.getNodeId();
+		} catch (Exception ex) {
+			System.out.println("Error: " + ex.getLocalizedMessage());
+			throw ex;
+		} finally {
+			if (docCreatNodeId != null) {
+				System.out.print("  - Esborrant document (nodeId=" + docCreatNodeId + ")... ");
+				try {
+					plugin.documentEsborrar(docCreatNodeId, capsaleraTest);
+					System.out.println("Ok");
+				} catch (Exception ex) {
+					System.out.println("Error: " + ex.getLocalizedMessage());
+				}
+			}
+			if (expCreatNodeId != null) {
+				System.out.print("  - Esborrant expedient (nodeId=" + expCreatNodeId + ")... ");
 				try {
 					plugin.expedientEsborrar(expCreatNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -565,7 +641,7 @@ public class ArxiuPluginTest {
 			throw ex;
 		} finally {
 			if (carCreadaNodeId != null) {
-				System.out.print("  - Esborrant carpeta degut a errors (nodeId=" + carCreadaNodeId + ")... ");
+				System.out.print("  - Esborrant carpeta (nodeId=" + carCreadaNodeId + ")... ");
 				try {
 					plugin.carpetaEsborrar(carCreadaNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -574,7 +650,7 @@ public class ArxiuPluginTest {
 				}
 			}
 			if (expCreatNodeId != null) {
-				System.out.print("  - Esborrant expedient degut a errors (nodeId=" + expCreatNodeId + ")... ");
+				System.out.print("  - Esborrant expedient (nodeId=" + expCreatNodeId + ")... ");
 				try {
 					plugin.expedientEsborrar(expCreatNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -693,7 +769,7 @@ public class ArxiuPluginTest {
 			throw ex;
 		} finally {
 			if (docCreatNodeId != null) {
-				System.out.print("  - Esborrant document degut a errors (nodeId=" + docCreatNodeId + ")... ");
+				System.out.print("  - Esborrant document (nodeId=" + docCreatNodeId + ")... ");
 				try {
 					plugin.documentEsborrar(docCreatNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -702,7 +778,7 @@ public class ArxiuPluginTest {
 				}
 			}
 			if (subcarCreadaNodeId != null) {
-				System.out.print("  - Esborrant subcarpeta degut a errors (nodeId=" + subcarCreadaNodeId + ")... ");
+				System.out.print("  - Esborrant subcarpeta (nodeId=" + subcarCreadaNodeId + ")... ");
 				try {
 					plugin.carpetaEsborrar(subcarCreadaNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -711,7 +787,7 @@ public class ArxiuPluginTest {
 				}
 			}
 			if (carCreadaNodeId != null) {
-				System.out.print("  - Esborrant carpeta degut a errors (nodeId=" + carCreadaNodeId + ")... ");
+				System.out.print("  - Esborrant carpeta (nodeId=" + carCreadaNodeId + ")... ");
 				try {
 					plugin.carpetaEsborrar(carCreadaNodeId, capsaleraTest);
 					System.out.println("Ok");
@@ -720,9 +796,145 @@ public class ArxiuPluginTest {
 				}
 			}
 			if (expCreatNodeId != null) {
-				System.out.print("  - Esborrant expedient degut a errors (nodeId=" + expCreatNodeId + ")... ");
+				System.out.print("  - Esborrant expedient (nodeId=" + expCreatNodeId + ")... ");
 				try {
 					plugin.expedientEsborrar(expCreatNodeId, capsaleraTest);
+					System.out.println("Ok");
+				} catch (Exception ex) {
+					System.out.println("Error: " + ex.getLocalizedMessage());
+				}
+			}
+		}
+	}
+	@Test
+	public void copiarContingut() throws Exception {
+		System.out.println("TEST: COPIA CONTINGUT");
+		String titolExp1 = "RIPEA_prova_exp1_" + System.currentTimeMillis();
+		String titolCar = "RIPEA_prova_car_" + System.currentTimeMillis();
+		String titolDoc = "RIPEA_prova_doc_" + System.currentTimeMillis();
+		String titolExp2 = "RIPEA_prova_exp2_" + System.currentTimeMillis();
+		ArxiuOrigenContingut origen = ArxiuOrigenContingut.ADMINISTRACIO;
+		Date dataObertura = new Date();
+		Date dataCaptura = new Date();
+		String classificacio = "organo1_PRO_123456789";
+		ArxiuExpedientEstat estat = ArxiuExpedientEstat.OBERT;
+		ArxiuEstatElaboracio estatElaboracio = ArxiuEstatElaboracio.ORIGINAL;
+		ArxiuTipusDocumental tipusDocumental1 = ArxiuTipusDocumental.ALTRES;
+		ArxiuFormatNom formatNom = ArxiuFormatNom.OASIS12;
+		ArxiuFormatExtensio formatExtensio = ArxiuFormatExtensio.ODT;
+		String serieDocumental = "S0001";
+		String expCreat1NodeId = null;
+		String carCreadaNodeId = null;
+		String docCreatNodeId = null;
+		String expCreat2NodeId = null;
+		try {
+			System.out.print("1.- Crear expedient 1... ");
+			ArxiuExpedient expedientCreat1 = plugin.expedientCrear(
+					titolExp1,
+					origen,
+					dataObertura,
+					classificacio,
+					estat,
+					organsTest,
+					interessatsTest,
+					serieDocumental,
+					capsaleraTest);
+			assertNotNull(expedientCreat1);
+			expCreat1NodeId = expedientCreat1.getNodeId();
+			System.out.println("Ok");
+			System.out.print("2.- Crear carpeta a expedient 1... ");
+			ArxiuCarpeta carpetaCreada = plugin.carpetaCrear(
+					titolCar,
+					expCreat1NodeId,
+					capsaleraTest);
+			assertNotNull(carpetaCreada);
+			carCreadaNodeId = carpetaCreada.getNodeId();
+			System.out.println("Ok");
+			System.out.print("3.- Crear document dins la carpeta... ");
+			ArxiuDocument documentCreat = plugin.documentEsborranyCrear(
+					titolDoc,
+					origen,
+					dataCaptura,
+					estatElaboracio,
+					tipusDocumental1,
+					formatNom,
+					formatExtensio,
+					organsTest,
+					serieDocumental,
+					getDocumentContingutPerTest(),
+					"application/vnd.oasis.opendocument.text",
+					carCreadaNodeId,
+					capsaleraTest);
+			assertNotNull(documentCreat);
+			docCreatNodeId = documentCreat.getNodeId();
+			System.out.println("Ok");
+			System.out.print("4.- Crear expedient 2... ");
+			ArxiuExpedient expedientCreat2 = plugin.expedientCrear(
+					titolExp2,
+					origen,
+					dataObertura,
+					classificacio,
+					estat,
+					organsTest,
+					interessatsTest,
+					serieDocumental,
+					capsaleraTest);
+			assertNotNull(expedientCreat2);
+			expCreat2NodeId = expedientCreat2.getNodeId();
+			System.out.println("Ok");
+			System.out.print("5.- Copiant carpeta amb document... ");
+			plugin.carpetaCopiar(
+					carCreadaNodeId,
+					expCreat2NodeId,
+					capsaleraTest);
+			System.out.println("Ok");
+			System.out.print("5.- Comprovant contingut expedient 2... ");
+			ArxiuExpedient expedientConsultat = plugin.expedientConsultar(
+					expCreat2NodeId,
+					capsaleraTest);
+			List<ArxiuFill> fills = expedientConsultat.getFills();
+			assertNotNull(fills);
+			assertEquals(1, fills.size());
+			ArxiuFill fill = fills.get(0);
+			assertNotNull(fill);
+			assertEquals(ArxiuFillTipusEnum.CARPETA, fill.getTipus());
+			assertEquals(titolCar, fill.getNom());
+			System.out.println("Ok");
+		} catch (Exception ex) {
+			System.out.println("Error: " + ex.getLocalizedMessage());
+			throw ex;
+		} finally {
+			if (expCreat2NodeId != null) {
+				System.out.print("  - Esborrant expedient 2 (nodeId=" + expCreat2NodeId + ")... ");
+				try {
+					plugin.carpetaEsborrar(expCreat2NodeId, capsaleraTest);
+					System.out.println("Ok");
+				} catch (Exception ex) {
+					System.out.println("Error: " + ex.getLocalizedMessage());
+				}
+			}
+			if (docCreatNodeId != null) {
+				System.out.print("  - Esborrant document (nodeId=" + docCreatNodeId + ")... ");
+				try {
+					plugin.documentEsborrar(docCreatNodeId, capsaleraTest);
+					System.out.println("Ok");
+				} catch (Exception ex) {
+					System.out.println("Error: " + ex.getLocalizedMessage());
+				}
+			}
+			if (carCreadaNodeId != null) {
+				System.out.print("  - Esborrant carpeta (nodeId=" + carCreadaNodeId + ")... ");
+				try {
+					plugin.carpetaEsborrar(carCreadaNodeId, capsaleraTest);
+					System.out.println("Ok");
+				} catch (Exception ex) {
+					System.out.println("Error: " + ex.getLocalizedMessage());
+				}
+			}
+			if (expCreat1NodeId != null) {
+				System.out.print("  - Esborrant expedient (nodeId=" + expCreat1NodeId + ")... ");
+				try {
+					plugin.expedientEsborrar(expCreat1NodeId, capsaleraTest);
 					System.out.println("Ok");
 				} catch (Exception ex) {
 					System.out.println("Error: " + ex.getLocalizedMessage());

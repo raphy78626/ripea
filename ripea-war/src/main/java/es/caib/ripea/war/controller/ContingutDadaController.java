@@ -122,6 +122,7 @@ public class ContingutDadaController extends BaseUserController {
 		ContingutDto contingut =  contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contingutId,
+				false,
 				false);
 		if (contingut instanceof NodeDto) {
 			return ((NodeDto)contingut).getDadesCount();

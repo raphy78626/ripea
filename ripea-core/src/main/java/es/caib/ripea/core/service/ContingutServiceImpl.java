@@ -3,6 +3,10 @@
  */
 package es.caib.ripea.core.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginNodeFillDto;
-import es.caib.ripea.core.api.dto.ArxiuPluginNodeFillTipusEnumDto;
+import es.caib.ripea.core.api.dto.ArxiuPluginNodeTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
@@ -31,6 +35,7 @@ import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -66,6 +71,7 @@ import es.caib.ripea.core.helper.HibernateHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
@@ -75,7 +81,9 @@ import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
+import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
+import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
 import es.caib.ripea.plugin.arxiu.ArxiuExpedient;
 import es.caib.ripea.plugin.arxiu.ArxiuFill;
 
@@ -261,7 +269,7 @@ public class ContingutServiceImpl implements ContingutService {
 	@CacheEvict(value = "errorsValidacioNode", key = "#contingutId")
 	public ContingutDto deleteReversible(
 			Long entitatId,
-			Long contingutId) {
+			Long contingutId) throws IOException {
 		logger.debug("Esborrant el contingut ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ")");
@@ -327,8 +335,17 @@ public class ContingutServiceImpl implements ContingutService {
 					contingutId,
 					ContingutEntity.class);
 		}
-		// Marca el contingut com a esborrat
+		// Marca el contingut i tots els seus fills com a esborrats
+		//  de forma recursiva
 		marcarEsborrat(contingut);
+		// Si el contingut és un document guarda una còpia del fitxer esborrat
+		// per a poder recuperar-lo posteriorment
+		if (contingut instanceof DocumentEntity) {
+			DocumentEntity document = (DocumentEntity)contingut;
+			if (DocumentTipusEnumDto.DIGITAL.equals(document.getDocumentTipus())) {
+				fitxerDocumentEsborratGuardar((DocumentEntity)contingut);
+			}
+		}
 		// Propaga l'acció a l'arxiu
 		contingutHelper.arxiuPropagarEliminacio(
 				contingut,
@@ -367,13 +384,13 @@ public class ContingutServiceImpl implements ContingutService {
 		if (contingut.getPare() != null) {
 			contingut.getPare().getFills().remove(contingut);
 		}
+		contingutRepository.delete(contingut);
 		// Propaga l'acció a l'arxiu
 		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
 				contingut,
 				false,
 				false,
 				false);
-		contingutRepository.delete(contingut);
 		contingutHelper.arxiuPropagarEliminacio(
 				contingut,
 				expedientSuperior);
@@ -392,7 +409,7 @@ public class ContingutServiceImpl implements ContingutService {
 	@Override
 	public ContingutDto undelete(
 			Long entitatId,
-			Long contingutId) {
+			Long contingutId) throws IOException {
 		logger.debug("Recuperant el contingut ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ")");
@@ -430,16 +447,9 @@ public class ContingutServiceImpl implements ContingutService {
 					ContingutEntity.class,
 					"Ja existeix un altre contingut amb el mateix nom dins el mateix pare");
 		}
+		// Recupera el contingut esborrat
 		contingut.updateEsborrat(0);
-		// Registra al log la recuperació del contingut
-		contingutLogHelper.log(
-				contingut,
-				LogTipusEnumDto.RECUPERACIO,
-				null,
-				null,
-				true,
-				true);
-		return contingutHelper.toContingutDto(
+		ContingutDto dto = contingutHelper.toContingutDto(
 				contingut,
 				true,
 				false,
@@ -448,6 +458,35 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false,
 				false);
+		// Registra al log la recuperació del contingut
+		contingutLogHelper.log(
+				contingut,
+				LogTipusEnumDto.RECUPERACIO,
+				null,
+				null,
+				true,
+				true);
+		// Propaga l'acció a l'arxiu
+		ExpedientEntity expedientSuperior = contingutHelper.getExpedientSuperior(
+				contingut,
+				false,
+				false,
+				false);
+		FitxerDto fitxer = null;
+		if (contingut instanceof DocumentEntity) {
+			DocumentEntity document = (DocumentEntity)contingut;
+			if (DocumentTipusEnumDto.DIGITAL.equals(document.getDocumentTipus())) {
+				fitxer = fitxerDocumentEsborratLlegir((DocumentEntity)contingut);
+			}
+		}
+		contingutHelper.arxiuPropagarModificacio(
+				contingut,
+				expedientSuperior,
+				fitxer);
+		if (fitxer != null) {
+			fitxerDocumentEsborratEsborrar((DocumentEntity)contingut);
+		}
+		return dto;
 	}
 
 	@Transactional
@@ -668,11 +707,13 @@ public class ContingutServiceImpl implements ContingutService {
 	public ContingutDto findAmbIdUser(
 			Long entitatId,
 			Long contingutId,
-			boolean ambFills) {
+			boolean ambFills,
+			boolean ambVersions) {
 		logger.debug("Obtenint contingut amb id per usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ", "
-				+ "ambFills=" + ambFills + ")");
+				+ "ambFills=" + ambFills + ", "
+				+ "ambVersions=" + ambVersions + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -704,7 +745,7 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				true,
 				false,
-				false);
+				ambVersions);
 	}
 
 	@Transactional(readOnly = true)
@@ -1184,6 +1225,8 @@ public class ContingutServiceImpl implements ContingutService {
 				});
 	}
 
+	@Transactional(readOnly = true)
+	@Override
 	public ArxiuPluginInfoDto getArxiuInfo(
 			Long entitatId,
 			Long contingutId) {
@@ -1634,22 +1677,70 @@ public class ContingutServiceImpl implements ContingutService {
 				arxiuFill.setNom(fill.getNom());
 				switch (fill.getTipus()) {
 				case EXPEDIENT:
-					arxiuFill.setTipus(ArxiuPluginNodeFillTipusEnumDto.EXPEDIENT);
+					arxiuFill.setTipus(ArxiuPluginNodeTipusEnumDto.EXPEDIENT);
 					break;
 				case DOCUMENT:
-					arxiuFill.setTipus(ArxiuPluginNodeFillTipusEnumDto.DOCUMENT);
+					arxiuFill.setTipus(ArxiuPluginNodeTipusEnumDto.DOCUMENT);
 					break;
 				case CARPETA:
-					arxiuFill.setTipus(ArxiuPluginNodeFillTipusEnumDto.CARPETA);
+					arxiuFill.setTipus(ArxiuPluginNodeTipusEnumDto.CARPETA);
 					break;
 				case DOCUMENT_MIGRAT:
-					arxiuFill.setTipus(ArxiuPluginNodeFillTipusEnumDto.DOCUMENT_MIGRAT);
+					arxiuFill.setTipus(ArxiuPluginNodeTipusEnumDto.DOCUMENT_MIGRAT);
 					break;
 				}
 				fills.add(arxiuFill);
 			}
 		}
 		return fills;
+	}
+
+	private void fitxerDocumentEsborratGuardar(
+			DocumentEntity document) throws IOException {
+		File fContent = new File(getBaseDir() + "/" + document.getId());
+		fContent.getParentFile().mkdirs();
+		FileOutputStream outContent = new FileOutputStream(fContent);
+		FitxerDto fitxer = documentHelper.getFitxerAssociat(
+				document,
+				null);
+		outContent.write(fitxer.getContingut());
+		outContent.close();
+	}
+
+	private FitxerDto fitxerDocumentEsborratLlegir(
+			DocumentEntity document) throws IOException {
+		File fContent = new File(getBaseDir() + "/" + document.getId());
+		fContent.getParentFile().mkdirs();
+		if (fContent.exists()) {
+			FileInputStream inContent = new FileInputStream(fContent);
+			byte fileContent[] = new byte[(int)fContent.length()];
+			inContent.read(fileContent);
+			inContent.close();
+			ArxiuDocumentContingut contingut = new ArxiuDocumentContingut(
+					ArxiuContingutTipusEnum.CONTINGUT,
+					null,
+					fileContent);
+			List<ArxiuDocumentContingut> continguts = new ArrayList<ArxiuDocumentContingut>();
+			continguts.add(contingut);
+			FitxerDto fitxer = new FitxerDto();
+			fitxer.setNom(document.getFitxerNom());
+			fitxer.setContentType(document.getFitxerContentType());
+			fitxer.setContingut(fileContent);
+			return fitxer;
+		} else {
+			return null;
+		}
+	}
+
+	private void fitxerDocumentEsborratEsborrar(
+			DocumentEntity document) {
+		File fContent = new File(getBaseDir() + "/" + document.getId());
+		fContent.getParentFile().mkdirs();
+		fContent.delete();
+	}
+
+	private String getBaseDir() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.app.data.dir") + "/esborrats-tmp";
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);

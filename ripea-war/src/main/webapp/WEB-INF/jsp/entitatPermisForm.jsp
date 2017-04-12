@@ -4,18 +4,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
-<%
-pageContext.setAttribute(
-		"idioma",
-		org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage());
-pageContext.setAttribute(
-		"principalTipusEnumOptions",
-		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.dto.PrincipalTipusEnumDto.class,
-				"principal.tipus.enum."));
-%>
-
 <c:choose>
 	<c:when test="${empty permisCommand.id}"><c:set var="titol"><spring:message code="entitat.permis.form.titol.crear"/></c:set></c:when>
 	<c:otherwise><c:set var="titol"><spring:message code="entitat.permis.form.titol.modificar"/></c:set></c:otherwise>
@@ -26,7 +14,8 @@ pageContext.setAttribute(
 	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
-	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${idioma}.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<rip:modalHead/>
 <script>
 	$(document).ready(function() {
@@ -38,11 +27,10 @@ pageContext.setAttribute(
 </script>
 </head>
 <body>
-
 	<c:set var="formAction"><rip:modalUrl value="/entitat/${entitat.id}/permis"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="permisCommand">
 		<form:hidden path="id"/>
-		<rip:inputSelect name="principalTipus" textKey="entitat.permis.form.camp.tipus" disabled="${not empty permisCommand.id}" optionItems="${principalTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
+		<rip:inputSelect name="principalTipus" textKey="entitat.permis.form.camp.tipus" disabled="${not empty permisCommand.id}" optionEnum="PrincipalTipusEnumDto"/>
 		<rip:inputText name="principalNom" textKey="entitat.permis.form.camp.principal" disabled="${not empty permisCommand.id}"/>
 		<rip:inputCheckbox name="administration" textKey="entitat.permis.form.camp.administracio"/>
 		<rip:inputCheckbox name="read" textKey="entitat.permis.form.camp.usuari"/>
@@ -51,6 +39,5 @@ pageContext.setAttribute(
 			<a href="<c:url value="/entitat/${entitat.id}/permis"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
-
 </body>
 </html>

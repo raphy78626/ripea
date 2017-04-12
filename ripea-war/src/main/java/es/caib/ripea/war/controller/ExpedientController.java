@@ -104,7 +104,8 @@ public class ExpedientController extends BaseUserController {
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						expedientId,
-						true));
+						true,
+						false));
 		return "expedientTancarForm";
 	}
 	@RequestMapping(value = "/{expedientId}/tancar", method = RequestMethod.POST)
@@ -121,7 +122,8 @@ public class ExpedientController extends BaseUserController {
 					contingutService.findAmbIdUser(
 							entitatActual.getId(),
 							expedientId,
-							true));
+							true,
+							false));
 			return "expedientTancarForm";
 		}
 		expedientService.tancar(
@@ -149,7 +151,8 @@ public class ExpedientController extends BaseUserController {
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						expedientId,
-						true));
+						true,
+						false));
 		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		model.addAttribute(
 				"contenidorOrigen",
@@ -188,7 +191,8 @@ public class ExpedientController extends BaseUserController {
 					contingutService.findAmbIdUser(
 							entitatActual.getId(),
 							expedientId,
-							true));
+							true,
+							false));
 			model.addAttribute(
 					"contenidorOrigen",
 					escriptori);
@@ -262,7 +266,8 @@ public class ExpedientController extends BaseUserController {
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						expedientId,
-						true));
+						true,
+						false));
 		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		model.addAttribute(
 				"contingutOrigen",
@@ -284,7 +289,8 @@ public class ExpedientController extends BaseUserController {
 					contingutService.findAmbIdUser(
 							entitatActual.getId(),
 							expedientId,
-							true));
+							true,
+							false));
 			model.addAttribute(
 					"contingutOrigen",
 					escriptori);

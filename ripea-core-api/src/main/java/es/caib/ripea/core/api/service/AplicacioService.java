@@ -122,21 +122,50 @@ public interface AplicacioService {
 	public List<String> permisosFindRolsDistinctAll();
 
 	/**
-	 * Retorna el valor d'un paràmetre de configuració de l'aplicació.
+	 * Retorna el valor de la propietat es.caib.ripea.base.url.
 	 * 
-	 * @param property
-	 *             El codi del paràmetre
-	 * @return el valor del paràmetre
+	 * @return el valor del paràmetre.
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
-	public String propertyGet(String property);
+	public String propertyBaseUrl();
 
 	/**
-	 * Retorna el valor d'un paràmetre de configuració de l'aplicació.
+	 * Retorna si el plugin d'arxiu està actiu.
 	 * 
-	 * @param prefix
-	 *             El prefix dels paràmetres a consultar
-	 * @return un Map amb els paràmetres trobats.
+	 * @return true si està actiu o false si no ho està.
+	 */
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public boolean isPluginArxiuActiu();
+
+	/**
+	 * Retorna el valor de la propietat es.caib.ripea.plugin.passarelafirma.ids.
+	 * 
+	 * @return el valor del paràmetre.
+	 */
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public String propertyPluginPassarelaFirmaIds();
+
+	/**
+	 * Retorna el valor de la propietat plugin.passarelafirma.ignorar.modal.ids.
+	 * 
+	 * @return el valor del paràmetre.
+	 */
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public String propertyPluginPassarelaFirmaIgnorarModalIds();
+
+	/**
+	 * Retorna el valor de la propietat es.caib.ripea.plugin.escaneig..ids.
+	 * 
+	 * @return el valor del paràmetre.
+	 */
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public String propertyPluginEscaneigIds();
+
+	/**
+	 * Retorna els valors dels paràmetres de configuració de l'aplicació
+	 * que tenen un determinat prefix.
+	 * 
+	 * @return el valor del paràmetre.
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public Map<String, String> propertyFindByPrefix(String prefix);

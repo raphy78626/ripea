@@ -108,6 +108,7 @@ public class ArxiuUserController extends BaseUserController {
 				contenidorService.findAmbIdUser(
 						entitatActual.getId(),
 						arxiuId,
+						false,
 						false));
 		model.addAttribute(
 				"metaExpedients",

@@ -134,29 +134,7 @@ public class ExpedientDto extends NodeDto {
 		return (MetaExpedientDto)getMetaNode();
 	}
 
-	/*public String getNumero() {
-		return sequencia + "/" + any;
-	}
-
-	public String getNtiVersion() {
-		return "1.0";
-	}
-	public String getNtiIdentificador() {
-		return "ES_" + getNtiOrgano() + "_" + getAny() + "_EXP_RIP" + String.format("%027d", getId());
-	}
-	public String getNtiOrgano() {
-		if (arxiu == null)
-			return null;
-		return arxiu.getUnitatCodi();
-	}
-	public String getNtiFechaApertura() {
-		if (getCreatedDate() != null)
-			return new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss").format(getCreatedDate());
-		else
-			return null;
-	}*/
-
-	public String getNtiVersionUrl() {
+	/*public String getNtiVersionUrl() {
 		return "http://administracionelectronica.gob.es/ENI/XSD/V" + ntiVersion + "/expediente-e";
 	}
 	public String getNtiClasificacion() {
@@ -177,6 +155,13 @@ public class ExpedientDto extends NodeDto {
 	}
 	public String getNtiEstado() {
 		return ExpedientEstatEnumDto.OBERT.equals(estat) ? "Abierto" : "Cerrado";
+	}*/
+
+	public boolean isAgafat() {
+		return getEscriptoriPare() != null;
+	}
+	public String getAgafatUsuari() {
+		return getNomPropietariEscriptoriPare();
 	}
 
 	protected ExpedientDto copiarContenidor(ContingutDto original) {

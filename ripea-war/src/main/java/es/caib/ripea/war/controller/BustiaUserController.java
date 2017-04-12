@@ -88,6 +88,7 @@ public class BustiaUserController extends BaseUserController {
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						bustiaId,
+						false,
 						false));
 		return "bustiaPendentList";
 	}

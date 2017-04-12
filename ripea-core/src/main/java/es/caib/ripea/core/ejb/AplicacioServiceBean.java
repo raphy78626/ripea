@@ -98,10 +98,33 @@ public class AplicacioServiceBean implements AplicacioService {
 		return delegate.permisosFindRolsDistinctAll();
 	}
 
+	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	public boolean isPluginArxiuActiu() {
+		return delegate.isPluginArxiuActiu();
+	}
+
 	@Override
 	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
-	public String propertyGet(String property) {
-		return delegate.propertyGet(property);
+	public String propertyBaseUrl() {
+		return delegate.propertyBaseUrl();
+	}
+
+	@Override
+	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	public String propertyPluginPassarelaFirmaIds() {
+		return delegate.propertyPluginPassarelaFirmaIds();
+	}
+
+	@Override
+	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	public String propertyPluginPassarelaFirmaIgnorarModalIds() {
+		return delegate.propertyPluginPassarelaFirmaIgnorarModalIds();
+	}
+
+	@Override
+	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	public String propertyPluginEscaneigIds() {
+		return delegate.propertyPluginEscaneigIds();
 	}
 
 	@Override

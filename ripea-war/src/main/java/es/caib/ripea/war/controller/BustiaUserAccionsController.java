@@ -219,7 +219,8 @@ public class BustiaUserAccionsController extends BaseUserController {
 		ContingutDto contingutOrigen = contenidorService.findAmbIdUser(
 				entitatActual.getId(),
 				contenidorOrigenId,
-				true);
+				true,
+				false);
 		model.addAttribute(
 				"contingutOrigen",
 				contingutOrigen);

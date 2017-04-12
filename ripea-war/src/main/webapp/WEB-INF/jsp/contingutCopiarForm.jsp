@@ -17,11 +17,7 @@
 	<form:form action="" class="form-horizontal" commandName="contingutMoureCopiarEnviarCommand">
 		<form:hidden path="origenId"/>
 		<rip:inputFixed textKey="contingut.copiar.camp.origen">
-			<c:choose>
-				<c:when test="${contingutOrigen.expedient}"><span class="fa fa-briefcase"></span></c:when>
-				<c:when test="${contingutOrigen.carpeta}"><rip:blocIconaCarpeta carpeta="${contingutOrigen}" petita="${true}"/></c:when>
-				<c:when test="${contingutOrigen.document}"><span class="fa fa-file"></span></c:when>
-			</c:choose>
+			<rip:blocIconaContingut contingut="${contingutOrigen}"/>
 			${contingutOrigen.nom}
 		</rip:inputFixed>
 		<rip:inputFileChooser name="destiId" contingutOrigen="${contingutOrigen}" textKey="contingut.copiar.camp.desti" required="true"/>

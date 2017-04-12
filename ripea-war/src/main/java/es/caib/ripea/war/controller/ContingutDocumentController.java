@@ -126,6 +126,7 @@ public class ContingutDocumentController extends BaseUserController {
 			ContingutDto contingut = contingutService.findAmbIdUser(
 					entitatActual.getId(),
 					contingutId,
+					false,
 					false);
 			if (contingut.getExpedientPare() != null) {
 				command.setNtiOrgano(contingut.getExpedientPare().getNtiOrgano());
@@ -358,7 +359,8 @@ public class ContingutDocumentController extends BaseUserController {
 		ContingutDto contingut = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				documentId,
-				true);
+				true,
+				false);
 		if (contingut instanceof DocumentDto) {
 			FitxerDto fitxer = documentService.descarregar(
 					entitatActual.getId(),

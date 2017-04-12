@@ -47,6 +47,7 @@ import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
+import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
@@ -799,6 +800,70 @@ public class PluginHelper {
 	}
 	public boolean arxiuSuportaMetadades() {
 		return getPropertyPluginArxiuSuportaMetadades();
+	}
+
+	public void arxiuEscriptoriCrear(
+			EscriptoriEntity escriptori) {
+		String accioDescripcio = "Creant un nou escriptori";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", escriptori.getId().toString());
+		accioParams.put("nom", escriptori.getNom());
+		accioParams.put("entitatId", escriptori.getEntitat().getId().toString());
+		accioParams.put("entitatCodi", escriptori.getEntitat().getCodi());
+		accioParams.put("entitatNom", escriptori.getEntitat().getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			String classificacio = getPropertyPluginArxiuEscriptoriClassificacio();
+			String serieDocumental = getPropertyPluginArxiuEscriptoriSerieDocumental();
+			ArxiuExpedientEstat estat = ArxiuExpedientEstat.OBERT;
+			List<String> organs = new ArrayList<String>();
+			organs.add(escriptori.getEntitat().getUnitatArrel());
+			ArxiuExpedient arxiuExpedient = getArxiuPlugin().expedientCrear(
+					escriptori.getNom(),
+					ArxiuOrigenContingut.ADMINISTRACIO,
+					escriptori.getCreatedDate().toDate(),
+					classificacio,
+					estat,
+					organs,
+					null,
+					serieDocumental,
+					generarCapsaleraArxiu(escriptori));
+			StringBuilder organsSb = null;
+			if (arxiuExpedient.getEniOrgans() != null && !arxiuExpedient.getEniOrgans().isEmpty()) {
+				organsSb = new StringBuilder();
+				boolean primer = true;
+				for (String organ: arxiuExpedient.getEniOrgans()) {
+					if (primer) {
+						primer = false;
+					} else {
+						organsSb.append(",");
+					}
+					organsSb.append(organ);
+				}
+			}
+			escriptori.updateArxiu(
+					arxiuExpedient.getNodeId());
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
 	}
 
 	public void arxiuExpedientActualitzar(
@@ -3137,6 +3202,12 @@ public class PluginHelper {
 	}
 	private boolean getPropertyPluginArxiuCsvBaseUrl() {
 		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.csv.base.url");
+	}
+	private String getPropertyPluginArxiuEscriptoriClassificacio() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.escriptori.classificacio");
+	}
+	private String getPropertyPluginArxiuEscriptoriSerieDocumental() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.escriptori.serie.documental");
 	}
 
 }

@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.ejb;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class ContingutServiceBean implements ContingutService {
 	@RolesAllowed("tothom")
 	public ContingutDto deleteReversible(
 			Long entitatId,
-			Long contingutId) {
+			Long contingutId) throws IOException {
 		return delegate.deleteReversible(entitatId, contingutId);
 	}
 
@@ -87,7 +88,7 @@ public class ContingutServiceBean implements ContingutService {
 	@RolesAllowed("IPA_ADMIN")
 	public ContingutDto undelete(
 			Long entitatId,
-			Long contingutId) {
+			Long contingutId) throws IOException {
 		return delegate.undelete(entitatId, contingutId);
 	}
 
@@ -122,11 +123,13 @@ public class ContingutServiceBean implements ContingutService {
 	public ContingutDto findAmbIdUser(
 			Long entitatId,
 			Long contingutId,
-			boolean ambFills) {
+			boolean ambFills,
+			boolean ambVersions) {
 		return delegate.findAmbIdUser(
 				entitatId,
 				contingutId,
-				ambFills);
+				ambFills,
+				ambVersions);
 	}
 
 	@Override

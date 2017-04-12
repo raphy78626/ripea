@@ -9,23 +9,26 @@
 <c:set var="potModificarContingut" value="${false}"/>
 <c:if test="${contingut.node}"><c:set var="potModificarContingut" value="${empty contingut.metaNode or contingut.metaNode.usuariActualWrite}"/></c:if>
 <c:set var="htmlIconaCarpeta6em"><span class="fa-stack" style="font-size:.6em"><i class="fa fa-folder fa-stack-2x"></i><i class="fa fa-clock-o fa-stack-1x fa-inverse"></i></span></c:set>
+<rip:blocIconaContingutNoms/>
 <html>
 <head>
 	<title>
 		<c:choose>
 			<c:when test="${contingut.escriptori}">
 				<c:choose>
-					<c:when test="${paginaExpedients}"><c:set var="titleIconClass" value="list-alt"/>&nbsp;<spring:message code="contingut.titol.expedients"/></c:when>
-					<c:otherwise><c:set var="titleIconClass" value="desktop"/>&nbsp;<spring:message code="contingut.titol.escriptori"/></c:otherwise>
+					<c:when test="${paginaExpedients}">&nbsp;<spring:message code="contingut.titol.expedients"/></c:when>
+					<c:otherwise>&nbsp;<spring:message code="contingut.titol.escriptori"/></c:otherwise>
 				</c:choose>
 			</c:when>
-			<c:when test="${contingut.expedient}"><c:set var="titleIconClass" value="briefcase"/>&nbsp;${contingut.nom}</c:when>
-			<c:when test="${contingut.carpeta}"><c:set var="titleIconClass" value="folder"/>&nbsp;${contingut.nom}</c:when>
-			<c:when test="${contingut.document}"><c:set var="titleIconClass" value="file"/>&nbsp;${contingut.nom}</c:when>
-			<c:when test="${contingut.bustia}"><c:set var="titleIconClass" value="inbox"/>&nbsp;${contingut.nom}</c:when>
+			<c:when test="${contingut.expedient}">&nbsp;${contingut.nom}</c:when>
+			<c:when test="${contingut.carpeta}">&nbsp;${contingut.nom}</c:when>
+			<c:when test="${contingut.document}">&nbsp;${contingut.nom}</c:when>
+			<c:when test="${contingut.bustia}">&nbsp;${contingut.nom}</c:when>
 		</c:choose>
 	</title>
-	<c:if test="${not empty titleIconClass}"><meta name="title-icon-class" content="fa fa-${titleIconClass}"/></c:if>
+	<c:set var="titleIconClass"><rip:blocIconaContingut contingut="${contingut}" nomesIconaNom="true"/></c:set>
+	<c:set var="titleIconClass" value="${fn:trim(titleIconClass)}"/>
+	<c:if test="${not empty titleIconClass}"><meta name="title-icon-class" content="fa ${titleIconClass}"/></c:if>
 	<meta name="subtitle" content="${serveiPerTitol}"/>
 	<script src="<c:url value="/webjars/datatables.net/1.10.11/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.11/js/dataTables.bootstrap.min.js"/>"></script>
@@ -61,10 +64,10 @@
 }
 #contenidor-contingut .thumbnail {
 	margin-bottom: 0 !important;
-	border: 1px solid #f9f9f9;
+	border: 2px solid #f9f9f9;
 }
 #contenidor-contingut .thumbnail:hover {
-	border: 1px solid #428bca;
+	border: 2px solid #ddd;
 	background-color: #f5f5f5;
 	cursor: pointer;
 }
@@ -117,21 +120,13 @@ h4.interessats {
 ul.interessats {
 	padding-left: 1em !important;
 }
-.element-target .thumbnail {
-	/*border: 1px solid #cacaca !important;*/
-}
 .element-hover .thumbnail {
-	border: 1px solid #428bca !important;
+	border: 2px solid #ddd !important;
 	background-color: #f5f5f5;
 }
 .right {
 	float: right;
 }
-.brep {
-	padding-right: 5px;
-    padding-left: 6px;
-}
-
 #nodeDades .form-group {
 	margin-bottom: 6px;
 }
@@ -141,7 +136,6 @@ ul.interessats {
 #nodeDades input.multiple {
 	width: 280px; !important
 }
-
 </style>
 <c:if test="${edicioOnlineActiva and contingut.document and not empty contingut.escriptoriPare}">
 	<script src="http://www.java.com/js/deployJava.js"></script>
@@ -351,16 +345,9 @@ $(document).ready(function() {
 				<div id="contenidor-info" class="well">
 					<h3>
 						<spring:message code="contingut.info.informacio"/>
-						<c:choose>
-							<c:when test="${contingut.replicatDinsArxiu}">
-								<a href="../contingut/${contingut.id}/arxiu" class="btn btn-info btn-xs" data-toggle="modal">Arxiu</a>
-							</c:when>
-							<c:otherwise>
-								<c:if test="${contingut.expedient or contingut.document}">
-									<a href="../contingut/${contingut.id}/nti" class="btn btn-info btn-xs" data-toggle="modal">NTI</a>
-								</c:if>
-							</c:otherwise>
-						</c:choose>
+						<c:if test="${pluginArxiuActiu}">
+							<a href="../contingut/${contingut.id}/arxiu" class="btn btn-info btn-xs" data-toggle="modal">Arxiu</a>
+						</c:if>
 					</h3>
 					<dl>
 						<dt>
@@ -377,24 +364,22 @@ $(document).ready(function() {
 						<dt><spring:message code="contingut.info.tipus"/></dt>
 						<dd><spring:message code="contingut.tipus.enum.${contingut.tipus}"/></dd>
 						<c:if test="${contingut.expedient}">
+							<c:if test="${not empty contingut.metaNode}">
+								<dt><spring:message code="contingut.info.meta.expedient"/></dt>
+								<dd>${contingut.metaNode.nom}</dd>
+							</c:if>
 							<dt><spring:message code="contingut.info.numero"/></dt>
 							<dd>${contingut.sequencia}/${contingut.any}</dd>
-						</c:if>
-						<c:if test="${contingut.expedient}">
 							<dt><spring:message code="contingut.info.arxiu"/></dt>
 							<dd>${contingut.arxiu.nom}</dd>
 							<dt><spring:message code="contingut.info.estat"/></dt>
 							<dd><spring:message code="expedient.estat.enum.${contingut.estat}"/></dd>
-							<dt><spring:message code="contingut.info.nti.identificador"/></dt>
-							<dd style="overflow:hidden;text-overflow:ellipsis" title="${contingut.ntiIdentificador}">${contingut.ntiIdentificador}</dd>
-							<dt><spring:message code="contingut.info.nti.organ"/></dt>
-							<dd>${contingut.ntiOrganoDescripcio}</dd>
-							<dt><spring:message code="contingut.info.nti.data.obertura"/></dt>
-							<dd><fmt:formatDate value="${contingut.ntiFechaApertura}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-							<dt><spring:message code="contingut.info.nti.classificacio"/></dt>
-							<dd>${contingut.ntiClasificacionSia}</dd>
 						</c:if>
 						<c:if test="${contingut.document}">
+							<c:if test="${not empty contingut.metaNode}">
+								<dt><spring:message code="contingut.info.meta.document"/></dt>
+								<dd>${contingut.metaNode.nom}</dd>
+							</c:if>
 							<dt><spring:message code="contingut.info.data"/></dt>
 							<dd><fmt:formatDate value="${contingut.data}" pattern="dd/MM/yyyy"/></dd>
 							<dt><spring:message code="contingut.info.estat"/></dt>
@@ -403,51 +388,68 @@ $(document).ready(function() {
 								<dt><spring:message code="contingut.info.versio"/></dt>
 								<dd>${contingut.versioDarrera}</dd>
 							</c:if>
-							<dt><spring:message code="contingut.info.nti.identificador"/></dt>
-							<dd style="overflow:hidden;text-overflow:ellipsis" title="${contingut.ntiIdentificador}">${contingut.ntiIdentificador}</dd>
-							<dt><spring:message code="contingut.info.nti.organ"/></dt>
-							<dd>${contingut.ntiOrganoDescripcio}</dd>
-							<dt><spring:message code="contingut.info.nti.data.captura"/></dt>
-							<dd><fmt:formatDate value="${contingut.dataCaptura}" pattern="dd/MM/yyyy"/></dd>
-							<dt><spring:message code="contingut.info.nti.origen"/></dt>
-							<dd><spring:message code="document.nti.origen.enum.${contingut.ntiOrigen}"/></dd>
-							<dt><spring:message code="contingut.info.nti.estat.elab"/></dt>
-							<dd><spring:message code="document.nti.estela.enum.${contingut.ntiEstadoElaboracion}"/></dd>
-							<dt><spring:message code="contingut.info.nti.tipus.doc"/></dt>
-							<dd><spring:message code="document.nti.tipdoc.enum.${contingut.ntiTipoDocumental}"/></dd>
-							<c:if test="${not empty contingut.ntiIdDocumentoOrigen}">
-								<dt><spring:message code="contingut.info.nti.doc.origen.id"/></dt>
-								<dd>${contingut.ntiIdDocumentoOrigen}</dd>
-							</c:if>
-						</c:if>
-						<%--dt><spring:message code="contingut.info.createl"/></dt>
-						<dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
-						<dt><spring:message code="contingut.info.creatper"/></dt>
-						<dd>${contingut.createdBy.nom}</dd--%>
-						<c:if test="${not empty relacionats}">
-							<h4 id="expedient-info-relacionats" style="padding-bottom: 0 !important;margin-bottom: 4px !important; border-bottom: 1px solid #e3e3e3">
-								<spring:message code="contingut.info.relacionats"/>
-							</h4>
-							<ul class="list-unstyled">
-								<c:forEach var="expedientRelacionat" items="${relacionats}">
-									<c:if test="${!expedientRelacionat.esborrat}">
-										<li>
-											<span class="fa fa-briefcase"></span>
-											<a href="${expedientRelacionat.id}">
-												[${expedientRelacionat.sequencia}/${expedientRelacionat.any}] 
-												${expedientRelacionat.nom} 
-											</a>
-											<c:if test="${potModificarContingut}">
-												<a href="../expedient/${contingut.id}/relacio/${expedientRelacionat.id}/delete" class="btn btn-default btn-xs" data-confirm="<spring:message code="contingut.info.relacio.esborrar.confirm"/>" style="float: right;">
-													<span class="fa fa-trash-o"></span>
-												</a> 
-											</c:if>
-										</li>
-									</c:if>
-								</c:forEach>
-							</ul>
 						</c:if>
 					</dl>
+					<c:if test="${contingut.expedient or contingut.document}">
+						<a href="#informacioEni" class="btn btn-default btn-xs pull-right" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="informacioEni" style="margin-top:-3.5em">
+						<spring:message code="contingut.info.mes"/> ...
+						</a>
+						<div class="collapse" id="informacioEni">
+							<dl>
+								<c:if test="${contingut.expedient}">
+									<dt><spring:message code="contingut.info.nti.identificador"/></dt>
+									<dd style="overflow:hidden;text-overflow:ellipsis" title="${contingut.ntiIdentificador}">${contingut.ntiIdentificador}</dd>
+									<dt><spring:message code="contingut.info.nti.organ"/></dt>
+									<dd>${contingut.ntiOrganoDescripcio}</dd>
+									<dt><spring:message code="contingut.info.nti.data.obertura"/></dt>
+									<dd><fmt:formatDate value="${contingut.ntiFechaApertura}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+									<dt><spring:message code="contingut.info.nti.classificacio"/></dt>
+									<dd>${contingut.ntiClasificacionSia}</dd>
+								</c:if>
+								<c:if test="${contingut.document}">
+									<dt><spring:message code="contingut.info.nti.identificador"/></dt>
+									<dd style="overflow:hidden;text-overflow:ellipsis" title="${contingut.ntiIdentificador}">${contingut.ntiIdentificador}</dd>
+									<dt><spring:message code="contingut.info.nti.organ"/></dt>
+									<dd>${contingut.ntiOrganoDescripcio}</dd>
+									<dt><spring:message code="contingut.info.nti.data.captura"/></dt>
+									<dd><fmt:formatDate value="${contingut.dataCaptura}" pattern="dd/MM/yyyy"/></dd>
+									<dt><spring:message code="contingut.info.nti.origen"/></dt>
+									<dd><spring:message code="document.nti.origen.enum.${contingut.ntiOrigen}"/></dd>
+									<dt><spring:message code="contingut.info.nti.estat.elab"/></dt>
+									<dd><spring:message code="document.nti.estela.enum.${contingut.ntiEstadoElaboracion}"/></dd>
+									<dt><spring:message code="contingut.info.nti.tipus.doc"/></dt>
+									<dd><spring:message code="document.nti.tipdoc.enum.${contingut.ntiTipoDocumental}"/></dd>
+									<c:if test="${not empty contingut.ntiIdDocumentoOrigen}">
+										<dt><spring:message code="contingut.info.nti.doc.origen.id"/></dt>
+										<dd>${contingut.ntiIdDocumentoOrigen}</dd>
+									</c:if>
+								</c:if>
+							</dl>
+						</div>
+					</c:if>
+					<c:if test="${not empty relacionats}">
+						<h4 id="expedient-info-relacionats" style="padding-bottom: 0 !important;margin-bottom: 4px !important; border-bottom: 1px solid #e3e3e3">
+							<spring:message code="contingut.info.relacionats"/>
+						</h4>
+						<ul class="list-unstyled">
+							<c:forEach var="expedientRelacionat" items="${relacionats}">
+								<c:if test="${!expedientRelacionat.esborrat}">
+									<li>
+										<span class="fa ${iconaExpedientObert}"></span>
+										<a href="${expedientRelacionat.id}">
+											[${expedientRelacionat.sequencia}/${expedientRelacionat.any}] 
+											${expedientRelacionat.nom} 
+										</a>
+										<c:if test="${potModificarContingut}">
+											<a href="../expedient/${contingut.id}/relacio/${expedientRelacionat.id}/delete" class="btn btn-default btn-xs" data-confirm="<spring:message code="contingut.info.relacio.esborrar.confirm"/>" style="float: right;">
+												<span class="fa fa-trash-o"></span>
+											</a> 
+										</c:if>
+									</li>
+								</c:if>
+							</c:forEach>
+						</ul>
+					</c:if>
 					<rip:blocContenidorAccions id="botons-accions-info" contingut="${contingut}" modeLlistat="true" mostrarObrir="false"/>
 				</div>
 				<%--                     --%>
@@ -470,40 +472,14 @@ $(document).ready(function() {
 			<%-- Pipelles --%>
 			<%--          --%>
 			<ul class="nav nav-tabs">
-				<c:choose>
-					<c:when test="${contingut.document}">
-						<c:choose>
-							<c:when test="${contingut.documentTipus == 'FISIC'}">
-								<li class="active"><a href="#ubicacio" data-toggle="tab">
-									<spring:message code="contingut.tab.ubicacio"/></a>
-								</li>
-								<li>
-									<a href="#dades" data-toggle="tab"><spring:message code="contingut.tab.dades"/>&nbsp;<span class="badge" id="dades-count">${contingut.dadesCount}</span></a>
-								</li>
-							</c:when>
-							<c:otherwise>
-								<li class="active">
-									<a href="#dades" data-toggle="tab"><spring:message code="contingut.tab.dades"/>&nbsp;<span class="badge" id="dades-count">${contingut.dadesCount}</span></a>
-								</li>
-							</c:otherwise>
-						</c:choose>
-						<c:if test="${contingut.versioCount gt 0}">
-							<li>
-								<a href="#contingut" data-toggle="tab"><spring:message code="contingut.tab.versions"/>&nbsp;<span class="badge" id="versions-count">${contingut.versioCount}</span></a>
-							</li>
-						</c:if>
-					</c:when>
-					<c:otherwise>
-						<li class="active"><a href="#contingut" data-toggle="tab">
-							<spring:message code="contingut.tab.contingut"/>&nbsp;<span class="badge">${contingut.fillsNoRegistresCount}</span></a>
-						</li>
-						<c:if test="${contingut.expedient}">
-							<li>
-								<a href="#dades" data-toggle="tab"><spring:message code="contingut.tab.dades"/>&nbsp;<span class="badge" id="dades-count">${contingut.dadesCount}</span></a>
-							</li>
-						</c:if>
-					</c:otherwise>
-				</c:choose>
+				<li class="active"><a href="#contingut" data-toggle="tab">
+					<spring:message code="contingut.tab.contingut"/>&nbsp;<span class="badge">${contingut.fillsNoRegistresCount}</span></a>
+				</li>
+				<c:if test="${contingut.document or contingut.expedient}">
+					<li>
+						<a href="#dades" data-toggle="tab"><spring:message code="contingut.tab.dades"/>&nbsp;<span class="badge" id="dades-count">${contingut.dadesCount}</span></a>
+					</li>
+				</c:if>
 				<c:if test="${contingut.expedient}">
 					<li>
 						<a href="#registres" data-toggle="tab"><spring:message code="contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contingut.fillsRegistresCount}</span></a>
@@ -515,115 +491,60 @@ $(document).ready(function() {
 						<a href="#enviaments" data-toggle="tab"><spring:message code="contingut.tab.enviaments"/>&nbsp;<span class="badge" id="enviaments-count">${enviamentsCount}</span></a>
 					</li>
 				</c:if>
+				<c:if test="${contingut.document and contingut.versioCount gt 0}">
+					<li>
+						<a href="#versions" data-toggle="tab"><spring:message code="contingut.tab.versions"/>&nbsp;<span class="badge" id="versions-count">${contingut.versioCount}</span></a>
+					</li>
+				</c:if>
 			</ul>
 			<%--           --%>
 			<%-- /Pipelles --%>
 			<%--           --%>
 			<div class="tab-content">
-				<c:choose>
-					<c:when test="${contingut.document}">
-						<%--          --%>
-						<%-- Document --%>
-						<%--          --%>
-						<c:choose>
-							<c:when test="${contingut.documentTipus != 'FISIC'}">
-								<div class="tab-pane" id="contingut">
-									<div id="document-versions" class="panel-group" id="accordion">
-										<table class="table table-bordered table-striped">
-										<thead>
+				<div class="tab-pane active in" id="contingut">
+					<%--                   --%>
+					<%-- Pipella contingut --%>
+					<%--                   --%>
+					<c:choose>
+						<c:when test="${contingut.document}">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th><strong>Tipus de document</strong></th>
+										<c:if test="${contingut.documentTipus == 'DIGITAL'}">
+											<th><span class="fa fa-save"></span> Document digital</th>
+										</c:if>
+										<c:if test="${contingut.documentTipus == 'FISIC'}">
+											<th><span class="fa fa-book"></span> Document físic</th>
+										</c:if>
+									</tr>
+								</thead>
+								<tbody>
+									<c:choose>
+										<c:when test="${contingut.documentTipus != 'FISIC'}">
 											<tr>
-												<th>Id</th>
-												<th>Data</th>
-												<th width="1%"></th>
+												<td><strong>Nom</strong></td>
+												<td>${contingut.fitxerNom}</td>
 											</tr>
-										</thead>
-										<tbody>
-										<c:forEach var="versio" items="${contingut.versions}">
 											<tr>
-												<td>${versio.id}</td>
-												<td><fmt:formatDate value="${versio.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
-												<td>
-													<a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.id}/descarregar" class="btn btn-default">
-														<span class="fa fa-download"></span>&nbsp;
-														<spring:message code="comu.boto.descarregar"/>
-													</a>
-												</td>
+												<td><strong>Tipus de contingut</strong></td>
+												<td>${contingut.fitxerContentType}</td>
 											</tr>
-										</c:forEach>
-										</tbody>
-										</table>
-										<c:forEach var="versio" items="${documentVersions}" varStatus="status">
-											<div class="panel panel-default">
-												<div class="panel-heading">
-													<h4 class="panel-title">
-														<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_${versio.id}">
-															<spring:message code="contingut.versions.versio"/> ${versio}
-														</a>
-													</h4>
-												</div>
-												<div id="collapse_${versio.id}" class="panel-collapse collapse<c:if test="${status.first}"> in</c:if>">
-													<div class="panel-body">
-														<dl class="dl-horizontal">
-															<dt><spring:message code="contingut.versions.arxiu.nom"/>:</dt>
-															<dd>${versio.arxiuNom}</dd>
-															<dt><spring:message code="contingut.versions.arxiu.tipus"/>:</dt>
-															<dd>${versio.arxiuContentType}</dd>
-															<dt><spring:message code="contingut.versions.arxiu.tamany"/>:</dt>
-															<dd>${versio.arxiuContentLength} bytes</dd>
-															<dt><spring:message code="contingut.versions.createl"/>:</dt>
-															<dd><fmt:formatDate value="${versio.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>
-															<c:if test="${versio.firmaIntentat}">
-																<dt><spring:message code="contingut.versions.firma.estat"/>:</dt>
-																<dd>
-																	<c:choose>
-																		<c:when test="${versio.firmaError}">
-																			<span class="label label-danger" title="${versio.portafirmesEnviamentDarrer.errorDescripcio}"><span class="fa fa-warning"></span>&nbsp;ERROR</span>
-																		</c:when>
-																		<c:otherwise><spring:message code="document.firma.estat.enum.${versio.firmaEstat}"/></c:otherwise>
-																	</c:choose>
-																</dd>
-															</c:if>
-															<%--c:if test="${versio.custodiat}">
-																<dt><spring:message code="contingut.versions.custodia.url"/>:</dt>
-																<dd><a href="${versio.custodiaUrl}" target="_blank">${versio.custodiaUrl}</a> <span class="fa fa-external-link"></span></dd>
-															</c:if--%>
-														</dl>
-														<div class="btn-toolbar pull-right">
-															<c:if test="${not empty contingut.escriptoriPare and status.first}">
-																<a href="../webdav${contingut.pathAsString}/${contingut.nom}/${contingut.versioDarrera.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contingut.boto.link.dav"/></a>
-															</c:if>
-															<c:if test="${edicioOnlineActiva}">
-																<c:if test="${not empty contingut.escriptoriPare and status.first}">
-																	<a href="../webdav${contingut.pathAsString}/${contingut.nom}/${contingut.versioDarrera.arxiuNom}" class="btn btn-default btn-document-modificar"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="contingut.boto.editar.office"/></a>
-																</c:if>
-															</c:if>
-															<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar/${versio}" class="btn btn-default"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
-														</div>
-													</div>
-												</div>
-											</div>
-										</c:forEach>
-									</div>
-								</div>
-							</c:when>
-							<c:otherwise>
-								<div class="tab-pane active in" id="ubicacio">
-										Aquest document només està disponible en format físic i es troba a la següent ubicació:
-										<br/><br/>
-										<pre>${contingut.ubicacio}</pre> 
-									
-								</div>
-							</c:otherwise>
-						</c:choose>	
-						<%--           --%>
-						<%-- /Document --%>
-						<%--           --%>
-					</c:when>
-					<c:otherwise>
-						<div class="tab-pane active in" id="contingut">
-							<%--                   --%>
-							<%-- Pipella contingut --%>
-							<%--                   --%>
+										</c:when>
+										<c:otherwise>
+											<tr>
+												<td><strong>Ubicació</strong></td>
+												<td>${contingut.ubicacio}</td>
+											</tr>
+										</c:otherwise>
+									</c:choose>
+								</tbody>
+							</table>
+							<c:if test="${contingut.documentTipus != 'FISIC'}">
+								<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar" class="btn btn-default pull-right"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
+							</c:if>
+						</c:when>
+						<c:otherwise>
 							<div class="text-right" id="contingut-botons">
 								<div class="btn-group">
 									<a href="../contingut/${contingut.id}/canviVista/icones" class="btn btn-default<c:if test="${vistaIcones}"> active</c:if>">
@@ -637,24 +558,24 @@ $(document).ready(function() {
 									<div id="botons-crear-contingut" class="btn-group">
 										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contingut.boto.crear.contingut"/>&nbsp;<span class="caret"></span></button>
 										<ul class="dropdown-menu text-left" role="menu">
-											<li><a href="../contingut/${contingut.id}/carpeta/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-folder"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.carpeta"/>...</a></li>
-											<li><a href="../contingut/${contingut.id}/document/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-file"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.document"/>...</a></li>
 											<c:if test="${contingut.crearExpedients and not empty metaExpedients}">
-												<li><a href="../contingut/${contingut.id}/expedient/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-briefcase"></span>&nbsp;<spring:message code="contingut.boto.crear.expedient"/>...</a></li>
+												<li><a href="../contingut/${contingut.id}/expedient/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa ${iconaExpedientTancat}"></span>&nbsp;<spring:message code="contingut.boto.crear.expedient"/>...</a></li>
 											</c:if>
+											<li><a href="../contingut/${contingut.id}/document/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa ${iconaDocument}"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.document"/>...</a></li>
+											<li><a href="../contingut/${contingut.id}/carpeta/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa ${iconaCarpeta}"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.carpeta"/>...</a></li>
 										</ul>
 									</div>
 								</c:if>
-  							</div>
+									</div>
 							<rip:blocContenidorContingut contingut="${contingut}" mostrarExpedients="${true}" mostrarNoExpedients="${true}"/>
-							<%--                    --%>
-							<%-- /Pipella contingut --%>
-							<%--                    --%>
-						</div>
-					</c:otherwise>
-				</c:choose>
+						</c:otherwise>
+					</c:choose>
+					<%--                    --%>
+					<%-- /Pipella contingut --%>
+					<%--                    --%>
+				</div>
 				<c:if test="${contingut.node}">
-					<div class="tab-pane<c:if test="${contingut.document and contingut.documentTipus != 'FISIC'}"> active in</c:if>" id="dades">
+					<div class="tab-pane" id="dades">
 						<%--               --%>
 						<%-- Pipella dades --%>
 						<%--               --%>
@@ -779,26 +700,6 @@ $(document).ready(function() {
 									<th data-col-name="documentNum" data-orderable="false" width="15%"><spring:message code="contingut.interessat.columna.document"/></th>
 									<th data-col-name="identificador" data-orderable="false" width="35%"><spring:message code="contingut.interessat.columna.identificador"/></th>
 									<th data-col-name="representantIdentificador" data-orderable="false" width="25%"><spring:message code="contingut.interessat.columna.representant"/>
-<%-- 
-									<th data-rdt-property="representantIdentificador" data-rdt-sortable="false" data-rdt-template="cellAccionsRepresentantTemplate" width="25%"><spring:message code="contingut.interessat.columna.representant"/>
-										<script id="cellAccionsRepresentantTemplate" type="text/x-jsrender">
-											{{if tipus != '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.ADMINISTRACIO%>'}}
-												{{if representantId}}
-													{{:representantIdentificador}}
-													<div class="dropdown right">
-														<button class="btn btn-success brep" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<span class="caret"></span></button>
-														<ul class="dropdown-menu">
-															<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/{{:representantId}}" data-rdt-link-modal="true"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.modificar.prepresentant"/></a></li>
-															<li><a href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/{{:representantId}}/delete" data-rdt-link-ajax="true" data-rdt-link-confirm="<spring:message code="contingut.confirmacio.esborrar.representant"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="contingut.interessat.borrar.representant"/></a></li>
-														</ul>
-													</div>	
-												{{else}}
-													<a class="btn btn-success right" href="../expedient/${contenidor.id}/interessat/{{:id}}/representant/new" data-rdt-link-modal="true" title="<spring:message code="contingut.interessat.nou.prepresentant"/>"><span class="fa fa-plus"></span></a>
-												{{/if}}
-											{{/if}}
-										</script>
-									</th>
---%>
 									<th data-col-name="id" data-orderable="false" data-template="#cellAccionsInteressatTemplate" width="10%">
 										<script id="cellAccionsInteressatTemplate" type="text/x-jsrender">
 											<div class="dropdown">
@@ -919,6 +820,47 @@ $(document).ready(function() {
 						<%--                     --%>
 						<%-- /Pipella enviaments --%>
 						<%--                     --%>
+					</div>
+				</c:if>
+				<c:if test="${contingut.document and contingut.versioCount gt 0}">
+					<div class="tab-pane" id="versions">
+						<%--                  --%>
+						<%-- Pipella versions --%>
+						<%--                  --%>
+						<div class="tab-pane" id="contingut">
+							<div id="document-versions" class="panel-group" id="accordion">
+								<table class="table table-bordered table-striped">
+								<thead>
+									<tr>
+										<th>Id</th>
+										<th>Data</th>
+										<c:if test="${contingut.documentTipus != 'FISIC'}">
+											<th width="1%"></th>
+										</c:if>
+									</tr>
+								</thead>
+								<tbody>
+								<c:forEach var="versio" items="${contingut.versions}">
+									<tr>
+										<td>${versio.id}</td>
+										<td><fmt:formatDate value="${versio.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+										<c:if test="${contingut.documentTipus != 'FISIC'}">
+											<td>
+												<a href="../contingut/${contingut.id}/document/${contingut.id}/versio/${versio.id}/descarregar" class="btn btn-default">
+													<span class="fa fa-download"></span>&nbsp;
+													<spring:message code="comu.boto.descarregar"/>
+												</a>
+											</td>
+										</c:if>
+									</tr>
+								</c:forEach>
+								</tbody>
+								</table>
+							</div>
+						</div>
+						<%--                   --%>
+						<%-- /Pipella versions --%>
+						<%--                   --%>
 					</div>
 				</c:if>
 			</div>

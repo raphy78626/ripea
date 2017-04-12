@@ -3,11 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%
-pageContext.setAttribute(
-		"principalTipus",
-		es.caib.ripea.core.api.dto.PrincipalTipusEnumDto.values());
-%>
 <html>
 <head>
 	<title><spring:message code="entitat.permis.titol"/></title>
@@ -19,23 +14,12 @@ pageContext.setAttribute(
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
-<script>
-var principalTipusEnumText = new Array();
-<c:forEach var="principalTipus" items="${principalTipus}">
-principalTipusEnumText["${principalTipus}"] = "<spring:message code="principal.tipus.enum.${principalTipus}"/>";
-</c:forEach>
-</script>
 </head>
 <body>
 	<table id="permisos" data-toggle="datatable" data-url="<c:url value="/entitat/${entitat.id}/permis/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-striped table-bordered" style="width:100%">
 		<thead>
 			<tr>
-				<th data-col-name="principalTipus" data-template="#cellPrincipalTipusTemplate">
-					<spring:message code="entitat.permis.columna.tipus"/>
-					<script id="cellPrincipalTipusTemplate" type="text/x-jsrender">
-						{{:~eval("principalTipusEnumText['" + principalTipus + "']")}}
-					</script>
-				</th>
+				<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="entitat.permis.columna.tipus"/></th>
 				<th data-col-name="principalNom"><spring:message code="entitat.permis.columna.principal"/></th>
 				<th data-col-name="administration" data-template="#cellAdministrationTemplate">
 					<spring:message code="entitat.permis.columna.administracio"/>

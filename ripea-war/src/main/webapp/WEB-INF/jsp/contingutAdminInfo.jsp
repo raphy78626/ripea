@@ -31,26 +31,54 @@
 	<dl class="dl-horizontal">
 		<dt><spring:message code="contingut.admin.info.camp.contingut"/></dt>
 		<dd>
-			<c:choose>
-				<c:when test="${contingut.escriptori}"><span class="fa fa-desktop" title="<spring:message code="contingut.path.escriptori"/>"></span></c:when>
-				<c:when test="${contingut.expedient}"><span class="fa fa-briefcase" title="<spring:message code="contingut.icona.expedient"/>"></span></c:when>
-				<c:when test="${contingut.carpeta}"><span class="fa fa-folder" title="<spring:message code="contingut.icona.carpeta"/>"></span></c:when>
-				<c:when test="${contingut.document}"><span class="fa fa-file" title="<spring:message code="contingut.icona.document"/>"></span></c:when>
-				<c:when test="${contingut.arxiv}"><span class="fa fa-archive" title="<spring:message code="contingut.icona.arxiu"/>"></span></c:when>
-				<c:when test="${contingut.bustia}"><span class="fa fa-inbox" title="<spring:message code="contingut.icona.bustia"/>"></span></c:when>
-				<c:when test="${contingut.registre}"><span class="fa fa-book" title="<spring:message code="contingut.icona.registre"/>"></span></c:when>
-			</c:choose>
+			<rip:blocIconaContingut contingut="${contingut}"/>
 			${contingut.nom}
 		</dd>
+		<c:if test="${contingut.expedient or contingut.document and not empty contingut.metaNode}">
+			<dt><spring:message code="contingut.admin.info.camp.metanode"/></dt>
+			<dd>${contingut.metaNode.nom}</dd>
+		</c:if>
 		<c:if test="${contingut.expedient}">
+			<dt><spring:message code="contingut.admin.info.camp.arxiu"/></dt>
+			<dd>${contingut.arxiu.nom}</dd>
 			<dt><spring:message code="contingut.admin.info.camp.numero"/></dt>
 			<dd>${contingut.numero}</dd>
 			<dt><spring:message code="contingut.admin.info.camp.estat"/></dt>
 			<dd><spring:message code="expedient.estat.enum.${contingut.estat}"/></dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.versio"/></dt>
+			<dd>${contingut.ntiVersion}</dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.identificador"/></dt>
+			<dd style="overflow:hidden;text-overflow:ellipsis" title="${contingut.ntiIdentificador}">${contingut.ntiIdentificador}</dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.organ"/></dt>
+			<dd>${contingut.ntiOrganoDescripcio}</dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.data.obertura"/></dt>
+			<dd><fmt:formatDate value="${contingut.ntiFechaApertura}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.classificacio"/></dt>
+			<dd>${contingut.ntiClasificacionSia}</dd>
 		</c:if>
-		<c:if test="${contingut.expedient or contingut.document and not empty contingut.metaNode}">
-			<dt><spring:message code="contingut.admin.info.camp.metanode"/></dt>
-			<dd>${contingut.metaNode.nom}</dd>
+		<c:if test="${contingut.document}">
+			<dt><spring:message code="contingut.admin.info.camp.data"/></dt>
+			<dd><fmt:formatDate value="${contingut.data}" pattern="dd/MM/yyyy"/></dd>
+			<dt><spring:message code="contingut.admin.info.camp.estat"/></dt>
+			<dd><spring:message code="document.estat.enum.${contingut.estat}"/></dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.versio"/></dt>
+			<dd>${contingut.ntiVersion}</dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.identificador"/></dt>
+			<dd style="overflow:hidden;text-overflow:ellipsis" title="${contingut.ntiIdentificador}">${contingut.ntiIdentificador}</dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.organ"/></dt>
+			<dd>${contingut.ntiOrganoDescripcio}</dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.data.captura"/></dt>
+			<dd><fmt:formatDate value="${contingut.dataCaptura}" pattern="dd/MM/yyyy"/></dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.origen"/></dt>
+			<dd><spring:message code="document.nti.origen.enum.${contingut.ntiOrigen}"/></dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.estat.elab"/></dt>
+			<dd><spring:message code="document.nti.estela.enum.${contingut.ntiEstadoElaboracion}"/></dd>
+			<dt><spring:message code="contingut.admin.info.camp.eni.tipus.doc"/></dt>
+			<dd><spring:message code="document.nti.tipdoc.enum.${contingut.ntiTipoDocumental}"/></dd>
+			<c:if test="${not empty contingut.ntiIdDocumentoOrigen}">
+				<dt><spring:message code="contingut.admin.info.camp.eni.doc.origen.id"/></dt>
+				<dd>${contingut.ntiIdDocumentoOrigen}</dd>
+			</c:if>
 		</c:if>
 		<c:if test="${contingut.registre}">
 			<dt><spring:message code="registre.detalls.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${contingut.registreTipus}"/></dd>

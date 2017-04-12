@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.api.service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -79,13 +80,16 @@ public interface ContingutService {
 	 *            Posar a true si es vol esborrar el contingut definitivament
 	 *            o false si només es vol marcar com a esborrat.
 	 * @return El contingut esborrat.
+	 * @throws IOException
+	 *             Si s'han produit errors guardant l'arxiu al sistema
+	 *             de fitxers.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public ContingutDto deleteReversible(
 			Long entitatId,
-			Long contingutId) throws NotFoundException;
+			Long contingutId) throws IOException, NotFoundException;
 
 	/**
 	 * Esborra un contingut sense possibilitat de recuperar-lo.
@@ -111,6 +115,9 @@ public interface ContingutService {
 	 * @param contingutId
 	 *            Atribut id del contingut que es vol esborrar.
 	 * @return El contingut recuperat.
+	 * @throws IOException
+	 *             Si s'han produit errors recuperant l'arxiu del sistema
+	 *             de fitxers.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 * @throws ValidationException
@@ -120,7 +127,7 @@ public interface ContingutService {
 	@PreAuthorize("hasRole('IPA_ADMIN')")
 	public ContingutDto undelete(
 			Long entitatId,
-			Long contingutId) throws NotFoundException, ValidationException;
+			Long contingutId) throws IOException, NotFoundException, ValidationException;
 
 	/**
 	 * Mou un contingut al destí especificat.
@@ -191,6 +198,8 @@ public interface ContingutService {
 	 *            Atribut id del contingut del qual es vol consultar el contingut.
 	 * @param ambFills
 	 *            Indica si la resposta ha d'incloure els fills del contingut.
+	 * @param ambVersions
+	 *            Indica si la resposta ha d'incloure les versions del contingut.
 	 * @return El contingut amb l'id especificat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -199,7 +208,8 @@ public interface ContingutService {
 	public ContingutDto findAmbIdUser(
 			Long entitatId,
 			Long contingutId,
-			boolean ambFills) throws NotFoundException;
+			boolean ambFills,
+			boolean ambVersions) throws NotFoundException;
 
 	/**
 	 * Obté la informació del contingut especificat.

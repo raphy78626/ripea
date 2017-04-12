@@ -23,11 +23,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class UsuariEntity implements Serializable {
 
 	@Id
-	@Column(name = "codi", length = 64, nullable = false)
+	@Column(name = "codi", length = 64, nullable = false, unique = true)
 	private String codi;
 	@Column(name = "nom", length = 200)
 	private String nom;
-	@Column(name = "nif", length = 9, nullable = false, unique = true)
+	@Column(name = "nif", length = 9, nullable = false)
 	private String nif;
 	@Column(name = "email", length = 200)
 	private String email;

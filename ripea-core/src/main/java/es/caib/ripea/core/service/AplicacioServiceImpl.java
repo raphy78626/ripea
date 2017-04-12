@@ -29,6 +29,7 @@ import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.ExcepcioLogHelper;
 import es.caib.ripea.core.helper.IntegracioHelper;
+import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.repository.AclSidRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
@@ -51,6 +52,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 
 	@Resource
 	private CacheHelper cacheHelper;
+	@Resource
+	private PluginHelper pluginHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
@@ -180,10 +183,33 @@ public class AplicacioServiceImpl implements AplicacioService {
 	}
 
 	@Override
-	public String propertyGet(String property) {
-		logger.debug("Consulta del valor de la property (" +
-				"property=" + property + ")");
-		return PropertiesHelper.getProperties().getProperty(property);
+	public boolean isPluginArxiuActiu() {
+		logger.debug("Consulta si el plugin d'arxiu està actiu");
+		return pluginHelper.isArxiuPluginActiu();
+	}
+
+	@Override
+	public String propertyBaseUrl() {
+		logger.debug("Consulta de la propietat base URL");
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.base.url");
+	}
+
+	@Override
+	public String propertyPluginPassarelaFirmaIds() {
+		logger.debug("Consulta de la propietat amb les ids pels plugins de passarela de firma");
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.passarelafirma.ids");
+	}
+
+	@Override
+	public String propertyPluginPassarelaFirmaIgnorarModalIds() {
+		logger.debug("Consulta de la propietat amb les ids pels plugins de passarela de firma");
+		return PropertiesHelper.getProperties().getProperty("plugin.passarelafirma.ignorar.modal.ids");
+	}
+
+	@Override
+	public String propertyPluginEscaneigIds() {
+		logger.debug("Consulta de la propietat amb les ids pels plugins d'escaneig de documents");
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.escaneig.ids");
 	}
 
 	@Override

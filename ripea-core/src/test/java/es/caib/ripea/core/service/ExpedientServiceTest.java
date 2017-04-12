@@ -5,10 +5,11 @@ package es.caib.ripea.core.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -228,22 +229,26 @@ public class ExpedientServiceTest extends BaseServiceTest {
 					public void executar(List<Object> elementsCreats) {
 						EntitatDto entitatCreada = (EntitatDto)elementsCreats.get(0);
 						ExpedientDto expedientCreat = (ExpedientDto)elementsCreats.get(5);
-						ContingutDto esborrat = contingutService.deleteReversible(
-								entitatCreada.getId(),
-								expedientCreat.getId());
-						assertTrue(esborrat instanceof ExpedientDto);
-						comprovarExpedientCoincideix(
-								expedientCreate,
-								(ExpedientDto)esborrat);
 						try {
-							autenticarUsuari("user");
-							expedientService.findById(
+							ContingutDto esborrat = contingutService.deleteReversible(
 									entitatCreada.getId(),
 									expedientCreat.getId());
-							fail("L'expedient esborrat no s'hauria d'haver trobat");
-						} catch (NotFoundException expected) {
+							assertTrue(esborrat instanceof ExpedientDto);
+							comprovarExpedientCoincideix(
+									expedientCreate,
+									(ExpedientDto)esborrat);
+							try {
+								autenticarUsuari("user");
+								expedientService.findById(
+										entitatCreada.getId(),
+										expedientCreat.getId());
+								fail("L'expedient esborrat no s'hauria d'haver trobat");
+							} catch (NotFoundException expected) {
+							}
+							elementsCreats.remove(expedientCreat);
+						} catch (IOException ex) {
+							fail("S'han produit errors inesperats: " + ex);
 						}
-						elementsCreats.remove(expedientCreat);
 					}
 				});
 	}
@@ -313,7 +318,7 @@ public class ExpedientServiceTest extends BaseServiceTest {
 	}
 
 	@Test
-    public void alliberarAgafar() {
+    public void alliberarAgafarUser() {
 		testAmbElementsIExpedient(
 				new TestAmbElementsCreats() {
 					@Override
@@ -321,32 +326,65 @@ public class ExpedientServiceTest extends BaseServiceTest {
 						EntitatDto entitatCreada = (EntitatDto)elementsCreats.get(0);
 						ExpedientDto expedientCreat = (ExpedientDto)elementsCreats.get(5);
 						autenticarUsuari("user");
-						assertEquals(
-								ExpedientEstatEnumDto.OBERT, expedientCreat.getEstat());
-						String motiu = "Motiu de tancament de test";
-						expedientService.tancar(
-								entitatCreada.getId(),
-								expedientCreat.getId(),
-								motiu);
-						ExpedientDto tancat = expedientService.findById(
+						assertTrue(
+								expedientCreat.isAgafat());
+						assertEquals("user", expedientCreat.getAgafatUsuari());
+						expedientService.alliberarUser(
 								entitatCreada.getId(),
 								expedientCreat.getId());
-						assertEquals(
-								ExpedientEstatEnumDto.TANCAT, tancat.getEstat());
-						assertEquals(motiu, tancat.getTancatMotiu());
-						expedientService.reobrir(
+						ExpedientDto alliberat = expedientService.findById(
 								entitatCreada.getId(),
 								expedientCreat.getId());
-						ExpedientDto reobert = expedientService.findById(
+						assertTrue(
+								!alliberat.isAgafat());
+						assertNull(alliberat.getAgafatUsuari());
+						expedientService.agafarUser(
 								entitatCreada.getId(),
 								expedientCreat.getId());
-						assertEquals(
-								ExpedientEstatEnumDto.OBERT, reobert.getEstat());
-						assertNull(reobert.getTancatMotiu());
+						ExpedientDto agafat = expedientService.findById(
+								entitatCreada.getId(),
+								expedientCreat.getId());
+						assertTrue(
+								agafat.isAgafat());
+						assertEquals("user", agafat.getAgafatUsuari());
 					}
 				});
 	}
 
+	@Test
+    public void alliberarAdminAgafarUser() {
+		testAmbElementsIExpedient(
+				new TestAmbElementsCreats() {
+					@Override
+					public void executar(List<Object> elementsCreats) {
+						EntitatDto entitatCreada = (EntitatDto)elementsCreats.get(0);
+						ExpedientDto expedientCreat = (ExpedientDto)elementsCreats.get(5);
+						assertTrue(
+								expedientCreat.isAgafat());
+						assertEquals("user", expedientCreat.getAgafatUsuari());
+						autenticarUsuari("admin");
+						expedientService.alliberarAdmin(
+								entitatCreada.getId(),
+								expedientCreat.getId());
+						autenticarUsuari("user");
+						ExpedientDto alliberat = expedientService.findById(
+								entitatCreada.getId(),
+								expedientCreat.getId());
+						assertTrue(
+								!alliberat.isAgafat());
+						assertNull(alliberat.getAgafatUsuari());
+						expedientService.agafarUser(
+								entitatCreada.getId(),
+								expedientCreat.getId());
+						ExpedientDto agafat = expedientService.findById(
+								entitatCreada.getId(),
+								expedientCreat.getId());
+						assertTrue(
+								agafat.isAgafat());
+						assertEquals("user", agafat.getAgafatUsuari());
+					}
+				});
+	}
 
 
 	private void donarPermisosArxiu(
@@ -403,6 +441,9 @@ public class ExpedientServiceTest extends BaseServiceTest {
 							elementsCreats.add(creat);
 							testAmbExpedientCreat.executar(
 									elementsCreats);
+						} catch (Exception ex) {
+							System.out.println("El test ha produït una excepció:");
+							ex.printStackTrace(System.out);
 						} finally {
 							for (Object element: elementsCreats) {
 								if (element instanceof ExpedientDto) {

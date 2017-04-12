@@ -162,18 +162,16 @@ $(document).ready(function() {
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
-								<li><a href="contingut/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.obrir"/></a></li>
-								{{if estat == 'OBERT'}}
-									{{if metaNode.usuariActualWrite}}
-										{{if !codiPropietariEscriptoriPare}}
-										<li><a href="../expedient/{{:id}}/agafar" data-toggle="ajax"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
-										{{else codiPropietariEscriptoriPare != '${pageContext.request.userPrincipal.name}'}}
-										<li><a href="../expedient/{{:id}}/agafar" data-confirm="<spring:message code="expedient.list.user.agafar.confirm.1"/> {{:nomPropietariEscriptoriPare}}. <spring:message code="expedient.list.user.agafar.confirm.2"/>" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
-										{{/if}}
+								<li><a href="contingut/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.consultar"/></a></li>
+								{{if metaNode.usuariActualWrite}}
+									{{if !codiPropietariEscriptoriPare}}
+									<li><a href="../expedient/{{:id}}/agafar" data-toggle="ajax"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+									{{else codiPropietariEscriptoriPare != '${pageContext.request.userPrincipal.name}'}}
+									<li><a href="../expedient/{{:id}}/agafar" data-confirm="<spring:message code="expedient.list.user.agafar.confirm.1"/> {{:nomPropietariEscriptoriPare}}. <spring:message code="expedient.list.user.agafar.confirm.2"/>" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
 									{{/if}}
-									{{if codiPropietariEscriptoriPare == '${pageContext.request.userPrincipal.name}'}}
-									<li><a href="../expedient/{{:id}}/alliberar" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
-									{{/if}}
+								{{/if}}
+								{{if codiPropietariEscriptoriPare == '${pageContext.request.userPrincipal.name}'}}
+								<li><a href="../expedient/{{:id}}/alliberar" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
 								{{/if}}
 							</ul>
 						</div>

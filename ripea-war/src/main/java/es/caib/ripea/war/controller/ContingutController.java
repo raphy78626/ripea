@@ -40,6 +40,7 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
+import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientInteressatService;
@@ -68,6 +69,8 @@ public class ContingutController extends BaseUserController {
 	private static final String CONTENIDOR_VISTA_ICONES = "icones";
 	private static final String CONTENIDOR_VISTA_LLISTAT = "llistat";
 
+	@Autowired
+	private AplicacioService aplicacioService;
 	@Autowired
 	private ContingutService contingutService;
 	@Autowired
@@ -101,6 +104,7 @@ public class ContingutController extends BaseUserController {
 		ContingutDto contingut = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contingutId,
+				true,
 				true);
 		omplirModelPerMostrarContingut(
 				request,
@@ -114,12 +118,13 @@ public class ContingutController extends BaseUserController {
 	public String delete(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
-			Model model) {
+			Model model) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ContingutDto contingut = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contingutId,
-				true);
+				true,
+				false);
 		contingutService.deleteReversible(
 				entitatActual.getId(),
 				contingutId);
@@ -201,7 +206,8 @@ public class ContingutController extends BaseUserController {
 		ContingutDto contingutOrigen = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contingutOrigenId,
-				true);
+				true,
+				false);
 		contingutService.move(
 				entitatActual.getId(),
 				contingutOrigenId,
@@ -304,7 +310,8 @@ public class ContingutController extends BaseUserController {
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						contingutId,
-						true));
+						true,
+						false));
 		model.addAttribute(
 				"errors",
 				contingutService.findErrorsValidacio(
@@ -324,7 +331,8 @@ public class ContingutController extends BaseUserController {
 		ContingutDto contingut = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contingutId,
-				true);
+				true,
+				false);
 		if (contingut instanceof ExpedientDto) {
 			ExpedientDto expedient = (ExpedientDto)contingut;
 			registres = expedient.getFillsRegistres();
@@ -440,7 +448,8 @@ public class ContingutController extends BaseUserController {
 		ContingutDto contingut = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contingutId,
-				true);
+				true,
+				false);
 		if (contingut instanceof ExpedientDto) {
 			interessats = interessatService.findByExpedient(
 					entitatActual.getId(),
@@ -462,7 +471,8 @@ public class ContingutController extends BaseUserController {
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						contingutId,
-						true));
+						true,
+						false));
 		model.addAttribute(
 				"logs",
 				contingutService.findLogsPerContingutUser(
@@ -500,38 +510,25 @@ public class ContingutController extends BaseUserController {
 				contingutLogId);
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/nti")
-	public String nti(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"contingut",
-				contingutService.findAmbIdUser(
-						entitatActual.getId(),
-						contingutId,
-						true));
-		return "contingutNti";
-	}
-
 	@RequestMapping(value = "/contingut/{contingutId}/arxiu")
 	public String arxiu(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"contingut",
-				contingutService.findAmbIdUser(
-						entitatActual.getId(),
-						contingutId,
-						false));
-		model.addAttribute(
-				"arxiuInfo",
-				contingutService.getArxiuInfo(
-						entitatActual.getId(),
-						contingutId));
+		ContingutDto contingut = contingutService.findAmbIdUser(
+				entitatActual.getId(),
+				contingutId,
+				false,
+				false);
+		model.addAttribute("contingut", contingut);
+		if (contingut.isReplicatDinsArxiu()) {
+			model.addAttribute(
+					"arxiuInfo",
+					contingutService.getArxiuInfo(
+							entitatActual.getId(),
+							contingutId));
+		}
 		return "contingutArxiu";
 	}
 
@@ -641,6 +638,9 @@ public class ContingutController extends BaseUserController {
 				EnumHelper.getOptionsForEnum(
 						InteressatTipusEnumDto.class,
 						"interessat.tipus.enum."));
+		model.addAttribute(
+				"pluginArxiuActiu",
+				aplicacioService.isPluginArxiuActiu());
 	}
 
 	private void omplirModelPerMoureOCopiar(
@@ -650,7 +650,8 @@ public class ContingutController extends BaseUserController {
 		ContingutDto contingutOrigen = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contingutOrigenId,
-				true);
+				true,
+				false);
 		model.addAttribute(
 				"contingutOrigen",
 				contingutOrigen);
@@ -663,7 +664,8 @@ public class ContingutController extends BaseUserController {
 		ContingutDto contingutOrigen = contingutService.findAmbIdUser(
 				entitatActual.getId(),
 				contingutOrigenId,
-				true);
+				true,
+				false);
 		model.addAttribute(
 				"contingutOrigen",
 				contingutOrigen);

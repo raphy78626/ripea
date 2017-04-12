@@ -11,8 +11,6 @@
 	<c:when test="${mostrarExpedients and not mostrarNoExpedients}"><c:set var="fills" value="${contingut.fillsExpedients}"/></c:when>
 	<c:when test="${not mostrarExpedients and mostrarNoExpedients}"><c:set var="fills" value="${contingut.fillsNoExpedients}"/></c:when>
 </c:choose>
-<c:set var="htmlIconaCarpeta"><span class="fa-stack"><i class="fa fa-folder fa-stack-2x"></i><i class="fa fa-clock-o fa-stack-1x fa-inverse"></i></span></c:set>
-<c:set var="htmlIconaCarpeta6em"><span class="fa-stack" style="font-size:.6em"><i class="fa fa-folder fa-stack-2x"></i><i class="fa fa-clock-o fa-stack-1x fa-inverse"></i></span></c:set>
 <c:choose>
 	<c:when test="${vistaIcones}">
 		<%--              --%>
@@ -24,59 +22,19 @@
 					<li class="col-md-2 element-contingut element-draggable<c:if test="${not fill.document}"> element-droppable</c:if>" data-contenidor-id="${fill.id}">
 						<div id="info-fill-${fill.id}" class="thumbnail element-noclick">
 							<div class="text-center">
-								<c:choose>
-									<c:when test="${fill.expedient}"><span class="fa fa-briefcase fa-2x"></span></c:when>
-									<c:when test="${fill.carpeta}"><rip:blocIconaCarpeta carpeta="${fill}" petita="${false}"/></c:when>
-									<c:when test="${fill.document}">
-										<span class="fa fa-file fa-2x"></span>
-									</c:when>
-								</c:choose>
+								<rip:blocIconaContingut contingut="${fill}" tamanyDoble="true"/> 
 							</div>
 							<div class="caption">
 								<p class="text-center">
-									<c:if test="${fill.node and not fill.valid}"><span class="fa fa-exclamation-triangle text-warning"></span></c:if>
-									<c:if test="${fill.document && fill.estat == 'CUSTODIAT'}"><span class="fa fa-certificate text-danger"></span></c:if>
+									<c:if test="${fill.node and not fill.valid}"><span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.icona.estat.invalid"/>"></span></c:if>
+									<c:if test="${fill.document && fill.estat == 'CUSTODIAT'}"><span class="fa fa-bookmark" title="<spring:message code="contingut.info.estat.firmat"/>"></span></c:if>
+									<c:if test="${fill.expedient && fill.estat == 'TANCAT'}"><span class="fa fa-check-square text-success" title="<spring:message code="contingut.info.estat.tancat"/>"></span></c:if>
 									${fill.nom}
 								</p>
 								<rip:blocContenidorAccions id="accions-fill-${fill.id}" className="botons-accions-element" modeLlistat="false" contingut="${fill}"/>
 							</div>
 						</div>
 						<script>
-							var tooltipTitle = '<dl class="text-left" style="min-width:120px">';
-							<c:if test="${fill.expedient}">
-							tooltipTitle += '<dt><spring:message code="contingut.info.numero"/></dt>';
-							tooltipTitle += '<dd>${fill.sequencia}/${fill.any}</dd>';
-							</c:if>
-							<c:if test="${fill.node and not empty fill.metaNode}">
-							tooltipTitle += '<dt><spring:message code="contingut.info.tipus"/></dt>';
-							tooltipTitle += '<dd>${fn:escapeXml(fill.metaNode.nom)}</dd>';
-							</c:if>
-							<c:if test="${fill.expedient}">
-							tooltipTitle += '<dt><spring:message code="contingut.info.arxiu"/></dt>' +
-									'<dd>${fn:escapeXml(fill.arxiu.nom)}</dd>' +
-									'<dt><spring:message code="contingut.info.estat"/></dt>' +
-									'<dd><spring:message code="expedient.estat.enum.${fill.estat}"/></dd>';
-							</c:if>
-							<c:if test="${fill.document}">
-							tooltipTitle += '<dt><spring:message code="contingut.info.estat"/></dt>' +
-									'<dd><spring:message code="document.estat.enum.${fill.estat}"/></dd>' +
-									'<dt><spring:message code="contingut.info.data"/></dt>' +
-									'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
-									'<dt><spring:message code="contingut.info.versio"/></dt>' +
-									'<dd>${fill.versioDarrera}</dd>';
-							</c:if>
-							tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
-									'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
-									'<dt><spring:message code="contingut.info.creatper"/></dt>' +
-									'<dd>${fn:escapeXml(fill.createdBy.nom)}</dd>';
-							tooltipTitle += '</dl>';
-							$('#info-fill-${fill.id}').tooltip({
-								trigger: 'hover',
-								placement: 'auto',
-								delay: { show: 1000, hide: 100 },
-								html: true,
-								title: tooltipTitle
-							});
 							$('#info-fill-${fill.id}').click(function(e) {
 								if ($(this).hasClass('noclick')) {
 									$(this).removeClass('noclick');
@@ -117,11 +75,7 @@
 				<c:forEach var="fill" items="${fills}">
 					<tr id="info-fill-${fill.id}" class="element-drag-drop">
 						<td>
-							<c:choose>
-								<c:when test="${fill.expedient}"><span class="fa fa-briefcase" title="<spring:message code="contingut.icona.expedient"/>"></span></c:when>
-								<c:when test="${fill.carpeta}"><rip:blocIconaCarpeta carpeta="${fill}" petita="${true}"/></c:when>
-								<c:when test="${fill.document}"><span class="fa fa-file" title="<spring:message code="contingut.icona.document"/>"></span></c:when>
-							</c:choose>
+							<rip:blocIconaContingut contingut="${fill}"/>
 							<c:if test="${fill.node and not fill.valid}">&nbsp;<span class="fa fa-exclamation-triangle text-warning"></span></c:if>
 							&nbsp;${fill.nom}
 						</td>
@@ -134,41 +88,6 @@
 							<rip:blocContenidorAccions className="botons-accions-element" modeLlistat="true" contingut="${fill}"/>
 						</td>
 					</tr>
-					<script>
-						var tooltipTitle = '<dl class="text-left" style="min-width:120px">';
-						<c:choose>
-							<c:when test="${fill.expedient or fill.document}">
-						tooltipTitle += '<dt><spring:message code="contingut.info.tipus"/></dt><dd>${fn:escapeXml(fill.metaNode.nom)}</dd>';
-							</c:when>
-						</c:choose>
-						<c:if test="${fill.expedient}">
-						tooltipTitle += '<dt><spring:message code="contingut.info.arxiu"/></dt>' +
-								'<dd>${fn:escapeXml(fill.arxiu.nom)}</dd>' +
-								'<dt><spring:message code="contingut.info.estat"/></dt>' +
-								'<dd><spring:message code="expedient.estat.enum.${fill.estat}"/></dd>';
-						</c:if>
-						<c:if test="${fill.document}">
-						tooltipTitle += '<dt><spring:message code="contingut.info.estat"/></dt>' +
-								'<dd><spring:message code="document.estat.enum.${fill.estat}"/></dd>' +
-								'<dt><spring:message code="contingut.info.data"/></dt>' +
-								'<dd><fmt:formatDate value="${fill.data}" pattern="dd/MM/yyyy"/></dd>' +
-								'<dt><spring:message code="contingut.info.versio"/></dt>' +
-								'<dd>${fill.versioDarrera}</dd>';
-						</c:if>
-						tooltipTitle += '<dt><spring:message code="contingut.info.createl"/></dt>' +
-						'<dd><fmt:formatDate value="${fill.createdDate}" pattern="dd/MM/yyyy HH:mm"/></dd>' +
-						'<dt><spring:message code="contingut.info.creatper"/></dt>' +
-						'<dd>${fn:escapeXml(fill.createdBy.nom)}</dd>';
-						tooltipTitle += '</dl>';
-						$('#info-fill-${fill.id} > td:not(:last-child)').tooltip({
-							trigger: 'hover',
-							placement: 'auto',
-							delay: { show: 1000, hide: 100 },
-							html: true,
-							title: tooltipTitle,
-							container: 'body'
-						});
-					</script>
 				</c:forEach>
 			</tbody>
 		</table>
@@ -177,3 +96,7 @@
 		<%--                --%>
 	</c:when>
 </c:choose>
+<c:if test="${empty fills}">
+	<h1 style="opacity: .1; text-align: center; margin-top: 1em"><rip:blocIconaContingut contingut="${fill}" tamanyEnorme="true"/></h1>
+	<h3 style="opacity: .2; text-align: center; margin-bottom: 3em"><strong><spring:message code="contingut.sense.contingut"/></strong></h3>
+</c:if>

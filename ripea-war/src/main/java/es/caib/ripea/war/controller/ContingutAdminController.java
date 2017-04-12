@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -150,7 +151,7 @@ public class ContingutAdminController extends BaseAdminController {
 	public String undelete(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
-			Model model) {
+			Model model) throws IOException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		try {
 			contingutService.undelete(

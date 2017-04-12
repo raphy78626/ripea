@@ -132,6 +132,9 @@ public class BaseServiceTest {
 				}
 			}
 			test.executar(elementsCreats);
+		} catch (Exception ex) {
+			System.out.println("El test ha produït una excepció:");
+			ex.printStackTrace(System.out);
 		} finally {
 			Collections.reverse(elementsCreats);
 			for (Object element: elementsCreats) {
