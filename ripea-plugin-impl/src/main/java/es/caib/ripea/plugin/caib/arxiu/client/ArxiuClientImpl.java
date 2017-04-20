@@ -1930,7 +1930,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 		return node;
 	}
 
-	public ServiceHeader generarServiceHeader(ArxiuHeader capsalera) {
+	private ServiceHeader generarServiceHeader(ArxiuHeader capsalera) {
 		ServiceHeader serviceHeader = new ServiceHeader();
 		ServiceAuditInfo auditInfo = new ServiceAuditInfo();
 		PersonIdentAuditInfo interessat = new PersonIdentAuditInfo();
