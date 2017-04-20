@@ -7,11 +7,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +21,9 @@ import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.SistemaExternNoTrobatException;
 import es.caib.ripea.plugin.arxiu.ArxiuCapsalera;
 import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
+import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
+import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentVersio;
 import es.caib.ripea.plugin.arxiu.ArxiuEstatElaboracio;
 import es.caib.ripea.plugin.arxiu.ArxiuExpedient;
@@ -75,8 +79,8 @@ public class ArxiuPluginTest {
 	}
 
 	//@Test
-	public void cicleCreacioExpedient() throws Exception {
-		System.out.println("TEST: GESTIO EXPEDIENTS");
+	public void cicleVidaExpedient() throws Exception {
+		System.out.println("TEST: CICLE DE VIDA DELS EXPEDIENTS");
 		String titol = "RIPEA_prova_exp_" + System.currentTimeMillis();
 		ArxiuOrigenContingut origen = ArxiuOrigenContingut.ADMINISTRACIO;
 		Date dataObertura = new Date();
@@ -129,13 +133,42 @@ public class ArxiuPluginTest {
 					interessatsTest,
 					serieDocumental);
 			System.out.println("Ok");
-			System.out.print("5.- Esborrant expedient creat (nodeId=" + creatNodeId + ")... ");
+			System.out.print("6.- Modificant expedient creat (nodeId=" + creatNodeId + ")... ");
+			String titolModificat = titol + "_MOD";
+			plugin.expedientModificar(
+					creatNodeId,
+					titolModificat,
+					origen,
+					dataObertura,
+					classificacio,
+					estat,
+					organsTest,
+					interessatsTest,
+					serieDocumental,
+					capsaleraTest);
+			System.out.println("Ok");
+			System.out.print("7.- Comprovar dades expedient modificat (nodeId=" + creatNodeId + ")... ");
+			ArxiuExpedient expedientTrobat2 = plugin.expedientConsultar(
+					expedientCreat.getNodeId(),
+					capsaleraTest);
+			assertNotNull(expedientTrobat2);
+			comprovarExpedient(
+					expedientTrobat1,
+					titolModificat,
+					origen,
+					dataObertura,
+					classificacio,
+					estat,
+					organsTest,
+					interessatsTest,
+					serieDocumental);
+			System.out.print("8.- Esborrant expedient creat (nodeId=" + creatNodeId + ")... ");
 			plugin.expedientEsborrar(
 					expedientCreat.getNodeId(),
 					capsaleraTest);
 			creatNodeId = null;
 			System.out.println("Ok");
-			System.out.print("6.- Obtenint expedient esborrat per verificar que no existeix (nodeId=" + expedientCreat.getNodeId() + ")... ");
+			System.out.print("9.- Obtenint expedient esborrat per verificar que no existeix (nodeId=" + expedientCreat.getNodeId() + ")... ");
 			try {
 				plugin.expedientConsultar(
 						expedientCreat.getNodeId(),
@@ -161,8 +194,8 @@ public class ArxiuPluginTest {
 	}
 
 	//@Test
-	public void cicleCreacioDocument() throws Exception {
-		System.out.println("TEST: GESTIO DOCUMENTS");
+	public void cicleVidaDocument() throws Exception {
+		System.out.println("TEST: CICLE DE VIDA DELS DOCUMENTS");
 		String titolExp = "RIPEA_prova_exp_" + System.currentTimeMillis();
 		String titolDoc = "RIPEA_prova_doc_" + System.currentTimeMillis();
 		ArxiuOrigenContingut origen = ArxiuOrigenContingut.ADMINISTRACIO;
@@ -237,7 +270,7 @@ public class ArxiuPluginTest {
 			ArxiuDocument documentTrobat1 = plugin.documentConsultar(
 					docCreatNodeId,
 					null,
-					false,
+					true,
 					capsaleraTest);
 			assertNotNull(documentTrobat1);
 			System.out.println("Ok");
@@ -254,6 +287,12 @@ public class ArxiuPluginTest {
 					organsTest,
 					null,
 					serieDocumental);
+			assertNotNull(documentTrobat1.getContinguts());
+			assertEquals(1, documentTrobat1.getContinguts().size());
+			ArxiuDocumentContingut documentContingut = documentTrobat1.getContinguts().get(0);
+			assertNotNull(documentContingut);
+			byte[] content = IOUtils.toByteArray(getDocumentContingutPerTest());
+			assertEquals(content.length, documentContingut.getContingut().length);
 			System.out.println("Ok");
 			System.out.print("7.- Obtenint versió antiga del document (nodeId=" + docCreatNodeId + ")... ");
 			ArxiuDocument documentTrobat2 = plugin.documentConsultar(
@@ -372,7 +411,7 @@ public class ArxiuPluginTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void documentFirmat() throws Exception {
 		System.out.println("TEST: GESTIO DOCUMENTS FIRMATS");
 		String titolExp = "RIPEA_prova_exp_" + System.currentTimeMillis();
@@ -446,6 +485,16 @@ public class ArxiuPluginTest {
 					true,
 					capsaleraTest);
 			assertNotNull(documentTrobat1);
+			assertNotNull(documentTrobat1.getContinguts());
+			assertEquals(2, documentTrobat1.getContinguts().size());
+			ArxiuDocumentContingut documentContingut = documentTrobat1.getContinguts().get(0);
+			if (!ArxiuContingutTipusEnum.FIRMA.equals(documentContingut.getTipus())) {
+				documentContingut = documentTrobat1.getContinguts().get(1);
+			}
+			assertNotNull(documentContingut);
+			assertEquals(ArxiuContingutTipusEnum.FIRMA, documentContingut.getTipus());
+			byte[] content = IOUtils.toByteArray(getPdfContingutPerTest());
+			assertEquals(content.length, documentContingut.getContingut().length);
 			System.out.println("Ok");
 			System.out.print("6.- Esborrant document creat (nodeId=" + docCreatNodeId + ")... ");
 			try {
@@ -569,8 +618,8 @@ public class ArxiuPluginTest {
 	}
 
 	//@Test
-	public void cicleCreacioCarpeta() throws Exception {
-		System.out.println("TEST: GESTIO CARPETES");
+	public void cicleVidaCarpeta() throws Exception {
+		System.out.println("TEST: CICLE DE VIDA DE LES CARPETES");
 		String titolExp = "RIPEA_prova_exp_" + System.currentTimeMillis();
 		String titolCar = "RIPEA_prova_car_" + System.currentTimeMillis();
 		ArxiuOrigenContingut origen = ArxiuOrigenContingut.ADMINISTRACIO;
@@ -806,7 +855,8 @@ public class ArxiuPluginTest {
 			}
 		}
 	}
-	@Test
+
+	// @Test
 	public void copiarContingut() throws Exception {
 		System.out.println("TEST: COPIA CONTINGUT");
 		String titolExp1 = "RIPEA_prova_exp1_" + System.currentTimeMillis();
@@ -942,6 +992,7 @@ public class ArxiuPluginTest {
 			}
 		}
 	}
+
 	/*@Test
 	public void arxiuTest() throws IOException {
 		InputStream is = getClass().getResourceAsStream(
@@ -954,6 +1005,25 @@ public class ArxiuPluginTest {
 				"UTF-8");
 		System.out.println(">>> contingutBase64: " + contingutBase64);
 	}*/
+
+	//@Test
+	public void documentGetTest() throws SistemaExternException, IOException {
+		String nodeId = "d774a799-b7df-4fab-be2b-6e44426c85e0";
+		System.out.print("5.- Obtenint document firmat (nodeId=" + nodeId + ")... ");
+		ArxiuDocument documentTrobat1 = plugin.documentConsultar(
+				nodeId,
+				null,
+				true,
+				capsaleraTest);
+		assertNotNull(documentTrobat1);
+		assertNotNull(documentTrobat1.getContinguts());
+		assertEquals(1, documentTrobat1.getContinguts().size());
+		ArxiuDocumentContingut documentContingut = documentTrobat1.getContinguts().get(0);
+		assertNotNull(documentContingut);
+		byte[] content = IOUtils.toByteArray(getPdfContingutPerTest());
+		assertEquals(content.length, documentContingut.getContingut());
+		System.out.println("Ok");
+	}
 
 
 

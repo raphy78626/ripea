@@ -10,7 +10,7 @@ import java.util.Date;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuDocumentVersio {
+public class ArxiuContentVersion {
 
 	private String id;
 	private Date data;

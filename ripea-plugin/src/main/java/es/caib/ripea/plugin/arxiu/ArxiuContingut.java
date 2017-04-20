@@ -17,11 +17,13 @@ public abstract class ArxiuContingut {
 	protected String titol;
 	protected Map<String, Object> metadades;
 	protected List<String> aspectes;
-	protected String json;
 
 	private String descripcio;
 	private String serieDocumental;
 	private String aplicacio;
+
+	protected String codiFontPeticio;
+	protected String codiFontResposta;
 
 	public ArxiuContingut(
 			String nodeId,
@@ -33,7 +35,6 @@ public abstract class ArxiuContingut {
 		this.titol = titol;
 		this.metadades = metadades;
 		this.aspectes = aspectes;
-		this.json = json;
 	}
 
 	public String getNodeId() {
@@ -47,9 +48,6 @@ public abstract class ArxiuContingut {
 	}
 	public List<String> getAspectes() {
 		return aspectes;
-	}
-	public String getJson() {
-		return json;
 	}
 	public String getDescripcio() {
 		return descripcio;
@@ -68,6 +66,19 @@ public abstract class ArxiuContingut {
 	}
 	public void setAplicacio(String aplicacio) {
 		this.aplicacio = aplicacio;
+	}
+
+	public String getCodiFontPeticio() {
+		return codiFontPeticio;
+	}
+	public void setCodiFontPeticio(String codiFontPeticio) {
+		this.codiFontPeticio = codiFontPeticio;
+	}
+	public String getCodiFontResposta() {
+		return codiFontResposta;
+	}
+	public void setCodiFontResposta(String codiFontResposta) {
+		this.codiFontResposta = codiFontResposta;
 	}
 
 }

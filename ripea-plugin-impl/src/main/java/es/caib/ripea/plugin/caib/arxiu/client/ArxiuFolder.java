@@ -5,37 +5,29 @@ package es.caib.ripea.plugin.caib.arxiu.client;
 
 import java.util.List;
 
-import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.SummaryInfoNode;
-
 /**
  * Estructura que representa una carpeta de l'arxiu.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuFolder extends ArxiuContingut {
+public class ArxiuFolder extends ArxiuContent {
 
-	private List<SummaryInfoNode> fills;
+	private List<ArxiuContentChild> children;
 
 	public ArxiuFolder(
 			String nodeId,
-			String titol,
-			List<SummaryInfoNode> fills,
-			String json) {
+			String name,
+			List<ArxiuContentChild> children) {
 		super(
 				nodeId,
-				titol,
+				name,
 				null,
-				null,
-				json);
-		this.fills = fills;
+				null);
+		this.children = children;
 	}
 
-	public List<SummaryInfoNode> getFills() {
-		return fills;
-	}
-
-	public String getNom() {
-		return titol;
+	public List<ArxiuContentChild> getChildren() {
+		return children;
 	}
 
 }

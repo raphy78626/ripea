@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.plugin.caib.arxiu;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -12,15 +13,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.axis.encoding.Base64;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.Content;
-import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.Metadata;
-import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.SummaryInfoNode;
-import es.caib.arxiudigital.apirest.constantes.Aspectos;
 import es.caib.arxiudigital.apirest.constantes.EstadosElaboracion;
 import es.caib.arxiudigital.apirest.constantes.EstadosExpediente;
 import es.caib.arxiudigital.apirest.constantes.ExtensionesFichero;
@@ -36,6 +35,7 @@ import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.SistemaExternNoTrobatException;
 import es.caib.ripea.plugin.arxiu.ArxiuCapsalera;
 import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
+import es.caib.ripea.plugin.arxiu.ArxiuContingut;
 import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
@@ -52,8 +52,13 @@ import es.caib.ripea.plugin.arxiu.ArxiuPlugin;
 import es.caib.ripea.plugin.arxiu.ArxiuTipusDocumental;
 import es.caib.ripea.plugin.caib.arxiu.client.ArxiuClient;
 import es.caib.ripea.plugin.caib.arxiu.client.ArxiuClientImpl;
+import es.caib.ripea.plugin.caib.arxiu.client.ArxiuContentChild;
+import es.caib.ripea.plugin.caib.arxiu.client.ArxiuContentVersion;
+import es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocumentContent;
+import es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocumentContentTypeEnum;
 import es.caib.ripea.plugin.caib.arxiu.client.ArxiuException;
 import es.caib.ripea.plugin.caib.arxiu.client.ArxiuFile;
+import es.caib.ripea.plugin.caib.arxiu.client.ArxiuFolder;
 import es.caib.ripea.plugin.caib.arxiu.client.ArxiuHeader;
 import es.caib.ripea.plugin.caib.arxiu.client.ArxiuNotFoundException;
 import es.caib.ripea.plugin.utils.PropertiesHelper;
@@ -66,11 +71,7 @@ import es.caib.ripea.plugin.utils.PropertiesHelper;
  */
 public class ArxiuPluginCaib implements ArxiuPlugin {
 
-	private static final String SERVEI_VERSIO = "1.0";
-
 	private ArxiuClient arxiuClient;
-
-
 
 	@Override
 	public ArxiuExpedient expedientCrear(
@@ -85,15 +86,16 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
 			ArxiuFile file = getArxiuClient().fileCreate(
-					titol,
-					toOrigenesContenido(origen),
-					dataObertura,
-					classificacio,
-					toEstadosExpediente(estat),
-					organs,
-					interessats,
-					serieDocumental,
-					null,
+					toArxiuFile(
+							null,
+							titol,
+							origen,
+							dataObertura,
+							classificacio,
+							estat,
+							organs,
+							interessats,
+							serieDocumental),
 					toArxiuHeader(capsalera));
 			return toArxiuExpedient(file);
 		} catch (ArxiuException aex) {
@@ -115,16 +117,16 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
 			getArxiuClient().fileUpdate(
-					nodeId,
-					titol,
-					toOrigenesContenido(origen),
-					dataObertura,
-					classificacio,
-					toEstadosExpediente(estat),
-					organs,
-					interessats,
-					serieDocumental,
-					null,
+					toArxiuFile(
+							nodeId,
+							titol,
+							origen,
+							dataObertura,
+							classificacio,
+							estat,
+							organs,
+							interessats,
+							serieDocumental),
 					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
@@ -245,24 +247,28 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
-			String tipusMime,
+			String contentType,
 			String pareNodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
 			es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocument document = getArxiuClient().documentDraftCreate(
-					titol,
-					toOrigenesContenido(origen),
-					dataCaptura,
-					toEstadosElaboracion(estatElaboracio),
-					toTiposDocumentosEni(documentTipus),
-					toFormatosFichero(formatNom),
-					organs,
-					serieDocumental,
-					contingut,
 					pareNodeId,
-					toExtensionesFichero(formatExtensio),
-					tipusMime,
-					null,
+					toArxiuDocument(
+							null,
+							titol,
+							origen,
+							dataCaptura,
+							estatElaboracio,
+							documentTipus,
+							formatNom,
+							formatExtensio,
+							organs,
+							null,
+							null,
+							null,
+							contingut,
+							contentType,
+							serieDocumental),
 					toArxiuHeader(capsalera));
 			return toArxiuDocument(document);
 		} catch (ArxiuException aex) {
@@ -283,23 +289,26 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
-			String tipusMime,
+			String contentType,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
 			getArxiuClient().documentUpdate(
-					nodeId,
-					titol,
-					toOrigenesContenido(origen),
-					dataCaptura,
-					toEstadosElaboracion(estatElaboracio),
-					toTiposDocumentosEni(documentTipus),
-					toFormatosFichero(formatNom),
-					organs,
-					serieDocumental,
-					contingut,
-					toExtensionesFichero(formatExtensio),
-					tipusMime,
-					null,
+					toArxiuDocument(
+							nodeId,
+							titol,
+							origen,
+							dataCaptura,
+							estatElaboracio,
+							documentTipus,
+							formatNom,
+							formatExtensio,
+							organs,
+							null,
+							null,
+							null,
+							contingut,
+							contentType,
+							serieDocumental),
 					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
@@ -362,10 +371,10 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
 			List<ArxiuDocumentVersio> versions = new ArrayList<ArxiuDocumentVersio>();
-			List<es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocumentVersio> vs = getArxiuClient().documentVersionList(
+			List<ArxiuContentVersion> vs = getArxiuClient().documentVersionList(
 					nodeId,
 					toArxiuHeader(capsalera));
-			for (es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocumentVersio v: vs) {
+			for (ArxiuContentVersion v: vs) {
 				ArxiuDocumentVersio versio = new ArxiuDocumentVersio();
 				versio.setId(v.getId());
 				versio.setNodeId(v.getId() + "@" + nodeId);
@@ -391,7 +400,6 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			String valcertDocumentId) throws SistemaExternException {
 		try {
 			return getArxiuClient().documentCsvGenerate(
-					nodeId,
 					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
@@ -415,22 +423,23 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			String valcertDocumentTipus) throws SistemaExternException {
 		try {
 			getArxiuClient().documentFinalSet(
-					nodeId,
-					null, // titol,
-					null, // toOrigenesContenido(origen),
-					null, // dataCaptura,
-					null, // toEstadosElaboracion(estatElaboracio),
-					null, // toTiposDocumentosEni(documentTipus),
-					null, // toFormatosFichero(formatNom),
-					null, // organs,
-					null, // serieDocumental,
-					firmaPdfContingut,
-					TiposFirma.CSV,
-					PerfilesFirma.EPES,
-					csv,
-					null, // toExtensionesFichero(formatExtensio),
-					"application/pdf", // tipusMime,
-					null,
+					toArxiuDocument(
+							nodeId,
+							null, // titol,
+							null, // toOrigenesContenido(origen),
+							null, // dataCaptura,
+							null, // toEstadosElaboracion(estatElaboracio),
+							null, // toTiposDocumentosEni(documentTipus),
+							null, // toFormatosFichero(formatNom),
+							null, // toExtensionesFichero(formatExtensio),
+							null, // organs,
+							TiposFirma.CSV.getValue(),
+							PerfilesFirma.EPES.getValue(),
+							csv,
+							firmaPdfContingut,
+							"application/pdf",
+							null // serieDocumental
+							),
 					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
@@ -510,9 +519,11 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			String pareNodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
-			es.caib.ripea.plugin.caib.arxiu.client.ArxiuFolder carpeta = getArxiuClient().folderCreate(
-					nom,
+			ArxiuFolder carpeta = getArxiuClient().folderCreate(
 					pareNodeId,
+					toArxiuFolder(
+							null,
+							nom),
 					toArxiuHeader(capsalera));
 			return toArxiuCarpeta(carpeta);
 		} catch (ArxiuException aex) {
@@ -527,8 +538,9 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
 			getArxiuClient().folderUpdate(
-					nodeId,
-					nom,
+					toArxiuFolder(
+							nodeId,
+							nom),
 					toArxiuHeader(capsalera));
 		} catch (ArxiuNotFoundException nfex) {
 			throw new SistemaExternNoTrobatException(
@@ -565,7 +577,7 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			String nodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException {
 		try {
-			es.caib.ripea.plugin.caib.arxiu.client.ArxiuFolder carpeta = getArxiuClient().folderGet(
+			ArxiuFolder carpeta = getArxiuClient().folderGet(
 					nodeId,
 					toArxiuHeader(capsalera));
 			return toArxiuCarpeta(carpeta);
@@ -637,16 +649,238 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 		return header;
 	}
 
+	private ArxiuFile toArxiuFile(
+			String nodeId,
+			String titol,
+			ArxiuOrigenContingut origen,
+			Date dataObertura,
+			String classificacio,
+			ArxiuExpedientEstat estat,
+			List<String> organs,
+			List<String> interessats,
+			String serieDocumental) throws SistemaExternException {
+		return new ArxiuFile(
+				nodeId,
+				titol,
+				null,
+				crearMetadadesExpedient(
+						origen,
+						dataObertura,
+						classificacio,
+						estat,
+						organs,
+						interessats,
+						serieDocumental),
+				null);
+	}
+
+	private es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocument toArxiuDocument(
+			String nodeId,
+			String titol,
+			ArxiuOrigenContingut origen,
+			Date dataCaptura,
+			ArxiuEstatElaboracio estatElaboracio,
+			ArxiuTipusDocumental documentTipus,
+			ArxiuFormatNom formatNom,
+			ArxiuFormatExtensio formatExtensio,
+			List<String> organs,
+			String tipoFirma,
+			String perfilFirma,
+			String csv,
+			InputStream contingut,
+			String contentType,
+			String serieDocumental) throws SistemaExternException {
+		List<ArxiuDocumentContent> contents = null;
+		if (contingut != null) {
+			contents = new ArrayList<ArxiuDocumentContent>();
+			ArxiuDocumentContent content = new ArxiuDocumentContent();
+			try {
+				content.setContentBase64(
+						new String(
+								Base64.encode(IOUtils.toByteArray(contingut))));
+			} catch (IOException ex) {
+				throw new SistemaExternException(
+						"No s'ha pogut convertir el contingut del document a Base64",
+						ex);
+			}
+			content.setContentType(contentType);
+			content.setEncoding("UTF-8");
+			if (tipoFirma != null) {
+				content.setType(ArxiuDocumentContentTypeEnum.SIGNATURE);
+			} else {
+				content.setType(ArxiuDocumentContentTypeEnum.CONTENT);
+			}
+			
+			contents.add(content);
+		}
+		es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocument arxiuDocument = new es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocument(
+				nodeId,
+				titol,
+				contents,
+				crearMetadadesDocument(
+						origen,
+						dataCaptura,
+						estatElaboracio,
+						documentTipus,
+						formatNom,
+						formatExtensio,
+						organs,
+						tipoFirma,
+						perfilFirma,
+						csv,
+						serieDocumental),
+				null);
+		if (contingut != null) {
+			
+		}
+		return arxiuDocument;
+	}
+
+	private ArxiuFolder toArxiuFolder(
+			String nodeId,
+			String nom) {
+		return new ArxiuFolder(
+				nodeId,
+				nom,
+				null);
+	}
+
+	private Map<String, Object> crearMetadadesExpedient(
+			ArxiuOrigenContingut origen,
+			Date dataObertura,
+			String classificacio,
+			ArxiuExpedientEstat estat,
+			List<String> organs,
+			List<String> interessats,
+			String serieDocumental) throws SistemaExternException {
+		Map<String, Object> metadades  = new HashMap<String, Object>();
+		metadades.put(
+				MetadatosExpediente.CODIGO_APLICACION_TRAMITE,
+				getAplicacioCodi());
+		metadades.put(
+				MetadatosExpediente.CODIGO_CLASIFICACION,
+				serieDocumental);
+		metadades.put(
+				MetadatosExpediente.IDENTIFICADOR_PROCEDIMIENTO,
+				classificacio);
+		if (origen != null) {
+			metadades.put(
+					MetadatosExpediente.ORIGEN,
+					toOrigenesContenido(origen));
+		}
+		if (estat != null) {
+			metadades.put(
+					MetadatosExpediente.ESTADO_EXPEDIENTE,
+					toEstadosExpediente(estat));
+		}
+		if (organs != null) {
+			metadades.put(
+					MetadatosExpediente.ORGANO,
+					organs);
+		}
+		if (interessats != null) {
+			metadades.put(
+					MetadatosExpediente.INTERESADOS,
+					interessats);
+		}
+		if (dataObertura != null){
+			metadades.put(
+					MetadatosExpediente.FECHA_INICIO,
+					formatDateIso8601(dataObertura));
+		}
+		return metadades;
+	}
+
+	private Map<String, Object> crearMetadadesDocument(
+			ArxiuOrigenContingut origen,
+			Date dataCaptura,
+			ArxiuEstatElaboracio estatElaboracio,
+			ArxiuTipusDocumental documentTipus,
+			ArxiuFormatNom formatNom,
+			ArxiuFormatExtensio formatExtensio,
+			List<String> organs,
+			String tipoFirma,
+			String perfilFirma,
+			String csv,
+			String serieDocumental) throws SistemaExternException {
+		Map<String, Object> metadades  = new HashMap<String, Object>();
+		metadades.put(
+				MetadatosDocumento.CODIGO_APLICACION_TRAMITE,
+				getAplicacioCodi());
+		if (origen != null) {
+			metadades.put(
+					MetadatosDocumento.ORIGEN,
+					toOrigenesContenido(origen));
+		}
+		if (dataCaptura != null){
+			metadades.put(
+					MetadatosDocumento.FECHA_INICIO,
+					formatDateIso8601(dataCaptura));
+		}
+		if (estatElaboracio != null) {
+			metadades.put(
+					MetadatosDocumento.ESTADO_ELABORACION,
+					toEstadosElaboracion(estatElaboracio));
+		}
+		if (documentTipus != null) {
+			metadades.put(
+					MetadatosDocumento.TIPO_DOC_ENI,
+					toTiposDocumentosEni(documentTipus));
+		}
+		if (formatNom != null) {
+			metadades.put(
+					MetadatosDocumento.NOMBRE_FORMATO,
+					toFormatosFichero(formatNom));
+		}
+		if (formatExtensio != null) {
+			metadades.put(
+					MetadatosDocumento.EXTENSION_FORMATO,
+					toExtensionesFichero(formatExtensio));
+		}
+		if (organs != null) {
+			metadades.put(
+					MetadatosDocumento.ORGANO,
+					organs);
+		}
+		if (tipoFirma != null) {
+			metadades.put(
+					MetadatosDocumento.TIPO_FIRMA,
+					tipoFirma);
+		}
+		if (perfilFirma != null) {
+			metadades.put(
+					MetadatosDocumento.PERFIL_FIRMA,
+					perfilFirma);
+		}
+		if (csv != null) {
+			metadades.put(
+					MetadatosDocumento.CSV,
+					csv);
+		}
+		if (serieDocumental != null) {
+			metadades.put(
+					MetadatosDocumento.CODIGO_CLASIFICACION,
+					serieDocumental);
+		}
+		return metadades;
+	}
+
+	private String formatDateIso8601(Date date) {
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		df.setTimeZone(tz);
+		return df.format(date);
+	}
+	
 	private ArxiuExpedient toArxiuExpedient(ArxiuFile arxiuFile) {
-		Map<String, Object> metadades = toMetadadesPerRetornar(
-				arxiuFile.getMetadades());
+		Map<String, Object> metadades = arxiuFile.getMetadata();
 		ArxiuExpedient expedient = new ArxiuExpedient(
 				arxiuFile.getNodeId(),
-				arxiuFile.getTitol(),
-				toFillsPerRetornar(arxiuFile.getFills()),
+				arxiuFile.getName(),
+				toFillsPerRetornar(arxiuFile.getChildren()),
 				metadades,
-				toAspectesPerRetornar(arxiuFile.getAspectes()),
-				arxiuFile.getJson());
+				arxiuFile.getAspects(),
+				null);
 		expedient.setEniVersio(
 				getMetadataValueAsString(
 						metadades,
@@ -709,20 +943,20 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 				getMetadataValueAsString(
 						metadades,
 						MetadatosExpediente.CODIGO_APLICACION_TRAMITE));
+		emplenarCodiFontComunicacioArxiu(expedient);
 		return expedient;
 	}
 
 	private ArxiuDocument toArxiuDocument(
 			es.caib.ripea.plugin.caib.arxiu.client.ArxiuDocument arxiuDocument) {
-		Map<String, Object> metadades = toMetadadesPerRetornar(
-				arxiuDocument.getMetadades());
+		Map<String, Object> metadades = arxiuDocument.getMetadata();
 		ArxiuDocument document = new ArxiuDocument(
 				arxiuDocument.getNodeId(),
-				arxiuDocument.getTitol(),
-				toContingutsPerRetornar(arxiuDocument.getContinguts()),
+				arxiuDocument.getName(),
+				toContingutsPerRetornar(arxiuDocument.getContents()),
 				metadades,
-				toAspectesPerRetornar(arxiuDocument.getAspectes()),
-				arxiuDocument.getJson());
+				arxiuDocument.getAspects(),
+				null);
 		document.setEniVersio(
 				getMetadataValueAsString(
 						metadades,
@@ -792,17 +1026,88 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 				getMetadataValueAsString(
 						metadades,
 						MetadatosExpediente.CODIGO_APLICACION_TRAMITE));
+		emplenarCodiFontComunicacioArxiu(document);
 		return document;
 	}
 
 	private ArxiuCarpeta toArxiuCarpeta(
-			es.caib.ripea.plugin.caib.arxiu.client.ArxiuFolder arxiuFolder) {
+			ArxiuFolder arxiuFolder) {
 		ArxiuCarpeta carpeta = new ArxiuCarpeta(
 				arxiuFolder.getNodeId(),
-				arxiuFolder.getTitol(),
-				toFillsPerRetornar(arxiuFolder.getFills()),
-				arxiuFolder.getJson());
+				arxiuFolder.getName(),
+				toFillsPerRetornar(arxiuFolder.getChildren()),
+				null);
+		emplenarCodiFontComunicacioArxiu(carpeta);
 		return carpeta;
+	}
+
+	private List<ArxiuFill> toFillsPerRetornar(
+			List<ArxiuContentChild> children) {
+		List<ArxiuFill> fills = null;
+		if (children != null) {
+			fills = new ArrayList<ArxiuFill>();
+			for (ArxiuContentChild child: children) {
+				ArxiuFillTipusEnum tipus = null;
+				if (child.getTipus() != null) {
+					switch (child.getTipus()) {
+					case EXPEDIENT:
+						tipus = ArxiuFillTipusEnum.EXPEDIENT;
+						break;
+					case DOCUMENT:
+						tipus = ArxiuFillTipusEnum.DOCUMENT;
+						break;
+					case CARPETA:
+						tipus = ArxiuFillTipusEnum.CARPETA;
+						break;
+					case DOCUMENT_MIGRAT:
+						tipus = ArxiuFillTipusEnum.DOCUMENT_MIGRAT;
+						break;
+					}
+				}
+				fills.add(
+						new ArxiuFill(
+								child.getNodeId(),
+								tipus,
+								child.getName()));
+			}
+		}
+		return fills;
+	}
+
+	private List<ArxiuDocumentContingut> toContingutsPerRetornar(
+			List<ArxiuDocumentContent> contents) {
+		List<ArxiuDocumentContingut> continguts = null;
+		if (contents != null) {
+			continguts = new ArrayList<ArxiuDocumentContingut>();
+			for (ArxiuDocumentContent content: contents) {
+				ArxiuContingutTipusEnum tipus = null;
+				if (content.getType() != null) {
+					switch (content.getType()) {
+					case CONTENT:
+						tipus = ArxiuContingutTipusEnum.CONTINGUT;
+						break;
+					case SIGNATURE:
+						tipus = ArxiuContingutTipusEnum.FIRMA;
+						break;
+					case SIGNATURE_VALCERT:
+						tipus = ArxiuContingutTipusEnum.FIRMA_VALCERT;
+						break;
+					case MIGRATION_SIGNATURE:
+						tipus = ArxiuContingutTipusEnum.MIGRACIO_FIRMA;
+						break;
+					case MIGRATION_ZIP:
+						tipus = ArxiuContingutTipusEnum.MIGRACIO_ZIP;
+						break;
+					}
+				}
+				continguts.add(
+						new ArxiuDocumentContingut(
+								tipus,
+								content.getContentType(),
+								Base64.decode(content.getContentBase64())));
+			}
+		}
+		return continguts;
 	}
 
 	private OrigenesContenido toOrigenesContenido(
@@ -872,14 +1177,42 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 		switch (documentTipus) {
 		case ACORD:
 			return TiposDocumentosENI.ACUERDO;
+		case ACTA:
+			return TiposDocumentosENI.ACTA;
+		case ALEGACIO:
+			return TiposDocumentosENI.ALEGACION;
 		case ALTRES:
 			return TiposDocumentosENI.OTROS;
+		case ALTRES_INCAUTATS:
+			return TiposDocumentosENI.OTROS_INCAUTADOS;
+		case CERTIFICAT:
+			return TiposDocumentosENI.CERTIFICADO;
+		case COMUNICACIO:
+			return TiposDocumentosENI.COMUNICACION;
+		case COMUNICACIO_CIUTADA:
+			return TiposDocumentosENI.COMUNICACION_CIUDADANO;
 		case CONTRACTE:
 			return TiposDocumentosENI.CONTRATO;
 		case CONVENI:
 			return TiposDocumentosENI.CONVENIO;
+		case DECLARACIO:
+			return TiposDocumentosENI.DECLARACION;
+		case DENUNCIA:
+			return TiposDocumentosENI.DENUNCIA;
+		case DILIGENCIA:
+			return TiposDocumentosENI.DILIGENCIA;
+		case FACTURA:
+			return TiposDocumentosENI.FACTURA;
+		case INFORME:
+			return TiposDocumentosENI.INFORME;
+		case JUSTIFICANT_RECEPCIO:
+			return TiposDocumentosENI.ACUSE_DE_RECIBO;
 		case NOTIFICACIO:
 			return TiposDocumentosENI.NOTIFICACION;
+		case PUBLICACIO:
+			return TiposDocumentosENI.PUBLICACION;
+		case RECURSOS:
+			return TiposDocumentosENI.RECURSOS;
 		case RESOLUCIO:
 			return TiposDocumentosENI.RESOLUCION;
 		case SOLICITUD:
@@ -1031,94 +1364,6 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 		}
 	}
 
-	private Map<String, Object> toMetadadesPerRetornar(List<Metadata> ms) {
-		Map<String, Object> metadades = null;
-		if (ms != null) {
-			metadades = new HashMap<String, Object>();
-			for (Metadata m: ms) {
-				metadades.put(
-						m.getQname(),
-						m.getValue());
-			}
-		}
-		return metadades;
-	}
-	private List<String> toAspectesPerRetornar(List<Aspectos> as) {
-		List<String> aspectes = null;
-		if (as != null) {
-			aspectes = new ArrayList<String>();
-			for (Aspectos a: as) {
-				aspectes.add(a.getValue());
-			}
-		}
-		return aspectes;
-	}
-	private List<ArxiuFill> toFillsPerRetornar(List<SummaryInfoNode> ns) {
-		List<ArxiuFill> fills = null;
-		if (ns != null) {
-			fills = new ArrayList<ArxiuFill>();
-			for (SummaryInfoNode n: ns) {
-				ArxiuFillTipusEnum tipus = null;
-				if (n.getType() != null) {
-					switch (n.getType()) {
-					case EXPEDIENTE:
-						tipus = ArxiuFillTipusEnum.EXPEDIENT;
-						break;
-					case DOCUMENTO:
-						tipus = ArxiuFillTipusEnum.DOCUMENT;
-						break;
-					case DIRECTORIO:
-						tipus = ArxiuFillTipusEnum.CARPETA;
-						break;
-					case DOCUMENTO_MIGRADO:
-						tipus = ArxiuFillTipusEnum.DOCUMENT_MIGRAT;
-						break;
-					}
-				}
-				fills.add(
-						new ArxiuFill(
-								n.getId(),
-								tipus,
-								n.getName()));
-			}
-		}
-		return fills;
-	}
-	private List<ArxiuDocumentContingut> toContingutsPerRetornar(List<Content> cs) {
-		List<ArxiuDocumentContingut> continguts = null;
-		if (cs != null) {
-			continguts = new ArrayList<ArxiuDocumentContingut>();
-			for (Content c: cs) {
-				ArxiuContingutTipusEnum tipus = null;
-				if (c.getBinaryType() != null) {
-					switch (c.getBinaryType()) {
-					case CONTENT:
-						tipus = ArxiuContingutTipusEnum.CONTINGUT;
-						break;
-					case SIGNATURE:
-						tipus = ArxiuContingutTipusEnum.FIRMA;
-						break;
-					case VALCERT_SIGNATURE:
-						tipus = ArxiuContingutTipusEnum.FIRMA_VALCERT;
-						break;
-					case MIGRATION_SIGNATURE:
-						tipus = ArxiuContingutTipusEnum.MIGRACIO_FIRMA;
-						break;
-					case MIGRATION_ZIP:
-						tipus = ArxiuContingutTipusEnum.MIGRACIO_ZIP;
-						break;
-					}
-				}
-				continguts.add(
-						new ArxiuDocumentContingut(
-								tipus,
-								c.getMimetype(),
-								Base64.decode(c.getContent())));
-			}
-		}
-		return continguts;
-	}
-
 	private String getMetadataValueAsString(
 			Map<String, Object> metadades,
 			String qname) {
@@ -1170,7 +1415,6 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			arxiuClient = new ArxiuClientImpl(
 					getBaseUrl(),
 					getAplicacioCodi(),
-					SERVEI_VERSIO,
 					getUsuari(),
 					getContrasenya());
 		}
@@ -1188,6 +1432,16 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 			return new SistemaExternException(
 					aex.getMessage(),
 					aex);
+		}
+	}
+
+	private void emplenarCodiFontComunicacioArxiu(ArxiuContingut arxiuContingut) {
+		ArxiuClient arxiuClient = getArxiuClient();
+		if (arxiuClient instanceof ArxiuClientImpl) {
+			arxiuContingut.setCodiFontPeticio(
+					((ArxiuClientImpl)arxiuClient).getLastJsonRequest());
+			arxiuContingut.setCodiFontResposta(
+					((ArxiuClientImpl)arxiuClient).getLastJsonResponse());
 		}
 	}
 

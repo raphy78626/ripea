@@ -134,7 +134,7 @@ public interface ArxiuPlugin {
 	 * @param organs
 	 * @param serieDocumental
 	 * @param contingut
-	 * @param tipusMime
+	 * @param contentType
 	 * @param pareNodeId
 	 * @param capsalera
 	 * @return
@@ -151,7 +151,7 @@ public interface ArxiuPlugin {
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
-			String tipusMime,
+			String contentType,
 			String pareNodeId,
 			ArxiuCapsalera capsalera) throws SistemaExternException;
 
@@ -168,7 +168,7 @@ public interface ArxiuPlugin {
 	 * @param organs
 	 * @param serieDocumental
 	 * @param contingut
-	 * @param tipusMime
+	 * @param contentType
 	 * @param expedientNodeId
 	 * @param capsalera
 	 * @throws SistemaExternException
@@ -185,7 +185,7 @@ public interface ArxiuPlugin {
 			List<String> organs,
 			String serieDocumental,
 			InputStream contingut,
-			String tipusMime,
+			String contentType,
 			ArxiuCapsalera capsalera) throws SistemaExternException;
 
 	/**

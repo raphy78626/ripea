@@ -156,7 +156,7 @@ public class ArxiuDigitalApiTest {
 				documentNom,
 				contingutBase64,
 				ENCODING,
-				"text/plain",
+				"application/pdf",
 				metadades,
 				null);
 		CreateDraftDocumentResult res = getApiArxiu().crearDraftDocument(

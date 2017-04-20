@@ -3,19 +3,7 @@
  */
 package es.caib.ripea.plugin.caib.arxiu.client;
 
-import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import es.caib.arxiudigital.apirest.constantes.EstadosElaboracion;
-import es.caib.arxiudigital.apirest.constantes.EstadosExpediente;
-import es.caib.arxiudigital.apirest.constantes.ExtensionesFichero;
-import es.caib.arxiudigital.apirest.constantes.FormatosFichero;
-import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
-import es.caib.arxiudigital.apirest.constantes.PerfilesFirma;
-import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
-import es.caib.arxiudigital.apirest.constantes.TiposFirma;
 
 /**
  * Interfície del client per a accedir a la funcionalitat de
@@ -26,163 +14,172 @@ import es.caib.arxiudigital.apirest.constantes.TiposFirma;
 public interface ArxiuClient {
 
 	public ArxiuFile fileCreate(
-			String titol,
-			OrigenesContenido origen,
-			Date dataObertura,
-			String classificacio,
-			EstadosExpediente estat,
-			List<String> organs,
-			List<String> interessats,
-			String serieDocumental,
-			Map<String, Object> metadadesAddicionals,
+			ArxiuFile file,
 			ArxiuHeader capsalera) throws ArxiuException;
 	public void fileUpdate(
-			String nodeId,
-			String titol,
-			OrigenesContenido origen,
-			Date dataObertura,
-			String classificacio,
-			EstadosExpediente estat,
-			List<String> organs,
-			List<String> interessats,
-			String serieDocumental,
-			Map<String, Object> metadadesAddicionals,
-			ArxiuHeader capsalera);
+			ArxiuFile file,
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void fileDelete(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public ArxiuFile fileGet(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
+	public List<ArxiuContentVersion> fileVersionList(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void fileClose(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void fileReopen(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public String fileExport(
 			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public String fileIndexGenerate(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public ArxiuFile fileChildCreate(
+			String pareNodeId,
+			ArxiuFile file,
 			ArxiuHeader capsalera);
-	public void fileEasySearch();
-	public void fileLink();
-	public void fileLock();
-	public void fileUnlock();
-	public void fileVersionList();
-	public void filePermissionsGrant();
-	public void filePermissionsCancel();
-	public void fileIndexGenerate();
-	public void fileChildCreate();
-	public void fileChildMove();
+	public void fileChildMove(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera);
+	/*public void fileSearch();
+	public void fileEasySearch();*/
+	public void fileLink(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void fileLock(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void fileUnlock(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void filePermissionsGrant(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuPermissionEnum permis,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void filePermissionsCancel(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuHeader capsalera) throws ArxiuException;
 
 	public ArxiuDocument documentDraftCreate(
-			String titol,
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			List<String> organs,
-			String serieDocumental,
-			InputStream contingut,
 			String pareNodeId,
-			ExtensionesFichero formatExtensio,
-			String tipusMime,
-			Map<String, Object> metadadesAddicionals,
-			ArxiuHeader capsalera);
-	public ArxiuDocument documentCreate();
+			ArxiuDocument document,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public ArxiuDocument documentFinalCreate(
+			String pareNodeId,
+			ArxiuDocument document,
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void documentUpdate(
-			String nodeId,
-			String titol,
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			List<String> organs,
-			String serieDocumental,
-			InputStream contingut,
-			ExtensionesFichero formatExtensio,
-			String tipusMime,
-			Map<String, Object> metadadesAddicionals,
-			ArxiuHeader capsalera);
+			ArxiuDocument document,
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void documentDelete(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public ArxiuDocument documentGet(
 			String nodeId,
 			String csv,
 			boolean ambContingut,
-			ArxiuHeader capsalera);
-	public List<ArxiuDocumentVersio> documentVersionList(
+			ArxiuHeader capsalera) throws ArxiuException;
+	public List<ArxiuContentVersion> documentVersionList(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public String documentCsvGenerate(
-			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void documentFinalSet(
-			String nodeId,
-			String titol,
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			List<String> organs,
-			String serieDocumental,
-			InputStream contingut,
-			TiposFirma firmaTipus,
-			PerfilesFirma firmaPerfil,
-			String csv,
-			ExtensionesFichero formatExtensio,
-			String tipusMime,
-			Map<String, Object> metadadesAddicionals,
-			ArxiuHeader capsalera);
+			ArxiuDocument document,
+			ArxiuHeader capsalera) throws ArxiuException;
 	public String documentEniGet(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void documentCopy(
 			String nodeId,
-			String nodeDestiId,
-			ArxiuHeader capsalera);
+			String targetNodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void documentMove(
 			String nodeId,
-			String nodeDestiId,
+			String targetNodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public String documentDispatch(
+			String nodeId,
+			String targetNodeId,
+			String targetNodeType,
+			String classificationSerie,
+			String classificationType,
+			ArxiuHeader capsalera);
+	/*public void documentValidate(
+			String nodeId,
+			String csv,
 			ArxiuHeader capsalera);
 	public void documentSearch();
-	public void documentLink();
-	public void documentLock();
-	public void documentUnlock();
-	public void documentPermissionsGrant();
-	public void documentPermissionsCancel();
-	public void documentValidate();
-	public void documentDispatch();
+	public void documentEasySearch();*/
+	public void documentLink(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void documentLock(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void documentUnlock(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void documentPermissionsGrant(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuPermissionEnum permis,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void documentPermissionsCancel(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuHeader capsalera) throws ArxiuException;
 
 	public ArxiuFolder folderCreate(
-			String name,
 			String pareNodeId,
-			ArxiuHeader capsalera);
+			ArxiuFolder folder,
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void folderUpdate(
-			String nodeId,
-			String name,
-			ArxiuHeader capsalera);
+			ArxiuFolder folder,
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void folderDelete(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public ArxiuFolder folderGet(
 			String nodeId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void folderCopy(
 			String nodeId,
 			String nodeDestiId,
-			ArxiuHeader capsalera);
+			ArxiuHeader capsalera) throws ArxiuException;
 	public void folderMove(
 			String nodeId,
 			String nodeDestiId,
-			ArxiuHeader capsalera);
-	public void folderLink();
-	public void folderLock();
-	public void folderUnlock();
-	public void folderPermissionsGrant();
-	public void folderPermissionsCancel();
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void folderLink(
+			String nodeId,
+			String nodeDestiId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void folderLock(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void folderUnlock(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void folderPermissionsGrant(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuPermissionEnum permis,
+			ArxiuHeader capsalera) throws ArxiuException;
+	public void folderPermissionsCancel(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuHeader capsalera) throws ArxiuException;
 
 }

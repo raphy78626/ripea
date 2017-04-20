@@ -4,38 +4,33 @@
 package es.caib.ripea.plugin.caib.arxiu.client;
 
 import java.util.List;
-
-import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.Metadata;
-import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.SummaryInfoNode;
-import es.caib.arxiudigital.apirest.constantes.Aspectos;
+import java.util.Map;
 
 /**
  * Estructura que representa un expedient de l'arxiu.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuFile extends ArxiuContingut {
+public class ArxiuFile extends ArxiuContent {
 
-	private List<SummaryInfoNode> fills;
+	private List<ArxiuContentChild> children;
 
 	public ArxiuFile(
 			String nodeId,
 			String titol,
-			List<SummaryInfoNode> fills,
-			List<Metadata> metadades,
-			List<Aspectos> aspectes,
-			String json) {
+			List<ArxiuContentChild> children,
+			Map<String, Object> metadata,
+			List<String> aspects) {
 		super(
 				nodeId,
 				titol,
-				metadades,
-				aspectes,
-				json);
-		this.fills = fills;
+				metadata,
+				aspects);
+		this.children = children;
 	}
 
-	public List<SummaryInfoNode> getFills() {
-		return fills;
+	public List<ArxiuContentChild> getChildren() {
+		return children;
 	}
 
 }

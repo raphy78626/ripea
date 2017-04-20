@@ -15,7 +15,8 @@
 <c:if test="${not empty arxiuInfo}">
 <script type="text/javascript">
 $(document).ready(function() {
-	$("#codiJson").text(JSON.stringify(${arxiuInfo.json}, null, 4));
+	$("#codiFontPeticio").text(JSON.stringify(${arxiuInfo.codiFontPeticio}, null, 4));
+	$("#codiFontResposta").text(JSON.stringify(${arxiuInfo.codiFontResposta}, null, 4));
 });
 </script>
 </c:if>
@@ -35,7 +36,7 @@ $(document).ready(function() {
 					<li role="presentation"><a href="#aspectes" aria-controls="aspectes" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.aspectes"/> <span class="badge badge-default">${fn:length(arxiuInfo.aspectes)}</span></a></li>
 				</c:if>
 				
-				<c:if test="${not empty arxiuInfo.json}">
+				<c:if test="${not empty arxiuInfo.codiFontPeticio || not empty arxiuInfo.codiFontResposta}">
 					<li role="presentation"><a href="#json" aria-controls="json" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.json"/></a></li>
 				</c:if>
 			</ul>
@@ -58,10 +59,12 @@ $(document).ready(function() {
 									<td>${arxiuInfo.descripcio}</td>
 								</tr>
 							</c:if>
-							<tr>
-								<td><strong><spring:message code="contingut.arxiu.camp.serie.doc"/></strong></td>
-								<td>${arxiuInfo.serieDocumental}</td>
-							</tr>
+							<c:if test="${not empty arxiuInfo.serieDocumental}">
+								<tr>
+									<td><strong><spring:message code="contingut.arxiu.camp.serie.doc"/></strong></td>
+									<td>${arxiuInfo.serieDocumental}</td>
+								</tr>
+							</c:if>
 							<c:if test="${not empty arxiuInfo.aplicacio}">
 								<tr>
 									<td><strong><spring:message code="contingut.arxiu.camp.aplicacio"/></strong></td>
@@ -224,9 +227,38 @@ $(document).ready(function() {
 						</ul>
 					</div>
 				</c:if>
-				<c:if test="${not empty arxiuInfo.json}">
+				<c:if test="${not empty arxiuInfo.codiFontPeticio || not empty arxiuInfo.codiFontResposta}">
 					<div role="tabpanel" class="tab-pane" id="json">
-						<pre id="codiJson" style="height:300px; margin: 12px"></pre>
+						<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">
+										<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsePeticio" aria-expanded="false" aria-controls="collapsePeticio">
+											<spring:message code="contingut.arxiu.json.peticio"/>
+										</a>
+									</h3>
+								</div>
+								<div id="collapsePeticio" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapsePeticio">
+									<div class="panel-body">
+										<pre id="codiFontPeticio"></pre>
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseResposta" aria-expanded="false" aria-controls="collapseResposta">
+											<spring:message code="contingut.arxiu.json.resposta"/>
+										</a>
+									</h3>
+								</div>
+								<div id="collapseResposta" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseResposta">
+									<div class="panel-body">
+										<pre id="codiFontResposta"></pre>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</c:if>
 			</div>

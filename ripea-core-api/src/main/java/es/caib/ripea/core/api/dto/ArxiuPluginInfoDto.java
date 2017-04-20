@@ -45,7 +45,9 @@ public class ArxiuPluginInfoDto implements Serializable {
 	protected Map<String, Object> metadades;
 	protected List<String> aspectes;
 	protected List<ArxiuPluginNodeFillDto> fills;
-	private String json;
+
+	private String codiFontPeticio;
+	private String codiFontResposta;
 
 
 
@@ -211,11 +213,18 @@ public class ArxiuPluginInfoDto implements Serializable {
 	public void setFills(List<ArxiuPluginNodeFillDto> fills) {
 		this.fills = fills;
 	}
-	public String getJson() {
-		return json;
+
+	public String getCodiFontPeticio() {
+		return codiFontPeticio;
 	}
-	public void setJson(String json) {
-		this.json = json;
+	public void setCodiFontPeticio(String codiFontPeticio) {
+		this.codiFontPeticio = codiFontPeticio;
+	}
+	public String getCodiFontResposta() {
+		return codiFontResposta;
+	}
+	public void setCodiFontResposta(String codiFontResposta) {
+		this.codiFontResposta = codiFontResposta;
 	}
 
 	private static final long serialVersionUID = -2124829280908976623L;

@@ -4,7 +4,6 @@
 package es.caib.ripea.plugin.caib.arxiu.client;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,10 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +30,7 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.Content;
+import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocClassification;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocumentId;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocumentNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.FileAuditInfo;
@@ -46,19 +44,27 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.ServiceAuditInfo;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.ServiceHeader;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.ServiceSecurityInfo;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.SummaryInfoNode;
+import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.TargetNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.VersionNode;
+import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCancelPermissions;
+import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateChildFile;
+import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateDraftDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateFile;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateFolder;
+import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamDispatchDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamGetDocument;
+import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamGrantPermissions;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamNodeID_TargetParent;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamNodeId;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamSetDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamSetFile;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamSetFolder;
+import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateChildFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateDraftDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateFolderResult;
+import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.DispatchDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.ExceptionResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.ExportFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GenerateDocCSVResult;
@@ -67,19 +73,37 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetENIDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetFolderResult;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.CancelPermissionsOnDocs;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.CancelPermissionsOnFiles;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.CancelPermissionsOnFolders;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CloseFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CopyDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CopyFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateChildFile;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateDraftDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.DispatchDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.ExportFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GenerateDocCSV;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.GenerateFileIndex;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetDocVersionList;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetENIDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetFile;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.GetFileVersionList;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.GrantPermissionsOnDocs;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.GrantPermissionsOnFiles;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.GrantPermissionsOnFolders;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.LinkDocument;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.LinkFile;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.LinkFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.LockDocument;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.LockFile;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.LockFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.MoveChildFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.MoveDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.MoveFolder;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.RemoveDocument;
@@ -91,21 +115,13 @@ import es.caib.arxiudigital.apirest.CSGD.peticiones.SetDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFinalDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.UnlockDocument;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.UnlockFile;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.UnlockFolder;
 import es.caib.arxiudigital.apirest.constantes.Aspectos;
-import es.caib.arxiudigital.apirest.constantes.EstadosElaboracion;
-import es.caib.arxiudigital.apirest.constantes.EstadosExpediente;
-import es.caib.arxiudigital.apirest.constantes.ExtensionesFichero;
-import es.caib.arxiudigital.apirest.constantes.FormatosFichero;
-import es.caib.arxiudigital.apirest.constantes.MetadatosDocumento;
-import es.caib.arxiudigital.apirest.constantes.MetadatosExpediente;
-import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
-import es.caib.arxiudigital.apirest.constantes.PerfilesFirma;
-import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
-import es.caib.arxiudigital.apirest.constantes.TiposFirma;
-import es.caib.arxiudigital.apirest.facade.pojos.Documento;
-import es.caib.arxiudigital.apirest.facade.pojos.Expediente;
-import es.caib.arxiudigital.apirest.facade.pojos.Nodo;
-import es.caib.arxiudigital.apirest.utils.MetadataUtils;
+import es.caib.arxiudigital.apirest.constantes.Permisos;
+import es.caib.arxiudigital.apirest.constantes.TiposContenidosBinarios;
+import es.caib.arxiudigital.apirest.constantes.TiposObjetoSGD;
 
 /**
  * Interfície del client per a accedir a la funcionalitat de
@@ -115,21 +131,23 @@ import es.caib.arxiudigital.apirest.utils.MetadataUtils;
  */
 public class ArxiuClientImpl implements ArxiuClient {
 
+	private static final String SERVEI_VERSIO = "1.0";
+
 	private String url;
 	private String aplicacioCodi;
-	private String serveiVersio = "1.0";
 	private String usuariSgd;
 	private String contrasenyaSgd;
 
 	private Client jerseyClient;
 	private ObjectMapper mapper;
+	private String lastJsonRequest;
+	private String lastJsonResponse;
 
 
 
 	public ArxiuClientImpl(
 			String url,
 			String aplicacioCodi,
-			String serveiVersio,
 			String usuariHttp,
 			String contrasenyaHttp,
 			String usuariSgd,
@@ -157,83 +175,47 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public ArxiuClientImpl(
 			String url,
 			String aplicacioCodi,
-			String serveiVersio,
 			String usuariSgd,
 			String contrasenyaSgd) {
 		this(	url,
 				aplicacioCodi,
-				serveiVersio,
 				null,
 				null,
 				usuariSgd,
 				contrasenyaSgd);
 	}
 
+
+
 	@Override
 	public ArxiuFile fileCreate(
-			String titol,
-			OrigenesContenido origen,
-			Date dataObertura,
-			String classificacio,
-			EstadosExpediente estat,
-			List<String> organs,
-			List<String> interessats,
-			String serieDocumental,
-			Map<String, Object> metadadesAddicionals,
+			ArxiuFile file,
 			ArxiuHeader capsalera) throws ArxiuException {
-		String metode = ArxiuMetodes.FILE_CREATE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"titol=" + titol + ", " +
-				"origen=" + origen + ", " +
-				"dataObertura=" + dataObertura + ", " +
-				"classificacio=" + classificacio + ", " +
-				"estat=" + estat + ", " +
-				"organs=" + organs + ", " +
-				"interessats=" + interessats + ", " +
-				"serieDocumental=" + serieDocumental + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FILE_CREATE;
 		try {
-			Map<String, Object> metadades = crearMetadadesExpedient(
-					origen,
-					dataObertura,
-					classificacio,
-					estat,
-					organs,
-					interessats,
-					serieDocumental);
-			if (metadadesAddicionals != null) {
-				metadades.putAll(metadadesAddicionals);
-			}
 			CreateFile createFile = new CreateFile();
 			Request<ParamCreateFile> request = new Request<ParamCreateFile>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			ParamCreateFile param = new ParamCreateFile();
-			param.setRetrieveNode(new Boolean(true).toString());
-			Expediente expedient = new Expediente();
-			expedient.expedienteParaCrear(true);
-			expedient.setName(titol);
-			expedient.setMetadataCollection(metadades);
-			param.setFile(toNodeFile(expedient));
+			param.setFile(toFileNode(file, true));
+			param.setRetrieveNode(Boolean.TRUE.toString());
 			request.setParam(param);
 			createFile.setCreateFileRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					createFile);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				CreateFileResult result = mapper.readValue(
 						resposta.getJson(),
 						CreateFileResult.class);
 				FileNode fileNode = result.getCreateFileResult().getResParam();
-				return new ArxiuFile(
+				ArxiuFile fileCreat = new ArxiuFile(
 						fileNode.getId(),
 						fileNode.getName(),
-						fileNode.getChildObjects(),
-						fileNode.getMetadataCollection(),
-						fileNode.getAspects(),
-						extreureResParamJson(resposta.getJson()));
+						generarChildrenPerRetornar(fileNode.getChildObjects()),
+						generarMetadadesPerRetornar(fileNode.getMetadataCollection()),
+						generarAspectesPerRetornar(fileNode.getAspects()));
+				return fileCreat;
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -251,58 +233,20 @@ public class ArxiuClientImpl implements ArxiuClient {
 
 	@Override
 	public void fileUpdate(
-			String nodeId,
-			String titol,
-			OrigenesContenido origen,
-			Date dataObertura,
-			String classificacio,
-			EstadosExpediente estat,
-			List<String> organs,
-			List<String> interessats,
-			String serieDocumental,
-			Map<String, Object> metadadesAddicionals,
-			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FILE_SET;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"titol=" + titol + ", " +
-				"origen=" + origen + ", " +
-				"dataObertura=" + dataObertura + ", " +
-				"classificacio=" + classificacio + ", " +
-				"estat=" + estat + ", " +
-				"organs=" + organs + ", " +
-				"interessats=" + interessats + ", " +
-				"serieDocumental=" + serieDocumental + ", " +
-				"capsalera=" + capsalera + ")");
+			ArxiuFile file,
+			ArxiuHeader capsalera) throws ArxiuException {
+		String metode = ArxiuMethods.FILE_CREATE;
 		try {
-			Map<String, Object> metadades = crearMetadadesExpedient(
-					origen,
-					dataObertura,
-					classificacio,
-					estat,
-					organs,
-					interessats,
-					serieDocumental);
-			if (metadadesAddicionals != null) {
-				metadades.putAll(metadadesAddicionals);
-			}
 			SetFile setFile = new SetFile();
 			Request<ParamSetFile> request = new Request<ParamSetFile>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			ParamSetFile param = new ParamSetFile();
-			Expediente expedient = new Expediente();
-			expedient.expedienteParaCrear(true);
-			expedient.setName(titol);
-			expedient.setMetadataCollection(metadades);
-			param.setFile(toNodeFile(expedient));
+			param.setFile(toFileNode(file, true));
 			request.setParam(param);
 			setFile.setSetFileRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					setFile);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -318,28 +262,23 @@ public class ArxiuClientImpl implements ArxiuClient {
 		}
 	}
 
+
 	@Override
 	public void fileDelete(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FILE_REMOVE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FILE_REMOVE;
 		try {
 			RemoveFile removeFile = new RemoveFile();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			ParamNodeId paramNodeId = new ParamNodeId();
-			paramNodeId.setNodeId(nodeId);
-			request.setParam(paramNodeId);
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
 			removeFile.setRemoveFileRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					removeFile);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -359,36 +298,74 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public ArxiuFile fileGet(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FILE_GET;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FILE_GET;
 		try {
 			GetFile getFile = new GetFile();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			ParamNodeId paramNodeId = new ParamNodeId();
-			paramNodeId.setNodeId(nodeId);
-			request.setParam(paramNodeId);
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
 			getFile.setGetFileRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					getFile);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				GetFileResult result = mapper.readValue(
 						resposta.getJson(),
 						GetFileResult.class);
 				FileNode fileNode = result.getGetFileResult().getResParam();
-				return new ArxiuFile(
+				ArxiuFile fileObtingut = new ArxiuFile(
 						fileNode.getId(),
 						fileNode.getName(),
-						fileNode.getChildObjects(),
-						fileNode.getMetadataCollection(),
-						fileNode.getAspects(),
-						extreureResParamJson(resposta.getJson()));
+						generarChildrenPerRetornar(fileNode.getChildObjects()),
+						generarMetadadesPerRetornar(fileNode.getMetadataCollection()),
+						generarAspectesPerRetornar(fileNode.getAspects()));
+				return fileObtingut;
+			} else {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public List<ArxiuContentVersion> fileVersionList(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException {
+		String metode = ArxiuMethods.FILE_GET_VERSION;
+		try {
+			GetFileVersionList getFileVersionList = new GetFileVersionList();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
+			getFileVersionList.setGetFileVersionListRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					getFileVersionList);
+			if (resposta.getStatus() == 200) {
+				GetDocVersionListResult result = mapper.readValue(
+						resposta.getJson(),
+						GetDocVersionListResult.class);
+				List<ArxiuContentVersion> versions = new ArrayList<ArxiuContentVersion>();
+				List<VersionNode> vns = result.getGetDocVersionListResult().getResParam();
+				for (VersionNode vn: vns) {
+					ArxiuContentVersion versio = new ArxiuContentVersion();
+					versio.setId(vn.getId());
+					versio.setData(getMetadataValueAsDate(vn.getDate()));
+					versions.add(versio);
+				}
+				return versions;
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -408,24 +385,18 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public void fileClose(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FILE_CLOSE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FILE_CLOSE;
 		try {
 			CloseFile closeFile = new CloseFile();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			ParamNodeId paramNodeId = new ParamNodeId();
-			paramNodeId.setNodeId(nodeId);
-			request.setParam(paramNodeId);
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
 			closeFile.setCloseFileRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					closeFile);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -445,24 +416,18 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public void fileReopen(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FILE_REOPEN;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FILE_REOPEN;
 		try {
 			ReopenFile reopenFile = new ReopenFile();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			ParamNodeId paramNodeId = new ParamNodeId();
-			paramNodeId.setNodeId(nodeId);
-			request.setParam(paramNodeId);
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
 			reopenFile.setReopenFileRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					reopenFile);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -482,24 +447,18 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public String fileExport(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FILE_EXPORT;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FILE_EXPORT;
 		try {
 			ExportFile exportFile = new ExportFile();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			ParamNodeId paramNodeId = new ParamNodeId();
-			paramNodeId.setNodeId(nodeId);
-			request.setParam(paramNodeId);
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
 			exportFile.setExportFileRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					exportFile);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				ExportFileResult result = mapper.readValue(
 						resposta.getJson(),
@@ -527,144 +486,32 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
-	public void fileEasySearch() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void fileLink() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void fileLock() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void fileUnlock() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void fileVersionList() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void filePermissionsGrant() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void filePermissionsCancel() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void fileIndexGenerate() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void fileChildCreate() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void fileChildMove() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public ArxiuDocument documentDraftCreate(
-			String titol,
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			List<String> organs,
-			String serieDocumental,
-			InputStream contingut,
-			String pareNodeId,
-			ExtensionesFichero formatExtensio,
-			String tipusMime,
-			Map<String, Object> metadadesAddicionals,
-			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_CREATE_DRAFT;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"titol=" + titol + ", " +
-				"origen=" + origen + ", " +
-				"dataCaptura=" + dataCaptura + ", " +
-				"estatElaboracio=" + estatElaboracio + ", " +
-				"documentTipus=" + documentTipus + ", " +
-				"formatNom=" + formatNom + ", " +
-				"organs=" + organs + ", " +
-				"serieDocumental=" + serieDocumental + ", " +
-				"pareNodeId=" + pareNodeId + ", " +
-				"formatExtensio=" + formatExtensio + ", " +
-				"tipusMime=" + tipusMime + ", " +
-				"capsalera=" + capsalera + ")");
+	public String fileIndexGenerate(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException {
+		String metode = ArxiuMethods.FILE_GENERAR_INDEX;
 		try {
-			Map<String, Object> metadades = crearMetadadesDocument(
-					origen,
-					dataCaptura,
-					estatElaboracio,
-					documentTipus,
-					formatNom,
-					formatExtensio,
-					organs,
-					serieDocumental,
-					null,
-					null,
-					null,
-					metode);
-			if (metadadesAddicionals != null) {
-				metadades.putAll(metadadesAddicionals);
-			}
-			CreateDraftDocument createDraftDocument = new CreateDraftDocument();
-			Request<ParamCreateDraftDocument> request = new Request<ParamCreateDraftDocument>();
+			GenerateFileIndex generateFileIndex = new GenerateFileIndex();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			ParamCreateDraftDocument param = new ParamCreateDraftDocument();
-			param.setRetrieveNode(new Boolean(true).toString());
-			param.setParent(pareNodeId);
-			param.setDocument(toDocumentNode(
-					null,
-					titol,
-					metadades,
-					contingut,
-					tipusMime));
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
 			request.setParam(param);
-			createDraftDocument.setCreateDraftDocumentRequest(request);
+			generateFileIndex.setGenerateFileIndexRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
-					createDraftDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
+					generateFileIndex);
 			if (resposta.getStatus() == 200) {
-				CreateDraftDocumentResult result = mapper.readValue(
+				ExportFileResult result = mapper.readValue(
 						resposta.getJson(),
-						CreateDraftDocumentResult.class);
-				DocumentNode documentNode = result.getCreateDraftDocumentResult().getResParam();
-				return new ArxiuDocument(
-						documentNode.getId(),
-						documentNode.getName(),
-						documentNode.getBinaryContents(),
-						documentNode.getMetadataCollection(),
-						documentNode.getAspects(),
-						extreureResParamJson(resposta.getJson()));
+						ExportFileResult.class);
+				String exportBase64 = result.getExportFileResult().getResParam();
+				if (exportBase64 != null) {
+					return new String(
+							Base64.decodeBase64(exportBase64));
+				} else {
+					return null;
+				}
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -681,72 +528,36 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
-	public ArxiuDocument documentCreate(
-			/*String titol,
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
-			List<String> organs,
-			String serieDocumental,
-			InputStream contingut,
-			String tipusMime,
+	public ArxiuFile fileChildCreate(
 			String pareNodeId,
-			ArxiuHeader capsalera*/) {
-		/*String metode = ArxiuMetodes.DOCUMENT_CREATE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"titol=" + titol + ", " +
-				"origen=" + origen + ", " +
-				"dataCaptura=" + dataCaptura + ", " +
-				"estatElaboracio=" + estatElaboracio + ", " +
-				"documentTipus=" + documentTipus + ", " +
-				"formatNom=" + formatNom + ", " +
-				"formatExtensio=" + formatExtensio + ", " +
-				"organs=" + organs + ", " +
-				"serieDocumental=" + serieDocumental + ", " +
-				"tipusMime=" + tipusMime + ", " +
-				"pareNodeId=" + pareNodeId + ", " +
-				"capsalera=" + capsalera + ")");
+			ArxiuFile file,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FILE_CREATE_CHILD;
 		try {
-			Map<String, Object> metadades = crearMetadadesDocument(
-					origen,
-					dataCaptura,
-					estatElaboracio,
-					documentTipus,
-					formatNom,
-					formatExtensio,
-					organs,
-					serieDocumental,
-					metode);
-			CreateDocument createDocument = new CreateDocument();
-			Request<ParamCreateDocument> request = new Request<ParamCreateDocument>();
+			CreateChildFile createChildFile = new CreateChildFile();
+			Request<ParamCreateChildFile> request = new Request<ParamCreateChildFile>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			ParamCreateDocument param = new ParamCreateDocument();
-			param.setRetrieveNode(new Boolean(true).toString());
+			ParamCreateChildFile param = new ParamCreateChildFile();
 			param.setParent(pareNodeId);
-			param.setDocument(toDocumentNode(
-					null,
-					titol,
-					metadades,
-					contingut,
-					tipusMime));
+			param.setFile(toFileNode(file, true));
+			param.setRetrieveNode(Boolean.TRUE.toString());
 			request.setParam(param);
-			createDocument.setCreateDocumentRequest(request);
+			createChildFile.setCreateChildFileRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
-					createDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
+					createChildFile);
 			if (resposta.getStatus() == 200) {
-				CreateDocumentResult result = mapper.readValue(
+				CreateChildFileResult result = mapper.readValue(
 						resposta.getJson(),
-						CreateDocumentResult.class);
-				return toArxiuDocument(
-						result.getCreateDocumentResult().getResParam(),
-						resposta.getJson());
+						CreateChildFileResult.class);
+				FileNode fileNode = result.getCreateChildFileResult().getResParam();
+				ArxiuFile fileCreat = new ArxiuFile(
+						fileNode.getId(),
+						fileNode.getName(),
+						generarChildrenPerRetornar(fileNode.getChildObjects()),
+						generarMetadadesPerRetornar(fileNode.getMetadataCollection()),
+						generarAspectesPerRetornar(fileNode.getAspects()));
+				return fileCreat;
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -759,75 +570,322 @@ public class ArxiuClientImpl implements ArxiuClient {
 					metode,
 					"S'ha produit un error cridant el mètode " + metode,
 					ex);
-		}*/
-		return null;
+		}
+	}
+
+	@Override
+	public void fileChildMove(
+			String nodeId,
+			String targetNodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FILE_MOVE_CHILD;
+		try {
+			MoveChildFile moveChildFile = new MoveChildFile();
+			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
+			ParamNodeID_TargetParent param = new ParamNodeID_TargetParent();
+			param.setNodeId(nodeId);
+			param.setTargetParent(targetNodeId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			moveChildFile.setMoveChildFileRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					moveChildFile);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public void fileLink(
+			String nodeId,
+			String targetNodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FILE_LINK;
+		try {
+			LinkFile linkFile = new LinkFile();
+			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
+			ParamNodeID_TargetParent param = new ParamNodeID_TargetParent();
+			param.setNodeId(nodeId);
+			param.setTargetParent(targetNodeId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			linkFile.setLinkFileRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					linkFile);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public void fileLock(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException {
+		String metode = ArxiuMethods.FILE_LOCK;
+		try {
+			LockFile lockFile = new LockFile();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			lockFile.setLockFileRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					lockFile);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public void fileUnlock(
+			String nodeId,
+			ArxiuHeader capsalera) throws ArxiuException {
+		String metode = ArxiuMethods.FILE_UNLOCK;
+		try {
+			UnlockFile unlockFile = new UnlockFile();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			unlockFile.setUnlockFileRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					unlockFile);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public void filePermissionsGrant(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuPermissionEnum permis,
+			ArxiuHeader capsalera) throws ArxiuException {
+		String metode = ArxiuMethods.FILE_GRANT_PERMISOS;
+		try {
+			GrantPermissionsOnFiles grantPermissionsFiles = new GrantPermissionsOnFiles();
+			Request<ParamGrantPermissions> request = new Request<ParamGrantPermissions>();
+			ParamGrantPermissions param = new ParamGrantPermissions();
+			param.setNodeIds(nodeIds);
+			param.setAuthorities(authorities);
+			if (permis != null) {
+				switch (permis) {
+				case READ:
+					param.setPermission(Permisos.READ);
+					break;
+				case WRITE:
+					param.setPermission(Permisos.WRITE);
+					break;
+				}
+			}
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			grantPermissionsFiles.setGrantPermissionsOnFilesRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					grantPermissionsFiles);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public void filePermissionsCancel(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuHeader capsalera) throws ArxiuException {
+		String metode = ArxiuMethods.FILE_CANCEL_PERMISOS;
+		try {
+			CancelPermissionsOnFiles cancelPermissionsFiles = new CancelPermissionsOnFiles();
+			Request<ParamCancelPermissions> request = new Request<ParamCancelPermissions>();
+			ParamCancelPermissions param = new ParamCancelPermissions();
+			param.setNodeIds(nodeIds);
+			param.setAuthorities(authorities);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			cancelPermissionsFiles.setCancelPermissionsOnFilesRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					cancelPermissionsFiles);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public ArxiuDocument documentDraftCreate(
+			String pareNodeId,
+			ArxiuDocument document,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.DOCUMENT_CREATE_DRAFT;
+		try {
+			CreateDraftDocument createDraftDocument = new CreateDraftDocument();
+			Request<ParamCreateDraftDocument> request = new Request<ParamCreateDraftDocument>();
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			ParamCreateDraftDocument param = new ParamCreateDraftDocument();
+			param.setParent(pareNodeId);
+			param.setDocument(toDocumentNode(document, true));
+			param.setRetrieveNode(Boolean.TRUE.toString());
+			request.setParam(param);
+			createDraftDocument.setCreateDraftDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					createDraftDocument);
+			if (resposta.getStatus() == 200) {
+				CreateDraftDocumentResult result = mapper.readValue(
+						resposta.getJson(),
+						CreateDraftDocumentResult.class);
+				DocumentNode documentNode = result.getCreateDraftDocumentResult().getResParam();
+				ArxiuDocument documentCreat = new ArxiuDocument(
+						documentNode.getId(),
+						documentNode.getName(),
+						generarContentPerRetornar(documentNode.getBinaryContents()),
+						generarMetadadesPerRetornar(documentNode.getMetadataCollection()),
+						generarAspectesPerRetornar(documentNode.getAspects()));
+				return documentCreat;
+			} else {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	@Override
+	public ArxiuDocument documentFinalCreate(
+			String pareNodeId,
+			ArxiuDocument document,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.DOCUMENT_CREATE;
+		try {
+			CreateDocument createDocument = new CreateDocument();
+			Request<ParamCreateDocument> request = new Request<ParamCreateDocument>();
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			ParamCreateDocument param = new ParamCreateDocument();
+			param.setParent(pareNodeId);
+			param.setDocument(toDocumentNode(document, true));
+			param.setRetrieveNode(Boolean.TRUE.toString());
+			request.setParam(param);
+			createDocument.setCreateDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					createDocument);
+			if (resposta.getStatus() == 200) {
+				CreateDraftDocumentResult result = mapper.readValue(
+						resposta.getJson(),
+						CreateDraftDocumentResult.class);
+				DocumentNode documentNode = result.getCreateDraftDocumentResult().getResParam();
+				ArxiuDocument documentCreat = new ArxiuDocument(
+						documentNode.getId(),
+						documentNode.getName(),
+						generarContentPerRetornar(documentNode.getBinaryContents()),
+						generarMetadadesPerRetornar(documentNode.getMetadataCollection()),
+						generarAspectesPerRetornar(documentNode.getAspects()));
+				return documentCreat;
+			} else {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
 	public void documentUpdate(
-			String nodeId,
-			String titol,
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			List<String> organs,
-			String serieDocumental,
-			InputStream contingut,
-			ExtensionesFichero formatExtensio,
-			String tipusMime,
-			Map<String, Object> metadadesAddicionals,
+			ArxiuDocument document,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_SET;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"titol=" + titol + ", " +
-				"origen=" + origen + ", " +
-				"dataCaptura=" + dataCaptura + ", " +
-				"estatElaboracio=" + estatElaboracio + ", " +
-				"documentTipus=" + documentTipus + ", " +
-				"formatNom=" + formatNom + ", " +
-				"organs=" + organs + ", " +
-				"serieDocumental=" + serieDocumental + ", " +
-				"formatExtensio=" + formatExtensio + ", " +
-				"tipusMime=" + tipusMime + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.DOCUMENT_SET;
 		try {
-			Map<String, Object> metadades = crearMetadadesDocument(
-					origen,
-					dataCaptura,
-					estatElaboracio,
-					documentTipus,
-					formatNom,
-					formatExtensio,
-					organs,
-					serieDocumental,
-					null,
-					null,
-					null,
-					metode);
-			if (metadadesAddicionals != null) {
-				metadades.putAll(metadadesAddicionals);
-			}
 			SetDocument setDocument = new SetDocument();
 			Request<ParamSetDocument> request = new Request<ParamSetDocument>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			ParamSetDocument param = new ParamSetDocument();
-			param.setDocument(toDocumentNode(
-					nodeId,
-					titol,
-					metadades,
-					contingut,
-					tipusMime));
+			param.setDocument(toDocumentNode(document, false));
 			request.setParam(param);
 			setDocument.setSetDocumentRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					setDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -847,24 +905,18 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public void documentDelete(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_REMOVE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.DOCUMENT_REMOVE;
 		try {
 			RemoveDocument removeDocument = new RemoveDocument();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			ParamNodeId paramNodeId = new ParamNodeId();
-			paramNodeId.setNodeId(nodeId);
-			request.setParam(paramNodeId);
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
 			removeDocument.setRemoveDocumentRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					removeDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -886,7 +938,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 			String csv,
 			boolean ambContingut,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_GET;
+		String metode = ArxiuMethods.DOCUMENT_GET;
 		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
 				"nodeId=" + nodeId + ", " +
 				"capsalera=" + capsalera + ")");
@@ -905,21 +957,18 @@ public class ArxiuClientImpl implements ArxiuClient {
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					getDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				GetDocumentResult result = mapper.readValue(
 						resposta.getJson(),
 						GetDocumentResult.class);
 				DocumentNode documentNode = result.getGetDocumentResult().getResParam();
-				return new ArxiuDocument(
+				ArxiuDocument documentObtingut = new ArxiuDocument(
 						documentNode.getId(),
 						documentNode.getName(),
-						documentNode.getBinaryContents(),
-						documentNode.getMetadataCollection(),
-						documentNode.getAspects(),
-						extreureResParamJson(resposta.getJson()));
+						generarContentPerRetornar(documentNode.getBinaryContents()),
+						generarMetadadesPerRetornar(documentNode.getMetadataCollection()),
+						generarAspectesPerRetornar(documentNode.getAspects()));
+				return documentObtingut;
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -936,13 +985,10 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
-	public List<ArxiuDocumentVersio> documentVersionList(
+	public List<ArxiuContentVersion> documentVersionList(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_GET_VERSION;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.DOCUMENT_GET_VERSION;
 		try {
 			GetDocVersionList getDocVersionList = new GetDocVersionList();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
@@ -954,19 +1000,16 @@ public class ArxiuClientImpl implements ArxiuClient {
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					getDocVersionList);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				GetDocVersionListResult result = mapper.readValue(
 						resposta.getJson(),
 						GetDocVersionListResult.class);
-				List<ArxiuDocumentVersio> versions = new ArrayList<ArxiuDocumentVersio>();
+				List<ArxiuContentVersion> versions = new ArrayList<ArxiuContentVersion>();
 				List<VersionNode> vns = result.getGetDocVersionListResult().getResParam();
-				for (VersionNode vs: vns) {
-					ArxiuDocumentVersio versio = new ArxiuDocumentVersio();
-					versio.setId(vs.getId());
-					versio.setData(getMetadataValueAsDate(vs.getDate()));
+				for (VersionNode vn: vns) {
+					ArxiuContentVersion versio = new ArxiuContentVersion();
+					versio.setId(vn.getId());
+					versio.setData(getMetadataValueAsDate(vn.getDate()));
 					versions.add(versio);
 				}
 				return versions;
@@ -987,12 +1030,8 @@ public class ArxiuClientImpl implements ArxiuClient {
 
 	@Override
 	public String documentCsvGenerate(
-			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_GENERATE_CSV;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.DOCUMENT_GENERATE_CSV;
 		try {
 			GenerateDocCSV generateDocCSV = new GenerateDocCSV();
 			Request<Object> request = new Request<Object>();
@@ -1001,9 +1040,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					generateDocCSV);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				GenerateDocCSVResult result = mapper.readValue(
 						resposta.getJson(),
@@ -1026,75 +1062,20 @@ public class ArxiuClientImpl implements ArxiuClient {
 
 	@Override
 	public void documentFinalSet(
-			String nodeId,
-			String titol,
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			List<String> organs,
-			String serieDocumental,
-			InputStream contingut,
-			TiposFirma firmaTipus,
-			PerfilesFirma firmaPerfil,
-			String csv,
-			ExtensionesFichero formatExtensio,
-			String tipusMime,
-			Map<String, Object> metadadesAddicionals,
+			ArxiuDocument document,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_SET_FINAL;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"titol=" + titol + ", " +
-				"origen=" + origen + ", " +
-				"dataCaptura=" + dataCaptura + ", " +
-				"estatElaboracio=" + estatElaboracio + ", " +
-				"documentTipus=" + documentTipus + ", " +
-				"formatNom=" + formatNom + ", " +
-				"formatExtensio=" + formatExtensio + ", " +
-				"organs=" + organs + ", " +
-				"serieDocumental=" + serieDocumental + ", " +
-				"firmaTipus=" + firmaTipus + ", " +
-				"firmaPerfil=" + firmaPerfil + ", " +
-				"csv=" + csv + ", " +
-				"tipusMime=" + tipusMime + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.DOCUMENT_SET_FINAL;
 		try {
-			Map<String, Object> metadades = crearMetadadesDocument(
-					origen,
-					dataCaptura,
-					estatElaboracio,
-					documentTipus,
-					formatNom,
-					formatExtensio,
-					organs,
-					serieDocumental,
-					firmaTipus,
-					firmaPerfil,
-					csv,
-					metode);
-			if (metadadesAddicionals != null) {
-				metadades.putAll(metadadesAddicionals);
-			}
 			SetFinalDocument setFinalDocument = new SetFinalDocument();
 			Request<ParamSetDocument> request = new Request<ParamSetDocument>();
 			ParamSetDocument param = new ParamSetDocument();
-			param.setDocument(toDocumentNode(
-					nodeId,
-					titol,
-					metadades,
-					contingut,
-					tipusMime));
+			param.setDocument(toDocumentNode(document, false));
 			request.setParam(param);
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			setFinalDocument.setSetFinalDocumentRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					setFinalDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -1114,10 +1095,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public String documentEniGet(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_GET_ENIDOC;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.DOCUMENT_GET_ENIDOC;
 		try {
 			GetENIDocument getEniDocument = new GetENIDocument();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
@@ -1130,9 +1108,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					getEniDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				GetENIDocumentResult result = mapper.readValue(
 						resposta.getJson(),
@@ -1162,27 +1137,21 @@ public class ArxiuClientImpl implements ArxiuClient {
 	@Override
 	public void documentCopy(
 			String nodeId,
-			String nodeDestiId,
+			String targetNodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_COPY;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.DOCUMENT_COPY;
 		try {
 			CopyDocument copyDocument = new CopyDocument();
 			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
-			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
-			paramTarget.setNodeId(nodeId);
-			paramTarget.setTargetParent(nodeDestiId);
-			request.setParam(paramTarget);
+			ParamNodeID_TargetParent param = new ParamNodeID_TargetParent();
+			param.setNodeId(nodeId);
+			param.setTargetParent(targetNodeId);
+			request.setParam(param);
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			copyDocument.setCopyDocumentRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					copyDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -1201,27 +1170,21 @@ public class ArxiuClientImpl implements ArxiuClient {
 	@Override
 	public void documentMove(
 			String nodeId,
-			String nodeDestiId,
+			String targetNodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.DOCUMENT_MOVE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.DOCUMENT_MOVE;
 		try {
 			MoveDocument moveDocument = new MoveDocument();
 			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
-			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
-			paramTarget.setNodeId(nodeId);
-			paramTarget.setTargetParent(nodeDestiId);
-			request.setParam(paramTarget);
+			ParamNodeID_TargetParent param = new ParamNodeID_TargetParent();
+			param.setNodeId(nodeId);
+			param.setTargetParent(targetNodeId);
+			request.setParam(param);
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			moveDocument.setMoveDocumentRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					moveDocument);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -1238,80 +1201,287 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
-	public void documentSearch() {
-		// TODO Auto-generated method stub
-		
+	public String documentDispatch(
+			String nodeId,
+			String targetNodeId,
+			String targetNodeType,
+			String classificationSerie,
+			String classificationType,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.DOCUMENT_DISPATCH;
+		try {
+			DispatchDocument dispatchDocument = new DispatchDocument();
+			Request<ParamDispatchDocument> request = new Request<ParamDispatchDocument>();
+			ParamDispatchDocument param = new ParamDispatchDocument();
+			param.setSourceNodeId(nodeId);
+			TargetNode targetNode = new TargetNode();
+			targetNode.setId(targetNodeId);
+			targetNode.setTargetType(targetNodeType);
+			DocClassification docClassification = new DocClassification();
+			docClassification.setSerie(classificationSerie);
+			docClassification.setType(classificationType);
+			targetNode.setDocClassification(docClassification);
+			param.setTargetNode(targetNode);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			dispatchDocument.setDispatchDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					dispatchDocument);
+			if (resposta.getStatus() == 200) {
+				DispatchDocumentResult result = mapper.readValue(
+						resposta.getJson(),
+						DispatchDocumentResult.class);
+				return result.getDispatchDocumentResult().getResParam();
+			} else {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	/*@Override
+	public void documentValidate(
+			String nodeId,
+			String csv,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.DOCUMENT_VALIDATE;
+		try {
+			ValidateDocument validateDocument = new ValidateDocument();
+			Request<ParamValidateDoc> request = new Request<ParamValidateDoc>();
+			ParamValidateDoc param = new ParamValidateDoc();
+			DocumentId documentId = new DocumentId();
+			documentId.setNodeId(nodeId);
+			documentId.setCsv(csv);
+			param.setDocumentId(documentId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			validateDocument.setValidateDocRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					validateDocument);
+			if (resposta.getStatus() == 200) {
+				ValidateDocResult result = mapper.readValue(
+						resposta.getJson(),
+						ValidateDocResult.class);
+				DocumentoYFirmas documentAmbFirmes = result.getValidateDocResult().getResParam();
+				DSSResult dssResult = result.getValidateDocResult().getResult();
+				
+				return result.getValidateDocResult().getResParam();
+			} else {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}*/
+
+	@Override
+	public void documentLink(
+			String nodeId,
+			String targetNodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.DOCUMENT_LINK;
+		try {
+			LinkDocument linkDocument = new LinkDocument();
+			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
+			ParamNodeID_TargetParent param = new ParamNodeID_TargetParent();
+			param.setNodeId(nodeId);
+			param.setTargetParent(targetNodeId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			linkDocument.setLinkDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					linkDocument);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void documentLink() {
-		// TODO Auto-generated method stub
-		
+	public void documentLock(
+			String nodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.DOCUMENT_LOCK;
+		try {
+			LockDocument lockDocument = new LockDocument();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			lockDocument.setLockDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					lockDocument);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void documentLock() {
-		// TODO Auto-generated method stub
-		
+	public void documentUnlock(
+			String nodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.DOCUMENT_UNLOCK;
+		try {
+			UnlockDocument unlockDocument = new UnlockDocument();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			ParamNodeId param = new ParamNodeId();
+			param.setNodeId(nodeId);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			unlockDocument.setUnlockDocumentRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					unlockDocument);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void documentUnlock() {
-		// TODO Auto-generated method stub
-		
+	public void documentPermissionsGrant(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuPermissionEnum permis,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.DOCUMENT_GRANT_PERMISOS;
+		try {
+			GrantPermissionsOnDocs grantPermissionsDocs = new GrantPermissionsOnDocs();
+			Request<ParamGrantPermissions> request = new Request<ParamGrantPermissions>();
+			ParamGrantPermissions param = new ParamGrantPermissions();
+			param.setNodeIds(nodeIds);
+			param.setAuthorities(authorities);
+			if (permis != null) {
+				switch (permis) {
+				case READ:
+					param.setPermission(Permisos.READ);
+					break;
+				case WRITE:
+					param.setPermission(Permisos.WRITE);
+					break;
+				}
+			}
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			grantPermissionsDocs.setGrantPermissionsOnDocsRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					grantPermissionsDocs);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void documentPermissionsGrant() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void documentPermissionsCancel() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void documentValidate() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void documentDispatch() {
-		// TODO Auto-generated method stub
-		
+	public void documentPermissionsCancel(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FOLDER_CANCEL_PERMISOS;
+		try {
+			CancelPermissionsOnDocs cancelPermissionsDocs = new CancelPermissionsOnDocs();
+			Request<ParamCancelPermissions> request = new Request<ParamCancelPermissions>();
+			ParamCancelPermissions param = new ParamCancelPermissions();
+			param.setNodeIds(nodeIds);
+			param.setAuthorities(authorities);
+			request.setParam(param);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			cancelPermissionsDocs.setCancelPermissionsOnDocsRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					cancelPermissionsDocs);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
 	public ArxiuFolder folderCreate(
-			String name,
 			String pareNodeId,
+			ArxiuFolder folder,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FOLDER_CREATE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"name=" + name + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FOLDER_CREATE;
 		try {
 			CreateFolder createFolder = new CreateFolder();
 			Request<ParamCreateFolder> request = new Request<ParamCreateFolder>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			ParamCreateFolder param = new ParamCreateFolder();
-			FolderNode folder = new FolderNode();
-			folder.setName(name);
-			param.setFolder(folder);
 			param.setParent(pareNodeId);
+			param.setFolder(toFolderNode(folder));
 			param.setRetrieveNode(Boolean.TRUE.toString());
 			request.setParam(param);
 			createFolder.setCreateFolderRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					createFolder);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				CreateFolderResult result = mapper.readValue(
 						resposta.getJson(),
@@ -1320,8 +1490,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 				return new ArxiuFolder(
 						folderNode.getId(),
 						folderNode.getName(),
-						folderNode.getChildObjects(),
-						extreureResParamJson(resposta.getJson()));
+						generarChildrenPerRetornar(folderNode.getChildObjects()));
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -1339,31 +1508,20 @@ public class ArxiuClientImpl implements ArxiuClient {
 
 	@Override
 	public void folderUpdate(
-			String nodeId,
-			String name,
+			ArxiuFolder folder,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FOLDER_SET;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"name=" + name + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FOLDER_SET;
 		try {
 			SetFolder setFolder = new SetFolder();
 			Request<ParamSetFolder> request = new Request<ParamSetFolder>();
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			ParamSetFolder param = new ParamSetFolder();
-			FolderNode folder = new FolderNode();
-			folder.setId(nodeId);
-			folder.setName(name);
-			param.setFolder(folder);
+			param.setFolder(toFolderNode(folder));
 			request.setParam(param);
 			setFolder.setSetFolderRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					setFolder);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -1383,10 +1541,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public void folderDelete(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FOLDER_REMOVE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FOLDER_REMOVE;
 		try {
 			RemoveFolder removeFolder = new RemoveFolder();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
@@ -1398,9 +1553,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					removeFolder);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -1420,10 +1572,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 	public ArxiuFolder folderGet(
 			String nodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FOLDER_GET;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FOLDER_GET;
 		try {
 			GetFolder getFolder = new GetFolder();
 			Request<ParamNodeId> request = new Request<ParamNodeId>();
@@ -1435,9 +1584,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					getFolder);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() == 200) {
 				GetFolderResult result = mapper.readValue(
 						resposta.getJson(),
@@ -1446,8 +1592,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 				return new ArxiuFolder(
 						folderNode.getId(),
 						folderNode.getName(),
-						folderNode.getChildObjects(),
-						extreureResParamJson(resposta.getJson()));
+						generarChildrenPerRetornar(folderNode.getChildObjects()));
 			} else {
 				throw generarExcepcioJson(
 						metode,
@@ -1466,27 +1611,21 @@ public class ArxiuClientImpl implements ArxiuClient {
 	@Override
 	public void folderCopy(
 			String nodeId,
-			String nodeDestiId,
+			String targetNodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FOLDER_COPY;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FOLDER_COPY;
 		try {
 			CopyFolder copyFolder = new CopyFolder();
 			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
 			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
 			paramTarget.setNodeId(nodeId);
-			paramTarget.setTargetParent(nodeDestiId);
+			paramTarget.setTargetParent(targetNodeId);
 			request.setParam(paramTarget);
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			copyFolder.setCopyDocumentFolder(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					copyFolder);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -1505,27 +1644,21 @@ public class ArxiuClientImpl implements ArxiuClient {
 	@Override
 	public void folderMove(
 			String nodeId,
-			String nodeDestiId,
+			String targetNodeId,
 			ArxiuHeader capsalera) {
-		String metode = ArxiuMetodes.FOLDER_MOVE;
-		logger.debug("Invocant mètode " + metode + " amb paràmetres (" +
-				"nodeId=" + nodeId + ", " +
-				"capsalera=" + capsalera + ")");
+		String metode = ArxiuMethods.FOLDER_MOVE;
 		try {
 			MoveFolder moveFolder = new MoveFolder();
 			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
 			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
 			paramTarget.setNodeId(nodeId);
-			paramTarget.setTargetParent(nodeDestiId);
+			paramTarget.setTargetParent(targetNodeId);
 			request.setParam(paramTarget);
 			request.setServiceHeader(generarServiceHeader(capsalera));
 			moveFolder.setMoveFolderRequest(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					moveFolder);
-			logger.debug("Rebuda resposta mètode " + metode + " (" +
-					"status=" + resposta.getStatus() + ", " +
-					"contingut=" + resposta.getJson() + ")");
 			if (resposta.getStatus() != 200) {
 				throw generarExcepcioJson(
 						metode,
@@ -1542,228 +1675,259 @@ public class ArxiuClientImpl implements ArxiuClient {
 	}
 
 	@Override
-	public void folderLink() {
-		// TODO Auto-generated method stub
-		
+	public void folderLink(
+			String nodeId,
+			String targetNodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FOLDER_LINK;
+		try {
+			LinkFolder linkFolder = new LinkFolder();
+			Request<ParamNodeID_TargetParent> request = new Request<ParamNodeID_TargetParent>();
+			ParamNodeID_TargetParent paramTarget = new ParamNodeID_TargetParent();
+			paramTarget.setNodeId(nodeId);
+			paramTarget.setTargetParent(targetNodeId);
+			request.setParam(paramTarget);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			linkFolder.setLinkFolderRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					linkFolder);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void folderLock() {
-		// TODO Auto-generated method stub
-		
+	public void folderLock(
+			String nodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FOLDER_LOCK;
+		try {
+			LockFolder lockFolder = new LockFolder();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			ParamNodeId paramNodeId = new ParamNodeId();
+			paramNodeId.setNodeId(nodeId);
+			request.setParam(paramNodeId);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			lockFolder.setLockFolderRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					lockFolder);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void folderUnlock() {
-		// TODO Auto-generated method stub
-		
+	public void folderUnlock(
+			String nodeId,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FOLDER_UNLOCK;
+		try {
+			UnlockFolder unlockFolder = new UnlockFolder();
+			Request<ParamNodeId> request = new Request<ParamNodeId>();
+			ParamNodeId paramNodeId = new ParamNodeId();
+			paramNodeId.setNodeId(nodeId);
+			request.setParam(paramNodeId);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			unlockFolder.setUnlockFolderRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					unlockFolder);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void folderPermissionsGrant() {
-		// TODO Auto-generated method stub
-		
+	public void folderPermissionsGrant(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuPermissionEnum permis,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FOLDER_GRANT_PERMISOS;
+		try {
+			GrantPermissionsOnFolders grantPermissionsFolders = new GrantPermissionsOnFolders();
+			Request<ParamGrantPermissions> request = new Request<ParamGrantPermissions>();
+			ParamGrantPermissions paramGrantPermissions = new ParamGrantPermissions();
+			paramGrantPermissions.setNodeIds(nodeIds);
+			paramGrantPermissions.setAuthorities(authorities);
+			if (permis != null) {
+				switch (permis) {
+				case READ:
+					paramGrantPermissions.setPermission(Permisos.READ);
+					break;
+				case WRITE:
+					paramGrantPermissions.setPermission(Permisos.WRITE);
+					break;
+				}
+			}
+			request.setParam(paramGrantPermissions);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			grantPermissionsFolders.setGrantPermissionsOnFoldersRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					grantPermissionsFolders);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
 	}
 
 	@Override
-	public void folderPermissionsCancel() {
-		// TODO Auto-generated method stub
-		
+	public void folderPermissionsCancel(
+			List<String> nodeIds,
+			List<String> authorities,
+			ArxiuHeader capsalera) {
+		String metode = ArxiuMethods.FOLDER_CANCEL_PERMISOS;
+		try {
+			CancelPermissionsOnFolders cancelPermissionsFolders = new CancelPermissionsOnFolders();
+			Request<ParamCancelPermissions> request = new Request<ParamCancelPermissions>();
+			ParamCancelPermissions paramCancelPermissions = new ParamCancelPermissions();
+			paramCancelPermissions.setNodeIds(nodeIds);
+			paramCancelPermissions.setAuthorities(authorities);
+			request.setParam(paramCancelPermissions);
+			request.setServiceHeader(generarServiceHeader(capsalera));
+			cancelPermissionsFolders.setCancelPermissionsOnFoldersRequest(request);
+			JerseyResponse resposta = enviarPeticioRest(
+					metode,
+					cancelPermissionsFolders);
+			if (resposta.getStatus() != 200) {
+				throw generarExcepcioJson(
+						metode,
+						resposta);
+			}
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					metode,
+					"S'ha produit un error cridant el mètode " + metode,
+					ex);
+		}
+	}
+
+	public String getLastJsonRequest() {
+		return lastJsonRequest;
+	}
+	public String getLastJsonResponse() {
+		return lastJsonResponse;
 	}
 
 
 
-	private JerseyResponse enviarPeticioRest(
-			String metode,
-			Object peticio) throws UniformInterfaceException, ClientHandlerException, JsonProcessingException {
-		String urlAmbMetode = (url.endsWith("/")) ? url + "services/" + metode : url + "/services/" + metode;
-		String body = mapper.writeValueAsString(peticio);
-		logger.debug("Enviant petició POST a l'arxiu (" +
-				"url=" + urlAmbMetode + ", " +
-				"tipus=application/json, " +
-				"body=" + body + ")");
-		System.out.println(">>> Enviant petició POST a l'arxiu (" +
-				"url=" + urlAmbMetode + ", " +
-				"tipus=application/json, " +
-				"body=" + body + ")");
-		ClientResponse response = jerseyClient.
-				resource(urlAmbMetode).
-				type("application/json").
-				post(ClientResponse.class, body);
-		String json = response.getEntity(String.class);
-		logger.debug("Rebuda resposta de l'arxiu (" +
-				"status=" + response.getStatus() + ", " +
-				"body=" + json + ")");
-		/*System.out.println(">>> Rebuda resposta de l'arxiu (" +
-				"status=" + response.getStatus() + ", " +
-				"body=" + json + ")");*/
-		return new JerseyResponse(
-				json,
-				response.getStatus());
+	private FileNode toFileNode(
+			ArxiuFile file,
+			boolean creacio) {
+		FileNode node = new FileNode();
+		node.setId(file.getNodeId());
+		node.setType(TiposObjetoSGD.EXPEDIENTE);
+		node.setName(file.getName());
+		node.setMetadataCollection(
+				generarMetadataPerArxiu(file.getMetadata()));
+		node.setAspects(
+				generarAspectosPerArxiu(
+						file.getAspects(),
+						creacio));
+		node.setChildObjects(
+				generarSummaryInfoNodePerArxiu(
+						file.getChildren()));
+		return node;
 	}
 
-	private FileNode toNodeFile(Expediente expedient) {
-		FileNode nodo = new FileNode();
-		nodo.setId(expedient.getId());
-		nodo.setType(expedient.getType());
-		nodo.setName(expedient.getName());
-		nodo.setMetadataCollection(
-				generarMetadadesAmbMap(expedient.getMetadataCollection()));
-		nodo.setAspects(expedient.getAspects());
-		nodo.setChildObjects(
-				convetertirListSummaryInfoNode(
-						expedient.getChilds()));
-		return nodo;
-	}
-
-	private List<Metadata> generarMetadadesAmbMap(Map<String, Object> metadadesMap){
-		List<Metadata> metadades = null;
-		if (metadadesMap != null) {
-			metadades = new ArrayList<Metadata>();
-			for (Map.Entry<String, Object> entry: metadadesMap.entrySet()) {
-				Metadata metadata = new Metadata();
-				metadata.setQname(entry.getKey());
-				metadata.setValue(entry.getValue());
-				metadades.add(metadata);
+	private DocumentNode toDocumentNode(
+			ArxiuDocument document,
+			boolean creacio) {
+		DocumentNode node = new DocumentNode();
+		node.setId(document.getNodeId());
+		node.setType(TiposObjetoSGD.DOCUMENTO);
+		node.setName(document.getName());
+		node.setMetadataCollection(
+				generarMetadataPerArxiu(document.getMetadata()));
+		node.setAspects(
+				generarAspectosPerArxiu(
+						document.getAspects(),
+						creacio));
+		List<Content> binaryContents = null;
+		if (document.getContents() != null) {
+			binaryContents = new ArrayList<Content>();
+			for (ArxiuDocumentContent content: document.getContents()) {
+				Content binaryContent = new Content();
+				if (content.getType() != null) {
+					switch (content.getType()) {
+					case CONTENT:
+						binaryContent.setBinaryType(TiposContenidosBinarios.CONTENT);
+						break;
+					case SIGNATURE:
+						binaryContent.setBinaryType(TiposContenidosBinarios.SIGNATURE);
+						break;
+					case SIGNATURE_VALCERT:
+						binaryContent.setBinaryType(TiposContenidosBinarios.VALCERT_SIGNATURE);
+						break;
+					case MIGRATION_SIGNATURE:
+						binaryContent.setBinaryType(TiposContenidosBinarios.MIGRATION_SIGNATURE);
+						break;
+					case MIGRATION_ZIP:
+						binaryContent.setBinaryType(TiposContenidosBinarios.MIGRATION_ZIP);
+						break;
+					}
+				}
+				binaryContent.setEncoding(content.getEncoding());
+				binaryContent.setMimetype(content.getContentType());
+				binaryContent.setContent(content.getContentBase64());
+				binaryContents.add(binaryContent);
 			}
 		}
-		return metadades;
+		node.setBinaryContents(binaryContents);
+		return node;
 	}
 
-	private Map<String, Object> crearMetadadesExpedient(
-			OrigenesContenido origen,
-			Date dataObertura,
-			String classificacio,
-			EstadosExpediente estat,
-			List<String> organs,
-			List<String> interessats,
-			String serieDocumental) {
-		Map<String, Object> metadades  = new HashMap<String, Object>();
-		metadades.put(
-				MetadatosExpediente.CODIGO_APLICACION_TRAMITE,
-				aplicacioCodi);
-		metadades.put(
-				MetadatosExpediente.CODIGO_CLASIFICACION,
-				serieDocumental);
-		metadades.put(
-				MetadatosExpediente.IDENTIFICADOR_PROCEDIMIENTO,
-				classificacio);
-		if (origen != null) {
-			metadades.put(
-					MetadatosExpediente.ORIGEN,
-					origen);
-		}
-		if (estat != null) {
-			metadades.put(
-					MetadatosExpediente.ESTADO_EXPEDIENTE,
-					estat);
-		}
-		if (organs != null) {
-			metadades.put(
-					MetadatosExpediente.ORGANO,
-					organs);
-		}
-		if (interessats != null) {
-			metadades.put(
-					MetadatosExpediente.INTERESADOS,
-					interessats);
-		}
-		if (dataObertura != null){
-			metadades.put(
-					MetadatosExpediente.FECHA_INICIO,
-					formatDateIso8601(dataObertura));
-		}
-		return metadades;
-	}
-
-	private Map<String, Object> crearMetadadesDocument(
-			OrigenesContenido origen,
-			Date dataCaptura,
-			EstadosElaboracion estatElaboracio,
-			TiposDocumentosENI documentTipus,
-			FormatosFichero formatNom,
-			ExtensionesFichero formatExtensio,
-			List<String> organs,
-			String serieDocumental,
-			TiposFirma firmaTipus,
-			PerfilesFirma firmaPerfil,
-			String csv,
-			String metode) {
-		Map<String, Object> metadades  = new HashMap<String, Object>();
-		metadades.put(
-				MetadatosDocumento.CODIGO_APLICACION_TRAMITE,
-				aplicacioCodi);
-		if (origen != null) {
-			metadades.put(
-					MetadatosDocumento.ORIGEN,
-					origen);
-		}
-		if (dataCaptura != null){
-			metadades.put(
-					MetadatosDocumento.FECHA_INICIO,
-					formatDateIso8601(dataCaptura));
-		}
-		if (estatElaboracio != null) {
-			metadades.put(
-					MetadatosDocumento.ESTADO_ELABORACION,
-					estatElaboracio);
-		}
-		if (documentTipus != null) {
-			metadades.put(
-					MetadatosDocumento.TIPO_DOC_ENI,
-					documentTipus);
-		}
-		if (formatNom != null) {
-			metadades.put(
-					MetadatosDocumento.NOMBRE_FORMATO,
-					formatNom);
-		}
-		if (formatExtensio != null) {
-			metadades.put(
-					MetadatosDocumento.EXTENSION_FORMATO,
-					formatExtensio);
-		}
-		if (organs != null) {
-			metadades.put(
-					MetadatosDocumento.ORGANO,
-					organs);
-		}
-		if (serieDocumental != null) {
-			metadades.put(
-					MetadatosDocumento.CODIGO_CLASIFICACION,
-					serieDocumental);
-		}
-		if (firmaTipus != null) {
-			metadades.put(
-					MetadatosDocumento.TIPO_FIRMA,
-					firmaTipus);
-		}
-		if (firmaPerfil != null) {
-			metadades.put(
-					MetadatosDocumento.PERFIL_FIRMA,
-					firmaPerfil);
-		}
-		if (csv != null) {
-			metadades.put(
-					MetadatosDocumento.CSV,
-					csv);
-		}
-		return metadades;
-	}
-
-	private List<SummaryInfoNode> convetertirListSummaryInfoNode(List<Nodo> listaEntrada) {
-		List<SummaryInfoNode> listaInfoNode = null;
-		if (listaEntrada != null){
-			listaInfoNode = new ArrayList<SummaryInfoNode>();
-			for (Nodo nodo: listaEntrada){
-				SummaryInfoNode obj = new SummaryInfoNode();
-				obj.setId(nodo.getId());
-				obj.setName(nodo.getName());
-				obj.setType(nodo.getType());
-				listaInfoNode.add(obj);
-			}
-		}
-		return listaInfoNode;
+	private FolderNode toFolderNode(
+			ArxiuFolder folder) {
+		FolderNode node = new FolderNode();
+		node.setId(folder.getNodeId());
+		node.setType(TiposObjetoSGD.DIRECTORIO);
+		node.setName(folder.getName());
+		return node;
 	}
 
 	public ServiceHeader generarServiceHeader(ArxiuHeader capsalera) {
@@ -1789,7 +1953,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 		auditInfo.setFile(expedient);
 		auditInfo.setApplication(aplicacioCodi);
 		serviceHeader.setAuditInfo(auditInfo);
-		serviceHeader.setServiceVersion(serveiVersio);
+		serviceHeader.setServiceVersion(SERVEI_VERSIO);
 		ServiceSecurityInfo securityInfo = new ServiceSecurityInfo();
 		securityInfo.setUser(usuariSgd);
 		securityInfo.setPassword(contrasenyaSgd);
@@ -1797,86 +1961,161 @@ public class ArxiuClientImpl implements ArxiuClient {
 		return serviceHeader;
 	}
 
-	private static final String DOCUMENT_ENCODING = "UTF-8";
-	private Documento crearDocumento(
-			String id,
-			String titol,
-			Map<String, Object> metadades,
-			InputStream contingut,
-			String tipusMime) throws IOException {
-		Documento documento = new Documento();
-		documento.setId(id);
-		documento.setName(titol);
-		List<Aspectos> aspects = new ArrayList<Aspectos>();
-		aspects.add(Aspectos.INTEROPERABLE);
-		aspects.add(Aspectos.TRANSFERIBLE);
-		documento.setAspects(aspects);
-		documento.setMetadataCollection(metadades);
-		if (contingut != null) {
-			String contingutBase64 = new String(
-					Base64.encodeBase64(IOUtils.toByteArray(contingut)));
-			documento.setContent(contingutBase64);
-			documento.setEncoding(DOCUMENT_ENCODING);
-			documento.setMimetype(tipusMime);
+	private List<Metadata> generarMetadataPerArxiu(
+			Map<String, Object> metadadesMap){
+		List<Metadata> metadades = null;
+		if (metadadesMap != null) {
+			metadades = new ArrayList<Metadata>();
+			for (Map.Entry<String, Object> entry: metadadesMap.entrySet()) {
+				Metadata metadata = new Metadata();
+				metadata.setQname(entry.getKey());
+				metadata.setValue(entry.getValue());
+				metadades.add(metadata);
+			}
 		}
-		return documento;
+		return metadades;
 	}
-	private DocumentNode toDocumentNode(
-			String id,
-			String titol,
-			Map<String, Object> metadades,
-			InputStream contingut,
-			String tipusMime) throws IOException {
-		Documento doc = crearDocumento(
-				id,
-				titol,
-				metadades,
-				contingut,
-				tipusMime);
-		DocumentNode nodo = new DocumentNode();
-		Content contenido = new Content();
-		List<Content> listaContenidos = new ArrayList<Content>();
-		// Si no se envía el contenido del documento, no se añade el objeto CONTENT
-		// del documento
-		if (doc != null && doc.getContent() != null) {
-			contenido.setBinaryType(doc.getBinarytype());
-			contenido.setContent(doc.getContent());
-			contenido.setEncoding(doc.getEncoding());
-			contenido.setMimetype(doc.getMimetype());
-			listaContenidos.add(contenido);
+	private List<Aspectos> generarAspectosPerArxiu(
+			List<String> aspectesList,
+			boolean perCreacio) {
+		List<Aspectos> aspectes = null;
+		if (aspectesList != null) {
+			aspectes = new ArrayList<Aspectos>();
+			for (String aspecte: aspectesList) {
+				aspectes.add(Aspectos.valueOf(aspecte));
+			}
 		}
-		/*if (firma != null && firma.getContent() != null) {
-			contenidofirma.setBinaryType(firma.getBinarytype());
-			contenidofirma.setContent(firma.getContent());
-			contenidofirma.setEncoding(firma.getEncoding());
-			// contenido.setMimetype(firma.getMimetype());
-			listaContenidos.add(contenidofirma);
-			// Añadimos el Aspecto Firmado al documento
-			doc.getAspects().add(Aspectos.FIRMADO);
-			// Añadimos los metadatos sobre la firma al documento
-			doc.getMetadataCollection().put(MetadatosFirma.PERFIL_FIRMA, firma.getPerfil_firma());
-			doc.getMetadataCollection().put(MetadatosFirma.TIPO_FIRMA, firma.getTipoFirma());
-		}*/
-		nodo.setId(doc.getId());
-		nodo.setName(doc.getName());
-		nodo.setType(doc.getType());
-		nodo.setMetadataCollection(MetadataUtils.generarListaMetadatos(doc.getMetadataCollection()));
-		nodo.setAspects(doc.getAspects());
-		nodo.setBinaryContents(listaContenidos);
-		return nodo;
+		if (perCreacio) {
+			if (aspectes == null) {
+				aspectes = new ArrayList<Aspectos>();
+			}
+			if (aspectes.isEmpty()) {
+				if (perCreacio) {
+					aspectes.add(Aspectos.INTEROPERABLE);
+					aspectes.add(Aspectos.TRANSFERIBLE);
+				}
+			}
+		}
+		return aspectes;
+	}
+	private List<SummaryInfoNode> generarSummaryInfoNodePerArxiu(
+			List<ArxiuContentChild> children) {
+		List<SummaryInfoNode> summaryInfoNodes = null;
+		if (children != null){
+			summaryInfoNodes = new ArrayList<SummaryInfoNode>();
+			for (ArxiuContentChild child: children){
+				SummaryInfoNode sin = new SummaryInfoNode();
+				sin.setId(child.getNodeId());
+				sin.setName(child.getName());
+				if (child.getTipus() != null) {
+					switch (child.getTipus()) {
+					case EXPEDIENT:
+						sin.setType(TiposObjetoSGD.EXPEDIENTE);
+						break;
+					case DOCUMENT:
+						sin.setType(TiposObjetoSGD.DOCUMENTO);
+						break;
+					case CARPETA:
+						sin.setType(TiposObjetoSGD.DIRECTORIO);
+						break;
+					case DOCUMENT_MIGRAT:
+						sin.setType(TiposObjetoSGD.DOCUMENTO_MIGRADO);
+						break;
+					}
+				}
+				summaryInfoNodes.add(sin);
+			}
+		}
+		return summaryInfoNodes;
 	}
 
-	private static final String JSON_RES_PARAM = "\"resParam\":";
-	private String extreureResParamJson(String respostaJson) {
-		int indexResParam = respostaJson.indexOf(JSON_RES_PARAM);
-		if (indexResParam != -1) {
-			int indexClau = respostaJson.lastIndexOf("}");
-			indexClau = respostaJson.lastIndexOf("}", indexClau);
-			return respostaJson.substring(
-					indexResParam + JSON_RES_PARAM.length(),
-					indexClau - 1);
+	private Map<String, Object> generarMetadadesPerRetornar(
+			List<Metadata> metadataList){
+		Map<String, Object> metadades = null;
+		if (metadataList != null) {
+			metadades = new HashMap<String, Object>();
+			for (Metadata metadata: metadataList) {
+				metadades.put(
+						metadata.getQname(),
+						metadata.getValue());
+			}
 		}
-		return respostaJson;
+		return metadades;
+	}
+	private List<String> generarAspectesPerRetornar(
+			List<Aspectos> aspectosList){
+		List<String> aspectes = null;
+		if (aspectosList != null) {
+			aspectes = new ArrayList<String>();
+			for (Aspectos aspecto: aspectosList) {
+				aspectes.add(aspecto.getValue());
+			}
+		}
+		return aspectes;
+	}
+	private List<ArxiuContentChild> generarChildrenPerRetornar(
+			List<SummaryInfoNode> summaryInfoNodeList){
+		List<ArxiuContentChild> children = null;
+		if (summaryInfoNodeList != null) {
+			children = new ArrayList<ArxiuContentChild>();
+			for (SummaryInfoNode node: summaryInfoNodeList) {
+				ArxiuContentChild child = new ArxiuContentChild();
+				child.setNodeId(node.getId());
+				if (node.getType() != null) {
+					switch (node.getType()) {
+					case EXPEDIENTE:
+						child.setTipus(ArxiuContentChildTypeEnum.EXPEDIENT);
+						break;
+					case DOCUMENTO:
+						child.setTipus(ArxiuContentChildTypeEnum.DOCUMENT);
+						break;
+					case DIRECTORIO:
+						child.setTipus(ArxiuContentChildTypeEnum.CARPETA);
+						break;
+					case DOCUMENTO_MIGRADO:
+						child.setTipus(ArxiuContentChildTypeEnum.DOCUMENT_MIGRAT);
+						break;
+					}
+				}
+				child.setName(node.getName());
+				children.add(child);
+			}
+		}
+		return children;
+	}
+	private List<ArxiuDocumentContent> generarContentPerRetornar(
+			List<Content> contentList){
+		List<ArxiuDocumentContent> contents = null;
+		if (contentList != null) {
+			contents = new ArrayList<ArxiuDocumentContent>();
+			for (Content node: contentList) {
+				ArxiuDocumentContent content = new ArxiuDocumentContent();
+				if (node.getBinaryType() != null) {
+					switch (node.getBinaryType()) {
+					case CONTENT:
+						content.setType(ArxiuDocumentContentTypeEnum.CONTENT);
+						break;
+					case SIGNATURE:
+						content.setType(ArxiuDocumentContentTypeEnum.SIGNATURE);
+						break;
+					case VALCERT_SIGNATURE:
+						content.setType(ArxiuDocumentContentTypeEnum.SIGNATURE_VALCERT);
+						break;
+					case MIGRATION_SIGNATURE:
+						content.setType(ArxiuDocumentContentTypeEnum.MIGRATION_SIGNATURE);
+						break;
+					case MIGRATION_ZIP:
+						content.setType(ArxiuDocumentContentTypeEnum.MIGRATION_ZIP);
+						break;
+					}
+				}
+				content.setEncoding(node.getEncoding());
+				content.setContentType(node.getMimetype());
+				content.setContentBase64(node.getContent());
+				contents.add(content);
+			}
+		}
+		return contents;
 	}
 
 	private Date getMetadataValueAsDate(Object value) throws ParseException {
@@ -1884,13 +2123,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 			return null;
 		}
 		return parseDateIso8601((String)value);
-	}
-
-	private String formatDateIso8601(Date date) {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		df.setTimeZone(tz);
-		return df.format(date);
 	}
 	private Date parseDateIso8601(String date) throws ParseException {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
@@ -1919,6 +2151,30 @@ public class ArxiuClientImpl implements ArxiuClient {
 					code,
 					description);
 		}
+	}
+
+	private JerseyResponse enviarPeticioRest(
+			String metode,
+			Object peticio) throws UniformInterfaceException, ClientHandlerException, JsonProcessingException {
+		String urlAmbMetode = (url.endsWith("/")) ? url + "services/" + metode : url + "/services/" + metode;
+		String body = mapper.writeValueAsString(peticio);
+		logger.debug("Enviant petició HTTP a l'arxiu (" +
+				"url=" + urlAmbMetode + ", " +
+				"tipus=application/json, " +
+				"body=" + body + ")");
+		lastJsonRequest = body;
+		ClientResponse response = jerseyClient.
+				resource(urlAmbMetode).
+				type("application/json").
+				post(ClientResponse.class, body);
+		String json = response.getEntity(String.class);
+		logger.debug("Rebuda resposta HTTP de l'arxiu (" +
+				"status=" + response.getStatus() + ", " +
+				"body=" + json + ")");
+		lastJsonResponse = json;
+		return new JerseyResponse(
+				json,
+				response.getStatus());
 	}
 
 	private class JerseyResponse {

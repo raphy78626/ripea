@@ -8,7 +8,7 @@ package es.caib.ripea.plugin.caib.arxiu.client;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public abstract class ArxiuMetodes {
+public abstract class ArxiuMethods {
 
 	public static final String FILE_CLOSE 				= "closeFile";
 	public static final String FILE_CANCEL_PERMISOS 	= "cancelPermissionsOnFiles";

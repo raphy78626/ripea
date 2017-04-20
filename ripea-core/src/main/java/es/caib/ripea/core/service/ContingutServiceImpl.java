@@ -1286,7 +1286,8 @@ public class ContingutServiceImpl implements ContingutService {
 			arxiuInfo.setMetadades(arxiuExpedient.getMetadades());
 			arxiuInfo.setAspectes(arxiuExpedient.getAspectes());
 			arxiuInfo.setFills(arxiuConvertirFills(arxiuExpedient.getFills()));
-			arxiuInfo.setJson(arxiuExpedient.getJson());
+			arxiuInfo.setCodiFontPeticio(arxiuExpedient.getCodiFontPeticio());
+			arxiuInfo.setCodiFontResposta(arxiuExpedient.getCodiFontResposta());
 			return arxiuInfo;
 		} else if (contingut instanceof DocumentEntity) {
 			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
@@ -1412,7 +1413,8 @@ public class ContingutServiceImpl implements ContingutService {
 			arxiuInfo.setEniFirmaCsvDefinicio(arxiuDocument.getEniFirmaCsvDefinicio());
 			arxiuInfo.setMetadades(arxiuDocument.getMetadades());
 			arxiuInfo.setAspectes(arxiuDocument.getAspectes());
-			arxiuInfo.setJson(arxiuDocument.getJson());
+			arxiuInfo.setCodiFontPeticio(arxiuDocument.getCodiFontPeticio());
+			arxiuInfo.setCodiFontResposta(arxiuDocument.getCodiFontResposta());
 			return arxiuInfo;
 		} else if (contingut instanceof CarpetaEntity) {
 			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
@@ -1426,7 +1428,8 @@ public class ContingutServiceImpl implements ContingutService {
 			arxiuInfo.setMetadades(arxiuCarpeta.getMetadades());
 			arxiuInfo.setAspectes(arxiuCarpeta.getAspectes());
 			arxiuInfo.setFills(arxiuConvertirFills(arxiuCarpeta.getFills()));
-			arxiuInfo.setJson(arxiuCarpeta.getJson());
+			arxiuInfo.setCodiFontPeticio(arxiuCarpeta.getCodiFontPeticio());
+			arxiuInfo.setCodiFontResposta(arxiuCarpeta.getCodiFontResposta());
 			return arxiuInfo;
 		} else {
 			throw new ValidationException(
