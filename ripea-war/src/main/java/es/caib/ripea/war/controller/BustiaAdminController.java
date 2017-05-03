@@ -3,7 +3,6 @@
  */
 package es.caib.ripea.war.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +21,10 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.war.command.BustiaCommand;
+import es.caib.ripea.war.command.BustiaFiltreCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -33,83 +34,59 @@ import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 @Controller
 @RequestMapping("/bustiaAdmin")
 public class BustiaAdminController extends BaseAdminController {
+	
+	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaAdminController.session.filtre";
 
 	@Autowired
 	private BustiaService bustiaService;
-
 
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		return get(request, null, model);
-	}
-	@RequestMapping(value = "/unitat/{unitatCodi}", method = RequestMethod.GET)
-	public String get(
-			HttpServletRequest request,
-			@PathVariable String unitatCodi,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"arbreUnitatsOrganitzatives",
-				bustiaService.findArbreUnitatsOrganitzatives(
-						entitatActual.getId(),
-						false,
-						false,
-						false));
-		model.addAttribute("unitatCodi", unitatCodi);
+		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
+		model.addAttribute("bustiaFiltreCommand", bustiaFiltreCommand);
 		return "bustiaAdminList";
 	}
 
-	/*@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesPagina<BustiaDto> datatable(
-			HttpServletRequest request,
-			@PathVariable String unitatCodi,
-			Model model) {
-		if (!"null".equalsIgnoreCase(unitatCodi)) {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			List<BustiaDto> busties = bustiaService.findByUnitatCodiAdmin(
-					entitatActual.getId(),
-					unitatCodi);
-			return PaginacioHelper.getPaginaPerDatatables(
-					request,
-					busties);
-		} else {
-			return PaginacioHelper.getPaginaPerDatatables(
-					request,
-					new ArrayList<BustiaDto>());
-		}
-	}*/
-	@RequestMapping(value = "/unitat/{unitatCodi}/datatable", method = RequestMethod.GET)
+	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
+			HttpServletRequest request) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				bustiaService.findAmbUnitatCodiBustiaNomAdmin(
+						entitatActual.getId(),
+						BustiaFiltreCommand.asDto(bustiaFiltreCommand),
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id");
+	}
+	
+	@RequestMapping(method = RequestMethod.POST)
+	public String bustiaPost(
 			HttpServletRequest request,
-			@PathVariable String unitatCodi) {
-		if (!"null".equalsIgnoreCase(unitatCodi)) {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			List<BustiaDto> busties = bustiaService.findAmbUnitatCodiAdmin(
-					entitatActual.getId(),
-					unitatCodi);
-			return DatatablesHelper.getDatatableResponse(
+			@Valid BustiaFiltreCommand filtreCommand,
+			BindingResult bindingResult,
+			Model model) {
+		if (!bindingResult.hasErrors()) {
+			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
-					busties);
-		} else {
-			return DatatablesHelper.getDatatableResponse(
-					request,
-					new ArrayList<BustiaDto>());
+					SESSION_ATTRIBUTE_FILTRE,
+					filtreCommand);
 		}
+		return "redirect:bustiaAdmin";
 	}
 
-	@RequestMapping(value = "/unitat/{unitatCodi}/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/new", method = RequestMethod.GET)
 	public String newGet(
 			HttpServletRequest request,
-			@PathVariable String unitatCodi,
 			Model model) {
 		String vista = formGet(request, null, model);
-		BustiaCommand command = (BustiaCommand)model.asMap().get("bustiaCommand");
-		command.setUnitatCodi(unitatCodi);
+//		BustiaCommand command = (BustiaCommand)model.asMap().get("bustiaCommand");
+//		command.setUnitatCodi(unitatCodi);
 		return vista;
 	}
 	@RequestMapping(value = "/{bustiaId}", method = RequestMethod.GET)
@@ -132,7 +109,8 @@ public class BustiaAdminController extends BaseAdminController {
 		command.setEntitatId(entitatActual.getId());
 		return "bustiaAdminForm";
 	}
-	@RequestMapping(method = RequestMethod.POST)
+	
+	@RequestMapping(value = "/new", method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,
 			@Valid BustiaCommand command,
@@ -160,6 +138,7 @@ public class BustiaAdminController extends BaseAdminController {
 					"bustia.controller.creat.ok");
 		}
 	}
+	
 	@RequestMapping(value = "/{bustiaId}/new", method = RequestMethod.GET)
 	public String getNewAmbPare(
 			HttpServletRequest request,
@@ -240,4 +219,18 @@ public class BustiaAdminController extends BaseAdminController {
 				entitatActual.getId());
 	}
 
+	private BustiaFiltreCommand getFiltreCommand(
+			HttpServletRequest request) {
+		BustiaFiltreCommand bustiaFiltreCommand = (BustiaFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_FILTRE);
+		if (bustiaFiltreCommand == null) {
+			bustiaFiltreCommand = new BustiaFiltreCommand();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					bustiaFiltreCommand);
+		}
+		return bustiaFiltreCommand;
+	}
 }
