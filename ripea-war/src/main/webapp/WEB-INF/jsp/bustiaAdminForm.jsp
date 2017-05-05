@@ -14,15 +14,15 @@
 	<rip:modalHead/>
 </head>
 <body>
-	<c:set var="formAction"><rip:modalUrl value="/bustiaAdmin"/></c:set>
+	<c:set var="formAction"><rip:modalUrl value="/bustiaAdmin/new"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="bustiaCommand" role="form">
 		<form:hidden path="id"/>
 		<form:hidden path="pareId"/>
+		<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/>
 		<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
-		<form:hidden path="unitatCodi"/>
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/bustiaAdmin/unitat/${bustiaCommand.unitatCodi}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/bustiaAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

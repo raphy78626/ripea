@@ -28,6 +28,7 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
+import es.caib.ripea.core.api.dto.BustiaFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -405,6 +406,48 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		omplirPermisosPerBusties(resposta, true);
 		return resposta;
+	}
+	
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	public PaginaDto<BustiaDto> findAmbUnitatCodiBustiaNomAdmin(
+			Long entitatId,
+			BustiaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		logger.debug("Cercant les bústies de la unitat i nom de bústia per admins ("
+				+ "entitatId=" + entitatId + ", "
+				+ "unitatCodi=" + filtre.getUnitatCodi() + ", "
+				+ "bustiaNom=" + filtre.getNom() + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		PaginaDto<BustiaDto> resultPagina =  paginacioHelper.toPaginaDto(
+				bustiaRepository.findByEntitatAndUnitatCodiAndBustiaNomFiltrePaginat(
+						entitat,
+						filtre.getUnitatCodi() == null || filtre.getUnitatCodi().isEmpty(), 
+						filtre.getUnitatCodi(),
+						filtre.getNom() == null || filtre.getNom().isEmpty(), 
+						filtre.getNom(),
+						paginacioHelper.toSpringDataPageable(paginacioParams)),
+				BustiaDto.class,
+				new Converter<BustiaEntity, BustiaDto>() {
+					@Override
+					public BustiaDto convert(BustiaEntity source) {
+						return toBustiaDto(
+								source,
+								true,
+								true);
+					}
+				});
+		
+		omplirPermisosPerBusties(resultPagina.getContingut(), true);
+		
+		return resultPagina;
 	}
 
 	@Override

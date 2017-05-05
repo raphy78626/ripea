@@ -50,5 +50,18 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("esNullFiltre") boolean esNullFiltre,
 			@Param("filtre") String filtre,		
 			Pageable pageable);
-
+	
+	@Query(	"from " +
+			"    BustiaEntity b " +
+			"where " +
+			"    b.entitat = :entitat " +
+			"and (:esNullFiltreUnitat = true or b.unitatCodi = :unitatCodi) " +
+			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%') or lower(b.pare.nom) like lower('%'||:filtreNom||'%')) ")
+	Page<BustiaEntity> findByEntitatAndUnitatCodiAndBustiaNomFiltrePaginat(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
+			@Param("unitatCodi") String unitatCodi, 
+			@Param("esNullFiltreNom") boolean esNullFiltreNom,
+			@Param("filtreNom") String filtreNom,		
+			Pageable pageable);
 }

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
+import es.caib.ripea.core.api.dto.BustiaFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -139,6 +140,26 @@ public interface BustiaService {
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
+	
+	/**
+	 * Consulta les bústies donat el codi de la seva unitat i
+	 * una cadena de texte pel nom.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param unitatCodi
+	 *            Atribut unitatCodi de les bústies a trobar.
+	 * @param bustiaNom
+	 *            Atribut bustiaNom de les bústies a trobar.
+	 * @return Les bústies amb la unitat especificada.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public PaginaDto<BustiaDto> findAmbUnitatCodiBustiaNomAdmin(
+			Long entitatId,
+			BustiaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException;
 
 	/**
 	 * Retorna una llista de les bústies actives de l'entitat.

@@ -15,6 +15,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
+import es.caib.ripea.core.api.dto.BustiaFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -231,4 +232,12 @@ public class BustiaServiceBean implements BustiaService {
 		delegate.deletePermis(entitatId, id, permisId);
 	}
 
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public PaginaDto<BustiaDto> findAmbUnitatCodiBustiaNomAdmin(Long entitatId, BustiaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException {
+		return delegate.findAmbUnitatCodiBustiaNomAdmin(entitatId, filtre, paginacioParams);
+	}
+
+	
 }
