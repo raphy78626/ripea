@@ -101,7 +101,6 @@ public class PluginHelper {
 
 	private DadesUsuariPlugin dadesUsuariPlugin;
 	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
-	boolean gestioDocumentalPluginConfigurat = false;
 	private PortafirmesPlugin portafirmesPlugin;
 	private ConversioPlugin conversioPlugin;
 	private RegistrePlugin registrePlugin;

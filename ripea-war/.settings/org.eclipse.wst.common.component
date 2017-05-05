@@ -4,34 +4,10 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="plugin-signatureweb-api-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/plugin-signatureweb-api/plugin-signatureweb-api">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="plugin-signatureweb-portafib-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/plugin-signatureweb-portafib/plugin-signatureweb-portafib">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="portafib-ws-api-passarela-1.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/portafib-ws-api-passarela/portafib-ws-api-passarela">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="portafib-utils-1.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/portafib-utils/portafib-utils">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="plugin-signatureweb-miniappletinclient-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/plugin-signatureweb-miniappletinclient/plugin-signatureweb-miniappletinclient">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="plugin-signatureweb-miniappletutils-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/plugin-signatureweb-miniappletutils/plugin-signatureweb-miniappletutils">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="plugin-signatureweb-miniappletinserver-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/plugin-signatureweb-miniappletinserver/plugin-signatureweb-miniappletinserver">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="ripea-core-0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ripea-core/ripea-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="ripea-plugin-impl-0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ripea-plugin-impl/ripea-plugin-impl">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="portafib-ws-api-1.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/portafib-ws-api/portafib-ws-api">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="ripea-plugin-0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ripea-plugin/ripea-plugin">
