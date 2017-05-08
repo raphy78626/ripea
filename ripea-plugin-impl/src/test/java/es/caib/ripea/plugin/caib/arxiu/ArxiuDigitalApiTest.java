@@ -6,6 +6,7 @@ package es.caib.ripea.plugin.caib.arxiu;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -16,12 +17,14 @@ import es.caib.arxiudigital.apirest.ApiArchivoDigital;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocumentNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.RespuestaGenerica;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateDraftDocumentResult;
+import es.caib.arxiudigital.apirest.constantes.Aspectos;
 import es.caib.arxiudigital.apirest.constantes.EstadosElaboracion;
 import es.caib.arxiudigital.apirest.constantes.OrigenesContenido;
 import es.caib.arxiudigital.apirest.constantes.TiposDocumentosENI;
 import es.caib.arxiudigital.apirest.facade.pojos.CabeceraPeticion;
 import es.caib.arxiudigital.apirest.facade.pojos.Documento;
 import es.caib.arxiudigital.apirest.facade.pojos.Expediente;
+import es.caib.arxiudigital.apirest.facade.pojos.FirmaDocumento;
 import es.caib.arxiudigital.apirest.facade.resultados.Resultado;
 import es.caib.arxiudigital.apirest.facade.resultados.ResultadoSimple;
 import es.caib.arxiudigital.apirest.utils.MetadataUtils;
@@ -151,7 +154,8 @@ public class ArxiuDigitalApiTest {
 		String contingutBase64 = IOUtils.toString(
 				new Base64InputStream(getDocumentContingutPerTest(), true),
 				ENCODING);
-		Documento documentNou = ApiArchivoDigital.generarObjetoDocumento(
+		
+		Documento documentNou = generarObjetoDocumento(
 				null,
 				documentNom,
 				contingutBase64,
@@ -162,7 +166,7 @@ public class ArxiuDigitalApiTest {
 		CreateDraftDocumentResult res = getApiArxiu().crearDraftDocument(
 				expedientId,
 				documentNou,
-				null);
+				false);
 		RespuestaGenerica<DocumentNode> result = res.getCreateDraftDocumentResult();
 		System.out.println(">>> Document creat (" +
 				"resultatCodi=" + result.getResult().getCode() + ", " +
@@ -194,6 +198,31 @@ public class ArxiuDigitalApiTest {
 		System.out.println(">>> Document esborrat (" +
 				"resultatCodi=" + resultado.getCodigoResultado() + ", " +
 				"resultatMissatge=" + resultado.getMsjResultado() + ")");
+	}
+
+	private Documento generarObjetoDocumento(
+		String id,
+		String name,
+		String content,
+		String encoding,
+		String mimetype,
+		Map<String, Object> metadataCollection,
+		FirmaDocumento firma) {
+		Documento doc = new Documento();
+		List<Aspectos> aspects = new ArrayList<Aspectos>();
+		aspects.add(Aspectos.INTEROPERABLE);
+		aspects.add(Aspectos.TRANSFERIBLE);
+		doc.setId(id);
+		doc.setName(name);
+		doc.setAspects(aspects);
+		doc.setMetadataCollection(metadataCollection);
+		doc.setContent(content);
+		doc.setEncoding(encoding);
+		doc.setMimetype(mimetype);
+		if (firma != null) {
+		  doc.setListaFirmas(Arrays.asList(firma));
+		}
+		return doc;
 	}
 
 	private ApiArchivoDigital getApiArxiu() {
