@@ -666,7 +666,7 @@ public class DocumentServiceImpl implements DocumentService {
 				document.getMetaDocument().getPortafirmesResponsables(),
 				document.getMetaDocument().getPortafirmesFluxTipus(),
 				document.getMetaDocument().getPortafirmesFluxId()).build();
-		expedientHelper.portafirmesEnviar(
+		documentHelper.portafirmesEnviar(
 				documentPortafirmes);
 		documentPortafirmesRepository.save(documentPortafirmes);
 		document.updateEstat(
@@ -766,7 +766,7 @@ public class DocumentServiceImpl implements DocumentService {
 					null,
 					false,
 					false);
-			expedientHelper.portafirmesProcessarFirma(documentPortafirmes);
+			documentHelper.portafirmesProcessarFirma(documentPortafirmes);
 		}
 		if (rebutjat) {
 			documentPortafirmes.getDocument().updateEstat(
@@ -835,9 +835,9 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false);
 		if (DocumentEnviamentEstatEnumDto.ENVIAT_ERROR.equals(documentPortafirmes.getEstat())) {
-			expedientHelper.portafirmesEnviar(documentPortafirmes);
+			documentHelper.portafirmesEnviar(documentPortafirmes);
 		} else if (DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR.equals(documentPortafirmes.getEstat())) {
-			expedientHelper.portafirmesProcessarFirma(documentPortafirmes);
+			documentHelper.portafirmesProcessarFirma(documentPortafirmes);
 		}
 	}
 
@@ -1054,6 +1054,7 @@ public class DocumentServiceImpl implements DocumentService {
 					new Date(),
 					custodiaDocumentId,
 					document.getCustodiaCsv());
+			documentHelper.actualitzarVersionsDocument(document);
 			// Registra al log la custòdia de la firma del document
 			contingutLogHelper.log(
 					document,

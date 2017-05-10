@@ -46,6 +46,8 @@ public class ArxiuPluginInfoDto implements Serializable {
 	protected List<String> aspectes;
 	protected List<ArxiuPluginNodeFillDto> fills;
 
+	protected List<ArxiuPluginDocumentContingutDto> continguts;
+
 	private String codiFontPeticio;
 	private String codiFontResposta;
 
@@ -212,6 +214,12 @@ public class ArxiuPluginInfoDto implements Serializable {
 	}
 	public void setFills(List<ArxiuPluginNodeFillDto> fills) {
 		this.fills = fills;
+	}
+	public List<ArxiuPluginDocumentContingutDto> getContinguts() {
+		return continguts;
+	}
+	public void setContinguts(List<ArxiuPluginDocumentContingutDto> continguts) {
+		this.continguts = continguts;
 	}
 
 	public String getCodiFontPeticio() {

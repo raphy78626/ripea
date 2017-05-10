@@ -198,6 +198,13 @@ public class DocumentDto extends NodeDto {
 		return "http://administracionelectronica.gob.es/ENI/XSD/V" + ntiVersion + "/expediente-e";
 	}
 
+	public boolean isFirmat() {
+		return DocumentEstatEnumDto.FIRMAT.equals(estat);
+	}
+	public boolean isCustodiat() {
+		return DocumentEstatEnumDto.CUSTODIAT.equals(estat);
+	}
+
 	protected DocumentDto copiarContenidor(ContingutDto original) {
 		DocumentDto copia = new DocumentDto();
 		copia.setId(original.getId());

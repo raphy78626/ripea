@@ -491,9 +491,9 @@ $(document).ready(function() {
 						<a href="#enviaments" data-toggle="tab"><spring:message code="contingut.tab.enviaments"/>&nbsp;<span class="badge" id="enviaments-count">${enviamentsCount}</span></a>
 					</li>
 				</c:if>
-				<c:if test="${contingut.document and contingut.versioCount gt 0}">
+				<c:if test="${contingut.document and fn:length(contingut.versions) gt 0}">
 					<li>
-						<a href="#versions" data-toggle="tab"><spring:message code="contingut.tab.versions"/>&nbsp;<span class="badge" id="versions-count">${contingut.versioCount}</span></a>
+						<a href="#versions" data-toggle="tab"><spring:message code="contingut.tab.versions"/>&nbsp;<span class="badge" id="versions-count">${fn:length(contingut.versions)}</span></a>
 					</li>
 				</c:if>
 			</ul>
@@ -508,40 +508,93 @@ $(document).ready(function() {
 					<c:choose>
 						<c:when test="${contingut.document}">
 							<table class="table table-bordered">
-								<thead>
+								<tbody>
 									<tr>
-										<th><strong>Tipus de document</strong></th>
+										<td><strong><spring:message code="contingut.document.camp.tipus"/></strong></td>
 										<c:if test="${contingut.documentTipus == 'DIGITAL'}">
-											<th><span class="fa fa-save"></span> Document digital</th>
+											<td><span class="label label-default"><span class="fa fa-save"></span> <spring:message code="document.tipus.enum.DIGITAL"/></span></td>
 										</c:if>
 										<c:if test="${contingut.documentTipus == 'FISIC'}">
-											<th><span class="fa fa-book"></span> Document físic</th>
+											<td><span class="label label-default"><span class="fa fa-book"></span> <spring:message code="document.tipus.enum.FISIC"/></span></td>
 										</c:if>
 									</tr>
-								</thead>
-								<tbody>
 									<c:choose>
 										<c:when test="${contingut.documentTipus != 'FISIC'}">
 											<tr>
-												<td><strong>Nom</strong></td>
+												<td>
+													<c:choose>
+														<c:when test="${not contingut.custodiat}">
+															<strong><spring:message code="contingut.document.camp.nom"/></strong>
+														</c:when>
+														<c:otherwise>
+															<strong><spring:message code="contingut.document.camp.nom.original"/></strong>
+														</c:otherwise>
+													</c:choose>
+												</td>
 												<td>${contingut.fitxerNom}</td>
 											</tr>
 											<tr>
-												<td><strong>Tipus de contingut</strong></td>
+												<td>
+													<c:choose>
+														<c:when test="${not contingut.custodiat}">
+															<strong><spring:message code="contingut.document.camp.content.type"/></strong>
+														</c:when>
+														<c:otherwise>
+															<strong><spring:message code="contingut.document.camp.content.type.original"/></strong>
+														</c:otherwise>
+													</c:choose>
+												</td>
 												<td>${contingut.fitxerContentType}</td>
 											</tr>
 										</c:when>
 										<c:otherwise>
 											<tr>
-												<td><strong>Ubicació</strong></td>
+												<td><strong><spring:message code="contingut.document.camp.ubicacio"/></strong></td>
 												<td>${contingut.ubicacio}</td>
 											</tr>
 										</c:otherwise>
 									</c:choose>
 								</tbody>
 							</table>
+							<c:if test="${contingut.custodiat}">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">
+											<span class="fa fa-bookmark" title="Document firmat"></span>
+											<spring:message code="contingut.document.info.firma"/>
+										</h3>
+									</div>
+									<table class="table table-bordered">
+										<tbody>
+											<tr>
+												<td><strong><spring:message code="contingut.document.camp.firma.tipus"/></strong></td>
+												<td><spring:message code="document.nti.tipfir.enum.${contingut.ntiTipoFirma}"/></td>
+											</tr>
+											<tr>
+												<td><strong><spring:message code="contingut.document.camp.firma.csv"/></strong></td>
+												<td>${contingut.ntiCsv}</td>
+											</tr>
+											<tr>
+												<td><strong><spring:message code="contingut.document.camp.firma.csv.regulacio"/></strong></td>
+												<td>${contingut.ntiCsvRegulacion}</td>
+											</tr>
+											<%--tr>
+												<td><strong><spring:message code="contingut.document.camp.firma.custodia.data"/></strong></td>
+												<td><fmt:formatDate value="${contingut.custodiaData}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+											</tr--%>
+										</tbody>
+									</table>
+								</div>
+							</c:if>
 							<c:if test="${contingut.documentTipus != 'FISIC'}">
-								<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar" class="btn btn-default pull-right"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
+								<c:choose>
+									<c:when test="${not contingut.custodiat}">
+										<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar" class="btn btn-default pull-right"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
+									</c:when>
+									<c:otherwise>
+										<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar" class="btn btn-default pull-right"><span class="fa fa-download"></span>&nbsp;<spring:message code="contingut.document.descarregar.firmat"/></a>
+									</c:otherwise>
+								</c:choose>
 							</c:if>
 						</c:when>
 						<c:otherwise>
