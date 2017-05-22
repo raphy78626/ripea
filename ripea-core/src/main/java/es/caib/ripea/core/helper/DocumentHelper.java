@@ -193,10 +193,9 @@ public class DocumentHelper {
 
 
 
-	public boolean portafirmesEnviar(
+	public SistemaExternException portafirmesEnviar(
 			DocumentPortafirmesEntity documentPortafirmes) {
 		DocumentEntity document = documentPortafirmes.getDocument();
-		boolean generacioCsvCorrecte = true;
 		if (pluginHelper.portafirmesEnviarDocumentEstampat() && document.getCustodiaCsv() == null) {
 			try {
 				String csv = pluginHelper.arxiuDocumentGenerarCsv(document);
@@ -211,7 +210,7 @@ public class DocumentHelper {
 						null,
 						false,
 						false);
-			} catch (Exception ex) {
+			} catch (SistemaExternException ex) {
 				Throwable rootCause = ExceptionUtils.getRootCause(ex);
 				if (rootCause == null) rootCause = ex;
 				documentPortafirmes.updateEnviament(
@@ -219,39 +218,35 @@ public class DocumentHelper {
 						true,
 						ExceptionUtils.getStackTrace(rootCause),
 						null);
-				generacioCsvCorrecte = false;
+				return ex;
 			}
 		}
-		if (generacioCsvCorrecte) {
-			try {
-				String portafirmesId = pluginHelper.portafirmesUpload(
-						document,
-						documentPortafirmes.getAssumpte(),
-						PortafirmesPrioritatEnum.valueOf(documentPortafirmes.getPrioritat().name()),
-						documentPortafirmes.getDataCaducitat(),
-						documentPortafirmes.getDocumentTipus(),
-						documentPortafirmes.getResponsables(),
-						documentPortafirmes.getFluxTipus(),
-						documentPortafirmes.getFluxId(),
-						null);
-				documentPortafirmes.updateEnviament(
-						true,
-						false,
-						null,
-						portafirmesId);
-				return true;
-			} catch (Exception ex) {
-				Throwable rootCause = ExceptionUtils.getRootCause(ex);
-				if (rootCause == null) rootCause = ex;
-				documentPortafirmes.updateEnviament(
-						true,
-						true,
-						ExceptionUtils.getStackTrace(rootCause),
-						null);
-				return false;
-			}
-		} else {
-			return false;
+		try {
+			String portafirmesId = pluginHelper.portafirmesUpload(
+					document,
+					documentPortafirmes.getAssumpte(),
+					PortafirmesPrioritatEnum.valueOf(documentPortafirmes.getPrioritat().name()),
+					documentPortafirmes.getDataCaducitat(),
+					documentPortafirmes.getDocumentTipus(),
+					documentPortafirmes.getResponsables(),
+					documentPortafirmes.getFluxTipus(),
+					documentPortafirmes.getFluxId(),
+					null);
+			documentPortafirmes.updateEnviament(
+					true,
+					false,
+					null,
+					portafirmesId);
+			return null;
+		} catch (SistemaExternException ex) {
+			Throwable rootCause = ExceptionUtils.getRootCause(ex);
+			if (rootCause == null) rootCause = ex;
+			documentPortafirmes.updateEnviament(
+					true,
+					true,
+					ExceptionUtils.getStackTrace(rootCause),
+					null);
+			return ex;
 		}
 	}
 

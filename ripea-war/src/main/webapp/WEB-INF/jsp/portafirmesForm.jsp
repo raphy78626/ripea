@@ -20,7 +20,7 @@
 	<rip:modalHead/>
 </head>
 <body>
-	<c:if test="${documentVersio.arxiuNom != documentVersio.portafirmesConversioArxiuNom}">
+	<c:if test="${document.fitxerNom != document.fitxerNomEnviamentPortafirmes}">
 		<div class="alert well-sm alert-warning alert-dismissable">
 			<span class="fa fa-exclamation-triangle"></span>
 			<spring:message code="contenidor.document.portafirmes.conversio.avis"/>

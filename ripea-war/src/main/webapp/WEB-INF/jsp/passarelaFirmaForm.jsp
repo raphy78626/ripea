@@ -15,7 +15,7 @@
 	<rip:modalHead/>
 </head>
 <body>
-	<c:if test="${documentVersio.arxiuNom != documentVersio.portafirmesConversioArxiuNom}">
+	<c:if test="${document.fitxerNom != document.fitxerNomEnviamentPortafirmes}">
 		<div class="alert well-sm alert-warning alert-dismissable">
 			<span class="fa fa-exclamation-triangle"></span>
 			<spring:message code="passarelafirma.form.conversio.avis"/>
@@ -26,8 +26,8 @@
 	</c:if>
 	<c:set var="formAction"><rip:modalUrl value="/document/${document.id}/firmaPassarela"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="passarelaFirmaEnviarCommand" role="form">
-		<rip:inputText name="motiu" textKey="passarelafirma.form.camp.motiu" required="true"/>
-		<rip:inputText name="lloc" textKey="passarelafirma.form.camp.lloc" required="true"/>
+		<rip:inputTextarea name="motiu" textKey="passarelafirma.form.camp.motiu" required="true"/>
+		<%--rip:inputText name="lloc" textKey="passarelafirma.form.camp.lloc" required="true"/--%>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-play"></span> <spring:message code="passarelafirma.form.iniciar"/></button>
 			<a href="<c:url value="/contenidor/${document.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

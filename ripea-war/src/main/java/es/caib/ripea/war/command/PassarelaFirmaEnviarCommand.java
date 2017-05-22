@@ -17,7 +17,7 @@ public class PassarelaFirmaEnviarCommand {
 
 	@NotEmpty @Size(max=256)
 	private String motiu;
-	@NotEmpty @Size(max=256)
+	@Size(max=256)
 	private String lloc;
 
 	public String getMotiu() {

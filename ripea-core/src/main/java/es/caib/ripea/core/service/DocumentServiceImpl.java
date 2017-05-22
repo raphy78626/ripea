@@ -38,6 +38,7 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -666,8 +667,12 @@ public class DocumentServiceImpl implements DocumentService {
 				document.getMetaDocument().getPortafirmesResponsables(),
 				document.getMetaDocument().getPortafirmesFluxTipus(),
 				document.getMetaDocument().getPortafirmesFluxId()).build();
-		documentHelper.portafirmesEnviar(
+		// Si l'enviament produeix excepcions la retorna
+		SistemaExternException sex = documentHelper.portafirmesEnviar(
 				documentPortafirmes);
+		if (sex != null) {
+			throw sex;
+		}
 		documentPortafirmesRepository.save(documentPortafirmes);
 		document.updateEstat(
 				DocumentEstatEnumDto.FIRMA_PENDENT);
