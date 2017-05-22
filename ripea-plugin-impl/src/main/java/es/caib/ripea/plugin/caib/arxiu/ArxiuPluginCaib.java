@@ -433,7 +433,7 @@ public class ArxiuPluginCaib implements ArxiuPlugin {
 							null, // toFormatosFichero(formatNom),
 							null, // toExtensionesFichero(formatExtensio),
 							null, // organs,
-							TiposFirma.CSV.getValue(),
+							TiposFirma.PADES.getValue(),
 							PerfilesFirma.EPES.getValue(),
 							csv,
 							firmaPdfContingut,
