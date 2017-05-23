@@ -200,8 +200,10 @@ public class ContingutHelper {
 			dto.setCustodiaUrl(
 					pluginHelper.arxiuDocumentGenerarUrlPerCsv(document.getCustodiaCsv()));
 			dto.setFitxerNom(document.getFitxerNom());
+			dto.setFitxerNomEnviamentPortafirmes(
+					pluginHelper.conversioConvertirPdfArxiuNom(document.getFitxerNom()));
 			dto.setFitxerContentType(document.getFitxerContentType());
-			dto.setFitxerContingut(document.getFitxerContingut());
+			//dto.setFitxerContingut(document.getFitxerContingut());
 			dto.setDataCaptura(document.getDataCaptura());
 			dto.setVersioDarrera(document.getVersioDarrera());
 			dto.setVersioCount(document.getVersioCount());
@@ -512,11 +514,16 @@ public class ContingutHelper {
 		if (path != null) {
 			// Dels contenidors del path només comprova el permis read
 			for (ContingutEntity contingutPath: path) {
-				comprovarPermisosContingut(
-						contingutPath,
-						true,
-						false,
-						false);
+				// Si el contingut està agafat per un altre usuari no es
+				// comproven els permisos de l'escriptori perquè òbviament
+				// els altres usuaris no hi tendran accés.
+				if (!(contingutPath instanceof EscriptoriEntity)) {
+					comprovarPermisosContingut(
+							contingutPath,
+							true,
+							false,
+							false);
+				}
 			}
 		}
 		if (incloureActual) {
@@ -868,32 +875,7 @@ public class ContingutHelper {
 							fitxer,
 							contingut.getPare(),
 							classificacioDocumental);
-					if (pluginHelper.arxiuSuportaVersionsDocuments()) {
-						try {
-							List<ArxiuDocumentVersio> versions = pluginHelper.arxiuDocumentObtenirVersions(
-								(DocumentEntity)contingut);
-							if (versions != null) {
-								ArxiuDocumentVersio darreraVersio = null;
-								Date versioData = null;
-								for (ArxiuDocumentVersio versio: versions) {
-									if (versioData == null || versio.getData().after(versioData)) {
-										versioData = versio.getData();
-										darreraVersio = versio;
-									}
-								}
-								((DocumentEntity)contingut).updateVersio(
-										darreraVersio.getId(),
-										versions.size());
-							}
-						} catch (Exception ex) {
-							logger.error(
-									"Error al actualitzar les versions del document (" + 
-									"entitatId=" + contingut.getEntitat().getId() + ", " +
-									"documentId=" + contingut.getId() + ", " +
-									"documentTitol=" + contingut.getNom() + ")",
-									ex);
-						}
-					}
+					documentHelper.actualitzarVersionsDocument((DocumentEntity)contingut);
 				}
 			} else if (contingut instanceof CarpetaEntity) {
 				if (pluginHelper.arxiuPotGestionarCarpetes()) {

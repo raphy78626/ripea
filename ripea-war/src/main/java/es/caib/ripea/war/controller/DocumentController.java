@@ -345,7 +345,7 @@ public class DocumentController extends BaseUserController {
 				fitxerPerFirmar,
 				usuariActual.getNif(),
 				command.getMotiu(),
-				command.getLloc(),
+				(command.getLloc() != null) ? command.getLloc() : "RIPEA",
 				usuariActual.getEmail(),
 				LocaleContextHolder.getLocale().getLanguage(),
 				modalStr + "/document/" + documentId + "/firmaPassarelaFinal",

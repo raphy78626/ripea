@@ -2939,16 +2939,17 @@ public class PluginHelper {
 			}
 		}
 		DocumentNtiTipoFirmaEnumDto ntiTipoFirma = null;
-		if (arxiuDocument.getEniFirmaTipus() != null) {
-			// TODO
+		if (arxiuDocument.getEniFirmaTipus() != null && arxiuDocument.getEniFirmaTipus().size() > 0) {
+			ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.valueOf(
+					arxiuDocument.getEniFirmaTipus().get(0));
 		}
 		String firmaCsv = null;
 		if (arxiuDocument.getEniFirmaCsv() != null) {
-			// TODO
+			firmaCsv = arxiuDocument.getEniFirmaCsv().get(0);
 		}
 		String firmaCsvDefinicio = null;
 		if (arxiuDocument.getEniFirmaCsvDefinicio() != null) {
-			// TODO
+			firmaCsvDefinicio = arxiuDocument.getEniFirmaCsvDefinicio().get(0);
 		}
 		document.updateNti(
 				obtenirNumeroVersioEniDocument(arxiuDocument.getEniVersio()),

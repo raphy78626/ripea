@@ -35,8 +35,8 @@ import es.caib.portafib.ws.callback.api.v1.SigningRequest;
 public class CallbackPortafibTest {
 
 	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/portafibCallback";
-	private static final String USERNAME = "tomeud";
-	private static final String PASSWORD = "tomeud15";
+	//private static final String USERNAME = "XXX";
+	//private static final String PASSWORD = "XXX";
 
 	public static void main(String[] args) {
 		try {
@@ -47,7 +47,7 @@ public class CallbackPortafibTest {
 			//   70 - DOCUMENT_REBUTJAT;
 			//   80 - DOCUMENT_PAUSAT;
 			new CallbackPortafibTest().test(
-					1476364060818L,
+					29079,
 					60);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -73,12 +73,12 @@ public class CallbackPortafibTest {
 		Service service = Service.create(url, qname);
 		PortaFIBCallBackWs callback = service.getPort(PortaFIBCallBackWs.class);
 		BindingProvider bp = (BindingProvider)callback;
-		bp.getRequestContext().put(
+		/*bp.getRequestContext().put(
 				BindingProvider.USERNAME_PROPERTY,
 				USERNAME);
 		bp.getRequestContext().put(
 				BindingProvider.PASSWORD_PROPERTY,
-				PASSWORD);
+				PASSWORD);*/
 		@SuppressWarnings("rawtypes")
 		List<Handler> handlerChain = new ArrayList<Handler>();
 		handlerChain.add(new LogMessageHandler());

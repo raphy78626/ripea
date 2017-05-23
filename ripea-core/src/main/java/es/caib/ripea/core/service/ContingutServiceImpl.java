@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.ArxiuPluginDocumentContingutDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginNodeFillDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginNodeTipusEnumDto;
@@ -1295,7 +1296,7 @@ public class ContingutServiceImpl implements ContingutService {
 					contingut,
 					null,
 					null,
-					false);
+					true);
 			arxiuInfo.setNodeId(arxiuDocument.getNodeId());
 			arxiuInfo.setNom(arxiuDocument.getTitol());
 			arxiuInfo.setDescripcio(arxiuDocument.getDescripcio());
@@ -1413,6 +1414,18 @@ public class ContingutServiceImpl implements ContingutService {
 			arxiuInfo.setEniFirmaCsvDefinicio(arxiuDocument.getEniFirmaCsvDefinicio());
 			arxiuInfo.setMetadades(arxiuDocument.getMetadades());
 			arxiuInfo.setAspectes(arxiuDocument.getAspectes());
+			if (arxiuDocument.getContinguts() != null) {
+				List<ArxiuPluginDocumentContingutDto> continguts = new ArrayList<ArxiuPluginDocumentContingutDto>();
+				for (ArxiuDocumentContingut arxiuContingut: arxiuDocument.getContinguts()) {
+					ArxiuPluginDocumentContingutDto dto = new ArxiuPluginDocumentContingutDto();
+					if (arxiuContingut.getTipus() != null) {
+						dto.setTipus(arxiuContingut.getTipus().toString());
+					}
+					dto.setContentType(arxiuContingut.getContentType());
+					continguts.add(dto);
+				}
+				arxiuInfo.setContinguts(continguts);
+			}
 			arxiuInfo.setCodiFontPeticio(arxiuDocument.getCodiFontPeticio());
 			arxiuInfo.setCodiFontResposta(arxiuDocument.getCodiFontResposta());
 			return arxiuInfo;

@@ -44,7 +44,7 @@
 	<script id="botonsTemplate" type="text/x-jsrender">
 		<p style="text-align:right"><a class="btn btn-default" href="../../bustiaAdmin/${bustia.id}/permis/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="entitat.permis.boto.nou.permis"/></a></p>
 	</script>
-	<a href="<c:url value="/bustiaAdmin/unitat/${bustia.unitatCodi}"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span>&nbsp;<spring:message code="comu.boto.tornar"/></a>
+	<a href="<c:url value="/bustiaAdmin"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span>&nbsp;<spring:message code="comu.boto.tornar"/></a>
 	<div class="clearfix"></div>
 </body>
 </html>

@@ -38,6 +38,7 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -666,8 +667,12 @@ public class DocumentServiceImpl implements DocumentService {
 				document.getMetaDocument().getPortafirmesResponsables(),
 				document.getMetaDocument().getPortafirmesFluxTipus(),
 				document.getMetaDocument().getPortafirmesFluxId()).build();
-		expedientHelper.portafirmesEnviar(
+		// Si l'enviament produeix excepcions la retorna
+		SistemaExternException sex = documentHelper.portafirmesEnviar(
 				documentPortafirmes);
+		if (sex != null) {
+			throw sex;
+		}
 		documentPortafirmesRepository.save(documentPortafirmes);
 		document.updateEstat(
 				DocumentEstatEnumDto.FIRMA_PENDENT);
@@ -766,7 +771,7 @@ public class DocumentServiceImpl implements DocumentService {
 					null,
 					false,
 					false);
-			expedientHelper.portafirmesProcessarFirma(documentPortafirmes);
+			documentHelper.portafirmesProcessarFirma(documentPortafirmes);
 		}
 		if (rebutjat) {
 			documentPortafirmes.getDocument().updateEstat(
@@ -835,9 +840,9 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false);
 		if (DocumentEnviamentEstatEnumDto.ENVIAT_ERROR.equals(documentPortafirmes.getEstat())) {
-			expedientHelper.portafirmesEnviar(documentPortafirmes);
+			documentHelper.portafirmesEnviar(documentPortafirmes);
 		} else if (DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR.equals(documentPortafirmes.getEstat())) {
-			expedientHelper.portafirmesProcessarFirma(documentPortafirmes);
+			documentHelper.portafirmesProcessarFirma(documentPortafirmes);
 		}
 	}
 
@@ -1054,6 +1059,7 @@ public class DocumentServiceImpl implements DocumentService {
 					new Date(),
 					custodiaDocumentId,
 					document.getCustodiaCsv());
+			documentHelper.actualitzarVersionsDocument(document);
 			// Registra al log la custòdia de la firma del document
 			contingutLogHelper.log(
 					document,

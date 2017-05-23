@@ -75,7 +75,7 @@ public class PortafirmesPluginPortafibTest {
 		System.out.println(">>> instanciaFluxId: " + instanciaFluxId);*/
 	}
 
-	@Test
+	//@Test
 	public void uploadAndDelete() throws Exception {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, 1);
@@ -99,22 +99,22 @@ public class PortafirmesPluginPortafibTest {
 		plugin.delete(documentId);
 	}
 
-	/*@Test
+	@Test
 	public void download() throws Exception {
-		long documentId = 30078; // 30078
-		PortafirmesDocument downloadDocument = plugin.download(documentId);
-		assertThat(
-				downloadDocument.getTitol(),
-				is(uploadDocument.getTitol()));
-		assertThat(
-				downloadDocument.getArxiuNom(),
-				is(uploadDocument.getArxiuNom()));
-		assertThat(
-				downloadDocument.getArxiuContingut().length,
-				is(uploadDocument.getArxiuContingut().length));
-		assertThat(
-				downloadDocument.isFirmat(),
-				is(true));
-	}*/
+		long documentId = 29079;
+		PortafirmesDocument downloadDocument = plugin.download(
+				new Long(documentId).toString());
+		/*assertEquals(
+				uploadDocument.getTitol(),
+				downloadDocument.getTitol());
+		assertEquals(
+				uploadDocument.getArxiuNom(),
+				downloadDocument.getArxiuNom());
+		assertEquals(
+				uploadDocument.getArxiuContingut().length,
+				downloadDocument.getArxiuContingut().length);*/
+		assertTrue(downloadDocument.isFirmat());
+		
+	}
 
 }
