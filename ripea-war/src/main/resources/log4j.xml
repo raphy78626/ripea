@@ -31,11 +31,10 @@
 		<level value="ERROR" />
 	</logger>
 
-	<logger name="org.springframework.web.servlet">
+	<!--logger name="org.springframework.web.servlet">
 		<level value="DEBUG"/> 
 	</logger>
-
-	<!--logger name="org.springframework.web">
+	<logger name="org.springframework.web">
 		<level value="DEBUG" />
 	</logger>
 	<logger name="org.springframework.security.access">
