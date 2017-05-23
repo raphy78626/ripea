@@ -75,8 +75,8 @@ public class EntitatServiceBean implements EntitatService {
 
 	@Override
 	@RolesAllowed("IPA_SUPER")
-	public PaginaDto<EntitatDto> findAllPaginat(PaginacioParamsDto paginacioParams) {
-		return delegate.findAllPaginat(paginacioParams);
+	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams) {
+		return delegate.findPaginat(paginacioParams);
 	}
 
 	@Override

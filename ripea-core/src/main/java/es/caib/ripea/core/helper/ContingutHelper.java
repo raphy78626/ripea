@@ -514,11 +514,16 @@ public class ContingutHelper {
 		if (path != null) {
 			// Dels contenidors del path només comprova el permis read
 			for (ContingutEntity contingutPath: path) {
-				comprovarPermisosContingut(
-						contingutPath,
-						true,
-						false,
-						false);
+				// Si el contingut està agafat per un altre usuari no es
+				// comproven els permisos de l'escriptori perquè òbviament
+				// els altres usuaris no hi tendran accés.
+				if (!(contingutPath instanceof EscriptoriEntity)) {
+					comprovarPermisosContingut(
+							contingutPath,
+							true,
+							false,
+							false);
+				}
 			}
 		}
 		if (incloureActual) {
