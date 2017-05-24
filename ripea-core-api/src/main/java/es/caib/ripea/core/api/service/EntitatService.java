@@ -104,7 +104,7 @@ public interface EntitatService {
 	 * @return La pàgina d'Entitats.
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER')")
-	public PaginaDto<EntitatDto> findAllPaginat(PaginacioParamsDto paginacioParams);
+	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams);
 
 	/**
 	 * Llistat amb les entitats accessibles per a l'usuari actual.

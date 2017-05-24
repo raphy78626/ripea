@@ -39,25 +39,13 @@ public class EntitatController extends BaseController {
 	public String get() {
 		return "entitatList";
 	}
-	/*@RequestMapping(value = "/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesPagina<EntitatDto> datatable(
-			HttpServletRequest request,
-			Model model) {
-		return PaginacioHelper.getPaginaPerDatatables(
-				request,
-				entitatService.findAllPaginat(
-						PaginacioHelper.getPaginacioDtoFromDatatable(
-								request,
-								null)));
-	}*/
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				entitatService.findAllPaginat(
+				entitatService.findPaginat(
 						DatatablesHelper.getPaginacioDtoFromRequest(request)));
 		return dtr;
 	}

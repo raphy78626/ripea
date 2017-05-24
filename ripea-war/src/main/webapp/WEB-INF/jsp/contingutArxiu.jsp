@@ -35,7 +35,9 @@ $(document).ready(function() {
 				<c:if test="${not empty arxiuInfo.aspectes}">
 					<li role="presentation"><a href="#aspectes" aria-controls="aspectes" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.aspectes"/> <span class="badge badge-default">${fn:length(arxiuInfo.aspectes)}</span></a></li>
 				</c:if>
-				
+				<c:if test="${not empty arxiuInfo.continguts}">
+					<li role="presentation"><a href="#continguts" aria-controls="continguts" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.continguts"/> <span class="badge badge-default">${fn:length(arxiuInfo.continguts)}</span></a></li>
+				</c:if>
 				<c:if test="${not empty arxiuInfo.codiFontPeticio || not empty arxiuInfo.codiFontResposta}">
 					<li role="presentation"><a href="#json" aria-controls="json" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.json"/></a></li>
 				</c:if>
@@ -225,6 +227,18 @@ $(document).ready(function() {
 							  <li class="list-group-item">${aspecte}</li>
 							</c:forEach>
 						</ul>
+					</div>
+				</c:if>
+				<c:if test="${not empty arxiuInfo.continguts}">
+					<div role="tabpanel" class="tab-pane" id="continguts">
+						<table class="table table-bordered">
+							<c:forEach var="contingut" items="${arxiuInfo.continguts}" varStatus="status">
+								<tr>
+									<td>${contingut.tipus}</td>
+									<td>${contingut.contentType}</td>
+								</tr>
+							</c:forEach>
+						</table>
 					</div>
 				</c:if>
 				<c:if test="${not empty arxiuInfo.codiFontPeticio || not empty arxiuInfo.codiFontResposta}">

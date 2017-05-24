@@ -215,6 +215,21 @@
         <dependent-module archiveName="org.odftoolkit.odfdom.converter.xhtml-1.0.3.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/fr/opensagres/xdocreport/org.odftoolkit.odfdom.converter.xhtml/1.0.3/org.odftoolkit.odfdom.converter.xhtml-1.0.3.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="jodconverter-2.2.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/artofsolving/jodconverter/2.2.1/jodconverter-2.2.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="juh-2.3.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/openoffice/juh/2.3.0/juh-2.3.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jurt-2.3.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/openoffice/jurt/2.3.0/jurt-2.3.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="ridl-2.3.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/openoffice/ridl/2.3.0/ridl-2.3.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="unoil-2.3.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/openoffice/unoil/2.3.0/unoil-2.3.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="axis-1.4.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/axis/axis/1.4/axis-1.4.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -233,13 +248,7 @@
         <dependent-module archiveName="jaxrpc-api-1.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/javax/xml/jaxrpc-api/1.1/jaxrpc-api-1.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="portafib-ws-api-1.1.0.jar" deploy-path="/" handle="module:/resource/portafib-ws-api/portafib-ws-api">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="portafib-utils-1.1.0.jar" deploy-path="/" handle="module:/resource/portafib-utils/portafib-utils">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="genapp-core-1.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/fundaciobit/genapp/genapp-core/1.0/genapp-core-1.0.jar">
+        <dependent-module archiveName="portafib-ws-api-1.1.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/portafib/portafib-ws-api/1.1.0/portafib-ws-api-1.1.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="regweb3-ws-api-3.0.5.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/regweb3/regweb3-ws-api/3.0.5/regweb3-ws-api-3.0.5.jar">
@@ -257,7 +266,31 @@
         <dependent-module archiveName="bcprov-jdk14-1.38.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/bouncycastle/bcprov-jdk14/1.38/bcprov-jdk14-1.38.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="arxiudigital-apirest-1.0.1.jar" deploy-path="/" handle="module:/resource/arxiudigital-apirest-1.0/arxiudigital-apirest-1.0">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="plugins-api-1.0.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/fundaciobit/plugins/plugins-api/1.0.0/plugins-api-1.0.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jersey-client-1.19.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/sun/jersey/jersey-client/1.19/jersey-client-1.19.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jersey-core-1.19.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/sun/jersey/jersey-core/1.19/jersey-core-1.19.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jsr311-api-1.1.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="log4j-1.2.17.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/log4j/log4j/1.2.17/log4j-1.2.17.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="joda-time-1.6.2.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/joda-time/joda-time/1.6.2/joda-time-1.6.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="portafib-ws-callback-api-1.1.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/portafib/portafib-ws-callback-api/1.1.0/portafib-ws-callback-api-1.1.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jOpenDocument-1.3.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/jopendocument/jOpenDocument/1.3/jOpenDocument-1.3.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>

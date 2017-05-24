@@ -5,29 +5,22 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<%
-pageContext.setAttribute(
-		"portafirmesPrioritatEnumOptions",
-		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
-				es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto.class,
-				"portafirmes.prioritat.enum."));
-%>
-
 <c:set var="titol"><spring:message code="contenidor.document.portafirmes.titol"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
+	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<rip:modalHead/>
-	<link href="<c:url value="/css/datepicker.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/bootstrap-datepicker.js"/>"></script>
-	<script src="<c:url value="/js/datepicker-locales/bootstrap-datepicker.${idioma}.js"/>"></script>
-	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
-	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/select2.min.js"/>"></script>
-	<script src="<c:url value="/js/select2-locales/select2_locale_${idioma}.js"/>"></script>
 </head>
 <body>
-	<c:if test="${documentVersio.arxiuNom != documentVersio.portafirmesConversioArxiuNom}">
+	<c:if test="${document.fitxerNom != document.fitxerNomEnviamentPortafirmes}">
 		<div class="alert well-sm alert-warning alert-dismissable">
 			<span class="fa fa-exclamation-triangle"></span>
 			<spring:message code="contenidor.document.portafirmes.conversio.avis"/>
@@ -39,7 +32,7 @@ pageContext.setAttribute(
 	<c:set var="formAction"><rip:modalUrl value="/document/${document.id}/portafirmes/upload"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="portafirmesEnviarCommand" role="form">
 		<rip:inputText name="motiu" textKey="contenidor.document.portafirmes.camp.motiu" required="true"/>
-		<rip:inputSelect name="prioritat" textKey="contenidor.document.portafirmes.camp.prioritat" optionItems="${portafirmesPrioritatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
+		<rip:inputSelect name="prioritat" textKey="contenidor.document.portafirmes.camp.prioritat" optionEnum="PortafirmesPrioritatEnumDto" required="true"/>
 		<rip:inputDate name="dataCaducitat" textKey="contenidor.document.portafirmes.camp.data.caducitat" required="true"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="contenidor.document.portafirmes.enviar"/></button>

@@ -77,8 +77,6 @@ public class ContingutController extends BaseUserController {
 	private MetaExpedientService metaExpedientService;
 	@Autowired
 	private MetaDocumentService metaDocumentService;
-	/*@Autowired
-	private DocumentService documentService;*/
 	@Autowired
 	private ExpedientInteressatService interessatService;
 	@Autowired

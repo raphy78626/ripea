@@ -169,17 +169,21 @@ public class EntitatServiceImpl implements EntitatService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<EntitatDto> findAllPaginat(PaginacioParamsDto paginacioParams) {
+	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams) {
 		logger.debug("Consulta de totes les entitats paginades (paginacioParams=" + paginacioParams + ")");
 		PaginaDto<EntitatDto> resposta;
 		if (paginacioHelper.esPaginacioActivada(paginacioParams)) {
 			resposta = paginacioHelper.toPaginaDto(
-					entitatRepository.findAll(
+					entitatRepository.findByFiltrePaginat(
+							paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
+							paginacioParams.getFiltre(),
 							paginacioHelper.toSpringDataPageable(paginacioParams)),
 					EntitatDto.class);
 		} else {
 			resposta = paginacioHelper.toPaginaDto(
-					entitatRepository.findAll(
+					entitatRepository.findByFiltrePaginat(
+							paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
+							paginacioParams.getFiltre(),
 							paginacioHelper.toSpringDataSort(paginacioParams)),
 					EntitatDto.class);
 		}

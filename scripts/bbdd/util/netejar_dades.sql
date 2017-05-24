@@ -2,8 +2,7 @@ delete from ipa_interessat;
 delete from ipa_cont_log;
 delete from ipa_document_enviament_doc;
 delete from ipa_document_enviament;
-update ipa_document set versio_darrera_id = null;
-delete from ipa_document_versio;
+
 delete from ipa_document;
 delete from ipa_expedient_rel;
 delete from ipa_expedient;
@@ -17,12 +16,12 @@ delete from ipa_registre_annex;
 delete from ipa_registre_inter;
 delete from ipa_registre;
 delete from ipa_metaexpedient_arxiu;
+delete from ipa_regla;
 delete from ipa_arxiu;
 delete from ipa_bustia;
 update ipa_contingut c set c.pare_id = null;
 delete from ipa_contingut;
 
-delete from ipa_metacarpeta;
 delete from ipa_metaexpedient_metadocument;
 delete from ipa_metaexp_seq;
 delete from ipa_metaexpedient;
