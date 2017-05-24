@@ -151,14 +151,24 @@ public class ArxiuDigitalApiTest {
 		String contingutBase64 = IOUtils.toString(
 				new Base64InputStream(getDocumentContingutPerTest(), true),
 				ENCODING);
+//		Documento documentNou = ApiArchivoDigital.generarObjetoDocumento(
+//				null,
+//				documentNom,
+//				contingutBase64,
+//				ENCODING,
+//				"application/pdf",
+//				metadades,
+//				null);
+		
 		Documento documentNou = ApiArchivoDigital.generarObjetoDocumento(
-				null,
-				documentNom,
-				contingutBase64,
-				ENCODING,
-				"application/pdf",
-				metadades,
+				null, 
+				documentNom, 
+				contingutBase64, 
+				ENCODING, 
+				null, 
+				null, 
 				null);
+		
 		CreateDraftDocumentResult res = getApiArxiu().crearDraftDocument(
 				expedientId,
 				documentNou,
