@@ -725,7 +725,13 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 
 	@Override
 	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
-		return cacheHelper.findUnitatOrganitzativaPerCodi(codi);
+		try {
+			return cacheHelper.findUnitatOrganitzativaPerCodi(codi);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+//			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	@Override

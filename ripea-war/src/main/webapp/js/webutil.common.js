@@ -29,6 +29,15 @@ function webutilModalAdjustHeight(iframe) {
 	}
 }
 
+function webutilModalRetornarValor(valor) {
+	var $iframe = $(window.frameElement);
+//	$iframe.data('retval', valor);
+	$modalobj = $iframe.parent().parent().parent();
+	$idRelVal = $modalobj.parent().parent().attr('id');
+	localStorage['relval_' + $idRelVal] = valor;
+	$('.close',$modalobj).trigger('click');
+}
+
 function webutilUrlAmbPrefix(url, prefix) {
 	var absolutePath;
 	if (url.indexOf('/') != 0)
