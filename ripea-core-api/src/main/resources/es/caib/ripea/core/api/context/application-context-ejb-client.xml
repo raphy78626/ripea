@@ -85,5 +85,9 @@
 			id="bustiaV1WsService"
 			jndi-name="ripea/BustiaV1WsServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.ws.BustiaV1WsService"/>
+	<jee:local-slsb
+			id="ripeaCarregaTestWsService"
+			jndi-name="ripea/RipeaCarregaTestWsServiceBean/local"
+			business-interface="es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService"/>
 
 </beans>

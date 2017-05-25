@@ -3,6 +3,11 @@
  */
 package es.caib.ripea.core.service.ws.carregatest;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.jws.WebService;
 
@@ -10,8 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
+import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
+import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.dto.ExpedientDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
@@ -20,6 +34,9 @@ import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.PrincipalTipusEnumDto;
+import es.caib.ripea.core.api.service.ArxiuService;
+import es.caib.ripea.core.api.service.ContingutService;
+import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.EntitatService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaDadaService;
@@ -37,7 +54,7 @@ import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
 		name = "RipeaCarregaTest",
 		serviceName = "RipeaCarregaTest",
 		portName = "RipeaCarregaTestPort",
-		targetNamespace = "http://www.caib.es/ripea/ws/carregatest")
+		targetNamespace = "http://www.caib.es/ripea/ws/ripeacarregatest")
 public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService {
 
 	@Resource
@@ -50,10 +67,16 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 	private MetaDadaService metaDadaService;
 	@Resource
 	private ExpedientService expedientService;
-//	@Resource
-//	private DocumentService documentService;
+	@Resource
+	private ContingutService contingutService;
+	@Resource
+	private ArxiuService arxiuService;
+	@Resource
+	private DocumentService documentService;
 //	@Resource
 //	private IntegracioHelper integracioHelper;
+//	@Resource
+//	private EntityComprovarHelper entityComprovarHelper;
 
 	@Override
 	public Long crearEntitat(
@@ -103,7 +126,7 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 	}
 
 	@Override
-	public Long crearExpedientTipus(
+	public Long crearmetaExpedient(
 			Long entitatId, 
 			String codi, 
 			String nom, 
@@ -149,7 +172,7 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 	@Override
 	public void crearExpedientMetadata(
 			Long entitatId, 
-			Long expedientTipus, 
+			Long metaExpedient, 
 			String codi, 
 			String nom, 
 			String descripcio,
@@ -179,11 +202,11 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 					metaDada);
 		}
 		
-		MetaNodeMetaDadaDto mde = metaExpedientService.metaDadaFind(entitatId, expedientTipus, metaDada.getId());
+		MetaNodeMetaDadaDto mde = metaExpedientService.metaDadaFind(entitatId, metaExpedient, metaDada.getId());
 		if (mde == null) {
 			metaExpedientService.metaDadaCreate(
 					entitatId, 
-					expedientTipus, 
+					metaExpedient, 
 					metaDada.getId(), 
 					MultiplicitatEnumDto.valueOf(expedientMultiplicitat), 
 					readOnly);
@@ -286,26 +309,72 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 	}
 
 	@Override
+	public Long crearArxiu(
+			Long entitatId,
+			String nom,
+			String unitatCodi){
+		ArxiuDto arxiu = null;
+		List<ArxiuDto> arxius = arxiuService.findByUnitatCodiAdmin(entitatId, unitatCodi);
+		for (ArxiuDto a: arxius) {
+			if (a.getNom().equals(nom)) {
+				arxiu = a;
+				break;
+			}
+		}
+		if (arxiu == null) {
+			arxiu = new ArxiuDto();
+			arxiu.setNom(nom);
+			arxiu.setUnitatCodi(unitatCodi);
+			
+			arxiu = arxiuService.create(
+					entitatId, 
+					arxiu);
+		}
+		return arxiu.getId();
+	}
+	
+	@Override
 	public Long crearExpedient(
 			Long entitatId, 
 			Long pareId, 
-			Long expedientTipusCodi, 
+			Long metaExpedientCodi, 
 			Long arxiuId, 
 			Integer any,
 			String nom, 
-			String expedientMetadata1, 
-			String expedientMetadata2, 
+			String expedientMetadada1Codi,
+			Object expedientMetadada1Valor,
+			String expedientMetadada2Codi, 
+			Object expedientMetadada2Valor,
 			String documentTipusCodi,
 			String documentTipus, 
-			String documentMetadata1, 
-			String documentMetadata2) {
-		// TODO 
+			String fitxerNomOriginal,
+			String fitxerContentType,
+			byte[] fitxerContingut,
+			String documentTitol,
+			Date documentData,
+			String documentUbicacio,
+			String documentNtiOrgan,
+			String documentNtiOrigen,
+			String documentNtiEstat,
+			String documentNtiTipusDoc,
+			String documentMetadada1Codi,
+			Object documentMetadada1Valor,
+			String documentMetadada2Codi,
+			Object documentMetadada2Valor) {
 		
 		// 1. Creació de l'expedient
-		expedientService.create(
+		
+		// Si no indiquen un pare, ho crearem a l'escriptori
+		if (pareId == null) {
+			EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatId);
+			pareId = escriptori.getId();
+		}
+		
+		// Cream l'expedient
+		ExpedientDto expedient = expedientService.create(
 				entitatId, 
 				pareId, 
-				expedientTipusCodi, 
+				metaExpedientCodi, 
 				arxiuId, 
 				any, 
 				nom, 
@@ -313,26 +382,83 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 				null);	// contingutId);
 		
 		
-		// 2. Modificació de la metadada 1 de l’expedient.
+		// 2. Modificació de les metadada 1 de l’expedient.
 		
+		Map<String, Object> valors = new HashMap<String, Object>();
+		valors.put(expedientMetadada1Codi, expedientMetadada1Valor);
+		contingutService.dadaSave(
+				entitatId,
+				expedient.getId(),
+				valors);
 		
 		// 3. Modificació de la metadada 2 de l’expedient.
 		
+		valors.put(expedientMetadada2Codi, expedientMetadada2Valor);
+		contingutService.dadaSave(
+				entitatId,
+				expedient.getId(),
+				valors);
 		
 		// 4. Creació del document a dins l’expedient.
+		MetaDocumentDto metaDocument = metaDocumentService.findByEntitatCodi(
+				entitatId, 
+				documentTipusCodi);
 		
+		DocumentTipusEnumDto tipusDocument = DocumentTipusEnumDto.valueOf(documentTipus);
+		FitxerDto fitxer = null;
 		
-		// 5. Modificació de la metadada 1 del document.
+		if (DocumentTipusEnumDto.DIGITAL.equals(tipusDocument)) {
+			fitxer = new FitxerDto();
+			fitxer.setNom(fitxerNomOriginal);
+			fitxer.setContentType(fitxerContentType);
+			fitxer.setContingut(fitxerContingut);
+		}
 		
+		DocumentDto document = new DocumentDto();
+		document.setDocumentTipus(DocumentTipusEnumDto.valueOf(documentTipus));
+		document.setNom(documentTitol);
+		document.setData(documentData);
+		document.setDataCaptura(documentData);
+		document.setNtiOrgano(documentNtiOrgan);
+		document.setNtiOrigen((documentNtiOrigen != null && !documentNtiOrigen.isEmpty()) ? DocumentNtiOrigenEnumDto.valueOf(documentNtiOrigen) : null);
+		document.setNtiEstadoElaboracion((documentNtiEstat != null && !documentNtiEstat.isEmpty()) ? DocumentNtiEstadoElaboracionEnumDto.valueOf(documentNtiEstat) : null);
+		document.setNtiTipoDocumental((documentNtiTipusDoc != null && !documentNtiTipusDoc.isEmpty()) ? DocumentNtiTipoDocumentalEnumDto.valueOf(documentNtiTipusDoc) : null);
+		document.setMetaNode(metaDocument);
+		document.setUbicacio(documentUbicacio);
 		
+		document = documentService.create(
+				entitatId,
+				expedient.getId(),
+				document,
+				fitxer);
+		
+		// 5. Modificació de les metadades del document.
+		
+		Map<String, Object> valorsDoc = new HashMap<String, Object>();
+		valors.put(documentMetadada1Codi, documentMetadada1Valor);
+		contingutService.dadaSave(
+				entitatId,
+				document.getId(),
+				valors);
+				
 		// 6. Modificació de la metadada 2 del document.
-		
+				
+		valorsDoc.put(documentMetadada2Codi, documentMetadada2Valor);
+		contingutService.dadaSave(
+				entitatId,
+				document.getId(),
+				valors);
 		
 		// 7. Tancar l’expedient.
-		
+		expedientService.tancar(
+				entitatId, 
+				expedient.getId(), 
+				"Proves de rendiment");
 		
 		// 8. Alliberar l’expedient.
-		
+		expedientService.alliberarAdmin(
+				entitatId, 
+				expedient.getId());
 		
 		return null;
 	}

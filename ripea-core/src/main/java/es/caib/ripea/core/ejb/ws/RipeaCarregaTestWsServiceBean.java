@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.ejb.ws;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
@@ -29,15 +31,15 @@ import es.caib.ripea.core.service.ws.carregatest.RipeaCarregaTestWsServiceImpl;
 		name = "RipeaCarregaTest",
 		serviceName = "RipeaCarregaTest",
 		portName = "RipeaCarregaTestPort",
-		targetNamespace = "http://www.caib.es/ripea/ws/carregatest")
+		targetNamespace = "http://www.caib.es/ripea/ws/ripeacarregatest")
 @WebContext(
 		contextRoot = "/ripea/ws",
-		urlPattern = "/carregaTest",
-		authMethod = "WSBASIC",
+		urlPattern = "/ripeaCarregaTest",
+//		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-@RolesAllowed({"IPA_TESTWS"})
-@SecurityDomain("seycon")
+//@RolesAllowed({"IPA_TESTWS"})
+//@SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService {
 
@@ -93,7 +95,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 	}
 
 	@Override
-	public Long crearExpedientTipus(
+	public Long crearmetaExpedient(
 			Long entitatId, 
 			String codi, 
 			String nom, 
@@ -113,7 +115,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-		return delegate.crearExpedientTipus(
+		return delegate.crearmetaExpedient(
 				entitatId, 
 				codi, 
 				nom, 
@@ -135,7 +137,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 	@Override
 	public void crearExpedientMetadata(
 			Long entitatId, 
-			Long expedientTipus, 
+			Long metaExpedient, 
 			String codi, 
 			String nom, 
 			String descripcio,
@@ -151,7 +153,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 				true);
 		delegate.crearExpedientMetadata(
 				entitatId, 
-				expedientTipus, 
+				metaExpedient, 
 				codi, 
 				nom, 
 				descripcio, 
@@ -239,37 +241,79 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 				documentMultiplicitat,
 				readOnly);
 	}
+	
+	@Override
+	public Long crearArxiu(
+			Long entitatId,
+			String nom,
+			String unitatCodi){
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		return delegate.crearArxiu(
+				entitatId,
+				nom,
+				unitatCodi);
+	}
 
 	@Override
 	public Long crearExpedient(
 			Long entitatId, 
 			Long pareId, 
-			Long expedientTipusCodi, 
+			Long metaExpedientCodi, 
 			Long arxiuId, 
 			Integer any,
 			String nom, 
-			String expedientMetadata1, 
-			String expedientMetadata2, 
+			String expedientMetadata1Codi, 
+			Object expedientMetadada1Valor,
+			String expedientMetadata2Codi, 
+			Object expedientMetadada2Valor,
 			String documentTipusCodi,
-			String documentTipus, 
-			String documentMetadata1, 
-			String documentMetadata2) {
+			String documentTipus,
+			String fitxerNomOriginal,
+			String fitxerContentType,
+			byte[] fitxerContingut,
+			String documentTitol,
+			Date documentData,
+			String documentUbicacio,
+			String documentNtiOrgan,
+			String documentNtiOrigen,
+			String documentNtiEstat,
+			String documentNtiTipusDoc,
+			String documentMetadada1Codi,
+			Object documentMetadada1Valor,
+			String documentMetadada2Codi,
+			Object documentMetadada2Valor) {
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
 		return delegate.crearExpedient(
 				entitatId, 
 				pareId, 
-				expedientTipusCodi, 
+				metaExpedientCodi, 
 				arxiuId, 
 				any, 
 				nom, 
-				expedientMetadata1, 
-				expedientMetadata2, 
+				expedientMetadata1Codi, 
+				expedientMetadada1Valor,
+				expedientMetadata2Codi, 
+				expedientMetadada2Valor,
 				documentTipusCodi, 
-				documentTipus, 
-				documentMetadata1, 
-				documentMetadata2);
+				documentTipus,
+				fitxerNomOriginal,
+				fitxerContentType,
+				fitxerContingut,
+				documentTitol,
+				documentData,
+				documentUbicacio,
+				documentNtiOrgan,
+				documentNtiOrigen,
+				documentNtiEstat,
+				documentNtiTipusDoc,
+				documentMetadada1Codi,
+				documentMetadada1Valor,
+				documentMetadada2Codi,
+				documentMetadada2Valor);
 	}
 
 	@Override

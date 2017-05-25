@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.api.service.ws;
 
+import java.util.Date;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -19,7 +21,7 @@ import javax.xml.bind.annotation.XmlElement;
 		name = "RipeaCarregaTest",
 		serviceName = "RipeaCarregaTest",
 		portName = "RipeaCarregaTestPort",
-		targetNamespace = "http://www.caib.es/ripea/ws/carregatest")
+		targetNamespace = "http://www.caib.es/ripea/ws/ripeacarregatest")
 public interface RipeaCarregaTestWsService {
 
 	public Long crearEntitat(
@@ -39,7 +41,7 @@ public interface RipeaCarregaTestWsService {
 			boolean delete,
 			boolean administration);
 	
-	public Long crearExpedientTipus(
+	public Long crearmetaExpedient(
 			Long entitatId,
 			String codi,
 			String nom,
@@ -59,7 +61,7 @@ public interface RipeaCarregaTestWsService {
 	
 	public void crearExpedientMetadata(
 			Long entitatId,
-			Long expedientTipus,
+			Long metaExpedient,
 			String codi,
 			String nom,
 			String descripcio,
@@ -105,6 +107,11 @@ public interface RipeaCarregaTestWsService {
 			String documentMultiplicitat,				// M_1, M_0_1, M_0_N, M_1_N);
 			boolean readOnly);
 	
+	public Long crearArxiu(
+			Long entitatId,
+			String nom,
+			String unitatCodi);
+	
 	/**
 	 * Crea un expedient.
 	 * 
@@ -116,16 +123,30 @@ public interface RipeaCarregaTestWsService {
 	public Long crearExpedient(
 			Long entitatId,
 			Long pareId,
-			Long expedientTipusCodi,
+			Long metaExpedientCodi,
 			Long arxiuId,
 			Integer any,
 			String nom,
-			String expedientMetadata1,
-			String expedientMetadata2,
+			String expedientMetadata1Codi, 
+			Object expedientMetadada1Valor,
+			String expedientMetadata2Codi, 
+			Object expedientMetadada2Valor,
 			String documentTipusCodi,
 			String documentTipus,
-			String documentMetadata1,
-			String documentMetadata2);
+			String fitxerNomOriginal,
+			String fitxerContentType,
+			byte[] fitxerContingut,
+			String documentTitol,
+			Date documentData,
+			String documentUbicacio,
+			String documentNtiOrgan,
+			String documentNtiOrigen,
+			String documentNtiEstat,
+			String documentNtiTipusDoc,
+			String documentMetadada1Codi,
+			Object documentMetadada1Valor,
+			String documentMetadada2Codi,
+			Object documentMetadada2Valor);
 	
 	/**
 	 * Crea una anotació de registre.
