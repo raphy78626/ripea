@@ -5,6 +5,7 @@ package es.caib.ripea.core.api.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -14,7 +15,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class BustiaContingutPendentDto implements Serializable {
+public class BustiaContingutDto implements Serializable {
 
 	private Long id;
 	private BustiaContingutPendentTipusEnumDto tipus;
@@ -22,10 +23,11 @@ public class BustiaContingutPendentDto implements Serializable {
 	private String remitent;
 	private Date recepcioData;
 	private String comentari;
+	private long pareId;
+	private List<ContingutDto> path;
+	private BustiaContingutFiltreEstatEnumDto estatContingut;
 	private boolean procesAutomatic;
 	private boolean error;
-
-
 
 	public Long getId() {
 		return id;
@@ -62,6 +64,24 @@ public class BustiaContingutPendentDto implements Serializable {
 	}
 	public void setComentari(String comentari) {
 		this.comentari = comentari;
+	}
+	public long getPareId() {
+		return pareId;
+	}
+	public void setPareId(long pareId) {
+		this.pareId = pareId;
+	}
+	public List<ContingutDto> getPath() {
+		return path;
+	}
+	public void setPath(List<ContingutDto> path) {
+		this.path = path;
+	}
+	public BustiaContingutFiltreEstatEnumDto getEstatContingut() {
+		return estatContingut;
+	}
+	public void setEstatContingut(BustiaContingutFiltreEstatEnumDto estatContingut) {
+		this.estatContingut = estatContingut;
 	}
 	public boolean isProcesAutomatic() {
 		return procesAutomatic;

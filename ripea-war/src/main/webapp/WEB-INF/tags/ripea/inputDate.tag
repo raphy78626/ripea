@@ -32,7 +32,7 @@
 	</c:when>
 	<c:otherwise>
 		<label class="sr-only" for="${campPath}">${campLabelText}</label>
-		<div class="input-group">
+		<div class="input-group" style="width:100%">
 			<form:input path="${campPath}" cssClass="form-control datepicker" id="${campPath}" placeholder="${campPlaceholder}" disabled="${disabled}" data-toggle="datepicker" data-idioma="${idioma}"/>
 			<span class="input-group-addon" style="width:auto"><span class="fa fa-calendar"></span></span>
 		</div>

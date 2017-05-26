@@ -8,9 +8,10 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
-import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
+import es.caib.ripea.core.api.dto.BustiaContingutDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.BustiaFiltreDto;
+import es.caib.ripea.core.api.dto.BustiaUserFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -175,7 +176,7 @@ public interface BustiaService {
 			Long entitatId) throws NotFoundException;
 
 	/**
-	 * Llistat de les bústies a les quals te accés un usuari.
+	 * Pàgina de les bústies a les quals te accés un usuari per datatable.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
@@ -187,6 +188,19 @@ public interface BustiaService {
 	public PaginaDto<BustiaDto> findPermesesPerUsuari(
 			Long entitatId, 
 			PaginacioParamsDto paginacioParams);
+	
+	/**
+	 * Llistat de les bústies a les quals te accés un usuari.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param paginacioParams
+	 *            Paràmetres per a dur a terme la paginació del resultats.
+	 * @return La pàgina de regles.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<BustiaDto> findPermesesPerUsuari(
+			Long entitatId);
 
 	/**
 	 * Envia contingut a una bústia.
@@ -253,16 +267,17 @@ public interface BustiaService {
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
-	 * @param bustiaId
-	 *            Atribut id de la bústia que es vol consultar.
+	 * @param filtre del datatable
+	 * 
 	 * @return El contingut pendent.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public PaginaDto<BustiaContingutPendentDto> contingutPendentFindByBustiaId(
+	public PaginaDto<BustiaContingutDto> contingutPendentFindByDatatable(
 			Long entitatId,
-			Long bustiaId,
+			List<BustiaDto> bustiesUsuari,
+			BustiaUserFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 
 	/**
@@ -279,7 +294,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public BustiaContingutPendentDto contingutPendentFindOne(
+	public BustiaContingutDto contingutPendentFindOne(
 			Long entitatId,
 			Long bustiaId,
 			Long contingutId) throws NotFoundException;

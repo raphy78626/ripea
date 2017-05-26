@@ -3,17 +3,22 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,12 +34,14 @@ import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.RegistreService;
+import es.caib.ripea.war.command.BustiaUserFiltreCommand;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.MissatgesHelper;
+import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -44,6 +51,8 @@ import es.caib.ripea.war.helper.MissatgesHelper;
 @Controller
 @RequestMapping("/bustiaUser")
 public class BustiaUserController extends BaseUserController {
+	
+	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaUserController.session.filtre";
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -61,50 +70,52 @@ public class BustiaUserController extends BaseUserController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		BustiaUserFiltreCommand filtreCommand = getFiltreCommand(request);
+		model.addAttribute(
+				filtreCommand);
+		
+		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId()));
+		
 		return "bustiaUserList";
+	}
+	
+	@RequestMapping(method = RequestMethod.POST)
+	public String bustiaPost(
+			HttpServletRequest request,
+			@Valid BustiaUserFiltreCommand filtreCommand,
+			BindingResult bindingResult,
+			Model model) {
+		if (!bindingResult.hasErrors()) {
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					filtreCommand);
+		}
+		return "redirect:bustiaUser";
 	}
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
+		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaUserFiltreCommand bustiaUserFiltreCommand = getFiltreCommand(request);
+		
+		List<BustiaDto> bustiesUsuari = null;
+		if (bustiaUserFiltreCommand.getBustia() == null || bustiaUserFiltreCommand.getBustia().isEmpty())
+			bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId());
+		
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				bustiaService.findPermesesPerUsuari(
+				bustiaService.contingutPendentFindByDatatable(
 						entitatActual.getId(),
-						DatatablesHelper.getPaginacioDtoFromRequest(request)),
-				"id");
-	}
-
-	@RequestMapping(value = "/{bustiaId}/pendent", method = RequestMethod.GET)
-	public String pendent(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"bustia",
-				contingutService.findAmbIdUser(
-						entitatActual.getId(),
-						bustiaId,
-						false,
-						false));
-		return "bustiaPendentList";
-	}
-
-	@RequestMapping(value = "/{bustiaId}/pendent/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesResponse datatable(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return DatatablesHelper.getDatatableResponse(
-				request,
-				bustiaService.contingutPendentFindByBustiaId(
-						entitatActual.getId(),
-						bustiaId,
+						bustiesUsuari,
+						BustiaUserFiltreCommand.asDto(bustiaUserFiltreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)));
+		
 	}
 
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/nouexp", method = RequestMethod.GET)
@@ -323,5 +334,31 @@ public class BustiaUserController extends BaseUserController {
 						false,
 						true));
 	}
+	
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+	    binder.registerCustomEditor(
+	    		Date.class,
+	    		new CustomDateEditor(
+	    				new SimpleDateFormat("dd/MM/yyyy"),
+	    				true));
+	}
+	
+	private BustiaUserFiltreCommand getFiltreCommand(
+			HttpServletRequest request) {
+		BustiaUserFiltreCommand filtreCommand = (BustiaUserFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_FILTRE);
+		if (filtreCommand == null) {
+			filtreCommand = new BustiaUserFiltreCommand();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					filtreCommand);
+		}
+		return filtreCommand;
+	}
+	
+	
 
 }

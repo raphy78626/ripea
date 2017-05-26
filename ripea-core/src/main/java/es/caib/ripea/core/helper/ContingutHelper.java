@@ -199,11 +199,13 @@ public class ContingutHelper {
 			dto.setCustodiaId(document.getCustodiaId());
 			dto.setCustodiaUrl(
 					pluginHelper.arxiuDocumentGenerarUrlPerCsv(document.getCustodiaCsv()));
-			dto.setFitxerNom(document.getFitxerNom());
-			dto.setFitxerNomEnviamentPortafirmes(
-					pluginHelper.conversioConvertirPdfArxiuNom(document.getFitxerNom()));
-			dto.setFitxerContentType(document.getFitxerContentType());
-			//dto.setFitxerContingut(document.getFitxerContingut());
+			if (document.getFitxerNom() != null) {
+				dto.setFitxerNom(document.getFitxerNom());
+				dto.setFitxerNomEnviamentPortafirmes(
+						pluginHelper.conversioConvertirPdfArxiuNom(document.getFitxerNom()));
+				dto.setFitxerContentType(document.getFitxerContentType());
+				//dto.setFitxerContingut(document.getFitxerContingut());
+			}
 			dto.setDataCaptura(document.getDataCaptura());
 			dto.setVersioDarrera(document.getVersioDarrera());
 			dto.setVersioCount(document.getVersioCount());
@@ -974,7 +976,7 @@ public class ContingutHelper {
 		return path;
 	}
 
-	private List<ContingutDto> getPathContingutComDto(
+	public List<ContingutDto> getPathContingutComDto(
 			ContingutEntity contingut,
 			boolean ambPermisos,
 			boolean nomesFinsExpedientArrel) {
