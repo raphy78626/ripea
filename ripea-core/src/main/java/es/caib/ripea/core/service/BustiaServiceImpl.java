@@ -25,10 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
-import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
+import es.caib.ripea.core.api.dto.BustiaContingutDto;
+import es.caib.ripea.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.BustiaFiltreDto;
+import es.caib.ripea.core.api.dto.BustiaUserFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -53,6 +55,7 @@ import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
+import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.HibernateHelper;
@@ -125,6 +128,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Resource
 	private PaginacioHelper paginacioHelper;
+	@Resource
+	private ConversioTipusHelper conversioTipusHelper;
 
 	/*private Map<String, String[]> ordenacioMap;
 
@@ -526,6 +531,37 @@ public class BustiaServiceImpl implements BustiaService {
 					}
 				});
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<BustiaDto> findPermesesPerUsuari(
+			Long entitatId) {
+		logger.debug("Consulta de busties permeses per un usuari ("
+				+ "entitatId=" + entitatId + ")");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		// Obté la llista d'id's amb permisos per a l'usuari
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
+		// Filtra la llista de bústies segons els permisos
+		permisosHelper.filterGrantedAll(
+				busties,
+				new ObjectIdentifierExtractor<BustiaEntity>() {
+					@Override
+					public Long getObjectIdentifier(BustiaEntity bustia) {
+						return bustia.getId();
+					}
+				},
+				BustiaEntity.class,
+				new Permission[] {ExtendedPermission.READ},
+				auth);
+		List<BustiaDto> bustiesRetorn = toBustiaDto(busties, true, true);
+		
+		return bustiesRetorn;
+	}
 
 	@Transactional
 	@Override
@@ -707,13 +743,19 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<BustiaContingutPendentDto> contingutPendentFindByBustiaId(
+	public PaginaDto<BustiaContingutDto> contingutPendentFindByDatatable(
 			Long entitatId,
-			Long bustiaId,
+			List<BustiaDto> bustiesUsuari,
+			BustiaUserFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consultant el contingut pendent de la bústia ("
+		logger.debug("Consultant el contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "contingutDescripcio=" + filtre.getContingutDescripcio() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getEstatContingut() + ", "
 				+ "paginacioParams=" + paginacioParams + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -721,10 +763,25 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
+		BustiaEntity bustia = null;
+		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
+			bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustia()),
+					true);
+		
+		List<ContingutEntity> pares = new ArrayList<ContingutEntity>();
+		if (bustiesUsuari != null && !bustiesUsuari.isEmpty())
+			for (BustiaDto bustiaUsuari: bustiesUsuari) {
+				pares.add(
+						entityComprovarHelper.comprovarBustia(
+						entitat,
+						new Long(bustiaUsuari.getId()),
+						true));
+			}
+		else
+			pares.add(bustia);
+		
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
 				"recepcioData",
@@ -735,8 +792,21 @@ public class BustiaServiceImpl implements BustiaService {
 		mapeigOrdenacio.put(
 				"comentari",
 				new String[] {"darrerMoviment.comentari"});
+		
 		Page<ContingutEntity> pagina = contingutRepository.findBustiaPendentByPareAndFiltre(
+				(bustia == null),
 				bustia,
+				pares,
+				filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
+				filtre.getContingutDescripcio(),
+				filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+				filtre.getRemitent(),
+				(filtre.getDataRecepcioInici() == null),
+				filtre.getDataRecepcioInici(),
+				(filtre.getDataRecepcioFi() == null),
+				filtre.getDataRecepcioFi(),
+				(filtre.getEstatContingut() == null),
+				(filtre.getEstatContingut() != null ? filtre.getEstatContingut().ordinal() : 1),
 				paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
 				paginacioParams.getFiltre(),
 				paginacioHelper.toSpringDataPageable(
@@ -744,10 +814,10 @@ public class BustiaServiceImpl implements BustiaService {
 						mapeigOrdenacio));
 		return paginacioHelper.toPaginaDto(
 				pagina,
-				BustiaContingutPendentDto.class,
-				new Converter<ContingutEntity, BustiaContingutPendentDto>() {
+				BustiaContingutDto.class,
+				new Converter<ContingutEntity, BustiaContingutDto>() {
 					@Override
-					public BustiaContingutPendentDto convert(ContingutEntity source) {
+					public BustiaContingutDto convert(ContingutEntity source) {
 						return toContingutPendentDto(source);
 					}
 				});
@@ -755,7 +825,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public BustiaContingutPendentDto contingutPendentFindOne(
+	public BustiaContingutDto contingutPendentFindOne(
 			Long entitatId,
 			Long bustiaId,
 			Long contingutId) {
@@ -1007,33 +1077,45 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 	}
 
-	private BustiaContingutPendentDto toContingutPendentDto(
+	private BustiaContingutDto toContingutPendentDto(
 			ContingutEntity contingut) {
 		Object deproxied = HibernateHelper.deproxy(contingut);
-		BustiaContingutPendentDto pendent = new BustiaContingutPendentDto();
-		pendent.setId(contingut.getId());
-		pendent.setNom(contingut.getNom());
+		BustiaContingutDto bustiaContingut = new BustiaContingutDto();
+		bustiaContingut.setId(contingut.getId());
+		bustiaContingut.setNom(contingut.getNom());
+		
+		List<ContingutDto> path = contingutHelper.getPathContingutComDto(
+				contingut,
+				false,
+				false);
+		
+		bustiaContingut.setPath(path);
+		
+		BustiaDto pare = toBustiaDto((BustiaEntity)(contingut.getPare()), false, false);
+		bustiaContingut.setPareId(pare.getId());
+		if (contingut.getEsborrat() < 2)
+			bustiaContingut.setEstatContingut(BustiaContingutFiltreEstatEnumDto.values()[contingut.getEsborrat()]);
 		if (deproxied instanceof RegistreEntity) {
 			RegistreEntity anotacio = (RegistreEntity)contingut;
-			pendent.setTipus(BustiaContingutPendentTipusEnumDto.REGISTRE);
-			pendent.setRecepcioData(anotacio.getCreatedDate().toDate());
+			bustiaContingut.setTipus(BustiaContingutPendentTipusEnumDto.REGISTRE);
+			bustiaContingut.setRecepcioData(anotacio.getCreatedDate().toDate());
 			if (RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
-				pendent.setError(true);
+				bustiaContingut.setError(true);
 			}
-			pendent.setProcesAutomatic(anotacio.getRegla() != null);
+			bustiaContingut.setProcesAutomatic(anotacio.getRegla() != null);
 		} else if (deproxied instanceof ExpedientEntity) {
-			pendent.setTipus(BustiaContingutPendentTipusEnumDto.EXPEDIENT);
+			bustiaContingut.setTipus(BustiaContingutPendentTipusEnumDto.EXPEDIENT);
 		} else if (deproxied instanceof ExpedientEntity) {
-			pendent.setTipus(BustiaContingutPendentTipusEnumDto.DOCUMENT);
+			bustiaContingut.setTipus(BustiaContingutPendentTipusEnumDto.DOCUMENT);
 		}
 		if (contingut.getDarrerMoviment() != null) {
 			if (contingut.getDarrerMoviment().getRemitent() != null)
-				pendent.setRemitent(contingut.getDarrerMoviment().getRemitent().getNom());
+				bustiaContingut.setRemitent(contingut.getDarrerMoviment().getRemitent().getNom());
 			if (contingut.getDarrerMoviment().getCreatedDate() != null)
-				pendent.setRecepcioData(contingut.getDarrerMoviment().getCreatedDate().toDate());
-			pendent.setComentari(contingut.getDarrerMoviment().getComentari());
+				bustiaContingut.setRecepcioData(contingut.getDarrerMoviment().getCreatedDate().toDate());
+			bustiaContingut.setComentari(contingut.getDarrerMoviment().getComentari());
 		}
-		return pendent;
+		return bustiaContingut;
 	}
 
 	private void processarAnnexos(RegistreEntity anotacio, BustiaEntity bustia) {

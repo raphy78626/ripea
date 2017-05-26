@@ -13,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
-import es.caib.ripea.core.api.dto.BustiaContingutPendentDto;
+import es.caib.ripea.core.api.dto.BustiaContingutDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.BustiaFiltreDto;
+import es.caib.ripea.core.api.dto.BustiaUserFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -155,19 +156,21 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public PaginaDto<BustiaContingutPendentDto> contingutPendentFindByBustiaId(
+	public PaginaDto<BustiaContingutDto> contingutPendentFindByDatatable(
 			Long entitatId,
-			Long bustiaId,
+			List<BustiaDto> bustiesUsuari,
+			BustiaUserFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		return delegate.contingutPendentFindByBustiaId(
+		return delegate.contingutPendentFindByDatatable(
 				entitatId,
-				bustiaId,
+				bustiesUsuari,
+				filtre,
 				paginacioParams);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public BustiaContingutPendentDto contingutPendentFindOne(
+	public BustiaContingutDto contingutPendentFindOne(
 			Long entitatId,
 			Long bustiaId,
 			Long contingutId) {
@@ -237,6 +240,12 @@ public class BustiaServiceBean implements BustiaService {
 	public PaginaDto<BustiaDto> findAmbUnitatCodiBustiaNomAdmin(Long entitatId, BustiaFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException {
 		return delegate.findAmbUnitatCodiBustiaNomAdmin(entitatId, filtre, paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public List<BustiaDto> findPermesesPerUsuari(Long entitatId) {
+		return delegate.findPermesesPerUsuari(entitatId);
 	}
 
 	

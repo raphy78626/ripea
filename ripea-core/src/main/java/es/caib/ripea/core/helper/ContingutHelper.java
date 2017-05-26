@@ -974,7 +974,7 @@ public class ContingutHelper {
 		return path;
 	}
 
-	private List<ContingutDto> getPathContingutComDto(
+	public List<ContingutDto> getPathContingutComDto(
 			ContingutEntity contingut,
 			boolean ambPermisos,
 			boolean nomesFinsExpedientArrel) {

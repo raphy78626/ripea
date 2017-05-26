@@ -108,15 +108,28 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"from " +
 			"    ContingutEntity c " +
 			"where " +
-			"    c.pare = :pare " +
+			"    (:esPareNull = true or c.pare = :pare) " +
+			"and (:esPareNull = false or c.pare in (:pares))" +
+			"and (:esNullContingutDescripcio = true or lower(c.nom) like lower('%'||:contingutDescripcio||'%')) " +
+			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
+			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
+			"and (:esNullDataFi = true or c.createdDate <= :dataFi) " +
 			"and (:esNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.comentari) like lower('%'||:filtre||'%')) " +
-			/*"        (type(c) = es.caib.ripea.core.entity.ExpedientEntity and (lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%'))) or " +
-			"        (type(c) = es.caib.ripea.core.entity.DocumentEntity and (lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%'))) or " +
-			"        (type(c) = es.caib.ripea.core.entity.RegistreEntity and (lower(c.identificador) like lower('%'||:filtre||'%') or lower(c.extracte) like lower('%'||:filtre||'%') or lower('REGWEB') like lower('%'||:filtre||'%'))) " +
-			"    ) " +*/
-			"and esborrat = 0")
+			"and ((:esNullEstat = true and (esborrat = 0 or esborrat = 1)) or (esborrat = :estat))")
 	public Page<ContingutEntity> findBustiaPendentByPareAndFiltre(
+			@Param("esPareNull") boolean esPareNull,
 			@Param("pare") ContingutEntity pare,
+			@Param("pares") List<? extends ContingutEntity> pares,
+			@Param("esNullContingutDescripcio") boolean esNullContingutDescripcio,
+			@Param("contingutDescripcio") String contingutDescripcio,
+			@Param("esNullRemitent") boolean esNullRemitent,
+			@Param("remitent") String remitent,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("esNullEstat") boolean esNullEstat,
+			@Param("estat") int estat,
 			@Param("esNullFiltre") boolean esNullFiltre,
 			@Param("filtre") String filtre,
 			Pageable pageable);
