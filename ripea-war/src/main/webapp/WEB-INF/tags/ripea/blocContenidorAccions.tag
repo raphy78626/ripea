@@ -87,18 +87,18 @@
 					<li><a href="../document/${contingut.id}/publicar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-clipboard"></span>&nbsp;<spring:message code="comu.boto.publicar"/>...</a></li>
 					<c:set var="mostrarSeparador" value="${true}"/>
 				</c:if>
-				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPortafirmesActiva}">
-					<li><a href="../document/${contingut.id}/portafirmes/upload" data-toggle="modal" data-reload-page="true"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/>...</a></li>
+				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPortafirmesActiva && contingut.documentTipus != 'FISIC'}">
+					<li><a href="../document/${contingut.id}/portafirmes/upload" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/>...</a></li>
 					<c:set var="mostrarSeparador" value="${true}"/>
 				</c:if>
-				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPassarelaActiva}">
-					<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal" data-reload-page="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/>...</a></li>
+				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPassarelaActiva && contingut.documentTipus != 'FISIC'}">
+					<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/>...</a></li>
 					<c:set var="mostrarSeparador" value="${true}"/>
 				</c:if>
-				<c:if test="${contingut.estat != 'REDACCIO'}">
+				<c:if test="${contingut.estat != 'REDACCIO' && contingut.documentTipus != 'FISIC'}">
 					<c:choose>
 						<c:when test="${contingut.estat != 'CUSTODIAT'}">
-							<li><a href="../document/${contingut.id}/portafirmes/info" data-toggle="modal" data-reload-page="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.firma.portafirmes.info"/></a></li>
+							<li><a href="../document/${contingut.id}/portafirmes/info" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.firma.portafirmes.info"/></a></li>
 						</c:when>
 						<c:otherwise>
 							<li><a href="../document/${contingut.id}/custodia/info" target="_blank"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="contingut.boto.firma.custodia"/>&nbsp;<small><i class="fa fa-external-link"></i></small></a></li>
