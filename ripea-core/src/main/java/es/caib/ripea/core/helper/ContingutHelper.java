@@ -199,11 +199,13 @@ public class ContingutHelper {
 			dto.setCustodiaId(document.getCustodiaId());
 			dto.setCustodiaUrl(
 					pluginHelper.arxiuDocumentGenerarUrlPerCsv(document.getCustodiaCsv()));
-			dto.setFitxerNom(document.getFitxerNom());
-			dto.setFitxerNomEnviamentPortafirmes(
-					pluginHelper.conversioConvertirPdfArxiuNom(document.getFitxerNom()));
-			dto.setFitxerContentType(document.getFitxerContentType());
-			//dto.setFitxerContingut(document.getFitxerContingut());
+			if (document.getFitxerNom() != null) {
+				dto.setFitxerNom(document.getFitxerNom());
+				dto.setFitxerNomEnviamentPortafirmes(
+						pluginHelper.conversioConvertirPdfArxiuNom(document.getFitxerNom()));
+				dto.setFitxerContentType(document.getFitxerContentType());
+				//dto.setFitxerContingut(document.getFitxerContingut());
+			}
 			dto.setDataCaptura(document.getDataCaptura());
 			dto.setVersioDarrera(document.getVersioDarrera());
 			dto.setVersioCount(document.getVersioCount());
