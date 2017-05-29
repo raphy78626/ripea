@@ -40,12 +40,12 @@ pre {
 			</c:when>
 			<c:when test="${errorObject.throwable.class.canonicalName == 'es.caib.ripea.core.api.exception.SistemaExternException'}">
 				<tr>
-					<td width="20%"><strong><spring:message code="error.missatge"/></strong></td>
-					<td>${errorObject.throwable.message}</td>
+					<td><strong><spring:message code="error.sistema.ext"/></strong></td>
+					<td><spring:message code="sistema.extern.codi.${errorObject.throwable.sistemaExternCodi}"/></td>
 				</tr>
 				<tr>
-					<td><strong><spring:message code="error.sistema.ext"/></strong></td>
-					<td>${errorObject.throwable.sistemaExternCodi}</td>
+					<td width="20%"><strong><spring:message code="error.missatge"/></strong></td>
+					<td>${errorObject.throwable.message}</td>
 				</tr>
 			</c:when>
 			<c:otherwise>
