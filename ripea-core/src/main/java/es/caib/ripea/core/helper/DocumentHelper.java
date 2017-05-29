@@ -288,8 +288,6 @@ public class DocumentHelper {
 				fitxer.setNom(portafirmesDocument.getArxiuNom());
 				fitxer.setContingut(portafirmesDocument.getArxiuContingut());
 				fitxer.setContentType("application/pdf");
-				document.updateEstat(
-						DocumentEstatEnumDto.CUSTODIAT);
 				documentPortafirmes.updateProcessament(
 						true,
 						false,

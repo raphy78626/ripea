@@ -568,7 +568,11 @@ $(document).ready(function() {
 										<tbody>
 											<tr>
 												<td><strong><spring:message code="contingut.document.camp.firma.tipus"/></strong></td>
-												<td><spring:message code="document.nti.tipfir.enum.${contingut.ntiTipoFirma}"/></td>
+												<td>
+													<c:if test="${not empty contingut.ntiTipoFirma}">
+														<spring:message code="document.nti.tipfir.enum.${contingut.ntiTipoFirma}"/>
+													</c:if>
+												</td>
 											</tr>
 											<tr>
 												<td><strong><spring:message code="contingut.document.camp.firma.csv"/></strong></td>

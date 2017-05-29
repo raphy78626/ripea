@@ -2162,6 +2162,10 @@ public class ArxiuClientImpl implements ArxiuClient {
 				"url=" + urlAmbMetode + ", " +
 				"tipus=application/json, " +
 				"body=" + body + ")");
+		System.out.println(">>> Enviant petició HTTP a l'arxiu (" +
+				"url=" + urlAmbMetode + ", " +
+				"tipus=application/json, " +
+				"body=" + body + ")");
 		lastJsonRequest = body;
 		ClientResponse response = jerseyClient.
 				resource(urlAmbMetode).
