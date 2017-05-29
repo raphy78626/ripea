@@ -18,15 +18,19 @@ import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.war.command.DocumentCommand.CreateDigital;
+import es.caib.ripea.war.command.DocumentCommand.CreateFisic;
 import es.caib.ripea.war.command.DocumentCommand.UpdateDigital;
+import es.caib.ripea.war.command.DocumentCommand.UpdateFisic;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 import es.caib.ripea.war.validation.DocumentDigitalExistent;
+import es.caib.ripea.war.validation.NomDocumentNoRepetit;
 
 /**
  * Command per al manteniment de documents.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@NomDocumentNoRepetit(groups = {CreateDigital.class, UpdateDigital.class, CreateFisic.class, UpdateFisic.class})
 @DocumentDigitalExistent(groups = {CreateDigital.class, UpdateDigital.class})
 public class DocumentCommand extends ContenidorCommand {
 

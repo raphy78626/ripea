@@ -10,11 +10,11 @@
 				<c:choose>
 					<c:when test="${contingutPath.escriptori}">
 						<c:choose>
-							<c:when test="${contingut.codiPropietariEscriptoriPare == pageContext.request.userPrincipal}">
+							<c:when test="${contingut.codiPropietariEscriptoriPare == pageContext.request.userPrincipal.name}">
 								<a href="${contingutPath.id}"><span class="fa fa-desktop"></span> <spring:message code="contingut.path.escriptori"/></a>
 							</c:when>
 							<c:otherwise>
-								<span class="fa fa-desktop"></span> <spring:message code="contingut.path.escriptori"/> de ${contingut.nomPropietariEscriptoriPare}
+								<span class="fa fa-desktop"></span> <spring:message code="contingut.path.escriptori.de"/> ${contingut.nomPropietariEscriptoriPare}
 							</c:otherwise>
 						</c:choose>
 					</c:when>

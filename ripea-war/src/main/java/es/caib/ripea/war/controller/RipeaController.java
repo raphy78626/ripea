@@ -138,6 +138,9 @@ public class RipeaController {
 		public String getFullStackTrace() {
 			return ExceptionUtils.getFullStackTrace(throwable);
 		}
+		public String getRootCauseMessage() {
+			return ExceptionUtils.getRootCauseMessage(throwable);
+		}
 		private String getExceptionMessage(Throwable throwable, Integer statusCode) {
 			if (throwable != null) {
 				Throwable rootCause = ExceptionUtils.getRootCause(throwable);
