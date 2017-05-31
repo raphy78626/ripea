@@ -88,11 +88,25 @@
 					<c:set var="mostrarSeparador" value="${true}"/>
 				</c:if>
 				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPortafirmesActiva && contingut.documentTipus != 'FISIC'}">
-					<li><a href="../document/${contingut.id}/portafirmes/upload" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/>...</a></li>
+					<c:choose>
+						<c:when test="${contingut.valid}">
+							<li><a href="../document/${contingut.id}/portafirmes/upload" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/>...</a></li>
+						</c:when>
+						<c:otherwise>
+							<li><a href="#" onclick="alert('<spring:message code="contingut.document.firmar.error.no.valid"/>');return false;"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="contingut.boto.portafirmes.enviar"/>...</a></li>
+						</c:otherwise>
+					</c:choose>
 					<c:set var="mostrarSeparador" value="${true}"/>
 				</c:if>
 				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPassarelaActiva && contingut.documentTipus != 'FISIC'}">
-					<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/>...</a></li>
+					<c:choose>
+						<c:when test="${contingut.valid}">
+							<li><a href="../document/${contingut.id}/firmaPassarela" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/>...</a></li>
+						</c:when>
+						<c:otherwise>
+							<li><a href="#" onclick="alert('<spring:message code="contingut.document.firmar.error.no.valid"/>');return false;"><span class="fa fa-edit"></span>&nbsp;<spring:message code="contingut.boto.firma.passarela"/>...</a></li>
+						</c:otherwise>
+					</c:choose>
 					<c:set var="mostrarSeparador" value="${true}"/>
 				</c:if>
 				<c:if test="${contingut.estat != 'REDACCIO' && contingut.documentTipus != 'FISIC'}">

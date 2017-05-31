@@ -619,6 +619,12 @@ public class DocumentServiceImpl implements DocumentService {
 					DocumentEntity.class,
 					"El document a enviar al portafirmes no és del tipus " + DocumentTipusEnumDto.DIGITAL);
 		}
+		if (!cacheHelper.findErrorsValidacioPerNode(document).isEmpty()) {
+			throw new ValidationException(
+					document.getId(),
+					DocumentEntity.class,
+					"El document a enviar al portafirmes te alertes de validació");
+		}
 		if (DocumentEstatEnumDto.CUSTODIAT.equals(document.getEstat())) {
 			throw new ValidationException(
 					document.getId(),
@@ -1028,6 +1034,12 @@ public class DocumentServiceImpl implements DocumentService {
 					true,
 					false,
 					false);
+			if (!cacheHelper.findErrorsValidacioPerNode(document).isEmpty()) {
+				throw new ValidationException(
+						document.getId(),
+						DocumentEntity.class,
+						"El document firmat te alertes de validació");
+			}
 			// Per a consultes no es comprova el contenidor arrel
 			// Comprova l'accés al path del document
 			contingutHelper.comprovarPermisosPathContingut(
