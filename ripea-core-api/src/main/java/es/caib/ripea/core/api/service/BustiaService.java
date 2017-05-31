@@ -143,24 +143,19 @@ public interface BustiaService {
 			String unitatCodi) throws NotFoundException;
 	
 	/**
-	 * Consulta les bústies donat el codi de la seva unitat i
-	 * una cadena de texte pel nom.
+	 * Consulta les bústies segons els valors del filtre.
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
-	 * @param unitatCodi
-	 *            Atribut unitatCodi de les bústies a trobar.
-	 * @param bustiaNom
-	 *            Atribut bustiaNom de les bústies a trobar.
-	 * @return Les bústies amb la unitat especificada.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 * @param filtre
+	 *            El filtre per a la consulta.
+	 * @return Les bústies que coincideixen amb els criteris del filtre.
 	 */
 	@PreAuthorize("hasRole('IPA_ADMIN')")
-	public PaginaDto<BustiaDto> findAmbUnitatCodiBustiaNomAdmin(
+	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
 			Long entitatId,
 			BustiaFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws NotFoundException;
+			PaginacioParamsDto paginacioParams);
 
 	/**
 	 * Retorna una llista de les bústies actives de l'entitat.

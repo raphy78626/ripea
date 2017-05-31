@@ -48,9 +48,20 @@ $(document).ready(function() {
 	<table id="busties" data-toggle="datatable" data-url="<c:url value="/bustiaAdmin/datatable"/>" data-filter="#bustiaFiltreCommand" data-default-order="1" data-default-dir="asc" class="table table-bordered table-striped" data-botons-template="#botonsTemplate">
 		<thead>
 			<tr>
-				<th data-col-name="id" width="4%" data-visible="false">#</th>
+				<th data-col-name="id" data-visible="false">#</th>
+				<th data-col-name="unitatCodi" data-visible="false"></th>
+				<th data-col-name="entitat.codi" data-visible="false"></th>
 				<th data-col-name="nom"><spring:message code="bustia.list.columna.nom"/></th>
-				<th data-col-name="unitat.denominacio"><spring:message code="bustia.list.columna.unitat"/></th>
+				<th data-col-name="unitat" data-template="#denominacioTemplate">
+					<spring:message code="bustia.list.columna.unitat"/>
+					<script id="denominacioTemplate" type="text/x-jsrender">
+						{{if unitat}}
+							{{:unitat.denominacio}}
+						{{else}}
+							{{:unitatCodi}}
+						{{/if}}
+					</script>
+				</th>
 				<th data-col-name="perDefecte" data-template="#cellPerDefecteTemplate">
 					<spring:message code="bustia.list.columna.per.defecte"/>
 					<script id="cellPerDefecteTemplate" type="text/x-jsrender">

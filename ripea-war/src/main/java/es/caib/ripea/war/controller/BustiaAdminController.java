@@ -58,7 +58,7 @@ public class BustiaAdminController extends BaseAdminController {
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				bustiaService.findAmbUnitatCodiBustiaNomAdmin(
+				bustiaService.findAmbFiltreAdmin(
 						entitatActual.getId(),
 						BustiaFiltreCommand.asDto(bustiaFiltreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
