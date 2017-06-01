@@ -55,7 +55,7 @@ $(document).ready(function() {
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>
 			</div>
 		</div>
@@ -101,6 +101,11 @@ $(document).ready(function() {
 					</script>
 				</th>
 				
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate">
+					<script id="cellPermisosTemplate" type="text/x-jsrender">
+						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+					</script>
+				</th>
 				
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="10%">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">

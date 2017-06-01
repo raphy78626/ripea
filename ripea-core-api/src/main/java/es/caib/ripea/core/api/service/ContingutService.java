@@ -11,6 +11,7 @@ import java.util.Map;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
+import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
@@ -445,4 +446,38 @@ public interface ContingutService {
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
 
+	/**
+	 * Retorna els comentaris d'un contingut
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol exportar.
+	 * @return Llista de comentaris pel contingut.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<ContingutComentariDto> findComentarisPerContingut(
+			Long entitatId,
+			Long contingutId) throws NotFoundException;
+	
+	/**
+	 * Publica un comentari per a un contingut
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol exportar.
+	 * @param text
+	 *            text del comentari a publicar.
+	 * @return boolea per indicar si s'ha publicat correctament.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public boolean publicarComentariPerContingut(
+			Long entitatId,
+			Long contingutId,
+			String text) throws NotFoundException;
 }

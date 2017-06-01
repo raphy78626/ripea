@@ -8,6 +8,7 @@
 			refreshMissatges: true,
 			refreshDatatable: false,
 			refreshPagina: false,
+			refreshTancar: false,
 			elementBotons: "#modal-botons",
 			elementForm: "#modal-form",
 			elementTancarData: "modal-cancel"
@@ -69,6 +70,7 @@
 								refreshMissatges: plugin.settings.refreshMissatges,
 								refreshDatatable: plugin.settings.refreshDatatable,
 								refreshPagina: plugin.settings.refreshPagina,
+								refreshTancar: plugin.settings.refreshTancar,
 								elementBotons: plugin.settings.elementBotons,
 								elementForm: plugin.settings.elementForm,
 								elementTancarData: plugin.settings.elementTancarData,
@@ -82,6 +84,7 @@
 								refreshMissatges: plugin.settings.refreshMissatges,
 								refreshDatatable: plugin.settings.refreshDatatable,
 								refreshPagina: plugin.settings.refreshPagina,
+								refreshTancar: plugin.settings.refreshTancar,
 								elementBotons: plugin.settings.elementBotons,
 								elementForm: plugin.settings.elementForm,
 								elementTancarData: plugin.settings.elementTancarData,
@@ -172,6 +175,13 @@
 						webutilModalAdjustHeight(iframe);
 					});
 				});
+				
+				modalobj.on('hidden.bs.modal', function () {
+					if (settings.refreshTancar) {
+						window.location.reload(true);
+					}
+				});
+				
 				iframe.on('load', function () {
 					var pathname = this.contentDocument.location.pathname;
 					if (pathname == webutilModalTancarPath()) {

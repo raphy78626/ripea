@@ -28,6 +28,7 @@ public class BustiaContingutDto implements Serializable {
 	private BustiaContingutFiltreEstatEnumDto estatContingut;
 	private boolean procesAutomatic;
 	private boolean error;
+	private long numComentaris;
 
 	public Long getId() {
 		return id;
@@ -96,6 +97,12 @@ public class BustiaContingutDto implements Serializable {
 		this.error = error;
 	}
 
+	public long getNumComentaris() {
+		return numComentaris;
+	}
+	public void setNumComentaris(long numComentaris) {
+		this.numComentaris = numComentaris;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
