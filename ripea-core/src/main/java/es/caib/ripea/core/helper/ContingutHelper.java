@@ -259,16 +259,12 @@ public class ContingutHelper {
 			UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleriaPerUnitatOrganitzativa(
 					bustia.getEntitat().getCodi(),
 					bustia.getUnitatCodi());
-			
 			if (unitatConselleria != null)
 				dto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
-			
 			UnitatOrganitzativaDto unitatOrganitzativa = unitatOrganitzativaHelper.findPerEntitatAndCodi(
 					bustia.getEntitat().getCodi(),
 					bustia.getUnitatCodi());
-			
 			dto.setUnitat(unitatOrganitzativa);
-			
 			resposta = dto;
 		} else if (deproxied instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)deproxied;

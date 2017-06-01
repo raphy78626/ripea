@@ -100,6 +100,18 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
+			Long entitatId,
+			BustiaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException {
+		return delegate.findAmbFiltreAdmin(
+				entitatId,
+				filtre,
+				paginacioParams);
+	}
+
+	@Override
 	@RolesAllowed({"IPA_ADMIN", "tothom"})
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) {
@@ -233,13 +245,6 @@ public class BustiaServiceBean implements BustiaService {
 			Long id,
 			Long permisId) {
 		delegate.deletePermis(entitatId, id, permisId);
-	}
-
-	@Override
-	@RolesAllowed("IPA_ADMIN")
-	public PaginaDto<BustiaDto> findAmbUnitatCodiBustiaNomAdmin(Long entitatId, BustiaFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws NotFoundException {
-		return delegate.findAmbUnitatCodiBustiaNomAdmin(entitatId, filtre, paginacioParams);
 	}
 
 	@Override

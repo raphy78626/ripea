@@ -182,7 +182,12 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia.getNom(),
 				bustia.getUnitatCodi(),
 				bustiaPare).build();
-		
+		bustiaRepository.save(entity);
+		// Registra al log la creació de la bústia
+		contingutLogHelper.logCreacio(
+				entity,
+				false,
+				false);
 		// Si no hi ha cap bústia per defecte a dins l'unitat configura
 		// la bústia actual com a bústia per defecte
 		BustiaEntity bustiaPerDefecte = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
@@ -198,15 +203,6 @@ public class BustiaServiceImpl implements BustiaService {
 					false,
 					false);
 		}
-		
-		bustiaRepository.saveAndFlush(entity);
-		
-		// Registra al log la creació de la bústia
-		contingutLogHelper.logCreacio(
-				entity,
-				false,
-				false);
-		
 		return toBustiaDto(
 				entity,
 				false,
@@ -415,25 +411,21 @@ public class BustiaServiceImpl implements BustiaService {
 		omplirPermisosPerBusties(resposta, true);
 		return resposta;
 	}
-	
-	
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public PaginaDto<BustiaDto> findAmbUnitatCodiBustiaNomAdmin(
+	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
 			Long entitatId,
 			BustiaFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Cercant les bústies de la unitat i nom de bústia per admins ("
+		logger.debug("Cercant les bústies segons el filtre ("
 				+ "entitatId=" + entitatId + ", "
-				+ "unitatCodi=" + filtre.getUnitatCodi() + ", "
-				+ "bustiaNom=" + filtre.getNom() + ")");
+				+ "filtre=" + filtre + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		
 		PaginaDto<BustiaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				bustiaRepository.findByEntitatAndUnitatCodiAndBustiaNomFiltrePaginat(
 						entitat,
@@ -452,9 +444,7 @@ public class BustiaServiceImpl implements BustiaService {
 								true);
 					}
 				});
-		
 		omplirPermisosPerBusties(resultPagina.getContingut(), true);
-		
 		return resultPagina;
 	}
 
