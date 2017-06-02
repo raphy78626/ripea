@@ -97,10 +97,10 @@ $(document).ready(function() {
 	window['loading_${campPath}'] = false;
 	
 	$("#${campPath}").on("blur", function(e) {
+		var valorCodi = this.value;
 		if (!window['loading_${campPath}']) {
-			var valorCodi = this.value;
+			$("#${campPathDesc}").val('');
 			if (valorCodi != undefined && valorCodi != "") {
-				$("#${campPathDesc}").attr("placeholder","Cercant...");
 				comprovarValorPerCodi(valorCodi, e);
 			}
 		} else {
@@ -108,6 +108,8 @@ $(document).ready(function() {
 			event.stopImmediatePropagation();
 		}
 	});
+	
+	$("#${campPath}").trigger('blur');
 });
 
 function comprovarValorPerCodi(valorCodi, e) {

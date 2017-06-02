@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,7 +70,6 @@ public class AjaxUnitatsController extends BaseAdminController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		UnitatsFiltreCommand unitatsFiltreCommand = getFiltreCommand(request);
 		unitatsFiltreCommand.setNivellAdministracio("3");
 		unitatsFiltreCommand.setComunitat("4");
@@ -97,6 +98,21 @@ public class AjaxUnitatsController extends BaseAdminController {
 						UnitatsFiltreCommand.asDto(unitatsFiltreCommand), 
 						null),
 				"codigo");
+	}
+	
+	@RequestMapping(value = "/unitats", method = RequestMethod.POST)
+	public String unitatsPost(
+			HttpServletRequest request,
+			@Valid UnitatsFiltreCommand unitatsFiltreCommand,
+			BindingResult bindingResult,
+			Model model) {
+		if (!bindingResult.hasErrors()) {
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					unitatsFiltreCommand);
+		}
+		return "redirect:/unitatajax/unitats";
 	}
 	
 	@RequestMapping(value = "/localitats", method = RequestMethod.POST)

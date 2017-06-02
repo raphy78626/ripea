@@ -67,23 +67,23 @@ public class UnitatOrganitzativaHelper {
 			UnitatsFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
 		
-//		List<UnitatOrganitzativaDto> unitats = pluginHelper.unitatsOrganitzativesFindByFiltre(
-//				filtre.getCodi(), 
-//				filtre.getDenominacio(), 
-//				filtre.getNivellAdministracio(), 
-//				filtre.getComunitat(), 
-//				filtre.getProvincia(), 
-//				filtre.getLocalitat(), 
-//				filtre.isUnitatArrel());
-		
-		List<UnitatOrganitzativaD3Dto> unitats = pluginHelper.unitatsOrganitzativesD3FindByFiltre(
-				"", 
-				"", 
-				"3", 
-				"4", 
-				"7", 
-				"12-01", 
+		List<UnitatOrganitzativaDto> unitats = pluginHelper.unitatsOrganitzativesFindByFiltre(
+				filtre.getCodi(), 
+				filtre.getDenominacio(), 
+				filtre.getNivellAdministracio(), 
+				filtre.getComunitat(), 
+				filtre.getProvincia(), 
+				filtre.getLocalitat(), 
 				filtre.isUnitatArrel());
+		
+//		List<UnitatOrganitzativaD3Dto> unitats = pluginHelper.unitatsOrganitzativesD3FindByFiltre(
+//				"", 
+//				"", 
+//				"3", 
+//				"4", 
+//				"7", 
+//				"12-01", 
+//				filtre.isUnitatArrel());
 		
 		PaginaDto<UnitatOrganitzativaD3Dto> resultPagina = paginacioHelper.toPaginaDto(unitats, UnitatOrganitzativaD3Dto.class);
 		

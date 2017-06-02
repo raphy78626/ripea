@@ -35,20 +35,16 @@
 			<rip:inputText name="codi" textKey="unitat.search.filtre.codi"/>
 		</div>
 		<div class="col-xs-6">
-<%-- 			<rip:inputText name="nivellAdministracio" textKey="unitat.search.filtre.nivell"/> --%>
-			<rip:inputSelect name="nivellAdministracio" textKey="unitat.search.filtre.nivell" optionItems="${nivellsAdmin}" optionValueAttribute="descripcio" optionTextKeyAttribute="codi" disabled="true"/>
+			<rip:inputSelect name="nivellAdministracio" textKey="unitat.search.filtre.nivell" optionItems="${nivellsAdmin}" optionValueAttribute="codi" optionTextAttribute="descripcio" disabled="true"/>
 		</div>
 		<div class="col-xs-6">
-<%-- 			<rip:inputText name="comunitat" textKey="unitat.search.filtre.comunitat"/> --%>
-			<rip:inputSelect name="comunitat" textKey="unitat.search.filtre.comunitat" optionItems="${comunitats}" optionValueAttribute="nom" optionTextKeyAttribute="codi" disabled="true"/>
+			<rip:inputSelect name="comunitat" textKey="unitat.search.filtre.comunitat" optionItems="${comunitats}" optionValueAttribute="codi" optionTextAttribute="nom" disabled="true"/>
 		</div>
 		<div class="col-xs-6">
-<%-- 			<rip:inputText name="provincia" textKey="unitat.search.filtre.provincia"/> --%>
-			<rip:inputSelect name="provincia" textKey="unitat.search.filtre.provincia" optionItems="${provincies}" optionValueAttribute="nom" optionTextKeyAttribute="codi" disabled="true"/>
+			<rip:inputSelect name="provincia" textKey="unitat.search.filtre.provincia" optionItems="${provincies}" optionValueAttribute="codi" optionTextAttribute="nom" disabled="true"/>
 		</div>
 		<div class="col-xs-6">
-<%-- 			<rip:inputText name="localitat" textKey="unitat.search.filtre.localitat"/> --%>
-			<rip:inputSelect name="localitat" textKey="unitat.search.filtre.localitat" optionItems="${localitats}" optionValueAttribute="nom" optionTextKeyAttribute="codi"/>
+			<rip:inputSelect name="localitat" textKey="unitat.search.filtre.localitat" optionItems="${localitats}" optionValueAttribute="codi" optionTextAttribute="nom"/>
 		</div>
 		<div class="col-xs-6">
 			<rip:inputCheckbox name="unitatArrel" textKey="unitat.search.filtre.unitat.arrel"/>
