@@ -13,7 +13,11 @@ import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
+import es.caib.ripea.core.api.dto.PaginaDto;
+import es.caib.ripea.core.api.dto.PaginacioParamsDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaD3Dto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.dto.UnitatsFiltreDto;
 
 
 /**
@@ -26,8 +30,14 @@ public class UnitatOrganitzativaHelper {
 
 	@Resource
 	private CacheHelper cacheHelper;
-
-
+	@Resource
+	private EntityComprovarHelper entityComprovarHelper;
+	@Resource
+	private PaginacioHelper paginacioHelper;
+	@Resource
+	private PluginHelper pluginHelper;
+	@Resource
+	private ConversioTipusHelper conversioTipusHelper;
 
 	public UnitatOrganitzativaDto findPerEntitatAndCodi(
 			String entitatCodi,
@@ -39,6 +49,36 @@ public class UnitatOrganitzativaHelper {
 			}
 		}
 		return null;
+	}
+	
+	public UnitatOrganitzativaDto findPerCodi(
+			String unitatCodi) throws Exception{
+		UnitatOrganitzativaDto unitat = cacheHelper.findUnitatOrganitzativaPerCodi(unitatCodi);
+		return unitat;
+	}
+	
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesListPerEntitat(
+			String entitatCodi) {
+		List<UnitatOrganitzativaDto> llista = cacheHelper.findUnitatsOrganitzativesListPerEntitat(entitatCodi);
+		return llista;
+	}
+	
+	public PaginaDto<UnitatOrganitzativaD3Dto> findUnitatsOrganitzativesPerDatatable(
+			UnitatsFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		
+		List<UnitatOrganitzativaD3Dto> unitats = pluginHelper.unitatsOrganitzativesD3FindByFiltre(
+				filtre.getCodi(), 
+				filtre.getDenominacio(), 
+				filtre.getNivellAdministracio(), 
+				filtre.getComunitat(), 
+				filtre.getProvincia(), 
+				filtre.getLocalitat(), 
+				filtre.isUnitatArrel());
+		
+		PaginaDto<UnitatOrganitzativaD3Dto> resultPagina = paginacioHelper.toPaginaDto(unitats, UnitatOrganitzativaD3Dto.class);
+		
+		return resultPagina;
 	}
 
 	public ArbreDto<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitatAmbPermesos(
