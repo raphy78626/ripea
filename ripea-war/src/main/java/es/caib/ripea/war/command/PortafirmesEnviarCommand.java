@@ -34,7 +34,7 @@ public class PortafirmesEnviarCommand {
 
 	public PortafirmesEnviarCommand() {
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DAY_OF_MONTH, 4);
+		cal.add(Calendar.DAY_OF_MONTH, 7);
 		cal.set(Calendar.HOUR, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 59);
