@@ -480,4 +480,25 @@ public interface ContingutService {
 			Long entitatId,
 			Long contingutId,
 			String text) throws NotFoundException;
+	
+	
+	/**
+	 * Marcar com a processat un contingut
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol exportar.
+	 * @param text
+	 *            text del comentari a publicar.
+	 * @return boolea per indicar si el procés ha finaltizat correctament
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public boolean marcarProcessat(
+			Long entitatId,
+			Long contingutId,
+			String text) throws NotFoundException;
+	
 }

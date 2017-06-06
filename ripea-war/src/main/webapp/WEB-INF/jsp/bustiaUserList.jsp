@@ -85,7 +85,19 @@ $(document).ready(function() {
 				</th>
 				<th data-col-name="remitent"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="recepcioData" data-converter="datetime" width="15%"><spring:message code="bustia.pendent.columna.recepcio.data"/></th>
-				<th data-col-name="estatContingut" data-orderable="false" width="10%"><spring:message code="bustia.pendent.columna.estat"/></th>
+				<th data-col-name="estatContingut" data-orderable="false" width="10%" data-template="#cellEstatTemplate">
+					<spring:message code="bustia.pendent.columna.estat"/>
+					<script id="cellEstatTemplate" type="text/x-jsrender">
+						{{if estatContingut == 'PENDENT'}}
+							<spring:message code="bustia.contingut.filtre.estat.enum.PENDENT"/>
+						{{else}}
+							<spring:message code="bustia.contingut.filtre.estat.enum.PROCESSAT"/>
+						{{/if}}
+						{{if procesAutomatic}}
+							<span class="fa fa-clock-o" title="<spring:message code="bustia.pendent.tooltip.amb.regles"/>"></span>
+						{{/if}}
+					</script>
+				</th>
 				<th data-col-name="path" data-template="#cellPathTemplate" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
@@ -101,9 +113,11 @@ $(document).ready(function() {
 					</script>
 				</th>
 				
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate">
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						{{if !procesAutomatic}}
+							<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						{{/if}}
 					</script>
 				</th>
 				
@@ -121,7 +135,10 @@ $(document).ready(function() {
 								{{if !procesAutomatic}}
 									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/nouexp" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.nou.expedient"/>...</a></li>
 									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/addexp" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>
-									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/reenviar" data-toggle="modal"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/reenviar" data-toggle="modal"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+									{{if estatContingut == 'PENDENT'}}
+										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+									{{/if}}			
 									<%--li><a href="../../bustiaUser/${bustia.id}/pendent/contingut/{{:id}}/agafar" data-toggle="modal"><span class="fa fa-thumbs-o-up"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.agafar"/></a></li--%>
 								{{/if}}
 							</ul>

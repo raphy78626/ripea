@@ -189,7 +189,7 @@
 				
 				modalobj.on('hidden.bs.modal', function () {
 					if (settings.refreshTancar) {
-						window.location.reload(true);
+						$('#' + settings.dataTableId).webutilDatatable('refresh');
 					}
 				});
 				

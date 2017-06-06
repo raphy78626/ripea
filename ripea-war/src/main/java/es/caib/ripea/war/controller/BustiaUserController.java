@@ -38,6 +38,7 @@ import es.caib.ripea.war.command.BustiaUserFiltreCommand;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
+import es.caib.ripea.war.command.MarcarProcessatCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.MissatgesHelper;
@@ -284,7 +285,43 @@ public class BustiaUserController extends BaseUserController {
 		}
 	}
 
-
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/marcarProcessat", method = RequestMethod.GET)
+	public String bustiaMarcarProcessatGet(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long contingutId,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		MarcarProcessatCommand command = new MarcarProcessatCommand();
+		model.addAttribute(command);
+		return "bustiaContingutMarcarProcessat";
+	}
+	
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/marcarProcessat", method = RequestMethod.POST)
+	public String bustiaMarcarProcessatPost(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long contingutId,
+			@Valid MarcarProcessatCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+			return "bustiaContingutMarcarProcessat";
+		}
+		contingutService.marcarProcessat(
+				entitatActual.getId(), 
+				contingutId,
+				"<span class='label label-default'>" + 
+				getMessage(
+						request, 
+						"bustia.pendent.accio.marcat.processat") + 
+				"</span> " + command.getMotiu());
+		return getModalControllerReturnValueSuccess(
+				request,
+				"redirect:/bustiaUser",
+				"bustia.controller.pendent.contingut.reenviat.ok");
+	}
 
 	private void omplirModelPerNouExpedient(
 			EntitatDto entitatActual,

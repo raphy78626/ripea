@@ -1570,6 +1570,30 @@ public class ContingutServiceImpl implements ContingutService {
 		
 		return true;
 	}
+	
+	@Transactional
+	@Override
+	public boolean marcarProcessat(
+			Long entitatId,
+			Long contingutId,
+			String text) {
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		
+		contingut.updateEsborrat(1);
+		
+		return publicarComentariPerContingut(
+				entitatId,
+				contingutId,
+				text);
+	}
 
 	private ContingutEntity copiarContingut(
 			EntitatEntity entitat,

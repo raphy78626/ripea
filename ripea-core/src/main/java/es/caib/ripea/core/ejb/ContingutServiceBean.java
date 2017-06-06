@@ -281,4 +281,10 @@ public class ContingutServiceBean implements ContingutService {
 		return delegate.publicarComentariPerContingut(entitatId, contingutId, text);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public boolean marcarProcessat(Long entitatId, Long contingutId, String text) throws NotFoundException {
+		return delegate.marcarProcessat(entitatId, contingutId, text);
+	}
+
 }
