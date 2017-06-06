@@ -31,7 +31,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public MetaDadaDto create(
 			Long entitatId,
 			MetaDadaDto metaDada) throws NotFoundException;
@@ -117,7 +117,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public MetaDadaDto findByEntitatCodi(
 			Long entitatId,
 			String codi) throws NotFoundException;

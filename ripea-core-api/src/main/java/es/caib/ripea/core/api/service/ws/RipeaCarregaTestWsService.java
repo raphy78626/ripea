@@ -41,7 +41,7 @@ public interface RipeaCarregaTestWsService {
 			boolean delete,
 			boolean administration);
 	
-	public Long crearmetaExpedient(
+	public Long crearMetaExpedient(
 			Long entitatId,
 			String codi,
 			String nom,

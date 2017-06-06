@@ -30,7 +30,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public ArxiuDto create(
 			Long entitatId,
 			ArxiuDto arxiu) throws NotFoundException;
@@ -113,7 +113,7 @@ public interface ArxiuService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public List<ArxiuDto> findByUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;

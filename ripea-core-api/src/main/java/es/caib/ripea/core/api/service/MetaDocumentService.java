@@ -42,7 +42,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public MetaDocumentDto create(
 			Long entitatId,
 			MetaDocumentDto metaDocument,
@@ -138,7 +138,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public MetaDocumentDto findByEntitatCodi(
 			Long entitatId,
 			String codi) throws NotFoundException;
@@ -220,7 +220,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public void metaDadaCreate(
 			Long entitatId,
 			Long id,
@@ -341,7 +341,7 @@ public interface MetaDocumentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public MetaNodeMetaDadaDto metaDadaFind(
 			Long entitatId,
 			Long id,

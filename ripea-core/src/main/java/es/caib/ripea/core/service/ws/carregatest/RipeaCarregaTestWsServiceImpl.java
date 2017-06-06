@@ -73,11 +73,8 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 	private ArxiuService arxiuService;
 	@Resource
 	private DocumentService documentService;
-//	@Resource
-//	private IntegracioHelper integracioHelper;
-//	@Resource
-//	private EntityComprovarHelper entityComprovarHelper;
 
+	
 	@Override
 	public Long crearEntitat(
 			String codi, 
@@ -85,6 +82,7 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			String descripcio, 
 			String cif, 
 			String unitatArrel) {
+		
 		EntitatDto entitat = entitatService.findByCodi(codi);
 		
 		if (entitat == null) {
@@ -126,7 +124,7 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 	}
 
 	@Override
-	public Long crearmetaExpedient(
+	public Long crearMetaExpedient(
 			Long entitatId, 
 			String codi, 
 			String nom, 
@@ -364,11 +362,20 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 		
 		// 1. Creació de l'expedient
 		
+		System.out.println("INICI obtenció d'escritori d'usuari actual.");
+		Long inici = System.currentTimeMillis();
+		
 		// Si no indiquen un pare, ho crearem a l'escriptori
 		if (pareId == null) {
 			EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatId);
 			pareId = escriptori.getId();
 		}
+		
+		Long fi = System.currentTimeMillis();
+		System.out.println("FI obtenció d'escritori d'usuari actual. (" + (fi - inici) + "ms)");
+		
+		System.out.println("INICI creació d'expedient.");
+		inici = fi;
 		
 		// Cream l'expedient
 		ExpedientDto expedient = expedientService.create(
@@ -381,8 +388,14 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 				BustiaContingutPendentTipusEnumDto.EXPEDIENT, // contingutTipus, 
 				null);	// contingutId);
 		
+		fi = System.currentTimeMillis();
+		System.out.println("FI creació d'expedient. (" + (fi - inici) + "ms)");
 		
-		// 2. Modificació de les metadada 1 de l’expedient.
+		
+		// 2. Modificació de la metadada 1 de l’expedient.
+		
+		System.out.println("INICI  Modificació de la metadada 1.");
+		inici = fi;
 		
 		Map<String, Object> valors = new HashMap<String, Object>();
 		valors.put(expedientMetadada1Codi, expedientMetadada1Valor);
@@ -391,7 +404,13 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 				expedient.getId(),
 				valors);
 		
+		fi = System.currentTimeMillis();
+		System.out.println("FI Modificació de la metadada 1. (" + (fi - inici) + "ms)");
+		
 		// 3. Modificació de la metadada 2 de l’expedient.
+		
+		System.out.println("INICI Modificació de la metadada 2.");
+		inici = fi;
 		
 		valors.put(expedientMetadada2Codi, expedientMetadada2Valor);
 		contingutService.dadaSave(
@@ -399,7 +418,14 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 				expedient.getId(),
 				valors);
 		
+		fi = System.currentTimeMillis();
+		System.out.println("FI Modificació de la metadada 2. (" + (fi - inici) + "ms)");
+		
 		// 4. Creació del document a dins l’expedient.
+		
+		System.out.println("INICI Creació del document.");
+		inici = fi;
+		
 		MetaDocumentDto metaDocument = metaDocumentService.findByEntitatCodi(
 				entitatId, 
 				documentTipusCodi);
@@ -432,7 +458,13 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 				document,
 				fitxer);
 		
-		// 5. Modificació de les metadades del document.
+		fi = System.currentTimeMillis();
+		System.out.println("FI Creació del document. (" + (fi - inici) + "ms)");
+		
+		// 5. Modificació de la metadada 1 del document.
+		
+		System.out.println("INICI Modificació de la metadada 1 del document.");
+		inici = fi;
 		
 		Map<String, Object> valorsDoc = new HashMap<String, Object>();
 		valors.put(documentMetadada1Codi, documentMetadada1Valor);
@@ -440,25 +472,48 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 				entitatId,
 				document.getId(),
 				valors);
+		
+		fi = System.currentTimeMillis();
+		System.out.println("FI Modificació de la metadada 1 del document. (" + (fi - inici) + "ms)");
 				
 		// 6. Modificació de la metadada 2 del document.
-				
+			
+		System.out.println("INICI Modificació de la metadada 2 del document.");
+		inici = fi;
+		
 		valorsDoc.put(documentMetadada2Codi, documentMetadada2Valor);
 		contingutService.dadaSave(
 				entitatId,
 				document.getId(),
 				valors);
 		
+		fi = System.currentTimeMillis();
+		System.out.println("FI Modificació de la metadada 2 del document. (" + (fi - inici) + "ms)");
+		
 		// 7. Tancar l’expedient.
+		
+		System.out.println("INICI Tancar l’expedient.");
+		inici = fi;
+		
 		expedientService.tancar(
 				entitatId, 
 				expedient.getId(), 
 				"Proves de rendiment");
 		
+		fi = System.currentTimeMillis();
+		System.out.println("FI Tancar l’expedient. (" + (fi - inici) + "ms)");
+		
 		// 8. Alliberar l’expedient.
+		
+		System.out.println("INICI Alliberar l’expedient.");
+		inici = fi;
+		
 		expedientService.alliberarAdmin(
 				entitatId, 
 				expedient.getId());
+		
+		fi = System.currentTimeMillis();
+		System.out.println("FI Alliberar l’expedient. (" + (fi - inici) + "ms)");
 		
 		return null;
 	}

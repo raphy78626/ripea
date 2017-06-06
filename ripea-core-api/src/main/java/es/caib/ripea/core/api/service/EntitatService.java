@@ -27,7 +27,7 @@ public interface EntitatService {
 	 *            Informació de l'entitat a crear.
 	 * @return L'Entitat creada.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_TESTWS')")
 	public EntitatDto create(EntitatDto entitat);
 
 	/**
@@ -93,7 +93,7 @@ public interface EntitatService {
 	 *            Atribut codi de l'entitat a trobar.
 	 * @return L'entitat amb el codi especificat o null si no s'ha trobat.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_TESTWS')")
 	public EntitatDto findByCodi(String codi);
 
 	/**
@@ -138,7 +138,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_TESTWS')")
 	public void updatePermisSuper(
 			Long id,
 			PermisDto permis) throws NotFoundException;

@@ -35,11 +35,11 @@ import es.caib.ripea.core.service.ws.carregatest.RipeaCarregaTestWsServiceImpl;
 @WebContext(
 		contextRoot = "/ripea/ws",
 		urlPattern = "/ripeaCarregaTest",
-//		authMethod = "WSBASIC",
+		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-//@RolesAllowed({"IPA_TESTWS"})
-//@SecurityDomain("seycon")
+@RolesAllowed({"IPA_TESTWS"})
+@SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService {
 
@@ -95,7 +95,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 	}
 
 	@Override
-	public Long crearmetaExpedient(
+	public Long crearMetaExpedient(
 			Long entitatId, 
 			String codi, 
 			String nom, 
@@ -115,7 +115,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-		return delegate.crearmetaExpedient(
+		return delegate.crearMetaExpedient(
 				entitatId, 
 				codi, 
 				nom, 

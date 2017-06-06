@@ -47,7 +47,7 @@ public interface DocumentService {
 	 * @throws ValidationException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('tothom') or hasRole('IPA_TESTWS')")
 	public DocumentDto create(
 			Long entitatId,
 			Long contenidorId,

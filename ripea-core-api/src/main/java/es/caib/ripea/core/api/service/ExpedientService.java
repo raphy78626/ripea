@@ -51,7 +51,7 @@ public interface ExpedientService {
 	 * @throws NomInvalidException
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('tothom') or hasRole('IPA_TESTWS')")
 	public ExpedientDto create(
 			Long entitatId,
 			Long pareId,
@@ -220,7 +220,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
 	public void alliberarAdmin(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -237,7 +237,7 @@ public interface ExpedientService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('tothom') or hasRole('IPA_TESTWS')")
 	public void tancar(
 			Long entitatId,
 			Long id,

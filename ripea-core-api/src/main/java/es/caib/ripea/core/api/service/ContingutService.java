@@ -62,7 +62,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('tothom') or hasRole('IPA_TESTWS')")
 	public void dadaSave(
 			Long entitatId,
 			Long contingutId,
@@ -185,7 +185,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('tothom') or hasRole('IPA_TESTWS')")
 	public EscriptoriDto getEscriptoriPerUsuariActual(
 			Long entitatId) throws NotFoundException;
 
