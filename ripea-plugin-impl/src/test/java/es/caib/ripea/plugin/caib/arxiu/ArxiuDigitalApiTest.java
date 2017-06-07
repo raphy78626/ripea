@@ -6,7 +6,6 @@ package es.caib.ripea.plugin.caib.arxiu;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -220,7 +219,7 @@ public class ArxiuDigitalApiTest {
 		doc.setEncoding(encoding);
 		doc.setMimetype(mimetype);
 		if (firma != null) {
-		  doc.setListaFirmas(Arrays.asList(firma));
+//		  doc.setListaFirmas(Arrays.asList(firma));
 		}
 		return doc;
 	}
