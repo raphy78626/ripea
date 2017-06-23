@@ -702,6 +702,26 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false);
 	}
+	
+	@Transactional
+	@Override
+	public Long getEscriptoriIdByUsuari(
+			String usuariCodi,
+			Long entitatId) {
+		logger.debug("Obtenint escriptori ("
+				+ "entitatId=" + entitatId + ", "
+				+ "usuariCodi=" + usuariCodi + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		EscriptoriEntity escriptori = contingutHelper.getEscriptoriPerUsuari(
+				entitat,
+				usuariHelper.getUsuariByCodi(usuariCodi));
+		
+		return escriptori.getId();
+	}
 
 	@Transactional(readOnly = true)
 	@Override

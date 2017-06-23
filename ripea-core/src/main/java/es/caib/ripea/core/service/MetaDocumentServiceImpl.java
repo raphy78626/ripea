@@ -553,7 +553,7 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 			Long entitatId,
 			Long id,
 			Long metaNodeMetaDadaId) {
-		logger.debug("Cercant la meta-dada del meta-expedient ("
+		logger.debug("Cercant la meta-dada del meta-document ("
 				+ "entitatId=" + entitatId +  ", "
 				+ "id=" + id +  ", "
 				+ "metaNodeMetaDadaId=" + metaNodeMetaDadaId +  ")");
@@ -573,6 +573,29 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 		return conversioTipusHelper.convertir(
 				metaNodeMetaDada,
 				MetaNodeMetaDadaDto.class);
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public boolean metaDadaExists(
+			Long entitatId,
+			Long metaNodeId,
+			Long metaDadaId) {
+		logger.debug("Comprovant si existeix la meta-dada del meta-document ("
+				+ "entitatId=" + entitatId +  ", "
+				+ "metaNodeId=" + metaNodeId +  ", "
+				+ "metaNodeMetaDadaId=" + metaDadaId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		entityComprovarHelper.comprovarMetaDocument(
+				entitat,
+				metaNodeId,
+				false);
+		MetaNodeMetaDadaEntity metaNodeMetaDada = metaNodeMetaDadaRepository.findByMetaNodeIdAndMetaDadaId(metaNodeId, metaDadaId);
+		return metaNodeMetaDada != null;
 	}
 
 	public List<MetaDadaDto> metaDadaFindGlobals(

@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public class ExpedientDto extends NodeDto {
 
-	public ArxiuDto arxiu;
+	private ArxiuDto arxiu;
 	private ExpedientEstatEnumDto estat;
 	private Date tancatData;
 	private String tancatMotiu;

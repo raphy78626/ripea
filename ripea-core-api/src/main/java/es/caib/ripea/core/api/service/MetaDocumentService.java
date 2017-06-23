@@ -346,6 +346,26 @@ public interface MetaDocumentService {
 			Long entitatId,
 			Long id,
 			Long metaNodeMetaDadaId) throws NotFoundException;
+	
+	/**
+	 * Cerca la meta-dada del meta-document donat l'id del registre
+	 * meta-node meta-dada.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param metaNodeId
+	 *            Atribut id del meta-expedient.
+	 * @param metaDadaId
+	 *            Id de la meta-dada a trobar.
+	 * @return True si existeix la metadada. False en cas contrari
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('IPA_TESTWS')")
+	public boolean metaDadaExists(
+			Long entitatId,
+			Long metaNodeId,
+			Long metaDadaId) throws NotFoundException;
 
 	/**
 	 * Cerca les meta-dades globals pels meta-documents.

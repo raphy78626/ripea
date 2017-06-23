@@ -43,7 +43,7 @@
 			<ws:service bean="#portaFIBCallBackWsImpl"/>
 		</wss:service>
 	</wss:binding>
-	<wss:binding url="/ws/ripeaCarregaTest">
+	<wss:binding url="/ws/ripeacarregatest">
 		<wss:service>
 			<ws:service bean="#ripeaCarregaTestWsServiceImpl"/>
 		</wss:service>

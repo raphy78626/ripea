@@ -3,8 +3,6 @@
  */
 package es.caib.ripea.core.service.ws;
 
-import java.util.Properties;
-
 import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
 
 /**
@@ -13,8 +11,6 @@ import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class CarregaDadesWsInicialitzacio extends CarregaDadesWsBase {
-
-	private Properties properties;
 	
 	public static void main(String[] args) {
 		try {
@@ -38,7 +34,7 @@ public class CarregaDadesWsInicialitzacio extends CarregaDadesWsBase {
 				properties.getProperty("es.caib.ripea.performance.entitat.nom"), 
 				"Entitat per a executar proves de rendiment", 
 				"D28953958", 
-				"A04003000");
+				"A04003003");
 		
 		// Assignam permisos al usuaris per a executar les accions a l'entitat
 		clientCarregaDades.assignaPermisEntitat(
@@ -49,17 +45,17 @@ public class CarregaDadesWsInicialitzacio extends CarregaDadesWsBase {
 				true, 
 				true, 
 				true, 
-				false);
-		
-		clientCarregaDades.assignaPermisEntitat(
-				entitatId, 
-				properties.getProperty("es.caib.ripea.performance.administrador.codi"), 
-				true, 
-				true, 
-				true, 
-				true, 
-				true, 
 				true);
+		
+//		clientCarregaDades.assignaPermisEntitat(
+//				entitatId, 
+//				properties.getProperty("es.caib.ripea.performance.administrador.codi"), 
+//				true, 
+//				true, 
+//				true, 
+//				true, 
+//				true, 
+//				true);
 		
 		// Cream un metaExpedient
 		Long metaExpadientId = clientCarregaDades.crearMetaExpedient(
@@ -81,6 +77,7 @@ public class CarregaDadesWsInicialitzacio extends CarregaDadesWsBase {
 				null);
 
 		// Cream la metadada1 de l'expedient
+		//Long expMetadada1 = 
 		clientCarregaDades.crearExpedientMetadata(
 				entitatId, 
 				metaExpadientId, 
@@ -96,6 +93,7 @@ public class CarregaDadesWsInicialitzacio extends CarregaDadesWsBase {
 				false);
 		
 		// Cream la metadada2 de l'expedient
+		//Long expMetadada2 = 
 		clientCarregaDades.crearExpedientMetadata(
 				entitatId, 
 				metaExpadientId, 
@@ -132,6 +130,7 @@ public class CarregaDadesWsInicialitzacio extends CarregaDadesWsBase {
 				null);
 		
 		// Cream la metadada1 del document
+		//Long docMetadada1 = 
 		clientCarregaDades.crearDocumentMetadata(
 				entitatId, 
 				metaDocumentId, 
@@ -147,6 +146,7 @@ public class CarregaDadesWsInicialitzacio extends CarregaDadesWsBase {
 				false);
 		
 		// Cream la metadada2 del document
+		//Long docMetadada2 = 
 		clientCarregaDades.crearDocumentMetadata(
 				entitatId, 
 				metaDocumentId, 

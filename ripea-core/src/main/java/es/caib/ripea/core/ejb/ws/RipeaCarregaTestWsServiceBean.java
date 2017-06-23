@@ -17,6 +17,8 @@ import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.service.ws.carregatest.RipeaCarregaTestWsServiceImpl;
@@ -44,7 +46,7 @@ import es.caib.ripea.core.service.ws.carregatest.RipeaCarregaTestWsServiceImpl;
 public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService {
 
 	@Autowired
-	private RipeaCarregaTestWsServiceImpl delegate;
+	private RipeaCarregaTestWsService delegate;
 	
 	@Resource
 	private SessionContext sessionContext;
@@ -70,6 +72,11 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 				unitatArrel);
 	}
 
+	@Override
+	public Long getEntitatIdByCodi(String codi) {
+		return delegate.getEntitatIdByCodi(codi);
+	}
+	
 	@Override
 	public void assignaPermisEntitat(
 			Long entitatId, 
@@ -135,7 +142,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 	}
 
 	@Override
-	public void crearExpedientMetadata(
+	public Long crearExpedientMetadata(
 			Long entitatId, 
 			Long metaExpedient, 
 			String codi, 
@@ -151,7 +158,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-		delegate.crearExpedientMetadata(
+		return delegate.crearExpedientMetadata(
 				entitatId, 
 				metaExpedient, 
 				codi, 
@@ -211,7 +218,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 	}
 
 	@Override
-	public void crearDocumentMetadata(
+	public Long crearDocumentMetadata(
 			Long entitatId, 
 			Long documentTipus, 
 			String codi, 
@@ -227,7 +234,7 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-		delegate.crearDocumentMetadata(
+		return delegate.crearDocumentMetadata(
 				entitatId, 
 				documentTipus, 
 				codi, 
@@ -257,33 +264,46 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 	}
 
 	@Override
-	public Long crearExpedient(
+	public Long crearAnotacio(String oficinaCodi, String llibreCodi, String destinatariCodi) {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		return delegate.crearAnotacio(
+				oficinaCodi, 
+				llibreCodi, 
+				destinatariCodi);
+	}
+
+	@Override
+	public Long getEscriptoriId(Long entitatId, String usuariCodi) {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		return delegate.getEscriptoriId(entitatId, usuariCodi);
+	}
+
+	@Override
+	public Long getArxiuIdByNom(
+			Long entitatId, 
+			String unitatCodi, 
+			String arxiuNom) {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		return delegate.getArxiuIdByNom(
+				entitatId, 
+				unitatCodi, 
+				arxiuNom);
+	}
+
+	@Override
+	public ExpedientDto crearExpedient(
 			Long entitatId, 
 			Long pareId, 
 			Long metaExpedientCodi, 
 			Long arxiuId, 
 			Integer any,
-			String nom, 
-			String expedientMetadata1Codi, 
-			Object expedientMetadada1Valor,
-			String expedientMetadata2Codi, 
-			Object expedientMetadada2Valor,
-			String documentTipusCodi,
-			String documentTipus,
-			String fitxerNomOriginal,
-			String fitxerContentType,
-			byte[] fitxerContingut,
-			String documentTitol,
-			Date documentData,
-			String documentUbicacio,
-			String documentNtiOrgan,
-			String documentNtiOrigen,
-			String documentNtiEstat,
-			String documentNtiTipusDoc,
-			String documentMetadada1Codi,
-			Object documentMetadada1Valor,
-			String documentMetadada2Codi,
-			Object documentMetadada2Valor) {
+			String nom) {
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
@@ -293,38 +313,157 @@ public class RipeaCarregaTestWsServiceBean implements RipeaCarregaTestWsService 
 				metaExpedientCodi, 
 				arxiuId, 
 				any, 
-				nom, 
-				expedientMetadata1Codi, 
-				expedientMetadada1Valor,
-				expedientMetadata2Codi, 
-				expedientMetadada2Valor,
-				documentTipusCodi, 
-				documentTipus,
-				fitxerNomOriginal,
-				fitxerContentType,
-				fitxerContingut,
-				documentTitol,
-				documentData,
-				documentUbicacio,
-				documentNtiOrgan,
-				documentNtiOrigen,
-				documentNtiEstat,
-				documentNtiTipusDoc,
-				documentMetadada1Codi,
-				documentMetadada1Valor,
-				documentMetadada2Codi,
-				documentMetadada2Valor);
+				nom);
 	}
 
 	@Override
-	public Long crearAnotacio(String oficinaCodi, String llibreCodi, String destinatariCodi) {
+	public void modificarMetadadaExpedient(
+			Long entitatId, 
+			Long expedientId, 
+			String expedientMetadadaCodi,
+			Object expedientMetadadaValor) {
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-		return delegate.crearAnotacio(
-				oficinaCodi, 
-				llibreCodi, 
-				destinatariCodi);
+		delegate.modificarMetadadaExpedient(
+				entitatId, 
+				expedientId, 
+				expedientMetadadaCodi, 
+				expedientMetadadaValor);
+	}
+
+	@Override
+	public DocumentDto crearDocumentExpedient(
+			Long entitatId, 
+			Long expedientId, 
+			String documentTipusCodi,
+			String documentTipus, 
+			String fitxerNomOriginal, 
+			String fitxerContentType, 
+			byte[] fitxerContingut,
+			String documentTitol, 
+			Date documentData, 
+			String documentUbicacio, 
+			String documentNtiOrgan,
+			String documentNtiOrigen, 
+			String documentNtiEstat, 
+			String documentNtiTipusDoc) {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		return delegate.crearDocumentExpedient(
+				entitatId, 
+				expedientId, 
+				documentTipusCodi, 
+				documentTipus, 
+				fitxerNomOriginal, 
+				fitxerContentType, 
+				fitxerContingut, 
+				documentTitol, 
+				documentData, 
+				documentUbicacio, 
+				documentNtiOrgan, 
+				documentNtiOrigen, 
+				documentNtiEstat, 
+				documentNtiTipusDoc);
+	}
+
+	@Override
+	public void modificarMetadadaDocument(
+			Long entitatId, 
+			Long documentId, 
+			String documentMetadadaCodi,
+			Object documentMetadadaValor) {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		delegate.modificarMetadadaDocument(
+				entitatId, 
+				documentId, 
+				documentMetadadaCodi, 
+				documentMetadadaValor);
+	}
+
+	@Override
+	public void tancarExpedient(
+			Long entitatId, 
+			Long expedientId, 
+			String missatge) {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		delegate.tancarExpedient(
+				entitatId, 
+				expedientId, 
+				missatge);
+	}
+
+	@Override
+	public void alliberarExpedient(Long entitatId, Long expedientId) {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		delegate.alliberarExpedient(entitatId, expedientId);
+	}
+
+	@Override
+	public Long crearExpedientRendiment(
+			Long entitatId, 
+			Long pareId, 
+			Long metaExpedientCodi, 
+			Long arxiuId, 
+			Integer any,
+			String nom, 
+			String expedientMetadata1Codi, 
+			Object expedientMetadada1Valor, 
+			String expedientMetadata2Codi,
+			Object expedientMetadada2Valor, 
+			String documentTipusCodi, 
+			String documentTipus, 
+			String fitxerNomOriginal,
+			String fitxerContentType, 
+			byte[] fitxerContingut, 
+			String documentTitol, 
+			Date documentData,
+			String documentUbicacio, 
+			String documentNtiOrgan, 
+			String documentNtiOrigen, 
+			String documentNtiEstat,
+			String documentNtiTipusDoc, 
+			String documentMetadada1Codi, 
+			Object documentMetadada1Valor,
+			String documentMetadada2Codi, 
+			Object documentMetadada2Valor) {
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
+		return delegate.crearExpedientRendiment(
+				entitatId, 
+				pareId, 
+				metaExpedientCodi, 
+				arxiuId, 
+				any, 
+				nom, 
+				expedientMetadata1Codi, 
+				expedientMetadada1Valor, 
+				expedientMetadata2Codi, 
+				expedientMetadada2Valor, 
+				documentTipusCodi, 
+				documentTipus, 
+				fitxerNomOriginal, 
+				fitxerContentType, 
+				fitxerContingut, 
+				documentTitol, 
+				documentData, 
+				documentUbicacio, 
+				documentNtiOrgan, 
+				documentNtiOrigen, 
+				documentNtiEstat, 
+				documentNtiTipusDoc, 
+				documentMetadada1Codi, 
+				documentMetadada1Valor, 
+				documentMetadada2Codi, 
+				documentMetadada2Valor);
 	}
 
 }

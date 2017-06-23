@@ -547,6 +547,30 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaNodeMetaDada,
 				MetaNodeMetaDadaDto.class);
 	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public boolean metaDadaExists(
+			Long entitatId,
+			Long metaNodeId,
+			Long metaDadaId) {
+		logger.debug("Comprovant si existeix la meta-dada del meta-expedient ("
+				+ "entitatId=" + entitatId +  ", "
+				+ "metaNodeId=" + metaNodeId +  ", "
+				+ "metaDadaId=" + metaDadaId +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		entityComprovarHelper.comprovarMetaExpedient(
+				entitat,
+				metaNodeId,
+				false,
+				false);
+		MetaNodeMetaDadaEntity metaNodeMetaDada = metaNodeMetaDadaRepository.findByMetaNodeIdAndMetaDadaId(metaNodeId, metaDadaId);
+		return metaNodeMetaDada != null;
+	}
 
 	public List<MetaDadaDto> metaDadaFindGlobals(
 			Long entitatId) throws NotFoundException {

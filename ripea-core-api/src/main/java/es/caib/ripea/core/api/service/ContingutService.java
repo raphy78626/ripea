@@ -189,6 +189,22 @@ public interface ContingutService {
 	public EscriptoriDto getEscriptoriPerUsuariActual(
 			Long entitatId) throws NotFoundException;
 
+	
+	/**
+	 * Obté l'identificador de l'escriptori d'un usuari.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param usuariCodi
+	 * 			  Codi de l'usuari
+	 * @return l'objecte que representa l'escriptori.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom') or hasRole('IPA_TESTWS')")
+	public Long getEscriptoriIdByUsuari(
+			String usuariCodi,
+			Long entitatId) throws NotFoundException;
 	/**
 	 * Obté la informació del contingut especificat.
 	 * 

@@ -206,6 +206,15 @@ public class MetaDocumentServiceBean implements MetaDocumentService {
 			Long metaNodeMetaDadaId) {
 		return delegate.metaDadaFind(entitatId, id, metaNodeMetaDadaId);
 	}
+	
+	@Override
+	@RolesAllowed({"IPA_ADMIN", "IPA_TESTWS"})
+	public boolean metaDadaExists(
+			Long entitatId,
+			Long metaNodeId,
+			Long metaDadaId) throws NotFoundException {
+		return delegate.metaDadaExists(entitatId, metaNodeId, metaDadaId);
+	}
 
 	@Override
 	@RolesAllowed("IPA_ADMIN")

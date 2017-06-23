@@ -11,9 +11,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.jws.WebService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
@@ -30,10 +29,10 @@ import es.caib.ripea.core.api.dto.MetaDadaDto;
 import es.caib.ripea.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
 import es.caib.ripea.core.api.dto.MetaExpedientDto;
-import es.caib.ripea.core.api.dto.MetaNodeMetaDadaDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.PrincipalTipusEnumDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
@@ -43,6 +42,9 @@ import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
+import es.caib.ripea.core.entity.ArxiuEntity;
+import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.helper.UsuariHelper;
 
 /**
  * Implementació dels mètodes per al servei de callback del portafirmes.
@@ -57,6 +59,9 @@ import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
 		targetNamespace = "http://www.caib.es/ripea/ws/ripeacarregatest")
 public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService {
 
+//	@Resource
+//	private MetaDadaRepository metaDadaRepository;
+	
 	@Resource
 	private EntitatService entitatService;
 	@Resource
@@ -73,8 +78,11 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 	private ArxiuService arxiuService;
 	@Resource
 	private DocumentService documentService;
+	@Resource
+	private UsuariHelper usuariHelper;
 
 	
+	@Transactional
 	@Override
 	public Long crearEntitat(
 			String codi, 
@@ -97,7 +105,23 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 		}
 		return entitat.getId();
 	}
+	
+	@Transactional(readOnly=true)
+	@Override
+	public Long getEntitatIdByCodi(String codi) {
+		
+		EntitatDto entitat = entitatService.findByCodi(codi);
+		
+		if (entitat != null) {
+			return entitat.getId();
+		}
+		
+		throw new NotFoundException(
+				codi,
+				EntitatEntity.class);
+	}
 
+	@Transactional
 	@Override
 	public void assignaPermisEntitat(
 			Long entitatId, 
@@ -122,7 +146,39 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 				entitatId, 
 				permis);
 	}
+	
+	@Transactional(readOnly=true)
+	@Override
+	public Long getEscriptoriId(
+			Long entitatId,
+			String usuariCodi) {
+		return contingutService.getEscriptoriIdByUsuari(
+				usuariCodi, 
+				entitatId);
+	}
+	
+	@Transactional(readOnly=true)
+	@Override
+	public Long getArxiuIdByNom(
+			Long entitatId,
+			String unitatCodi,
+			String arxiuNom) {
+		
+		List<ArxiuDto> arxius = arxiuService.findByUnitatCodiAdmin(
+				entitatId, 
+				unitatCodi);
+		
+		for (ArxiuDto arxiu: arxius) {
+			if (arxiu.getNom().equals(arxiuNom))
+				return arxiu.getId();
+		}
 
+		throw new NotFoundException(
+				arxiuNom,
+				ArxiuEntity.class);
+	}
+
+	@Transactional
 	@Override
 	public Long crearMetaExpedient(
 			Long entitatId, 
@@ -141,6 +197,10 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			String notificacioOficiTitol, 
 			String notificacioOficiText, 
 			Long pareId) {
+		
+//		// TODO: Eliminar aquesta línia!!!! -> Autentica un usuari en Tomcat
+//		usuariHelper.autenticaTest();
+
 		
 		MetaExpedientDto metaExpedient = metaExpedientService.findByEntitatCodi(entitatId, codi);
 		
@@ -167,8 +227,9 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 		return metaExpedient.getId();
 	}
 
+	@Transactional
 	@Override
-	public void crearExpedientMetadata(
+	public Long crearExpedientMetadata(
 			Long entitatId, 
 			Long metaExpedient, 
 			String codi, 
@@ -181,7 +242,7 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			boolean globalReadOnly, 
 			String expedientMultiplicitat,
 			boolean readOnly) {
-		
+
 		MetaDadaDto metaDada = metaDadaService.findByEntitatCodi(entitatId, codi);
 		
 		if (metaDada == null) {
@@ -200,8 +261,8 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 					metaDada);
 		}
 		
-		MetaNodeMetaDadaDto mde = metaExpedientService.metaDadaFind(entitatId, metaExpedient, metaDada.getId());
-		if (mde == null) {
+		
+		if (!metaExpedientService.metaDadaExists(entitatId, metaExpedient, metaDada.getId())) {
 			metaExpedientService.metaDadaCreate(
 					entitatId, 
 					metaExpedient, 
@@ -209,8 +270,10 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 					MultiplicitatEnumDto.valueOf(expedientMultiplicitat), 
 					readOnly);
 		}
+		return metaDada.getId();
 	}
 
+	@Transactional
 	@Override
 	public Long crearDocumentTipus(
 			Long entitatId, 
@@ -261,8 +324,9 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 		return metaDocument.getId();
 	}
 
+	@Transactional
 	@Override
-	public void crearDocumentMetadata(
+	public Long crearDocumentMetadata(
 			Long entitatId, 
 			Long documentTipus, 
 			String codi, 
@@ -294,8 +358,7 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 					metaDada);
 		}
 		
-		MetaNodeMetaDadaDto mde = metaDocumentService.metaDadaFind(entitatId, documentTipus, metaDada.getId());
-		if (mde == null) {
+		if (!metaDocumentService.metaDadaExists(entitatId, documentTipus, metaDada.getId())) {
 			metaDocumentService.metaDadaCreate(
 					entitatId, 
 					documentTipus, 
@@ -304,13 +367,16 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 					readOnly);
 		}
 		
+		return metaDada.getId();
 	}
 
+	@Transactional
 	@Override
 	public Long crearArxiu(
 			Long entitatId,
 			String nom,
 			String unitatCodi){
+		
 		ArxiuDto arxiu = null;
 		List<ArxiuDto> arxius = arxiuService.findByUnitatCodiAdmin(entitatId, unitatCodi);
 		for (ArxiuDto a: arxius) {
@@ -331,36 +397,15 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 		return arxiu.getId();
 	}
 	
+	@Transactional
 	@Override
-	public Long crearExpedient(
+	public ExpedientDto crearExpedient(
 			Long entitatId, 
 			Long pareId, 
-			Long metaExpedientCodi, 
+			Long metaExpedientCodi,
 			Long arxiuId, 
 			Integer any,
-			String nom, 
-			String expedientMetadada1Codi,
-			Object expedientMetadada1Valor,
-			String expedientMetadada2Codi, 
-			Object expedientMetadada2Valor,
-			String documentTipusCodi,
-			String documentTipus, 
-			String fitxerNomOriginal,
-			String fitxerContentType,
-			byte[] fitxerContingut,
-			String documentTitol,
-			Date documentData,
-			String documentUbicacio,
-			String documentNtiOrgan,
-			String documentNtiOrigen,
-			String documentNtiEstat,
-			String documentNtiTipusDoc,
-			String documentMetadada1Codi,
-			Object documentMetadada1Valor,
-			String documentMetadada2Codi,
-			Object documentMetadada2Valor) {
-		
-		// 1. Creació de l'expedient
+			String nom) {
 		
 		System.out.println("INICI obtenció d'escritori d'usuari actual.");
 		Long inici = System.currentTimeMillis();
@@ -391,40 +436,52 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 		fi = System.currentTimeMillis();
 		System.out.println("FI creació d'expedient. (" + (fi - inici) + "ms)");
 		
-		
-		// 2. Modificació de la metadada 1 de l’expedient.
+		return expedient;
+	}
+	
+	@Transactional
+	@Override
+	public void modificarMetadadaExpedient(
+			Long entitatId,
+			Long expedientId,
+			String expedientMetadadaCodi,
+			Object expedientMetadadaValor) {
 		
 		System.out.println("INICI  Modificació de la metadada 1.");
-		inici = fi;
+		Long inici = System.currentTimeMillis();
 		
 		Map<String, Object> valors = new HashMap<String, Object>();
-		valors.put(expedientMetadada1Codi, expedientMetadada1Valor);
+		valors.put(expedientMetadadaCodi, expedientMetadadaValor);
 		contingutService.dadaSave(
 				entitatId,
-				expedient.getId(),
+				expedientId,
 				valors);
 		
-		fi = System.currentTimeMillis();
+		Long fi = System.currentTimeMillis();
 		System.out.println("FI Modificació de la metadada 1. (" + (fi - inici) + "ms)");
 		
-		// 3. Modificació de la metadada 2 de l’expedient.
-		
-		System.out.println("INICI Modificació de la metadada 2.");
-		inici = fi;
-		
-		valors.put(expedientMetadada2Codi, expedientMetadada2Valor);
-		contingutService.dadaSave(
-				entitatId,
-				expedient.getId(),
-				valors);
-		
-		fi = System.currentTimeMillis();
-		System.out.println("FI Modificació de la metadada 2. (" + (fi - inici) + "ms)");
-		
-		// 4. Creació del document a dins l’expedient.
+	}
+	
+	@Transactional
+	@Override
+	public DocumentDto crearDocumentExpedient(
+			Long entitatId,
+			Long expedientId,
+			String documentTipusCodi,
+			String documentTipus, 
+			String fitxerNomOriginal,
+			String fitxerContentType,
+			byte[] fitxerContingut,
+			String documentTitol,
+			Date documentData,
+			String documentUbicacio,
+			String documentNtiOrgan,
+			String documentNtiOrigen,
+			String documentNtiEstat,
+			String documentNtiTipusDoc) {
 		
 		System.out.println("INICI Creació del document.");
-		inici = fi;
+		Long inici = System.currentTimeMillis();
 		
 		MetaDocumentDto metaDocument = metaDocumentService.findByEntitatCodi(
 				entitatId, 
@@ -454,79 +511,187 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 		
 		document = documentService.create(
 				entitatId,
-				expedient.getId(),
+				expedientId,
 				document,
 				fitxer);
 		
-		fi = System.currentTimeMillis();
+		Long fi = System.currentTimeMillis();
 		System.out.println("FI Creació del document. (" + (fi - inici) + "ms)");
 		
-		// 5. Modificació de la metadada 1 del document.
+		return document;
 		
+	}
+	
+	@Transactional
+	@Override
+	public void modificarMetadadaDocument(
+			Long entitatId,
+			Long documentId,
+			String documentMetadadaCodi,
+			Object documentMetadadaValor) {
+	
 		System.out.println("INICI Modificació de la metadada 1 del document.");
-		inici = fi;
+		Long inici = System.currentTimeMillis();
 		
 		Map<String, Object> valorsDoc = new HashMap<String, Object>();
-		valors.put(documentMetadada1Codi, documentMetadada1Valor);
+		valorsDoc.put(documentMetadadaCodi, documentMetadadaValor);
 		contingutService.dadaSave(
 				entitatId,
-				document.getId(),
-				valors);
+				documentId,
+				valorsDoc);
 		
-		fi = System.currentTimeMillis();
+		Long fi = System.currentTimeMillis();
 		System.out.println("FI Modificació de la metadada 1 del document. (" + (fi - inici) + "ms)");
-				
-		// 6. Modificació de la metadada 2 del document.
-			
-		System.out.println("INICI Modificació de la metadada 2 del document.");
-		inici = fi;
 		
-		valorsDoc.put(documentMetadada2Codi, documentMetadada2Valor);
-		contingutService.dadaSave(
-				entitatId,
-				document.getId(),
-				valors);
-		
-		fi = System.currentTimeMillis();
-		System.out.println("FI Modificació de la metadada 2 del document. (" + (fi - inici) + "ms)");
-		
-		// 7. Tancar l’expedient.
+	}
+	
+	@Transactional
+	@Override
+	public void tancarExpedient(
+			Long entitatId, 
+			Long expedientId, 
+			String missatge) {
 		
 		System.out.println("INICI Tancar l’expedient.");
-		inici = fi;
+		Long inici = System.currentTimeMillis();
 		
 		expedientService.tancar(
+				entitatId, 
+				expedientId, 
+				missatge);
+		
+		Long fi = System.currentTimeMillis();
+		System.out.println("FI Tancar l’expedient. (" + (fi - inici) + "ms)");
+		
+	}
+	
+	@Transactional
+	@Override
+	public void alliberarExpedient(
+			Long entitatId, 
+			Long expedientId) {
+		
+		System.out.println("INICI Alliberar l’expedient.");
+		Long inici = System.currentTimeMillis();
+		
+		expedientService.alliberarAdmin(
+				entitatId, 
+				expedientId);
+		
+		Long fi = System.currentTimeMillis();
+		System.out.println("FI Alliberar l’expedient. (" + (fi - inici) + "ms)");
+		
+	}
+
+	@Transactional
+	@Override
+	public Long crearExpedientRendiment(
+			Long entitatId, 
+			Long pareId, 
+			Long metaExpedientCodi, 
+			Long arxiuId, 
+			Integer any,
+			String nom, 
+			String expedientMetadada1Codi,
+			Object expedientMetadada1Valor,
+			String expedientMetadada2Codi, 
+			Object expedientMetadada2Valor,
+			String documentTipusCodi,
+			String documentTipus, 
+			String fitxerNomOriginal,
+			String fitxerContentType,
+			byte[] fitxerContingut,
+			String documentTitol,
+			Date documentData,
+			String documentUbicacio,
+			String documentNtiOrgan,
+			String documentNtiOrigen,
+			String documentNtiEstat,
+			String documentNtiTipusDoc,
+			String documentMetadada1Codi,
+			Object documentMetadada1Valor,
+			String documentMetadada2Codi,
+			Object documentMetadada2Valor) {
+		
+		// 1. Creació de l'expedient
+		ExpedientDto expedient = crearExpedient(
+				entitatId, 
+				pareId, 
+				metaExpedientCodi,
+				arxiuId, 
+				any,
+				nom);
+		
+		// 2. Modificació de la metadada 1 de l’expedient.
+		modificarMetadadaExpedient(
+				entitatId,
+				expedient.getId(),
+				expedientMetadada1Codi,
+				expedientMetadada1Valor);
+		
+		// 3. Modificació de la metadada 2 de l’expedient.
+		modificarMetadadaExpedient(
+				entitatId,
+				expedient.getId(),
+				expedientMetadada2Codi,
+				expedientMetadada2Valor);
+		
+		// 4. Creació del document a dins l’expedient.
+		DocumentDto document = crearDocumentExpedient(
+				entitatId,
+				expedient.getId(),
+				documentTipusCodi,
+				documentTipus, 
+				fitxerNomOriginal,
+				fitxerContentType,
+				fitxerContingut,
+				documentTitol,
+				documentData,
+				documentUbicacio,
+				documentNtiOrgan,
+				documentNtiOrigen,
+				documentNtiEstat,
+				documentNtiTipusDoc);
+		
+		// 5. Modificació de la metadada 1 del document.
+		modificarMetadadaDocument(
+				entitatId,
+				document.getId(),
+				documentMetadada1Codi,
+				documentMetadada1Valor);
+		
+		// 6. Modificació de la metadada 2 del document.
+		modificarMetadadaDocument(
+				entitatId,
+				document.getId(),
+				documentMetadada2Codi,
+				documentMetadada2Valor);
+		
+		// 7. Tancar l’expedient.
+		tancarExpedient(
 				entitatId, 
 				expedient.getId(), 
 				"Proves de rendiment");
 		
-		fi = System.currentTimeMillis();
-		System.out.println("FI Tancar l’expedient. (" + (fi - inici) + "ms)");
-		
 		// 8. Alliberar l’expedient.
-		
-		System.out.println("INICI Alliberar l’expedient.");
-		inici = fi;
-		
-		expedientService.alliberarAdmin(
+		alliberarExpedient(
 				entitatId, 
 				expedient.getId());
 		
-		fi = System.currentTimeMillis();
-		System.out.println("FI Alliberar l’expedient. (" + (fi - inici) + "ms)");
-		
-		return null;
+		return expedient.getId();
 	}
 
+	@Transactional
 	@Override
 	public Long crearAnotacio(
 			String oficinaCodi, 
 			String llibreCodi, 
 			String destinatariCodi) {
+		
 		// TODO 
 		return null;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(RipeaCarregaTestWsServiceImpl.class);
+//	private static final Logger logger = LoggerFactory.getLogger(RipeaCarregaTestWsServiceImpl.class);
 
 }

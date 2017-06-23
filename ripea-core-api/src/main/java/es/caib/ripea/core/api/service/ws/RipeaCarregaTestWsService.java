@@ -10,6 +10,9 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlElement;
 
+import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.ExpedientDto;
+
 
 /**
  * Declaració dels mètodes per al servei per a carregar dades per 
@@ -31,6 +34,8 @@ public interface RipeaCarregaTestWsService {
 			String cif,
 			String unitatArrel);
 	
+	public Long getEntitatIdByCodi(String codi);
+	
 	public void assignaPermisEntitat(
 			Long entitatId,
 			String nom,
@@ -40,6 +45,15 @@ public interface RipeaCarregaTestWsService {
 			boolean create,
 			boolean delete,
 			boolean administration);
+	
+	public Long getEscriptoriId(
+			Long entitatId,
+			String usuariCodi);
+	
+	public Long getArxiuIdByNom(
+			Long entitatId,
+			String unitatCodi,
+			String arxiuNom);
 	
 	public Long crearMetaExpedient(
 			Long entitatId,
@@ -59,7 +73,7 @@ public interface RipeaCarregaTestWsService {
 			String notificacioOficiText,
 			Long pareId);
 	
-	public void crearExpedientMetadata(
+	public Long crearExpedientMetadata(
 			Long entitatId,
 			Long metaExpedient,
 			String codi,
@@ -93,7 +107,7 @@ public interface RipeaCarregaTestWsService {
 			String plantillaContentType,
 			byte[] plantillaContingut);
 	
-	public void crearDocumentMetadata(
+	public Long crearDocumentMetadata(
 			Long entitatId,
 			Long documentTipus,
 			String codi,
@@ -112,27 +126,25 @@ public interface RipeaCarregaTestWsService {
 			String nom,
 			String unitatCodi);
 	
-	/**
-	 * Crea un expedient.
-	 * 
-	 * @param registreEntrada
-	 *            Dades de l'anotació al registre d'entrada.
-	 * @return l'identificador de l'expedient creat.
-	 */
-	@WebMethod
-	public Long crearExpedient(
-			Long entitatId,
-			Long pareId,
+	public ExpedientDto crearExpedient(
+			Long entitatId, 
+			Long pareId, 
 			Long metaExpedientCodi,
-			Long arxiuId,
+			Long arxiuId, 
 			Integer any,
-			String nom,
-			String expedientMetadata1Codi, 
-			Object expedientMetadada1Valor,
-			String expedientMetadata2Codi, 
-			Object expedientMetadada2Valor,
+			String nom);
+	
+	public void modificarMetadadaExpedient(
+			Long entitatId,
+			Long expedientId,
+			String expedientMetadadaCodi,
+			Object expedientMetadadaValor);
+	
+	public DocumentDto crearDocumentExpedient(
+			Long entitatId,
+			Long expedientId,
 			String documentTipusCodi,
-			String documentTipus,
+			String documentTipus, 
 			String fitxerNomOriginal,
 			String fitxerContentType,
 			byte[] fitxerContingut,
@@ -142,11 +154,59 @@ public interface RipeaCarregaTestWsService {
 			String documentNtiOrgan,
 			String documentNtiOrigen,
 			String documentNtiEstat,
-			String documentNtiTipusDoc,
-			String documentMetadada1Codi,
-			Object documentMetadada1Valor,
-			String documentMetadada2Codi,
-			Object documentMetadada2Valor);
+			String documentNtiTipusDoc);
+	
+	public void modificarMetadadaDocument(
+			Long entitatId,
+			Long documentId,
+			String documentMetadadaCodi,
+			Object documentMetadadaValor);
+	
+	public void tancarExpedient(
+			Long entitatId, 
+			Long expedientId, 
+			String missatge);
+	
+	public void alliberarExpedient(
+			Long entitatId, 
+			Long expedientId);
+	
+	
+	/**
+	 * Crea un expedient.
+	 * 
+	 * @param registreEntrada
+	 *            Dades de l'anotació al registre d'entrada.
+	 * @return l'identificador de l'expedient creat.
+	 */
+	@WebMethod
+	public Long crearExpedientRendiment(
+			@WebParam(name="entitatId") 				@XmlElement(required=true) 	Long entitatId,
+			@WebParam(name="pareId") 					@XmlElement(required=false) Long pareId,
+			@WebParam(name="metaExpedientCodi") 		@XmlElement(required=true) 	Long metaExpedientCodi,
+			@WebParam(name="arxiuId") 					@XmlElement(required=true) 	Long arxiuId,
+			@WebParam(name="any") 						@XmlElement(required=true)	Integer any,
+			@WebParam(name="nom") 						@XmlElement(required=true)	String nom,
+			@WebParam(name="expedientMetadata1Codi") 	@XmlElement(required=true) 	String expedientMetadata1Codi, 
+			@WebParam(name="expedientMetadada1Valor")	@XmlElement(required=false)	Object expedientMetadada1Valor,
+			@WebParam(name="expedientMetadata2Codi")	@XmlElement(required=true) 	String expedientMetadata2Codi, 
+			@WebParam(name="expedientMetadada2Valor") 	@XmlElement(required=false)	Object expedientMetadada2Valor,
+			@WebParam(name="documentTipusCodi") 		@XmlElement(required=true) 	String documentTipusCodi,
+			@WebParam(name="documentTipus") 			@XmlElement(required=true) 	String documentTipus,
+			@WebParam(name="fitxerNomOriginal") 		@XmlElement(required=false)	String fitxerNomOriginal,
+			@WebParam(name="fitxerContentType") 		@XmlElement(required=false)	String fitxerContentType,
+			@WebParam(name="fitxerContingut") 			@XmlElement(required=false)	byte[] fitxerContingut,
+			@WebParam(name="documentTitol") 			@XmlElement(required=true) 	String documentTitol,
+			@WebParam(name="documentData") 				@XmlElement(required=true) 	Date documentData,
+			@WebParam(name="documentUbicacio") 			@XmlElement(required=false)	String documentUbicacio,
+			@WebParam(name="documentNtiOrgan") 			@XmlElement(required=false)	String documentNtiOrgan,
+			@WebParam(name="documentNtiOrigen") 		@XmlElement(required=false)	String documentNtiOrigen,
+			@WebParam(name="documentNtiEstat") 			@XmlElement(required=false)	String documentNtiEstat,
+			@WebParam(name="documentNtiTipusDoc") 		@XmlElement(required=false)	String documentNtiTipusDoc,
+			@WebParam(name="documentMetadada1Codi") 	@XmlElement(required=true) 	String documentMetadada1Codi,
+			@WebParam(name="documentMetadada1Valor") 	@XmlElement(required=false)	Object documentMetadada1Valor,
+			@WebParam(name="documentMetadada2Codi") 	@XmlElement(required=true) 	String documentMetadada2Codi,
+			@WebParam(name="documentMetadada2Valor") 	@XmlElement(required=false)	Object documentMetadada2Valor);
 	
 	/**
 	 * Crea una anotació de registre.
@@ -160,5 +220,6 @@ public interface RipeaCarregaTestWsService {
 			@WebParam(name="oficinaCodi") 			@XmlElement(required=true) String oficinaCodi,
 			@WebParam(name="llibreCodi") 			@XmlElement(required=true) String llibreCodi,
 			@WebParam(name="destinatariCodi") 		@XmlElement(required=true) String destinatariCodi);
+
 
 }

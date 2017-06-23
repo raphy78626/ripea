@@ -50,7 +50,7 @@ public class CarregaDadesWsBase {
 	
 	protected RipeaCarregaTestWsService getCarregaDadesService() throws Exception {
 		return new WsClientHelper<RipeaCarregaTestWsService>().generarClientWs(
-				getClass().getResource("/es/caib/ripea/core/service/ws/carregaTest/ripeaCarregaTest.wsdl"),
+				getClass().getResource("/es/caib/ripea/core/service/ws/carregatest/ripeaCarregaTest.wsdl"),
 				properties.getProperty("es.caib.ripea.performance.endpoint.address"),
 				new QName(
 						"http://www.caib.es/ripea/ws/ripeacarregatest",

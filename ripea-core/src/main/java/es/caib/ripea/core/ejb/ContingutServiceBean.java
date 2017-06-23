@@ -117,6 +117,16 @@ public class ContingutServiceBean implements ContingutService {
 			Long entitatId) {
 		return delegate.getEscriptoriPerUsuariActual(entitatId);
 	}
+	
+	@Override
+	@RolesAllowed({"tothom", "IPA_TESTWS"})
+	public Long getEscriptoriIdByUsuari(
+			String usuariCodi, 
+			Long entitatId) throws NotFoundException {
+		return delegate.getEscriptoriIdByUsuari(
+				usuariCodi, 
+				entitatId);
+	}
 
 	@Override
 	@RolesAllowed("tothom")

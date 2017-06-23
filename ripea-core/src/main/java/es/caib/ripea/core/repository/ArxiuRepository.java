@@ -22,7 +22,11 @@ public interface ArxiuRepository extends JpaRepository<ArxiuEntity, Long> {
 
 	List<ArxiuEntity> findByEntitatAndActiuTrue(EntitatEntity entitat);
 	List<ArxiuEntity> findByEntitatAndPareNotNull(EntitatEntity entitat);
-
+	List<ArxiuEntity> findByEntitatAndUnitatCodiAndNom(
+			EntitatEntity entitat,
+			String unitatCodi,
+			String arxiuNom);
+	
 	List<ArxiuEntity> findByEntitatAndUnitatCodiAndPareNotNull(
 			EntitatEntity entitat,
 			String unitatCodi);
