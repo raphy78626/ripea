@@ -66,6 +66,11 @@ public class ExecucioMassivaEntity extends RipeaAuditable<Long> {
 	@OneToMany(mappedBy = "execucioMassiva", cascade = {CascadeType.ALL})
 	private List<ExecucioMassivaContingutEntity> continguts = new ArrayList<ExecucioMassivaContingutEntity>();
 	
+	public void updateDataFi(
+			Date dataFi) {
+		this.dataFi = dataFi;
+	}
+	
 	public static Builder getBuilder(
 			ExecucioMassivaTipus tipus,
 			Date dataInici,

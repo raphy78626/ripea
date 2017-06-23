@@ -29,4 +29,18 @@ public interface ExecucioMassivaService {
 	@PreAuthorize("hasRole('tothom')")
 	public void crearExecucioMassiva(ExecucioMassivaDto dto) throws NotFoundException, ValidationException;
 	
+	/**
+	 * Retorna l'ID de la pròxima execució massiva activa
+	 * 
+	 * @param ultimaExecucioMassiva
+	 *            Dto amb la informació de l'execució massiva a programar
+	 */
+	public Long getExecucionsMassivesActiva(Long ultimaExecucioMassiva);
+	
+	/**
+	 * Executa un contingut massiu
+	 * 
+	 * @param cmasiu_id id del contingut massiu a executar
+	 */
+	public void executarExecucioMassiva(Long cmasiu_id) throws NotFoundException, ValidationException;
 }
