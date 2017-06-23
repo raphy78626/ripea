@@ -21,6 +21,7 @@ import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
+import es.caib.ripea.core.api.dto.ContingutMassiuFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -285,6 +286,20 @@ public class ContingutServiceBean implements ContingutService {
 	@RolesAllowed("tothom")
 	public boolean marcarProcessat(Long entitatId, Long contingutId, String text) throws NotFoundException {
 		return delegate.marcarProcessat(entitatId, contingutId, text);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<ContingutDto> contingutMassiuFindByDatatable(Long entitatId, ContingutMassiuFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException {
+		return delegate.contingutMassiuFindByDatatable(entitatId, filtre, paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<Long> findIdsMassiusAmbFiltre(Long entitatId, ContingutMassiuFiltreDto filtre)
+			throws NotFoundException {
+		return delegate.findIdsMassiusAmbFiltre(entitatId, filtre);
 	}
 
 }

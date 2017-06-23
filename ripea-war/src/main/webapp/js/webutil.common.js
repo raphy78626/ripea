@@ -129,9 +129,18 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 	}
 
 	$.fn.webutilNetejarInputs = function(options) {
-		$(this).find('input:text, input:password, input:file, select, textarea').val('');
-		$(this).find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
-		$(this).find('select.select2-hidden-accessible').select2({theme: "bootstrap"}).trigger("change");
+		$(this).find('input:text, input:password, input:file, select, textarea').each(function( index ) {
+			if ($(this).data("netejar") == undefined || $(this).data("netejar"))
+				$(this).val('');
+		});
+		$(this).find('input:radio, input:checkbox').each(function( index ) {
+			if ($(this).data("netejar") == undefined || $(this).data("netejar"))
+				$(this).removeAttr('checked').removeAttr('selected');
+		});
+		$(this).find('select.select2-hidden-accessible').each(function( index ) {
+			if ($(this).data("netejar") == undefined || $(this).data("netejar"))
+				$(this).select2({theme: "bootstrap"}).trigger("change");
+		});
 	}
 
 	$.fn.webutilClonar = function() {

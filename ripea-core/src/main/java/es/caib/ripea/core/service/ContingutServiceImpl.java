@@ -32,7 +32,9 @@ import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
+import es.caib.ripea.core.api.dto.ContingutMassiuFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
+import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
@@ -1594,6 +1596,276 @@ public class ContingutServiceImpl implements ContingutService {
 				contingutId,
 				text);
 	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public PaginaDto<ContingutDto> contingutMassiuFindByDatatable(
+			Long entitatId, 
+			ContingutMassiuFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException {
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		Date dataInici = filtre.getDataInici();
+		if (dataInici != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataInici);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			dataInici = cal.getTime();
+		}
+		Date dataFi = filtre.getDataFi();
+		if (dataFi != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataFi);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			cal.set(Calendar.SECOND, 59);
+			cal.set(Calendar.MILLISECOND, 999);
+			dataFi = cal.getTime();
+		}
+		boolean tipusArxiu = true;
+		boolean tipusBustia = true;
+		boolean tipusCarpeta = true;
+		boolean tipusDocument = true;
+		boolean tipusEscriptori = false;
+		boolean tipusExpedient = true;
+		boolean tipusRegistre = true;
+		
+		if (filtre.getTipusElement() != null) {
+			tipusArxiu = false;
+			tipusBustia = false;
+			tipusCarpeta = false;
+			tipusDocument = false;
+			tipusExpedient = false;
+			tipusRegistre = false;
+			switch (filtre.getTipusElement()) {
+			case ARXIU:
+				tipusArxiu = true;
+				break;
+			case BUSTIA:
+				tipusBustia = true;
+				break;
+			case CARPETA:
+				tipusCarpeta = true;
+				break;
+			case DOCUMENT:
+				tipusDocument = true;
+				break;
+			case ESCRIPTORI:
+				break;
+			case EXPEDIENT:
+				tipusExpedient = true;
+				break;
+			case REGISTRE:
+				tipusRegistre = true;
+				break;
+			}
+		}
+		
+		Long idMetaNode = null;
+		MetaNodeEntity metaNode = null;
+		
+		if (filtre.getTipusElement() == ContingutTipusEnumDto.EXPEDIENT && filtre.getTipusExpedient() != null && !filtre.getTipusExpedient().isEmpty())
+			idMetaNode = Long.parseLong(filtre.getTipusExpedient());
+		else if (filtre.getTipusElement() == ContingutTipusEnumDto.DOCUMENT && filtre.getTipusDocument() != null && !filtre.getTipusDocument().isEmpty())
+			idMetaNode = Long.parseLong(filtre.getTipusDocument());
+		
+		if (idMetaNode != null) {
+			metaNode = metaNodeRepository.findOne(idMetaNode);
+			if (metaNode == null) {
+				throw new NotFoundException(
+						idMetaNode,
+						MetaNodeEntity.class);
+			}
+		}
+		
+//		List<ContingutEntity>preLlistat = contingutRepository.findContingutMassiuByFiltrePaginat(
+//						entitat,
+//						tipusArxiu,
+//						tipusBustia,
+//						tipusCarpeta,
+//						tipusDocument,
+//						tipusEscriptori,
+//						tipusExpedient,
+//						tipusRegistre,
+//						(filtre.getNom() == null),
+//						filtre.getNom(),
+//						(metaNode == null),
+//						metaNode,
+//						(dataInici == null),
+//						dataInici,
+//						(dataFi == null),
+//						dataFi,
+//						false,
+//						true);
+		
+		return paginacioHelper.toPaginaDto(
+				contingutRepository.findContingutMassiuByFiltrePaginat(
+						entitat,
+						tipusArxiu,
+						tipusBustia,
+						tipusCarpeta,
+						tipusDocument,
+						tipusEscriptori,
+						tipusExpedient,
+						tipusRegistre,
+						(filtre.getNom() == null),
+						filtre.getNom(),
+						(metaNode == null),
+						metaNode,
+						(dataInici == null),
+						dataInici,
+						(dataFi == null),
+						dataFi,
+						false,
+						true,
+						paginacioHelper.toSpringDataPageable(paginacioParams)),
+				ContingutDto.class,
+				new Converter<ContingutEntity, ContingutDto>() {
+					@Override
+					public ContingutDto convert(ContingutEntity source) {
+						return contingutHelper.toContingutDto(
+								source,
+								false,
+								false,
+								false,
+								false,
+								true,
+								false,
+								false);
+					}
+				});
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<Long> findIdsMassiusAmbFiltre(
+			Long entitatId,
+			ContingutMassiuFiltreDto filtre) throws NotFoundException {
+		logger.debug("Consultant els ids d'expedient segons el filtre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "filtre=" + filtre + ")");
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		return findIdsAmbFiltrePaginat(
+				entitatId,
+				filtre);
+	}
+	
+	private List<Long> findIdsAmbFiltrePaginat(
+			Long entitatId,
+			ContingutMassiuFiltreDto filtre) {
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		Date dataInici = filtre.getDataInici();
+		if (dataInici != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataInici);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			dataInici = cal.getTime();
+		}
+		Date dataFi = filtre.getDataFi();
+		if (dataFi != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataFi);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			cal.set(Calendar.SECOND, 59);
+			cal.set(Calendar.MILLISECOND, 999);
+			dataFi = cal.getTime();
+		}
+		boolean tipusArxiu = true;
+		boolean tipusBustia = true;
+		boolean tipusCarpeta = true;
+		boolean tipusDocument = true;
+		boolean tipusEscriptori = false;
+		boolean tipusExpedient = true;
+		boolean tipusRegistre = true;
+		
+		if (filtre.getTipusElement() != null) {
+			tipusArxiu = false;
+			tipusBustia = false;
+			tipusCarpeta = false;
+			tipusDocument = false;
+			tipusExpedient = false;
+			tipusRegistre = false;
+			switch (filtre.getTipusElement()) {
+			case ARXIU:
+				tipusArxiu = true;
+				break;
+			case BUSTIA:
+				tipusBustia = true;
+				break;
+			case CARPETA:
+				tipusCarpeta = true;
+				break;
+			case DOCUMENT:
+				tipusDocument = true;
+				break;
+			case ESCRIPTORI:
+				break;
+			case EXPEDIENT:
+				tipusExpedient = true;
+				break;
+			case REGISTRE:
+				tipusRegistre = true;
+				break;
+			}
+		}
+		
+		Long idMetaNode = null;
+		MetaNodeEntity metaNode = null;
+		
+		if (filtre.getTipusElement() == ContingutTipusEnumDto.EXPEDIENT && filtre.getTipusExpedient() != null && !filtre.getTipusExpedient().isEmpty())
+			idMetaNode = Long.parseLong(filtre.getTipusExpedient());
+		else if (filtre.getTipusElement() == ContingutTipusEnumDto.DOCUMENT && filtre.getTipusDocument() != null && !filtre.getTipusDocument().isEmpty())
+			idMetaNode = Long.parseLong(filtre.getTipusDocument());
+		
+		if (idMetaNode != null) {
+			metaNode = metaNodeRepository.findOne(idMetaNode);
+			if (metaNode == null) {
+				throw new NotFoundException(
+						idMetaNode,
+						MetaNodeEntity.class);
+			}
+		}
+		return contingutRepository.findIdMassiuByEntitatAndFiltre(
+				entitat,
+				tipusArxiu,
+				tipusBustia,
+				tipusCarpeta,
+				tipusDocument,
+				tipusEscriptori,
+				tipusExpedient,
+				tipusRegistre,
+				(filtre.getNom() == null),
+				filtre.getNom(),
+				(metaNode == null),
+				metaNode,
+				(dataInici == null),
+				dataInici,
+				(dataFi == null),
+				dataFi,
+				false,
+				true);
+	}
 
 	private ContingutEntity copiarContingut(
 			EntitatEntity entitat,
@@ -1857,5 +2129,9 @@ public class ContingutServiceImpl implements ContingutService {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);
+
+
+
+	
 
 }

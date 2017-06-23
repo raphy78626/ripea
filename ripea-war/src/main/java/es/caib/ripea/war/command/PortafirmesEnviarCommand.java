@@ -27,9 +27,9 @@ public class PortafirmesEnviarCommand {
 	private PortafirmesPrioritatEnumDto prioritat = PortafirmesPrioritatEnumDto.NORMAL;
 	@NotNull
 	private Date dataCaducitat;
-
-	private Date dataCaducitatMinima;
-
+	private Date dataInici;
+	private boolean enviarCorreu;
+	
 
 
 	public PortafirmesEnviarCommand() {
@@ -39,8 +39,7 @@ public class PortafirmesEnviarCommand {
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 59);
 		cal.set(Calendar.MILLISECOND, 999);
-		dataCaducitatMinima = cal.getTime();
-		dataCaducitat = dataCaducitatMinima;
+		dataCaducitat = cal.getTime();
 	}
 
 	public String getMotiu() {
@@ -60,6 +59,22 @@ public class PortafirmesEnviarCommand {
 	}
 	public void setDataCaducitat(Date dataCaducitat) {
 		this.dataCaducitat = dataCaducitat;
+	}
+
+	public Date getDataInici() {
+		return dataInici;
+	}
+
+	public void setDataInici(Date dataInici) {
+		this.dataInici = dataInici;
+	}
+
+	public boolean isEnviarCorreu() {
+		return enviarCorreu;
+	}
+
+	public void setEnviarCorreu(boolean enviarCorreu) {
+		this.enviarCorreu = enviarCorreu;
 	}
 
 	@Override

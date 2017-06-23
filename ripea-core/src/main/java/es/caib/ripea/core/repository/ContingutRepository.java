@@ -148,5 +148,84 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 	List<Object[]> countByPares(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("pares") List<? extends ContingutEntity> pares);
-
+	
+	
+	@Query(	"select " +
+			"    c " +
+			"from " +
+			"    ContingutEntity c " +
+			"where " +
+			"    c.entitat = :entitat " +
+			"and (c.pare is not null or (type(c) <> es.caib.ripea.core.entity.ArxiuEntity and type(c) <> es.caib.ripea.core.entity.BustiaEntity)) " +
+			"and (:tipusArxiu = true or type(c) <> es.caib.ripea.core.entity.ArxiuEntity) " +
+			"and (:tipusBustia = true or type(c) <> es.caib.ripea.core.entity.BustiaEntity) " +
+			"and (:tipusCarpeta = true or type(c) <> es.caib.ripea.core.entity.CarpetaEntity) " +
+			"and (:tipusDocument = true or type(c) <> es.caib.ripea.core.entity.DocumentEntity) " +
+			"and (:tipusEscriptori = true or type(c) <> es.caib.ripea.core.entity.EscriptoriEntity) " +
+			"and (:tipusExpedient = true or type(c) <> es.caib.ripea.core.entity.ExpedientEntity) " +
+			"and (:tipusRegistre = true or type(c) <> es.caib.ripea.core.entity.RegistreEntity) " +
+			"and (:esNullMetaNode = true or ((type(c) = es.caib.ripea.core.entity.ExpedientEntity or type(c) = es.caib.ripea.core.entity.DocumentEntity) and c.metaNode = :metaNode)) " +
+			"and (:esNullNom = true or lower(c.nom) like lower('%'||:nom||'%')) " +
+			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
+			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
+			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
+	public Page<ContingutEntity> findContingutMassiuByFiltrePaginat(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("tipusArxiu") boolean tipusArxiu,
+			@Param("tipusBustia") boolean tipusBustia,
+			@Param("tipusCarpeta") boolean tipusCarpeta,
+			@Param("tipusDocument") boolean tipusDocument,
+			@Param("tipusEscriptori") boolean tipusEscriptori,
+			@Param("tipusExpedient") boolean tipusExpedient,
+			@Param("tipusRegistre") boolean tipusRegistre,
+			@Param("esNullNom") boolean esNullNom,
+			@Param("nom") String nom,
+			@Param("esNullMetaNode") boolean esNullMetaNode,
+			@Param("metaNode") MetaNodeEntity metaNode,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("mostrarEsborrats") boolean mostrarEsborrats,
+			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats,
+			Pageable pageable);
+	
+	@Query(	"select " +
+			"    c.id " +
+			"from " +
+			"    ContingutEntity c " +
+			"where " +
+			"    c.entitat = :entitat " +
+			"and (c.pare is not null or (type(c) <> es.caib.ripea.core.entity.ArxiuEntity and type(c) <> es.caib.ripea.core.entity.BustiaEntity)) " +
+			"and (:tipusArxiu = true or type(c) <> es.caib.ripea.core.entity.ArxiuEntity) " +
+			"and (:tipusBustia = true or type(c) <> es.caib.ripea.core.entity.BustiaEntity) " +
+			"and (:tipusCarpeta = true or type(c) <> es.caib.ripea.core.entity.CarpetaEntity) " +
+			"and (:tipusDocument = true or type(c) <> es.caib.ripea.core.entity.DocumentEntity) " +
+			"and (:tipusEscriptori = true or type(c) <> es.caib.ripea.core.entity.EscriptoriEntity) " +
+			"and (:tipusExpedient = true or type(c) <> es.caib.ripea.core.entity.ExpedientEntity) " +
+			"and (:tipusRegistre = true or type(c) <> es.caib.ripea.core.entity.RegistreEntity) " +
+			"and (:esNullMetaNode = true or ((type(c) = es.caib.ripea.core.entity.ExpedientEntity or type(c) = es.caib.ripea.core.entity.DocumentEntity) and c.metaNode = :metaNode)) " +
+			"and (:esNullNom = true or lower(c.nom) like lower('%'||:nom||'%')) " +
+			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
+			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
+			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
+	public List<Long> findIdMassiuByEntitatAndFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("tipusArxiu") boolean tipusArxiu,
+			@Param("tipusBustia") boolean tipusBustia,
+			@Param("tipusCarpeta") boolean tipusCarpeta,
+			@Param("tipusDocument") boolean tipusDocument,
+			@Param("tipusEscriptori") boolean tipusEscriptori,
+			@Param("tipusExpedient") boolean tipusExpedient,
+			@Param("tipusRegistre") boolean tipusRegistre,
+			@Param("esNullNom") boolean esNullNom,
+			@Param("nom") String nom,
+			@Param("esNullMetaNode") boolean esNullMetaNode,
+			@Param("metaNode") MetaNodeEntity metaNode,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("mostrarEsborrats") boolean mostrarEsborrats,
+			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats);
 }
