@@ -3,8 +3,6 @@
  */
 package es.caib.ripea.core.service.ws;
 
-import java.util.Properties;
-
 import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
 
 /**
@@ -13,8 +11,6 @@ import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class CarregaDadesWsInicialitzacio extends CarregaDadesWsBase {
-
-	private Properties properties;
 	
 	public static void main(String[] args) {
 		try {

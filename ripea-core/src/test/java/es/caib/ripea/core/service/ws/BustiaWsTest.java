@@ -32,9 +32,9 @@ import es.caib.ripea.core.api.service.ws.BustiaV0WsService.BustiaContingutTipus;
  */
 public class BustiaWsTest {
 
-	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/bustia";
-	private static final String USERNAME = "tomeud";
-	private static final String PASSWORD = "tomeud";
+	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/v0/bustia";
+	private static final String USERNAME = "siona";
+	private static final String PASSWORD = "siona15";
 
 	public static void main(String[] args) {
 		try {
@@ -55,8 +55,8 @@ public class BustiaWsTest {
 	private BustiaV0WsService getBustiaService() throws Exception {
 		URL url = new URL(ENDPOINT_ADDRESS + "?wsdl");
 		QName qname = new QName(
-				"http://www.caib.es/ripea/ws/bustia",
-				"BustiaService");
+				"http://www.caib.es/ripea/ws/v0/bustia",
+				"BustiaV0Service");
 		Service service = Service.create(url, qname);
 		BustiaV0WsService bustiaWs = service.getPort(BustiaV0WsService.class);
 		BindingProvider bp = (BindingProvider)bustiaWs;

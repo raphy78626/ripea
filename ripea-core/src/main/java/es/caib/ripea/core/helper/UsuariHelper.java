@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.helper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -38,13 +40,39 @@ public class UsuariHelper {
 	private CacheHelper cacheHelper;
 
 
+	//TODO: esborrar aquest mètode quan s'acabi el desenvolupament
+	public Authentication autenticaTest() {
+		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		authorities.add(new SimpleGrantedAuthority("IPA_SUPER"));
+		authorities.add(new SimpleGrantedAuthority("IPA_BSTWS"));
+		authorities.add(new SimpleGrantedAuthority("IPA_ADMIN"));
+		authorities.add(new SimpleGrantedAuthority("tothom"));
+		
+		Authentication auth = new DadesUsuariAuthenticationToken(
+				"danielm",
+				authorities);
+		SecurityContextHolder.getContext().setAuthentication(auth);
+		return auth;
+	}
 
 	public Authentication generarUsuariAutenticatEjb(
 			SessionContext sessionContext,
 			boolean establirComAUsuariActual) {
 		if (sessionContext != null && sessionContext.getCallerPrincipal() != null) {
+			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+			if (sessionContext.isCallerInRole("IPA_SUPER"))
+				authorities.add(new SimpleGrantedAuthority("IPA_SUPER"));
+			if (sessionContext.isCallerInRole("IPA_ADMIN"))
+				authorities.add(new SimpleGrantedAuthority("IPA_ADMIN"));
+			if (sessionContext.isCallerInRole("IPA_BSTWS"))
+				authorities.add(new SimpleGrantedAuthority("IPA_BSTWS"));
+			if (sessionContext.isCallerInRole("tothom"))
+				authorities.add(new SimpleGrantedAuthority("tothom"));
+			if (authorities.isEmpty())
+				authorities = null;
 			return generarUsuariAutenticat(
 					sessionContext.getCallerPrincipal().getName(),
+					authorities,
 					establirComAUsuariActual);
 		} else {
 			return null;
@@ -52,8 +80,16 @@ public class UsuariHelper {
 	}
 	public Authentication generarUsuariAutenticat(
 			String usuariCodi,
+			boolean establirComAUsuariActual){
+		return generarUsuariAutenticat(
+				usuariCodi,
+				null,
+				establirComAUsuariActual);
+	}
+	public Authentication generarUsuariAutenticat(
+			String usuariCodi,
+			List<GrantedAuthority> authorities,
 			boolean establirComAUsuariActual) {
-		List<GrantedAuthority> authorities = null;
 		Authentication auth = new DadesUsuariAuthenticationToken(
 				usuariCodi,
 			authorities);

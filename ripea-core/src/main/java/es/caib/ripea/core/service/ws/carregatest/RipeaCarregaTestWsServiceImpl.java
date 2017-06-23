@@ -11,8 +11,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.jws.WebService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.ArxiuDto;
@@ -43,6 +41,7 @@ import es.caib.ripea.core.api.service.MetaDadaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.ws.RipeaCarregaTestWsService;
+import es.caib.ripea.core.helper.UsuariHelper;
 
 /**
  * Implementació dels mètodes per al servei de callback del portafirmes.
@@ -73,6 +72,8 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 	private ArxiuService arxiuService;
 	@Resource
 	private DocumentService documentService;
+	@Resource
+	private UsuariHelper usuariHelper;
 
 	
 	@Override
@@ -82,6 +83,9 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			String descripcio, 
 			String cif, 
 			String unitatArrel) {
+		
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
 		
 		EntitatDto entitat = entitatService.findByCodi(codi);
 		
@@ -109,6 +113,9 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			boolean delete, 
 			boolean administration) {
 		
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
+
 		PermisDto permis = new PermisDto();
 		permis.setPrincipalNom(nom);
 		permis.setPrincipalTipus(usuari ? PrincipalTipusEnumDto.USUARI: PrincipalTipusEnumDto.ROL);
@@ -141,6 +148,10 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			String notificacioOficiTitol, 
 			String notificacioOficiText, 
 			Long pareId) {
+		
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
+
 		
 		MetaExpedientDto metaExpedient = metaExpedientService.findByEntitatCodi(entitatId, codi);
 		
@@ -181,6 +192,9 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			boolean globalReadOnly, 
 			String expedientMultiplicitat,
 			boolean readOnly) {
+
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
 		
 		MetaDadaDto metaDada = metaDadaService.findByEntitatCodi(entitatId, codi);
 		
@@ -232,6 +246,9 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			String plantillaContentType,
 			byte[] plantillaContingut) {
 
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
+
 		MetaDocumentDto metaDocument = metaDocumentService.findByEntitatCodi(entitatId, codi);
 		
 		if (metaDocument == null) {
@@ -276,6 +293,9 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			String documentMultiplicitat,
 			boolean readOnly) {
 		
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
+
 		MetaDadaDto metaDada = metaDadaService.findByEntitatCodi(entitatId, codi);
 		
 		if (metaDada == null) {
@@ -311,6 +331,10 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			Long entitatId,
 			String nom,
 			String unitatCodi){
+		
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
+
 		ArxiuDto arxiu = null;
 		List<ArxiuDto> arxius = arxiuService.findByUnitatCodiAdmin(entitatId, unitatCodi);
 		for (ArxiuDto a: arxius) {
@@ -360,6 +384,9 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			String documentMetadada2Codi,
 			Object documentMetadada2Valor) {
 		
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
+
 		// 1. Creació de l'expedient
 		
 		System.out.println("INICI obtenció d'escritori d'usuari actual.");
@@ -523,10 +550,14 @@ public class RipeaCarregaTestWsServiceImpl implements RipeaCarregaTestWsService 
 			String oficinaCodi, 
 			String llibreCodi, 
 			String destinatariCodi) {
+		
+		// TODO: Eliminar aquesta línia!!!!
+		usuariHelper.autenticaTest();
+
 		// TODO 
 		return null;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(RipeaCarregaTestWsServiceImpl.class);
+//	private static final Logger logger = LoggerFactory.getLogger(RipeaCarregaTestWsServiceImpl.class);
 
 }
