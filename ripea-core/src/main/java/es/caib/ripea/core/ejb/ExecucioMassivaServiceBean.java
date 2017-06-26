@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
+import es.caib.ripea.core.api.exception.ExecucioMassivaException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ExecucioMassivaService;
@@ -32,6 +33,30 @@ public class ExecucioMassivaServiceBean implements ExecucioMassivaService {
 	@RolesAllowed("tothom")
 	public void crearExecucioMassiva(ExecucioMassivaDto dto) throws NotFoundException, ValidationException {
 		delegate.crearExecucioMassiva(dto);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public Long getExecucionsMassivesActiva(Long ultimaExecucioMassiva) {
+		return delegate.getExecucionsMassivesActiva(ultimaExecucioMassiva);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void executarExecucioMassiva(Long cmasiu_id) throws NotFoundException, ValidationException {
+		delegate.executarExecucioMassiva(cmasiu_id);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void generaInformeError(Long emc_id, String error) throws NotFoundException {
+		delegate.generaInformeError(emc_id, error);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void actualitzaUltimaOperacio(Long ome_id) throws NotFoundException, ExecucioMassivaException {
+		delegate.actualitzaUltimaOperacio(ome_id);
 	}
 	
 }

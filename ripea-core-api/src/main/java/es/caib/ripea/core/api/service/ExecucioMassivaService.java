@@ -6,6 +6,7 @@ package es.caib.ripea.core.api.service;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
+import es.caib.ripea.core.api.exception.ExecucioMassivaException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 
@@ -43,4 +44,10 @@ public interface ExecucioMassivaService {
 	 * @param cmasiu_id id del contingut massiu a executar
 	 */
 	public void executarExecucioMassiva(Long cmasiu_id) throws NotFoundException, ValidationException;
+	
+	
+	public void generaInformeError(Long emc_id, String error) throws NotFoundException;
+	
+	
+	public void actualitzaUltimaOperacio(Long ome_id) throws NotFoundException, ExecucioMassivaException;
 }

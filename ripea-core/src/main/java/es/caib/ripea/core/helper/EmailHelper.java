@@ -25,6 +25,7 @@ import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.ExecucioMassivaEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
@@ -148,6 +149,26 @@ public class EmailHelper {
 		}
 	}
 
+	public void emailExecucioMassivaFinalitzada(
+			ExecucioMassivaEntity em) {
+		logger.debug("Enviament emails execució massiva finalitzada amb id: " + em.getId());
+		SimpleMailMessage missatge = new SimpleMailMessage();
+		
+		if (emplenarDestinatari(
+				missatge,
+				em.getCreatedBy().getCodi())) {
+			missatge.setFrom(getRemitent());
+			missatge.setSubject(PREFIX_RIPEA + " Execucio massiva finalitzada: " + em.getTipus());
+			missatge.setText(
+					"Execució massiva finalitzada:\n" +
+					"\tId: " + em.getId() + "\n" +
+					"\tTipus: " + em.getTipus() + "\n" +
+					"\tData Inici: " + em.getDataInici() + "\n" +
+					"\tData Fi: " + em.getDataFi() + "\n" +
+					"\tContinguts: " + em.getContinguts().size() + "\n");
+			mailSender.send(missatge);
+		}
+	}
 
 
 	private boolean emplenarDestinataris(
@@ -172,6 +193,20 @@ public class EmailHelper {
 			return false;
 		}
 	}
+	
+	private boolean emplenarDestinatari(
+			MailMessage mailMessage,
+			String usuariCodi) {
+		DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(
+				usuariCodi);
+		if (dadesUsuari != null && dadesUsuari.getEmail() != null) {
+			mailMessage.setTo(dadesUsuari.getEmail());
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private String getUnitatOrganitzativaNom(
 			EntitatEntity entitat,
 			String unitatOrganitzativaCodi) {

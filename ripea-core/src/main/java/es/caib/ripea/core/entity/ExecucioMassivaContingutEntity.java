@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -54,12 +53,12 @@ public class ExecucioMassivaContingutEntity extends RipeaAuditable<Long> {
 	@Column(name = "ordre", nullable = false)
 	private int ordre;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "execucio_massiva_id")
 	@ForeignKey(name = "ipa_exmas_exmascont_fk")
 	private ExecucioMassivaEntity execucioMassiva;
 	
-	@ManyToOne(optional=false, fetch = FetchType.EAGER)
+	@ManyToOne(optional=false)
 	@JoinColumn(name="contingut_id")
 	@ForeignKey(name="hel_cont_exmascont_fk")
 	private ContingutEntity contingut;
@@ -95,6 +94,26 @@ public class ExecucioMassivaContingutEntity extends RipeaAuditable<Long> {
 		}
 	}
 	
+	
+	public void updateError(
+			Date ara,
+			String error) {
+		this.dataInici = ara;
+		this.dataFi = ara;
+		this.estat = ExecucioMassivaEstat.ESTAT_ERROR;
+		this.error = error;
+	}
+	
+	public void updateDataInici(
+			Date dataInici) {
+		this.dataInici = dataInici;
+	}
+	
+	public void updateFinalitzat(
+			Date dataFi) {
+		this.dataFi = dataFi;
+		this.estat = ExecucioMassivaEstat.ESTAT_FINALITZAT;
+	}
 	
 	public Date getDataInici() {
 		return dataInici;

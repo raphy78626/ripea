@@ -20,16 +20,16 @@ import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
 public interface ExecucioMassivaContingutRepository extends JpaRepository<ExecucioMassivaContingutEntity, Long> {
 	
 	@Query("select min(e.id) " +
-			"from	ExecucioMassivaContingut e " +
+			"from	ExecucioMassivaContingutEntity e " +
 			"where	e.execucioMassiva.id = :nextMassiu " +
 			"   and	e.dataFi is null ")
 	public Long findNextExecucioMassivaContingut(@Param("nextMassiu") Long nextMassiu);
 	
 	@Query("select min(e.id) " +
-			"from	ExecucioMassivaContingut e " +
+			"from	ExecucioMassivaContingutEntity e " +
 			"where	e.execucioMassiva.id =	" +
 			"			(select min(id) " +
-			"			 from 	ExecucioMassiva " +
+			"			 from 	ExecucioMassivaEntity " +
 			"			 where 	dataInici <= :ara " +
 			"					and dataFi is null) " +
 			"	and	e.dataFi is null ")
