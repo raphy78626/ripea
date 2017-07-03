@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.api.dto;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -38,6 +39,11 @@ public class ExecucioMassivaContingutDto extends AuditoriaDto {
 
 	public Date getDataFi() {
 		return dataFi;
+	}
+	
+	public String getDataFiAmbFormat() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		return dataFi != null ? sdf.format(dataFi) : "";
 	}
 
 	public void setDataFi(Date dataFi) {

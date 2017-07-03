@@ -3,8 +3,6 @@
  */
 package es.caib.ripea.core.api.service;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 /**
  * Declaració dels mètodes per a gestionar continguts.
  * 

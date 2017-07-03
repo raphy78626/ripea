@@ -85,10 +85,13 @@
 				<rip:inputSelect name="tipusExpedient" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="execucions.massives.list.filtre.tipusexpedient" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaExpedient}"/>
 			</div>
 			<div class="col-md-4">
-				<rip:inputSelect name="tipusDocument" optionItems="${metaDocuments}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="execucions.massives.list.filtre.tipusdocument" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaDocument}"/>
+				<rip:inputSelect name="expedientId" optionItems="${expedients}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="execucions.massives.list.filtre.tipusdocument" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaDocument}"/>
 			</div>
 		</div>
 		<div class="row">
+			<div class="col-md-4">
+				<rip:inputSelect name="tipusDocument" optionItems="${metaDocuments}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="execucions.massives.list.filtre.tipusdocument" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaDocument}"/>
+			</div>
 			<div class="col-md-4">
 				<rip:inputText name="nom" inline="true" placeholderKey="execucions.massives.list.filtre.nom"/>
 			</div>
@@ -101,6 +104,8 @@
 			<div class="col-md-2">
 				<rip:inputDate name="dataFi" inline="true" placeholderKey="execucions.massives.list.filtre.datafi"/>
 			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>

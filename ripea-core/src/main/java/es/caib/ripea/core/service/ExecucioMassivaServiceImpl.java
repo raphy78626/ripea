@@ -4,7 +4,9 @@
 package es.caib.ripea.core.service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -12,6 +14,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,21 +24,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto.ExecucioMassivaTipusDto;
+import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.exception.ExecucioMassivaException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.DocumentService;
 import es.caib.ripea.core.api.service.ExecucioMassivaService;
 import es.caib.ripea.core.entity.ContingutEntity;
+import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
+import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity.ExecucioMassivaEstat;
 import es.caib.ripea.core.entity.ExecucioMassivaEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaEntity.ExecucioMassivaTipus;
+import es.caib.ripea.core.entity.UsuariEntity;
+import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EmailHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.ExecucioMassivaContingutRepository;
 import es.caib.ripea.core.repository.ExecucioMassivaRepository;
+import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
  * Implementació dels mètodes per a gestionar documents.
@@ -46,18 +59,30 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	@Resource
 	private ContingutRepository contingutRepository;
 	@Resource
+	private UsuariRepository usuariRepository;
+	@Resource
 	private ExecucioMassivaRepository execucioMassivaRepository;
 	@Resource
 	private ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
 	@Resource
 	private EmailHelper mailHelper;
+	@Resource
+	private ConversioTipusHelper conversioTipusHelper;
+	@Resource
+	private EntityComprovarHelper entityComprovarHelper;
 	
 	@Autowired
 	private DocumentService documentService;
 
 	@Transactional
 	@Override
-	public void crearExecucioMassiva(ExecucioMassivaDto dto) throws NotFoundException, ValidationException {
+	public void crearExecucioMassiva(Long entitatId, ExecucioMassivaDto dto) throws NotFoundException, ValidationException {
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		
 		ExecucioMassivaEntity execucioMassiva = null;
 		
 		Date dataInici;
@@ -74,7 +99,8 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 					dto.getMotiu(), 
 					dto.getPrioritat(), 
 					dto.getDataCaducitat(), 
-					false).build();
+					false,
+					entitat.getId()).build();
 		}
 		
 		int ordre = 0;
@@ -142,7 +168,8 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			
 			Authentication authentication =  new UsernamePasswordAuthenticationToken(
 					principal, 
-					"N/A");
+					"N/A",
+					exm.getAuthenticationRoles("tothom"));
 			
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 			
@@ -152,9 +179,9 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			}
 			
 			SecurityContextHolder.getContext().setAuthentication(orgAuthentication);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			
-			Throwable excepcioRetorn = ExceptionUtils.getRootCause(ex);
+			Throwable excepcioRetorn = ExceptionUtils.getRootCause(ex) != null ? ExceptionUtils.getRootCause(ex) : ex;
 			
 			SegonPlaServiceImpl.saveError(cmasiu_id, excepcioRetorn, exm.getTipus());
 			throw new ExecucioMassivaException(
@@ -220,9 +247,79 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		
 		emc.updateError(
 				ara, 
-				error);
+				error.length() < 2045 ? error : error.substring(0, 2045));
 		
 		execucioMassivaContingutRepository.save(emc);
+	}
+	
+	@Override
+	public List<ExecucioMassivaDto> findExecucionsMassivesPerUsuari(Long entitatId, UsuariDto usuari, int pagina) throws NotFoundException {
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		
+		Pageable paginacio = new PageRequest(pagina, 8, Direction.DESC, "dataInici");		
+		
+		List<ExecucioMassivaEntity> exmEntities = new ArrayList<ExecucioMassivaEntity>();
+		if (usuari == null) {
+			exmEntities = execucioMassivaRepository.findByEntitatId(entitat.getId(), paginacio);
+		} else {
+			UsuariEntity usuariEntity = usuariRepository.findByCodi(usuari.getCodi());
+			exmEntities = execucioMassivaRepository.findByCreatedByAndEntitatId(usuariEntity, entitat.getId(), paginacio);
+		}
+		
+		return recompteErrors(exmEntities);
+	}
+
+	@Override
+	public List<ExecucioMassivaDto> findExecucionsMassivesGlobals() throws NotFoundException {
+		List<ExecucioMassivaEntity> entities = execucioMassivaRepository.findAll();
+		return recompteErrors(entities);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<ExecucioMassivaContingutDto> findContingutPerExecucioMassiva(Long exm_id) throws NotFoundException {
+		ExecucioMassivaEntity execucioMassiva = execucioMassivaRepository.findOne(exm_id);
+		if (execucioMassiva == null)
+			throw new NotFoundException(exm_id, ExecucioMassivaEntity.class);
+		
+		List<ExecucioMassivaContingutEntity> continguts = execucioMassivaContingutRepository.findByExecucioMassivaOrderByOrdreAsc(execucioMassiva);
+		List<ExecucioMassivaContingutDto> dtos = conversioTipusHelper.convertirList(continguts, ExecucioMassivaContingutDto.class);
+		
+		return dtos;
+	}
+	
+	private List<ExecucioMassivaDto> recompteErrors(List<ExecucioMassivaEntity> exmEntities) {
+		List<ExecucioMassivaDto> dtos = new ArrayList<ExecucioMassivaDto>();
+		for (ExecucioMassivaEntity exm: exmEntities) {
+			ExecucioMassivaDto dto = conversioTipusHelper.convertir(exm, ExecucioMassivaDto.class);
+			int errors = 0;
+			Long pendents = 0L;
+			for (ExecucioMassivaContingutEntity emc: exm.getContinguts()) {
+				if (emc.getEstat() == ExecucioMassivaEstat.ESTAT_ERROR)
+					errors ++;
+				if (emc.getDataFi() == null)
+					pendents++;
+				dto.getContingutIds().add(emc.getId());
+			}
+			dto.setErrors(errors);
+			Long total = new Long(dto.getContingutIds().size());
+			dto.setExecutades(getPercent((total - pendents), total));
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	private double getPercent(Long value, Long total) {
+		if (total == 0)
+			return 100L;
+		else if (value == 0L)
+			return 0L;
+	    return Math.round(value * 100 / total);
 	}
 	
 	private void enviarPortafirmes(ExecucioMassivaContingutEntity emc) throws Exception {

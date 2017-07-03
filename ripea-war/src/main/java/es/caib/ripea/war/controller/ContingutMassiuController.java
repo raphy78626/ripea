@@ -3,11 +3,11 @@
  */
 package es.caib.ripea.war.controller;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,17 +20,20 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto.ExecucioMassivaTipusDto;
+import es.caib.ripea.core.api.dto.UsuariDto;
+import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExecucioMassivaService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
@@ -40,6 +43,7 @@ import es.caib.ripea.war.command.PortafirmesEnviarCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.RequestSessionHelper;
+import es.caib.ripea.war.helper.RolHelper;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -48,7 +52,7 @@ import es.caib.ripea.war.helper.RequestSessionHelper;
  */
 @Controller
 @RequestMapping("/massiu")
-public class ContingutMassiuController extends BaseUserController {
+public class ContingutMassiuController extends BaseUserOAdminController {
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ContingutMassiuController.session.filtre";
 	private static final String SESSION_ATTRIBUTE_SELECCIO = "ContingutMassiuController.session.seleccio";
@@ -56,14 +60,15 @@ public class ContingutMassiuController extends BaseUserController {
 	@Autowired
 	private ContingutService contingutService;
 	@Autowired
-	ContingutService contenidorService;
+	private ContingutService contenidorService;
 	@Autowired
 	private MetaExpedientService metaExpedientService;
 	@Autowired
 	private MetaDocumentService metaDocumentService;
 	@Autowired
 	private ExecucioMassivaService execucioMassivaService;
-
+	@Autowired
+	private AplicacioService aplicacioService;
 
 	@RequestMapping(value = "/portafirmes", method = RequestMethod.GET)
 	public String getDocuments(
@@ -77,7 +82,7 @@ public class ContingutMassiuController extends BaseUserController {
 		filtreCommand.setTipusElement(ContingutTipusEnumDto.DOCUMENT);
 		filtreCommand.setBloquejarTipusElement(true);
 		filtreCommand.setBloquejarMetaDada(true);
-		filtreCommand.setBloquejarMetaExpedient(true);
+		filtreCommand.setBloquejarMetaExpedient(false);
 		
 		model.addAttribute(
 				"seleccio",
@@ -100,6 +105,8 @@ public class ContingutMassiuController extends BaseUserController {
 				metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
 						entitatActual.getId(),
 						escriptori.getId()));
+		
+		
 		
 		
 		return "contingutMassiuList";
@@ -147,7 +154,7 @@ public class ContingutMassiuController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model) {
 		
-		getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		
 		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
@@ -162,9 +169,12 @@ public class ContingutMassiuController extends BaseUserController {
 		dto.setDataCaducitat(filtreCommand.getDataCaducitat());
 		dto.setContingutIds(new ArrayList<Long>(seleccio));
 
-		execucioMassivaService.crearExecucioMassiva(dto);
+		execucioMassivaService.crearExecucioMassiva(entitatActual.getId(), dto);
 		
-		return "enviarPortafirmes";
+		return getModalControllerReturnValueSuccess(
+				request,
+				"redirect:../../../massiu/portafirmes",
+				"execucions.massives.creat.ok");
 	}
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
@@ -242,11 +252,54 @@ public class ContingutMassiuController extends BaseUserController {
 		return seleccio.size();
 	}
 	
-	private void omplirModelContingutMassiu(
+	
+	@RequestMapping(value = "/consulta/{pagina}", method = RequestMethod.GET)
+	public String getConsultaExecucions(
 			HttpServletRequest request,
-			EntitatDto entitatActual,
-			ContingutDto contingut,
-			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			@PathVariable int pagina,
+			Model model) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		pagina = (pagina < 0 ? 0 : pagina);
+		
+		List<ExecucioMassivaDto> execucionsMassives = new ArrayList<ExecucioMassivaDto>();
+		
+		UsuariDto usuariActual = null;
+		if (RolHelper.isUsuariActualAdministrador(request)) {
+			model.addAttribute(
+					"titolConsulta",
+					getMessage(request, "execucions.massives.consulta.titol.gobal"));
+		} else if (RolHelper.isUsuariActualUsuari(request)) {
+			usuariActual = aplicacioService.getUsuariActual();
+			model.addAttribute(
+					"titolConsulta",
+					getMessage(request, "execucions.massives.consulta.titol.usuari", new String[]{usuariActual.getNom()}));
+		}
+		
+		execucionsMassives = execucioMassivaService.findExecucionsMassivesPerUsuari(entitatActual.getId(), usuariActual,pagina);
+		
+		if (execucionsMassives.size() < 8)
+			model.addAttribute("sumador", 0);
+		else
+			model.addAttribute("sumador", 1);
+		
+		model.addAttribute("pagina",pagina);
+		model.addAttribute("execucionsMassives", execucionsMassives);
+		
+		return "consultaExecucionsMassives";
+	}
+	
+	@RequestMapping(value = "/consultaContingut/{execucioMassivaId}", method = RequestMethod.GET)
+	@ResponseBody
+	public List<ExecucioMassivaContingutDto> getConsultaContinguts(
+			HttpServletRequest request,
+			@PathVariable Long execucioMassivaId) {
+		
+		if (RolHelper.isUsuariActualUsuari(request)) 
+			getEntitatActualComprovantPermisos(request);
+		
+		return execucioMassivaService.findContingutPerExecucioMassiva(execucioMassivaId);
 		
 	}
 	

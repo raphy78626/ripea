@@ -3,9 +3,13 @@
  */
 package es.caib.ripea.core.api.service;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
+import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.exception.ExecucioMassivaException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -28,7 +32,7 @@ public interface ExecucioMassivaService {
 	 *             Si el nom del contenidor conté caràcters invàlids.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public void crearExecucioMassiva(ExecucioMassivaDto dto) throws NotFoundException, ValidationException;
+	public void crearExecucioMassiva(Long entitatId, ExecucioMassivaDto dto) throws NotFoundException, ValidationException;
 	
 	/**
 	 * Retorna l'ID de la pròxima execució massiva activa
@@ -48,6 +52,11 @@ public interface ExecucioMassivaService {
 	
 	public void generaInformeError(Long emc_id, String error) throws NotFoundException;
 	
-	
 	public void actualitzaUltimaOperacio(Long ome_id) throws NotFoundException, ExecucioMassivaException;
+	
+	public List<ExecucioMassivaDto> findExecucionsMassivesPerUsuari(Long entitatId, UsuariDto usuari, int pagina) throws NotFoundException;
+	
+	public List<ExecucioMassivaDto> findExecucionsMassivesGlobals() throws NotFoundException;
+	
+	public List<ExecucioMassivaContingutDto> findContingutPerExecucioMassiva(Long exm_id) throws NotFoundException, ExecucioMassivaException;
 }

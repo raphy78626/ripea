@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.api.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,12 +14,13 @@ import java.util.List;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ExecucioMassivaDto extends AuditoriaDto {
+public class ExecucioMassivaDto extends AuditoriaDto implements Serializable {
 
 	public enum ExecucioMassivaTipusDto {
 		PORTASIGNATURES
 	}
 
+	private Long id;
 	private ExecucioMassivaTipusDto tipus;
 	private Date dataInici;
 	private Date dataFi;
@@ -31,6 +33,17 @@ public class ExecucioMassivaDto extends AuditoriaDto {
 	
 	private Boolean enviarCorreu;
 	private List<Long> contingutIds = new ArrayList<Long>();
+	
+	private int errors;
+	private double executades;
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 	public ExecucioMassivaTipusDto getTipus() {
 		return tipus;
@@ -95,6 +108,22 @@ public class ExecucioMassivaDto extends AuditoriaDto {
 
 	public void setContingutIds(List<Long> contingutIds) {
 		this.contingutIds = contingutIds;
+	}
+
+	public int getErrors() {
+		return errors;
+	}
+
+	public void setErrors(int errors) {
+		this.errors = errors;
+	}
+
+	public double getExecutades() {
+		return executades;
+	}
+
+	public void setExecutades(double executades) {
+		this.executades = executades;
 	}
 
 	private static final long serialVersionUID = 4061379951434174596L;

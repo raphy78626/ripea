@@ -20,15 +20,6 @@
 	<rip:modalHead/>
 </head>
 <body>
-	<c:if test="${document.fitxerNom != document.fitxerNomEnviamentPortafirmes}">
-<!-- 		<div class="alert well-sm alert-warning alert-dismissable"> -->
-<!-- 			<span class="fa fa-exclamation-triangle"></span> -->
-<%-- 			<spring:message code="contenidor.document.portafirmes.conversio.avis"/> --%>
-<!-- 			<a data-rdt-link-modal="true" class="btn btn-xs btn-default pull-right" href="../pdf"> -->
-<%-- 				<spring:message code="contenidor.document.portafirmes.conversio.boto.previsualitzar"/> --%>
-<!-- 			</a> -->
-<!-- 		</div> -->
-	</c:if>
 	<c:set var="formAction"><rip:modalUrl value="/massiu/crear/portafirmes"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="portafirmesEnviarCommand" role="form">
 		<rip:inputDate name="dataInici" textKey="execucions.massives.general.data.inici" required="false"/>

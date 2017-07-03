@@ -13,12 +13,16 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
@@ -39,11 +43,11 @@ public class ExecucioMassivaEntity extends RipeaAuditable<Long> {
 	@Enumerated(EnumType.STRING)
 	private ExecucioMassivaTipus tipus;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data_inici")
 	private Date dataInici;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data_fi")
 	private Date dataFi;
 	
@@ -55,7 +59,7 @@ public class ExecucioMassivaEntity extends RipeaAuditable<Long> {
 	@Enumerated(EnumType.STRING)
 	private PortafirmesPrioritatEnumDto prioritat = PortafirmesPrioritatEnumDto.NORMAL;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "pfirmes_datcad")
 	private Date dataCaducitat;
 //////////////////////////////////////	
@@ -63,8 +67,11 @@ public class ExecucioMassivaEntity extends RipeaAuditable<Long> {
 	@Column(name = "enviar_correu")
 	private Boolean enviarCorreu;
 	
-	@OneToMany(mappedBy = "execucioMassiva", cascade = {CascadeType.ALL})
+	@OneToMany(mappedBy = "execucioMassiva", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
 	private List<ExecucioMassivaContingutEntity> continguts = new ArrayList<ExecucioMassivaContingutEntity>();
+	
+	@Column(name = "entitat_id")
+	private Long entitatId;
 	
 	public void updateDataFi(
 			Date dataFi) {
@@ -77,14 +84,16 @@ public class ExecucioMassivaEntity extends RipeaAuditable<Long> {
 			String motiu,
 			PortafirmesPrioritatEnumDto prioritat,
 			Date dataCaducitat,
-			boolean enviarCorreu) {
+			boolean enviarCorreu,
+			Long entitatId) {
 		return new Builder(
 				tipus,
 				dataInici,
 				motiu,
 				prioritat,
 				dataCaducitat,
-				enviarCorreu);
+				enviarCorreu,
+				entitatId);
 	}
 
 	/**
@@ -99,7 +108,8 @@ public class ExecucioMassivaEntity extends RipeaAuditable<Long> {
 				String motiu,
 				PortafirmesPrioritatEnumDto prioritat,
 				Date dataCaducitat,
-				boolean enviarCorreu) {
+				boolean enviarCorreu,
+				Long entitatId) {
 			built = new ExecucioMassivaEntity();
 			built.tipus = tipus;
 			built.dataInici = dataInici;
@@ -107,10 +117,18 @@ public class ExecucioMassivaEntity extends RipeaAuditable<Long> {
 			built.prioritat = prioritat;
 			built.dataCaducitat = dataCaducitat;
 			built.enviarCorreu = enviarCorreu;
+			built.entitatId = entitatId;
 		}
 		public ExecucioMassivaEntity build() {
 			return built;
 		}
+	}
+	
+	@Transient
+	public List<GrantedAuthority> getAuthenticationRoles(String rol) {
+		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		authorities.add(new SimpleGrantedAuthority(rol));
+		return authorities;
 	}
 	
 	public ExecucioMassivaTipus getTipus() {
@@ -143,6 +161,10 @@ public class ExecucioMassivaEntity extends RipeaAuditable<Long> {
 
 	public List<ExecucioMassivaContingutEntity> getContinguts() {
 		return continguts;
+	}
+	
+	public Long getEntitatId() {
+		return entitatId;
 	}
 
 	public void addContingut(ExecucioMassivaContingutEntity contingut) {

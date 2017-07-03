@@ -189,14 +189,18 @@ body {
 								</a>
 							</c:when>
 						</c:choose>
-						<div class="btn-group">
-							<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="execucions.massives.boto.user"/>&nbsp;<span class="caret caret-white"></span></button>
-							<ul class="dropdown-menu">
-								<li><a href="<c:url value="/massiu/portafirmes"/>"><span class="fa fa-file-o "></span> <spring:message code="execucions.massives.boto.option.portafirmes"/></a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="<c:url value="/excepcio"/>"><span class="fa fa-tasks"></span> <spring:message code="execucions.massives.boto.option.consulta"/></a></li>
-							</ul>
-						</div>
+						<c:if test="${isRolActualUsuari or isRolActualAdministrador}">
+							<div class="btn-group">
+								<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="execucions.massives.boto.user"/>&nbsp;<span class="caret caret-white"></span></button>
+								<ul class="dropdown-menu">
+									<c:if test="${isRolActualUsuari}">
+										<li><a href="<c:url value="/massiu/portafirmes"/>"><span class="fa fa-file-o "></span> <spring:message code="execucions.massives.boto.option.portafirmes"/></a></li>
+										<li role="separator" class="divider"></li>
+									</c:if>
+									<li><a href="<c:url value="/massiu/consulta/0"/>" data-toggle="modal" data-maximized="true"><span class="fa fa-tasks"></span> <spring:message code="execucions.massives.boto.option.consulta"/></a></li>
+								</ul>
+							</div>
+						</c:if>
 					</div>
 				</div>
 			</div>

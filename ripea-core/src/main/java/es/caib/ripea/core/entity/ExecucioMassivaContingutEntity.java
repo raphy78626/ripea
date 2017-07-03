@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -35,11 +36,11 @@ public class ExecucioMassivaContingutEntity extends RipeaAuditable<Long> {
 		ESTAT_CANCELAT
 	}
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "datA_inici")
 	private Date dataInici;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data_fi")
 	private Date dataFi;
 	
@@ -53,12 +54,12 @@ public class ExecucioMassivaContingutEntity extends RipeaAuditable<Long> {
 	@Column(name = "ordre", nullable = false)
 	private int ordre;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "execucio_massiva_id")
 	@ForeignKey(name = "ipa_exmas_exmascont_fk")
 	private ExecucioMassivaEntity execucioMassiva;
 	
-	@ManyToOne(optional=false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name="contingut_id")
 	@ForeignKey(name="hel_cont_exmascont_fk")
 	private ContingutEntity contingut;
@@ -88,6 +89,7 @@ public class ExecucioMassivaContingutEntity extends RipeaAuditable<Long> {
 			built.execucioMassiva = execucioMassiva;
 			built.contingut = contingut;
 			built.ordre = ordre;
+			built.estat = ExecucioMassivaEstat.ESTAT_PENDENT;
 		}
 		public ExecucioMassivaContingutEntity build() {
 			return built;

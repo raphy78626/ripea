@@ -21,6 +21,7 @@ public class ContingutMassiuFiltreCommand {
 
 	private ContingutTipusEnumDto tipusElement;
 	private String tipusExpedient;
+	private Long expedientId;
 	private String tipusDocument;
 	private String metaDada;
 	private String nom;
@@ -60,6 +61,12 @@ public class ContingutMassiuFiltreCommand {
 	}
 	public void setTipusExpedient(String tipusExpedient) {
 		this.tipusExpedient = tipusExpedient;
+	}
+	public Long getExpedientId() {
+		return expedientId;
+	}
+	public void setExpedientId(Long expedientId) {
+		this.expedientId = expedientId;
 	}
 	public String getTipusDocument() {
 		return tipusDocument;
