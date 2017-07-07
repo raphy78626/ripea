@@ -143,4 +143,17 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			MetaNodeEntity metaNode,
 			Collection<Long> id);
 
+	@Query(	"select" +
+			"    e " +
+			"from" +
+			"    ExpedientEntity e " +
+			"where " +
+			"    e.entitat = :entitat " +
+			"and (e.metaNode is null or e.metaNode in (:metaNodesPermesos)) " +
+			"and (:esNullMetaNode = true or e.metaNode = :metaNode)")
+	List<ExpedientEntity> findByEntitatAndMetaExpedientOrderByNomAsc(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("metaNodesPermesos") List<? extends MetaNodeEntity> metaNodesPermesos,
+			@Param("esNullMetaNode") boolean esNullMetaNode,
+			@Param("metaNode") MetaNodeEntity metaNode);
 }

@@ -32,10 +32,12 @@ import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto.ExecucioMassivaTipusDto;
+import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExecucioMassivaService;
+import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaDocumentService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ContingutMassiuFiltreCommand;
@@ -67,6 +69,8 @@ public class ContingutMassiuController extends BaseUserOAdminController {
 	private MetaDocumentService metaDocumentService;
 	@Autowired
 	private ExecucioMassivaService execucioMassivaService;
+	@Autowired
+	private ExpedientService expedientService;
 	@Autowired
 	private AplicacioService aplicacioService;
 
@@ -106,8 +110,13 @@ public class ContingutMassiuController extends BaseUserOAdminController {
 						entitatActual.getId(),
 						escriptori.getId()));
 		
+		List<ExpedientDto> expedients = new ArrayList<ExpedientDto>();
+		if (filtreCommand.getTipusExpedient() != null)
+			expedients = expedientService.findPerUserAndTipus(entitatActual.getId(), Long.parseLong(filtreCommand.getTipusExpedient()));
 		
-		
+		model.addAttribute(
+				"expedients",
+				expedients);
 		
 		return "contingutMassiuList";
 	}

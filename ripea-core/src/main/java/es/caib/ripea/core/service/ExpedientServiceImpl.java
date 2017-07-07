@@ -425,6 +425,61 @@ public class ExpedientServiceImpl implements ExpedientService {
 				false,
 				true);
 	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<ExpedientDto> findPerUserAndTipus(
+			Long entitatId,
+			Long metaExpedientId) {
+		
+		logger.debug("Consultant els expedients segons el tipus per usuaris ("
+				+ "entitatId=" + entitatId + ", "
+				+ "metaExpedientId=" + metaExpedientId + ")");
+		
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		MetaExpedientEntity metaExpedient = null;
+		if (metaExpedientId != null) {
+			metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+					entitat,
+					metaExpedientId,
+					false,
+					true);
+		}
+		
+		List<MetaExpedientEntity> metaExpedientsPermesos = metaExpedientRepository.findByEntitatOrderByNomAsc(
+				entitat);
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		permisosHelper.filterGrantedAll(
+				metaExpedientsPermesos,
+				new ObjectIdentifierExtractor<MetaExpedientEntity>() {
+					@Override
+					public Long getObjectIdentifier(MetaExpedientEntity metaExpedient) {
+						return metaExpedient.getId();
+					}
+				},
+				MetaNodeEntity.class,
+				new Permission[] {ExtendedPermission.READ},
+				auth);
+		
+		if (!metaExpedientsPermesos.isEmpty()) {
+			return conversioTipusHelper.convertirList(
+					expedientRepository.findByEntitatAndMetaExpedientOrderByNomAsc(
+							entitat, 
+							metaExpedientsPermesos,
+							metaExpedient == null,
+							metaExpedient), 
+					ExpedientDto.class);
+		} else {
+			return new ArrayList<ExpedientDto>();
+		}
+	}
 
 	@Transactional(readOnly = true)
 	@Override

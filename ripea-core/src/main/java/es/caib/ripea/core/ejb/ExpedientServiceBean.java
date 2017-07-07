@@ -233,4 +233,10 @@ public class ExpedientServiceBean implements ExpedientService {
 				format);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public List<ExpedientDto> findPerUserAndTipus(Long entitatId, Long metaExpedientId) throws NotFoundException {
+		return delegate.findPerUserAndTipus(entitatId, metaExpedientId);
+	}
+
 }

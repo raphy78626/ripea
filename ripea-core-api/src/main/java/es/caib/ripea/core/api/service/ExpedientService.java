@@ -142,6 +142,22 @@ public interface ExpedientService {
 			Long entitatId,
 			ExpedientFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
+	
+	/**
+	 * Consulta els expedients de l'usuari per tipus d'expedient
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param metaExpedientId
+	 *            id del metaExpedient
+	 * @return Llista dels expeidents trobats
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<ExpedientDto> findPerUserAndTipus(
+			Long entitatId,
+			Long metaExpedientId) throws NotFoundException;
 
 	/**
 	 * Consulta la llista d'ids d'expedient segons el filtre.
