@@ -1129,10 +1129,12 @@ public class BustiaServiceImpl implements BustiaService {
 				}
 			}
 		} catch (Exception e) {
+			logger.error("=====> ERROR_PROCESSANT_ANNEX: " + e.getStackTrace(), e);
 			//borrar possibles documents i firmes guardats
 			try {
 				eliminarContingutExistent(anotacio);
 			} catch (Exception e1) {
+				logger.error("=====> ERROR_ELIMINANT_DOCS: " + e.getStackTrace(), e);
 				throw new ValidationException("Error eliminants documents en els directoris del servidor");
 			}
 			/////
