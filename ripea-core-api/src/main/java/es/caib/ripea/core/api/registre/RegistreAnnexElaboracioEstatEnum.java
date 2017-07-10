@@ -15,11 +15,11 @@ import java.util.Map;
  */
 public enum RegistreAnnexElaboracioEstatEnum {
 
-	ORIGINAL("01"),
-	COPIA_ELECT_AUTENTICA_CANVI_FORMAT("02"),
-	COPIA_ELECT_AUTENTICA_PAPER("03"),
-	COPIA_ELECT_AUTENTICA_PARCIAL("04"),
-	ALTRES("99");
+	ORIGINAL("EE01"),
+	COPIA_ELECT_AUTENTICA_CANVI_FORMAT("EE02"),
+	COPIA_ELECT_AUTENTICA_PAPER("EE03"),
+	COPIA_ELECT_AUTENTICA_PARCIAL("EE04"),
+	ALTRES("EE99");
 
 	private final String valor;
 	private RegistreAnnexElaboracioEstatEnum(String valor) {

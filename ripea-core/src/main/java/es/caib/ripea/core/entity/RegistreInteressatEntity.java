@@ -244,7 +244,8 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 				RegistreEntity registre) {
 			built = new RegistreInteressatEntity();
 			built.tipus = tipus.getValor();
-			built.documentTipus = documentTipus.getValor();
+			if (documentTipus != null)
+				built.documentTipus = documentTipus.getValor();
 			built.documentNum = documentNum;
 			built.nom = nom;
 			built.llinatge1 = llinatge1;

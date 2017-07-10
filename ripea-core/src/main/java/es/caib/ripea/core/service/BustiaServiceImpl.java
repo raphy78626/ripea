@@ -37,6 +37,7 @@ import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.exception.BustiaServiceException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
@@ -697,12 +698,8 @@ public class BustiaServiceImpl implements BustiaService {
 				unitatAdministrativa,
 				anotacio,
 				reglaAplicable);
-		
 		registreRepository.saveAndFlush(anotacioEntity);
-		
-		//recorrem els annexos per a guardar el document
 		processarAnnexos(anotacioEntity, bustia);
-		
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
@@ -1115,7 +1112,6 @@ public class BustiaServiceImpl implements BustiaService {
 	}
 
 	private void processarAnnexos(RegistreEntity anotacio, BustiaEntity bustia) {
-		//recorrem els annexos per a guardar el document
 		try {
 			for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 				//si tenim contingut de fitxer i també referència del registre, hem de tornar una excepció
@@ -1128,17 +1124,17 @@ public class BustiaServiceImpl implements BustiaService {
 					guardarFirmaAnnex(annex, bustia);
 				}
 			}
-		} catch (Exception e) {
-			logger.error("=====> ERROR_PROCESSANT_ANNEX: " + e.getStackTrace(), e);
-			//borrar possibles documents i firmes guardats
+		} catch (Exception ex) {
 			try {
 				eliminarContingutExistent(anotacio);
-			} catch (Exception e1) {
-				logger.error("=====> ERROR_ELIMINANT_DOCS: " + e.getStackTrace(), e);
-				throw new ValidationException("Error eliminants documents en els directoris del servidor");
+			} catch (Exception ex2) {
+				logger.error(
+						"Error al eliminar els continguts relacionats amb els annexos de l'anotació de registre",
+						ex2);
 			}
-			/////
-			throw new ValidationException("Error al guardar el document en els directoris del servidor");
+			throw new BustiaServiceException(
+					"Error al processar els annexos de l'anotació de registre",
+					ex);
 		}
 	}
 
