@@ -1,6 +1,5 @@
 // Basat en http://stefangabos.ro/jquery/jquery-plugin-boilerplate-revisited/
 (function($) {
-
 	$.webutilModal = function(element, options) {
 		var defaults = {
 			adjustHeight: true,
@@ -8,9 +7,11 @@
 			refreshMissatges: true,
 			refreshDatatable: false,
 			refreshPagina: false,
+			refreshTancar: false,
 			elementBotons: "#modal-botons",
 			elementForm: "#modal-form",
-			elementTancarData: "modal-cancel"
+			elementTancarData: "modal-cancel",
+			elementRetorn: null
 		}
 		var $element = $(element), element = element;
 		var plugin = this;
@@ -69,11 +70,13 @@
 								refreshMissatges: plugin.settings.refreshMissatges,
 								refreshDatatable: plugin.settings.refreshDatatable,
 								refreshPagina: plugin.settings.refreshPagina,
+								refreshTancar: plugin.settings.refreshTancar,
 								elementBotons: plugin.settings.elementBotons,
 								elementForm: plugin.settings.elementForm,
 								elementTancarData: plugin.settings.elementTancarData,
 								contentUrl: webutilUrlAmbPrefix(href, '/modal'),
-								dataTableId: dataTableId
+								dataTableId: dataTableId,
+								elementRetorn: plugin.settings.elementRetorn
 							});
 						} else {
 							$('#' + modalDivId).webutilModalShow({
@@ -82,12 +85,23 @@
 								refreshMissatges: plugin.settings.refreshMissatges,
 								refreshDatatable: plugin.settings.refreshDatatable,
 								refreshPagina: plugin.settings.refreshPagina,
+								refreshTancar: plugin.settings.refreshTancar,
 								elementBotons: plugin.settings.elementBotons,
 								elementForm: plugin.settings.elementForm,
 								elementTancarData: plugin.settings.elementTancarData,
-								dataTableId: dataTableId
+								dataTableId: dataTableId,
+								elementRetorn: plugin.settings.elementRetorn
 							});
 						}
+						$('#' + modalDivId).data('elementRetorn', plugin.settings.elementRetorn);
+						$('#' + modalDivId).on('hide.bs.modal', function() {
+							var valorCodi = localStorage['relval_' + modalDivId];
+							var nomElementRetorn = $(this).data('elementRetorn');
+							if (nomElementRetorn != null && valorCodi != undefined && valorCodi != '') {
+								$(nomElementRetorn).val(valorCodi);
+								$(nomElementRetorn).trigger('blur');
+							}
+						});
 					} else {
 						window.open(href, '_blank');
 					}
@@ -172,7 +186,16 @@
 						webutilModalAdjustHeight(iframe);
 					});
 				});
+				
+				modalobj.on('hidden.bs.modal', function () {
+					if (settings.refreshTancar) {
+						$('#' + settings.dataTableId).webutilDatatable('refresh');
+					}
+				});
+				
 				iframe.on('load', function () {
+					localStorage['relval_' + settings.dataTableId] = undefined;
+//					$(this).removeData('retval');
 					var pathname = this.contentDocument.location.pathname;
 					if (pathname == webutilModalTancarPath()) {
 						$('button.close', $(this).closest('.modal-dialog')).trigger('click');

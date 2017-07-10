@@ -5,7 +5,7 @@
         <dependent-module archiveName="ripea.jar" deploy-path="/" handle="module:/resource/ripea-core/ripea-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="ripea.war" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/ripea-war/0.1/ripea-war-0.1.war">
+        <dependent-module archiveName="ripea.war" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/ripea/ripea-war/0.1/ripea-war-0.1.war">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="hibernate-validator-legacy-4.0.2.GA.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/hibernate/hibernate-validator-legacy/4.0.2.GA/hibernate-validator-legacy-4.0.2.GA.jar">
@@ -282,6 +282,9 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="log4j-1.2.17.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/log4j/log4j/1.2.17/log4j-1.2.17.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jsoup-1.10.2.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/jsoup/jsoup/1.10.2/jsoup-1.10.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="joda-time-1.6.2.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/joda-time/joda-time/1.6.2/joda-time-1.6.2.jar">

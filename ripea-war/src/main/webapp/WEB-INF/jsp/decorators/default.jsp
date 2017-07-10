@@ -82,7 +82,7 @@ body {
 				</button--%>
 				<div class="navbar-brand">
 					<div id="govern-logo" class="pull-left">
-						<img src="<c:url value="/img/govern-logo.png"/>" alt="Govern de les Illes Balears" />
+						<img src="<c:url value="/img/govern-logo.png"/>"  height="65" alt="Govern de les Illes Balears" />
 					</div>
 					<div id="app-logo" class="pull-left">
 						<img src="<c:url value="/img/logo.png"/>" alt="RIPEA" />
@@ -212,7 +212,7 @@ body {
 	</div>
     <div class="container container-foot">
     	<div class="pull-left app-version"><p>RIPEA v<rip:versio/></p></div>
-        <div class="pull-right govern-footer"><p><img src="<c:url value="/img/govern-logo-neg.png"/>" width="129" height="30" alt="Govern de les Illes Balears" /></p></div>
+        <div class="pull-right govern-footer"><p><img src="<c:url value="/img/govern-logo-neg.png"/>" height="30" alt="Govern de les Illes Balears" /></p></div>
     </div>
 </body>
 </html>

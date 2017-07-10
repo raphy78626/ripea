@@ -70,6 +70,7 @@ import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
+import es.caib.ripea.core.repository.ContingutComentariRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
@@ -101,6 +102,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private ExpedientRepository expedientRepository;
 	@Resource
 	private ContingutRepository contingutRepository;
+	@Resource
+	private ContingutComentariRepository contingutComentariRepository;
 
 	@Resource
 	private PermisosHelper permisosHelper;
@@ -808,7 +811,7 @@ public class BustiaServiceImpl implements BustiaService {
 				new Converter<ContingutEntity, BustiaContingutDto>() {
 					@Override
 					public BustiaContingutDto convert(ContingutEntity source) {
-						return toContingutPendentDto(source);
+						return toBustiaContingutDto(source);
 					}
 				});
 	}
@@ -837,7 +840,7 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				contingutId,
 				bustia);
-		return toContingutPendentDto(contingutPendent);
+		return toBustiaContingutDto(contingutPendent);
 	}
 
 	@Transactional(readOnly = true)
@@ -1067,7 +1070,7 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 	}
 
-	private BustiaContingutDto toContingutPendentDto(
+	private BustiaContingutDto toBustiaContingutDto(
 			ContingutEntity contingut) {
 		Object deproxied = HibernateHelper.deproxy(contingut);
 		BustiaContingutDto bustiaContingut = new BustiaContingutDto();
@@ -1105,6 +1108,9 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaContingut.setRecepcioData(contingut.getDarrerMoviment().getCreatedDate().toDate());
 			bustiaContingut.setComentari(contingut.getDarrerMoviment().getComentari());
 		}
+		
+		bustiaContingut.setNumComentaris(contingutComentariRepository.countByContingut(contingut));
+		
 		return bustiaContingut;
 	}
 
@@ -1123,10 +1129,12 @@ public class BustiaServiceImpl implements BustiaService {
 				}
 			}
 		} catch (Exception e) {
+			logger.error("=====> ERROR_PROCESSANT_ANNEX: " + e.getStackTrace(), e);
 			//borrar possibles documents i firmes guardats
 			try {
 				eliminarContingutExistent(anotacio);
 			} catch (Exception e1) {
+				logger.error("=====> ERROR_ELIMINANT_DOCS: " + e.getStackTrace(), e);
 				throw new ValidationException("Error eliminants documents en els directoris del servidor");
 			}
 			/////

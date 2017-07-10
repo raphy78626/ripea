@@ -41,6 +41,10 @@
 		<level value="DEBUG" />
 	</logger-->
 
+	<logger name="es.caib.ripea.plugin.caib.arxiu.client.ArxiuClientImpl">
+		<level value="DEBUG" />
+	</logger>
+
 	<root>
 		<level value="INFO"/>
 		<appender-ref ref="consoleAppender"/>

@@ -93,11 +93,21 @@ public class DocumentController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long documentId,
 			Model model) {
-		emplenarModelPortafirmes(
-				request,
-				documentId,
-				model);
-		model.addAttribute(new PortafirmesEnviarCommand());
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		DocumentDto document = documentService.findById(
+				entitatActual.getId(),
+				documentId);
+		model.addAttribute("document", document);
+		
+		PortafirmesEnviarCommand command = new PortafirmesEnviarCommand();
+		command.setMotiu(
+				getMessage(
+						request, 
+						"contenidor.document.portafirmes.camp.motiu.default") +
+				" [" + document.getExpedientPare().getNom() + "]");
+		
+		model.addAttribute(command);
 		return "portafirmesForm";
 	}
 	@RequestMapping(value = "/{documentId}/portafirmes/upload", method = RequestMethod.POST)
@@ -312,11 +322,20 @@ public class DocumentController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long documentId,
 			Model model) {
-		emplenarModelFirmaClient(
-				request,
-				documentId,
-				model);
-		model.addAttribute(new PassarelaFirmaEnviarCommand());
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		DocumentDto document = documentService.findById(
+				entitatActual.getId(),
+				documentId);
+		model.addAttribute("document", document);
+		
+		PassarelaFirmaEnviarCommand command = new PassarelaFirmaEnviarCommand();
+		command.setMotiu(getMessage(
+						request, 
+						"contenidor.document.portafirmes.camp.motiu.default") +
+				" [" + document.getExpedientPare().getNom() + "]");
+		
+		model.addAttribute(command);
 		return "passarelaFirmaForm";
 	}
 	@RequestMapping(value = "/{documentId}/firmaPassarela", method = RequestMethod.POST)

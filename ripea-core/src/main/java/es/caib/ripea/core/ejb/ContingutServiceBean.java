@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
+import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
@@ -264,6 +265,26 @@ public class ContingutServiceBean implements ContingutService {
 		return delegate.exportacioEni(
 				entitatId,
 				contingutId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<ContingutComentariDto> findComentarisPerContingut(Long entitatId, Long contingutId)
+			throws NotFoundException {
+		return delegate.findComentarisPerContingut(entitatId, contingutId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean publicarComentariPerContingut(Long entitatId, Long contingutId, String text)
+			throws NotFoundException {
+		return delegate.publicarComentariPerContingut(entitatId, contingutId, text);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean marcarProcessat(Long entitatId, Long contingutId, String text) throws NotFoundException {
+		return delegate.marcarProcessat(entitatId, contingutId, text);
 	}
 
 }

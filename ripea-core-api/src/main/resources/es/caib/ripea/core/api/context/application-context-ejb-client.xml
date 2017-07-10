@@ -37,6 +37,10 @@
 			jndi-name="ripea/DadesExternesServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.DadesExternesService"/>
 	<jee:local-slsb
+			id="unitatsOrganitzativesService"
+			jndi-name="ripea/UnitatsOrganitzativesServiceBean/local"
+			business-interface="es.caib.ripea.core.api.service.UnitatsOrganitzativesService"/>
+	<jee:local-slsb
 			id="documentService"
 			jndi-name="ripea/DocumentServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.DocumentService"/>

@@ -27,6 +27,7 @@ import es.caib.ripea.core.api.dto.ArxiuPluginDocumentContingutDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginNodeFillDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginNodeTipusEnumDto;
+import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
@@ -50,6 +51,7 @@ import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.entity.CarpetaEntity;
+import es.caib.ripea.core.entity.ContingutComentariEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DadaEntity;
@@ -74,6 +76,7 @@ import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
+import es.caib.ripea.core.repository.ContingutComentariRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.EscriptoriRepository;
@@ -110,6 +113,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private DadaRepository dadaRepository;
 	@Resource
 	private MetaNodeRepository metaNodeRepository;
+	@Resource
+	private ContingutComentariRepository contingutComentariRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -1496,7 +1501,99 @@ public class ContingutServiceImpl implements ContingutService {
 		return fitxer;
 	}
 
-
+	@Transactional(readOnly = true)
+	@Override
+	public List<ContingutComentariDto> findComentarisPerContingut(
+			Long entitatId,
+			Long contingutId) {
+		logger.debug("Obtenint els comentaris pel contingut de bustia ("
+				+ "entitatId=" + entitatId + ", "
+				+ "nodeId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		// Comprova que l'usuari tengui accés al contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
+				false,
+				false,
+				false,
+				true);
+		
+		
+		return conversioTipusHelper.convertirList(
+				contingutComentariRepository.findByContingutOrderByCreatedDateAsc(contingut), 
+				ContingutComentariDto.class);
+	}
+	
+	@Transactional
+	@Override
+	public boolean publicarComentariPerContingut(
+			Long entitatId,
+			Long contingutId,
+			String text) {
+		logger.debug("Obtenint els comentaris pel contingut de bustia ("
+				+ "entitatId=" + entitatId + ", "
+				+ "nodeId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		// Comprova que l'usuari tengui accés al contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
+				false,
+				false,
+				false,
+				true);
+		
+		//truncam a 1024 caracters
+		if (text.length() > 1024)
+			text = text.substring(0, 1024);
+		
+		ContingutComentariEntity comentari = ContingutComentariEntity.getBuilder(
+				contingut, 
+				text).build();
+		
+		contingutComentariRepository.save(comentari);
+		
+		return true;
+	}
+	
+	@Transactional
+	@Override
+	public boolean marcarProcessat(
+			Long entitatId,
+			Long contingutId,
+			String text) {
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		
+		contingut.updateEsborrat(1);
+		
+		return publicarComentariPerContingut(
+				entitatId,
+				contingutId,
+				text);
+	}
 
 	private ContingutEntity copiarContingut(
 			EntitatEntity entitat,

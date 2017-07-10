@@ -23,10 +23,12 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
+import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
@@ -39,6 +41,7 @@ import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.NodeDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
+import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.BustiaService;
@@ -544,6 +547,47 @@ public class ContingutController extends BaseUserController {
 				fitxer.getContingut(),
 				response);
 		return null;
+	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/comentaris", method = RequestMethod.GET)
+	public String comentaris(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		model.addAttribute(
+				"contingut",
+				contingutService.findAmbIdUser(
+						entitatActual.getId(),
+						contingutId,
+						true,
+						false));
+		
+		UsuariDto usuariActual = aplicacioService.getUsuariActual();
+		
+		model.addAttribute(
+				"usuariActual",
+				usuariActual);
+		
+		return "contingutComentaris";
+	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/comentaris/publicar", method = RequestMethod.POST)
+	@ResponseBody
+	public List<ContingutComentariDto> publicarComentari(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			@RequestParam String text,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		if (text != null && !text.isEmpty()) {
+			contingutService.publicarComentariPerContingut(entitatActual.getId(), contingutId, text);
+		}
+			
+		return contingutService.findComentarisPerContingut(
+				entitatActual.getId(), 
+				contingutId);
 	}
 
 	@InitBinder

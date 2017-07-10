@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.caib.ripea.plugin.SistemaExternException;
+import es.caib.ripea.plugin.unitat.Localitat;
+import es.caib.ripea.plugin.unitat.ProvinciaRw3;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
+import es.caib.ripea.plugin.unitat.UnitatOrganitzativaD3;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
 
 /**
@@ -49,7 +52,7 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 	}
 
 	@Override
-	public List<UnitatOrganitzativa> cercaUnitats(
+	public List<UnitatOrganitzativaD3> cercaUnitatsD3(
 			String codiUnitat, 
 			String denominacioUnitat,
 			Long codiNivellAdministracio, 
@@ -76,6 +79,26 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 			unitats.add(fill);
 		}
 		return unitats;
+	}
+
+	@Override
+	public List<ProvinciaRw3> getProvinciaPerComunitat(Long codiComunitat) throws SistemaExternException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Localitat> getLocalitatsPerProvincia(Long codiProvincia) throws SistemaExternException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<UnitatOrganitzativa> cercaUnitats(String codiUnitat, String denominacioUnitat,
+			Long codiNivellAdministracio, Long codiComunitat, Boolean ambOficines, Boolean esUnitatArrel,
+			Long codiProvincia, String codiLocalitat) throws SistemaExternException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

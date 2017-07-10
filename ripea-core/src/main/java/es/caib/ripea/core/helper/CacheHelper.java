@@ -248,11 +248,23 @@ public class CacheHelper {
 	public void evictUnitatsOrganitzativesPerEntitat(
 			String entitatCodi) {
 	}
+	
+//	@Cacheable(value = "unitatsOrganitzativesList", key="#entitatCodi")
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesListPerEntitat(
+			String entitatCodi) {
+		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+		return pluginHelper.unitatsOrganitzativesFindListByPare(
+				entitat.getUnitatArrel());
+	}
+//	@CacheEvict(value = "unitatsOrganitzativesList", key="#entitatCodi")
+	public void evictUnitatsOrganitzativesListPerEntitat(
+			String entitatCodi) {
+	}
 
 	@Cacheable(value = "unitatOrganitzativa", key="#organCodi")
 	public UnitatOrganitzativaDto findUnitatOrganitzativaPerCodi(
-			String organCodi) {
-		UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(organCodi);
+			String organCodi) throws Exception {
+			UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(organCodi);
 		if (unitat != null) {
 			unitat.setAdressa(
 					getAdressa(
