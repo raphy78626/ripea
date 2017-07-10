@@ -4,7 +4,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>es.caib</groupId>
+		<groupId>es.caib.ripea</groupId>
 		<artifactId>ripea</artifactId>
 		<version>0.1</version>
 	</parent>
@@ -220,7 +220,7 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>es.caib</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ripea-applet</artifactId>
 			<version>${ripea.version}</version>
 			<scope>provided</scope>
@@ -230,7 +230,7 @@
 		<profile>
 			<id>tomcat</id>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
 				<application.context>application-context-tomcat.xml</application.context>
@@ -267,17 +267,17 @@
 					<version>1.1</version>
 				</dependency>
 				<dependency>
-					<groupId>es.caib</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>ripea-core</artifactId>
 					<version>${ripea.version}</version>
 				</dependency>
 				<dependency>
-					<groupId>es.caib</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>ripea-plugin-impl</artifactId>
 					<version>${ripea.version}</version>
 				</dependency>
 				<dependency>
-					<groupId>es.caib</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>ripea-lib-common</artifactId>
 					<version>${ripea.version}</version>
 					<type>pom</type>
@@ -297,7 +297,7 @@
 		<profile>
 			<id>jboss</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<properties>
 				<application.context>application-context-jboss.xml</application.context>
@@ -310,7 +310,7 @@
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
-					<groupId>es.caib</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>ripea-lib-common</artifactId>
 					<version>${ripea.version}</version>
 					<scope>provided</scope>
@@ -391,7 +391,7 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>es.caib</groupId>
+									<groupId>${project.groupId}</groupId>
 									<artifactId>ripea-applet</artifactId>
 									<version>${ripea.version}</version>
 									<type>jar</type>

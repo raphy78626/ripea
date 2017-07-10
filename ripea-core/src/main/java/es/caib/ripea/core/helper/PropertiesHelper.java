@@ -36,6 +36,7 @@ public class PropertiesHelper extends Properties {
 		if (instance == null) {
 			instance = new PropertiesHelper();
 			if (propertiesPath != null) {
+				instance.llegirSystem = false;
 				logger.info("Llegint les propietats de l'aplicació del path: " + propertiesPath);
 				try {
 					if (propertiesPath.startsWith("classpath:")) {
@@ -50,7 +51,6 @@ public class PropertiesHelper extends Properties {
 						FileInputStream fis = new FileInputStream(propertiesPath);
 						instance.load(fis);
 					}
-					instance.llegirSystem = false;
 				} catch (Exception ex) {
 					logger.error("No s'han pogut llegir els properties", ex);
 				}
