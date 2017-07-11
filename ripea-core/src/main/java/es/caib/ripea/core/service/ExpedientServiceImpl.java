@@ -33,6 +33,7 @@ import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
+import es.caib.ripea.core.api.dto.ExpedientSelectorDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -424,6 +425,61 @@ public class ExpedientServiceImpl implements ExpedientService {
 				paginacioParams,
 				false,
 				true);
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<ExpedientSelectorDto> findPerUserAndTipus(
+			Long entitatId,
+			Long metaExpedientId) {
+		
+		logger.debug("Consultant els expedients segons el tipus per usuaris ("
+				+ "entitatId=" + entitatId + ", "
+				+ "metaExpedientId=" + metaExpedientId + ")");
+		
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		MetaExpedientEntity metaExpedient = null;
+		if (metaExpedientId != null) {
+			metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
+					entitat,
+					metaExpedientId,
+					false,
+					true);
+		}
+		
+		List<MetaExpedientEntity> metaExpedientsPermesos = metaExpedientRepository.findByEntitatOrderByNomAsc(
+				entitat);
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		permisosHelper.filterGrantedAll(
+				metaExpedientsPermesos,
+				new ObjectIdentifierExtractor<MetaExpedientEntity>() {
+					@Override
+					public Long getObjectIdentifier(MetaExpedientEntity metaExpedient) {
+						return metaExpedient.getId();
+					}
+				},
+				MetaNodeEntity.class,
+				new Permission[] {ExtendedPermission.READ},
+				auth);
+		
+		if (!metaExpedientsPermesos.isEmpty()) {
+			return conversioTipusHelper.convertirList(
+					expedientRepository.findByEntitatAndMetaExpedientOrderByNomAsc(
+							entitat, 
+							metaExpedientsPermesos,
+							metaExpedient == null,
+							metaExpedient), 
+					ExpedientSelectorDto.class);
+		} else {
+			return new ArrayList<ExpedientSelectorDto>();
+		}
 	}
 
 	@Transactional(readOnly = true)

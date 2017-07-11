@@ -3,11 +3,17 @@
  */
 package es.caib.ripea.core.repository;
 
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import es.caib.ripea.core.entity.DocumentEntity;
+import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 
@@ -30,4 +36,67 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> 
 			MetaNodeEntity metaNode,
 			int esborrat);
 
+	@Query(	"select " +
+			"    c " +
+			"from " +
+			"    DocumentEntity c " +
+			"where " +
+			"    c.entitat = :entitat " +
+			"and (:esNullTipusExpedient = true or c.expedient.metaNode.id = :tipusExpedientId) " +
+			"and (:esNullExpedient = true or c.expedient.id = :expedientId) " +
+			"and (:esNullTipusDocument = true or c.metaNode.id = :tipusDocumentId) " +
+			"and (:esNullNom = true or lower(c.nom) like lower('%'||:nom||'%')) " +
+			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
+			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
+			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
+	public Page<DocumentEntity> findDocumentMassiuByFiltrePaginat(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullTipusExpedient") boolean esNullTipusExpedient,
+			@Param("tipusExpedientId") Long tipusExpedientId,
+			@Param("esNullExpedient") boolean esNullExpedient,
+			@Param("expedientId") Long expedientId,
+			
+			@Param("esNullTipusDocument") boolean esNullTipusDocument,
+			@Param("tipusDocumentId") Long tipusDocumentId,
+			
+			@Param("esNullNom") boolean esNullNom,
+			@Param("nom") String nom,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("mostrarEsborrats") boolean mostrarEsborrats,
+			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats,
+			Pageable pageable);
+	
+	
+	@Query(	"select " +
+			"    c.id " +
+			"from " +
+			"    DocumentEntity c " +
+			"where " +
+			"    c.entitat = :entitat " +
+			"and (:esNullTipusExpedient = true or c.expedient.metaNode.id = :tipusExpedientId) " +
+			"and (:esNullExpedient = true or c.expedient.id = :expedientId) " +
+			"and (:esNullTipusDocument = true or c.metaNode.id = :tipusDocumentId) " +
+			"and (:esNullNom = true or lower(c.nom) like lower('%'||:nom||'%')) " +
+			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
+			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
+			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
+	public List<Long> findIdMassiuByEntitatAndFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullTipusExpedient") boolean esNullTipusExpedient,
+			@Param("tipusExpedientId") Long tipusExpedientId,
+			@Param("esNullExpedient") boolean esNullExpedient,
+			@Param("expedientId") Long expedientId,
+			@Param("esNullTipusDocument") boolean esNullTipusDocument,
+			@Param("tipusDocumentId") Long tipusDocumentId,
+			@Param("esNullNom") boolean esNullNom,
+			@Param("nom") String nom,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("mostrarEsborrats") boolean mostrarEsborrats,
+			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats);
 }
