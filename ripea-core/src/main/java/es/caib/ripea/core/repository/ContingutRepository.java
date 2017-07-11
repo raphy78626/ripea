@@ -148,5 +148,5 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 	List<Object[]> countByPares(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("pares") List<? extends ContingutEntity> pares);
-
+	
 }

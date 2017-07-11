@@ -17,6 +17,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.ExpedientFiltreDto;
+import es.caib.ripea.core.api.dto.ExpedientSelectorDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -231,6 +232,12 @@ public class ExpedientServiceBean implements ExpedientService {
 				metaExpedientId,
 				expedientIds,
 				format);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<ExpedientSelectorDto> findPerUserAndTipus(Long entitatId, Long metaExpedientId) throws NotFoundException {
+		return delegate.findPerUserAndTipus(entitatId, metaExpedientId);
 	}
 
 }

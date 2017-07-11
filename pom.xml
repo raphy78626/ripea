@@ -13,7 +13,7 @@
 		<!--spring.version>4.2.5.RELEASE</spring.version>
 		<spring-security.version>4.0.4.RELEASE</spring-security.version> 
 		<spring-data-jpa.version>1.9.4.RELEASE</spring-data-jpa.version -->
-		<spring.version>3.2.16.RELEASE</spring.version>
+		<spring.version>3.2.17.RELEASE</spring.version>
 		<spring-security.version>3.2.9.RELEASE</spring-security.version>
 		<spring-data-jpa.version>1.6.6.RELEASE</spring-data-jpa.version>
 		<hibernate.version>3.6.5.Final</hibernate.version>

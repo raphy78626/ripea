@@ -10,6 +10,12 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
+import es.caib.ripea.core.api.dto.DocumentDto;
+import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto;
+import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto.ExecucioMassivaEstatDto;
+import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
+import es.caib.ripea.core.entity.DocumentEntity;
+import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
@@ -56,6 +62,23 @@ public class ConversioTipusHelper {
 						return target;
 					}
 				});*/
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<ExecucioMassivaContingutEntity, ExecucioMassivaContingutDto>() {
+					public ExecucioMassivaContingutDto convert(ExecucioMassivaContingutEntity source, Type<? extends ExecucioMassivaContingutDto> destinationClass) {
+						ExecucioMassivaContingutDto target = new ExecucioMassivaContingutDto();
+						target.setDataInici(source.getDataInici());
+						target.setDataFi(source.getDataFi());
+						target.setEstat(ExecucioMassivaEstatDto.valueOf(source.getEstat().name()));
+						target.setError(source.getError());
+						target.setOrdre(source.getOrdre());
+						target.setExecucioMassiva(convertir(source.getExecucioMassiva(), ExecucioMassivaDto.class));
+						
+						if (source.getContingut() instanceof DocumentEntity)
+							target.setContingut(convertir((DocumentEntity)source.getContingut(), DocumentDto.class));
+						
+						return target;
+					}
+				});
 	}
 
 	public <T> T convertir(Object source, Class<T> targetType) {

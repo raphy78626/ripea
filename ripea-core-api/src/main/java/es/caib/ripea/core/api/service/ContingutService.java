@@ -16,7 +16,9 @@ import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
+import es.caib.ripea.core.api.dto.ContingutMassiuFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
+import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -500,5 +502,42 @@ public interface ContingutService {
 			Long entitatId,
 			Long contingutId,
 			String text) throws NotFoundException;
+	
+	
+	
+	/**
+	 * Consulta la llista d'ids de contingut segons el filtre.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param filtre
+	 *            Filtre per a la consulta.
+	 * @return La llista amb els ids dels continguts.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	public List<Long> findIdsMassiusAmbFiltre(
+			Long entitatId,
+			ContingutMassiuFiltreDto filtre) throws NotFoundException;
+	
+	
+	
+	
+	/**
+	 * Consulta el amb el programar accions massives
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param filtre del datatable
+	 * 
+	 * @return El contingut pendent.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public PaginaDto<DocumentDto> documentMassiuFindByDatatable(
+			Long entitatId,
+			ContingutMassiuFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException;
 	
 }
