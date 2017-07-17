@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -74,7 +75,7 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	private String canalPreferent;
 	@Column(name = "observacions", length = 160)
 	private String observacions;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "representant_id")
 	@ForeignKey(name = "ipa_interessat_representant_fk")
 	protected RegistreInteressatEntity representant;
