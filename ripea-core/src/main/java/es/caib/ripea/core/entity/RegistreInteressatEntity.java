@@ -29,15 +29,7 @@ import es.caib.ripea.core.audit.RipeaAuditable;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "ipa_registre_inter",
-		uniqueConstraints = {
-				@UniqueConstraint(
-						name = "ipa_regint_mult_uk",
-						columnNames = {
-								"registre_id",
-								"tipus",
-								"doc_tipus",
-								"doc_num"})})
+@Table(	name = "ipa_registre_inter")
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 
