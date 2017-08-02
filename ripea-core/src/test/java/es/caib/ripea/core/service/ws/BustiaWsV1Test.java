@@ -61,11 +61,62 @@ public class BustiaWsV1Test {
 		anotacio.setEntitatCodi("?");
 		anotacio.setLlibreCodi("?");
 		
+		anotacio.setInteressats(new ArrayList<RegistreInteressat>());
+		// Afegeix interessats
+		for (int i=0; i<2; i++)
+			anotacio.getInteressats().add(getInteressat(i));
+		
 		// Envia l'anotació de registre.
 		getBustiaService().enviarAnotacioRegistreEntrada(
 				"A04019299",
 				"A04019299",
 				anotacio);
+	}
+
+	private RegistreInteressat getInteressat(int i) {
+		RegistreInteressat interessat = new RegistreInteressat();
+
+		interessat.setAdresa("Addreça " + i);
+		interessat.setCanalPreferent("02");
+		interessat.setCodiPostal("07500");
+		interessat.setDocumentNum("12345678Z");
+		interessat.setDocumentTipus("N");
+		interessat.setEmail("email" + i + "@mail.com");
+		interessat.setEmailHabilitat("email" + i + "@mail.com");
+		interessat.setNom("Nom_" + i);
+		interessat.setLlinatge1("Llinatge1_" + i);
+		interessat.setLlinatge2("Llinatge2_" + i);
+		interessat.setMunicipi("Municipi"+i);
+		interessat.setObservacions("Observacions " + i);
+		interessat.setPais("ES");
+		interessat.setProvincia("Prov" + i);
+		interessat.setRaoSocial("?");
+		interessat.setTelefon("971000000");
+		interessat.setTipus("2");
+		
+		// Representant de l'interessat
+		RegistreInteressat representant = new RegistreInteressat();
+		representant.setAdresa("Addreça representant " + i);
+		representant.setCanalPreferent("02");
+		representant.setCodiPostal("07500");
+		representant.setDocumentNum("12345678Z");
+		representant.setDocumentTipus("N");
+		representant.setEmail("representant" + i + "@mail.com");
+		representant.setEmailHabilitat("representant" + i + "@mail.com");
+		representant.setNom("Representant_" + i);
+		representant.setLlinatge1("Llinatge1_" + i);
+		representant.setLlinatge2("Llinatge2_" + i);
+		representant.setMunicipi("Municipi"+i);
+		representant.setObservacions("Observacions representant " + i);
+		representant.setPais("ES");
+		representant.setProvincia("Prov" + i);
+		representant.setRaoSocial("?");
+		representant.setTelefon("971000000");
+		representant.setTipus("2");
+		
+		interessat.setRepresentant(representant);
+		
+		return interessat;
 	}
 
 	private BustiaV1WsService getBustiaService() throws Exception {

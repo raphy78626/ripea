@@ -11,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
@@ -163,7 +162,7 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 			String emailHabilitat,
 			RegistreInteressatCanalEnum canalPreferent) {
 		Builder representantBuilder;
-		if (nom == null) {
+		if (nom != null) {
 			representantBuilder = getBuilder(
 					tipus,
 					documentTipus,
@@ -301,7 +300,7 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 			return this;
 		}
 		public Builder representat(RegistreInteressatEntity representat) {
-			built.representant = representat;
+			built.representat = representat;
 			return this;
 		}
 		public RegistreInteressatEntity build() {
