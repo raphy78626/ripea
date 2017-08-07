@@ -1652,23 +1652,36 @@ public class ContingutServiceImpl implements ContingutService {
 			}
 		}
 		
+		List<DocumentEntity> preDocuments = documentRepository.findDocumentMassiuByFiltre(
+				entitat,
+				(filtre.getTipusExpedient() == null),
+				filtre.getTipusExpedient(),
+				(filtre.getExpedientId() == null),
+				filtre.getExpedientId(),
+				(filtre.getTipusDocument() == null),
+				filtre.getTipusDocument(),
+				(filtre.getNom() == null),
+				filtre.getNom(),
+				(dataInici == null),
+				dataInici,
+				(dataFi == null),
+				dataFi,
+				false,
+				true);
+		
+		List<Long> docIds = new ArrayList<Long>();
+		for (DocumentEntity document: preDocuments) {
+			try {
+				contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(entitat, document);
+				docIds.add(document.getId());
+			} catch (SecurityException se) {
+				
+			}
+		}
+		
 		return paginacioHelper.toPaginaDto(
-				documentRepository.findDocumentMassiuByFiltrePaginat(
-						entitat,
-						(filtre.getTipusExpedient() == null),
-						filtre.getTipusExpedient(),
-						(filtre.getExpedientId() == null),
-						filtre.getExpedientId(),
-						(filtre.getTipusDocument() == null),
-						filtre.getTipusDocument(),
-						(filtre.getNom() == null),
-						filtre.getNom(),
-						(dataInici == null),
-						dataInici,
-						(dataFi == null),
-						dataFi,
-						false,
-						true,
+				documentRepository.findDocumentMassiuByIdsPaginat(
+						docIds,
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				DocumentDto.class,
 				new Converter<DocumentEntity, DocumentDto>() {
