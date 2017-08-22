@@ -32,6 +32,7 @@ public class IntegracioHelper {
 	public static final String INTCODI_USUARIS = "USUARIS";
 	public static final String INTCODI_UNITATS = "UNITATS";
 	public static final String INTCODI_CIUTADA = "CIUTADA";
+	public static final String INTCODI_NOTIB = "NOTIB";
 	public static final String INTCODI_PFIRMA = "PFIRMA";
 	public static final String INTCODI_ARXIU = "ARXIU";
 	public static final String INTCODI_CONVERT = "CONVERT";
@@ -63,6 +64,9 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_CIUTADA));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_NOTIB));
 		integracions.add(
 				novaIntegracio(
 						INTCODI_USUARIS));
@@ -205,6 +209,8 @@ public class IntegracioHelper {
 			integracio.setNom("Unitats admin.");
 		} else if (INTCODI_CIUTADA.equals(codi)) {
 			integracio.setNom("Com. ciutadà");
+		} else if (INTCODI_NOTIB.equals(codi)) {
+			integracio.setNom("Com. Notib");
 		} else if (INTCODI_CALLBACK.equals(codi)) {
 			integracio.setNom("Callback PF");
 		} else if (INTCODI_DADESEXT.equals(codi)) {

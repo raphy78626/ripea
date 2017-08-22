@@ -82,6 +82,10 @@ import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.Municipi;
 import es.caib.ripea.plugin.dadesext.Pais;
 import es.caib.ripea.plugin.dadesext.Provincia;
+import es.caib.ripea.plugin.notib.NotibDocument;
+import es.caib.ripea.plugin.notib.NotibNotificacioResultat;
+import es.caib.ripea.plugin.notib.NotibPersona;
+import es.caib.ripea.plugin.notib.NotibPlugin;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocument;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocumentTipus;
 import es.caib.ripea.plugin.portafirmes.PortafirmesFluxBloc;
@@ -108,6 +112,7 @@ public class PluginHelper {
 	private ConversioPlugin conversioPlugin;
 	private RegistrePlugin registrePlugin;
 	private CiutadaPlugin ciutadaPlugin;
+	private NotibPlugin notibPlugin;
 	private DadesExternesPlugin dadesExternesPlugin;
 	private ArxiuPlugin arxiuPlugin;
 
@@ -2358,7 +2363,7 @@ public class PluginHelper {
 		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
 		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
 		accioParams.put("unitatAdministrativa", metaExpedient.getUnitatAdministrativa());
-		String idioma = getIdiomaPerPluginCiutada(destinatari.getPreferenciaIdioma());
+		String idioma = getIdiomaPerPluginNotificacio(destinatari.getPreferenciaIdioma());
 		accioParams.put("idioma", idioma);
 		accioParams.put("destinatari", destinatari.getIdentificador());
 		long t0 = System.currentTimeMillis();
@@ -2524,7 +2529,7 @@ public class PluginHelper {
 					metaExpedient.getNotificacioOrganCodi(),
 					toPluginCiutadaPersona(destinatari),
 					null,
-					getIdiomaPerPluginCiutada(idioma),
+					getIdiomaPerPluginNotificacio(idioma),
 					oficiTitol,
 					oficiText,
 					avisTitol,
@@ -2775,7 +2780,139 @@ public class PluginHelper {
 		}
 	}
 
-
+	
+	/*****************************/
+	/**** NOTIFICACIONS NOTIB ****/
+	/*****************************/
+	public NotibNotificacioResultat notibNotificacioEnviar(
+			ExpedientEntity expedient,
+			InteressatEntity destinatari,
+			String oficiTitol,
+			String oficiText,
+			String avisTitol,
+			String avisText,
+			String avisTextMobil,
+			InteressatIdiomaEnumDto idioma,
+			boolean confirmarRecepcio,
+			List<DocumentEntity> annexos) {
+		MetaExpedientEntity metaExpedient = expedient.getMetaExpedient();
+		String accioDescripcio = "Enviament d'una notificació electrònica al notib";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientId", expedient.getId().toString());
+		accioParams.put("expedientNumero", expedient.getNumero());
+		accioParams.put("expedientTitol", expedient.getNom());
+		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
+		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
+		accioParams.put("unitatAdministrativa", metaExpedient.getUnitatAdministrativa());
+		accioParams.put("llibreCodi", metaExpedient.getNotificacioLlibreCodi());
+		accioParams.put("organCodi", metaExpedient.getNotificacioOrganCodi());
+		accioParams.put("destinatari", (destinatari != null) ? destinatari.getIdentificador() : "<null>");
+		accioParams.put("idioma", idioma.name());
+		accioParams.put("oficiTitol", oficiTitol);
+		accioParams.put("avisTitol", avisTitol);
+		accioParams.put("confirmarRecepcio", new Boolean(confirmarRecepcio).toString());
+		if (annexos != null)
+			accioParams.put("annexos (núm.)", new Integer(annexos.size()).toString());
+		if (annexos != null) {
+			StringBuilder annexosIds = new StringBuilder();
+			StringBuilder annexosTitols = new StringBuilder();
+			boolean primer = true;
+			for (DocumentEntity annex: annexos) {
+				if (!primer) {
+					annexosIds.append(", ");
+					annexosTitols.append(", ");
+				}
+				annexosIds.append(annex.getId());
+				annexosTitols.append(annex.getNom());
+				primer = false;
+			}
+			accioParams.put("annexosIds", annexosIds.toString());
+			accioParams.put("annexosTitols", annexosTitols.toString());
+		}
+		long t0 = System.currentTimeMillis();
+		try {
+			List<NotibDocument> notibAnnexos = null;
+			if (annexos != null) {
+				notibAnnexos = new ArrayList<NotibDocument>();
+				for (DocumentEntity annex: annexos) {
+					if (DocumentTipusEnumDto.FISIC.equals(annex.getDocumentTipus())) {
+						throw new ValidationException(
+								annex.getId(),
+								DocumentEntity.class,
+								"No espoden emprar documents físics com annexos d'una notificació telemàtica");
+					}
+					NotibDocument cdoc = new NotibDocument();
+					cdoc.setTitol(annex.getNom());
+					FitxerDto fitxer = documentHelper.getFitxerAssociat(annex);
+					cdoc.setArxiuNom(fitxer.getNom());
+					cdoc.setArxiuContingut(fitxer.getContingut());
+					notibAnnexos.add(cdoc);
+				}
+			}
+			
+			NotibNotificacioResultat resultat2 = getNotibPlugin().notificacioCrear(
+					cifEntitat, 
+					enviamentTipus, 
+					concepte, 
+					procedimentCodiSia, 
+					documentArxiuNom, 
+					documentContingut, 
+					destinatari, 
+					representat, 
+					seuExpedientSerieDocumental, 
+					seuExpedientUnitatOrganitzativa, 
+					seuExpedientIdentificadorEni, 
+					seuExpedientTitol, 
+					seuRegistreOficina, 
+					seuRegistreLlibre, 
+					seuIdioma, 
+					seuAvisTitol, 
+					seuAvisText, 
+					seuAvisTextMobil, 
+					seuOficiTitol, 
+					seuOficiText, 
+					confirmarRecepcio, 
+					annexos)
+			
+			NotibNotificacioResultat resultat = getNotibPlugin().notificacioCrear(
+					expedient.getNtiIdentificador(),
+					expedient.getSistraUnitatAdministrativa(),
+					metaExpedient.getNotificacioLlibreCodi(),
+					metaExpedient.getNotificacioOrganCodi(),
+					toPluginCiutadaPersona(destinatari),
+					null,
+					getIdiomaPerPluginNotificacio(idioma),
+					oficiTitol,
+					oficiText,
+					avisTitol,
+					avisText,
+					avisTextMobil,
+					confirmarRecepcio,
+					ciutadaAnnexos);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_CIUTADA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return resultat;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_CIUTADA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_CIUTADA,
+					errorDescripcio,
+					ex);
+		}
+	}
+	/*****************************/
 
 	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
 			UnitatOrganitzativa unitatOrganitzativa,
@@ -2836,8 +2973,45 @@ public class PluginHelper {
 		}
 		return persona;
 	}
+	
+	private NotibPersona toPluginNotibPersona(
+			InteressatEntity interessat) {
+		if (interessat == null)
+			return null;
+		if (	!InteressatDocumentTipusEnumDto.NIF.equals(interessat.getDocumentTipus()) &&
+				!InteressatDocumentTipusEnumDto.CIF.equals(interessat.getDocumentTipus())) {
+			throw new ValidationException(
+					interessat.getId(),
+					InteressatEntity.class,
+					"No es pot notificar a interessats amb el tipus de document " + interessat.getDocumentTipus());
+		}
+		NotibPersona persona = new NotibPersona();
+		if (interessat instanceof InteressatPersonaFisicaEntity) {
+			InteressatPersonaFisicaEntity interessatPf = (InteressatPersonaFisicaEntity)interessat;
+			persona.setNif(interessatPf.getDocumentNum());
+			persona.setNom(interessatPf.getNom());
+			persona.setLlinatge1(interessatPf.getLlinatge1());
+			persona.setLlinatge2(interessatPf.getLlinatge2());
+			persona.setPaisCodi(interessat.getPais());
+			persona.setProvinciaCodi(interessat.getProvincia());
+			persona.setMunicipiCodi(interessat.getMunicipi());
+		} else if (interessat instanceof InteressatPersonaJuridicaEntity) {
+			InteressatPersonaFisicaEntity interessatPj = (InteressatPersonaFisicaEntity)interessat;
+			persona.setNif(interessatPj.getDocumentNum());
+			persona.setNom(interessatPj.getNom());
+			persona.setPaisCodi(interessat.getPais());
+			persona.setProvinciaCodi(interessat.getProvincia());
+			persona.setMunicipiCodi(interessat.getMunicipi());
+		} else if (interessat instanceof InteressatAdministracioEntity) {
+			throw new ValidationException(
+					interessat.getId(),
+					InteressatEntity.class,
+					"Els interessats de les notificacions només poden ser persones físiques o jurídiques");
+		}
+		return persona;
+	}
 
-	private String getIdiomaPerPluginCiutada(InteressatIdiomaEnumDto idioma) {
+	private String getIdiomaPerPluginNotificacio(InteressatIdiomaEnumDto idioma) {
 		switch (idioma) {
 		case CA:
 			return "ca";
@@ -3290,6 +3464,23 @@ public class PluginHelper {
 		}
 		return ciutadaPlugin;
 	}
+	private NotibPlugin getNotibPlugin() {
+		if (notibPlugin == null) {
+			String pluginClass = getPropertyPluginNotib();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					notibPlugin = (NotibPlugin)clazz.newInstance();
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_CIUTADA,
+							"Error al crear la instància del plugin de comunicació amb el notib",
+							ex);
+				}
+			}
+		}
+		return notibPlugin;
+	}
 	private DadesExternesPlugin getDadesExternesPlugin() {
 		if (dadesExternesPlugin == null) {
 			String pluginClass = getPropertyPluginDadesExternes();
@@ -3334,6 +3525,9 @@ public class PluginHelper {
 	}
 	private String getPropertyPluginCiutada() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.ciutada.class");
+	}
+	private String getPropertyPluginNotib() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.notib.class");
 	}
 	private String getPropertyPluginDadesExternes() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.dadesext.class");

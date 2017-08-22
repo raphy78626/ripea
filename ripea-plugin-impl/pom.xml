@@ -197,6 +197,7 @@
 								<wsdlUrl>${basedir}/wsdl/sistra-bantel/BackofficeFacade.wsdl</wsdlUrl>
 								<wsdlUrl>${basedir}/wsdl/sistra-zonaper/BackofficeFacade.wsdl</wsdlUrl>
 								<wsdlUrl>${basedir}/wsdl/sistra-regtel/BackofficeFacade.wsdl</wsdlUrl>
+								<wsdlUrl>${basedir}/wsdl/notib-notificacio/notificacio.wsdl</wsdlUrl>
 							</wsdlUrls>
 							<vmArgs>
 								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
