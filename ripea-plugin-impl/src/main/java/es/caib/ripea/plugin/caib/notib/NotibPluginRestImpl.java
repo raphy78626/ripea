@@ -66,8 +66,7 @@ public class NotibPluginRestImpl implements NotibPlugin {
 			String seuAvisTextMobil,
 			String seuOficiTitol,
 			String seuOficiText,
-			boolean confirmarRecepcio,
-			List<NotibDocument> annexos) throws SistemaExternException {
+			boolean confirmarRecepcio) throws SistemaExternException {
 		
 		try {
 			
@@ -147,9 +146,11 @@ public class NotibPluginRestImpl implements NotibPlugin {
 		destinatariFinal.setDomiciliMunicipiCodiIne(destinatari.getMunicipiCodi());
 		destinatariFinal.setDomiciliMunicipiNom(destinatari.getMunicipiNom());
 		
-		destinatariFinal.setTitularNif(representat.getNif());
-		destinatariFinal.setTitularNom(representat.getNom());
-		destinatariFinal.setTitularLlinatges(representat.getLlinatges());
+		if (representat != null) {
+			destinatariFinal.setTitularNif(representat.getNif());
+			destinatariFinal.setTitularNom(representat.getNom());
+			destinatariFinal.setTitularLlinatges(representat.getLlinatges());
+		}
 		
 		destinataris.add(destinatariFinal);
 		

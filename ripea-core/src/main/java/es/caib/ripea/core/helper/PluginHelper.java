@@ -2794,7 +2794,7 @@ public class PluginHelper {
 			String avisTextMobil,
 			InteressatIdiomaEnumDto idioma,
 			boolean confirmarRecepcio,
-			List<DocumentEntity> annexos) {
+			DocumentEntity document) {
 		MetaExpedientEntity metaExpedient = expedient.getMetaExpedient();
 		String accioDescripcio = "Enviament d'una notificació electrònica al notib";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -2811,68 +2811,49 @@ public class PluginHelper {
 		accioParams.put("oficiTitol", oficiTitol);
 		accioParams.put("avisTitol", avisTitol);
 		accioParams.put("confirmarRecepcio", new Boolean(confirmarRecepcio).toString());
-		if (annexos != null)
-			accioParams.put("annexos (núm.)", new Integer(annexos.size()).toString());
-		if (annexos != null) {
-			StringBuilder annexosIds = new StringBuilder();
-			StringBuilder annexosTitols = new StringBuilder();
-			boolean primer = true;
-			for (DocumentEntity annex: annexos) {
-				if (!primer) {
-					annexosIds.append(", ");
-					annexosTitols.append(", ");
-				}
-				annexosIds.append(annex.getId());
-				annexosTitols.append(annex.getNom());
-				primer = false;
-			}
-			accioParams.put("annexosIds", annexosIds.toString());
-			accioParams.put("annexosTitols", annexosTitols.toString());
+		if (document != null) {
+			accioParams.put("documentId", document.getId());
+			accioParams.put("documentTitol", document.getNom());
 		}
 		long t0 = System.currentTimeMillis();
 		try {
-			List<NotibDocument> notibAnnexos = null;
-			if (annexos != null) {
-				notibAnnexos = new ArrayList<NotibDocument>();
-				for (DocumentEntity annex: annexos) {
-					if (DocumentTipusEnumDto.FISIC.equals(annex.getDocumentTipus())) {
+			NotibDocument notibDocument = null;
+			if (document != null) {
+				notibDocument = new NotibDocument();
+					if (DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())) {
 						throw new ValidationException(
 								annex.getId(),
 								DocumentEntity.class,
 								"No espoden emprar documents físics com annexos d'una notificació telemàtica");
 					}
-					NotibDocument cdoc = new NotibDocument();
-					cdoc.setTitol(annex.getNom());
-					FitxerDto fitxer = documentHelper.getFitxerAssociat(annex);
-					cdoc.setArxiuNom(fitxer.getNom());
-					cdoc.setArxiuContingut(fitxer.getContingut());
-					notibAnnexos.add(cdoc);
-				}
+					notibDocument.setTitol(document.getNom());
+					FitxerDto fitxer = documentHelper.getFitxerAssociat(document);
+					notibDocument.setArxiuNom(fitxer.getNom());
+					notibDocument.setArxiuContingut(fitxer.getContingut());
 			}
 			
 			NotibNotificacioResultat resultat2 = getNotibPlugin().notificacioCrear(
 					cifEntitat, 
-					enviamentTipus, 
+					NotificacioEnviamentTipusEnumDto.NOTIFICACIO.toString(), 
 					concepte, 
 					procedimentCodiSia, 
-					documentArxiuNom, 
-					documentContingut, 
-					destinatari, 
-					representat, 
+					notibDocument.getArxiuNom(), 
+					notibDocument.getArxiuContignut(), 
+					toPluginNotibPersona(destinatari),
+					null, 
 					seuExpedientSerieDocumental, 
 					seuExpedientUnitatOrganitzativa, 
 					seuExpedientIdentificadorEni, 
 					seuExpedientTitol, 
 					seuRegistreOficina, 
-					seuRegistreLlibre, 
-					seuIdioma, 
-					seuAvisTitol, 
-					seuAvisText, 
-					seuAvisTextMobil, 
-					seuOficiTitol, 
-					seuOficiText, 
-					confirmarRecepcio, 
-					annexos)
+					metaExpedient.getNotificacioLlibreCodi(),
+					getIdiomaPerPluginNotificacio(idioma),, 
+					avisTitol,
+					avisText,
+					avisTextMobil,
+					oficiTitol,
+					oficiText,
+					confirmarRecepcio)
 			
 			NotibNotificacioResultat resultat = getNotibPlugin().notificacioCrear(
 					expedient.getNtiIdentificador(),

@@ -53,8 +53,7 @@ public interface NotibPlugin {
 			String seuAvisTextMobil,
 			String seuOficiTitol,
 			String seuOficiText,
-			boolean confirmarRecepcio,
-			List<NotibDocument> annexos) throws SistemaExternException;
+			boolean confirmarRecepcio) throws SistemaExternException;
 
 
 }
