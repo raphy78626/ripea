@@ -31,7 +31,6 @@ import es.caib.notib.ws.notificacio.NotificacioDestinatari;
 import es.caib.notib.ws.notificacio.NotificacioEntity;
 import es.caib.notib.ws.notificacio.NotificacioEstatEnumDto;
 import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.notib.NotibDocument;
 import es.caib.ripea.plugin.notib.NotibNotificacioResultat;
 import es.caib.ripea.plugin.notib.NotibPersona;
 import es.caib.ripea.plugin.notib.NotibPlugin;
@@ -58,7 +57,6 @@ public class NotibPluginRestImpl implements NotibPlugin {
 			String seuExpedientUnitatOrganitzativa,
 			String seuExpedientIdentificadorEni,
 			String seuExpedientTitol,
-			String seuRegistreOficina,
 			String seuRegistreLlibre,
 			String seuIdioma,
 			String seuAvisTitol,
@@ -95,7 +93,6 @@ public class NotibPluginRestImpl implements NotibPlugin {
 			notificacio.setSeuExpedientUnitatOrganitzativa(seuExpedientUnitatOrganitzativa);
 			notificacio.setSeuExpedientIdentificadorEni(seuExpedientIdentificadorEni);
 			notificacio.setSeuExpedientTitol(seuExpedientTitol);
-			notificacio.setSeuRegistreOficina(seuRegistreOficina);
 			notificacio.setSeuRegistreLlibre(seuRegistreLlibre);
 			notificacio.setSeuIdioma(seuIdioma);
 			notificacio.setSeuAvisTitol(seuAvisTitol);

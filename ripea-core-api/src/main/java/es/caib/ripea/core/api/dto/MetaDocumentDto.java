@@ -27,6 +27,8 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 	private String firmaPassarelaCustodiaTipus;
 	private String plantillaNom;
 	private String plantillaContentType;
+	private String procedimentCodiSia;
+	private String seuExpedientSerieDocumental;
 
 	public boolean isGlobalExpedient() {
 		return globalExpedient;
@@ -107,6 +109,18 @@ public class MetaDocumentDto extends MetaNodeAmbMetaDadesDto implements Serializ
 		this.plantillaContentType = plantillaContentType;
 	}
 
+	public String getProcedimentCodiSia() {
+		return procedimentCodiSia;
+	}
+	public void setProcedimentCodiSia(String procedimentCodiSia) {
+		this.procedimentCodiSia = procedimentCodiSia;
+	}
+	public String getSeuExpedientSerieDocumental() {
+		return seuExpedientSerieDocumental;
+	}
+	public void setSeuExpedientSerieDocumental(String seuExpedientSerieDocumental) {
+		this.seuExpedientSerieDocumental = seuExpedientSerieDocumental;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

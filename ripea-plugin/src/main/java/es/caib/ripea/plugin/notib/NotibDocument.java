@@ -13,8 +13,8 @@ public class NotibDocument {
 	private String titol;
 	private String arxiuNom;
 	private byte[] arxiuContingut;
-
-
+	private String procedimentCodiSia;
+	private String seuExpedientSerieDocumental;
 
 	public String getTitol() {
 		return titol;
@@ -50,6 +50,18 @@ public class NotibDocument {
 		} else {
 			return "";
 		}
+	}
+	public String getProcedimentCodiSia() {
+		return procedimentCodiSia;
+	}
+	public void setProcedimentCodiSia(String procedimentCodiSia) {
+		this.procedimentCodiSia = procedimentCodiSia;
+	}
+	public String getSeuExpedientSerieDocumental() {
+		return seuExpedientSerieDocumental;
+	}
+	public void setSeuExpedientSerieDocumental(String seuExpedientSerieDocumental) {
+		this.seuExpedientSerieDocumental = seuExpedientSerieDocumental;
 	}
 
 }

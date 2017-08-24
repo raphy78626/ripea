@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import es.caib.notib.ws.notificacio.NotificaEnviamentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.ComunitatDto;
@@ -56,6 +57,7 @@ import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
+import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.plugin.arxiu.ArxiuCapsalera;
 import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
@@ -2787,6 +2789,7 @@ public class PluginHelper {
 	public NotibNotificacioResultat notibNotificacioEnviar(
 			ExpedientEntity expedient,
 			InteressatEntity destinatari,
+			String concepte,
 			String oficiTitol,
 			String oficiText,
 			String avisTitol,
@@ -2812,7 +2815,7 @@ public class PluginHelper {
 		accioParams.put("avisTitol", avisTitol);
 		accioParams.put("confirmarRecepcio", new Boolean(confirmarRecepcio).toString());
 		if (document != null) {
-			accioParams.put("documentId", document.getId());
+			accioParams.put("documentId", document.getId().toString());
 			accioParams.put("documentTitol", document.getNom());
 		}
 		long t0 = System.currentTimeMillis();
@@ -2822,7 +2825,7 @@ public class PluginHelper {
 				notibDocument = new NotibDocument();
 					if (DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())) {
 						throw new ValidationException(
-								annex.getId(),
+								document.getId(),
 								DocumentEntity.class,
 								"No espoden emprar documents físics com annexos d'una notificació telemàtica");
 					}
@@ -2830,46 +2833,36 @@ public class PluginHelper {
 					FitxerDto fitxer = documentHelper.getFitxerAssociat(document);
 					notibDocument.setArxiuNom(fitxer.getNom());
 					notibDocument.setArxiuContingut(fitxer.getContingut());
+					
+					MetaDocumentEntity tipusDocument = document.getMetaDocument();
+					if (tipusDocument != null) {
+						notibDocument.setProcedimentCodiSia(tipusDocument.getProcedimentCodiSia());
+						notibDocument.setSeuExpedientSerieDocumental(tipusDocument.getSeuExpedientSerieDocumental());
+					}
 			}
 			
-			NotibNotificacioResultat resultat2 = getNotibPlugin().notificacioCrear(
-					cifEntitat, 
-					NotificacioEnviamentTipusEnumDto.NOTIFICACIO.toString(), 
+			NotibNotificacioResultat resultat = getNotibPlugin().notificacioCrear(
+					expedient.getEntitat().getCif(), 
+					NotificaEnviamentTipusEnumDto.NOTIFICACIO.toString(), 
 					concepte, 
-					procedimentCodiSia, 
+					notibDocument.getProcedimentCodiSia(), 
 					notibDocument.getArxiuNom(), 
-					notibDocument.getArxiuContignut(), 
+					notibDocument.getArxiuContingut(), 
 					toPluginNotibPersona(destinatari),
 					null, 
-					seuExpedientSerieDocumental, 
-					seuExpedientUnitatOrganitzativa, 
-					seuExpedientIdentificadorEni, 
-					seuExpedientTitol, 
-					seuRegistreOficina, 
+					notibDocument.getSeuExpedientSerieDocumental(), 
+					metaExpedient.getUnitatAdministrativa(), 
+					expedient.getNtiIdentificador(), 
+					expedient.getNom(), 
 					metaExpedient.getNotificacioLlibreCodi(),
-					getIdiomaPerPluginNotificacio(idioma),, 
-					avisTitol,
-					avisText,
-					avisTextMobil,
-					oficiTitol,
-					oficiText,
-					confirmarRecepcio)
-			
-			NotibNotificacioResultat resultat = getNotibPlugin().notificacioCrear(
-					expedient.getNtiIdentificador(),
-					expedient.getSistraUnitatAdministrativa(),
-					metaExpedient.getNotificacioLlibreCodi(),
-					metaExpedient.getNotificacioOrganCodi(),
-					toPluginCiutadaPersona(destinatari),
-					null,
 					getIdiomaPerPluginNotificacio(idioma),
-					oficiTitol,
-					oficiText,
 					avisTitol,
 					avisText,
 					avisTextMobil,
-					confirmarRecepcio,
-					ciutadaAnnexos);
+					oficiTitol,
+					oficiText,
+					confirmarRecepcio);
+			
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_CIUTADA,
 					accioDescripcio,

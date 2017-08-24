@@ -45,7 +45,6 @@ public interface NotibPlugin {
 			String seuExpedientUnitatOrganitzativa,
 			String seuExpedientIdentificadorEni,
 			String seuExpedientTitol,
-			String seuRegistreOficina,
 			String seuRegistreLlibre,
 			String seuIdioma,
 			String seuAvisTitol,

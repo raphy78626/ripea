@@ -121,6 +121,8 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				portafirmesCustodiaTipus(metaDocument.getPortafirmesCustodiaTipus()).
 				firmaPassarelaActiva(metaDocument.isFirmaPassarelaActiva()).
 				firmaPassarelaCustodiaTipus(metaDocument.getFirmaPassarelaCustodiaTipus()).
+				procedimentCodiSia(metaDocument.getProcedimentCodiSia()).
+				seuExpedientSerieDocumental(metaDocument.getSeuExpedientSerieDocumental()).
 				build();
 		if (plantillaContingut != null) {
 			entity.updatePlantilla(
@@ -167,7 +169,9 @@ public class MetaDocumentServiceImpl implements MetaDocumentService {
 				metaDocument.getPortafirmesFluxTipus(),
 				metaDocument.getPortafirmesCustodiaTipus(),
 				metaDocument.isFirmaPassarelaActiva(),
-				metaDocument.getFirmaPassarelaCustodiaTipus());
+				metaDocument.getFirmaPassarelaCustodiaTipus(),
+				metaDocument.getProcedimentCodiSia(),
+				metaDocument.getSeuExpedientSerieDocumental());
 		if (plantillaContingut != null) {
 			metaDocumentEntitiy.updatePlantilla(
 					plantillaNom,

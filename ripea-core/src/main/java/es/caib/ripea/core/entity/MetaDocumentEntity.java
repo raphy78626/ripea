@@ -60,7 +60,12 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "plantilla_contingut")
 	private byte[] plantillaContingut;
-
+	
+	/**NotificacionsNotib**/
+	@Column(name = "procediment_codi_sia", length = 256)
+	private String procedimentCodiSia;
+	@Column(name = "seu_exp_serie_doc", length = 256)
+	private String seuExpedientSerieDocumental;
 
 
 	public boolean isGlobalExpedient() {
@@ -107,7 +112,13 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 	public byte[] getPlantillaContingut() {
 		return plantillaContingut;
 	}
-
+	public String getProcedimentCodiSia() {
+		return procedimentCodiSia;
+	}
+	public String getSeuExpedientSerieDocumental() {
+		return seuExpedientSerieDocumental;
+	}
+	
 	public void update(
 			String codi,
 			String nom,
@@ -122,7 +133,9 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 			MetaDocumentFirmaFluxTipusEnumDto portafirmesFluxTipus,
 			String portafirmesCustodiaTipus,
 			boolean firmaPassarelaActiva,
-			String firmaPassarelaCustodiaTipus) {
+			String firmaPassarelaCustodiaTipus,
+			String procedimentCodiSia,
+			String seuExpedientSerieDocumental) {
 		update(
 				codi,
 				nom,
@@ -138,6 +151,8 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 		this.portafirmesCustodiaTipus = portafirmesCustodiaTipus;
 		this.firmaPassarelaActiva = firmaPassarelaActiva;
 		this.firmaPassarelaCustodiaTipus = firmaPassarelaCustodiaTipus;
+		this.procedimentCodiSia = procedimentCodiSia;
+		this.seuExpedientSerieDocumental = seuExpedientSerieDocumental;
 	}
 
 	public void updatePlantilla(
@@ -212,6 +227,14 @@ public class MetaDocumentEntity extends MetaNodeEntity {
 		}
 		public Builder firmaPassarelaCustodiaTipus(String firmaPassarelaCustodiaTipus) {
 			built.firmaPassarelaCustodiaTipus = firmaPassarelaCustodiaTipus;
+			return this;
+		}
+		public Builder procedimentCodiSia(String procedimentCodiSia) {
+			built.procedimentCodiSia = procedimentCodiSia;
+			return this;
+		}
+		public Builder seuExpedientSerieDocumental(String seuExpedientSerieDocumental) {
+			built.seuExpedientSerieDocumental = seuExpedientSerieDocumental;
 			return this;
 		}
 		public MetaDocumentEntity build() {
