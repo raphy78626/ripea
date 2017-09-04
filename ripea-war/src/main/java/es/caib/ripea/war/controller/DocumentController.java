@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNotificacioEnviamentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
@@ -518,6 +519,11 @@ public class DocumentController extends BaseUserController {
 				EnumHelper.getOptionsForEnum(
 						DocumentNotificacioTipusEnumDto.class,
 						"notificacio.tipus.enum."));
+		model.addAttribute(
+				"notificacioTipusEnviamentEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						DocumentNotificacioEnviamentTipusEnumDto.class,
+						"notificacio.tipus.enviament.enum."));
 		model.addAttribute(
 				"notificacioEstatEnumOptions",
 				EnumHelper.getOptionsForEnum(

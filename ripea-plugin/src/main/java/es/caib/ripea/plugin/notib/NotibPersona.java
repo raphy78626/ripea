@@ -20,6 +20,7 @@ public class NotibPersona {
 	private String provinciaNom;
 	private String municipiCodi;
 	private String municipiNom;
+	private String email;
 
 
 
@@ -82,6 +83,12 @@ public class NotibPersona {
 	}
 	public void setMunicipiNom(String municipiNom) {
 		this.municipiNom = municipiNom;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	public String getLlinatges() {
 		if (llinatge2 == null) {

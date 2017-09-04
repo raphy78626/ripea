@@ -3,8 +3,10 @@
  */
 package es.caib.ripea.core.api.service;
 
+import java.util.Date;
 import java.util.List;
 
+import es.caib.notib.ws.notificacio.NotificacioEstatEnum;
 import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
@@ -202,4 +204,23 @@ public interface ExpedientEnviamentService {
 			Long entitatId,
 			Long expedientId) throws NotFoundException;
 
+	
+	/**
+	 * Modifica una notificació d'un document de l'expedient
+	 *  a partir d'una referencia d'enviament
+	 * 
+	 * @param referencia
+	 *            Referència de l'enviament.
+	 * @param estat
+	 *            Estat de la notificació.
+	 * @param data
+	 *            Data del canvi d'estat.
+	 * @return notificacio modificada
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	public DocumentNotificacioDto notificacioUpdatePerReferencia(
+			String referencia,
+			NotificacioEstatEnum estat,
+			Date data) throws NotFoundException;
 }

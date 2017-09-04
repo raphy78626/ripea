@@ -11,13 +11,13 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.notib.ws.notificacio.NotificacioEstatEnum;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
+import es.caib.ripea.core.api.dto.DocumentEnviamentEstatDetallatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
@@ -26,6 +26,8 @@ import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ExpedientEnviamentService;
 import es.caib.ripea.core.entity.DocumentEntity;
@@ -41,6 +43,8 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.ExpedientHelper;
+import es.caib.ripea.core.helper.IntegracioHelper;
+import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPublicacioRepository;
 
@@ -67,6 +71,8 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
+	@Resource
+	private PluginHelper pluginHelper;
 
 
 
@@ -182,6 +188,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				new Date(),
 				document,
 				notificacio.getTipus(),
+				notificacio.getTipusEnviament(),
 				interessat.getDocumentTipus(),
 				interessat.getDocumentNum(),
 				nom,
@@ -191,7 +198,8 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				interessat.getProvincia(),
 				interessat.getMunicipi(),
 				interessat.isEsRepresentant(),
-				notificacioIdioma).
+				notificacioIdioma,
+				notificacio.getConcepte()).
 				observacions(notificacio.getObservacions()).
 				unitatAdministrativa(expedient.getMetaExpedient().getUnitatAdministrativa()).
 				organCodi(expedient.getMetaExpedient().getNotificacioOrganCodi()).
@@ -205,9 +213,19 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				annexos(annexos).
 				build();
 		if (DocumentNotificacioTipusEnumDto.ELECTRONICA.equals(notificacio.getTipus())) {
-			expedientHelper.ciutadaNotificacioEnviar(
+			//TODO: S'HA DE DECICIDIR AQUÍ QUIN CAMÍ AGAFAR. SISTRA O NOTIB
+//			expedientHelper.ciutadaNotificacioEnviar(
+//					notificacioEntity,
+//					interessat);
+			
+			if (!expedientHelper.notibNotificacioEnviar(
 					notificacioEntity,
-					interessat);
+					interessat)) {
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_NOTIB,
+						"No s'ha pogut notificar el document al Notib. Consulti l'error detallat en el registre d'enviaments");
+			}
+			
 		}
 		DocumentNotificacioDto dto = conversioTipusHelper.convertir(
 				documentNotificacioRepository.save(notificacioEntity),
@@ -497,22 +515,22 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 
 	@Override
 	@Transactional
-	@Async
-	@Scheduled(fixedRateString = "${config:es.caib.ripea.tasca.notificacio.pendent.periode.execucio}")
+//	@Async
+//	@Scheduled(fixedRateString = "${config:es.caib.ripea.tasca.notificacio.pendent.periode.execucio}")
 	public void notificacioProcessarPendents() {
-		logger.debug("Aplicant regles a les notificacions pendents");
-		List<DocumentNotificacioEntity> pendents = documentNotificacioRepository.findByEstatAndTipus(
-				DocumentEnviamentEstatEnumDto.ENVIAT_OK,
-				DocumentNotificacioTipusEnumDto.ELECTRONICA);
-		logger.debug("Aplicant regles a " + pendents.size() + " notificacions pendents");
-		if (!pendents.isEmpty()) {
-			for (DocumentNotificacioEntity pendent: pendents) {
-				expedientHelper.ciutadaNotificacioComprovarEstat(
-						pendent);
-			}
-		} else {
-			logger.debug("No hi ha notificacions pendents de processar");
-		}
+//		logger.debug("Aplicant regles a les notificacions pendents");
+//		List<DocumentNotificacioEntity> pendents = documentNotificacioRepository.findByEstatAndTipus(
+//				DocumentEnviamentEstatEnumDto.ENVIAT_OK,
+//				DocumentNotificacioTipusEnumDto.ELECTRONICA);
+//		logger.debug("Aplicant regles a " + pendents.size() + " notificacions pendents");
+//		if (!pendents.isEmpty()) {
+//			for (DocumentNotificacioEntity pendent: pendents) {
+//				expedientHelper.ciutadaNotificacioComprovarEstat(
+//						pendent);
+//			}
+//		} else {
+//			logger.debug("No hi ha notificacions pendents de processar");
+//		}
 	}
 
 	@Transactional
@@ -709,7 +727,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				null,
 				expedientId);
 		List<DocumentEnviamentDto> resposta = new ArrayList<DocumentEnviamentDto>();
-		List<DocumentNotificacioEntity> notificacions = documentNotificacioRepository.findByExpedientOrderByDestinatariNomAscDestinatariLlinatge1AscDataEnviamentAsc(expedient);
+		List<DocumentNotificacioEntity> notificacions = documentNotificacioRepository.findByExpedientOrderByDestinatariNomAscDestinatariLlinatge1AscDataEnviamentDesc(expedient);
 		for (DocumentNotificacioEntity notificacio: notificacions) {
 			resposta.add(
 					conversioTipusHelper.convertir(
@@ -726,7 +744,37 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 		}
 		return resposta;
 	}
-
+	
+	@Transactional
+	@Override
+	public DocumentNotificacioDto notificacioUpdatePerReferencia(String referencia, NotificacioEstatEnum estat, Date data)
+			throws NotFoundException {
+		DocumentNotificacioEntity notificacio = documentNotificacioRepository.findByReferencia(referencia);
+		
+		DocumentEnviamentEstatEnumDto estatFinal = notificacio.getEstat();
+		DocumentEnviamentEstatDetallatEnumDto estatDetallatFinal = DocumentEnviamentEstatDetallatEnumDto.valueOf(estat.value());
+		if (estatDetallatFinal == DocumentEnviamentEstatDetallatEnumDto.NOTIFICADA) {
+			estatFinal = DocumentEnviamentEstatEnumDto.PROCESSAT_OK;
+		} else if (
+				estatDetallatFinal == DocumentEnviamentEstatDetallatEnumDto.AUSENT ||
+				estatDetallatFinal == DocumentEnviamentEstatDetallatEnumDto.DESCONEGUT ||
+				estatDetallatFinal == DocumentEnviamentEstatDetallatEnumDto.ADRESA_INCORRECTA ||
+				estatDetallatFinal == DocumentEnviamentEstatDetallatEnumDto.ERROR_ENVIAMENT ||
+				estatDetallatFinal == DocumentEnviamentEstatDetallatEnumDto.EXTRAVIADA ||
+				estatDetallatFinal == DocumentEnviamentEstatDetallatEnumDto.MORT ||
+				estatDetallatFinal == DocumentEnviamentEstatDetallatEnumDto.REBUTJADA
+				) {
+			estatFinal = DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR;
+		}
+		
+		notificacio.updateNotificacioEstat(
+				true,
+				estatFinal, 
+				estatDetallatFinal, 
+				data);
+		
+		return conversioTipusHelper.convertir(notificacio, DocumentNotificacioDto.class);
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(ExpedientEnviamentServiceImpl.class);
-
 }

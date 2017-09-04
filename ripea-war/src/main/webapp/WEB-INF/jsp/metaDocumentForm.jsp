@@ -58,6 +58,9 @@ pageContext.setAttribute(
 				<rip:inputSelect name="globalMultiplicitat" textKey="metadada.form.camp.global.multiplicitat" optionItems="${multiplicitatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text"/>
 				<rip:inputCheckbox name="globalReadOnly" textKey="metadada.form.camp.global.readonly"/>
 				<rip:inputFile name="plantilla" textKey="metadocument.form.camp.plantilla"/>
+				<rip:inputText name="procedimentCodiSia" textKey="metadocument.form.camp.procedimentcodisia"/>
+				<rip:inputText name="seuExpedientSerieDocumental" textKey="metadocument.form.camp.seuexpedientseriedocumental"/>
+				
 			</div>
 			<div role="tabpanel" class="tab-pane" id="firma-portafirmes">
 				<rip:inputCheckbox name="firmaPortafirmesActiva" textKey="metadocument.form.camp.firma.portafirmes.activa"/>

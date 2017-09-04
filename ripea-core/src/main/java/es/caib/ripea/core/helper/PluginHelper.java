@@ -2849,11 +2849,12 @@ public class PluginHelper {
 					notibDocument.getArxiuNom(), 
 					notibDocument.getArxiuContingut(), 
 					toPluginNotibPersona(destinatari),
-					null, 
+					toPluginNotibPersona(destinatari.getRepresentant()), 
 					notibDocument.getSeuExpedientSerieDocumental(), 
 					metaExpedient.getUnitatAdministrativa(), 
 					expedient.getNtiIdentificador(), 
 					expedient.getNom(), 
+					metaExpedient.getNotificacioOrganCodi(),
 					metaExpedient.getNotificacioLlibreCodi(),
 					getIdiomaPerPluginNotificacio(idioma),
 					avisTitol,
@@ -2871,9 +2872,9 @@ public class PluginHelper {
 					System.currentTimeMillis() - t0);
 			return resultat;
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
+			String errorDescripcio = "Error al accedir al plugin de comunicació amb el notib";
 			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_CIUTADA,
+					IntegracioHelper.INTCODI_NOTIB,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
@@ -2881,11 +2882,22 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_CIUTADA,
+					IntegracioHelper.INTCODI_NOTIB,
 					errorDescripcio,
 					ex);
 		}
 	}
+	
+//	public NotificacioEstatEnumDto obtenirEstatNotificacioPerReferencia (String referencia) {
+//		try {
+//			Notificacio_Type notificacio = notibPlugin.notificacioFindPerReferencia(referencia);
+//			return notificacio.getEstat();
+//		} catch (Exception e) {
+//			throw new SistemaExternException(
+//					IntegracioHelper.INTCODI_NOTIB, 
+//					e.getMessage());
+//		}
+//	}
 	/*****************************/
 
 	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
@@ -2960,6 +2972,7 @@ public class PluginHelper {
 					"No es pot notificar a interessats amb el tipus de document " + interessat.getDocumentTipus());
 		}
 		NotibPersona persona = new NotibPersona();
+		persona.setEmail(interessat.getEmail());
 		if (interessat instanceof InteressatPersonaFisicaEntity) {
 			InteressatPersonaFisicaEntity interessatPf = (InteressatPersonaFisicaEntity)interessat;
 			persona.setNif(interessatPf.getDocumentNum());

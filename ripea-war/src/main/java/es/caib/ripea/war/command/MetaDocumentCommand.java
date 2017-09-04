@@ -52,6 +52,11 @@ public class MetaDocumentCommand {
 	@Size(max=64)
 	private String firmaPassarelaCustodiaTipus;
 	protected MultipartFile plantilla;
+	
+	@Size(max=256)
+	private String procedimentCodiSia;
+	@Size(max=256)
+	private String seuExpedientSerieDocumental;
 
 	private Long entitatId;
 
@@ -160,6 +165,18 @@ public class MetaDocumentCommand {
 		this.entitatId = entitatId;
 	}
 
+	public String getProcedimentCodiSia() {
+		return procedimentCodiSia;
+	}
+	public void setProcedimentCodiSia(String procedimentCodiSia) {
+		this.procedimentCodiSia = procedimentCodiSia;
+	}
+	public String getSeuExpedientSerieDocumental() {
+		return seuExpedientSerieDocumental;
+	}
+	public void setSeuExpedientSerieDocumental(String seuExpedientSerieDocumental) {
+		this.seuExpedientSerieDocumental = seuExpedientSerieDocumental;
+	}
 	public static List<MetaDocumentCommand> toEntitatCommands(
 			List<MetaDocumentDto> dtos) {
 		List<MetaDocumentCommand> commands = new ArrayList<MetaDocumentCommand>();

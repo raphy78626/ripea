@@ -15,6 +15,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
+import es.caib.ripea.core.api.dto.DocumentNotificacioEnviamentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 
@@ -32,10 +33,15 @@ public class DocumentNotificacioCommand {
 	private Long interessatId;
 	@NotNull
 	private DocumentNotificacioTipusEnumDto tipus;
+	@NotNull
+	private DocumentNotificacioEnviamentTipusEnumDto tipusEnviament;
+	@NotNull
 	private DocumentEnviamentEstatEnumDto estat;
 	@NotEmpty(groups = {Create.class, Update.class})
 	@Size(max = 64, groups = {Create.class, Update.class})
 	private String assumpte;
+	@Size(max = 256, groups = {Create.class, Update.class})
+	private String concepte;
 	@Size(groups = {Create.class, Update.class}, max = 256)
 	private String observacions;
 	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
@@ -75,6 +81,12 @@ public class DocumentNotificacioCommand {
 	}
 	public void setTipus(DocumentNotificacioTipusEnumDto tipus) {
 		this.tipus = tipus;
+	}
+	public DocumentNotificacioEnviamentTipusEnumDto getTipusEnviament() {
+		return tipusEnviament;
+	}
+	public void setTipusEnviament(DocumentNotificacioEnviamentTipusEnumDto tipusEnviament) {
+		this.tipusEnviament = tipusEnviament;
 	}
 	public DocumentEnviamentEstatEnumDto getEstat() {
 		return estat;
@@ -131,6 +143,12 @@ public class DocumentNotificacioCommand {
 		this.annexos = annexos;
 	}
 
+	public String getConcepte() {
+		return concepte;
+	}
+	public void setConcepte(String concepte) {
+		this.concepte = concepte;
+	}
 	public static DocumentNotificacioCommand asCommand(DocumentNotificacioDto dto) {
 		return ConversioTipusHelper.convertir(
 				dto,

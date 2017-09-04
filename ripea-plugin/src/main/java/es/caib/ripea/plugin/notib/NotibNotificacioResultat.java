@@ -12,22 +12,21 @@ import java.util.Date;
  */
 public class NotibNotificacioResultat {
 
-	private Date registreData;
-	private String registreNumero;
-
-
-
-	public Date getRegistreData() {
-		return registreData;
+	private Date referenciaData;
+	private String referencia;
+	
+	
+	public Date getReferenciaData() {
+		return referenciaData;
 	}
-	public void setRegistreData(Date registreData) {
-		this.registreData = registreData;
+	public void setReferenciaData(Date referenciaData) {
+		this.referenciaData = referenciaData;
 	}
-	public String getRegistreNumero() {
-		return registreNumero;
+	public String getReferencia() {
+		return referencia;
 	}
-	public void setRegistreNumero(String registreNumero) {
-		this.registreNumero = registreNumero;
+	public void setReferencia(String referencia) {
+		this.referencia = referencia;
 	}
 
 }

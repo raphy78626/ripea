@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.ejb;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -12,9 +13,11 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.notib.ws.notificacio.NotificacioEstatEnum;
 import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ExpedientEnviamentService;
 
 /**
@@ -153,6 +156,13 @@ public class ExpedientEnviamentServiceBean implements ExpedientEnviamentService 
 		return delegate.enviamentFindAmbExpedient(
 				entitatId,
 				expedientId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public DocumentNotificacioDto notificacioUpdatePerReferencia(String referencia, NotificacioEstatEnum estat,
+			Date data) throws NotFoundException {
+		return delegate.notificacioUpdatePerReferencia(referencia, estat, data);
 	}
 
 }

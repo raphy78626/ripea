@@ -7,11 +7,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -21,15 +24,17 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
+import es.caib.notib.rest.client.NotibRestClient;
+import es.caib.notib.rest.client.NotibRestException;
 import es.caib.notib.ws.notificacio.NotificaEnviamentTipusEnumDto;
 import es.caib.notib.ws.notificacio.NotificacioDestinatari;
-import es.caib.notib.ws.notificacio.NotificacioEntity;
 import es.caib.notib.ws.notificacio.NotificacioEstatEnumDto;
+import es.caib.notib.ws.notificacio.NotificacioSeuEstatEnumDto;
+import es.caib.notib.ws.notificacio.Notificacio_Type;
+import es.caib.notib.ws.notificacio.ServeiTipusEnum;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.notib.NotibNotificacioResultat;
 import es.caib.ripea.plugin.notib.NotibPersona;
@@ -43,6 +48,16 @@ import es.caib.ripea.plugin.utils.PropertiesHelper;
  */
 public class NotibPluginRestImpl implements NotibPlugin {
 
+	public Notificacio_Type notificacioFindPerReferencia(String referencia) throws JsonParseException, JsonMappingException, NotibRestException, IOException {
+		Notificacio_Type notificacio = NotibRestClient.consulta(
+				getBaseUrl(), 
+				getUsername(), 
+				getPassword(), 
+				referencia);
+		
+		return notificacio;
+	}
+	
 	@Override
 	public NotibNotificacioResultat notificacioCrear(
 			String cifEntitat,
@@ -57,6 +72,7 @@ public class NotibPluginRestImpl implements NotibPlugin {
 			String seuExpedientUnitatOrganitzativa,
 			String seuExpedientIdentificadorEni,
 			String seuExpedientTitol,
+			String seuRegistreOficina,
 			String seuRegistreLlibre,
 			String seuIdioma,
 			String seuAvisTitol,
@@ -68,11 +84,15 @@ public class NotibPluginRestImpl implements NotibPlugin {
 		
 		try {
 			
+			GregorianCalendar c = new GregorianCalendar();
+			c.setTime(new Date(0));
+			XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+			
 			/*instanciem una notificacio*/
-			NotificacioEntity notificacio = new NotificacioEntity();
+			Notificacio_Type notificacio = new Notificacio_Type();
 			notificacio.setCifEntitat(cifEntitat);
 			notificacio.setEnviamentTipus(NotificaEnviamentTipusEnumDto.valueOf(enviamentTipus));
-			notificacio.setEnviamentDataProgramada(new Date());
+			notificacio.setEnviamentDataProgramada(date);
 			notificacio.setConcepte(concepte);
 			
 			notificacio.setPagadorCorreusCodiDir3(null);
@@ -94,35 +114,36 @@ public class NotibPluginRestImpl implements NotibPlugin {
 			notificacio.setSeuExpedientIdentificadorEni(seuExpedientIdentificadorEni);
 			notificacio.setSeuExpedientTitol(seuExpedientTitol);
 			notificacio.setSeuRegistreLlibre(seuRegistreLlibre);
+			notificacio.setSeuRegistreOficina(seuRegistreOficina);
 			notificacio.setSeuIdioma(seuIdioma);
 			notificacio.setSeuAvisTitol(seuAvisTitol);
 			notificacio.setSeuAvisText(seuAvisText);
 			notificacio.setSeuAvisTextMobil(seuAvisTextMobil);
 			notificacio.setSeuOficiTitol(seuOficiTitol);
 			notificacio.setSeuOficiText(seuOficiText);
-			notificacio.setEstat(NotificacioEstatEnumDto.ENVIADA_NOTIFICA);
-			notificacio.setDestinataris(getDestinataris(destinatari, representat));
+			notificacio.setEstat(NotificacioEstatEnumDto.PENDENT);
+			notificacio.getDestinataris().addAll(getDestinataris(destinatari, representat));
 			/////////////////////////////
 			
-			Client jerseyClient = new Client();
-			ObjectMapper mapper  = new ObjectMapper();
 			
-			String user = getUsername();
-			String pass = getPassword();
-			String urlAmbMetode = getBaseUrl() + "/api/services/altaEnviament";
-			String body = mapper.writeValueAsString(notificacio);
+			/**Usam client api notib**/
+			List<String> referencies = null;
+			referencies = NotibRestClient.alta(
+					getBaseUrl(), 
+					getUsername(), 
+					getPassword(), 
+					notificacio);
 			
-			jerseyClient.addFilter( new HTTPBasicAuthFilter(user, pass) );
-			ClientResponse response = jerseyClient.
-					resource(urlAmbMetode).
-					type("application/json").
-					post(ClientResponse.class, body);
+			/*************************/
 			
-			System.out.println( response.getStatus() );
-			System.out.println( response.getEntity(String.class) );
-			
-			NotibNotificacioResultat resultat = new NotibNotificacioResultat();
-			return resultat;
+			if (referencies != null && referencies.size() > 0) {
+				NotibNotificacioResultat resultat = new NotibNotificacioResultat();
+				resultat.setReferenciaData(new Date());
+				resultat.setReferencia(referencies.get(0));
+				return resultat;
+			} else {
+				throw new SistemaExternException();
+			}
 		} catch (Exception ex) {
 			throw new SistemaExternException("",ex);
 		}
@@ -134,19 +155,29 @@ public class NotibPluginRestImpl implements NotibPlugin {
 		NotificacioDestinatari destinatariFinal = new NotificacioDestinatari();
 		
 		destinatariFinal.setDestinatariNif(destinatari.getNif());
+		destinatariFinal.setDehNif(destinatari.getNif());
 		destinatariFinal.setDestinatariNom(destinatari.getNom());
-		destinatariFinal.setDestinatariLlinatges(destinatari.getLlinatges());
+		destinatariFinal.setDestinatariLlinatge1(destinatari.getLlinatge1());
+		destinatariFinal.setDestinatariLlinatge2(destinatari.getLlinatge2());
 		destinatariFinal.setDomiciliPaisCodiIso(destinatari.getPaisCodi());
 		destinatariFinal.setDomiciliPaisNom(destinatari.getPaisNom());
 		destinatariFinal.setDomiciliProvinciaCodi(destinatari.getProvinciaCodi());
 		destinatariFinal.setDomiciliProvinciaNom(destinatari.getProvinciaNom());
 		destinatariFinal.setDomiciliMunicipiCodiIne(destinatari.getMunicipiCodi());
 		destinatariFinal.setDomiciliMunicipiNom(destinatari.getMunicipiNom());
+		destinatariFinal.setDestinatariEmail(destinatari.getEmail());
+		destinatariFinal.setServeiTipus(ServeiTipusEnum.NORMAL);
+		destinatariFinal.setSeuEstat(NotificacioSeuEstatEnumDto.PENDENT);
+//		destinatariFinal.setDomiciliTipus(DomiciliTipusEnum.CONCRET);
+//		destinatariFinal.setDomiciliConcretTipus(DomiciliConcretTipusEnum.NACIONAL);
+//		destinatariFinal.setDomiciliNumeracioTipus(DomiciliNumeracioTipusEnum.NUMERO);
 		
 		if (representat != null) {
 			destinatariFinal.setTitularNif(representat.getNif());
 			destinatariFinal.setTitularNom(representat.getNom());
-			destinatariFinal.setTitularLlinatges(representat.getLlinatges());
+			destinatariFinal.setTitularLlinatge1(representat.getLlinatge1());
+			destinatariFinal.setTitularLlinatge2(representat.getLlinatge2());
+			destinatariFinal.setTitularEmail(representat.getEmail());
 		}
 		
 		destinataris.add(destinatariFinal);
@@ -154,6 +185,7 @@ public class NotibPluginRestImpl implements NotibPlugin {
 		return destinataris;
 	}
 
+	
 
 	private String getBaseUrl() {
 		return PropertiesHelper.getProperties().getProperty(

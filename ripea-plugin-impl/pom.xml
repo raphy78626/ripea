@@ -177,6 +177,11 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.10.2</version>
 		</dependency>
+		<dependency>
+			<groupId>es.caib.notib</groupId>
+			<artifactId>notib-api-client</artifactId>
+			<version>0.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -197,7 +202,6 @@
 								<wsdlUrl>${basedir}/wsdl/sistra-bantel/BackofficeFacade.wsdl</wsdlUrl>
 								<wsdlUrl>${basedir}/wsdl/sistra-zonaper/BackofficeFacade.wsdl</wsdlUrl>
 								<wsdlUrl>${basedir}/wsdl/sistra-regtel/BackofficeFacade.wsdl</wsdlUrl>
-								<wsdlUrl>${basedir}/wsdl/notib-notificacio/notificacio.wsdl</wsdlUrl>
 							</wsdlUrls>
 							<vmArgs>
 								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>

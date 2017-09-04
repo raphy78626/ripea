@@ -1,7 +1,12 @@
 package es.caib.ripea.plugin.notib;
 
-import java.util.List;
+import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import es.caib.notib.rest.client.NotibRestException;
+import es.caib.notib.ws.notificacio.Notificacio_Type;
 import es.caib.ripea.plugin.SistemaExternException;
 
 /**
@@ -45,6 +50,7 @@ public interface NotibPlugin {
 			String seuExpedientUnitatOrganitzativa,
 			String seuExpedientIdentificadorEni,
 			String seuExpedientTitol,
+			String seuRegistreOficina,
 			String seuRegistreLlibre,
 			String seuIdioma,
 			String seuAvisTitol,
@@ -55,4 +61,5 @@ public interface NotibPlugin {
 			boolean confirmarRecepcio) throws SistemaExternException;
 
 
+	public Notificacio_Type notificacioFindPerReferencia(String referencia) throws JsonParseException, JsonMappingException, NotibRestException, IOException;
 }

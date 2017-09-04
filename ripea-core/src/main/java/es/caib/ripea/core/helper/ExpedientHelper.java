@@ -20,6 +20,7 @@ import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
 import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat;
 import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat.ZonaperJustificantEstat;
 import es.caib.ripea.plugin.ciutada.CiutadaNotificacioResultat;
+import es.caib.ripea.plugin.notib.NotibNotificacioResultat;
 
 /**
  * Mètodes comuns per a gestionar expedients.
@@ -164,43 +165,26 @@ public class ExpedientHelper {
 			DocumentNotificacioEntity notificacio,
 			InteressatEntity destinatari) {
 		ExpedientEntity expedient = notificacio.getExpedient();
-		if (!expedient.isSistraPublicat()) {
 			try {
-				CiutadaExpedientInformacio expedientInfo = pluginHelper.ciutadaExpedientCrear(
-						expedient,
-						destinatari);
-				expedient.updateSistra(
-						true,
-						expedient.getMetaExpedient().getUnitatAdministrativa(),
-						expedientInfo.getClau());
-			} catch (Exception ex) {
-				Throwable rootCause = ExceptionUtils.getRootCause(ex);
-				if (rootCause == null) rootCause = ex;
-				notificacio.updateEnviament(
-						true,
-						true,
-						ExceptionUtils.getStackTrace(rootCause),
-						null);
-			}
-		}
-		if (expedient.isSistraPublicat()) {
-			try {
-				CiutadaNotificacioResultat notificacioResultat = pluginHelper.ciutadaNotificacioEnviar(
-						expedient,
-						destinatari,
-						notificacio.getOficiTitol(),
-						notificacio.getOficiText(),
-						notificacio.getAvisTitol(),
-						notificacio.getAvisText(),
-						notificacio.getAvisTextSms(),
-						notificacio.getIdioma(),
-						true,
-						notificacio.getAnnexos());
-				notificacio.updateEnviament(
+				
+				NotibNotificacioResultat notificacioResultat = pluginHelper.notibNotificacioEnviar(
+						expedient, 
+						destinatari, 
+						notificacio.getConcepte(), 
+						notificacio.getOficiTitol(), 
+						notificacio.getOficiText(), 
+						notificacio.getAvisTitol(), 
+						notificacio.getAvisText(), 
+						notificacio.getAvisTextSms(), 
+						notificacio.getIdioma(), 
+						true, 
+						notificacio.getDocument());
+				
+				notificacio.updateReferenciaEnviament(
 						true,
 						false,
 						null,
-						notificacioResultat.getRegistreNumero());
+						notificacioResultat.getReferencia());
 				return true;
 			} catch (Exception ex) {
 				Throwable rootCause = ExceptionUtils.getRootCause(ex);
@@ -212,9 +196,6 @@ public class ExpedientHelper {
 						null);
 				return false;
 			}
-		} else {
-			return false;
-		}
 	}
 	
 	/*************************/

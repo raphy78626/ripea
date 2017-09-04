@@ -13,6 +13,7 @@ import java.util.Date;
 public class DocumentNotificacioDto extends DocumentEnviamentDto {
 
 	private DocumentNotificacioTipusEnumDto tipus;
+	private DocumentNotificacioEnviamentTipusEnumDto tipusEnviament;
 	private Date dataRecepcio;
 	private String registreNumero;
 	private InteressatDocumentTipusEnumDto destinatariDocumentTipus;
@@ -39,7 +40,8 @@ public class DocumentNotificacioDto extends DocumentEnviamentDto {
 	private Integer processamentCount;
 	private boolean processamentError;
 	private String processamentErrorDescripcio;
-
+	private String concepte;
+	private String referencia;
 
 
 	public DocumentNotificacioTipusEnumDto getTipus() {
@@ -47,6 +49,12 @@ public class DocumentNotificacioDto extends DocumentEnviamentDto {
 	}
 	public void setTipus(DocumentNotificacioTipusEnumDto tipus) {
 		this.tipus = tipus;
+	}
+	public DocumentNotificacioEnviamentTipusEnumDto getTipusEnviament() {
+		return tipusEnviament;
+	}
+	public void setTipusEnviament(DocumentNotificacioEnviamentTipusEnumDto tipusEnviament) {
+		this.tipusEnviament = tipusEnviament;
 	}
 	public Date getDataRecepcio() {
 		return dataRecepcio;
@@ -246,6 +254,20 @@ public class DocumentNotificacioDto extends DocumentEnviamentDto {
 
 	public String getDestinatari() {
 		return getDestinatariNomSencerAmbDocument();
+	}
+
+	public String getConcepte() {
+		return concepte;
+	}
+	public void setConcepte(String concepte) {
+		this.concepte = concepte;
+	}
+
+	public String getReferencia() {
+		return referencia;
+	}
+	public void setReferencia(String referencia) {
+		this.referencia = referencia;
 	}
 
 	private static final long serialVersionUID = -139254994389509932L;

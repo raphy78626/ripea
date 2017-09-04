@@ -17,7 +17,9 @@ import javax.persistence.TemporalType;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.DocumentEnviamentEstatDetallatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
+import es.caib.ripea.core.api.dto.DocumentNotificacioEnviamentTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
@@ -35,6 +37,9 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 	@Column(name = "tipus")
 	@Enumerated(EnumType.STRING)
 	private DocumentNotificacioTipusEnumDto tipus;
+	@Column(name = "tipus_enviament")
+	@Enumerated(EnumType.STRING)
+	private DocumentNotificacioEnviamentTipusEnumDto tipusEnviament;
 	@Column(name = "data_recepcio")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dataRecepcio;
@@ -97,7 +102,13 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 	private boolean processamentError;
 	@Column(name = "proces_error_desc", length = 2048)
 	private String processamentErrorDescripcio;
-
+	@Column(name = "concepte", length = 256)
+	private String concepte;
+	@Column(name = "referencia", length = 64)
+	private String referencia;
+	@Column(name = "estat_detallat", nullable = true)
+	@Enumerated(EnumType.STRING)
+	protected DocumentEnviamentEstatDetallatEnumDto estatDetallat;
 
 
 	public DocumentNotificacioTipusEnumDto getTipus() {
@@ -191,6 +202,18 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 		return processamentErrorDescripcio;
 	}
 
+	public DocumentNotificacioEnviamentTipusEnumDto getTipusEnviament() {
+		return tipusEnviament;
+	}
+	public String getConcepte() {
+		return concepte;
+	}
+	public String getReferencia() {
+		return referencia;
+	}
+	public DocumentEnviamentEstatDetallatEnumDto getEstatDetallat() {
+		return estatDetallat;
+	}
 	public void update(
 			DocumentEnviamentEstatEnumDto estat,
 			String assumpte,
@@ -253,6 +276,52 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 			estat = DocumentEnviamentEstatEnumDto.ENVIAT_OK;
 		}
 	}
+	
+	public void updateReferenciaEnviament(
+			boolean enviamentCountIncrementar,
+			boolean enviamentError,
+			String enviamentErrorDescripcio,
+			String referencia) {
+		this.enviamentData = new Date();
+		if (enviamentCountIncrementar) {
+			if (this.enviamentCount == null)
+				this.enviamentCount = 1;
+			else
+				this.enviamentCount += 1;
+		}
+		this.enviamentError = enviamentError;
+		if (enviamentErrorDescripcio != null) {
+			this.enviamentErrorDescripcio = enviamentErrorDescripcio.substring(0, 2048);
+		}
+		if (enviamentError) {
+			estat = DocumentEnviamentEstatEnumDto.ENVIAT_ERROR;
+		} else {
+			this.referencia = referencia;
+			estat = DocumentEnviamentEstatEnumDto.ENVIAT_OK;
+		}
+	}
+	
+	public void updateNotificacioEstat(
+			boolean processamentCountIncrementar,
+			DocumentEnviamentEstatEnumDto estat,
+			DocumentEnviamentEstatDetallatEnumDto estatDetallat,
+			Date dataRecepcio) {
+		this.processamentData = new Date();
+		if (processamentCountIncrementar) {
+			if (this.processamentCount == null)
+				this.processamentCount = 1;
+			else
+				this.processamentCount += 1;
+		}
+		
+		this.estat = estat;
+		this.estatDetallat = estatDetallat;
+		
+		if (DocumentEnviamentEstatEnumDto.PROCESSAT_OK == estat) {
+			this.processamentError = true;
+			this.dataRecepcio = dataRecepcio;
+		}
+	}
 
 	public void updateProcessament(
 			boolean processamentCountIncrementar,
@@ -292,6 +361,7 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 			Date dataEnviament,
 			DocumentEntity document,
 			DocumentNotificacioTipusEnumDto tipus,
+			DocumentNotificacioEnviamentTipusEnumDto tipusEnviament,
 			InteressatDocumentTipusEnumDto destinatariDocumentTipus,
 			String destinatariDocumentNum,
 			String destinatariNom,
@@ -301,7 +371,8 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 			String destinatariProvinciaCodi,
 			String destinatariMunicipiCodi,
 			boolean destinatariRepresentant,
-			InteressatIdiomaEnumDto idioma) {
+			InteressatIdiomaEnumDto idioma,
+			String concepte) {
 		return new Builder(
 				expedient,
 				estat,
@@ -309,6 +380,7 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 				dataEnviament,
 				document,
 				tipus,
+				tipusEnviament,
 				destinatariDocumentTipus,
 				destinatariDocumentNum,
 				destinatariNom,
@@ -318,7 +390,8 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 				destinatariProvinciaCodi,
 				destinatariMunicipiCodi,
 				destinatariRepresentant,
-				idioma);
+				idioma,
+				concepte);
 	}
 
 	public static class Builder {
@@ -330,6 +403,7 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 				Date dataEnviament,
 				DocumentEntity document,
 				DocumentNotificacioTipusEnumDto tipus,
+				DocumentNotificacioEnviamentTipusEnumDto tipusEnviament,
 				InteressatDocumentTipusEnumDto destinatariDocumentTipus,
 				String destinatariDocumentNum,
 				String destinatariNom,
@@ -339,7 +413,8 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 				String destinatariProvinciaCodi,
 				String destinatariMunicipiCodi,
 				boolean destinatariRepresentant,
-				InteressatIdiomaEnumDto idioma) {
+				InteressatIdiomaEnumDto idioma,
+				String concepte) {
 			built = new DocumentNotificacioEntity();
 			built.expedient = expedient;
 			built.estat = estat;
@@ -347,6 +422,7 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 			built.dataEnviament = dataEnviament;
 			built.document = document;
 			built.tipus = tipus;
+			built.tipusEnviament = tipusEnviament;
 			built.destinatariDocumentTipus = destinatariDocumentTipus;
 			built.destinatariDocumentNum = destinatariDocumentNum;
 			built.destinatariNom = destinatariNom;
@@ -357,6 +433,7 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 			built.destinatariMunicipiCodi = destinatariMunicipiCodi;
 			built.destinatariRepresentant = destinatariRepresentant;
 			built.idioma = idioma;
+			built.concepte = concepte;
 		}
 		public Builder annexos(List<DocumentEntity> annexos) {
 			built.annexos = annexos;
