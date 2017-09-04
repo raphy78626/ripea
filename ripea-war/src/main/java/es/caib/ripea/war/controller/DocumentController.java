@@ -265,15 +265,24 @@ public class DocumentController extends BaseUserController {
 			return "notificacioForm";
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		expedientEnviamentService.notificacioCreate(
-				entitatActual.getId(),
-				documentId,
-				command.getInteressatId(),
-				DocumentNotificacioCommand.asDto(command));
-		return this.getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../../contingut/" + documentId,
-				"document.controller.notificacio.ok");
+		
+		try {
+			expedientEnviamentService.notificacioCreate(
+					entitatActual.getId(),
+					documentId,
+					command.getInteressatId(),
+					DocumentNotificacioCommand.asDto(command));
+			return this.getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../../../contingut/" + documentId,
+					"document.controller.notificacio.ok");
+		} catch (Exception ex) {
+			return this.getModalControllerReturnValueErrorText(
+					request, 
+					"redirect:../../../contingut/" + documentId,
+					"document.controller.notificacio.ko",
+					ex.getMessage());
+		}
 	}
 
 

@@ -8,6 +8,8 @@ import java.util.Date;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
@@ -16,6 +18,7 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.entity.DocumentNotificacioEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
+import es.caib.ripea.core.service.ExpedientEnviamentServiceImpl;
 import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
 import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat;
 import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat.ZonaperJustificantEstat;
@@ -194,10 +197,13 @@ public class ExpedientHelper {
 						true,
 						ExceptionUtils.getStackTrace(rootCause),
 						null);
+				
+				logger.error("Error enviant la notificació: " + ex.getMessage());
+				
 				return false;
 			}
 	}
 	
 	/*************************/
-	
+	private static final Logger logger = LoggerFactory.getLogger(ExpedientHelper.class);
 }

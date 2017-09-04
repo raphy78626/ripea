@@ -223,7 +223,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 					interessat)) {
 				throw new SistemaExternException(
 						IntegracioHelper.INTCODI_NOTIB,
-						"No s'ha pogut notificar el document al Notib. Consulti l'error detallat en el registre d'enviaments");
+						"No s'ha pogut notificar el document al Notib.");
 			}
 			
 		}

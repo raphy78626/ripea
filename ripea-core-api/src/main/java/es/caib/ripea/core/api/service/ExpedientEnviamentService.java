@@ -11,6 +11,7 @@ import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.SistemaExternException;
 
 /**
  * Declaració dels mètodes per a gestionar enviaments dels expedients.
@@ -38,7 +39,7 @@ public interface ExpedientEnviamentService {
 			Long entitatId,
 			Long documentId,
 			Long interessatId,
-			DocumentNotificacioDto notificacio) throws NotFoundException;
+			DocumentNotificacioDto notificacio) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Modifica una notificació d'un document de l'expedient a un ciutadà.
