@@ -218,6 +218,7 @@ public class RegistreHelper {
 			RegistreAnnexEntity annexEntity,
 			RegistreAnotacio registre) {
 		RegistreAnnex annex = new RegistreAnnex();
+		annex.setId(annexEntity.getId());
 		annex.setTitol(annexEntity.getTitol());
 		annex.setFitxerNom(annexEntity.getFitxerNom());
 		annex.setFitxerTamany(annexEntity.getFitxerTamany());

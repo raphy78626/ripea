@@ -14,8 +14,7 @@ import javax.xml.ws.WebFault;
 public class BackofficeFacadeException
     extends Exception
 {
-
-    /**
+	/**
      * Java type that goes as soapenv:Fault detail element.
      * 
      */
@@ -23,8 +22,8 @@ public class BackofficeFacadeException
 
     /**
      * 
-     * @param faultInfo
      * @param message
+     * @param faultInfo
      */
     public BackofficeFacadeException(String message, es.caib.bantel.ws.v2.model.backofficefacade.BackofficeFacadeException faultInfo) {
         super(message);
@@ -33,9 +32,9 @@ public class BackofficeFacadeException
 
     /**
      * 
+     * @param message
      * @param faultInfo
      * @param cause
-     * @param message
      */
     public BackofficeFacadeException(String message, es.caib.bantel.ws.v2.model.backofficefacade.BackofficeFacadeException faultInfo, Throwable cause) {
         super(message, cause);
@@ -51,4 +50,5 @@ public class BackofficeFacadeException
         return faultInfo;
     }
 
+	private static final long serialVersionUID = 4745319186660232020L;
 }

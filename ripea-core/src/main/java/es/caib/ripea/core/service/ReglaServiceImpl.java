@@ -99,10 +99,12 @@ public class ReglaServiceImpl implements ReglaService {
 		switch(regla.getTipus()) {
 		case BACKOFFICE:
 			entity.updatePerTipusBackoffice(
+					regla.getBackofficeTipus(),
 					regla.getBackofficeUrl(),
 					regla.getBackofficeUsuari(),
 					regla.getBackofficeContrasenya(),
-					regla.getBackofficeReintents());
+					regla.getBackofficeIntents(),
+					regla.getBackofficeTempsEntreIntents());
 			break;
 		case BUSTIA:
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(

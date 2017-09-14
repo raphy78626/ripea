@@ -25,8 +25,10 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 
 /**
@@ -126,6 +128,16 @@ public class RegistreEntity extends ContingutEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "proces_estat", length = 16, nullable = false)
 	private RegistreProcesEstatEnum procesEstat;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "proces_estat_sistra", length = 16)
+	private RegistreProcesEstatSistraEnum procesEstatSistra;
+	@Column(name = "sistra_id_tram", length = 20)
+	private String identificadorTramitSistra;
+	@Column(name = "sistra_id_proc", length = 100)
+	private String identificadorProcedimentSistra;
+
+	
 	@Column(name = "proces_error", length = ERROR_MAX_LENGTH)
 	private String procesError;
 	@Column(name = "proces_intents")
@@ -257,6 +269,9 @@ public class RegistreEntity extends ContingutEntity {
 	public RegistreProcesEstatEnum getProcesEstat() {
 		return procesEstat;
 	}
+	public RegistreProcesEstatSistraEnum getProcesEstatSistra() {
+		return procesEstatSistra;
+	}
 	public String getProcesError() {
 		return procesError;
 	}
@@ -297,6 +312,16 @@ public class RegistreEntity extends ContingutEntity {
 			this.procesError = null;
 		}
 	}
+	public void updateProcesSistra(RegistreProcesEstatSistraEnum procesEstatSistra) {
+		this.procesEstatSistra = procesEstatSistra;
+	}
+	public void updateIdentificadorTramitSistra(String identificadorTramit) {
+		this.identificadorTramitSistra = identificadorTramit;
+	}
+	public void updateIdentificadorProcedimentSistra(String identificadorProcediment) {
+		this.identificadorProcedimentSistra = identificadorProcediment;
+	}
+	
 
 	public static Builder getBuilder(
 			EntitatEntity entitat,
@@ -473,6 +498,12 @@ public class RegistreEntity extends ContingutEntity {
 		public Builder regla(ReglaEntity regla) {
 			built.regla = regla;
 			built.procesIntents = new Integer(0);
+			// Per backoffices tipus Sistra posa l'estat en pendent
+			if (regla != null
+					&& regla.getBackofficeTipus() != null
+					&& BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) {
+				built.procesEstatSistra = RegistreProcesEstatSistraEnum.PENDENT;
+			}
 			return this;
 		}
 		public RegistreEntity build() {
@@ -526,5 +557,4 @@ public class RegistreEntity extends ContingutEntity {
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
-
 }

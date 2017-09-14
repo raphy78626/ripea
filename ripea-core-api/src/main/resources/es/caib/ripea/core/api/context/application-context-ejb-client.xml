@@ -97,5 +97,9 @@
 			id="bustiaV1WsService"
 			jndi-name="ripea/BustiaV1WsServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.ws.BustiaV1WsService"/>
+	<jee:local-slsb
+			id="bantelBackofficeWs"
+			jndi-name="ripea/BackofficeFacadeWsBean/local"
+			business-interface="es.caib.ripea.core.api.service.bantel.ws.v2.BantelBackofficeWs"/>
 
 </beans>

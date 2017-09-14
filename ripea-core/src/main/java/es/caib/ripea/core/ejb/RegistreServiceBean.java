@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.ejb;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -17,6 +18,8 @@ import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.ripea.core.api.service.RegistreService;
 
 /**
@@ -62,6 +65,11 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
+	public void reglaAplicarPendentsBackofficeSistra() {
+		delegate.reglaAplicarPendents();
+	}
+	
+	@Override
 	@RolesAllowed("IPA_ADMIN")
 	public boolean reglaReintentarAdmin(
 			Long entitatId,
@@ -102,6 +110,26 @@ public class RegistreServiceBean implements RegistreService {
 	@RolesAllowed("tothom")
 	public FitxerDto getArxiuAnnex(Long annexId, AnnexArxiuTipusEnumDto tipus) throws NotFoundException {
 		return delegate.getArxiuAnnex(annexId, tipus);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public RegistreAnotacioDto findAmbIdentificador(String identificador) {
+		return delegate.findAmbIdentificador(identificador);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void updateProces(Long registreId, RegistreProcesEstatEnum procesEstat,
+			RegistreProcesEstatSistraEnum procesEstatSistra, String resultadoProcesamiento) {
+		delegate.updateProces(registreId, procesEstat, procesEstatSistra, resultadoProcesamiento);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<String> findPerBackofficeSistra(String identificadorProcediment, String identificadorTramit,
+			RegistreProcesEstatSistraEnum procesEstatSistra, Date desdeDate, Date finsDate) {
+		return delegate.findPerBackofficeSistra(identificadorProcediment, identificadorTramit, procesEstatSistra, desdeDate, finsDate);
 	}
 
 }

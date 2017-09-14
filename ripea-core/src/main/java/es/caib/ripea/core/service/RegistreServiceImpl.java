@@ -4,6 +4,8 @@
 package es.caib.ripea.core.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -25,6 +27,7 @@ import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -163,18 +166,55 @@ public class RegistreServiceImpl implements RegistreService {
 	@Scheduled(fixedRateString = "${config:es.caib.ripea.tasca.regla.pendent.periode.execucio}")
 	public void reglaAplicarPendents() {
 		logger.debug("Aplicant regles a les anotacions pendents");
-		List<RegistreEntity> pendents = registreRepository.findByReglaNotNullAndProcesEstatOrderByCreatedDateAsc(
-				RegistreProcesEstatEnum.PENDENT);
+		try {
+			List<RegistreEntity> pendents = registreRepository.findAmbReglaPendentProcessar();
+			logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
+			if (!pendents.isEmpty()) {
+				for (RegistreEntity pendent: pendents) {
+					reglaAplicar(pendent);
+				}
+			} else {
+				logger.debug("No hi ha registres pendents de processar");
+			}
+		} catch (Exception e) {
+			logger.error("Error aplicant regles a les anotacions pendents.", e);
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	@Transactional
+	@Async
+	@Scheduled(fixedRateString = "60000")
+	public void reglaAplicarPendentsBackofficeSistra() {
+		logger.debug("Aplicant regles a les anotacions pendents per a regles de backoffice tipus Sistra");
+		List<RegistreEntity> pendents = registreRepository.findAmbReglaPendentProcessarBackofficeSistra();
 		logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
 		if (!pendents.isEmpty()) {
+			Date ara;
+			Date darrerProcessament;
+			Integer minutsEntreReintents;
+			Calendar properProcessamentCal = Calendar.getInstance();
 			for (RegistreEntity pendent: pendents) {
-				reglaAplicar(pendent);
+				// Comprova si ha passat el temps entre reintents o ha d'esperar
+				boolean esperar = false;
+				darrerProcessament = pendent.getProcesData();
+				minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
+				if (darrerProcessament != null && minutsEntreReintents != null) {
+					// Calcula el temps pel proper intent
+					properProcessamentCal.setTime(darrerProcessament);
+					properProcessamentCal.add(Calendar.MINUTE, minutsEntreReintents);
+					ara  = new Date();
+					esperar = ara.before(properProcessamentCal.getTime());
+				}
+				if (!esperar)
+					reglaAplicar(pendent);
 			}
 		} else {
 			logger.debug("No hi ha registres pendents de processar");
 		}
 	}
-
+	
 	@Override
 	@Transactional
 	public boolean reglaReintentarAdmin(
@@ -314,6 +354,64 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		return annexos;
 	}
+	
+	@Transactional (readOnly = true)
+	@Override
+	public RegistreAnotacioDto findAmbIdentificador(String identificador) {
+		RegistreAnotacioDto registreAnotacioDto;
+		RegistreEntity registre = registreRepository.findByIdentificador(identificador);
+		if (registre != null)
+			registreAnotacioDto = (RegistreAnotacioDto) contingutHelper.toContingutDto(registre);
+		else
+			registreAnotacioDto = null;
+		return registreAnotacioDto;
+	}
+
+	@Transactional
+	@Override
+	public void updateProces(
+			Long registreId, 
+			RegistreProcesEstatEnum procesEstat, 
+			RegistreProcesEstatSistraEnum procesEstatSistra,
+			String resultadoProcesamiento) {
+		logger.debug("Actualitzar estat procés anotació de registre ("
+				+ "registreId=" + registreId + ", "
+				+ "procesEstat=" + procesEstat + ", "
+				+ "procesEstatSistra=" + procesEstatSistra + ", "
+				+ "resultadoProcesamiento=" + resultadoProcesamiento + ")");
+		RegistreEntity registre = registreRepository.findOne(registreId);
+		registre.updateProces(
+				new Date(), 
+				procesEstat, 
+				resultadoProcesamiento);
+		registre.updateProcesSistra(procesEstatSistra);
+	}
+
+	@Transactional (readOnly = true)
+	@Override
+	public List<String> findPerBackofficeSistra(
+			String identificadorProcediment, 
+			String identificadorTramit,
+			RegistreProcesEstatSistraEnum procesEstatSistra, 
+			Date desdeDate, 
+			Date finsDate) {
+		logger.debug("Consultant els numeros d'entrada del registre pel backoffice Sistra ("
+				+ "identificadorProcediment=" + identificadorProcediment + ", "
+				+ "identificadorTramit=" + identificadorTramit + ", "
+				+ "procesEstatSistra=" + procesEstatSistra + ", "
+				+ "desdeDate=" + desdeDate + ", "
+				+ "finsDate=" + finsDate + ")");
+		
+		return registreRepository.findPerBackofficeSistra(
+				identificadorProcediment,
+				identificadorTramit,
+				procesEstatSistra == null,
+				procesEstatSistra,
+				desdeDate == null,
+				desdeDate,
+				finsDate == null,
+				finsDate);
+	}
 
 	private boolean reglaAplicar(
 			RegistreEntity anotacio) {
@@ -329,6 +427,9 @@ public class RegistreServiceImpl implements RegistreService {
 				"anotacioNum=" + anotacio.getIdentificador() + ", " +
 				"reglaId=" + anotacio.getRegla().getId() + ", " +
 				"reglaTipus=" + anotacio.getRegla().getTipus().name() + ", " +
+				(anotacio.getRegla().getBackofficeTipus() != null ?
+						"reglaBackofficeTipus=" + anotacio.getRegla().getBackofficeTipus().name() + ", " 
+						: "") +
 				"metaExpedient=" + anotacio.getRegla().getMetaExpedient() + ", " +
 				"arxiu=" + anotacio.getRegla().getArxiu() + ", " +
 				"bustia=" + anotacio.getRegla().getBustia() + ")");

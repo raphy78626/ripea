@@ -9,6 +9,7 @@ import java.util.List;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
 import es.caib.ripea.core.api.registre.RegistreInteressat;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 
 /**
@@ -22,6 +23,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private String unitatAdministrativa;
 	private Date procesData;
 	private RegistreProcesEstatEnum procesEstat;
+	private RegistreProcesEstatSistraEnum procesEstatSistra;
 	private String procesError;
 	private Integer procesIntents;
 
@@ -48,6 +50,12 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setProcesEstat(RegistreProcesEstatEnum procesEstat) {
 		this.procesEstat = procesEstat;
+	}
+	public RegistreProcesEstatSistraEnum getProcesEstatSistra() {
+		return procesEstatSistra;
+	}
+	public void setProcesEstatSistra(RegistreProcesEstatSistraEnum procesEstatSistra) {
+		this.procesEstatSistra = procesEstatSistra;
 	}
 	public String getProcesError() {
 		return procesError;

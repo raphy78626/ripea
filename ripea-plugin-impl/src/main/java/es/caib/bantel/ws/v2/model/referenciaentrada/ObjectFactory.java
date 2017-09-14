@@ -34,19 +34,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ReferenciasEntrada }
-     * 
-     */
-    public ReferenciasEntrada createReferenciasEntrada() {
-        return new ReferenciasEntrada();
-    }
-
-    /**
      * Create an instance of {@link ReferenciaEntrada }
      * 
      */
     public ReferenciaEntrada createReferenciaEntrada() {
         return new ReferenciaEntrada();
+    }
+
+    /**
+     * Create an instance of {@link ReferenciasEntrada }
+     * 
+     */
+    public ReferenciasEntrada createReferenciasEntrada() {
+        return new ReferenciasEntrada();
     }
 
     /**

@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "BackofficeFacadeService", targetNamespace = "urn:es:caib:bantel:ws:v2:services", wsdlLocation = "file:/C:/Users/PereP/git/ripea/ripea-plugin-impl/wsdl/sistra-bantel/BackofficeFacade.wsdl")
+@WebServiceClient(name = "BackofficeFacadeService", targetNamespace = "urn:es:caib:bantel:ws:v2:services", wsdlLocation = "file:/C:/Users/danielm/Limit%20Tecnologies/lot3/Ripea/git/ripea-plugin-impl/wsdl/sistra-bantel/BackofficeFacade.wsdl")
 public class BackofficeFacadeService
     extends Service
 {
@@ -30,7 +30,7 @@ public class BackofficeFacadeService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/C:/Users/PereP/git/ripea/ripea-plugin-impl/wsdl/sistra-bantel/BackofficeFacade.wsdl");
+            url = new URL("file:/C:/Users/danielm/Limit%20Tecnologies/lot3/Ripea/git/ripea-plugin-impl/wsdl/sistra-bantel/BackofficeFacade.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
