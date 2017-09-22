@@ -15,7 +15,7 @@
 		<sec:intercept-url pattern="/ws/portafibCallback*" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/ws/v0/bustia*" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/ws/v1/bustia*" access="isAnonymous()"/>
-		<sec:intercept-url pattern="/ws/ripeaCarregaTest*" access="isAnonymous()"/>
+		<sec:intercept-url pattern="/ws/ripeacarregatest*" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/rest/v0/bustia" access="hasRole('IPA_BSTWS')"/>
 		<sec:intercept-url pattern="/rest/v1/bustia" access="hasRole('IPA_BSTWS')"/>
 		<sec:intercept-url pattern="/entitat*" access="hasRole('IPA_SUPER')"/>
