@@ -774,7 +774,8 @@ public class BustiaServiceImpl implements BustiaService {
 						true));
 			}
 		else
-			pares.add(bustia);
+			if (bustia != null)
+				pares.add(bustia);
 		
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
