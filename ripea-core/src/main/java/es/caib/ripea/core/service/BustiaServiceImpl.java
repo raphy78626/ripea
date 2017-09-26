@@ -674,7 +674,7 @@ public class BustiaServiceImpl implements BustiaService {
 					unitatAdministrativa,
 					UnitatOrganitzativaDto.class);
 		}
-		BustiaEntity bustia = bustiaHelper.findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
+		BustiaEntity bustia = bustiaHelper.findBustiaPerDefecte(
 				entitat,
 				unitat);
 		RegistreEntity registreRepetit = registreRepository.findByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndData(
