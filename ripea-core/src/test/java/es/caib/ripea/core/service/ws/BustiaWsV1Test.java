@@ -32,7 +32,7 @@ public class BustiaWsV1Test extends BustiaBaseTest {
 		Date ara = new Date();
 		String numeroIdentificador = new SimpleDateFormat("yyMMddHHmm").format(ara);
 		RegistreAnotacio anotacio = new RegistreAnotacio();
-		anotacio.setNumero(Integer.valueOf(numeroIdentificador));
+		anotacio.setNumero(String.valueOf(ara.getTime()));
 		anotacio.setData(ara);
 		anotacio.setIdentificador(numeroIdentificador);
 		anotacio.setExtracte("Extracte " + numeroIdentificador);

@@ -50,7 +50,7 @@
 		<div class="tab-pane active in" id="informacio" role="tabpanel">
 			<dl class="dl-horizontal">
 				<dt><spring:message code="registre.detalls.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></dd>
-				<dt><spring:message code="registre.detalls.camp.numero"/></dt><dd>${registre.identificador}</dd>
+				<dt><spring:message code="registre.detalls.camp.numero"/></dt><dd>${registre.numero}</dd>
 				<dt><spring:message code="registre.detalls.camp.data"/></dt><dd><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
 				<c:if test="${registre.registreTipus == 'ENTRADA'}">
 					<dt><spring:message code="registre.detalls.camp.desti"/></dt><dd>${registre.unitatAdministrativa}</dd>				

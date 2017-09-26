@@ -57,8 +57,8 @@ public class RegistreEntity extends ContingutEntity {
 	private String registreTipus;
 	@Column(name = "unitat_adm", length = 21, nullable = false)
 	private String unitatAdministrativa;
-	@Column(name = "numero", nullable = false)
-	private int numero;
+	@Column(name = "numero", length = 100, nullable = false)
+	private String numero;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data", nullable = false)
 	private Date data;
@@ -167,7 +167,7 @@ public class RegistreEntity extends ContingutEntity {
 	public String getUnitatAdministrativa() {
 		return unitatAdministrativa;
 	}
-	public int getNumero() {
+	public String getNumero() {
 		return numero;
 	}
 	public Date getData() {
@@ -327,7 +327,7 @@ public class RegistreEntity extends ContingutEntity {
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
-			int numero,
+			String numero,
 			Date data,
 			String identificador,
 			String extracte,
@@ -364,7 +364,7 @@ public class RegistreEntity extends ContingutEntity {
 				EntitatEntity entitat,
 				RegistreTipusEnum tipus,
 				String unitatAdministrativa,
-				int numero,
+				String numero,
 				Date data,
 				String identificador,
 				String extracte,
@@ -376,9 +376,9 @@ public class RegistreEntity extends ContingutEntity {
 				ContingutEntity pare) {
 			built = new RegistreEntity();
 			if (extracte != null) {
-				built.nom = identificador + " - " + extracte;
+				built.nom = numero + " - " + extracte;
 			} else {
-				built.nom = identificador;
+				built.nom = numero;
 			}
 			built.tipus = ContingutTipusEnumDto.REGISTRE;
 			built.entitat = entitat;
@@ -518,7 +518,7 @@ public class RegistreEntity extends ContingutEntity {
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
 		result = prime * result + ((entitatCodi == null) ? 0 : entitatCodi.hashCode());
 		result = prime * result + ((llibreCodi == null) ? 0 : llibreCodi.hashCode());
-		result = prime * result + numero;
+		result = prime * result + numero.hashCode();
 		result = prime * result + ((registreTipus == null) ? 0 : registreTipus.hashCode());
 		return result;
 	}
