@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
@@ -129,14 +130,42 @@ public class BustiaHelper {
 		return arbre;
 	}
 
-	public BustiaEntity findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
+	/** Troba la bústica per defecte per a la unitat administrativa. Si la unitat no té
+	 * bústia, llavors mira la 1a de les unitats organitzatives superiors que tingui bústia,
+	 * si cap en té llavors crea la bústia per a la unitat organitzativa arrel.
+	 * 
+	 * @param entitat
+	 * @param unitat
+	 * @return
+	 */
+	public BustiaEntity findBustiaPerDefecte(
 			EntitatEntity entitat,
 			UnitatOrganitzativaDto unitat) {
-		String unitatOrganitzativaCodi = unitat.getCodi();
-		BustiaEntity bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
-				entitat,
-				unitatOrganitzativaCodi);
-		// Si la bústia no existeix la crea
+		
+		BustiaEntity bustia = null;
+		String unitatOrganitzativaCodi;
+		String unitatSuperiorCodi;
+		String unitatArrelCodi = unitat.getCodiUnitatArrel();		
+		// Busca la bústia mentre no es trobi la per defecte en la unitat o les seves superiors fins la arrel
+		do {
+			// Guarda el codi de la unitat actual i de la immediatament superior
+			unitatOrganitzativaCodi = unitat.getCodi();
+			unitatSuperiorCodi = unitat.getCodiUnitatSuperior();
+			// Busca la bústia per defecte per la unitat actual
+			bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
+					entitat,
+					unitatOrganitzativaCodi);
+			// Si la bústia no existeix continua mirant amb la unitat superior
+			if (bustia == null) {
+				unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
+						entitat.getCodi(),
+						unitatSuperiorCodi);	
+				if (unitat == null)
+					throw new NotFoundException(unitatSuperiorCodi, UnitatOrganitzativaDto.class);
+			}
+		} while(bustia == null && unitatArrelCodi.compareTo(unitatOrganitzativaCodi) != 0);		
+		
+		// Si la bústia no existeix la crea per a la unitat superior
 		if (bustia == null) {
 			// Cerca la bústia superior
 			BustiaEntity bustiaPare = bustiaRepository.findByEntitatAndUnitatCodiAndPareNull(
