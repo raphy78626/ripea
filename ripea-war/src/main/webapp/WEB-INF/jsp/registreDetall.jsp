@@ -49,21 +49,21 @@
 	<div class="tab-content">
 		<div class="tab-pane active in" id="informacio" role="tabpanel">
 			<dl class="dl-horizontal">
-				<dt><spring:message code="registre.detalls.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></dd>
-				<dt><spring:message code="registre.detalls.camp.numero"/></dt><dd>${registre.identificador}</dd>
+				<dt><spring:message code="registre.detalls.camp.extracte"/></dt><dd>${registre.extracte}</dd>
 				<dt><spring:message code="registre.detalls.camp.data"/></dt><dd><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				<dt><spring:message code="registre.detalls.camp.data.origen"/></dt><dd><fmt:formatDate value="${registre.dataOrigen}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				<dt><spring:message code="registre.detalls.camp.numero"/></dt><dd>${registre.numero}</dd>
 				<c:if test="${registre.registreTipus == 'ENTRADA'}">
-					<dt><spring:message code="registre.detalls.camp.desti"/></dt><dd>${registre.unitatAdministrativa}</dd>				
+					<dt><spring:message code="registre.detalls.camp.desti"/></dt><dd>${registre.unitatAdministrativaDescripcio} (${registre.unitatAdministrativa})</dd>				
 				</c:if>
 				<c:if test="${registre.registreTipus == 'SORTIDA'}">
-					<dt><spring:message code="registre.detalls.camp.origen"/></dt><dd>${registre.unitatAdministrativa}</dd>
+					<dt><spring:message code="registre.detalls.camp.origen"/></dt><dd>${registre.unitatAdministrativaDescripcio} (${registre.unitatAdministrativa})</dd>
 				</c:if>
 				<dt><spring:message code="registre.detalls.camp.entitat"/></dt><dd>${registre.entitatDescripcio} (${registre.entitatCodi})</dd>
 				<dt><spring:message code="registre.detalls.camp.oficina"/></dt><dd>${registre.oficinaDescripcio} (${registre.oficinaCodi})</dd>
-				<dt><spring:message code="registre.detalls.camp.data.origen"/></dt><dd><fmt:formatDate value="${registre.dataOrigen}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
 				<dt><spring:message code="registre.detalls.camp.oficina.origen"/></dt><dd>${registre.oficinaOrigenDescripcio} (${registre.oficinaOrigenCodi})</dd>
 				<dt><spring:message code="registre.detalls.camp.llibre"/></dt><dd>${registre.llibreDescripcio} (${registre.llibreCodi})</dd>
-				<dt><spring:message code="registre.detalls.camp.extracte"/></dt><dd>${registre.extracte}</dd>
+				<dt><spring:message code="registre.detalls.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></dd>
 				<dt><spring:message code="registre.detalls.camp.assumpte.tipus"/></dt><dd>${registre.assumpteTipusDescripcio} (${registre.assumpteTipusCodi})</dd>
 				<c:if test="${not empty registre.assumpteCodi}">
 					<dt><spring:message code="registre.detalls.camp.assumpte.codi"/></dt><dd>${registre.assumpteCodi}</dd>

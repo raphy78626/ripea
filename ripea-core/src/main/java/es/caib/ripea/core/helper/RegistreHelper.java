@@ -11,9 +11,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
 import es.caib.ripea.core.api.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -39,7 +42,10 @@ import es.caib.ripea.core.entity.ReglaEntity;
  */
 @Component
 public class RegistreHelper {
-	
+
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
 		RegistreAnotacio anotacio = new RegistreAnotacio();
@@ -105,10 +111,18 @@ public class RegistreHelper {
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio,
 			ReglaEntity regla) {
+		
+		// Obté la unitat organitzativa per guardar la descripció a l'anotació del registre
+		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
+				entitat.getCodi(),
+				unitatAdministrativa);
+		
+		// Construeix l'anotació
 		RegistreEntity entity = RegistreEntity.getBuilder(
 				entitat,
 				tipus,
 				unitatAdministrativa,
+				unitat != null? unitat.getDenominacio() : null,
 				anotacio.getNumero(),
 				anotacio.getData(),
 				anotacio.getIdentificador(),

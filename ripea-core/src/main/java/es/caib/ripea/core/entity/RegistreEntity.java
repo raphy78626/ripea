@@ -57,6 +57,8 @@ public class RegistreEntity extends ContingutEntity {
 	private String registreTipus;
 	@Column(name = "unitat_adm", length = 21, nullable = false)
 	private String unitatAdministrativa;
+	@Column(name = "unitat_adm_desc", length = 100)
+	private String unitatAdministrativaDescripcio;
 	@Column(name = "numero", nullable = false)
 	private int numero;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -174,6 +176,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public String getUnitatAdministrativa() {
 		return unitatAdministrativa;
+	}
+	public String getUnitatAdministrativaDescripcio() {
+		return unitatAdministrativaDescripcio;
 	}
 	public int getNumero() {
 		return numero;
@@ -344,6 +349,7 @@ public class RegistreEntity extends ContingutEntity {
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
+			String unitatAdministrativaDescripcio,
 			int numero,
 			Date data,
 			String identificador,
@@ -358,6 +364,7 @@ public class RegistreEntity extends ContingutEntity {
 				entitat,
 				tipus,
 				unitatAdministrativa,
+				unitatAdministrativaDescripcio,
 				numero,
 				data,
 				identificador,
@@ -381,6 +388,7 @@ public class RegistreEntity extends ContingutEntity {
 				EntitatEntity entitat,
 				RegistreTipusEnum tipus,
 				String unitatAdministrativa,
+				String unitatdAministrativaDescripcio,
 				int numero,
 				Date data,
 				String identificador,
@@ -401,6 +409,7 @@ public class RegistreEntity extends ContingutEntity {
 			built.entitat = entitat;
 			built.registreTipus = tipus.getValor();
 			built.unitatAdministrativa = unitatAdministrativa;
+			built.unitatAdministrativaDescripcio = unitatdAministrativaDescripcio;
 			built.numero = numero;
 			built.data = data;
 			built.identificador = identificador;

@@ -21,6 +21,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 
 	private RegistreTipusEnum registreTipus;
 	private String unitatAdministrativa;
+	private String unitatAdministrativaDescripcio;
 	private Date procesData;
 	private RegistreProcesEstatEnum procesEstat;
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
@@ -38,6 +39,12 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setUnitatAdministrativa(String unitatAdministrativa) {
 		this.unitatAdministrativa = unitatAdministrativa;
+	}
+	public String getUnitatAdministrativaDescripcio() {
+		return unitatAdministrativaDescripcio;
+	}
+	public void setUnitatAdministrativaDescripcio(String unitatAdministrativaDescripcio) {
+		this.unitatAdministrativaDescripcio = unitatAdministrativaDescripcio;
 	}
 	public Date getProcesData() {
 		return procesData;
