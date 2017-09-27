@@ -50,6 +50,9 @@ public class RegistreHelper {
 		anotacio.setEntitatDescripcio(entity.getEntitatDescripcio());
 		anotacio.setOficinaCodi(entity.getOficinaCodi());
 		anotacio.setOficinaDescripcio(entity.getOficinaDescripcio());
+		anotacio.setDataOrigen(entity.getDataOrigen());
+		anotacio.setOficinaOrigenCodi(entity.getOficinaOrigenCodi());
+		anotacio.setOficinaOrigenDescripcio(entity.getOficinaOrigenDescripcio());
 		anotacio.setLlibreCodi(entity.getLlibreCodi());
 		anotacio.setLlibreDescripcio(entity.getLlibreDescripcio());
 		anotacio.setExtracte(entity.getExtracte());
@@ -140,6 +143,7 @@ public class RegistreHelper {
 		exposa(anotacio.getExposa()).
 		solicita(anotacio.getSolicita()).
 		regla(regla).
+		oficinaOrigen(anotacio.getDataOrigen(), anotacio.getOficinaOrigenCodi(), anotacio.getOficinaOrigenDescripcio()).
 		build();
 		if (anotacio.getInteressats() != null) {
 			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {

@@ -128,6 +128,14 @@ public class RegistreEntity extends ContingutEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "proces_estat", length = 16, nullable = false)
 	private RegistreProcesEstatEnum procesEstat;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "data_orig")
+	private Date dataOrigen;
+	@Column(name = "oficina_orig_codi", length = 21)
+	private String oficinaOrigenCodi;
+	@Column(name = "oficina_orig_desc", length = 100)
+	private String oficinaOrigenDescripcio;
+
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "proces_estat_sistra", length = 16)
@@ -173,6 +181,9 @@ public class RegistreEntity extends ContingutEntity {
 	public Date getData() {
 		return data;
 	}
+	public Date getDataOrigen() {
+		return dataOrigen;
+	}
 	public String getIdentificador() {
 		return identificador;
 	}
@@ -187,6 +198,12 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public String getOficinaDescripcio() {
 		return oficinaDescripcio;
+	}
+	public String getOficinaOrigenCodi() {
+		return oficinaOrigenCodi;
+	}
+	public String getOficinaOrigenDescripcio() {
+		return oficinaOrigenDescripcio;
 	}
 	public String getLlibreCodi() {
 		return llibreCodi;
@@ -504,6 +521,14 @@ public class RegistreEntity extends ContingutEntity {
 					&& BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) {
 				built.procesEstatSistra = RegistreProcesEstatSistraEnum.PENDENT;
 			}
+			return this;
+		}
+		public Builder oficinaOrigen(Date dataOrigen,
+				String oficinaOrigenCodi,
+				String oficinaOrigenDescripcio) {
+			built.dataOrigen = dataOrigen;
+			built.oficinaOrigenCodi = oficinaOrigenCodi;
+			built.oficinaOrigenDescripcio = oficinaOrigenDescripcio;
 			return this;
 		}
 		public RegistreEntity build() {

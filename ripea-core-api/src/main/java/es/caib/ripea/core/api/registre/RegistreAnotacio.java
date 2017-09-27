@@ -16,11 +16,14 @@ public class RegistreAnotacio {
 
 	private int numero;
 	private Date data;
+	private Date dataOrigen;
 	private String identificador;
 	private String entitatCodi;
 	private String entitatDescripcio;
 	private String oficinaCodi;
 	private String oficinaDescripcio;
+	private String oficinaOrigenCodi;
+	private String oficinaOrigenDescripcio;
 	private String llibreCodi;
 	private String llibreDescripcio;
 	private String extracte;
@@ -62,6 +65,12 @@ public class RegistreAnotacio {
 	public void setData(Date data) {
 		this.data = data;
 	}
+	public Date getDataOrigen() {
+		return dataOrigen;
+	}
+	public void setDataOrigen(Date dataOrigen) {
+		this.dataOrigen = dataOrigen;
+	}
 	public String getIdentificador() {
 		return identificador;
 	}
@@ -91,6 +100,18 @@ public class RegistreAnotacio {
 	}
 	public void setOficinaDescripcio(String oficinaDescripcio) {
 		this.oficinaDescripcio = oficinaDescripcio;
+	}
+	public String getOficinaOrigenCodi() {
+		return oficinaOrigenCodi;
+	}
+	public void setOficinaOrigenCodi(String oficinaOrigenCodi) {
+		this.oficinaOrigenCodi = oficinaOrigenCodi;
+	}
+	public String getOficinaOrigenDescripcio() {
+		return oficinaOrigenDescripcio;
+	}
+	public void setOficinaOrigenDescripcio(String oficinaOrigenDescripcio) {
+		this.oficinaOrigenDescripcio = oficinaOrigenDescripcio;
 	}
 	public String getLlibreCodi() {
 		return llibreCodi;

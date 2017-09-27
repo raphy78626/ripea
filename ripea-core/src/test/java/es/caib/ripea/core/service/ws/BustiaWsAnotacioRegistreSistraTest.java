@@ -72,6 +72,10 @@ public class BustiaWsAnotacioRegistreSistraTest extends BustiaBaseTest {
 		anotacio.setIdiomaCodi("CA");
 		anotacio.setEntitatCodi("?");
 		anotacio.setLlibreCodi("?");
+		anotacio.setData(new Date());
+		anotacio.setDataOrigen(new Date(0));
+		anotacio.setOficinaOrigenCodi("ofi_origen");
+		anotacio.setOficinaOrigenDescripcio("Oficina origen descripció");
 				
 		// Afegeix els adjunts
 		List<RegistreAnnex> annexos = this.getAnnexos();
