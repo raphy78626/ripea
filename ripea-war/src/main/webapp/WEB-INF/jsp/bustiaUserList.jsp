@@ -28,6 +28,13 @@ $(document).ready(function() {
 	$('#netejarFiltre').click(function(e) {
 		$('#estatContingut').val('PENDENT').change();
 	});
+	$('#taulaDades').on( 'draw.dt', function () {
+		// Quan es refresca la llista consulta els pendents
+		$.get( "bustiaUser/getNumPendents")
+		.done(function( data ) {
+			$('#bustia-pendent-count').text(data);
+		})
+	} );
 });
 </script>
 </head>

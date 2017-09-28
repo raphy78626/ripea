@@ -42,6 +42,7 @@ import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.command.MarcarProcessatCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
@@ -344,6 +345,13 @@ public class BustiaUserController extends BaseUserController {
 				request,
 				"redirect:/bustiaUser",
 				"bustia.controller.pendent.contingut.reenviat.ok");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/getNumPendents", method = RequestMethod.GET)
+	public Long bustaGetNumeroPendents(HttpServletRequest request) {
+		Long ret = ElementsPendentsBustiaHelper.countElementsPendentsBustia(request, bustiaService);
+		return ret;
 	}
 
 	private void omplirModelPerNouExpedient(
