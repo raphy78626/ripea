@@ -16,6 +16,7 @@ public class RegistreAnnexDetallDto implements Serializable {
 	private Long id;
 	private String titol;
 	private String fitxerNom;
+	private int fitxerTamany;
 	private String fitxerTipusMime;
 	private Date dataCaptura;
 	private String localitzacio;
@@ -25,6 +26,7 @@ public class RegistreAnnexDetallDto implements Serializable {
 	private String ntiElaboracioEstat;
 	private String observacions;
 	private String firmaFitxerNom;
+	private Integer firmaFitxerTamany;
 	private Integer firmaMode;
 	private String firmaCsv;
 	private String firmaFitxerTipusMime;
@@ -185,6 +187,22 @@ public class RegistreAnnexDetallDto implements Serializable {
 
 	public void setAmbFirma(boolean ambFirma) {
 		this.ambFirma = ambFirma;
+	}
+
+	public int getFitxerTamany() {
+		return fitxerTamany;
+	}
+
+	public void setFitxerTamany(int fitxerTamany) {
+		this.fitxerTamany = fitxerTamany;
+	}
+
+	public Integer getFirmaFitxerTamany() {
+		return firmaFitxerTamany;
+	}
+
+	public void setFirmaFitxerTamany(Integer firmaFitxerTamany) {
+		this.firmaFitxerTamany = firmaFitxerTamany;
 	}
 
 }
