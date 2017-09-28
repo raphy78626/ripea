@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class RegistreAnotacio {
 
-	private int numero;
+	private String numero;
 	private Date data;
 	private Date dataOrigen;
 	private String identificador;
@@ -53,10 +53,10 @@ public class RegistreAnotacio {
 
 
 
-	public int getNumero() {
+	public String getNumero() {
 		return numero;
 	}
-	public void setNumero(int numero) {
+	public void setNumero(String numero) {
 		this.numero = numero;
 	}
 	public Date getData() {

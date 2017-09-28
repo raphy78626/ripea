@@ -426,7 +426,7 @@ CREATE TABLE IPA_REGISTRE
   ID                   NUMBER(19)               NOT NULL,
   TIPUS                VARCHAR2(1)              NOT NULL,
   UNITAT_ADM           VARCHAR2(21)             NOT NULL,
-  NUMERO               NUMBER(10)               NOT NULL,
+  NUMERO               VARCHAR2(100)            NOT NULL,
   DATA                 TIMESTAMP(6)             NOT NULL,
   IDENTIFICADOR        VARCHAR2(100)            NOT NULL,
   ENTITAT_CODI         VARCHAR2(21)             NOT NULL,

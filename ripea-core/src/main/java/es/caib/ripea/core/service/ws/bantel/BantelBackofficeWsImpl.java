@@ -111,7 +111,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
     	
 		// Dades de Ripea
 		tramitBte.setNumeroEntrada(registre.getIdentificador());
-		tramitBte.setCodigoEntrada(registre.getNumero());
+		tramitBte.setCodigoEntrada(Long.parseLong(registre.getNumero()));
 		tramitBte.setProcesada(getProcesada(registre.getProcesEstatSistra()));
 		
 		// Constants

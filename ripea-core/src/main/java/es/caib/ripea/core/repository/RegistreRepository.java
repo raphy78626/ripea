@@ -75,7 +75,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			String entitatCodi,
 			String llibreCodi,
 			String registreTipus,
-			int numero,
+			String numero,
 			Date data);
 
 

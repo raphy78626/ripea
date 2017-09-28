@@ -85,7 +85,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 
 	// Copiat de es.caib.ripea.core.api.registre.RegistreAnotacio
-	private int numero;
+	private String numero;
 	private Date data;
 	private Date dataOrigen;
 	private String identificador;
@@ -124,10 +124,10 @@ public class RegistreAnotacioDto extends ContingutDto {
 
 
 
-	public int getNumero() {
+	public String getNumero() {
 		return numero;
 	}
-	public void setNumero(int numero) {
+	public void setNumero(String numero) {
 		this.numero = numero;
 	}
 	public Date getData() {
