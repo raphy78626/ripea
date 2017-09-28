@@ -14,13 +14,13 @@
 	<script src="<c:url value="/js/jstree.min.js"/>"></script>
 </head>
 <body>
-	<form:form action="" class="form-horizontal" commandName="contenidorMoureCopiarEnviarCommand">
+	<form:form action="" class="form-horizontal" commandName="contingutMoureCopiarEnviarCommand">
 		<form:hidden path="origenId"/>
-		<rip:inputArbre name="destiId" textKey="contenidor.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
-		<rip:inputTextarea name="comentariEnviar" textKey="contenidor.enviar.camp.comentari"/>
+		<rip:inputArbre name="destiId" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
+		<rip:inputTextarea name="comentariEnviar" textKey="contingut.enviar.camp.comentari"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>
-			<a href="<c:url value="/contenidor/${contenidorOrigen.pare.id}"/>" class="btn btn-default modal-tancar"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/contenidor/${contenidorOrigen.pare.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

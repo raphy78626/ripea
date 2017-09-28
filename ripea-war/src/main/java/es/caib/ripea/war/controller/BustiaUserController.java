@@ -251,7 +251,7 @@ public class BustiaUserController extends BaseUserController {
 		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
 		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
-		return "bustiaPendentContingutReenviar";
+		return "bustiaPendentRegistreReenviar";
 	}
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.POST)
 	public String bustiaPendentReenviarPost(
@@ -268,7 +268,7 @@ public class BustiaUserController extends BaseUserController {
 					bustiaId,
 					contingutId,
 					model);
-			return "bustiaPendentContingutReenviar";
+			return "bustiaPendentRegistreReenviar";
 		}
 		bustiaService.contingutPendentReenviar(
 				entitatActual.getId(),
