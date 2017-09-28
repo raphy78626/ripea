@@ -110,7 +110,7 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 	private RegistreAnotacio toRegistreAnotacio(
 			RegistroResponseWs registro) {
 		RegistreAnotacio anotacio = new RegistreAnotacio();
-		anotacio.setNumero(registro.getNumeroRegistro());
+		anotacio.setNumero(String.valueOf(registro.getNumeroRegistro()));
 		anotacio.setData(registro.getFechaRegistro());
 		anotacio.setIdentificador(registro.getNumeroRegistroFormateado());
 		anotacio.setEntitatCodi(registro.getEntidadCodigo());

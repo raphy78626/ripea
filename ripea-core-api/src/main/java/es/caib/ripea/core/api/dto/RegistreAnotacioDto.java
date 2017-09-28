@@ -21,6 +21,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 
 	private RegistreTipusEnum registreTipus;
 	private String unitatAdministrativa;
+	private String unitatAdministrativaDescripcio;
 	private Date procesData;
 	private RegistreProcesEstatEnum procesEstat;
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
@@ -38,6 +39,12 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setUnitatAdministrativa(String unitatAdministrativa) {
 		this.unitatAdministrativa = unitatAdministrativa;
+	}
+	public String getUnitatAdministrativaDescripcio() {
+		return unitatAdministrativaDescripcio;
+	}
+	public void setUnitatAdministrativaDescripcio(String unitatAdministrativaDescripcio) {
+		this.unitatAdministrativaDescripcio = unitatAdministrativaDescripcio;
 	}
 	public Date getProcesData() {
 		return procesData;
@@ -78,13 +85,16 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 
 	// Copiat de es.caib.ripea.core.api.registre.RegistreAnotacio
-	private int numero;
+	private String numero;
 	private Date data;
+	private Date dataOrigen;
 	private String identificador;
 	private String entitatCodi;
 	private String entitatDescripcio;
 	private String oficinaCodi;
 	private String oficinaDescripcio;
+	private String oficinaOrigenCodi;
+	private String oficinaOrigenDescripcio;
 	private String llibreCodi;
 	private String llibreDescripcio;
 	private String extracte;
@@ -114,10 +124,10 @@ public class RegistreAnotacioDto extends ContingutDto {
 
 
 
-	public int getNumero() {
+	public String getNumero() {
 		return numero;
 	}
-	public void setNumero(int numero) {
+	public void setNumero(String numero) {
 		this.numero = numero;
 	}
 	public Date getData() {
@@ -125,6 +135,12 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setData(Date data) {
 		this.data = data;
+	}
+	public Date getDataOrigen() {
+		return dataOrigen;
+	}
+	public void setDataOrigen(Date dataOrigen) {
+		this.dataOrigen = dataOrigen;
 	}
 	public String getIdentificador() {
 		return identificador;
@@ -155,6 +171,18 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setOficinaDescripcio(String oficinaDescripcio) {
 		this.oficinaDescripcio = oficinaDescripcio;
+	}
+	public String getOficinaOrigenCodi() {
+		return oficinaOrigenCodi;
+	}
+	public void setOficinaOrigenCodi(String oficinaOrigenCodi) {
+		this.oficinaOrigenCodi = oficinaOrigenCodi;
+	}
+	public String getOficinaOrigenDescripcio() {
+		return oficinaOrigenDescripcio;
+	}
+	public void setOficinaOrigenDescripcio(String oficinaOrigenDescripcio) {
+		this.oficinaOrigenDescripcio = oficinaOrigenDescripcio;
 	}
 	public String getLlibreCodi() {
 		return llibreCodi;

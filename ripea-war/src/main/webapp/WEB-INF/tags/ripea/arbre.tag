@@ -72,14 +72,14 @@
 		"plugins": ["conditionalselect", "conditionalhover"]
 	})
 	.on('after_open.jstree', function (e, data) {
-		var iframe = $('.modal-body iframe', window.parent.document);
-		var height = $('html').height();
-		iframe.height(height + 'px');
+		// var iframe = $('.modal-body iframe', window.parent.document);
+		// var height = $('html').height();
+		// iframe.height(height + 'px');
 	})
 	.on('after_close.jstree', function (e, data) {
-		var iframe = $('.modal-body iframe', window.parent.document);
-		var height = $('html').height();
-		iframe.height(height + 'px');
+		// var iframe = $('.modal-body iframe', window.parent.document);
+		// var height = $('html').height();
+		// iframe.height(height + 'px');
 	})<c:if test="${not empty changedCallback}">
 	.on('changed.jstree', function (e, data) {
 		//console.log('>>> changed.jstree');

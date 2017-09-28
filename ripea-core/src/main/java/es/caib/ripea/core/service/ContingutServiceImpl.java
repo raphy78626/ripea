@@ -53,6 +53,7 @@ import es.caib.ripea.core.api.exception.ConteDocumentsDefinitiusException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.ContingutService;
+import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContingutComentariEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -67,6 +68,7 @@ import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
+import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
@@ -140,6 +142,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private PluginHelper pluginHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
+	@Resource
+	private BustiaHelper bustiaHelper;
 
 
 
@@ -1594,6 +1598,14 @@ public class ContingutServiceImpl implements ContingutService {
 				null);
 		
 		contingut.updateEsborrat(1);
+		
+		// Marca per evitar la cache de la bustia
+		Long bustiaId = contingut.getPare().getId();
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				true);
+		bustiaHelper.evictElementsPendentsBustia(entitat, bustia);
 		
 		return publicarComentariPerContingut(
 				entitatId,

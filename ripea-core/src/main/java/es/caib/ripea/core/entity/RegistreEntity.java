@@ -57,8 +57,10 @@ public class RegistreEntity extends ContingutEntity {
 	private String registreTipus;
 	@Column(name = "unitat_adm", length = 21, nullable = false)
 	private String unitatAdministrativa;
-	@Column(name = "numero", nullable = false)
-	private int numero;
+	@Column(name = "unitat_adm_desc", length = 100)
+	private String unitatAdministrativaDescripcio;
+	@Column(name = "numero", length = 100, nullable = false)
+	private String numero;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data", nullable = false)
 	private Date data;
@@ -128,6 +130,14 @@ public class RegistreEntity extends ContingutEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "proces_estat", length = 16, nullable = false)
 	private RegistreProcesEstatEnum procesEstat;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "data_orig")
+	private Date dataOrigen;
+	@Column(name = "oficina_orig_codi", length = 21)
+	private String oficinaOrigenCodi;
+	@Column(name = "oficina_orig_desc", length = 100)
+	private String oficinaOrigenDescripcio;
+
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "proces_estat_sistra", length = 16)
@@ -167,11 +177,17 @@ public class RegistreEntity extends ContingutEntity {
 	public String getUnitatAdministrativa() {
 		return unitatAdministrativa;
 	}
-	public int getNumero() {
+	public String getUnitatAdministrativaDescripcio() {
+		return unitatAdministrativaDescripcio;
+	}
+	public String getNumero() {
 		return numero;
 	}
 	public Date getData() {
 		return data;
+	}
+	public Date getDataOrigen() {
+		return dataOrigen;
 	}
 	public String getIdentificador() {
 		return identificador;
@@ -187,6 +203,12 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public String getOficinaDescripcio() {
 		return oficinaDescripcio;
+	}
+	public String getOficinaOrigenCodi() {
+		return oficinaOrigenCodi;
+	}
+	public String getOficinaOrigenDescripcio() {
+		return oficinaOrigenDescripcio;
 	}
 	public String getLlibreCodi() {
 		return llibreCodi;
@@ -327,7 +349,8 @@ public class RegistreEntity extends ContingutEntity {
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
-			int numero,
+			String unitatAdministrativaDescripcio,
+			String numero,
 			Date data,
 			String identificador,
 			String extracte,
@@ -341,6 +364,7 @@ public class RegistreEntity extends ContingutEntity {
 				entitat,
 				tipus,
 				unitatAdministrativa,
+				unitatAdministrativaDescripcio,
 				numero,
 				data,
 				identificador,
@@ -364,7 +388,8 @@ public class RegistreEntity extends ContingutEntity {
 				EntitatEntity entitat,
 				RegistreTipusEnum tipus,
 				String unitatAdministrativa,
-				int numero,
+				String unitatdAministrativaDescripcio,
+				String numero,
 				Date data,
 				String identificador,
 				String extracte,
@@ -376,14 +401,15 @@ public class RegistreEntity extends ContingutEntity {
 				ContingutEntity pare) {
 			built = new RegistreEntity();
 			if (extracte != null) {
-				built.nom = identificador + " - " + extracte;
+				built.nom = numero + " - " + extracte;
 			} else {
-				built.nom = identificador;
+				built.nom = numero;
 			}
 			built.tipus = ContingutTipusEnumDto.REGISTRE;
 			built.entitat = entitat;
 			built.registreTipus = tipus.getValor();
 			built.unitatAdministrativa = unitatAdministrativa;
+			built.unitatAdministrativaDescripcio = unitatdAministrativaDescripcio;
 			built.numero = numero;
 			built.data = data;
 			built.identificador = identificador;
@@ -506,6 +532,14 @@ public class RegistreEntity extends ContingutEntity {
 			}
 			return this;
 		}
+		public Builder oficinaOrigen(Date dataOrigen,
+				String oficinaOrigenCodi,
+				String oficinaOrigenDescripcio) {
+			built.dataOrigen = dataOrigen;
+			built.oficinaOrigenCodi = oficinaOrigenCodi;
+			built.oficinaOrigenDescripcio = oficinaOrigenDescripcio;
+			return this;
+		}
 		public RegistreEntity build() {
 			return built;
 		}
@@ -518,7 +552,7 @@ public class RegistreEntity extends ContingutEntity {
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
 		result = prime * result + ((entitatCodi == null) ? 0 : entitatCodi.hashCode());
 		result = prime * result + ((llibreCodi == null) ? 0 : llibreCodi.hashCode());
-		result = prime * result + numero;
+		result = prime * result + numero.hashCode();
 		result = prime * result + ((registreTipus == null) ? 0 : registreTipus.hashCode());
 		return result;
 	}

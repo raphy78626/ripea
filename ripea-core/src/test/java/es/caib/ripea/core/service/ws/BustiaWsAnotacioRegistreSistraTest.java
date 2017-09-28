@@ -62,9 +62,9 @@ public class BustiaWsAnotacioRegistreSistraTest extends BustiaBaseTest {
 		Date ara = new Date();
 		String numeroIdentificador = new SimpleDateFormat("yyMMddHHmm").format(ara);
 		RegistreAnotacio anotacio = new RegistreAnotacio();
-		anotacio.setNumero(Integer.valueOf(numeroIdentificador));
+		anotacio.setNumero(String.valueOf(ara.getTime()) + "_numero");
 		anotacio.setData(ara);
-		anotacio.setIdentificador(numeroIdentificador);
+		anotacio.setIdentificador(numeroIdentificador + "_identificador");
 		anotacio.setExtracte("Extracte " + numeroIdentificador);
 		anotacio.setOficinaCodi("0");
 //		anotacio.setAssumpteTipusCodi("0");	// Regla Backoffice Ripea
@@ -72,6 +72,10 @@ public class BustiaWsAnotacioRegistreSistraTest extends BustiaBaseTest {
 		anotacio.setIdiomaCodi("CA");
 		anotacio.setEntitatCodi("?");
 		anotacio.setLlibreCodi("?");
+		anotacio.setData(new Date());
+		anotacio.setDataOrigen(new Date(0));
+		anotacio.setOficinaOrigenCodi("ofi_origen");
+		anotacio.setOficinaOrigenDescripcio("Oficina origen descripció");
 				
 		// Afegeix els adjunts
 		List<RegistreAnnex> annexos = this.getAnnexos();

@@ -20,15 +20,17 @@ public class ElementsPendentsBustiaHelper {
 
 
 
-	public static void countElementsPendentsBustia(
+	public static Long countElementsPendentsBustia(
 			HttpServletRequest request,
 			BustiaService bustiaService) {
+		Long count = null;
 		if (!RequestHelper.isError(request) && bustiaService != null && RolHelper.isUsuariActualUsuari(request)) {
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);
-			long count = bustiaService.contingutPendentBustiesAllCount(
+			count = bustiaService.contingutPendentBustiesAllCount(
 					entitat.getId());
 			request.setAttribute(REQUEST_PARAMETER_COUNT, new Long(count));
 		}
+		return count;
 	}
 
 	public static Long getCount(HttpServletRequest request) {
