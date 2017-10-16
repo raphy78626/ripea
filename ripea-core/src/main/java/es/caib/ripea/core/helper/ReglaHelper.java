@@ -7,20 +7,28 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import javax.xml.namespace.QName;
 
+import org.apache.axis.encoding.Base64;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
 import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.ripea.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
 import es.caib.ripea.core.api.service.ws.RipeaBackofficeResultatProces;
 import es.caib.ripea.core.api.service.ws.RipeaBackofficeWsService;
+import es.caib.ripea.core.api.service.bantel.wsClient.v2.BantelFacadeException;
+import es.caib.ripea.core.api.service.bantel.wsClient.v2.model.ReferenciaEntrada;
+import es.caib.ripea.core.api.service.bantel.wsClient.v2.model.ReferenciasEntrada;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -57,6 +65,8 @@ public class ReglaHelper {
 	@Resource
 	private EmailHelper emailHelper;
 
+	private final static String CLAU_XIFRAT = "3çS)ZX!3a94_*?S2";
+
 
 
 	public ReglaEntity findAplicable(
@@ -89,21 +99,50 @@ public class ReglaHelper {
 		try {
 			switch (regla.getTipus()) {
 			case BACKOFFICE:
-				//System.out.println(">>> Processant anotacio de registre amb backoffice (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
-				RipeaBackofficeWsService backofficeClient = new WsClientHelper<RipeaBackofficeWsService>().generarClientWs(
-						getClass().getResource("/es/caib/ripea/core/service/ws/backoffice/RipeaBackoffice.wsdl"),
-						regla.getBackofficeUrl(),
-						new QName(
-								"http://www.caib.es/ripea/ws/backoffice",
-								"RipeaBackofficeService"),
-						regla.getBackofficeUsuari(),
-						regla.getBackofficeContrasenya(),
-						null,
-						RipeaBackofficeWsService.class);
-				RipeaBackofficeResultatProces resultat = backofficeClient.processarAnotacio(
-						registreHelper.fromRegistreEntity(pendent));
-				if (resultat.isError()) {
-					error = "[" + resultat.getErrorCodi() + "] " + resultat.getErrorDescripcio();
+				if (BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) {
+					// SISTRA
+					
+					BantelFacadeWsClient backofficeSistraClient = new WsClientHelper<BantelFacadeWsClient>().generarClientWs(
+							getClass().getResource("/es/caib/ripea/core/service/ws/backofficeSistra/BantelFacade.wsdl"),
+							regla.getBackofficeUrl(),
+							new QName(
+									"urn:es:caib:bantel:ws:v2:services",
+									"BantelFacadeService"),
+							regla.getBackofficeUsuari(),
+							regla.getBackofficeContrasenya(),
+							null,
+							BantelFacadeWsClient.class);
+					// Crea la llista de referències d'entrada
+					ReferenciasEntrada referenciesEntrades = new ReferenciasEntrada();
+					ReferenciaEntrada referenciaEntrada = new ReferenciaEntrada();
+					referenciaEntrada.setNumeroEntrada(pendent.getIdentificador());
+					referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getIdentificador()));	
+					referenciesEntrades.getReferenciaEntrada().add(referenciaEntrada);
+					// Invoca el backoffice sistra
+					try {
+						backofficeSistraClient.avisoEntradas(referenciesEntrades);
+					} catch (BantelFacadeException bfe) {
+						error = "[" + bfe.getFaultInfo() + "] " + bfe.getLocalizedMessage();
+					}
+				} else {
+					// RIPEA
+
+					//System.out.println(">>> Processant anotacio de registre amb backoffice (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
+					RipeaBackofficeWsService backofficeClient = new WsClientHelper<RipeaBackofficeWsService>().generarClientWs(
+							getClass().getResource("/es/caib/ripea/core/service/ws/backoffice/RipeaBackoffice.wsdl"),
+							regla.getBackofficeUrl(),
+							new QName(
+									"http://www.caib.es/ripea/ws/backoffice",
+									"RipeaBackofficeService"),
+							regla.getBackofficeUsuari(),
+							regla.getBackofficeContrasenya(),
+							null,
+							RipeaBackofficeWsService.class);
+					RipeaBackofficeResultatProces resultat = backofficeClient.processarAnotacio(
+							registreHelper.fromRegistreEntity(pendent));
+					if (resultat.isError()) {
+						error = "[" + resultat.getErrorCodi() + "] " + resultat.getErrorDescripcio();
+					}
 				}
 				break;
 			case BUSTIA:
@@ -169,7 +208,12 @@ public class ReglaHelper {
 				break;
 			}
 		} catch (Exception ex) {
-			error = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
+			Throwable t = ExceptionUtils.getRootCause(ex);
+			if (t == null)
+				t = ex.getCause();
+			if (t == null)
+				t = ex;
+			error = ExceptionUtils.getStackTrace(t);
 		}
 		if (error != null) {
 			throw new ScheduledTaskException(error);
@@ -225,4 +269,18 @@ public class ReglaHelper {
 		}
 	}
 
+	/** Mètode per encriptar un text per a generar la clau d'accès. */
+	public static String encrypt(String input){
+		   byte[] crypted = null;
+		   try{
+		     SecretKeySpec skey = new SecretKeySpec(CLAU_XIFRAT.getBytes(), "AES");
+		       Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+		       cipher.init(Cipher.ENCRYPT_MODE, skey);
+		       crypted = cipher.doFinal(input.getBytes());
+		     }catch(Exception e){
+		      System.out.println(e.toString());
+		     }
+		     return new String(Base64.encode(crypted));
+		 }
+	
 }

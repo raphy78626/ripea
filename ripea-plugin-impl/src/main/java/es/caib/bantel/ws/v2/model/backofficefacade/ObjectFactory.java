@@ -50,11 +50,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BackofficeFacadeException }
+     * Create an instance of {@link ObtenerEntrada }
      * 
      */
-    public BackofficeFacadeException createBackofficeFacadeException() {
-        return new BackofficeFacadeException();
+    public ObtenerEntrada createObtenerEntrada() {
+        return new ObtenerEntrada();
     }
 
     /**
@@ -74,11 +74,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ObtenerEntrada }
+     * Create an instance of {@link BackofficeFacadeException }
      * 
      */
-    public ObtenerEntrada createObtenerEntrada() {
-        return new ObtenerEntrada();
+    public BackofficeFacadeException createBackofficeFacadeException() {
+        return new BackofficeFacadeException();
     }
 
     /**

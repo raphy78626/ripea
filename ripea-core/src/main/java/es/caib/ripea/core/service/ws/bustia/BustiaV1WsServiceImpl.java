@@ -91,7 +91,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 
 	private void validarAnotacioRegistre(
 			RegistreAnotacio registreEntrada) {
-		if (registreEntrada.getNumero() == 0) {
+		if (registreEntrada.getNumero() == null) {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'numero'");
 		}

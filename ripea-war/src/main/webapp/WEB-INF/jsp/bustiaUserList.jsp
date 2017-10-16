@@ -25,6 +25,16 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 <script>
 $(document).ready(function() {
+	$('#netejarFiltre').click(function(e) {
+		$('#estatContingut').val('PENDENT').change();
+	});
+	$('#taulaDades').on( 'draw.dt', function () {
+		// Quan es refresca la llista consulta els pendents
+		$.get( "bustiaUser/getNumPendents")
+		.done(function( data ) {
+			$('#bustia-pendent-count').text(data);
+		})
+	} );
 });
 </script>
 </head>
@@ -50,11 +60,12 @@ $(document).ready(function() {
 				<rip:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
 			<div class="col-md-3">
-				<rip:inputSelect name="estatContingut"  optionEnum="BustiaContingutFiltreEstatEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+				<rip:inputSelect name="estatContingut"  netejar="false" optionEnum="BustiaContingutFiltreEstatEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
 			</div>
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
-					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
+					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>
 			</div>
@@ -66,7 +77,7 @@ $(document).ready(function() {
 		data-url="<c:url value="/bustiaUser/datatable"/>"
 		data-filter="#bustiaUserFiltreCommand"
 		data-info-type="search"
-		data-default-order="6"
+		data-default-order="7"
 		data-default-dir="desc">
 		<thead>
 			<tr>

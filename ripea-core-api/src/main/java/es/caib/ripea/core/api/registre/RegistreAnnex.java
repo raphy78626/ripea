@@ -13,6 +13,7 @@ import java.util.Date;
  */
 public class RegistreAnnex {
 
+	private Long id;
 	private String titol;
 	private String fitxerNom;
 	private int fitxerTamany;
@@ -38,6 +39,12 @@ public class RegistreAnnex {
 
 
 
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getTitol() {
 		return titol;
 	}

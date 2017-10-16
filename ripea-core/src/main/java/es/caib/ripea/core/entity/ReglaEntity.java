@@ -20,6 +20,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 
@@ -64,6 +65,9 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	@JoinColumn(name = "bustia_id")
 	@ForeignKey(name = "ipa_bustia_regla_fk")
 	protected BustiaEntity bustia;
+	@Column(name = "tipus_backoffice", length = 256)
+	@Enumerated(EnumType.STRING)
+	protected BackofficeTipusEnumDto backofficeTipus;
 	@Column(name = "url", length = 256)
 	protected String backofficeUrl;
 	@Column(name = "usuari", length = 64)
@@ -72,6 +76,8 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	protected String backofficeContrasenya;
 	@Column(name = "intents")
 	protected Integer backofficeIntents;
+	@Column(name = "temps_entre_intents")
+	protected Integer backofficeTempsEntreIntents;
 	@Column(name = "ordre", nullable = false)
 	protected int ordre;
 	@Column(name = "activa")
@@ -109,6 +115,9 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	public BustiaEntity getBustia() {
 		return bustia;
 	}
+	public BackofficeTipusEnumDto getBackofficeTipus() {
+		return backofficeTipus;
+	}
 	public String getBackofficeUrl() {
 		return backofficeUrl;
 	}
@@ -120,6 +129,9 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	}
 	public Integer getBackofficeIntents() {
 		return backofficeIntents;
+	}
+	public Integer getBackofficeTempsEntreIntents() {
+		return backofficeTempsEntreIntents;
 	}
 	public int getOrdre() {
 		return ordre;
@@ -154,14 +166,18 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 		this.bustia = bustia;
 	}
 	public void updatePerTipusBackoffice(
+			BackofficeTipusEnumDto backofficeTipus,
 			String backofficeUrl,
 			String backofficeUsuari,
 			String backofficeContrasenya,
-			Integer backofficeIntents) {
+			Integer backofficeIntents,
+			Integer backofficeTempsEntreIntents) {
+		this.backofficeTipus = backofficeTipus;
 		this.backofficeUrl = backofficeUrl;
 		this.backofficeUsuari = backofficeUsuari;
 		this.backofficeContrasenya = backofficeContrasenya;
 		this.backofficeIntents = backofficeIntents;
+		this.backofficeTempsEntreIntents = backofficeTempsEntreIntents;
 	}
 	public void updateOrdre(
 			int ordre) {

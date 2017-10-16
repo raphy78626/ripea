@@ -43,5 +43,10 @@
 			<ws:service bean="#portaFIBCallBackWsImpl"/>
 		</wss:service>
 	</wss:binding>
+	<wss:binding url="/ws/bantel">
+		<wss:service>
+			<ws:service bean="#bantelBackofficeWsImpl"/>
+		</wss:service>
+	</wss:binding>
 
 </beans>

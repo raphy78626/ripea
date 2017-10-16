@@ -26,22 +26,14 @@ import es.caib.bantel.ws.v2.model.datosdocumentotelematico.DatosDocumentoTelemat
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _DocumentoBTEPresentacionPresencial_QNAME = new QName("", "presentacionPresencial");
     private final static QName _DocumentoBTEPresentacionTelematica_QNAME = new QName("", "presentacionTelematica");
+    private final static QName _DocumentoBTEPresentacionPresencial_QNAME = new QName("", "presentacionPresencial");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: es.caib.bantel.ws.v2.model.documentobte
      * 
      */
     public ObjectFactory() {
-    }
-
-    /**
-     * Create an instance of {@link DocumentosBTE }
-     * 
-     */
-    public DocumentosBTE createDocumentosBTE() {
-        return new DocumentosBTE();
     }
 
     /**
@@ -53,12 +45,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DatosDocumentoPresencial }{@code >}}
+     * Create an instance of {@link DocumentosBTE }
      * 
      */
-    @XmlElementDecl(namespace = "", name = "presentacionPresencial", scope = DocumentoBTE.class)
-    public JAXBElement<DatosDocumentoPresencial> createDocumentoBTEPresentacionPresencial(DatosDocumentoPresencial value) {
-        return new JAXBElement<DatosDocumentoPresencial>(_DocumentoBTEPresentacionPresencial_QNAME, DatosDocumentoPresencial.class, DocumentoBTE.class, value);
+    public DocumentosBTE createDocumentosBTE() {
+        return new DocumentosBTE();
     }
 
     /**
@@ -68,6 +59,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "", name = "presentacionTelematica", scope = DocumentoBTE.class)
     public JAXBElement<DatosDocumentoTelematico> createDocumentoBTEPresentacionTelematica(DatosDocumentoTelematico value) {
         return new JAXBElement<DatosDocumentoTelematico>(_DocumentoBTEPresentacionTelematica_QNAME, DatosDocumentoTelematico.class, DocumentoBTE.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DatosDocumentoPresencial }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "", name = "presentacionPresencial", scope = DocumentoBTE.class)
+    public JAXBElement<DatosDocumentoPresencial> createDocumentoBTEPresentacionPresencial(DatosDocumentoPresencial value) {
+        return new JAXBElement<DatosDocumentoPresencial>(_DocumentoBTEPresentacionPresencial_QNAME, DatosDocumentoPresencial.class, DocumentoBTE.class, value);
     }
 
 }

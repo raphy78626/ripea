@@ -21,10 +21,12 @@ public class ReglaDto extends AuditoriaDto {
 	private Long metaExpedientId;
 	private Long arxiuId;
 	private Long bustiaId;
+	private BackofficeTipusEnumDto backofficeTipus;
 	private String backofficeUrl;
 	private String backofficeUsuari;
 	private String backofficeContrasenya;
-	private Integer backofficeReintents;
+	private Integer backofficeIntents;
+	private Integer backofficeTempsEntreIntents;
 	private int ordre;
 	private boolean activa;
 
@@ -84,6 +86,12 @@ public class ReglaDto extends AuditoriaDto {
 	public void setBustiaId(Long bustiaId) {
 		this.bustiaId = bustiaId;
 	}
+	public BackofficeTipusEnumDto getBackofficeTipus() {
+		return backofficeTipus;
+	}
+	public void setBackofficeTipus(BackofficeTipusEnumDto backofficeTipus) {
+		this.backofficeTipus = backofficeTipus;
+	}
 	public String getBackofficeUrl() {
 		return backofficeUrl;
 	}
@@ -102,11 +110,17 @@ public class ReglaDto extends AuditoriaDto {
 	public void setBackofficeContrasenya(String backofficeContrasenya) {
 		this.backofficeContrasenya = backofficeContrasenya;
 	}
-	public Integer getBackofficeReintents() {
-		return backofficeReintents;
+	public Integer getBackofficeIntents() {
+		return backofficeIntents;
 	}
-	public void setBackofficeReintents(Integer backofficeReintents) {
-		this.backofficeReintents = backofficeReintents;
+	public void setBackofficeIntents(Integer backofficeIntents) {
+		this.backofficeIntents = backofficeIntents;
+	}
+	public Integer getBackofficeTempsEntreIntents() {
+		return backofficeTempsEntreIntents;
+	}
+	public void setBackofficeTempsEntreIntents(Integer backofficeTempsEntreIntents) {
+		this.backofficeTempsEntreIntents = backofficeTempsEntreIntents;
 	}
 	public int getOrdre() {
 		return ordre;

@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.ReglaDto;
 import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
@@ -32,13 +33,15 @@ public class ReglaCommand {
 	private Long metaExpedientId;
 	private Long arxiuId;
 	private Long bustiaId;
+	private BackofficeTipusEnumDto backofficeTipus;
 	@Size(max = 256)
 	private String backofficeUrl;
 	@Size(max = 64)
 	private String backofficeUsuari;
 	@Size(max = 64)
 	private String backofficeContrasenya;
-	private Integer backofficeReintents;
+	private Integer backofficeIntents;
+	private Integer backofficeTempsEntreIntents;
 
 
 
@@ -96,6 +99,12 @@ public class ReglaCommand {
 	public void setBustiaId(Long bustiaId) {
 		this.bustiaId = bustiaId;
 	}
+	public BackofficeTipusEnumDto getBackofficeTipus() {
+		return backofficeTipus;
+	}
+	public void setBackofficeTipus(BackofficeTipusEnumDto backofficeTipus) {
+		this.backofficeTipus = backofficeTipus;
+	}
 	public String getBackofficeUrl() {
 		return backofficeUrl;
 	}
@@ -114,13 +123,19 @@ public class ReglaCommand {
 	public void setBackofficeContrasenya(String backofficeContrasenya) {
 		this.backofficeContrasenya = backofficeContrasenya;
 	}
-	public Integer getBackofficeReintents() {
-		return backofficeReintents;
+	public Integer getBackofficeIntents() {
+		return backofficeIntents;
 	}
-	public void setBackofficeReintents(Integer backofficeReintents) {
-		this.backofficeReintents = backofficeReintents;
+	public void setBackofficeIntents(Integer backofficeIntents) {
+		this.backofficeIntents = backofficeIntents;
 	}
 
+	public Integer getBackofficeTempsEntreIntents() {
+		return backofficeTempsEntreIntents;
+	}
+	public void setBackofficeTempsEntreIntents(Integer backofficeTempsEntreIntents) {
+		this.backofficeTempsEntreIntents = backofficeTempsEntreIntents;
+	}
 	public static ReglaCommand asCommand(ReglaDto dto) {
 		return ConversioTipusHelper.convertir(
 				dto,

@@ -23,8 +23,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
+import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaContingutDto;
 import es.caib.ripea.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
@@ -36,6 +38,7 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
+import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.BustiaServiceException;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -70,6 +73,7 @@ import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
+import es.caib.ripea.core.helper.XmlHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.ContingutComentariRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
@@ -670,7 +674,7 @@ public class BustiaServiceImpl implements BustiaService {
 					unitatAdministrativa,
 					UnitatOrganitzativaDto.class);
 		}
-		BustiaEntity bustia = bustiaHelper.findAndCreateIfNotExistsBustiaPerDefectePerUnitatAdministrativa(
+		BustiaEntity bustia = bustiaHelper.findBustiaPerDefecte(
 				entitat,
 				unitat);
 		RegistreEntity registreRepetit = registreRepository.findByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndData(
@@ -770,7 +774,8 @@ public class BustiaServiceImpl implements BustiaService {
 						true));
 			}
 		else
-			pares.add(bustia);
+			if (bustia != null)
+				pares.add(bustia);
 		
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
@@ -1123,6 +1128,15 @@ public class BustiaServiceImpl implements BustiaService {
 					guardarDocumentAnnex (annex, bustia);
 					guardarFirmaAnnex(annex, bustia);
 				}
+				// Si l'anotació té una regla sistra llavors intenta extreure la informació dels identificadors
+				// del tràmit i del procediment de l'annex
+				if (anotacio.getRegla() != null 
+						&& anotacio.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE
+						&& anotacio.getRegla().getBackofficeTipus() == BackofficeTipusEnumDto.SISTRA) {
+					if (annex.getFitxerNom().equals("DatosPropios.xml")
+							|| annex.getFitxerNom().equals("Asiento.xml"))
+						processarAnnexSistra(anotacio, annex);
+				}
 			}
 		} catch (Exception ex) {
 			try {
@@ -1138,6 +1152,34 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 	}
 
+	
+	/** Mètode privat per obrir el document annex de tipus sistra i extreure'n informació per a l'anotació
+	 * del registre. La informació que es pot extreure depén del document:
+	 * - Asiento.xml: ASIENTO_REGISTRAL.DATOS_ASUNTO.IDENTIFICADOR_TRAMITE (VARCHAR2(20))
+	 * - DatosPropios.xml: DATOS_PROPIOS.INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO (VARCHAR2(100))
+	 * 
+	 * @param anotacio 
+	 * 			Anotació del registre
+	 * @param annex
+	 * 			Document annex amb el contingut per a llegir.
+	 */
+	private void processarAnnexSistra(RegistreEntity anotacio, RegistreAnnexEntity annex) {
+		try {
+			Document doc = XmlHelper.getDocumentFromContent(Base64.decode(annex.getFitxerContingutBase64()));
+			if (annex.getFitxerNom().equals("DatosPropios.xml")) {
+				String identificadorProcediment = XmlHelper.getNodeValue(doc.getDocumentElement(), "INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO");
+				anotacio.updateIdentificadorProcedimentSistra(identificadorProcediment);
+			} else if (annex.getFitxerNom().equals("Asiento.xml")) {
+				String identificadorTramit = XmlHelper.getNodeValue(doc.getDocumentElement(), "DATOS_ASUNTO.IDENTIFICADOR_TRAMITE");
+				anotacio.updateIdentificadorTramitSistra(identificadorTramit);
+			}		
+		} catch (Exception e) {
+			logger.error(
+					"Error processant l'annex per l'anotació amb regla backoffice SISTRA " + annex.getFitxerNom(),
+					e);
+		}
+	}
+	
 	private void guardarDocumentAnnex(
 			RegistreAnnexEntity annex,
 			BustiaEntity bustia) throws IOException {

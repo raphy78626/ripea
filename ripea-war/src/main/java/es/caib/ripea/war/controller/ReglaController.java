@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ReglaDto;
 import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
@@ -240,6 +241,11 @@ public class ReglaController  extends BaseAdminController {
 				"busties",
 				bustiaService.findActivesAmbEntitat(
 						entitatActual.getId()));
+		model.addAttribute(
+				"backofficeTipusEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						BackofficeTipusEnumDto.class,
+						"backoffice.tipus.enum."));
 	}
 
 }

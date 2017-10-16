@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.ArxiuDto;
+import es.caib.ripea.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
@@ -40,6 +42,7 @@ import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.command.MarcarProcessatCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
+import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
@@ -87,15 +90,36 @@ public class BustiaUserController extends BaseUserController {
 			HttpServletRequest request,
 			@Valid BustiaUserFiltreCommand filtreCommand,
 			BindingResult bindingResult,
+			@RequestParam(value = "accio", required = false) String accio,
 			Model model) {
-		if (!bindingResult.hasErrors()) {
-			RequestSessionHelper.actualitzarObjecteSessio(
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
 					request,
-					SESSION_ATTRIBUTE_FILTRE,
-					filtreCommand);
+					SESSION_ATTRIBUTE_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_FILTRE,
+						filtreCommand);
+			}
 		}
 		return "redirect:bustiaUser";
 	}
+
+	
+	@RequestMapping(value = "/netejar", method = RequestMethod.GET)
+	public String expedientNetejar(
+			HttpServletRequest request,
+			@PathVariable Long arxiuId,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		RequestSessionHelper.esborrarObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_FILTRE);
+		return "redirect:bustiaUser";
+	}
+	
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
@@ -227,7 +251,7 @@ public class BustiaUserController extends BaseUserController {
 		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
 		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
-		return "bustiaPendentContingutReenviar";
+		return "bustiaPendentRegistreReenviar";
 	}
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.POST)
 	public String bustiaPendentReenviarPost(
@@ -244,7 +268,7 @@ public class BustiaUserController extends BaseUserController {
 					bustiaId,
 					contingutId,
 					model);
-			return "bustiaPendentContingutReenviar";
+			return "bustiaPendentRegistreReenviar";
 		}
 		bustiaService.contingutPendentReenviar(
 				entitatActual.getId(),
@@ -322,6 +346,13 @@ public class BustiaUserController extends BaseUserController {
 				"redirect:/bustiaUser",
 				"bustia.controller.pendent.contingut.reenviat.ok");
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/getNumPendents", method = RequestMethod.GET)
+	public Long bustaGetNumeroPendents(HttpServletRequest request) {
+		Long ret = ElementsPendentsBustiaHelper.countElementsPendentsBustia(request, bustiaService);
+		return ret;
+	}
 
 	private void omplirModelPerNouExpedient(
 			EntitatDto entitatActual,
@@ -388,6 +419,7 @@ public class BustiaUserController extends BaseUserController {
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
 			filtreCommand = new BustiaUserFiltreCommand();
+			filtreCommand.setEstatContingut(BustiaContingutFiltreEstatEnumDto.PENDENT);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,

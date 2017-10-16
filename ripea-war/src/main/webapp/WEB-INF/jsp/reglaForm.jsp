@@ -30,7 +30,13 @@ $(document).ready(function() {
 			$('div#camps_tipus_EXP_COMU').css('display', '');
 		}
 	});
-	$('#tipus').trigger('change');
+	$('#tipus').trigger('change');	
+	$('#backofficeTipus').change(function(){
+		if ($(this).val() == 'SISTRA')
+			$('#backofficeTempsEntreIntentsBlock').show();
+		else
+			$('#backofficeTempsEntreIntentsBlock').hide();
+	});
 });
 </script>
 </head>
@@ -64,10 +70,14 @@ $(document).ready(function() {
 					<rip:inputSelect name="bustiaId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>
 				</div>
 				<div id="camps_tipus_BACKOFFICE">
+					<rip:inputSelect name="backofficeTipus" textKey="regla.form.camp.backoffice.tipus" optionItems="${backofficeTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 					<rip:inputText name="backofficeUrl" textKey="regla.form.camp.backoffice.url" required="true"/>
 					<rip:inputText name="backofficeUsuari" textKey="regla.form.camp.backoffice.usuari"/>
 					<rip:inputText name="backofficeContrasenya" textKey="regla.form.camp.backoffice.contrasenya"/>
-					<rip:inputText name="backofficeReintents" textKey="regla.form.camp.backoffice.reintents"/>
+					<rip:inputText name="backofficeIntents" textKey="regla.form.camp.backoffice.intents"/>
+					<block id="backofficeTempsEntreIntentsBlock" style="display:${reglaCommand.backofficeTipus == "SISTRA" ? "inline" : "none"}">
+						<rip:inputText name="backofficeTempsEntreIntents" textKey="regla.form.camp.backoffice.temps.entre.intents" comment="regla.form.camp.backoffice.temps.entre.intents.info"/>
+					</block>
 				</div>
 			</div>
 		</div>

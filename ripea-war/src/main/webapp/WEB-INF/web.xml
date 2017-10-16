@@ -113,6 +113,7 @@
 			<url-pattern>/ws/v1/bustia</url-pattern>
 			<url-pattern>/ws/MCGDws</url-pattern>
 			<url-pattern>/ws/portafibCallback</url-pattern>
+			<url-pattern>/ws/bantel</url-pattern>
 		</web-resource-collection>
 	</security-constraint>
 

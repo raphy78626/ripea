@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.api.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,8 @@ import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 
 /**
  * Declaració dels mètodes per a gestionar les anotacions
@@ -63,10 +66,17 @@ public interface RegistreService {
 
 	/**
 	 * Processa periòdicament les regles pendents d'aplicar a les anotacions
-	 * de registre.
+	 * de registre que no siguin regles de tipus backoffice de tipus Sistra.
 	 */
 	public void reglaAplicarPendents();
 
+	/**
+	 * Processa periòdicament les regles de tipus backoffice Sistra pendents d'aplicar 
+	 * a les anotacions de registre. Aquestes regles es revisen un cop cada minut (60000 milisegons).
+	 */
+	public void reglaAplicarPendentsBackofficeSistra();
+
+	
 	/**
 	 * Torna a processar una anotació de registre pendent o amb error.
 	 * 
@@ -129,4 +139,47 @@ public interface RegistreService {
 			Long contingutId,
 			Long registreId) throws NotFoundException;
 
+	/**
+	 * Retorna la informació d'una anotació de registre segons el seu identificador.
+	 * 
+	 * @param identificador
+	 *            Atribut identificador l'entitat.
+	 * @return els detalls de l'anotació o null si no es troba.
+	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	public RegistreAnotacioDto findAmbIdentificador(String identificador);
+
+	/**
+	 * Mètode per actualitzar l'estat d'una anotació de registre.
+	 * @param procesEstat
+	 * 				Estat del procés per a l'anotació
+	 * @param procesEstatSistra
+	 * 				Estat del procés SISTRA per l'anotació
+	 * @param resultat
+	 * 				Descripció del resultat d'error o del processament SISTRA.
+	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	public void updateProces(
+			Long registreId,
+			RegistreProcesEstatEnum procesEstat, 
+			RegistreProcesEstatSistraEnum procesEstatSistra,
+			String resultadoProcesamiento);
+
+	/** Mètode per consultar les anotacions de registre per a les consultes de backoffices
+	 * tipus Sistra
+	 * @param identificadorProcediment
+	 * @param identificadorTramit
+	 * @param procesEstatSistra
+	 * @param desdeDate
+	 * @param finsDate
+	 * @return La llista de números d'entrada de registres (identificadors) segons els paràmetres 
+	 * de filtre.
+	 */
+	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	public List<String> findPerBackofficeSistra(
+			String identificadorProcediment, 
+			String identificadorTramit,
+			RegistreProcesEstatSistraEnum procesEstatSistra, 
+			Date desdeDate, 
+			Date finsDate);
 }

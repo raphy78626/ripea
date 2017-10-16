@@ -35,6 +35,7 @@
 	         <xs:element name="assumpteTipusCodi" type="xs:string" minOccurs="0"/>
 	         <xs:element name="assumpteTipusDescripcio" type="xs:string" minOccurs="0"/>
 	         <xs:element name="data" type="xs:dateTime" minOccurs="0"/>
+	         <xs:element name="dataOrigen" type="xs:dateTime" minOccurs="0"/>
 	         <xs:element name="documentacioFisicaCodi" type="xs:string" minOccurs="0"/>
 	         <xs:element name="documentacioFisicaDescripcio" type="xs:string" minOccurs="0"/>
 	         <xs:element name="entitatCodi" type="xs:string" minOccurs="0"/>
@@ -52,6 +53,8 @@
 	         <xs:element name="observacions" type="xs:string" minOccurs="0"/>
 	         <xs:element name="oficinaCodi" type="xs:string" minOccurs="0"/>
 	         <xs:element name="oficinaDescripcio" type="xs:string" minOccurs="0"/>
+	         <xs:element name="oficinaOrigenCodi" type="xs:string" minOccurs="0"/>
+	         <xs:element name="oficinaOrigenDescripcio" type="xs:string" minOccurs="0"/>
 	         <xs:element name="referencia" type="xs:string" minOccurs="0"/>
 	         <xs:element name="solicita" type="xs:string" minOccurs="0"/>
 	         <xs:element name="transportNumero" type="xs:string" minOccurs="0"/>

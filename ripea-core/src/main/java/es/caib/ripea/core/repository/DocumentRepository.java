@@ -41,7 +41,18 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> 
 			"from " +
 			"    DocumentEntity c " +
 			"where " +
+			"    c.id in (:ids)")
+	public Page<DocumentEntity> findDocumentMassiuByIdsPaginat(
+			@Param("ids") List<Long> ids,
+			Pageable pageable);
+	
+	@Query(	"select " +
+			"    c " +
+			"from " +
+			"    DocumentEntity c " +
+			"where " +
 			"    c.entitat = :entitat " +
+			"and c.estat = 0 " +
 			"and (:esNullTipusExpedient = true or c.expedient.metaNode.id = :tipusExpedientId) " +
 			"and (:esNullExpedient = true or c.expedient.id = :expedientId) " +
 			"and (:esNullTipusDocument = true or c.metaNode.id = :tipusDocumentId) " +
@@ -49,16 +60,14 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> 
 			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
 			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
-	public Page<DocumentEntity> findDocumentMassiuByFiltrePaginat(
+	public List<DocumentEntity> findDocumentMassiuByFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullTipusExpedient") boolean esNullTipusExpedient,
 			@Param("tipusExpedientId") Long tipusExpedientId,
 			@Param("esNullExpedient") boolean esNullExpedient,
 			@Param("expedientId") Long expedientId,
-			
 			@Param("esNullTipusDocument") boolean esNullTipusDocument,
 			@Param("tipusDocumentId") Long tipusDocumentId,
-			
 			@Param("esNullNom") boolean esNullNom,
 			@Param("nom") String nom,
 			@Param("esNullDataInici") boolean esNullDataInici,
@@ -66,8 +75,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> 
 			@Param("esNullDataFi") boolean esNullDataFi,
 			@Param("dataFi") Date dataFi,
 			@Param("mostrarEsborrats") boolean mostrarEsborrats,
-			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats,
-			Pageable pageable);
+			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats);
 	
 	
 	@Query(	"select " +

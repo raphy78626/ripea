@@ -34,19 +34,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FirmaWS }
-     * 
-     */
-    public FirmaWS createFirmaWS() {
-        return new FirmaWS();
-    }
-
-    /**
      * Create an instance of {@link FirmasWS }
      * 
      */
     public FirmasWS createFirmasWS() {
         return new FirmasWS();
+    }
+
+    /**
+     * Create an instance of {@link FirmaWS }
+     * 
+     */
+    public FirmaWS createFirmaWS() {
+        return new FirmaWS();
     }
 
     /**
