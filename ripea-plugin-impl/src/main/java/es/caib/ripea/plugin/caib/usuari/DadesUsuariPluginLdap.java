@@ -72,11 +72,18 @@ public class DadesUsuariPluginLdap implements DadesUsuariPlugin {
 		List<DadesUsuari> usuaris = consultaUsuaris(filtre, valor);
 		if (usuaris.size() == 1) {
 			return usuaris.get(0);
-		} else {
+		} else if(usuaris.size() > 1){
 			throw new SistemaExternException(
 					"La consulta d'usuari únic ha retornat més d'un resultat (" +
 					"filtre=" + filtre + ", " +
 					"valor=" + valor + ")");
+		} else if(usuaris.size() == 0){
+			throw new SistemaExternException(
+					"La consulta d'usuari únic no ha retornat cap resultat (" +
+					"filtre=" + filtre + ", " +
+					"valor=" + valor + ")");
+		} else {
+			throw new SistemaExternException("Error desconegut al consultar un usuari únic");
 		}
 	}
 	private List<DadesUsuari> consultaUsuaris(
@@ -127,11 +134,15 @@ public class DadesUsuariPluginLdap implements DadesUsuariPlugin {
 					String email = obtenirAtributComString(
 							result.getAttributes(),
 							atributs[3]);
+					String nif = obtenirAtributComString(
+							result.getAttributes(),
+							atributs[4]);
 					DadesUsuari dadesUsuari = new DadesUsuari();
 					dadesUsuari.setCodi(codi);
 					dadesUsuari.setNom(nom);
 					dadesUsuari.setLlinatges(llinatges);
 					dadesUsuari.setEmail(email);
+					dadesUsuari.setNif(nif);
 					usuaris.add(dadesUsuari);
 				}
 			}
