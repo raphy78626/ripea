@@ -99,7 +99,7 @@
 			business-interface="es.caib.ripea.core.api.service.ws.BustiaV1WsService"/>
 	<jee:local-slsb
 			id="bantelBackofficeWs"
-			jndi-name="ripea/BackofficeFacadeWsBean/local"
+			jndi-name="ripea/BantelBackofficeWsBean/local"
 			business-interface="es.caib.ripea.core.api.service.bantel.ws.v2.BantelBackofficeWs"/>
 
 </beans>
