@@ -64,8 +64,8 @@ public class JdbcMutableAclService extends JdbcAclService implements MutableAclS
 	
 	private static final String CLASS_IDENTITY_ORACLE = "SELECT " + TableNames.SEQUENCE_CLASS + ".CURRVAL FROM DUAL";
 	private static final String SID_IDENTITY_ORACLE = "SELECT " + TableNames.SEQUENCE_SID + ".CURRVAL FROM DUAL";
-	private static final String CLASS_IDENTITY_POSTGRES = "select currval(pg_get_serial_sequence('acl_class', 'id'))";
-	private static final String SID_IDENTITY_POSTGRES = "select currval(pg_get_serial_sequence('acl_sid', 'id'))";
+	private static final String CLASS_IDENTITY_POSTGRES = "select currval(pg_get_serial_sequence('" + TableNames.TABLE_CLASS + "', 'id'))";
+	private static final String SID_IDENTITY_POSTGRES = "select currval(pg_get_serial_sequence('" + TableNames.TABLE_SID + "', 'id'))";
 	private static final String CLASS_IDENTITY_HSQL = "call identity()";
 	private static final String SID_IDENTITY_HSQL = "call identity()";
 
