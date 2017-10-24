@@ -248,7 +248,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed({"IPA_ADMIN", "tothom"})
 	public List<BustiaDto> findPermesesPerUsuari(Long entitatId) {
 		return delegate.findPermesesPerUsuari(entitatId);
 	}
