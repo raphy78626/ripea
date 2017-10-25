@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.MetaDocumentDto;
@@ -51,7 +51,7 @@ public class DocumentCommand extends ContenidorCommand {
 	@Size(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class}, max=9)
 	private String ntiOrgano;
 	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
-	private DocumentNtiOrigenEnumDto ntiOrigen;
+	private NtiOrigenEnumDto ntiOrigen;
 	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
 	private DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion;
 	@NotNull(groups = {CreateDigital.class, CreateFisic.class, UpdateDigital.class, UpdateFisic.class})
@@ -115,10 +115,10 @@ public class DocumentCommand extends ContenidorCommand {
 	public void setNtiOrgano(String ntiOrgano) {
 		this.ntiOrgano = ntiOrgano;
 	}
-	public DocumentNtiOrigenEnumDto getNtiOrigen() {
+	public NtiOrigenEnumDto getNtiOrigen() {
 		return ntiOrigen;
 	}
-	public void setNtiOrigen(DocumentNtiOrigenEnumDto ntiOrigen) {
+	public void setNtiOrigen(NtiOrigenEnumDto ntiOrigen) {
 		this.ntiOrigen = ntiOrigen;
 	}
 	public DocumentNtiEstadoElaboracionEnumDto getNtiEstadoElaboracion() {

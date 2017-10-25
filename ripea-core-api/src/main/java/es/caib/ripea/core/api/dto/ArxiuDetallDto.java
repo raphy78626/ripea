@@ -13,10 +13,30 @@ import java.util.Map;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuPluginInfoDto implements Serializable {
+public class ArxiuDetallDto implements Serializable {
 
-	private String nodeId;
+	private String identificador;
 	private String nom;
+
+	private String eniVersio;
+	private String eniIdentificador;
+	private NtiOrigenEnumDto eniOrigen;
+	private Date eniDataObertura;
+	private String eniClassificacio;
+	private ExpedientEstatEnumDto eniEstat;
+	private List<String> eniInteressats;
+	private Date eniDataCaptura;
+	private DocumentNtiEstadoElaboracionEnumDto eniEstatElaboracio;
+	private DocumentNtiTipoDocumentalEnumDto eniTipusDocumental;
+	private String eniFormat;
+	private String eniExtensio;
+	private String eniDocumentOrigenId;
+
+	protected Map<String, Object> metadadesAddicionals;
+
+	// firmes
+	// fills
+	
 	private String descripcio;
 	private String serieDocumental;
 	private String aplicacio;

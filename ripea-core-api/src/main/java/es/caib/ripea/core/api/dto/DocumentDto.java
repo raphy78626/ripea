@@ -29,7 +29,7 @@ public class DocumentDto extends NodeDto {
 	private String ntiIdentificador;
 	private String ntiOrgano;
 	private String ntiOrganoDescripcio;
-	private DocumentNtiOrigenEnumDto ntiOrigen;
+	private NtiOrigenEnumDto ntiOrigen;
 	private DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion;
 	private DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental;
 	private String ntiIdDocumentoOrigen;
@@ -136,10 +136,10 @@ public class DocumentDto extends NodeDto {
 	public void setNtiOrganoDescripcio(String ntiOrganoDescripcio) {
 		this.ntiOrganoDescripcio = ntiOrganoDescripcio;
 	}
-	public DocumentNtiOrigenEnumDto getNtiOrigen() {
+	public NtiOrigenEnumDto getNtiOrigen() {
 		return ntiOrigen;
 	}
-	public void setNtiOrigen(DocumentNtiOrigenEnumDto ntiOrigen) {
+	public void setNtiOrigen(NtiOrigenEnumDto ntiOrigen) {
 		this.ntiOrigen = ntiOrigen;
 	}
 	public DocumentNtiEstadoElaboracionEnumDto getNtiEstadoElaboracion() {

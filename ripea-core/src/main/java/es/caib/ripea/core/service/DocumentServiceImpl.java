@@ -1063,10 +1063,9 @@ public class DocumentServiceImpl implements DocumentService {
 			fitxer.setContentType("application/pdf");
 			document.updateEstat(
 					DocumentEstatEnumDto.CUSTODIAT);
-			String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
+			String custodiaDocumentId = pluginHelper.arxiuDocumentMarcarDefinitiu(
 					document,
-					fitxer,
-					document.getMetaDocument().getPortafirmesCustodiaTipus());
+					fitxer);
 			document.updateInformacioCustodia(
 					new Date(),
 					custodiaDocumentId,

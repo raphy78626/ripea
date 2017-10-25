@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -67,7 +67,7 @@ public class DocumentHelper {
 			Date data,
 			Date dataCaptura,
 			String ntiOrgano,
-			DocumentNtiOrigenEnumDto ntiOrigen,
+			NtiOrigenEnumDto ntiOrigen,
 			DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion,
 			DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental,
 			ExpedientEntity expedient,

@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.plugins.arxiu.api.ExpedientMetadades;
 import es.caib.ripea.core.api.dto.ArxiuPluginDocumentContingutDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
 import es.caib.ripea.core.api.dto.ArxiuPluginNodeFillDto;
@@ -38,7 +39,6 @@ import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
@@ -46,6 +46,7 @@ import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
@@ -94,7 +95,6 @@ import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
 import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocument;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
-import es.caib.ripea.plugin.arxiu.ArxiuExpedient;
 import es.caib.ripea.plugin.arxiu.ArxiuFill;
 
 /**
@@ -1259,51 +1259,41 @@ public class ContingutServiceImpl implements ContingutService {
 				contingutId,
 				null);
 		if (contingut instanceof ExpedientEntity) {
-			ArxiuExpedient arxiuExpedient = pluginHelper.arxiuExpedientConsultar(
+			es.caib.plugins.arxiu.api.Expedient arxiuExpedient = pluginHelper.arxiuExpedientConsultar(
 					(ExpedientEntity)contingut);
 			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
-			arxiuInfo.setNodeId(arxiuExpedient.getNodeId());
-			arxiuInfo.setNom(arxiuExpedient.getTitol());
+			arxiuInfo.setNodeId(arxiuExpedient.getIdentificador());
+			arxiuInfo.setNom(arxiuExpedient.getNom());
 			arxiuInfo.setDescripcio(arxiuExpedient.getDescripcio());
-			arxiuInfo.setSerieDocumental(arxiuExpedient.getSerieDocumental());
-			arxiuInfo.setAplicacio(arxiuExpedient.getAplicacio());
-			arxiuInfo.setEniVersio(arxiuExpedient.getEniVersio());
-			arxiuInfo.setEniIdentificador(arxiuExpedient.getEniIdentificador());
-			if (arxiuExpedient.getEniOrigen() != null) {
-				switch (arxiuExpedient.getEniOrigen()) {
-				case CIUTADA:
-					arxiuInfo.setEniOrigen(DocumentNtiOrigenEnumDto.O0);
-					break;
-				case ADMINISTRACIO:
-					arxiuInfo.setEniOrigen(DocumentNtiOrigenEnumDto.O1);
-					break;
+			ExpedientMetadades metadades = arxiuExpedient.getMetadades();
+			if (metadades != null) {
+				arxiuInfo.setEniVersio(metadades.getVersioNti());
+				arxiuInfo.setEniIdentificador(metadades.getIdentificador());
+				arxiuInfo.setSerieDocumental(metadades.getSerieDocumental());
+				arxiuInfo.setAplicacio(arxiuExpedient.getAplicacio());
+				arxiuInfo.setEniDataObertura(metadades.getDataObertura());
+				arxiuInfo.setEniClassificacio(metadades.getClassificacio());
+				if (metadades.getEstat() != null) {
+					switch (metadades.getEstat()) {
+					case OBERT:
+						arxiuInfo.setEniEstat(ExpedientEstatEnumDto.OBERT);
+						break;
+					case TANCAT:
+						arxiuInfo.setEniEstat(ExpedientEstatEnumDto.TANCAT);
+						break;
+					case INDEX_REMISSIO:
+						arxiuInfo.setEniEstat(ExpedientEstatEnumDto.INDEX_REMISSIO);
+						break;
+					}
 				}
+				arxiuInfo.setEniInteressats(metadades.getInteressats());
+				arxiuInfo.setEniOrgans(metadades.getOrgans());
+				arxiuInfo.setEniFirmaTipus(arxiuExpedient.getEniFirmaTipus());
+				arxiuInfo.setEniFirmaCsv(arxiuExpedient.getEniFirmaCsv());
+				arxiuInfo.setEniFirmaCsvDefinicio(arxiuExpedient.getEniFirmaCsvDefinicio());
+				arxiuInfo.setMetadades(metadades.getMetadadesAddicionals());
+				
 			}
-			arxiuInfo.setEniDataObertura(arxiuExpedient.getEniDataObertura());
-			arxiuInfo.setEniClassificacio(arxiuExpedient.getEniClassificacio());
-			if (arxiuExpedient.getEniEstat() != null) {
-				switch (arxiuExpedient.getEniEstat()) {
-				case OBERT:
-					arxiuInfo.setEniEstat(ExpedientEstatEnumDto.OBERT);
-					break;
-				case TANCAT:
-					arxiuInfo.setEniEstat(ExpedientEstatEnumDto.TANCAT);
-					break;
-				case INDEX_REMISSIO:
-					arxiuInfo.setEniEstat(ExpedientEstatEnumDto.INDEX_REMISSIO);
-					break;
-				}
-			}
-			arxiuInfo.setEniInteressats(arxiuExpedient.getEniInteressats());
-			arxiuInfo.setEniFirmaTipus(arxiuExpedient.getEniFirmaTipus());
-			arxiuInfo.setEniFirmaCsv(arxiuExpedient.getEniFirmaCsv());
-			arxiuInfo.setEniFirmaCsvDefinicio(arxiuExpedient.getEniFirmaCsvDefinicio());
-			arxiuInfo.setEniOrgans(arxiuExpedient.getEniOrgans());
-			arxiuInfo.setMetadades(arxiuExpedient.getMetadades());
-			arxiuInfo.setAspectes(arxiuExpedient.getAspectes());
-			arxiuInfo.setFills(arxiuConvertirFills(arxiuExpedient.getFills()));
-			arxiuInfo.setCodiFontPeticio(arxiuExpedient.getCodiFontPeticio());
-			arxiuInfo.setCodiFontResposta(arxiuExpedient.getCodiFontResposta());
 			return arxiuInfo;
 		} else if (contingut instanceof DocumentEntity) {
 			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
@@ -1324,10 +1314,10 @@ public class ContingutServiceImpl implements ContingutService {
 			if (arxiuDocument.getEniOrigen() != null) {
 				switch (arxiuDocument.getEniOrigen()) {
 				case CIUTADA:
-					arxiuInfo.setEniOrigen(DocumentNtiOrigenEnumDto.O0);
+					arxiuInfo.setEniOrigen(NtiOrigenEnumDto.O0);
 					break;
 				case ADMINISTRACIO:
-					arxiuInfo.setEniOrigen(DocumentNtiOrigenEnumDto.O1);
+					arxiuInfo.setEniOrigen(NtiOrigenEnumDto.O1);
 					break;
 				}
 			}

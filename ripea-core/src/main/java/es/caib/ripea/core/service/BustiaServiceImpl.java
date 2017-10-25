@@ -23,8 +23,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
 
+import es.caib.plugins.arxiu.api.Document;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaContingutDto;
@@ -82,9 +82,6 @@ import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.ReglaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
-import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
-import es.caib.ripea.plugin.arxiu.ArxiuDocument;
-import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
 import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 
 /**
@@ -1152,9 +1149,10 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 	}
 
-	
-	/** Mètode privat per obrir el document annex de tipus sistra i extreure'n informació per a l'anotació
-	 * del registre. La informació que es pot extreure depén del document:
+	/*
+	 * Mètode privat per obrir el document annex de tipus sistra i extreure'n
+	 * informació per a l'anotació de registre. La informació que es pot extreure
+	 * depén del document:
 	 * - Asiento.xml: ASIENTO_REGISTRAL.DATOS_ASUNTO.IDENTIFICADOR_TRAMITE (VARCHAR2(20))
 	 * - DatosPropios.xml: DATOS_PROPIOS.INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO (VARCHAR2(100))
 	 * 
@@ -1165,7 +1163,7 @@ public class BustiaServiceImpl implements BustiaService {
 	 */
 	private void processarAnnexSistra(RegistreEntity anotacio, RegistreAnnexEntity annex) {
 		try {
-			Document doc = XmlHelper.getDocumentFromContent(Base64.decode(annex.getFitxerContingutBase64()));
+			org.w3c.dom.Document doc = XmlHelper.getDocumentFromContent(Base64.decode(annex.getFitxerContingutBase64()));
 			if (annex.getFitxerNom().equals("DatosPropios.xml")) {
 				String identificadorProcediment = XmlHelper.getNodeValue(doc.getDocumentElement(), "INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO");
 				anotacio.updateIdentificadorProcedimentSistra(identificadorProcediment);
@@ -1179,7 +1177,7 @@ public class BustiaServiceImpl implements BustiaService {
 					e);
 		}
 	}
-	
+
 	private void guardarDocumentAnnex(
 			RegistreAnnexEntity annex,
 			BustiaEntity bustia) throws IOException {
@@ -1188,26 +1186,23 @@ public class BustiaServiceImpl implements BustiaService {
 		if (annex.getFitxerContingutBase64() != null) {
 			contingut = Base64.decode(annex.getFitxerContingutBase64());
 		} else {
-			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
+			Document arxiuDocument = pluginHelper.arxiuDocumentConsultar(
 					bustia,
 					annex.getFitxerArxiuUuid(),
 					null,
 					true);
-			if (arxiuDocument.getContinguts() != null) {
-				for (ArxiuDocumentContingut arxiuContingut: arxiuDocument.getContinguts()) {
-					if (ArxiuContingutTipusEnum.CONTINGUT.equals(arxiuContingut.getTipus())) {
-						contingut = arxiuContingut.getContingut();
-						break;
-					}
-				}
-			}
-			if (contingut == null) {
+			if (arxiuDocument.getContingut() != null) {
+				contingut = arxiuDocument.getContingut().getContingut();
+			} else {
 				throw new ValidationException(
 						"No s'ha trobat cap contingut per l'annex (" +
 						"uuid=" + annex.getFitxerArxiuUuid() + ")");
 			}
 		}
-		FileUtils.writeByteArrayToFile(new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime()), contingut);
+		FileUtils.writeByteArrayToFile(
+				new File(
+						pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime()),
+				contingut);
 	}
 
 	private void guardarFirmaAnnex(

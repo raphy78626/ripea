@@ -183,8 +183,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 				contrasenyaSgd);
 	}
 
-
-
 	@Override
 	public ArxiuFile fileCreate(
 			ArxiuFile file,
@@ -259,7 +257,6 @@ public class ArxiuClientImpl implements ArxiuClient {
 					ex);
 		}
 	}
-
 
 	@Override
 	public void fileDelete(
@@ -359,7 +356,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 				List<VersionNode> vns = result.getGetDocVersionListResult().getResParam();
 				for (VersionNode vn: vns) {
 					ArxiuContentVersion versio = new ArxiuContentVersion();
-					versio.setId(vn.getId());
+					versio.setId(vn.getId().toString());
 					versio.setData(getMetadataValueAsDate(vn.getDate()));
 					versions.add(versio);
 				}
@@ -1006,7 +1003,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 				List<VersionNode> vns = result.getGetDocVersionListResult().getResParam();
 				for (VersionNode vn: vns) {
 					ArxiuContentVersion versio = new ArxiuContentVersion();
-					versio.setId(vn.getId());
+					versio.setId(vn.getId().toString());
 					versio.setData(getMetadataValueAsDate(vn.getDate()));
 					versions.add(versio);
 				}
@@ -1620,7 +1617,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 			paramTarget.setTargetParent(targetNodeId);
 			request.setParam(paramTarget);
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			copyFolder.setCopyDocumentFolder(request);
+			copyFolder.setCopyCopyFolder(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					copyFolder);

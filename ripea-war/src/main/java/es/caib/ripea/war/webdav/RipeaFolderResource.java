@@ -23,7 +23,7 @@ import es.caib.ripea.core.api.dto.CarpetaDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
@@ -224,7 +224,7 @@ public class RipeaFolderResource implements FolderResource {
 		Date ara = new Date();
 		dto.setData(ara);
 		dto.setDataCaptura(ara);
-		dto.setNtiOrigen(DocumentNtiOrigenEnumDto.O0);
+		dto.setNtiOrigen(NtiOrigenEnumDto.O0);
 		dto.setNtiEstadoElaboracion(DocumentNtiEstadoElaboracionEnumDto.EE01);
 		dto.setNtiTipoDocumental(DocumentNtiTipoDocumentalEnumDto.TD99);
 		DocumentDto document = getDocumentService().create(
