@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -20,12 +21,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.WebUtils;
 
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
@@ -36,8 +39,8 @@ import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.EnumHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.EnumHelper;
 import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
@@ -65,6 +68,7 @@ public class ExpedientConsultaController extends BaseUserController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
+			@CookieValue(value = "escriptori", defaultValue = "false") boolean escriptori,
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -88,6 +92,7 @@ public class ExpedientConsultaController extends BaseUserController {
 				EnumHelper.getOptionsForEnum(
 						ExpedientEstatEnumDto.class,
 						"expedient.estat.enum."));
+		model.addAttribute("escriptori", escriptori);
 		return "expedientUserList";
 	}
 
@@ -256,6 +261,8 @@ public class ExpedientConsultaController extends BaseUserController {
 					SESSION_ATTRIBUTE_FILTRE,
 					filtreCommand);
 		}
+		Cookie c = WebUtils.getCookie(request, "escriptori");
+		filtreCommand.setEscriptori(c != null && "true".equals(c.getValue()));
 		return filtreCommand;
 	}
 

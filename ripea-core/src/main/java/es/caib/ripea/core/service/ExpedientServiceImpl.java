@@ -929,6 +929,12 @@ public class ExpedientServiceImpl implements ExpedientService {
 					auth);
 		}
 		if (!metaExpedientsPermesos.isEmpty()) {
+			Long escriptoriId = null;
+			if (filtre.isEscriptori())
+				escriptoriId = contingutHelper.getEscriptoriPerUsuari(
+												entitat,
+												usuariHelper.getUsuariAutenticat()).getId();
+			
 			Map<String, String[]> ordenacioMap = new HashMap<String, String[]>();
 			ordenacioMap.put("numero", new String[] {"any", "sequencia"});
 			return paginacioHelper.toPaginaDto(
@@ -953,6 +959,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 							filtre.getDataTancatFi(),
 							filtre.getEstat() == null,
 							filtre.getEstat(),
+							escriptoriId == null,
+							escriptoriId,
 							paginacioHelper.toSpringDataPageable(
 									paginacioParams,
 									ordenacioMap)),

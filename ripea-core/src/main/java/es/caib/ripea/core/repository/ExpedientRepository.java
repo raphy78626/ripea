@@ -75,7 +75,8 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			"and (:esNullCreacioFi = true or e.createdDate <= :creacioFi) " +
 			"and (:esNullTancatInici = true or e.createdDate >= :tancatInici) " +
 			"and (:esNullTancatFi = true or e.createdDate <= :tancatFi) " +
-			"and (:esNullEstat = true or e.estat = :estat)")
+			"and (:esNullEstat = true or e.estat = :estat) " +
+			"and (:isPareIdNull = true or :pareId = e.pare.id)")
 	Page<ExpedientEntity> findByEntitatAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullArxiu") boolean esNullArxiu,
@@ -97,6 +98,8 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			@Param("tancatFi") Date tancatFi,
 			@Param("esNullEstat") boolean esNullEstat,
 			@Param("estat") ExpedientEstatEnumDto estat,
+			@Param("isPareIdNull") boolean isPareIdNull,
+			@Param("pareId") Long pareId,
 			Pageable pageable);
 
 	@Query(	"select" +
