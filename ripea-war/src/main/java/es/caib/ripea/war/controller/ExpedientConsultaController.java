@@ -56,6 +56,9 @@ public class ExpedientConsultaController extends BaseUserController {
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ExpedientUserController.session.filtre";
 	private static final String SESSION_ATTRIBUTE_SELECCIO = "ExpedientUserController.session.seleccio";
 	private static final String SESSION_ATTRIBUTE_METAEXP_ID = "ExpedientUserController.session.metaExpedient.id";
+	
+	/** Cookie per matenir la opció de si el botó "escriptori" està premut o no */
+	private static final String COOKIE_ESCRIPTORI = "escriptori";
 
 	@Autowired
 	private ArxiuService arxiuService;
@@ -68,7 +71,7 @@ public class ExpedientConsultaController extends BaseUserController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
-			@CookieValue(value = "escriptori", defaultValue = "false") boolean escriptori,
+			@CookieValue(value = COOKIE_ESCRIPTORI, defaultValue = "false") boolean escriptori,
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
