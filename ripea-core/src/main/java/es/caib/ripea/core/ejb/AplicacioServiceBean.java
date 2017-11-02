@@ -4,7 +4,7 @@
 package es.caib.ripea.core.ejb;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -129,7 +129,7 @@ public class AplicacioServiceBean implements AplicacioService {
 
 	@Override
 	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
-	public Map<String, String> propertyFindByPrefix(String prefix) {
+	public Properties propertyFindByPrefix(String prefix) {
 		return delegate.propertyFindByPrefix(prefix);
 	}
 

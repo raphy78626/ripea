@@ -281,15 +281,6 @@
         <dependent-module archiveName="log4j-1.2.17.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/log4j/log4j/1.2.17/log4j-1.2.17.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="plugin-arxiu-caib-1.0.0.jar" deploy-path="/" handle="module:/resource/plugin-arxiu-caib/plugin-arxiu-caib">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="plugin-arxiu-api-1.0.0.jar" deploy-path="/" handle="module:/resource/plugin-arxiu-api/plugin-arxiu-api">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="commons-codec-1.10.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/commons-codec/commons-codec/1.10/commons-codec-1.10.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="jsoup-1.10.2.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/jsoup/jsoup/1.10.2/jsoup-1.10.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -300,6 +291,15 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jOpenDocument-1.3.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/jopendocument/jOpenDocument/1.3/jOpenDocument-1.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="plugin-arxiu-caib-1.0.0.jar" deploy-path="/" handle="module:/resource/plugin-arxiu-caib/plugin-arxiu-caib">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="plugin-arxiu-api-1.0.0.jar" deploy-path="/" handle="module:/resource/plugin-arxiu-api/plugin-arxiu-api">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-codec-1.10.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/commons-codec/commons-codec/1.10/commons-codec-1.10.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>

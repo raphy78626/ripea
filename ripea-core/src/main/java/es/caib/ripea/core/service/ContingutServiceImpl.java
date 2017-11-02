@@ -23,11 +23,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.plugins.arxiu.api.Carpeta;
+import es.caib.plugins.arxiu.api.ContingutArxiu;
+import es.caib.plugins.arxiu.api.Document;
+import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.ExpedientMetadades;
-import es.caib.ripea.core.api.dto.ArxiuPluginDocumentContingutDto;
-import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
-import es.caib.ripea.core.api.dto.ArxiuPluginNodeFillDto;
-import es.caib.ripea.core.api.dto.ArxiuPluginNodeTipusEnumDto;
+import es.caib.plugins.arxiu.api.Firma;
+import es.caib.ripea.core.api.dto.ArxiuContingutDto;
+import es.caib.ripea.core.api.dto.ArxiuContingutTipusEnumDto;
+import es.caib.ripea.core.api.dto.ArxiuDetallDto;
+import es.caib.ripea.core.api.dto.ArxiuFirmaDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
@@ -91,11 +96,8 @@ import es.caib.ripea.core.repository.MetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
-import es.caib.ripea.plugin.arxiu.ArxiuCarpeta;
 import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
-import es.caib.ripea.plugin.arxiu.ArxiuDocument;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
-import es.caib.ripea.plugin.arxiu.ArxiuFill;
 
 /**
  * Implementació dels mètodes per a gestionar continguts.
@@ -1243,7 +1245,7 @@ public class ContingutServiceImpl implements ContingutService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public ArxiuPluginInfoDto getArxiuInfo(
+	public ArxiuDetallDto getArxiuDetall(
 			Long entitatId,
 			Long contingutId) {
 		logger.debug("Obtenint informació de l'arxiu pel contingut ("
@@ -1258,203 +1260,223 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
+		List<ContingutArxiu> continguts = null;
+		List<Firma> firmes = null;
+		ArxiuDetallDto arxiuDetall = new ArxiuDetallDto();
 		if (contingut instanceof ExpedientEntity) {
 			es.caib.plugins.arxiu.api.Expedient arxiuExpedient = pluginHelper.arxiuExpedientConsultar(
 					(ExpedientEntity)contingut);
-			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
-			arxiuInfo.setNodeId(arxiuExpedient.getIdentificador());
-			arxiuInfo.setNom(arxiuExpedient.getNom());
-			arxiuInfo.setDescripcio(arxiuExpedient.getDescripcio());
+			continguts = arxiuExpedient.getContinguts();
+			arxiuDetall.setIdentificador(arxiuExpedient.getIdentificador());
+			arxiuDetall.setNom(arxiuExpedient.getNom());
 			ExpedientMetadades metadades = arxiuExpedient.getMetadades();
 			if (metadades != null) {
-				arxiuInfo.setEniVersio(metadades.getVersioNti());
-				arxiuInfo.setEniIdentificador(metadades.getIdentificador());
-				arxiuInfo.setSerieDocumental(metadades.getSerieDocumental());
-				arxiuInfo.setAplicacio(arxiuExpedient.getAplicacio());
-				arxiuInfo.setEniDataObertura(metadades.getDataObertura());
-				arxiuInfo.setEniClassificacio(metadades.getClassificacio());
+				arxiuDetall.setEniVersio(metadades.getVersioNti());
+				arxiuDetall.setEniIdentificador(metadades.getIdentificador());
+				arxiuDetall.setSerieDocumental(metadades.getSerieDocumental());
+				arxiuDetall.setEniDataObertura(metadades.getDataObertura());
+				arxiuDetall.setEniClassificacio(metadades.getClassificacio());
 				if (metadades.getEstat() != null) {
 					switch (metadades.getEstat()) {
 					case OBERT:
-						arxiuInfo.setEniEstat(ExpedientEstatEnumDto.OBERT);
+						arxiuDetall.setEniEstat(ExpedientEstatEnumDto.OBERT);
 						break;
 					case TANCAT:
-						arxiuInfo.setEniEstat(ExpedientEstatEnumDto.TANCAT);
+						arxiuDetall.setEniEstat(ExpedientEstatEnumDto.TANCAT);
 						break;
 					case INDEX_REMISSIO:
-						arxiuInfo.setEniEstat(ExpedientEstatEnumDto.INDEX_REMISSIO);
+						arxiuDetall.setEniEstat(ExpedientEstatEnumDto.INDEX_REMISSIO);
 						break;
 					}
 				}
-				arxiuInfo.setEniInteressats(metadades.getInteressats());
-				arxiuInfo.setEniOrgans(metadades.getOrgans());
-				arxiuInfo.setEniFirmaTipus(arxiuExpedient.getEniFirmaTipus());
-				arxiuInfo.setEniFirmaCsv(arxiuExpedient.getEniFirmaCsv());
-				arxiuInfo.setEniFirmaCsvDefinicio(arxiuExpedient.getEniFirmaCsvDefinicio());
-				arxiuInfo.setMetadades(metadades.getMetadadesAddicionals());
-				
+				arxiuDetall.setEniInteressats(metadades.getInteressats());
+				arxiuDetall.setEniOrgans(metadades.getOrgans());
+				arxiuDetall.setMetadadesAddicionals(metadades.getMetadadesAddicionals());
 			}
-			return arxiuInfo;
 		} else if (contingut instanceof DocumentEntity) {
-			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
-			ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
+			Document arxiuDocument = pluginHelper.arxiuDocumentConsultar(
 					contingut,
 					null,
 					null,
 					true);
-			arxiuInfo.setNodeId(arxiuDocument.getNodeId());
-			arxiuInfo.setNom(arxiuDocument.getTitol());
-			arxiuInfo.setDescripcio(arxiuDocument.getDescripcio());
-			arxiuInfo.setSerieDocumental(arxiuDocument.getSerieDocumental());
-			arxiuInfo.setAplicacio(arxiuDocument.getAplicacio());
-			arxiuInfo.setDocumentVersioId(arxiuDocument.getVersioId());
-			arxiuInfo.setDocumentVersioNodeId(arxiuDocument.getVersioNodeId());
-			arxiuInfo.setEniVersio(arxiuDocument.getEniVersio());
-			arxiuInfo.setEniIdentificador(arxiuDocument.getEniIdentificador());
-			if (arxiuDocument.getEniOrigen() != null) {
-				switch (arxiuDocument.getEniOrigen()) {
-				case CIUTADA:
-					arxiuInfo.setEniOrigen(NtiOrigenEnumDto.O0);
-					break;
-				case ADMINISTRACIO:
-					arxiuInfo.setEniOrigen(NtiOrigenEnumDto.O1);
-					break;
-				}
-			}
-			arxiuInfo.setEniDataCaptura(arxiuDocument.getEniDataCaptura());
-			if (arxiuDocument.getEniEstatElaboracio() != null) {
-				switch (arxiuDocument.getEniEstatElaboracio()) {
-				case ORIGINAL:
-					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE01);
-					break;
-				case COPIA_AUTENTICA_FORMAT:
-					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE02);
-					break;
-				case COPIA_AUTENTICA_PAPER:
-					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE03);
-					break;
-				case COPIA_AUTENTICA_PARCIAL:
-					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE04);
-					break;
-				case ALTRES:
-					arxiuInfo.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE99);
-					break;
-				}
-			}
-			if (arxiuDocument.getEniTipusDocumental() != null) {
-				switch (arxiuDocument.getEniTipusDocumental()) {
-				case RESOLUCIO:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD01);
-					break;
-				case ACORD:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD02);
-					break;
-				case CONTRACTE:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD03);
-					break;
-				case CONVENI:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD04);
-					break;
-				case DECLARACIO:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD05);
-					break;
-				case COMUNICACIO:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD06);
-					break;
-				case NOTIFICACIO:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD07);
-					break;
-				case PUBLICACIO:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD08);
-					break;
-				case JUSTIFICANT_RECEPCIO:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD09);
-					break;
-				case ACTA:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD10);
-					break;
-				case CERTIFICAT:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD11);
-					break;
-				case DILIGENCIA:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD12);
-					break;
-				case INFORME:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD13);
-					break;
-				case SOLICITUD:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD14);
-					break;
-				case DENUNCIA:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD15);
-					break;
-				case ALEGACIO:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD16);
-					break;
-				case RECURSOS:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD17);
-					break;
-				case COMUNICACIO_CIUTADA:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD18);
-					break;
-				case FACTURA:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD19);
-					break;
-				case ALTRES_INCAUTATS:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD20);
-					break;
-				case ALTRES:
-					arxiuInfo.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD99);
-					break;
-				}
-			}
-			if (arxiuDocument.getEniFormatNom() != null)
-				arxiuInfo.setEniFormatNom(arxiuDocument.getEniFormatNom().getValor());
-			if (arxiuDocument.getEniFormatExtensio() != null)
-				arxiuInfo.setEniFormatExtensio(arxiuDocument.getEniFormatExtensio().getValor());
-			arxiuInfo.setEniOrgans(arxiuDocument.getEniOrgans());
-			arxiuInfo.setEniDocumentOrigenId(arxiuDocument.getEniDocumentOrigenId());
-			arxiuInfo.setEniFirmaTipus(arxiuDocument.getEniFirmaTipus());
-			arxiuInfo.setEniFirmaCsv(arxiuDocument.getEniFirmaCsv());
-			arxiuInfo.setEniFirmaCsvDefinicio(arxiuDocument.getEniFirmaCsvDefinicio());
-			arxiuInfo.setMetadades(arxiuDocument.getMetadades());
-			arxiuInfo.setAspectes(arxiuDocument.getAspectes());
-			if (arxiuDocument.getContinguts() != null) {
-				List<ArxiuPluginDocumentContingutDto> continguts = new ArrayList<ArxiuPluginDocumentContingutDto>();
-				for (ArxiuDocumentContingut arxiuContingut: arxiuDocument.getContinguts()) {
-					ArxiuPluginDocumentContingutDto dto = new ArxiuPluginDocumentContingutDto();
-					if (arxiuContingut.getTipus() != null) {
-						dto.setTipus(arxiuContingut.getTipus().toString());
+			firmes = arxiuDocument.getFirmes();
+			arxiuDetall.setIdentificador(arxiuDocument.getIdentificador());
+			arxiuDetall.setNom(arxiuDocument.getNom());
+			DocumentMetadades metadades = arxiuDocument.getMetadades();
+			if (metadades != null) {
+				arxiuDetall.setEniVersio(metadades.getVersioNti());
+				arxiuDetall.setEniIdentificador(metadades.getIdentificador());
+				arxiuDetall.setSerieDocumental(metadades.getSerieDocumental());
+				arxiuDetall.setEniDataCaptura(metadades.getDataCaptura());
+				if (metadades.getOrigen() != null) {
+					switch (metadades.getOrigen()) {
+					case CIUTADA:
+						arxiuDetall.setEniOrigen(NtiOrigenEnumDto.O0);
+						break;
+					case ADMINISTRACIO:
+						arxiuDetall.setEniOrigen(NtiOrigenEnumDto.O1);
+						break;
 					}
-					dto.setContentType(arxiuContingut.getContentType());
-					continguts.add(dto);
 				}
-				arxiuInfo.setContinguts(continguts);
+				if (metadades.getEstatElaboracio() != null) {
+					switch (metadades.getEstatElaboracio()) {
+					case ORIGINAL:
+						arxiuDetall.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE01);
+						break;
+					case COPIA_CF:
+						arxiuDetall.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE02);
+						break;
+					case COPIA_DP:
+						arxiuDetall.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE03);
+						break;
+					case COPIA_PR:
+						arxiuDetall.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE04);
+						break;
+					case ALTRES:
+						arxiuDetall.setEniEstatElaboracio(DocumentNtiEstadoElaboracionEnumDto.EE99);
+						break;
+					}
+				}
+				if (metadades.getTipusDocumental() != null) {
+					switch (metadades.getTipusDocumental()) {
+					case RESOLUCIO:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD01);
+						break;
+					case ACORD:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD02);
+						break;
+					case CONTRACTE:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD03);
+						break;
+					case CONVENI:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD04);
+						break;
+					case DECLARACIO:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD05);
+						break;
+					case COMUNICACIO:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD06);
+						break;
+					case NOTIFICACIO:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD07);
+						break;
+					case PUBLICACIO:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD08);
+						break;
+					case JUSTIFICANT_RECEPCIO:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD09);
+						break;
+					case ACTA:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD10);
+						break;
+					case CERTIFICAT:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD11);
+						break;
+					case DILIGENCIA:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD12);
+						break;
+					case INFORME:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD13);
+						break;
+					case SOLICITUD:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD14);
+						break;
+					case DENUNCIA:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD15);
+						break;
+					case ALEGACIO:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD16);
+						break;
+					case RECURS:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD17);
+						break;
+					case COMUNICACIO_CIUTADA:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD18);
+						break;
+					case FACTURA:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD19);
+						break;
+					case ALTRES_INCAUTATS:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD20);
+						break;
+					case ALTRES:
+						arxiuDetall.setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto.TD99);
+						break;
+					}
+				}
+				arxiuDetall.setEniOrgans(metadades.getOrgans());
+				if (metadades.getFormat() != null) {
+					arxiuDetall.setEniFormat(metadades.getFormat().toString());
+				}
+				if (metadades.getExtensio() != null) {
+					arxiuDetall.setEniExtensio(metadades.getExtensio().toString());
+				}
+				arxiuDetall.setEniDocumentOrigenId(metadades.getIdentificadorOrigen());
+				arxiuDetall.setMetadadesAddicionals(metadades.getMetadadesAddicionals());
+				if (arxiuDocument.getContingut() != null) {
+					arxiuDetall.setContingutArxiuNom(
+							arxiuDocument.getContingut().getArxiuNom());
+					arxiuDetall.setContingutTipusMime(
+							arxiuDocument.getContingut().getTipusMime());
+				}
+				
 			}
-			arxiuInfo.setCodiFontPeticio(arxiuDocument.getCodiFontPeticio());
-			arxiuInfo.setCodiFontResposta(arxiuDocument.getCodiFontResposta());
-			return arxiuInfo;
 		} else if (contingut instanceof CarpetaEntity) {
-			ArxiuPluginInfoDto arxiuInfo = new ArxiuPluginInfoDto();
-			ArxiuCarpeta arxiuCarpeta = pluginHelper.arxiuCarpetaConsultar(
+			Carpeta arxiuCarpeta = pluginHelper.arxiuCarpetaConsultar(
 					(CarpetaEntity)contingut);
-			arxiuInfo.setNodeId(arxiuCarpeta.getNodeId());
-			arxiuInfo.setNom(arxiuCarpeta.getNom());
-			arxiuInfo.setDescripcio(arxiuCarpeta.getDescripcio());
-			arxiuInfo.setSerieDocumental(arxiuCarpeta.getSerieDocumental());
-			arxiuInfo.setAplicacio(arxiuCarpeta.getAplicacio());
-			arxiuInfo.setMetadades(arxiuCarpeta.getMetadades());
-			arxiuInfo.setAspectes(arxiuCarpeta.getAspectes());
-			arxiuInfo.setFills(arxiuConvertirFills(arxiuCarpeta.getFills()));
-			arxiuInfo.setCodiFontPeticio(arxiuCarpeta.getCodiFontPeticio());
-			arxiuInfo.setCodiFontResposta(arxiuCarpeta.getCodiFontResposta());
-			return arxiuInfo;
+			continguts = arxiuCarpeta.getContinguts();
+			arxiuDetall.setIdentificador(arxiuCarpeta.getIdentificador());
+			arxiuDetall.setNom(arxiuCarpeta.getNom());
 		} else {
 			throw new ValidationException(
 					contingutId,
 					ContingutEntity.class,
-					"El plugin d'arxiu no està actiu");
+					"Tipus de contingut desconegut: " + contingut.getClass().getName());
 		}
+		if (continguts != null) {
+			List<ArxiuContingutDto> detallFills = new ArrayList<ArxiuContingutDto>();
+			for (ContingutArxiu cont: continguts) {
+				ArxiuContingutDto detallFill = new ArxiuContingutDto();
+				detallFill.setIdentificador(
+						cont.getIdentificador());
+				detallFill.setNom(
+						cont.getNom());
+				if (cont.getTipus() != null) {
+					switch (cont.getTipus()) {
+					case EXPEDIENT:
+						detallFill.setTipus(ArxiuContingutTipusEnumDto.EXPEDIENT);
+						break;
+					case DOCUMENT:
+						detallFill.setTipus(ArxiuContingutTipusEnumDto.DOCUMENT);
+						break;
+					case CARPETA:
+						detallFill.setTipus(ArxiuContingutTipusEnumDto.CARPETA);
+						break;
+					}
+				}
+				detallFills.add(detallFill);
+			}
+			arxiuDetall.setFills(detallFills);
+		}
+		if (firmes != null) {
+			List<ArxiuFirmaDto> detallFirmes = new ArrayList<ArxiuFirmaDto>();
+			for (Firma firma: firmes) {
+				ArxiuFirmaDto detallFirma = new ArxiuFirmaDto();
+				if (firma.getTipus() != null) {
+					detallFirma.setTipus(firma.getTipus().name());
+				}
+				if (firma.getPerfil() != null) {
+					detallFirma.setPerfil(firma.getPerfil().name());
+				}
+				detallFirma.setFitxerNom(firma.getFitxerNom());
+				detallFirma.setContingut(firma.getContingut());
+				detallFirma.setTipusMime(firma.getTipusMime());
+				detallFirma.setCsvRegulacio(firma.getCsvRegulacio());
+				detallFirmes.add(detallFirma);
+			}
+			arxiuDetall.setFirmes(detallFirmes);
+		}
+		return arxiuDetall;
 	}
 
 	@Transactional(readOnly = true)
@@ -1609,13 +1631,11 @@ public class ContingutServiceImpl implements ContingutService {
 			Long entitatId, 
 			ContingutMassiuFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException {
-		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		
 		Date dataInici = filtre.getDataInici();
 		if (dataInici != null) {
 			Calendar cal = Calendar.getInstance();
@@ -1636,15 +1656,13 @@ public class ContingutServiceImpl implements ContingutService {
 			cal.set(Calendar.MILLISECOND, 999);
 			dataFi = cal.getTime();
 		}
-		
 		Long idMetaNode = null;
 		MetaNodeEntity metaNode = null;
-		
-		if (filtre.getTipusElement() == ContingutTipusEnumDto.EXPEDIENT && filtre.getTipusExpedient() != null)
+		if (filtre.getTipusElement() == ContingutTipusEnumDto.EXPEDIENT && filtre.getTipusExpedient() != null) {
 			idMetaNode = filtre.getTipusExpedient();
-		else if (filtre.getTipusElement() == ContingutTipusEnumDto.DOCUMENT && filtre.getTipusDocument() != null)
+		} else if (filtre.getTipusElement() == ContingutTipusEnumDto.DOCUMENT && filtre.getTipusDocument() != null) {
 			idMetaNode = filtre.getTipusDocument();
-		
+		}
 		if (idMetaNode != null) {
 			metaNode = metaNodeRepository.findOne(idMetaNode);
 			if (metaNode == null) {
@@ -1653,7 +1671,6 @@ public class ContingutServiceImpl implements ContingutService {
 						MetaNodeEntity.class);
 			}
 		}
-		
 		List<DocumentEntity> preDocuments = documentRepository.findDocumentMassiuByFiltre(
 				entitat,
 				(filtre.getTipusExpedient() == null),
@@ -1670,7 +1687,6 @@ public class ContingutServiceImpl implements ContingutService {
 				dataFi,
 				false,
 				true);
-		
 		List<Long> docIds = new ArrayList<Long>();
 		for (DocumentEntity document: preDocuments) {
 			try {
@@ -1680,28 +1696,32 @@ public class ContingutServiceImpl implements ContingutService {
 				
 			}
 		}
-		
-		return paginacioHelper.toPaginaDto(
-				documentRepository.findDocumentMassiuByIdsPaginat(
-						docIds,
-						paginacioHelper.toSpringDataPageable(paginacioParams)),
-				DocumentDto.class,
-				new Converter<DocumentEntity, DocumentDto>() {
-					@Override
-					public DocumentDto convert(DocumentEntity source) {
-						return (DocumentDto)contingutHelper.toContingutDto(
-								source,
-								false,
-								false,
-								false,
-								false,
-								true,
-								true,
-								false);
-					}
-				});
+		if (!docIds.isEmpty()) {
+			return paginacioHelper.toPaginaDto(
+					documentRepository.findDocumentMassiuByIdsPaginat(
+							docIds,
+							paginacioHelper.toSpringDataPageable(paginacioParams)),
+					DocumentDto.class,
+					new Converter<DocumentEntity, DocumentDto>() {
+						@Override
+						public DocumentDto convert(DocumentEntity source) {
+							return (DocumentDto)contingutHelper.toContingutDto(
+									source,
+									false,
+									false,
+									false,
+									false,
+									true,
+									true,
+									false);
+						}
+					});
+		} else {
+			return paginacioHelper.getPaginaDtoBuida(
+					DocumentDto.class);
+		}
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<Long> findIdsMassiusAmbFiltre(
@@ -1719,7 +1739,9 @@ public class ContingutServiceImpl implements ContingutService {
 				entitatId,
 				filtre);
 	}
-	
+
+
+
 	private List<Long> findIdsAmbFiltrePaginat(
 			Long entitatId,
 			ContingutMassiuFiltreDto filtre) {
@@ -1967,35 +1989,6 @@ public class ContingutServiceImpl implements ContingutService {
 				true);
 	}
 
-	private List<ArxiuPluginNodeFillDto> arxiuConvertirFills(
-			List<ArxiuFill> arxiuFills) {
-		List<ArxiuPluginNodeFillDto> fills = null;
-		if (arxiuFills != null) {
-			fills = new ArrayList<ArxiuPluginNodeFillDto>();
-			for (ArxiuFill fill: arxiuFills) {
-				ArxiuPluginNodeFillDto arxiuFill = new ArxiuPluginNodeFillDto();
-				arxiuFill.setNodeId(fill.getNodeId());
-				arxiuFill.setNom(fill.getNom());
-				switch (fill.getTipus()) {
-				case EXPEDIENT:
-					arxiuFill.setTipus(ArxiuPluginNodeTipusEnumDto.EXPEDIENT);
-					break;
-				case DOCUMENT:
-					arxiuFill.setTipus(ArxiuPluginNodeTipusEnumDto.DOCUMENT);
-					break;
-				case CARPETA:
-					arxiuFill.setTipus(ArxiuPluginNodeTipusEnumDto.CARPETA);
-					break;
-				case DOCUMENT_MIGRAT:
-					arxiuFill.setTipus(ArxiuPluginNodeTipusEnumDto.DOCUMENT_MIGRAT);
-					break;
-				}
-				fills.add(arxiuFill);
-			}
-		}
-		return fills;
-	}
-
 	private void fitxerDocumentEsborratGuardar(
 			DocumentEntity document) throws IOException {
 		File fContent = new File(getBaseDir() + "/" + document.getId());
@@ -2045,9 +2038,5 @@ public class ContingutServiceImpl implements ContingutService {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);
-
-
-
-	
 
 }

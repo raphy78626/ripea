@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.CarpetaDto;
@@ -75,7 +76,6 @@ import es.caib.ripea.core.repository.MetaNodeRepository;
 import es.caib.ripea.core.repository.NodeRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
-import es.caib.ripea.plugin.arxiu.ArxiuDocumentVersio;
 import es.caib.ripea.plugin.usuari.DadesUsuari;
 
 /**
@@ -197,8 +197,6 @@ public class ContingutHelper {
 			dto.setData(document.getData());
 			dto.setCustodiaData(document.getCustodiaData());
 			dto.setCustodiaId(document.getCustodiaId());
-			dto.setCustodiaUrl(
-					pluginHelper.arxiuDocumentGenerarUrlPerCsv(document.getCustodiaCsv()));
 			if (document.getFitxerNom() != null) {
 				dto.setFitxerNom(document.getFitxerNom());
 				dto.setFitxerNomEnviamentPortafirmes(
@@ -210,14 +208,13 @@ public class ContingutHelper {
 			dto.setVersioDarrera(document.getVersioDarrera());
 			dto.setVersioCount(document.getVersioCount());
 			if (ambVersions && pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuSuportaVersionsDocuments() && document.getEsborrat() == 0) {
-				List<ArxiuDocumentVersio> arxiuVersions = pluginHelper.arxiuDocumentObtenirVersions(document);
+				List<ContingutArxiu> arxiuVersions = pluginHelper.arxiuDocumentObtenirVersions(document);
 				if (arxiuVersions != null) {
 					List<DocumentVersioDto> versions = new ArrayList<DocumentVersioDto>();
-					for (ArxiuDocumentVersio arxiuVersio: arxiuVersions) {
+					for (ContingutArxiu arxiuVersio: arxiuVersions) {
 						DocumentVersioDto versio = new DocumentVersioDto();
-						versio.setArxiuUuid(arxiuVersio.getNodeId());
-						versio.setId(arxiuVersio.getId());
-						versio.setData(arxiuVersio.getData());
+						versio.setArxiuUuid(arxiuVersio.getIdentificador());
+						versio.setId(arxiuVersio.getVersio());
 						versions.add(versio);
 					}
 					dto.setVersions(versions);
@@ -862,25 +859,19 @@ public class ContingutHelper {
 		}
 		if (pluginHelper.isArxiuPluginActiu()) {
 			if (contingut instanceof ExpedientEntity) {
-				if (pluginHelper.arxiuPotGestionarExpedients()) {
-					pluginHelper.arxiuExpedientActualitzar(
-							(ExpedientEntity)contingut);
-				}
+				pluginHelper.arxiuExpedientActualitzar(
+						(ExpedientEntity)contingut);
 			} else if (contingut instanceof DocumentEntity) {
-				if (pluginHelper.arxiuPotGestionarDocuments()) {
-					pluginHelper.arxiuDocumentActualitzar(
-							(DocumentEntity)contingut,
-							fitxer,
-							contingut.getPare(),
-							classificacioDocumental);
-					documentHelper.actualitzarVersionsDocument((DocumentEntity)contingut);
-				}
+				pluginHelper.arxiuDocumentActualitzar(
+						(DocumentEntity)contingut,
+						fitxer,
+						contingut.getPare(),
+						classificacioDocumental);
+				documentHelper.actualitzarVersionsDocument((DocumentEntity)contingut);
 			} else if (contingut instanceof CarpetaEntity) {
-				if (pluginHelper.arxiuPotGestionarCarpetes()) {
-					pluginHelper.arxiuCarpetaActualitzar(
-							(CarpetaEntity)contingut,
-							contingut.getPare());
-				}
+				pluginHelper.arxiuCarpetaActualitzar(
+						(CarpetaEntity)contingut,
+						contingut.getPare());
 			} else {
 				throw new ValidationException(
 						contingut.getId(),
@@ -896,20 +887,14 @@ public class ContingutHelper {
 		if (contingut.getArxiuUuid() != null) {
 			if (pluginHelper.isArxiuPluginActiu()) {
 				if (contingut instanceof ExpedientEntity) {
-					if (pluginHelper.arxiuPotGestionarExpedients()) {
-						pluginHelper.arxiuExpedientEsborrar(
-								(ExpedientEntity)contingut);
-					}
+					pluginHelper.arxiuExpedientEsborrar(
+							(ExpedientEntity)contingut);
 				} else if (contingut instanceof DocumentEntity) {
-					if (pluginHelper.arxiuPotGestionarDocuments()) {
-						pluginHelper.arxiuDocumentEsborrar(
-								(DocumentEntity)contingut);
-					}
+					pluginHelper.arxiuDocumentEsborrar(
+							(DocumentEntity)contingut);
 				} else if (contingut instanceof CarpetaEntity) {
-					if (pluginHelper.arxiuPotGestionarCarpetes()) {
-						pluginHelper.arxiuCarpetaEsborrar(
-								(CarpetaEntity)contingut);
-					}
+					pluginHelper.arxiuCarpetaEsborrar(
+							(CarpetaEntity)contingut);
 				} else {
 					throw new ValidationException(
 							contingut.getId(),

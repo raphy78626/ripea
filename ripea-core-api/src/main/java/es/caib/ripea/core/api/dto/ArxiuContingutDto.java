@@ -12,9 +12,9 @@ import java.io.Serializable;
  */
 public class ArxiuContingutDto implements Serializable {
 
-	private String identificador;
-	private String nom;
-	private ArxiuContingutTipusEnumDto tipus;
+	protected String identificador;
+	protected String nom;
+	protected ArxiuContingutTipusEnumDto tipus;
 
 	public String getIdentificador() {
 		return identificador;

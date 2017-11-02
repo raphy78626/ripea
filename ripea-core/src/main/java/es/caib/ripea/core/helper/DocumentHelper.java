@@ -3,9 +3,12 @@
  */
 package es.caib.ripea.core.helper;
 
+import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -14,13 +17,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.sun.jersey.core.util.Base64;
+
+import es.caib.plugins.arxiu.api.ContingutArxiu;
+import es.caib.plugins.arxiu.api.Document;
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -30,10 +37,6 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDocumentEntity;
 import es.caib.ripea.core.repository.DocumentRepository;
-import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
-import es.caib.ripea.plugin.arxiu.ArxiuDocument;
-import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
-import es.caib.ripea.plugin.arxiu.ArxiuDocumentVersio;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocument;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPrioritatEnum;
 
@@ -105,7 +108,7 @@ public class DocumentHelper {
 	public void actualitzarFitxerDocument(
 			DocumentEntity document,
 			FitxerDto fitxer) {
-		if (pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuPotGestionarDocuments()) {
+		if (pluginHelper.isArxiuPluginActiu()) {
 			document.updateFitxer(
 					fitxer.getNom(),
 					fitxer.getContentType(),
@@ -128,7 +131,7 @@ public class DocumentHelper {
 		FitxerDto fitxer = null;
 		if (document.getArxiuUuid() != null) {
 			if (pluginHelper.isArxiuPluginActiu()) {
-				ArxiuDocument arxiuDocument = pluginHelper.arxiuDocumentConsultar(
+				Document arxiuDocument = pluginHelper.arxiuDocumentConsultar(
 						document,
 						null,
 						versio,
@@ -137,22 +140,13 @@ public class DocumentHelper {
 				fitxer.setContentType(document.getFitxerContentType());
 				fitxer.setNom(document.getFitxerNom());
 				byte[] contingut = null;
-				if (arxiuDocument.getContinguts() != null) {
-					ArxiuContingutTipusEnum arxiuTipus = ArxiuContingutTipusEnum.CONTINGUT;
-					if (versio == null && DocumentEstatEnumDto.CUSTODIAT.equals(document.getEstat())) {
-						arxiuTipus = ArxiuContingutTipusEnum.FIRMA;
-					}
-					for (ArxiuDocumentContingut arxiuContingut: arxiuDocument.getContinguts()) {
-						if (arxiuTipus.equals(arxiuContingut.getTipus())) {
-							contingut = arxiuContingut.getContingut();
-							break;
-						}
-					}
-				}
-				if (contingut == null) {
+				if (arxiuDocument.getContingut() != null) {
+					contingut = arxiuDocument.getContingut().getContingut();
+				} else {
 					throw new ValidationException(
-							"No s'ha trobat cap contingut pel document de l'arxiu(" +
-							"uuid=" + document.getArxiuUuid() + ")");
+							"El document no no te cap contingut associat a dins l'arxiu (" +
+							"documentId=" + document.getId() + ", " +
+							"arxiuUuid=" + document.getArxiuUuid() + ")");
 				}
 				fitxer.setContingut(contingut);
 			} else {
@@ -178,8 +172,14 @@ public class DocumentHelper {
 			DocumentEntity document,
 			String organCodi) {
 		int any = Calendar.getInstance().get(Calendar.YEAR);
-		String ntiIdentificador = "ES_" + organCodi + "_" + any + "_RIP" + String.format("%027d", document.getId());
-		document.updateNtiIdentificador(ntiIdentificador);
+		UUID uuid = UUID.randomUUID();
+		ByteBuffer bb = ByteBuffer.wrap(new byte[20]);
+		bb.putLong(uuid.getMostSignificantBits());
+		bb.putLong(uuid.getLeastSignificantBits());
+		Random rand = new Random(System.currentTimeMillis());
+		bb.putInt(rand.nextInt());
+		String identificador = "ES_" + organCodi + "_" + any + "_" +  new String(Base64.encode(bb.array()));
+		document.updateNtiIdentificador(identificador);
 	}
 
 	public String getExtensioArxiu(String arxiuNom) {
@@ -196,31 +196,6 @@ public class DocumentHelper {
 	public SistemaExternException portafirmesEnviar(
 			DocumentPortafirmesEntity documentPortafirmes) {
 		DocumentEntity document = documentPortafirmes.getDocument();
-		if (pluginHelper.portafirmesEnviarDocumentEstampat() && document.getCustodiaCsv() == null) {
-			try {
-				String csv = pluginHelper.arxiuDocumentGenerarCsv(document);
-				document.updateInformacioCustodia(
-						document.getCustodiaData(),
-						document.getCustodiaId(),
-						csv);
-				contingutLogHelper.log(
-						documentPortafirmes.getDocument(),
-						LogTipusEnumDto.ARXIU_CSV,
-						csv,
-						null,
-						false,
-						false);
-			} catch (SistemaExternException ex) {
-				Throwable rootCause = ExceptionUtils.getRootCause(ex);
-				if (rootCause == null) rootCause = ex;
-				documentPortafirmes.updateEnviament(
-						true,
-						true,
-						ExceptionUtils.getStackTrace(rootCause),
-						null);
-				return ex;
-			}
-		}
 		try {
 			String portafirmesId = pluginHelper.portafirmesUpload(
 					document,
@@ -295,8 +270,7 @@ public class DocumentHelper {
 						false);
 				String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
 						document,
-						fitxer,
-						document.getMetaDocument().getPortafirmesCustodiaTipus());
+						fitxer);
 				document.updateInformacioCustodia(
 						new Date(),
 						custodiaDocumentId,
@@ -327,19 +301,19 @@ public class DocumentHelper {
 			DocumentEntity document) {
 		if (pluginHelper.arxiuSuportaVersionsDocuments()) {
 			try {
-				List<ArxiuDocumentVersio> versions = pluginHelper.arxiuDocumentObtenirVersions(
+				List<ContingutArxiu> versions = pluginHelper.arxiuDocumentObtenirVersions(
 						document);
 				if (versions != null) {
-					ArxiuDocumentVersio darreraVersio = null;
-					Date versioData = null;
-					for (ArxiuDocumentVersio versio: versions) {
-						if (versioData == null || versio.getData().after(versioData)) {
-							versioData = versio.getData();
+					ContingutArxiu darreraVersio = null;
+					Float versioNum = null;
+					for (ContingutArxiu versio: versions) {
+						if (versioNum == null || new Float(versio.getVersio()).floatValue() > versioNum.floatValue()) {
+							versioNum = new Float(versio.getVersio());
 							darreraVersio = versio;
 						}
 					}
 					document.updateVersio(
-							darreraVersio.getId(),
+							darreraVersio.getVersio(),
 							versions.size());
 				}
 			} catch (Exception ex) {

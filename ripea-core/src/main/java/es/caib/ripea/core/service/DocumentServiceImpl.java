@@ -896,12 +896,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public FitxerDto convertirPdfPerFirmaClient(
 			Long entitatId,
-			Long id,
-			boolean estamparUrl) {
+			Long id) {
 		logger.debug("Convertint document a format PDF per firmar (" +
 				"entitatId=" + entitatId + ", " +
-				"id=" + id + ", " +
-				"estamparUrl=" + estamparUrl + ")");
+				"id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -922,27 +920,9 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				true);
-		if (estamparUrl && document.getCustodiaCsv() == null) {
-			String csv = pluginHelper.arxiuDocumentGenerarCsv(document);
-			document.updateInformacioCustodia(
-					document.getCustodiaData(),
-					document.getCustodiaId(),
-					csv);
-			contingutLogHelper.log(
-					document,
-					LogTipusEnumDto.ARXIU_CSV,
-					csv,
-					null,
-					false,
-					false);
-		}
-		String url = null;
-		if (document.getCustodiaCsv() != null) {
-			url = pluginHelper.arxiuDocumentGenerarUrlPerCsv(document.getCustodiaCsv());
-		}
-		return pluginHelper.conversioConvertirPdfIEstamparUrl(
+		return pluginHelper.conversioConvertirPdf(
 				documentHelper.getFitxerAssociat(document),
-				url);
+				null);
 	}
 
 	@Transactional
@@ -1063,7 +1043,7 @@ public class DocumentServiceImpl implements DocumentService {
 			fitxer.setContentType("application/pdf");
 			document.updateEstat(
 					DocumentEstatEnumDto.CUSTODIAT);
-			String custodiaDocumentId = pluginHelper.arxiuDocumentMarcarDefinitiu(
+			String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
 					document,
 					fitxer);
 			document.updateInformacioCustodia(

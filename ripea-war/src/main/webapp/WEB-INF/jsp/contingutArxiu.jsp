@@ -5,77 +5,167 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-
 <c:set var="titol"><spring:message code="contingut.arxiu.titol"/></c:set>
-
 <html>
 <head>
 	<title>${titol}</title>
 	<rip:modalHead/>
-<c:if test="${not empty arxiuInfo}">
-<script type="text/javascript">
-$(document).ready(function() {
-	$("#codiFontPeticio").text(JSON.stringify(${arxiuInfo.codiFontPeticio}, null, 4));
-	$("#codiFontResposta").text(JSON.stringify(${arxiuInfo.codiFontResposta}, null, 4));
-});
-</script>
-</c:if>
 </head>
 <body>
 	<c:choose>
-		<c:when test="${not empty arxiuInfo}">
+		<c:when test="${not empty arxiuDetall}">
 			<ul class="nav nav-tabs" role="tablist">
 				<li role="presentation" class="active"><a href="#info" aria-controls="info" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.info"/></a></li>
-				<c:if test="${not empty arxiuInfo.fills}">
-					<li role="presentation"><a href="#fills" aria-controls="fills" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.fills"/> <span class="badge badge-default">${fn:length(arxiuInfo.fills)}</span></a></li>
+				<c:if test="${not empty arxiuDetall.fills}">
+					<li role="presentation"><a href="#fills" aria-controls="fills" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.fills"/> <span class="badge badge-default">${fn:length(arxiuDetall.fills)}</span></a></li>
 				</c:if>
-				<c:if test="${not empty arxiuInfo.metadades}">
-					<li role="presentation"><a href="#metadades" aria-controls="metadades" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.metadades"/> <span class="badge badge-default">${fn:length(arxiuInfo.metadades)}</span></a></li>
+				<c:if test="${not empty arxiuDetall.firmes}">
+					<li role="presentation"><a href="#firmes" aria-controls="firmes" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.firmes"/> <span class="badge badge-default">${fn:length(arxiuDetall.firmes)}</span></a></li>
 				</c:if>
-				<c:if test="${not empty arxiuInfo.aspectes}">
-					<li role="presentation"><a href="#aspectes" aria-controls="aspectes" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.aspectes"/> <span class="badge badge-default">${fn:length(arxiuInfo.aspectes)}</span></a></li>
-				</c:if>
-				<c:if test="${not empty arxiuInfo.continguts}">
-					<li role="presentation"><a href="#continguts" aria-controls="continguts" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.continguts"/> <span class="badge badge-default">${fn:length(arxiuInfo.continguts)}</span></a></li>
-				</c:if>
-				<c:if test="${not empty arxiuInfo.codiFontPeticio || not empty arxiuInfo.codiFontResposta}">
-					<li role="presentation"><a href="#json" aria-controls="json" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.json"/></a></li>
+				<c:if test="${not empty arxiuDetall.metadadesAddicionals}">
+					<li role="presentation"><a href="#metadades" aria-controls="metadades" role="tab" data-toggle="tab"><spring:message code="contingut.arxiu.tab.metadades"/> <span class="badge badge-default">${fn:length(arxiuDetall.metadadesAddicionals)}</span></a></li>
 				</c:if>
 			</ul>
 			<br/>
 			<div class="tab-content">
 				<div role="tabpanel" class="tab-pane active" id="info">
-					<table class="table table-bordered">
+					<table class="table table-striped table-bordered">
 						<tbody>
 							<tr>
-								<td><strong><spring:message code="contingut.arxiu.camp.node.id"/></strong></td>
-								<td>${arxiuInfo.nodeId}</td>
+								<td><strong><spring:message code="contingut.arxiu.camp.identificador"/></strong></td>
+								<td>${arxiuDetall.identificador}</td>
 							</tr>
 							<tr>
 								<td><strong><spring:message code="contingut.arxiu.camp.nom"/></strong></td>
-								<td>${arxiuInfo.nom}</td>
+								<td>${arxiuDetall.nom}</td>
 							</tr>
-							<c:if test="${not empty arxiuInfo.descripcio}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.descripcio"/></strong></td>
-									<td>${arxiuInfo.descripcio}</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.serieDocumental}">
+							<c:if test="${not empty arxiuDetall.serieDocumental}">
 								<tr>
 									<td><strong><spring:message code="contingut.arxiu.camp.serie.doc"/></strong></td>
-									<td>${arxiuInfo.serieDocumental}</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.aplicacio}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.aplicacio"/></strong></td>
-									<td>${arxiuInfo.aplicacio}</td>
+									<td>${arxiuDetall.serieDocumental}</td>
 								</tr>
 							</c:if>
 						</tbody>
 					</table>
-					<table class="table table-bordered">
+					<c:if test="${not empty arxiuDetall.contingutTipusMime or not empty arxiuDetall.contingutArxiuNom}">
+						<div class="panel panel-default">
+							<div class="panel-heading"><h4 style="margin:0"><strong><spring:message code="contingut.arxiu.grup.contingut"/></strong></h4></div>
+							<table class="table table-striped table-bordered">
+							<tbody>
+								<c:if test="${not empty arxiuDetall.contingutTipusMime}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.contingut.tipus.mime"/></strong></td>
+										<td>${arxiuDetall.contingutTipusMime}</td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.contingutArxiuNom}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.contingut.arxiu.nom"/></strong></td>
+										<td>${arxiuDetall.contingutArxiuNom}</td>
+									</tr>
+								</c:if>
+							</tbody>
+							</table>
+						</div>
+					</c:if>
+					<c:if test="${not empty arxiuDetall.eniIdentificador}">
+						<div class="panel panel-default">
+							<div class="panel-heading"><h4 style="margin:0"><strong><spring:message code="contingut.arxiu.grup.metadades"/></strong></h4></div>
+							<table class="table table-striped table-bordered">
+							<tbody>
+								<tr>
+									<td><strong><spring:message code="contingut.arxiu.camp.eni.versio"/></strong></td>
+									<td>${arxiuDetall.eniVersio}</td>
+								</tr>
+								<tr>
+									<td><strong><spring:message code="contingut.arxiu.camp.eni.identificador"/></strong></td>
+									<td>${arxiuDetall.eniIdentificador}</td>
+								</tr>
+								<c:if test="${not empty arxiuDetall.eniOrgans}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.organs"/></strong></td>
+										<td>
+											<c:forEach var="organ" items="${arxiuDetall.eniOrgans}" varStatus="status">
+												${organ}<c:if test="${not status.last}">,</c:if>
+											</c:forEach>
+										</td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniDataObertura}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.data.obertura"/></strong></td>
+										<td><fmt:formatDate value="${arxiuDetall.eniDataObertura}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniClassificacio}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.classificacio"/></strong></td>
+										<td>${arxiuDetall.eniClassificacio}</td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniEstat}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.estat"/></strong></td>
+										<td><spring:message code="expedient.estat.enum.${arxiuDetall.eniEstat}"/></td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniDataCaptura}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.data.captura"/></strong></td>
+										<td><fmt:formatDate value="${arxiuDetall.eniDataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniOrigen}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.origen"/></strong></td>
+										<td><spring:message code="document.nti.origen.enum.${arxiuDetall.eniOrigen}"/></td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniEstatElaboracio}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.estat.elab"/></strong></td>
+										<td><spring:message code="document.nti.estela.enum.${arxiuDetall.eniEstatElaboracio}"/></td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniTipusDocumental}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.tipus.doc"/></strong></td>
+										<td><spring:message code="document.nti.tipdoc.enum.${arxiuDetall.eniTipusDocumental}"/></td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniFormat}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.format.nom"/></strong></td>
+										<td>${arxiuDetall.eniFormat}</td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniExtensio}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.format.ext"/></strong></td>
+										<td>${arxiuDetall.eniExtensio}</td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniInteressats}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.interessats"/></strong></td>
+										<td>
+											<c:forEach var="interessat" items="${arxiuDetall.eniInteressats}" varStatus="status">
+												${interessat}<c:if test="${not status.last}">,</c:if>
+											</c:forEach>
+										</td>
+									</tr>
+								</c:if>
+								<c:if test="${not empty arxiuDetall.eniDocumentOrigenId}">
+									<tr>
+										<td><strong><spring:message code="contingut.arxiu.camp.eni.doc.orig.id"/></strong></td>
+										<td>${arxiuDetall.eniDocumentOrigenId}</td>
+									</tr>
+								</c:if>
+							</tbody>
+							</table>
+						</div>
+					</c:if>
+					<%--table class="table table-bordered">
 						<tbody>
 							<c:if test="${not empty arxiuInfo.eniVersio}">
 								<tr>
@@ -194,12 +284,12 @@ $(document).ready(function() {
 								</tr>
 							</c:if>
 						</tbody>
-					</table>
+					</table--%>
 				</div>
-				<c:if test="${not empty arxiuInfo.fills}">
+				<c:if test="${not empty arxiuDetall.fills}">
 					<div role="tabpanel" class="tab-pane" id="fills">
-						<table class="table table-bordered">
-							<c:forEach var="fill" items="${arxiuInfo.fills}" varStatus="status">
+						<table class="table table-striped table-bordered">
+							<c:forEach var="fill" items="${arxiuDetall.fills}" varStatus="status">
 								<tr>
 									<td width="10%">${fill.tipus}</td>
 									<td>${fill.nom}</td>
@@ -208,19 +298,62 @@ $(document).ready(function() {
 						</table>
 					</div>
 				</c:if>
-				<c:if test="${not empty arxiuInfo.metadades}">
+				<c:if test="${not empty arxiuDetall.firmes}">
+					<div role="tabpanel" class="tab-pane" id="firmes">
+						<c:forEach var="firma" items="${arxiuDetall.firmes}" varStatus="status">
+							<div class="panel panel-default">
+								<div class="panel-heading"><h4 style="margin:0"><strong><spring:message code="contingut.arxiu.grup.firma"/> ${firma.tipus}</strong></h4></div>
+								<table class="table table-striped table-bordered">
+								<tbody>
+									<c:if test="${not empty firma.perfil}">
+										<tr>
+											<td><strong><spring:message code="contingut.arxiu.camp.firma.perfil"/></strong></td>
+											<td>${firma.perfil}</td>
+										</tr>
+									</c:if>
+									<c:if test="${not empty firma.fitxerNom}">
+										<tr>
+											<td><strong><spring:message code="contingut.arxiu.camp.firma.arxiu"/></strong></td>
+											<td>${firma.fitxerNom}</td>
+										</tr>
+									</c:if>
+									<c:if test="${not empty firma.tipusMime}">
+										<tr>
+											<td><strong><spring:message code="contingut.arxiu.camp.firma.tipus.mime"/></strong></td>
+											<td>${firma.tipusMime}</td>
+										</tr>
+									</c:if>
+									<c:if test="${firma.tipus == 'CSV'}">
+										<tr>
+											<td><strong><spring:message code="contingut.arxiu.camp.firma.csv"/></strong></td>
+											<td>${firma.contingutComString}</td>
+										</tr>
+									</c:if>
+									<c:if test="${not empty firma.csvRegulacio}">
+										<tr>
+											<td><strong><spring:message code="contingut.arxiu.camp.firma.csv.reg"/></strong></td>
+											<td>${firma.csvRegulacio}</td>
+										</tr>
+									</c:if>
+								</tbody>
+								</table>
+							</div>
+						</c:forEach>
+					</div>
+				</c:if>
+				<c:if test="${not empty arxiuDetall.metadadesAddicionals}">
 					<div role="tabpanel" class="tab-pane" id="metadades">
-						<table class="table table-bordered">
-							<c:forEach var="metadada" items="${arxiuInfo.metadades}" varStatus="status">
+						<table class="table table-striped table-bordered">
+							<c:forEach var="metadada" items="${arxiuDetall.metadadesAddicionals}" varStatus="status">
 								<tr>
-									<td><strong>${metadada.key}</strong></td>
+									<td width="20%"><strong>${metadada.key}</strong></td>
 									<td>${metadada.value}</td>
 								</tr>
 							</c:forEach>
 						</table>
 					</div>
 				</c:if>
-				<c:if test="${not empty arxiuInfo.aspectes}">
+				<%--c:if test="${not empty arxiuInfo.aspectes}">
 					<div role="tabpanel" class="tab-pane" id="aspectes">
 						<ul class="list-group">
 							<c:forEach var="aspecte" items="${arxiuInfo.aspectes}" varStatus="status">
@@ -274,7 +407,7 @@ $(document).ready(function() {
 							</div>
 						</div>
 					</div>
-				</c:if>
+				</c:if--%>
 			</div>
 		</c:when>
 		<c:otherwise>

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
@@ -34,6 +35,8 @@ import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.ExpedientEstat;
 import es.caib.plugins.arxiu.api.ExpedientMetadades;
 import es.caib.plugins.arxiu.api.Firma;
+import es.caib.plugins.arxiu.api.FirmaPerfil;
+import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
@@ -78,6 +81,8 @@ import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat;
 import es.caib.ripea.plugin.ciutada.CiutadaNotificacioResultat;
 import es.caib.ripea.plugin.ciutada.CiutadaPersona;
 import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
+import es.caib.ripea.plugin.conversio.ConversioArxiu;
+import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.dadesext.Comunitat;
 import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.Municipi;
@@ -106,7 +111,7 @@ public class PluginHelper {
 	private DadesUsuariPlugin dadesUsuariPlugin;
 	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
 	private PortafirmesPlugin portafirmesPlugin;
-	//private ConversioPlugin conversioPlugin;
+	private ConversioPlugin conversioPlugin;
 	private RegistrePlugin registrePlugin;
 	private CiutadaPlugin ciutadaPlugin;
 	private DadesExternesPlugin dadesExternesPlugin;
@@ -940,17 +945,11 @@ public class PluginHelper {
 	public boolean isArxiuPluginActiu() {
 		return getArxiuPlugin() != null;
 	}
-	public boolean arxiuPotGestionarExpedients() {
-		return getPropertyPluginArxiuGestionarExpedients();
-	}
-	public boolean arxiuPotGestionarDocuments() {
-		return getPropertyPluginArxiuGestionarDocuments();
-	}
-	public boolean arxiuPotGestionarCarpetes() {
-		return getPropertyPluginArxiuGestionarCarpetes();
+	public boolean arxiuSuportaVersionsExpedients() {
+		return getArxiuPlugin().suportaVersionatExpedient();
 	}
 	public boolean arxiuSuportaVersionsDocuments() {
-		return getPropertyPluginArxiuDocumentVersionable();
+		return getArxiuPlugin().suportaVersionatDocument();
 	}
 	public boolean arxiuSuportaMetadades() {
 		return getArxiuPlugin().suportaMetadadesNti();
@@ -1285,6 +1284,7 @@ public class PluginHelper {
 								document.getNom(),
 								fitxer,
 								null,
+								null,
 								document.getNtiOrigen(),
 								Arrays.asList(document.getNtiOrgano()),
 								document.getDataCaptura(),
@@ -1311,6 +1311,7 @@ public class PluginHelper {
 								document.getArxiuUuid(),
 								document.getNom(),
 								fitxer,
+								null,
 								null,
 								document.getNtiOrigen(),
 								Arrays.asList(document.getNtiOrgano()),
@@ -1467,48 +1468,7 @@ public class PluginHelper {
 		}
 	}
 
-	public FitxerDto arxiuDocumentImprimible(
-			DocumentEntity document) {
-		String accioDescripcio = "Generar versió imprimible del document";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("id", document.getId().toString());
-		accioParams.put("títol", document.getNom());
-		long t0 = System.currentTimeMillis();
-		try {
-			DocumentContingut versioImprimible = getArxiuPlugin().documentImprimible(
-					document.getArxiuUuid());
-			FitxerDto fitxer = new FitxerDto();
-			fitxer.setNom(versioImprimible.getArxiuNom());
-			fitxer.setContingut(versioImprimible.getContingut());
-			fitxer.setContentType(versioImprimible.getTipusMime());
-			if (versioImprimible.getContingut() != null) {
-				fitxer.setTamany(versioImprimible.getContingut().length);
-			}
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_ARXIU,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return fitxer;
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_ARXIU,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_ARXIU,
-					errorDescripcio,
-					ex);
-		}
-	}
-
-	public String arxiuDocumentMarcarDefinitiu(
+	public String arxiuDocumentGuardarPdfFirmat(
 			DocumentEntity document,
 			FitxerDto fitxerPdfFirmat) {
 		// El paràmetre custodiaTipus es reb sempre com a paràmetre però només te
@@ -1526,6 +1486,7 @@ public class PluginHelper {
 					toArxiuDocument(
 							document.getArxiuUuid(),
 							document.getNom(),
+							null,
 							fitxerPdfFirmat,
 							null,
 							document.getNtiOrigen(),
@@ -1910,7 +1871,10 @@ public class PluginHelper {
 		FitxerDto fitxerConvertit = conversioConvertirPdfIEstamparUrl(
 				fitxerOriginal,
 				urlCustodia);*/
-		FitxerDto fitxerConvertit = arxiuDocumentImprimible(document);
+		FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(document);
+		FitxerDto fitxerConvertit = this.conversioConvertirPdf(
+				fitxerOriginal,
+				null);
 		portafirmesDocument.setArxiuNom(
 				fitxerConvertit.getNom());
 		portafirmesDocument.setArxiuContingut(
@@ -2109,14 +2073,14 @@ public class PluginHelper {
 		return !getPortafirmesPlugin().isCustodiaAutomatica();
 	}
 
-	/*public String conversioConvertirPdfArxiuNom(
+	public String conversioConvertirPdfArxiuNom(
 			String nomOriginal) {
 		return getConversioPlugin().getNomArxiuConvertitPdf(nomOriginal);
 	}
 
-	public FitxerDto conversioConvertirPdfIEstamparUrl(
+	public FitxerDto conversioConvertirPdf(
 			FitxerDto original,
-			String url) {
+			String urlPerEstampar) {
 		String accioDescripcio = "Conversió de document a PDF";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("arxiuOriginalNom", original.getNom());
@@ -2127,7 +2091,7 @@ public class PluginHelper {
 					new ConversioArxiu(
 							original.getNom(),
 							original.getContingut()),
-							url);
+					urlPerEstampar);
 			accioParams.put("arxiuConvertitNom", convertit.getArxiuNom());
 			accioParams.put("arxiuConvertitTamany", new Integer(convertit.getArxiuContingut().length).toString());
 			integracioHelper.addAccioOk(
@@ -2157,7 +2121,7 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 		}
-	}*/
+	}
 
 	public RegistreAnotacioResposta registreEntradaConsultar(
 			String identificador,
@@ -2744,11 +2708,12 @@ public class PluginHelper {
 		expedient.setMetadades(metadades);
 		return expedient;
 	}
-	
+
 	private Document toArxiuDocument(
 			String identificador,
 			String nom,
 			FitxerDto fitxer,
+			FitxerDto firmaPdf,
 			String ntiIdentificador,
 			NtiOrigenEnumDto ntiOrigen,
 			List<String> ntiOrgans,
@@ -2860,85 +2825,129 @@ public class PluginHelper {
 			break;
 		}
 		metadades.setTipusDocumental(tipusDocumental);
-		DocumentFormat format = null;
 		DocumentExtensio extensio = null;
 		DocumentContingut contingut = null;
 		if (fitxer != null && !enPaper) {
 			String fitxerExtensio = fitxer.getExtensio();
 			String extensioAmbPunt = (fitxerExtensio.startsWith(".")) ? fitxerExtensio.toLowerCase() : "." + fitxerExtensio.toLowerCase();
 			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
-			switch (extensio) {
-			case AVI:
-				format = DocumentFormat.AVI;
-			case CSS:
-				format = DocumentFormat.CSS;
-			case CSV:
-				format = DocumentFormat.CSV;
-			case DOCX:
-				format = DocumentFormat.SOXML;
-			case GML:
-				format = DocumentFormat.GML;
-			case GZ:
-				format = DocumentFormat.GZIP;
-			case HTM:
-				format = DocumentFormat.XHTML; // HTML o XHTML!!!
-			case HTML:
-				format = DocumentFormat.XHTML; // HTML o XHTML!!!
-			case JPEG:
-				format = DocumentFormat.JPEG;
-			case JPG:
-				format = DocumentFormat.JPEG;
-			case MHT:
-				format = DocumentFormat.MHTML;
-			case MHTML:
-				format = DocumentFormat.MHTML;
-			case MP3:
-				format = DocumentFormat.MP3;
-			case MP4:
-				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
-			case MPEG:
-				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
-			case ODG:
-				format = DocumentFormat.OASIS12;
-			case ODP:
-				format = DocumentFormat.OASIS12;
-			case ODS:
-				format = DocumentFormat.OASIS12;
-			case ODT:
-				format = DocumentFormat.OASIS12;
-			case OGA:
-				format = DocumentFormat.OGG;
-			case OGG:
-				format = DocumentFormat.OGG;
-			case PDF:
-				format = DocumentFormat.PDF; // PDF o PDFA!!!
-			case PNG:
-				format = DocumentFormat.PNG;
-			case PPTX:
-				format = DocumentFormat.SOXML;
-			case RTF:
-				format = DocumentFormat.RTF;
-			case SVG:
-				format = DocumentFormat.SVG;
-			case TIFF:
-				format = DocumentFormat.TIFF;
-			case TXT:
-				format = DocumentFormat.TXT;
-			case WEBM:
-				format = DocumentFormat.WEBM;
-			case XLSX:
-				format = DocumentFormat.SOXML;
-			case ZIP:
-				format = DocumentFormat.ZIP;
-			}
 			contingut = new DocumentContingut();
 			contingut.setArxiuNom(fitxer.getNom());
 			contingut.setContingut(fitxer.getContingut());
 			contingut.setTipusMime(fitxer.getContentType());
 			document.setContingut(contingut);
 		}
-		metadades.setFormat(format);
-		metadades.setExtensio(extensio);
+		if (firmaPdf != null) {
+			Firma firmaPades = new Firma();
+			firmaPades.setTipus(FirmaTipus.PADES);
+			firmaPades.setPerfil(FirmaPerfil.EPES);
+			firmaPades.setTipusMime("application/pdf");
+			firmaPades.setFitxerNom(firmaPdf.getNom());
+			firmaPades.setContingut(firmaPdf.getContingut());
+			document.setFirmes(Arrays.asList(firmaPades));
+			extensio = DocumentExtensio.PDF;
+		}
+		if (extensio != null) {
+			metadades.setExtensio(extensio);
+			DocumentFormat format = null;
+			switch (extensio) {
+			case AVI:
+				format = DocumentFormat.AVI;
+				break;
+			case CSS:
+				format = DocumentFormat.CSS;
+				break;
+			case CSV:
+				format = DocumentFormat.CSV;
+				break;
+			case DOCX:
+				format = DocumentFormat.SOXML;
+				break;
+			case GML:
+				format = DocumentFormat.GML;
+				break;
+			case GZ:
+				format = DocumentFormat.GZIP;
+				break;
+			case HTM:
+				format = DocumentFormat.XHTML; // HTML o XHTML!!!
+				break;
+			case HTML:
+				format = DocumentFormat.XHTML; // HTML o XHTML!!!
+				break;
+			case JPEG:
+				format = DocumentFormat.JPEG;
+				break;
+			case JPG:
+				format = DocumentFormat.JPEG;
+				break;
+			case MHT:
+				format = DocumentFormat.MHTML;
+				break;
+			case MHTML:
+				format = DocumentFormat.MHTML;
+				break;
+			case MP3:
+				format = DocumentFormat.MP3;
+				break;
+			case MP4:
+				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
+				break;
+			case MPEG:
+				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
+				break;
+			case ODG:
+				format = DocumentFormat.OASIS12;
+				break;
+			case ODP:
+				format = DocumentFormat.OASIS12;
+				break;
+			case ODS:
+				format = DocumentFormat.OASIS12;
+				break;
+			case ODT:
+				format = DocumentFormat.OASIS12;
+				break;
+			case OGA:
+				format = DocumentFormat.OGG;
+				break;
+			case OGG:
+				format = DocumentFormat.OGG;
+				break;
+			case PDF:
+				format = DocumentFormat.PDF; // PDF o PDFA!!!
+				break;
+			case PNG:
+				format = DocumentFormat.PNG;
+				break;
+			case PPTX:
+				format = DocumentFormat.SOXML;
+				break;
+			case RTF:
+				format = DocumentFormat.RTF;
+				break;
+			case SVG:
+				format = DocumentFormat.SVG;
+				break;
+			case TIFF:
+				format = DocumentFormat.TIFF;
+				break;
+			case TXT:
+				format = DocumentFormat.TXT;
+				break;
+			case WEBM:
+				format = DocumentFormat.WEBM;
+				break;
+			case XLSX:
+				format = DocumentFormat.SOXML;
+				break;
+			case ZIP:
+				format = DocumentFormat.ZIP;
+				break;
+			}
+			metadades.setFormat(format);
+		}
+		metadades.setOrgans(ntiOrgans);
 		metadades.setSerieDocumental(serieDocumental);
 		document.setMetadades(metadades);
 		document.setContingut(contingut);
@@ -2959,8 +2968,6 @@ public class PluginHelper {
 		String extensioAmbPunt = (extensio.startsWith(".")) ? extensio.toLowerCase() : "." + extensio.toLowerCase();
 		return DocumentExtensio.toEnum(extensioAmbPunt);
 	}
-
-	
 
 	/*private ArxiuCapsalera generarCapsaleraArxiu(
 			ContingutEntity contingut) {
@@ -3269,7 +3276,18 @@ public class PluginHelper {
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					arxiuPlugin = (IArxiuPlugin)clazz.newInstance();
+					if (PropertiesHelper.getProperties().isLlegirSystem()) {
+						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+								String.class).newInstance(
+								"es.caib.ripea.");
+					} else {
+						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+								String.class,
+								Properties.class).newInstance(
+								"es.caib.ripea.",
+								PropertiesHelper.getProperties().findAll());
+					}
+					
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_ARXIU,
@@ -3297,7 +3315,7 @@ public class PluginHelper {
 		}
 		return portafirmesPlugin;
 	}
-	/*private ConversioPlugin getConversioPlugin() {
+	private ConversioPlugin getConversioPlugin() {
 		if (conversioPlugin == null) {
 			String pluginClass = getPropertyPluginConversio();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -3314,7 +3332,7 @@ public class PluginHelper {
 		}
 		return conversioPlugin;
 	}
-	private CustodiaPlugin getCustodiaPlugin() {
+	/*private CustodiaPlugin getCustodiaPlugin() {
 		if (custodiaPlugin == null) {
 			String pluginClass = getPropertyPluginCustodia();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -3401,9 +3419,9 @@ public class PluginHelper {
 	private String getPropertyPluginPortafirmes() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.portafirmes.class");
 	}
-	/*private String getPropertyPluginConversio() {
+	private String getPropertyPluginConversio() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.conversio.class");
-	}*/
+	}
 	private String getPropertyPluginRegistre() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.registre.class");
 	}
@@ -3414,18 +3432,6 @@ public class PluginHelper {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.dadesext.class");
 	}
 
-	private boolean getPropertyPluginArxiuGestionarExpedients() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.gestionar.expedients");
-	}
-	private boolean getPropertyPluginArxiuGestionarDocuments() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.gestionar.documents");
-	}
-	private boolean getPropertyPluginArxiuGestionarCarpetes() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.gestionar.carpetes");
-	}
-	private boolean getPropertyPluginArxiuDocumentVersionable() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.arxiu.document.versionable");
-	}
 	private String getPropertyPluginArxiuEscriptoriClassificacio() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.escriptori.classificacio");
 	}

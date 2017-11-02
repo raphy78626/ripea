@@ -3,7 +3,6 @@
  */
 package es.caib.ripea.core.api.dto;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +12,7 @@ import java.util.Map;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuDetallDto implements Serializable {
-
-	private String identificador;
-	private String nom;
+public class ArxiuDetallDto extends ArxiuContingutDto {
 
 	private String eniVersio;
 	private String eniIdentificador;
@@ -24,6 +20,7 @@ public class ArxiuDetallDto implements Serializable {
 	private Date eniDataObertura;
 	private String eniClassificacio;
 	private ExpedientEstatEnumDto eniEstat;
+	private List<String> eniOrgans;
 	private List<String> eniInteressats;
 	private Date eniDataCaptura;
 	private DocumentNtiEstadoElaboracionEnumDto eniEstatElaboracio;
@@ -31,90 +28,16 @@ public class ArxiuDetallDto implements Serializable {
 	private String eniFormat;
 	private String eniExtensio;
 	private String eniDocumentOrigenId;
-
-	protected Map<String, Object> metadadesAddicionals;
-
-	// firmes
-	// fills
-	
-	private String descripcio;
 	private String serieDocumental;
-	private String aplicacio;
 
-	private String documentVersioId;
-	private String documentVersioNodeId;
+	private Map<String, Object> metadadesAddicionals;
 
-	private String eniVersio;
-	private String eniIdentificador;
-	private NtiOrigenEnumDto eniOrigen;
-	private Date eniDataObertura;
-	private String eniClassificacio;
-	private ExpedientEstatEnumDto eniEstat;
-	private List<String> eniInteressats;
-	private Date eniDataCaptura;
-	private DocumentNtiEstadoElaboracionEnumDto eniEstatElaboracio;
-	private DocumentNtiTipoDocumentalEnumDto eniTipusDocumental;
-	private String eniFormatNom;
-	private String eniFormatExtensio;
-	private String eniDocumentOrigenId;
-	private List<String> eniOrgans;
-	private List<String> eniFirmaTipus;
-	private List<String> eniFirmaCsv;
-	private List<String> eniFirmaCsvDefinicio;
+	private String contingutTipusMime;
+	private String contingutArxiuNom;
+	
+	private List<ArxiuFirmaDto> firmes;
+	private List<ArxiuContingutDto> fills;
 
-	protected Map<String, Object> metadades;
-	protected List<String> aspectes;
-	protected List<ArxiuPluginNodeFillDto> fills;
-
-	protected List<ArxiuPluginDocumentContingutDto> continguts;
-
-	private String codiFontPeticio;
-	private String codiFontResposta;
-
-
-
-	public String getNodeId() {
-		return nodeId;
-	}
-	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-	public String getDescripcio() {
-		return descripcio;
-	}
-	public void setDescripcio(String descripcio) {
-		this.descripcio = descripcio;
-	}
-	public String getSerieDocumental() {
-		return serieDocumental;
-	}
-	public void setSerieDocumental(String serieDocumental) {
-		this.serieDocumental = serieDocumental;
-	}
-	public String getAplicacio() {
-		return aplicacio;
-	}
-	public void setAplicacio(String aplicacio) {
-		this.aplicacio = aplicacio;
-	}
-	public String getDocumentVersioId() {
-		return documentVersioId;
-	}
-	public void setDocumentVersioId(String documentVersioId) {
-		this.documentVersioId = documentVersioId;
-	}
-	public String getDocumentVersioNodeId() {
-		return documentVersioNodeId;
-	}
-	public void setDocumentVersioNodeId(String documentVersioNodeId) {
-		this.documentVersioNodeId = documentVersioNodeId;
-	}
 	public String getEniVersio() {
 		return eniVersio;
 	}
@@ -151,6 +74,12 @@ public class ArxiuDetallDto implements Serializable {
 	public void setEniEstat(ExpedientEstatEnumDto eniEstat) {
 		this.eniEstat = eniEstat;
 	}
+	public List<String> getEniOrgans() {
+		return eniOrgans;
+	}
+	public void setEniOrgans(List<String> eniOrgans) {
+		this.eniOrgans = eniOrgans;
+	}
 	public List<String> getEniInteressats() {
 		return eniInteressats;
 	}
@@ -175,17 +104,17 @@ public class ArxiuDetallDto implements Serializable {
 	public void setEniTipusDocumental(DocumentNtiTipoDocumentalEnumDto eniTipusDocumental) {
 		this.eniTipusDocumental = eniTipusDocumental;
 	}
-	public String getEniFormatNom() {
-		return eniFormatNom;
+	public String getEniFormat() {
+		return eniFormat;
 	}
-	public void setEniFormatNom(String eniFormatNom) {
-		this.eniFormatNom = eniFormatNom;
+	public void setEniFormat(String eniFormat) {
+		this.eniFormat = eniFormat;
 	}
-	public String getEniFormatExtensio() {
-		return eniFormatExtensio;
+	public String getEniExtensio() {
+		return eniExtensio;
 	}
-	public void setEniFormatExtensio(String eniFormatExtensio) {
-		this.eniFormatExtensio = eniFormatExtensio;
+	public void setEniExtensio(String eniExtensio) {
+		this.eniExtensio = eniExtensio;
 	}
 	public String getEniDocumentOrigenId() {
 		return eniDocumentOrigenId;
@@ -193,66 +122,41 @@ public class ArxiuDetallDto implements Serializable {
 	public void setEniDocumentOrigenId(String eniDocumentOrigenId) {
 		this.eniDocumentOrigenId = eniDocumentOrigenId;
 	}
-	public List<String> getEniOrgans() {
-		return eniOrgans;
+	public String getSerieDocumental() {
+		return serieDocumental;
 	}
-	public void setEniOrgans(List<String> eniOrgans) {
-		this.eniOrgans = eniOrgans;
+	public void setSerieDocumental(String serieDocumental) {
+		this.serieDocumental = serieDocumental;
 	}
-	public List<String> getEniFirmaTipus() {
-		return eniFirmaTipus;
+	public Map<String, Object> getMetadadesAddicionals() {
+		return metadadesAddicionals;
 	}
-	public void setEniFirmaTipus(List<String> eniFirmaTipus) {
-		this.eniFirmaTipus = eniFirmaTipus;
+	public void setMetadadesAddicionals(Map<String, Object> metadadesAddicionals) {
+		this.metadadesAddicionals = metadadesAddicionals;
 	}
-	public List<String> getEniFirmaCsv() {
-		return eniFirmaCsv;
+	public String getContingutTipusMime() {
+		return contingutTipusMime;
 	}
-	public void setEniFirmaCsv(List<String> eniFirmaCsv) {
-		this.eniFirmaCsv = eniFirmaCsv;
+	public void setContingutTipusMime(String contingutTipusMime) {
+		this.contingutTipusMime = contingutTipusMime;
 	}
-	public List<String> getEniFirmaCsvDefinicio() {
-		return eniFirmaCsvDefinicio;
+	public String getContingutArxiuNom() {
+		return contingutArxiuNom;
 	}
-	public void setEniFirmaCsvDefinicio(List<String> eniFirmaCsvDefinicio) {
-		this.eniFirmaCsvDefinicio = eniFirmaCsvDefinicio;
+	public void setContingutArxiuNom(String contingutArxiuNom) {
+		this.contingutArxiuNom = contingutArxiuNom;
 	}
-	public Map<String, Object> getMetadades() {
-		return metadades;
+	public List<ArxiuFirmaDto> getFirmes() {
+		return firmes;
 	}
-	public void setMetadades(Map<String, Object> metadades) {
-		this.metadades = metadades;
+	public void setFirmes(List<ArxiuFirmaDto> firmes) {
+		this.firmes = firmes;
 	}
-	public List<String> getAspectes() {
-		return aspectes;
-	}
-	public void setAspectes(List<String> aspectes) {
-		this.aspectes = aspectes;
-	}
-	public List<ArxiuPluginNodeFillDto> getFills() {
+	public List<ArxiuContingutDto> getFills() {
 		return fills;
 	}
-	public void setFills(List<ArxiuPluginNodeFillDto> fills) {
+	public void setFills(List<ArxiuContingutDto> fills) {
 		this.fills = fills;
-	}
-	public List<ArxiuPluginDocumentContingutDto> getContinguts() {
-		return continguts;
-	}
-	public void setContinguts(List<ArxiuPluginDocumentContingutDto> continguts) {
-		this.continguts = continguts;
-	}
-
-	public String getCodiFontPeticio() {
-		return codiFontPeticio;
-	}
-	public void setCodiFontPeticio(String codiFontPeticio) {
-		this.codiFontPeticio = codiFontPeticio;
-	}
-	public String getCodiFontResposta() {
-		return codiFontResposta;
-	}
-	public void setCodiFontResposta(String codiFontResposta) {
-		this.codiFontResposta = codiFontResposta;
 	}
 
 	private static final long serialVersionUID = -2124829280908976623L;

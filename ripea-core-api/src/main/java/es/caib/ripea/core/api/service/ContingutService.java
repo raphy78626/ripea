@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.ripea.core.api.dto.ArxiuPluginInfoDto;
+import es.caib.ripea.core.api.dto.ArxiuDetallDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
@@ -428,7 +428,7 @@ public interface ContingutService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public ArxiuPluginInfoDto getArxiuInfo(
+	public ArxiuDetallDto getArxiuDetall(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
 

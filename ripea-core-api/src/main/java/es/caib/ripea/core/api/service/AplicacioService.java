@@ -4,7 +4,7 @@
 package es.caib.ripea.core.api.service;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -165,9 +165,9 @@ public interface AplicacioService {
 	 * Retorna els valors dels paràmetres de configuració de l'aplicació
 	 * que tenen un determinat prefix.
 	 * 
-	 * @return el valor del paràmetre.
+	 * @return els valors com a un objecte Properties.
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
-	public Map<String, String> propertyFindByPrefix(String prefix);
+	public Properties propertyFindByPrefix(String prefix);
 
 }

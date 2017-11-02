@@ -756,7 +756,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				false,
 				false);
-		if (pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuPotGestionarExpedients()) {
+		if (pluginHelper.isArxiuPluginActiu()) {
 			pluginHelper.arxiuExpedientTancar(expedient);
 		}
 	}
@@ -804,7 +804,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null,
 				false,
 				false);
-		if (pluginHelper.isArxiuPluginActiu() && pluginHelper.arxiuPotGestionarExpedients()) {
+		if (pluginHelper.isArxiuPluginActiu()) {
 			pluginHelper.arxiuExpedientReobrir(expedient);
 		}
 	}
