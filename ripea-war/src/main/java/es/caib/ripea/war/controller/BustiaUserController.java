@@ -82,6 +82,9 @@ public class BustiaUserController extends BaseUserController {
 		
 		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId()));
 		
+		model.addAttribute("potCrearExpedient", metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()).size() > 0);
+		model.addAttribute("potModificarExpedient", metaExpedientService.findActiusAmbEntitatPerModificacio(entitatActual.getId()).size() > 0);
+		
 		return "bustiaUserList";
 	}
 	
