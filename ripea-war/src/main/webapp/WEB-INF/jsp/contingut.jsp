@@ -611,6 +611,23 @@ $(document).ready(function() {
 										<span class="fa fa-th-list"></span>
 									</a>
 								</div>
+								<c:if test="${contingut.escriptori}">
+									<div id="boto-accions-massives" class="btn-group">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+											<span class="fa fa-cogs"></span>&nbsp;
+											<spring:message code="contingut.boto.accions.massives"/>&nbsp;
+											<span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu text-left" role="menu">
+											<li>
+												<a href="<c:url value="/massiu/portafirmes"/>">
+													<span class="fa fa-envelope"></span>
+													<spring:message code="contingut.boto.accio.massiva.portafirmes"/>
+												</a>
+											</li>
+										</ul>
+									</div>
+								</c:if>
 								<c:if test="${(contingut.escriptori or not empty contingut.escriptoriPare) and (contingut.escriptori or contingut.carpeta or ((contingut.expedient or contingut.document) and potModificarContingut))}">
 									<div id="botons-crear-contingut" class="btn-group">
 										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contingut.boto.crear.contingut"/>&nbsp;<span class="caret"></span></button>
@@ -623,7 +640,7 @@ $(document).ready(function() {
 										</ul>
 									</div>
 								</c:if>
-									</div>
+							</div>
 							<rip:blocContenidorContingut contingut="${contingut}" mostrarExpedients="${true}" mostrarNoExpedients="${true}"/>
 						</c:otherwise>
 					</c:choose>

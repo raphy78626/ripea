@@ -23,8 +23,8 @@ public class BackofficeFacadeException
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public BackofficeFacadeException(String message, es.caib.bantel.ws.v2.model.backofficefacade.BackofficeFacadeException faultInfo) {
         super(message);
@@ -33,9 +33,9 @@ public class BackofficeFacadeException
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public BackofficeFacadeException(String message, es.caib.bantel.ws.v2.model.backofficefacade.BackofficeFacadeException faultInfo, Throwable cause) {
         super(message, cause);

@@ -35,11 +35,11 @@ public interface BackofficeFacade {
 
     /**
      * 
-     * @param identificadorTramite
-     * @param procesada
-     * @param identificadorProcedimiento
      * @param hasta
      * @param desde
+     * @param identificadorProcedimiento
+     * @param procesada
+     * @param identificadorTramite
      * @return
      *     returns es.caib.bantel.ws.v2.model.referenciaentrada.ReferenciasEntrada
      * @throws BackofficeFacadeException
@@ -64,8 +64,8 @@ public interface BackofficeFacade {
 
     /**
      * 
-     * @param numeroEntrada
      * @param resultado
+     * @param numeroEntrada
      * @param resultadoProcesamiento
      * @throws BackofficeFacadeException
      */

@@ -5,7 +5,7 @@ package es.caib.ripea.core.service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.Resource;
 
@@ -213,7 +213,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 	}
 
 	@Override
-	public Map<String, String> propertyFindByPrefix(String prefix) {
+	public Properties propertyFindByPrefix(String prefix) {
 		logger.debug("Consulta del valor dels properties amb prefix (" +
 				"prefix=" + prefix + ")");
 		return PropertiesHelper.getProperties().findByPrefix(prefix);

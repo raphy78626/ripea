@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
@@ -83,7 +83,7 @@ public class DocumentEntity extends NodeEntity {
 	private String ntiOrgano;
 	@Column(name = "nti_origen", length = 2, nullable = false)
 	@Enumerated(EnumType.STRING)
-	private DocumentNtiOrigenEnumDto ntiOrigen;
+	private NtiOrigenEnumDto ntiOrigen;
 	@Column(name = "nti_estela", length = 4, nullable = false)
 	@Enumerated(EnumType.STRING)
 	private DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion;
@@ -153,7 +153,7 @@ public class DocumentEntity extends NodeEntity {
 	public String getNtiOrgano() {
 		return ntiOrgano;
 	}
-	public DocumentNtiOrigenEnumDto getNtiOrigen() {
+	public NtiOrigenEnumDto getNtiOrigen() {
 		return ntiOrigen;
 	}
 	public DocumentNtiEstadoElaboracionEnumDto getNtiEstadoElaboracion() {
@@ -186,7 +186,7 @@ public class DocumentEntity extends NodeEntity {
 			String ubicacio,
 			Date dataCaptura,
 			String ntiOrgano,
-			DocumentNtiOrigenEnumDto ntiOrigen,
+			NtiOrigenEnumDto ntiOrigen,
 			DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion,
 			DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental,
 			String ntiIdDocumentoOrigen,
@@ -216,7 +216,7 @@ public class DocumentEntity extends NodeEntity {
 			String ntiVersion,
 			String ntiIdentificador,
 			String ntiOrgano,
-			DocumentNtiOrigenEnumDto ntiOrigen,
+			NtiOrigenEnumDto ntiOrigen,
 			DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion,
 			DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental,
 			String ntiIdDocumentoOrigen,
@@ -270,7 +270,7 @@ public class DocumentEntity extends NodeEntity {
 			Date dataCaptura,
 			String ntiVersion,
 			String ntiOrgano,
-			DocumentNtiOrigenEnumDto ntiOrigen,
+			NtiOrigenEnumDto ntiOrigen,
 			DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion,
 			DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental,
 			ExpedientEntity expedient,
@@ -303,7 +303,7 @@ public class DocumentEntity extends NodeEntity {
 				Date dataCaptura,
 				String ntiVersion,
 				String ntiOrgano,
-				DocumentNtiOrigenEnumDto ntiOrigen,
+				NtiOrigenEnumDto ntiOrigen,
 				DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion,
 				DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental,
 				ExpedientEntity expedient,

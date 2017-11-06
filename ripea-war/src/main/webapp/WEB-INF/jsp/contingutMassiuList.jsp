@@ -98,30 +98,30 @@
 	<form:form action="" method="post" cssClass="well" commandName="contingutMassiuFiltreCommand">
 		<div class="row">
 			<div class="col-md-4">
-				<rip:inputSelect name="tipusElement"  optionEnum="ContingutTipusEnumDto" placeholderKey="execucions.massives.list.filtre.tipuselement" emptyOption="true" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarTipusElement}" netejar="${not contingutMassiuFiltreCommand.bloquejarTipusElement}"/>
+				<rip:inputSelect name="tipusElement"  optionEnum="ContingutTipusEnumDto" placeholderKey="accio.massiva.list.filtre.tipuselement" emptyOption="true" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarTipusElement}" netejar="${not contingutMassiuFiltreCommand.bloquejarTipusElement}"/>
 			</div>
 			<div class="col-md-4">
-				<rip:inputSelect name="tipusExpedient" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="execucions.massives.list.filtre.tipusexpedient" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaExpedient}"/>
+				<rip:inputSelect name="tipusExpedient" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="accio.massiva.list.filtre.tipusexpedient" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaExpedient}"/>
 			</div>
 			<div class="col-md-4">
-				<rip:inputSelect name="expedientId" optionItems="${expedients}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="execucions.massives.list.filtre.expedient" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaDocument}"/>
+				<rip:inputSelect name="expedientId" optionItems="${expedients}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="accio.massiva.list.filtre.expedient" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaDocument}"/>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-md-4">
-				<rip:inputSelect name="tipusDocument" optionItems="${metaDocuments}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="execucions.massives.list.filtre.tipusdocument" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaDocument}"/>
+				<rip:inputSelect name="tipusDocument" optionItems="${metaDocuments}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="accio.massiva.list.filtre.tipusdocument" inline="true" disabled="${contingutMassiuFiltreCommand.bloquejarMetaDocument}"/>
 			</div>
 			<div class="col-md-4">
-				<rip:inputText name="nom" inline="true" placeholderKey="execucions.massives.list.filtre.nom"/>
+				<rip:inputText name="nom" inline="true" placeholderKey="accio.massiva.list.filtre.nom"/>
 			</div>
 <!-- 			<div class="col-md-4"> -->
-<%-- 				<rip:inputSelect name="metaDada" optionItems="${metaDades}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="execucions.massives.list.filtre.metadada" inline="true" disabled="${not empty contingutMassiuFiltreCommand.bloquejarTipusElement}"/> --%>
+<%-- 				<rip:inputSelect name="metaDada" optionItems="${metaDades}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="accio.massiva.list.filtre.metadada" inline="true" disabled="${not empty contingutMassiuFiltreCommand.bloquejarTipusElement}"/> --%>
 <!-- 			</div> -->
 			<div class="col-md-2">
-				<rip:inputDate name="dataInici" inline="true" placeholderKey="execucions.massives.list.filtre.datainici"/>
+				<rip:inputDate name="dataInici" inline="true" placeholderKey="accio.massiva.list.filtre.datainici"/>
 			</div>
 			<div class="col-md-2">
-				<rip:inputDate name="dataFi" inline="true" placeholderKey="execucions.massives.list.filtre.datafi"/>
+				<rip:inputDate name="dataFi" inline="true" placeholderKey="accio.massiva.list.filtre.datafi"/>
 			</div>
 		</div>
 		<div class="row">
@@ -158,7 +158,7 @@
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
 				<th data-col-name="tipus" data-orderable="true" width="15%" data-template="#cellTipusTemplate">
-					<spring:message code="execucions.massives.list.column.tipuselement"/>
+					<spring:message code="accio.massiva.list.column.tipuselement"/>
 					<script id="cellTipusTemplate" type="text/x-jsrender">
 						{{if tipus == 'DOCUMENT'}}
 							<span class="fa fa-file-text-o"></span> <spring:message code="contingut.tipus.enum.DOCUMENT"/>
@@ -166,7 +166,7 @@
 					</script>
 				</th>
 				<th data-col-name="path" data-template="#cellPathTemplate" data-orderable="false">
-					<spring:message code="execucions.massives.list.column.ubicacio"/>
+					<spring:message code="accio.massiva.list.column.ubicacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{for path}}/
 							{{if escriptori}}<span class="fa ${iconaEscriptori}" title="<spring:message code="contingut.path.escriptori"/>"></span>
@@ -179,8 +179,8 @@
 						{{/for}}
 					</script>
 				</th>
-				<th data-col-name="nom" data-ordenable="true"><spring:message code="execucions.massives.list.column.nom"/></th>
-				<th data-col-name="createdDate" data-ordenable="true" data-converter="datetime" width="15%"><spring:message code="execucions.massives.list.column.datacreacio"/></th>
+				<th data-col-name="nom" data-ordenable="true"><spring:message code="accio.massiva.list.column.nom"/></th>
+				<th data-col-name="createdDate" data-ordenable="true" data-converter="datetime" width="15%"><spring:message code="accio.massiva.list.column.datacreacio"/></th>
 <%-- 				<th data-col-name="nomPropietariEscriptoriPare" data-orderable="false" width="20%"><spring:message code="expedient.list.user.columna.agafatper"/></th> --%>
 			</tr>
 		</thead>

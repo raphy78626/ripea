@@ -24,8 +24,8 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _DatosDocumentoTelematicoCodigoDocumentoCustodia_QNAME = new QName("", "codigoDocumentoCustodia");
     private final static QName _DatosDocumentoTelematicoReferenciaGestorDocumental_QNAME = new QName("", "referenciaGestorDocumental");
+    private final static QName _DatosDocumentoTelematicoCodigoDocumentoCustodia_QNAME = new QName("", "codigoDocumentoCustodia");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: es.caib.bantel.ws.v2.model.datosdocumentotelematico
@@ -46,18 +46,18 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "", name = "codigoDocumentoCustodia", scope = DatosDocumentoTelematico.class)
-    public JAXBElement<String> createDatosDocumentoTelematicoCodigoDocumentoCustodia(String value) {
-        return new JAXBElement<String>(_DatosDocumentoTelematicoCodigoDocumentoCustodia_QNAME, String.class, DatosDocumentoTelematico.class, value);
+    @XmlElementDecl(namespace = "", name = "referenciaGestorDocumental", scope = DatosDocumentoTelematico.class)
+    public JAXBElement<String> createDatosDocumentoTelematicoReferenciaGestorDocumental(String value) {
+        return new JAXBElement<String>(_DatosDocumentoTelematicoReferenciaGestorDocumental_QNAME, String.class, DatosDocumentoTelematico.class, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "", name = "referenciaGestorDocumental", scope = DatosDocumentoTelematico.class)
-    public JAXBElement<String> createDatosDocumentoTelematicoReferenciaGestorDocumental(String value) {
-        return new JAXBElement<String>(_DatosDocumentoTelematicoReferenciaGestorDocumental_QNAME, String.class, DatosDocumentoTelematico.class, value);
+    @XmlElementDecl(namespace = "", name = "codigoDocumentoCustodia", scope = DatosDocumentoTelematico.class)
+    public JAXBElement<String> createDatosDocumentoTelematicoCodigoDocumentoCustodia(String value) {
+        return new JAXBElement<String>(_DatosDocumentoTelematicoCodigoDocumentoCustodia_QNAME, String.class, DatosDocumentoTelematico.class, value);
     }
 
 }

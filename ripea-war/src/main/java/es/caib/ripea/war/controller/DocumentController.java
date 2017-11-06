@@ -213,8 +213,7 @@ public class DocumentController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		FitxerDto convertit = documentService.convertirPdfPerFirmaClient(
 				entitatActual.getId(),
-				documentId,
-				false);
+				documentId);
 		writeFileToResponse(
 				convertit.getNom(),
 				convertit.getContingut(),
@@ -322,19 +321,16 @@ public class DocumentController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long documentId,
 			Model model) {
-		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		DocumentDto document = documentService.findById(
 				entitatActual.getId(),
 				documentId);
 		model.addAttribute("document", document);
-		
 		PassarelaFirmaEnviarCommand command = new PassarelaFirmaEnviarCommand();
 		command.setMotiu(getMessage(
 						request, 
 						"contenidor.document.portafirmes.camp.motiu.default") +
 				" [" + document.getExpedientPare().getNom() + "]");
-		
 		model.addAttribute(command);
 		return "passarelaFirmaForm";
 	}
@@ -353,23 +349,41 @@ public class DocumentController extends BaseUserController {
 					model);
 			return "passarelaFirmaForm";
 		}
-		FitxerDto fitxerPerFirmar = documentService.convertirPdfPerFirmaClient(
-				entitatActual.getId(),
-				documentId,
-				true);
-		UsuariDto usuariActual = aplicacioService.getUsuariActual();
-		String modalStr = (ModalHelper.isModal(request)) ? "/modal" : "";
-		String procesFirmaUrl = passarelaFirmaHelper.iniciarProcesDeFirma(
-				request,
-				fitxerPerFirmar,
-				usuariActual.getNif(),
-				command.getMotiu(),
-				(command.getLloc() != null) ? command.getLloc() : "RIPEA",
-				usuariActual.getEmail(),
-				LocaleContextHolder.getLocale().getLanguage(),
-				modalStr + "/document/" + documentId + "/firmaPassarelaFinal",
-				false);
-		return "redirect:" + procesFirmaUrl;
+		if (!command.getFirma().isEmpty()) {
+			String identificador = documentService.generarIdentificadorFirmaClient(
+					entitatActual.getId(),
+					documentId);
+			documentService.processarFirmaClient(
+					identificador,
+					command.getFirma().getOriginalFilename(),
+					command.getFirma().getBytes());
+			MissatgesHelper.success(
+					request,
+					getMessage(
+							request, 
+							"document.controller.firma.passarela.final.ok"));
+			return getModalControllerReturnValueSuccess(
+					request, 
+					"redirect:/contingut/" + documentId,
+					null);
+		} else {
+			FitxerDto fitxerPerFirmar = documentService.convertirPdfPerFirmaClient(
+					entitatActual.getId(),
+					documentId);
+			UsuariDto usuariActual = aplicacioService.getUsuariActual();
+			String modalStr = (ModalHelper.isModal(request)) ? "/modal" : "";
+			String procesFirmaUrl = passarelaFirmaHelper.iniciarProcesDeFirma(
+					request,
+					fitxerPerFirmar,
+					usuariActual.getNif(),
+					command.getMotiu(),
+					(command.getLloc() != null) ? command.getLloc() : "RIPEA",
+					usuariActual.getEmail(),
+					LocaleContextHolder.getLocale().getLanguage(),
+					modalStr + "/document/" + documentId + "/firmaPassarelaFinal",
+					false);
+			return "redirect:" + procesFirmaUrl;
+		}
 	}
 
 	@RequestMapping(value = "/{documentId}/firmaPassarelaFinal")

@@ -525,8 +525,8 @@ public class ContingutController extends BaseUserController {
 		model.addAttribute("contingut", contingut);
 		if (contingut.isReplicatDinsArxiu()) {
 			model.addAttribute(
-					"arxiuInfo",
-					contingutService.getArxiuInfo(
+					"arxiuDetall",
+					contingutService.getArxiuDetall(
 							entitatActual.getId(),
 							contingutId));
 		}

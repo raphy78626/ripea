@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -120,7 +120,7 @@ public class ContingutDocumentController extends BaseUserController {
 			Date ara = new Date();
 			command.setData(ara);
 			command.setDataCaptura(ara);
-			command.setNtiOrigen(DocumentNtiOrigenEnumDto.O0);
+			command.setNtiOrigen(NtiOrigenEnumDto.O0);
 			command.setNtiEstadoElaboracion(DocumentNtiEstadoElaboracionEnumDto.EE01);
 			command.setNtiTipoDocumental(DocumentNtiTipoDocumentalEnumDto.TD99);
 			ContingutDto contingut = contingutService.findAmbIdUser(
@@ -529,7 +529,7 @@ public class ContingutDocumentController extends BaseUserController {
 		model.addAttribute(
 				"ntiOrigenOptions",
 				EnumHelper.getOptionsForEnum(
-						DocumentNtiOrigenEnumDto.class,
+						NtiOrigenEnumDto.class,
 						"document.nti.origen.enum."));
 		model.addAttribute(
 				"ntiEstatElaboracioOptions",

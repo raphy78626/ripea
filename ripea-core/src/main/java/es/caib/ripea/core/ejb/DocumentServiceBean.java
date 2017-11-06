@@ -174,12 +174,10 @@ public class DocumentServiceBean implements DocumentService {
 	@RolesAllowed("tothom")
 	public FitxerDto convertirPdfPerFirmaClient(
 			Long entitatId,
-			Long id,
-			boolean estamparUrl) {
+			Long id) {
 		return delegate.convertirPdfPerFirmaClient(
 				entitatId,
-				id,
-				estamparUrl);
+				id);
 	}
 
 	@Override
