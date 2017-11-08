@@ -75,7 +75,7 @@ $(document).ready(function() {
 					<rip:inputText name="backofficeUsuari" textKey="regla.form.camp.backoffice.usuari"/>
 					<rip:inputText name="backofficeContrasenya" textKey="regla.form.camp.backoffice.contrasenya"/>
 					<rip:inputText name="backofficeIntents" textKey="regla.form.camp.backoffice.intents"/>
-					<block id="backofficeTempsEntreIntentsBlock" style="display:${reglaCommand.backofficeTipus == "SISTRA" ? "inline" : "none"}">
+					<block id="backofficeTempsEntreIntentsBlock" style='display:${reglaCommand.backofficeTipus == "SISTRA" ? "inline" : "none"}'>
 						<rip:inputText name="backofficeTempsEntreIntents" textKey="regla.form.camp.backoffice.temps.entre.intents" comment="regla.form.camp.backoffice.temps.entre.intents.info"/>
 					</block>
 				</div>

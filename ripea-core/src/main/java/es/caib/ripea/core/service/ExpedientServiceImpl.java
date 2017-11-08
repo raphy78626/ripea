@@ -936,7 +936,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 												usuariHelper.getUsuariAutenticat()).getId();
 			
 			Map<String, String[]> ordenacioMap = new HashMap<String, String[]>();
-			ordenacioMap.put("numero", new String[] {"any", "sequencia"});
+			ordenacioMap.put("numero", new String[] {"any", "codi", "sequencia"});
 			return paginacioHelper.toPaginaDto(
 					expedientRepository.findByEntitatAndFiltre(
 							entitat,

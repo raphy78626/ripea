@@ -63,6 +63,8 @@ public class ExpedientEntity extends NodeEntity {
 	protected int any;
 	@Column(name = "sequencia", nullable = false)
 	protected long sequencia;
+	@Column(name = "codi", nullable = false)
+	protected String codi;
 	@Column(name = "nti_version", length = 5, nullable = false)
 	protected String ntiVersion;
 	@Column(name = "nti_identif", length = 52, nullable = false)
@@ -140,6 +142,9 @@ public class ExpedientEntity extends NodeEntity {
 	public long getSequencia() {
 		return sequencia;
 	}
+	public String getCodi() {
+		return codi;
+	}
 	public String getNtiVersion() {
 		return ntiVersion;
 	}
@@ -179,7 +184,7 @@ public class ExpedientEntity extends NodeEntity {
 
 	@Transient
 	public String getNumero() {
-		return sequencia + "/" + any;
+		return codi + "/" + sequencia + "/" + any;
 	}
 
 	public void update(
@@ -190,11 +195,13 @@ public class ExpedientEntity extends NodeEntity {
 		this.metaNode = metaExpedient;
 		this.arxiu = arxiu;
 	}
-	public void updateAnySequencia(
+	public void updateAnySequenciaCodi(
 			int any,
-			long sequencia) {
+			long sequencia,
+			String codi) {
 		this.any = any;
 		this.sequencia = sequencia;
+		this.codi = codi;
 	}
 	public void updateNtiIdentificador(
 			String ntiIdentificador) {

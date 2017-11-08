@@ -292,6 +292,7 @@ CREATE TABLE IPA_EXPEDIENT
   TANCAT_MOTIU       character varying(1024),
   ANIO               integer                    NOT NULL,
   SEQUENCIA          bigint                     NOT NULL,
+  CODI               character varying(256)     NOT NULL,
   ARXIU_ID           bigint                     NOT NULL,
   NTI_VERSION        character varying(5)       NOT NULL,
   NTI_IDENTIF        character varying(52)      NOT NULL,

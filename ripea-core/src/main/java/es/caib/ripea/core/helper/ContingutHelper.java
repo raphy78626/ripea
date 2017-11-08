@@ -170,6 +170,7 @@ public class ContingutHelper {
 			dto.setTancatMotiu(expedient.getTancatMotiu());
 			dto.setAny(expedient.getAny());
 			dto.setSequencia(expedient.getSequencia());
+			dto.setCodi(expedient.getCodi());
 			dto.setNtiVersion(expedient.getNtiVersion());
 			dto.setNtiIdentificador(expedient.getNtiIdentificador());
 			dto.setNtiOrgano(expedient.getNtiOrgano());
@@ -662,9 +663,10 @@ public class ContingutHelper {
 		}
 		long sequenciaExpedient = sequencia.getValor();
 		sequencia.incrementar();
-		expedient.updateAnySequencia(
+		expedient.updateAnySequenciaCodi(
 				anyExpedient,
-				sequenciaExpedient);
+				sequenciaExpedient,
+				expedient.getMetaExpedient().getCodi());
 	}
 
 	public ExpedientEntity crearNouExpedient(

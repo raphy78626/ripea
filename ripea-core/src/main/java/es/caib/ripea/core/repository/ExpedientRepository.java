@@ -68,7 +68,7 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			"and e.entitat = :entitat " +
 			"and (:esNullArxiu = true or e.arxiu = :arxiu) " +
 			"and (e.metaNode is null or e.metaNode in (:metaNodesPermesos)) " +
-			"and (:esNullNumero = true or lower(e.sequencia||'/'||e.any) like lower('%'||:numero||'%')) " +
+			"and (:esNullNumero = true or lower(e.codi||'/'||e.sequencia||'/'||e.any) like lower('%'||:numero||'%')) " +
 			"and (:esNullNom = true or lower(e.nom) like lower('%'||:nom||'%')) " +
 			"and (:esNullMetaNode = true or e.metaNode = :metaNode) " +
 			"and (:esNullCreacioInici = true or e.createdDate >= :creacioInici) " +
@@ -111,7 +111,7 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			"and e.entitat = :entitat " +
 			"and (:esNullArxiu = true or e.arxiu = :arxiu) " +
 			"and (e.metaNode is null or e.metaNode in (:metaNodesPermesos)) " +
-			"and (:esNullNumero = true or lower(e.sequencia||'/'||e.any) like lower('%'||:numero||'%')) " +
+			"and (:esNullNumero = true or lower(e.codi||'/'||e.sequencia||'/'||e.any) like lower('%'||:numero||'%')) " +
 			"and (:esNullNom = true or lower(e.nom) like lower('%'||:nom||'%')) " +
 			"and (:esNullMetaNode = true or e.metaNode = :metaNode) " +
 			"and (:esNullCreacioInici = true or e.createdDate >= :creacioInici) " +

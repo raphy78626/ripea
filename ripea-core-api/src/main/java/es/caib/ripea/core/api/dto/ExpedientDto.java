@@ -20,6 +20,7 @@ public class ExpedientDto extends NodeDto {
 	private String tancatMotiu;
 	private int any;
 	private long sequencia;
+	private String codi;
 	private String ntiVersion;
 	private String ntiIdentificador;
 	private String ntiOrgano;
@@ -69,6 +70,12 @@ public class ExpedientDto extends NodeDto {
 	}
 	public void setSequencia(long sequencia) {
 		this.sequencia = sequencia;
+	}
+	public String getCodi() {
+		return codi;
+	}
+	public void setCodi(String codi) {
+		this.codi = codi;
 	}
 	public String getNtiVersion() {
 		return ntiVersion;

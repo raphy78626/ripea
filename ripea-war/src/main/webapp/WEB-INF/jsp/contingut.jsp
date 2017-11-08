@@ -369,7 +369,7 @@ $(document).ready(function() {
 								<dd>${contingut.metaNode.nom}</dd>
 							</c:if>
 							<dt><spring:message code="contingut.info.numero"/></dt>
-							<dd>${contingut.sequencia}/${contingut.any}</dd>
+							<dd>${contingut.codi}/${contingut.sequencia}/${contingut.any}</dd>
 							<dt><spring:message code="contingut.info.arxiu"/></dt>
 							<dd>${contingut.arxiu.nom}</dd>
 							<dt><spring:message code="contingut.info.estat"/></dt>
