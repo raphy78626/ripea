@@ -12,7 +12,7 @@ CREATE TABLE IPA_USUARI
 
 CREATE TABLE IPA_ENTITAT
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   CODI                 character varying(64)    NOT NULL,
   NOM                  character varying(256)   NOT NULL,
   DESCRIPCIO           character varying(1024),
@@ -29,7 +29,7 @@ CREATE TABLE IPA_ENTITAT
 
 CREATE TABLE IPA_METANODE
 (
-  ID                   BIGSERIAL               NOT NULL,
+  ID                   BIGINT                  NOT NULL,
   CODI                 character varying(256)  NOT NULL,
   NOM                  character varying(256)  NOT NULL,
   DESCRIPCIO           character varying(1024),
@@ -46,7 +46,7 @@ CREATE TABLE IPA_METANODE
 
 CREATE TABLE IPA_METADOCUMENT
 (
-  ID                      BIGSERIAL            NOT NULL,
+  ID                      BIGINT               NOT NULL,
   GLOBAL_EXPEDIENT        boolean,
   GLOBAL_MULTIPLICITAT    character varying(256),
   GLOBAL_READONLY         boolean,
@@ -66,7 +66,7 @@ CREATE TABLE IPA_METADOCUMENT
 
 CREATE TABLE IPA_METADADA
 (
-  ID                    BIGSERIAL              NOT NULL,
+  ID                    BIGINT                 NOT NULL,
   CREATEDDATE           timestamp without time zone,
   LASTMODIFIEDDATE      timestamp without time zone,
   ACTIVA                boolean,
@@ -88,7 +88,7 @@ CREATE TABLE IPA_METADADA
 
 CREATE TABLE IPA_METAEXPEDIENT
 (
-  ID                 BIGSERIAL                  NOT NULL,
+  ID                 BIGINT                     NOT NULL,
   PARE_ID            bigint,
   CLASIF_SIA         character varying(6)       NOT NULL,
   CLASIF_DOC         character varying(30)      NOT NULL,
@@ -108,14 +108,14 @@ CREATE TABLE IPA_METAEXPEDIENT
 
 CREATE TABLE IPA_METAEXPEDIENT_ARXIU
 (
-  METAEXPEDIENT_ID  BIGSERIAL                   NOT NULL,
+  METAEXPEDIENT_ID  BIGINT                      NOT NULL,
   ARXIU_ID          bigint                      NOT NULL
 );
 
 
 CREATE TABLE IPA_METAEXP_SEQ
 (
-  ID                   BIGSERIAL                 NOT NULL,
+  ID                   BIGINT                    NOT NULL,
   ANIO                 integer,
   VALOR                bigint,
   CREATEDDATE          timestamp without time zone,
@@ -127,7 +127,7 @@ CREATE TABLE IPA_METAEXP_SEQ
 
 CREATE TABLE IPA_INTERESSAT
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   DTYPE                character varying(256)   NOT NULL,
   NOM                  character varying(30)    NOT NULL,
   LLINATGE1            character varying(30),
@@ -160,7 +160,7 @@ CREATE TABLE IPA_INTERESSAT
 
 CREATE TABLE IPA_ARXIU
 (
-  ID                   BIGSERIAL                 NOT NULL,
+  ID                   BIGINT                    NOT NULL,
   ACTIU                boolean,
   UNITAT_CODI          character varying(9)      NOT NULL
 );
@@ -168,7 +168,7 @@ CREATE TABLE IPA_ARXIU
 
 CREATE TABLE IPA_CONTINGUT
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   NOM                  character varying(1024)  NOT NULL,
   TIPUS                integer                  NOT NULL,
   PARE_ID              bigint,
@@ -187,7 +187,7 @@ CREATE TABLE IPA_CONTINGUT
 
 CREATE TABLE IPA_CONT_MOV
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   CONTINGUT_ID         bigint                   NOT NULL,
   ORIGEN_ID            bigint,
   DESTI_ID             bigint                   NOT NULL,
@@ -202,7 +202,7 @@ CREATE TABLE IPA_CONT_MOV
 
 CREATE TABLE IPA_CONT_LOG
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   TIPUS                integer                  NOT NULL,
   CONTINGUT_ID         bigint                   NOT NULL,
   PARE_ID              bigint,
@@ -221,14 +221,14 @@ CREATE TABLE IPA_CONT_LOG
 
 CREATE TABLE IPA_ESCRIPTORI
 (
-  ID         BIGSERIAL                            NOT NULL,
+  ID         BIGINT                               NOT NULL,
   USUARI_ID  character varying(64)                NOT NULL
 );
 
 
 CREATE TABLE IPA_METAEXPEDIENT_METADOCUMENT
 (
-  ID                   BIGSERIAL                  NOT NULL,
+  ID                   BIGINT                     NOT NULL,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   MULTIPLICITAT        character varying(256),
@@ -243,14 +243,14 @@ CREATE TABLE IPA_METAEXPEDIENT_METADOCUMENT
 
 CREATE TABLE IPA_NODE
 (
-  ID                  BIGSERIAL                   NOT NULL,
+  ID                  BIGINT                      NOT NULL,
   METANODE_ID         bigint
 );
 
 
 CREATE TABLE IPA_METANODE_METADADA
 (
-  ID                   BIGSERIAL                  NOT NULL,
+  ID                   BIGINT                     NOT NULL,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   MULTIPLICITAT        character varying(256),
@@ -265,13 +265,13 @@ CREATE TABLE IPA_METANODE_METADADA
 
 CREATE TABLE IPA_CARPETA
 (
-  ID     BIGSERIAL                                NOT NULL
+  ID     BIGINT                                   NOT NULL
 );
 
 
 CREATE TABLE IPA_DADA
 (
-  ID                   BIGSERIAL                  NOT NULL,
+  ID                   BIGINT                     NOT NULL,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   ORDRE                integer,
@@ -286,7 +286,7 @@ CREATE TABLE IPA_DADA
 
 CREATE TABLE IPA_EXPEDIENT
 (
-  ID                 BIGSERIAL                  NOT NULL,
+  ID                 BIGINT                     NOT NULL,
   ESTAT              integer                    NOT NULL,
   TANCAT_DATA        timestamp without time zone,
   TANCAT_MOTIU       character varying(1024),
@@ -307,14 +307,14 @@ CREATE TABLE IPA_EXPEDIENT
 
 CREATE TABLE IPA_EXPEDIENT_REL
 (
-  EXPEDIENT_ID       BIGSERIAL                  NOT NULL,
+  EXPEDIENT_ID       BIGINT                     NOT NULL,
   EXPEDIENT_REL_ID   bigint                     NOT NULL
 );
 
 
 CREATE TABLE IPA_DOCUMENT
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   TIPUS                integer                  NOT NULL,
   ESTAT                integer                  NOT NULL,
   UBICACIO             character varying(255),
@@ -344,7 +344,7 @@ CREATE TABLE IPA_DOCUMENT
 
 CREATE TABLE IPA_DOCUMENT_ENVIAMENT
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   DTYPE                character varying(32)    NOT NULL,
   ASSUMPTE             character varying(256)   NOT NULL,
   ESTAT                character varying(255)   NOT NULL,
@@ -399,21 +399,21 @@ CREATE TABLE IPA_DOCUMENT_ENVIAMENT
 
 
 CREATE TABLE IPA_DOCUMENT_ENVIAMENT_DOC (
-  DOCUMENT_ENVIAMENT_ID BIGSERIAL               NOT NULL,
+  DOCUMENT_ENVIAMENT_ID BIGINT                  NOT NULL,
   DOCUMENT_ID           bigint                  NOT NULL
 );
 
 
 CREATE TABLE IPA_EXPEDIENT_INTERESSAT
 (
-  EXPEDIENT_ID   BIGSERIAL                      NOT NULL,
+  EXPEDIENT_ID   BIGINT                         NOT NULL,
   INTERESSAT_ID  bigint                         NOT NULL
 );
 
 
 CREATE TABLE IPA_BUSTIA
 (
-  ID           BIGSERIAL                        NOT NULL,
+  ID           BIGINT                           NOT NULL,
   UNITAT_CODI  character varying(9)             NOT NULL,
   PER_DEFECTE  boolean,
   ACTIVA       boolean
@@ -422,9 +422,10 @@ CREATE TABLE IPA_BUSTIA
 
 CREATE TABLE IPA_REGISTRE
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   TIPUS                character varying(1)     NOT NULL,
   UNITAT_ADM           character varying(21)    NOT NULL,
+  UNITAT_ADM_DESC      character varying(100),
   NUMERO               character varying(100)   NOT NULL,
   DATA                 timestamp without time zone NOT NULL,
   IDENTIFICADOR        character varying(100)   NOT NULL,
@@ -477,7 +478,7 @@ CREATE TABLE IPA_REGISTRE
 
 CREATE TABLE IPA_REGISTRE_ANNEX
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   TITOL                character varying(200)   NOT NULL,
   FITXER_NOM           character varying(80)    NOT NULL,
   FITXER_TAMANY        integer                  NOT NULL,
@@ -509,7 +510,7 @@ CREATE TABLE IPA_REGISTRE_ANNEX
 
 CREATE TABLE IPA_REGISTRE_INTER
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   ADRESA               character varying(640),
@@ -540,7 +541,7 @@ CREATE TABLE IPA_REGISTRE_INTER
 
 CREATE TABLE IPA_REGLA
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   ACTIVA               boolean,
@@ -606,7 +607,7 @@ CREATE TABLE IPA_ACL_OBJECT_IDENTITY
 
 CREATE TABLE IPA_CONT_COMMENT
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   CONTINGUT_ID         bigint 		        NOT NULL,
   TEXT		       character varying (1024),
   CREATEDDATE          timestamp without time zone,
@@ -617,7 +618,7 @@ CREATE TABLE IPA_CONT_COMMENT
 
 CREATE TABLE IPA_EXECUCIO_MASSIVA
 (
-  ID                   BIGSERIAL		NOT NULL,
+  ID                   BIGINT   		NOT NULL,
   TIPUS                character varying(255)   NOT NULL,
   DATA_INICI	       timestamp without time zone,
   DATA_FI              timestamp without time zone,
@@ -634,7 +635,7 @@ CREATE TABLE IPA_EXECUCIO_MASSIVA
 
 CREATE TABLE IPA_MASSIVA_CONTINGUT
 (
-  ID                   BIGSERIAL                NOT NULL,
+  ID                   BIGINT                   NOT NULL,
   EXECUCIO_MASSIVA_ID  bigint,
   CONTINGUT_ID         bigint,
   DATA_INICI	       timestamp without time zone,
