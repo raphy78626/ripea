@@ -47,17 +47,18 @@ public class RolHelper {
 				SESSION_ATTRIBUTE_ROL_ACTUAL);
 		List<String> rolsDisponibles = getRolsUsuariActual(request);
 		if (rolActual == null || !rolsDisponibles.contains(rolActual)) {
-			if (request.isUserInRole(ROLE_SUPER) && rolsDisponibles.contains(ROLE_SUPER)) {
-				rolActual = ROLE_SUPER;
+			if (request.isUserInRole(ROLE_USER) && rolsDisponibles.contains(ROLE_USER)) {
+				rolActual = ROLE_USER;
 			} else if (request.isUserInRole(ROLE_ADMIN) && rolsDisponibles.contains(ROLE_ADMIN)) {
 				rolActual = ROLE_ADMIN;
-			} else if (request.isUserInRole(ROLE_USER) && rolsDisponibles.contains(ROLE_USER)) {
-				rolActual = ROLE_USER;
+			} else if (request.isUserInRole(ROLE_SUPER) && rolsDisponibles.contains(ROLE_SUPER)) {
+				rolActual = ROLE_SUPER;
 			}
-			if (rolActual != null)
+			if (rolActual != null) {
 				request.getSession().setAttribute(
 						SESSION_ATTRIBUTE_ROL_ACTUAL,
 						rolActual);
+			}
 		}
 		LOGGER.debug("Obtenint rol actual (rol=" + rolActual + ")");
 		return rolActual;

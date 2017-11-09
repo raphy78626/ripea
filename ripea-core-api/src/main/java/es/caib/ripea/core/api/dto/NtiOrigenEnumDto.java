@@ -9,7 +9,7 @@ package es.caib.ripea.core.api.dto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public enum DocumentNtiOrigenEnumDto {
+public enum NtiOrigenEnumDto {
 	O0, // Ciutadà
 	O1  // Administració
 }

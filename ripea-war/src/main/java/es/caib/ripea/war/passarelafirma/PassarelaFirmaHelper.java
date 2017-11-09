@@ -410,26 +410,27 @@ public class PassarelaFirmaHelper {
 			plugins = new ArrayList<PassarelaFirmaPlugin>();
 			for (String id: ids) {
 				String base = PROPERTIES_BASE + id + ".";
-				Map<String, String> pluginProperties = aplicacioService.propertyFindByPrefix(base);
-				String nom = pluginProperties.get(base + "nom");
-				String classe = pluginProperties.get(base + "class");
-				String descripcioCurta = pluginProperties.get(base + "desc");
+				Properties pluginProperties = aplicacioService.propertyFindByPrefix(base);
+				String nom = pluginProperties.getProperty(base + "nom");
+				String classe = pluginProperties.getProperty(base + "class");
+				String descripcioCurta = pluginProperties.getProperty(base + "desc");
 				log.debug("Configurant plugin a partir de les propietats (" +
 						"propertiesBase=" + base + ", " +
 						"class=" + classe + ", " +
 						"nom=" + nom + ", " +
 						"descripcioCurta=" + descripcioCurta + ")");
 				Properties pluginPropertiesProcessat = new Properties();
-				for (String property: pluginProperties.keySet()) {
-					String value = pluginProperties.get(property);
-					String nomFinal = property.substring(base.length());
+				for (Object propertyObj: pluginProperties.keySet()) {
+					String propertyKey = propertyObj.toString();
+					String value = pluginProperties.getProperty(propertyKey);
+					String nomFinal = propertyKey.substring(base.length());
 					pluginPropertiesProcessat.put(
 							PROPERTIES_BASE + nomFinal,
 							value);
 					log.debug(
 							"Afegint propietat al plugin (" +
 							"pluginNom=" + nom + ", " +
-							"propertyOriginal=" + property + ", " +
+							"propertyOriginal=" + propertyKey + ", " +
 							"propertyProcessat=" + (PROPERTIES_BASE + nomFinal) + ", " +
 							"valor=" + value + ")");
 				}

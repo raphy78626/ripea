@@ -95,10 +95,10 @@ public class ContingutMassiuController extends BaseUserOAdminController {
 						SESSION_ATTRIBUTE_SELECCIO));
 		model.addAttribute(
 				"titolMassiu",
-				getMessage(request, "execucions.massives.titol.portafirmes"));
+				getMessage(request, "accio.massiva.titol.portafirmes"));
 		model.addAttribute(
 				"botoMassiu",
-				getMessage(request, "execucions.massives.boto.crear.portafirmes"));
+				getMessage(request, "accio.massiva.boto.crear.portafirmes"));
 		model.addAttribute(
 				filtreCommand);
 		model.addAttribute(
@@ -156,7 +156,7 @@ public class ContingutMassiuController extends BaseUserOAdminController {
 			return getModalControllerReturnValueError(
 					request,
 					"redirect:/massiu/portafirmes",
-					"execucions.massives.seleccio.buida");
+					"accio.massiva.seleccio.buida");
 		}
 		
 		getEntitatActualComprovantPermisos(request);
@@ -201,7 +201,7 @@ public class ContingutMassiuController extends BaseUserOAdminController {
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../massiu/portafirmes",
-				"execucions.massives.creat.ok");
+				"accio.massiva.creat.ok");
 	}
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
@@ -310,12 +310,12 @@ public class ContingutMassiuController extends BaseUserOAdminController {
 		if (RolHelper.isUsuariActualAdministrador(request)) {
 			model.addAttribute(
 					"titolConsulta",
-					getMessage(request, "execucions.massives.consulta.titol.gobal"));
+					getMessage(request, "accio.massiva.consulta.titol.gobal"));
 		} else if (RolHelper.isUsuariActualUsuari(request)) {
 			usuariActual = aplicacioService.getUsuariActual();
 			model.addAttribute(
 					"titolConsulta",
-					getMessage(request, "execucions.massives.consulta.titol.usuari", new String[]{usuariActual.getNom()}));
+					getMessage(request, "accio.massiva.consulta.titol.usuari", new String[]{usuariActual.getNom()}));
 		}
 		
 		execucionsMassives = execucioMassivaService.findExecucionsMassivesPerUsuari(entitatActual.getId(), usuariActual,pagina);

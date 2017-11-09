@@ -16,4 +16,7 @@ public enum DocumentNtiTipoFirmaEnumDto {
 	TF04, // CAdES detached/explicit signature
 	TF05, // CAdES attached/implicit signature
 	TF06, // PAdES
+	TF07, // SMIME
+	TF08, // ODT
+	TF09  // OOXML
 }

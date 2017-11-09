@@ -137,12 +137,22 @@ body {
 								</c:otherwise>
 							</c:choose>
 						</li>
-						<li>
-							<span class="fa fa-user"></span>
-							<c:choose>
-								<c:when test="${not empty dadesUsuariActual}">${dadesUsuariActual.nom}</c:when>
-								<c:otherwise>${pageContext.request.userPrincipal.name}</c:otherwise>
-							</c:choose>
+						<li class="dropdown">
+							<a href="#" data-toggle="dropdown">
+								<span class="fa fa-user"></span>
+								<c:choose>
+									<c:when test="${not empty dadesUsuariActual}">${dadesUsuariActual.nom}</c:when>
+									<c:otherwise>${pageContext.request.userPrincipal.name}</c:otherwise>
+								</c:choose>
+								<span class="caret caret-white"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="<c:url value="/massiu/consulta/0"/>" data-toggle="modal" data-maximized="true">
+									<spring:message code="decorator.menu.accions.massives.user"/>
+								</a>
+							</li>
+							</ul>
 						</li>
 					</ul>
 					<div class="clearfix"></div>
@@ -170,15 +180,20 @@ body {
 										<li><a href="<c:url value="/arxiuAdmin"/>"><spring:message code="decorator.menu.arxius"/></a></li>
 										<li class="divider"></li>
 										<li><a href="<c:url value="/regla"/>"><spring:message code="decorator.menu.regles"/></a></li>
+										<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
 									</ul>
 								</div>
 								<div class="btn-group">
 									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
+										<li>
+											<a href="<c:url value="/massiu/consulta/0"/>" data-toggle="modal" data-maximized="true">
+												<spring:message code="decorator.menu.accions.massives.admin"/>
+											</a>
+										</li>
 									</ul>
 								</div>
-								<a href="<c:url value="/permis"/>" class="btn btn-primary"><spring:message code="decorator.menu.permisos"/></a>
 							</c:when>
 							<c:when test="${isRolActualUsuari}">
 								<a href="<c:url value="/escriptori"/>" class="btn btn-primary"><spring:message code="decorator.menu.escriptori"/></a>
@@ -189,7 +204,7 @@ body {
 								</a>
 							</c:when>
 						</c:choose>
-						<c:if test="${isRolActualUsuari or isRolActualAdministrador}">
+						<%--c:if test="${isRolActualUsuari or isRolActualAdministrador}">
 							<div class="btn-group">
 								<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="execucions.massives.boto.user"/>&nbsp;<span class="caret caret-white"></span></button>
 								<ul class="dropdown-menu">
@@ -200,7 +215,7 @@ body {
 									<li><a href="<c:url value="/massiu/consulta/0"/>" data-toggle="modal" data-maximized="true"><span class="fa fa-tasks"></span> <spring:message code="execucions.massives.boto.option.consulta"/></a></li>
 								</ul>
 							</div>
-						</c:if>
+						</c:if--%>
 					</div>
 				</div>
 			</div>
@@ -224,7 +239,14 @@ body {
 	</div>
     <div class="container container-foot">
     	<div class="pull-left app-version"><p>RIPEA v<rip:versio/></p></div>
-        <div class="pull-right govern-footer"><p><img src="<c:url value="/img/govern-logo-neg.png"/>" height="30" alt="Govern de les Illes Balears" /></p></div>
+        <div class="pull-right govern-footer">
+        	<p>
+	        	<img src="<c:url value="/img/govern-logo-neg.png"/>" hspace="5" height="30" alt="<spring:message code='decorator.logo.govern'/>" />
+	        	<img src="<c:url value="/img/una_manera.png"/>" 	 hspace="5" height="30" alt="<spring:message code='decorator.logo.manera'/>" />
+	        	<img src="<c:url value="/img/feder7.png"/>" 	     hspace="5" height="35" alt="<spring:message code='decorator.logo.feder'/>" />
+	        	<img src="<c:url value="/img/uenegroma.png"/>"	     hspace="5" height="50" alt="<spring:message code='decorator.logo.ue'/>" />
+        	</p>
+        </div>
     </div>
 </body>
 </html>

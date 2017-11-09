@@ -830,9 +830,40 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 	@Override
 	public List<MetaExpedientDto> findActiusAmbEntitatPerCreacio(
 			Long entitatId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Consulta de meta-expedients actius de l'entitat amb el permis CREATE ("
 				+ "entitatId=" + entitatId +  ")");
+		return findActiusAmbEntitatPermis(
+				entitatId, 
+				new Permission[] {ExtendedPermission.CREATE});
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<MetaExpedientDto> findActiusAmbEntitatPerModificacio(
+			Long entitatId) {
+		logger.debug("Consulta de meta-expedients actius de l'entitat amb el permis WRITE ("
+				+ "entitatId=" + entitatId +  ")");
+		return findActiusAmbEntitatPermis(
+				entitatId, 
+				new Permission[] {ExtendedPermission.WRITE});
+	}	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<MetaExpedientDto> findAmbEntitatPerLectura(
+			Long entitatId) {
+		logger.debug("Consulta de meta-expedients de l'entitat amb el permis READ ("
+				+ "entitatId=" + entitatId +  ")");
+		return findActiusAmbEntitatPermis(
+				entitatId, 
+				new Permission[] {ExtendedPermission.READ});
+	}
+	
+	/** Mètode comú per obtenir entitats i filtrar-les per un o més permisos.*/
+	private List<MetaExpedientDto> findActiusAmbEntitatPermis(
+			Long entitatId,
+			Permission[] permisos) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -847,40 +878,13 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 					}
 				},
 				MetaNodeEntity.class,
-				new Permission[] {ExtendedPermission.CREATE},
+				permisos,
 				auth);
 		return conversioTipusHelper.convertirList(
 				metaExpedients,
-				MetaExpedientDto.class);
+				MetaExpedientDto.class);		
 	}
 
-	@Transactional(readOnly = true)
-	@Override
-	public List<MetaExpedientDto> findAmbEntitatPerLectura(
-			Long entitatId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Consulta de meta-expedients de l'entitat amb el permis READ ("
-				+ "entitatId=" + entitatId +  ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		List<MetaExpedientEntity> metaExpedients = metaExpedientRepository.findByEntitatOrderByNomAsc(entitat);
-		permisosHelper.filterGrantedAll(
-				metaExpedients,
-				new ObjectIdentifierExtractor<MetaNodeEntity>() {
-					public Long getObjectIdentifier(MetaNodeEntity metaNode) {
-						return metaNode.getId();
-					}
-				},
-				MetaNodeEntity.class,
-				new Permission[] {ExtendedPermission.READ},
-				auth);
-		return conversioTipusHelper.convertirList(
-				metaExpedients,
-				MetaExpedientDto.class);
-	}
 
 	@Override
 	@Transactional

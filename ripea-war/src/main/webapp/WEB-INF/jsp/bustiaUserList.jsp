@@ -144,8 +144,12 @@ $(document).ready(function() {
 								{{/if}}
 								<li><a href="./contingut/{{:id}}/log" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								{{if !procesAutomatic}}
-									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/nouexp" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.nou.expedient"/>...</a></li>
-									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/addexp" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>
+									<c:if test="${potCrearExpedient}">
+										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/nouexp" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.nou.expedient"/>...</a></li>
+									</c:if>
+									<c:if test="${potModificarExpedient}">
+										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/addexp" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>
+									</c:if>
 									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/reenviar" data-toggle="modal"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 									{{if estatContingut == 'PENDENT'}}
 										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>

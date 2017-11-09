@@ -285,8 +285,6 @@ public interface DocumentService {
 	 *            Atribut id de l'entitat a la qual pertany el contenidor.
 	 * @param id
 	 *            Atribut id del document que es vol convertir.
-	 * @param estamparUrl
-	 *            Indica si el document PDF s'ha de generar amb URL del CSV estampada.
 	 * @return el fitxer convertit.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -296,8 +294,7 @@ public interface DocumentService {
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto convertirPdfPerFirmaClient(
 			Long entitatId,
-			Long id,
-			boolean estamparUrl) throws NotFoundException, SistemaExternException;
+			Long id) throws NotFoundException, SistemaExternException;
 
 	/**
 	 * Genera un identificador del document per firmar en el navegador

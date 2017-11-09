@@ -260,6 +260,13 @@ public class MetaExpedientServiceBean implements MetaExpedientService {
 			Long entitatId) {
 		return delegate.findActiusAmbEntitatPerCreacio(entitatId);
 	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public List<MetaExpedientDto> findActiusAmbEntitatPerModificacio(
+			Long entitatId) {
+		return delegate.findActiusAmbEntitatPerModificacio(entitatId);
+	}	
 
 	@Override
 	@RolesAllowed("tothom")

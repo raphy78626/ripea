@@ -9,9 +9,8 @@ package es.caib.ripea.core.api.dto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public enum ArxiuPluginNodeTipusEnumDto {
+public enum ArxiuContingutTipusEnumDto {
 	EXPEDIENT,
-	CARPETA,
 	DOCUMENT,
-	DOCUMENT_MIGRAT
+	CARPETA
 }

@@ -4,8 +4,6 @@
 package es.caib.ripea.core.helper;
 
 import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -59,6 +57,10 @@ public class PropertiesHelper extends Properties {
 		return instance;
 	}
 
+	public boolean isLlegirSystem() {
+		return llegirSystem;
+	}
+
 	public String getProperty(String key) {
 		if (llegirSystem)
 			return System.getProperty(key);
@@ -90,13 +92,13 @@ public class PropertiesHelper extends Properties {
 		return new Double(getProperty(key)).doubleValue();
 	}
 
-	public Map<String, String> findByPrefix(String prefix) {
-		Map<String, String> properties = new HashMap<String, String>();
+	public Properties findByPrefix(String prefix) {
+		Properties properties = new Properties();
 		if (llegirSystem) {
 			for (Object key: System.getProperties().keySet()) {
 				if (key instanceof String) {
 					String keystr = (String)key;
-					if (keystr.startsWith(prefix)) {
+					if (prefix == null || keystr.startsWith(prefix)) {
 						properties.put(
 								keystr,
 								System.getProperty(keystr));
@@ -107,7 +109,7 @@ public class PropertiesHelper extends Properties {
 			for (Object key: this.keySet()) {
 				if (key instanceof String) {
 					String keystr = (String)key;
-					if (keystr.startsWith(prefix)) {
+					if (prefix == null || keystr.startsWith(prefix)) {
 						properties.put(
 								keystr,
 								getProperty(keystr));
@@ -116,6 +118,9 @@ public class PropertiesHelper extends Properties {
 			}
 		}
 		return properties;
+	}
+	public Properties findAll() {
+		return findByPrefix(null);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(PropertiesHelper.class);

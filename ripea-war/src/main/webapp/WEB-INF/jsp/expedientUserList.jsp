@@ -34,6 +34,9 @@ table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr
 }
 </style>
 <script>
+// Variable que indica si mostrar només els expedients de l'escriptori agafats per l'usuari
+var escriptori = '${escriptori}' == 'true';
+
 $(document).ready(function() {
 	$('#taulaDades').on('selectionchange.dataTable', function (e, accio, ids) {
 		$.get(
@@ -66,12 +69,55 @@ $(document).ready(function() {
 			);
 			return false;
 		});
+		$('#taulaDades').DataTable().column(9).visible(!escriptori);
 	});
+	
+	if (escriptori)
+		$('#taulaDades').DataTable().column(9).visible(false);
+	
+	$('#escriptoriBtn').click(function() {
+		escriptori = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#escriptori').val(escriptori);
+		$(this).blur();
+		// Estableix el valor de la cookie
+		setCookie('escriptori', escriptori);
+		// Amaga la columna i refresca la taula
+		$('#taulaDades').webutilDatatable('refresh');
+	})
 });
+
+/** Afegeix el valor a la cookie. */
+function setCookie(cname,cvalue) {
+	var exdays = 30;
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+/** Recupera el valor de la cookie. */
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
 </script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="well" commandName="expedientFiltreCommand">
+	<div class="text-right" data-toggle="botons-titol">
+		<button id="escriptoriBtn" title="<spring:message code="expedient.list.user.escriptori.info"/>" class='btn btn-default <c:if test="${escriptori}">active</c:if>' data-toggle="button"><span class="fa fa-desktop"></span> <spring:message code="expedient.list.user.escriptori"/></button>
+	</div>
+	<form:form id="expedientFiltreForm" action="" method="post" cssClass="well" commandName="expedientFiltreCommand">
 		<div class="row">
 			<div class="col-md-2">
 				<rip:inputText name="numero" inline="true" placeholderKey="expedient.list.user.placeholder.numero"/>
@@ -105,6 +151,7 @@ $(document).ready(function() {
 						<rip:inputDate name="dataTancatFi" inline="true" placeholderKey="expedient.list.user.placeholder.tancat.fi"/>
 					</div>
 				</div>
+				<rip:inputHidden name="escriptori"/>
 			</div>
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
@@ -141,9 +188,9 @@ $(document).ready(function() {
 			<tr>
 				<th data-col-name="codiPropietariEscriptoriPare" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
+				<th data-col-name="metaNode.nom" width="15%"><spring:message code="expedient.list.user.columna.tipus"/></th>
 				<th data-col-name="numero"><spring:message code="expedient.list.user.columna.numero"/></th>
 				<th data-col-name="nom" width="30%"><spring:message code="expedient.list.user.columna.titol"/></th>
-				<th data-col-name="metaNode.nom" width="15%"><spring:message code="expedient.list.user.columna.tipus"/></th>
 				<th data-col-name="arxiu.nom" width="15%"><spring:message code="expedient.list.user.columna.arxiu"/></th>
 				<th data-col-name="createdDate" data-type="datetime" data-converter="datetime" width="15%"><spring:message code="expedient.list.user.columna.createl"/></th>
 				<th data-col-name="estat" data-template="#cellEstatTemplate" width="10%">

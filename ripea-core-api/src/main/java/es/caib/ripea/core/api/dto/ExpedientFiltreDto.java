@@ -25,6 +25,7 @@ public class ExpedientFiltreDto implements Serializable {
 	private ExpedientEstatEnumDto estat;
 	private Date dataTancatInici;
 	private Date dataTancatFi;
+	private boolean escriptori;
 
 
 	public Long getArxiuId() {
@@ -81,6 +82,12 @@ public class ExpedientFiltreDto implements Serializable {
 	}
 	public void setDataTancatFi(Date dataTancatFi) {
 		this.dataTancatFi = dataTancatFi;
+	}
+	public boolean isEscriptori() {
+		return escriptori;
+	}
+	public void setEscriptori(boolean escriptori) {
+		this.escriptori = escriptori;
 	}
 	@Override
 	public String toString() {
