@@ -27,7 +27,7 @@ public class ExpedientFiltreCommand {
 	private ExpedientEstatEnumDto estat;
 	private Date dataTancatInici;
 	private Date dataTancatFi;
-	private boolean escriptori;
+	private boolean meusExpedients;
 
 
 
@@ -86,13 +86,13 @@ public class ExpedientFiltreCommand {
 	public void setDataTancatFi(Date dataTancatFi) {
 		this.dataTancatFi = dataTancatFi;
 	}
-	
-	public boolean isEscriptori() {
-		return escriptori;
+	public boolean isMeusExpedients() {
+		return meusExpedients;
 	}
-	public void setEscriptori(boolean escriptori) {
-		this.escriptori = escriptori;
+	public void setMeusExpedients(boolean meusExpedients) {
+		this.meusExpedients = meusExpedients;
 	}
+
 	public static ExpedientFiltreCommand asCommand(ExpedientFiltreDto dto) {
 		return ConversioTipusHelper.convertir(
 				dto,

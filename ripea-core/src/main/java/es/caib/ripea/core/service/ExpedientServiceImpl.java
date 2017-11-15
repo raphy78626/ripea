@@ -930,11 +930,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 		}
 		if (!metaExpedientsPermesos.isEmpty()) {
 			Long escriptoriId = null;
-			if (filtre.isEscriptori())
+			if (filtre.isMeusExpedients()) {
 				escriptoriId = contingutHelper.getEscriptoriPerUsuari(
 												entitat,
 												usuariHelper.getUsuariAutenticat()).getId();
-			
+			}
 			Map<String, String[]> ordenacioMap = new HashMap<String, String[]>();
 			ordenacioMap.put("numero", new String[] {"any", "codi", "sequencia"});
 			return paginacioHelper.toPaginaDto(

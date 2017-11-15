@@ -1,4 +1,3 @@
-<%@page import="java.util.Iterator"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib tagdir="/WEB-INF/tags/ripea" prefix="rip"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -165,126 +164,6 @@
 							</table>
 						</div>
 					</c:if>
-					<%--table class="table table-bordered">
-						<tbody>
-							<c:if test="${not empty arxiuInfo.eniVersio}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.versio"/></strong></td>
-									<td>${arxiuInfo.eniVersio}</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.eniIdentificador}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.identificador"/></strong></td>
-									<td>${arxiuInfo.eniIdentificador}</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.eniOrigen}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.origen"/></strong></td>
-									<td><spring:message code="document.nti.origen.enum.${arxiuInfo.eniOrigen}"/></td>
-								</tr>
-							</c:if>
-							<c:choose>
-								<c:when test="${contingut.expedient}">
-									<tr>
-										<td><strong><spring:message code="contingut.arxiu.camp.eni.data.obertura"/></strong></td>
-										<td><fmt:formatDate value="${arxiuInfo.eniDataObertura}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
-									</tr>
-									<tr>
-										<td><strong><spring:message code="contingut.arxiu.camp.eni.classificacio"/></strong></td>
-										<td>${arxiuInfo.eniClassificacio}</td>
-									</tr>
-									<tr>
-										<td><strong><spring:message code="contingut.arxiu.camp.eni.estat"/></strong></td>
-										<td><spring:message code="expedient.estat.enum.${arxiuInfo.eniEstat}"/></td>
-									</tr>
-								</c:when>
-								<c:when test="${contingut.document}">
-									<tr>
-										<td><strong><spring:message code="contingut.arxiu.camp.eni.data.captura"/></strong></td>
-										<td><fmt:formatDate value="${arxiuInfo.eniDataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
-									</tr>
-									<tr>
-										<td><strong><spring:message code="contingut.arxiu.camp.eni.estat.elab"/></strong></td>
-										<td><spring:message code="document.nti.estela.enum.${arxiuInfo.eniEstatElaboracio}"/></td>
-									</tr>
-									<tr>
-										<td><strong><spring:message code="contingut.arxiu.camp.eni.tipus.doc"/></strong></td>
-										<td><spring:message code="document.nti.tipdoc.enum.${arxiuInfo.eniTipusDocumental}"/></td>
-									</tr>
-									<c:if test="${not empty arxiuInfo.eniFormatNom}">
-										<tr>
-											<td><strong><spring:message code="contingut.arxiu.camp.eni.format.nom"/></strong></td>
-											<td>${arxiuInfo.eniFormatNom}</td>
-										</tr>
-									</c:if>
-									<c:if test="${not empty arxiuInfo.eniFormatExtensio}">
-										<tr>
-											<td><strong><spring:message code="contingut.arxiu.camp.eni.format.ext"/></strong></td>
-											<td>${arxiuInfo.eniFormatExtensio}</td>
-										</tr>
-									</c:if>
-								</c:when>
-							</c:choose>
-							<c:if test="${not empty arxiuInfo.eniOrgans}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.organs"/></strong></td>
-									<td>
-										<c:forEach var="organ" items="${arxiuInfo.eniOrgans}" varStatus="status">
-											${organ}<c:if test="${not status.last}">,</c:if>
-										</c:forEach>
-									</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.eniInteressats}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.interessats"/></strong></td>
-									<td>
-										<c:forEach var="interessat" items="${arxiuInfo.eniInteressats}" varStatus="status">
-											${interessat}<c:if test="${not status.last}">,</c:if>
-										</c:forEach>
-									</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.eniDocumentOrigenId}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.doc.orig.id"/></strong></td>
-									<td>${arxiuInfo.eniDocumentOrigenId}</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.eniFirmaTipus}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.firma.tipus"/></strong></td>
-									<td>
-										<c:forEach var="tipus" items="${arxiuInfo.eniFirmaTipus}" varStatus="status">
-											${tipus}<c:if test="${not status.last}">,</c:if>
-										</c:forEach>
-									</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.eniFirmaCsv}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.firma.csv"/></strong></td>
-									<td>
-										<c:forEach var="csv" items="${arxiuInfo.eniFirmaCsv}" varStatus="status">
-											${csv}<c:if test="${not status.last}">,</c:if>
-										</c:forEach>
-									</td>
-								</tr>
-							</c:if>
-							<c:if test="${not empty arxiuInfo.eniFirmaCsvDefinicio}">
-								<tr>
-									<td><strong><spring:message code="contingut.arxiu.camp.eni.firma.csvdef"/></strong></td>
-									<td>
-										<c:forEach var="csvdef" items="${arxiuInfo.eniFirmaCsvDefinicio}" varStatus="status">
-											${csvdef}<c:if test="${not status.last}">,</c:if>
-										</c:forEach>
-									</td>
-								</tr>
-							</c:if>
-						</tbody>
-					</table--%>
 				</div>
 				<c:if test="${not empty arxiuDetall.fills}">
 					<div role="tabpanel" class="tab-pane" id="fills">
@@ -353,61 +232,6 @@
 						</table>
 					</div>
 				</c:if>
-				<%--c:if test="${not empty arxiuInfo.aspectes}">
-					<div role="tabpanel" class="tab-pane" id="aspectes">
-						<ul class="list-group">
-							<c:forEach var="aspecte" items="${arxiuInfo.aspectes}" varStatus="status">
-							  <li class="list-group-item">${aspecte}</li>
-							</c:forEach>
-						</ul>
-					</div>
-				</c:if>
-				<c:if test="${not empty arxiuInfo.continguts}">
-					<div role="tabpanel" class="tab-pane" id="continguts">
-						<table class="table table-bordered">
-							<c:forEach var="contingut" items="${arxiuInfo.continguts}" varStatus="status">
-								<tr>
-									<td>${contingut.tipus}</td>
-									<td>${contingut.contentType}</td>
-								</tr>
-							</c:forEach>
-						</table>
-					</div>
-				</c:if>
-				<c:if test="${not empty arxiuInfo.codiFontPeticio || not empty arxiuInfo.codiFontResposta}">
-					<div role="tabpanel" class="tab-pane" id="json">
-						<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">
-										<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsePeticio" aria-expanded="false" aria-controls="collapsePeticio">
-											<spring:message code="contingut.arxiu.json.peticio"/>
-										</a>
-									</h3>
-								</div>
-								<div id="collapsePeticio" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapsePeticio">
-									<div class="panel-body">
-										<pre id="codiFontPeticio"></pre>
-									</div>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">
-										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseResposta" aria-expanded="false" aria-controls="collapseResposta">
-											<spring:message code="contingut.arxiu.json.resposta"/>
-										</a>
-									</h3>
-								</div>
-								<div id="collapseResposta" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseResposta">
-									<div class="panel-body">
-										<pre id="codiFontResposta"></pre>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</c:if--%>
 			</div>
 		</c:when>
 		<c:otherwise>
@@ -425,7 +249,6 @@
 			<br/>
 		</c:otherwise>
 	</c:choose>
-	
 	<div id="modal-botons" class="well">
 		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>

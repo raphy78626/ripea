@@ -34,9 +34,8 @@ table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr
 }
 </style>
 <script>
-// Variable que indica si mostrar només els expedients de l'escriptori agafats per l'usuari
-var escriptori = '${escriptori}' == 'true';
-
+var mostrarMeusExpedients = '${meusExpedients}' == 'true';
+var columnaAgafatPer = 12;
 $(document).ready(function() {
 	$('#taulaDades').on('selectionchange.dataTable', function (e, accio, ids) {
 		$.get(
@@ -69,25 +68,22 @@ $(document).ready(function() {
 			);
 			return false;
 		});
-		$('#taulaDades').DataTable().column(9).visible(!escriptori);
+		$('#taulaDades').DataTable().column(columnaAgafatPer).visible(!mostrarMeusExpedients);
 	});
-	
-	if (escriptori)
-		$('#taulaDades').DataTable().column(9).visible(false);
-	
-	$('#escriptoriBtn').click(function() {
-		escriptori = !$(this).hasClass('active');
+	if (mostrarMeusExpedients) {
+		$('#taulaDades').DataTable().column(columnaAgafatPer).visible(false);
+	}
+	$('#meusExpedientsBtn').click(function() {
+		mostrarMeusExpedients = !$(this).hasClass('active');
 		// Modifica el formulari
-		$('#escriptori').val(escriptori);
+		$('#meusExpedients').val(mostrarMeusExpedients);
 		$(this).blur();
 		// Estableix el valor de la cookie
-		setCookie('escriptori', escriptori);
+		setCookie("${nomCookieMeusExpedients}", mostrarMeusExpedients);
 		// Amaga la columna i refresca la taula
 		$('#taulaDades').webutilDatatable('refresh');
 	})
 });
-
-/** Afegeix el valor a la cookie. */
 function setCookie(cname,cvalue) {
 	var exdays = 30;
     var d = new Date();
@@ -95,8 +91,6 @@ function setCookie(cname,cvalue) {
     var expires = "expires=" + d.toGMTString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
-
-/** Recupera el valor de la cookie. */
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -115,7 +109,10 @@ function getCookie(cname) {
 </head>
 <body>
 	<div class="text-right" data-toggle="botons-titol">
-		<button id="escriptoriBtn" title="<spring:message code="expedient.list.user.escriptori.info"/>" class='btn btn-default <c:if test="${escriptori}">active</c:if>' data-toggle="button"><span class="fa fa-desktop"></span> <spring:message code="expedient.list.user.escriptori"/></button>
+		<button id="meusExpedientsBtn" class="btn btn-default <c:if test="${meusExpedients}">active</c:if>" data-toggle="button"><span class="fa fa-desktop"></span> <spring:message code="expedient.list.user.meus"/></button>
+		<c:if test="${not empty metaExpedientsPermisCreacio}">
+			<a href="<c:url value="/contingut/${escriptori.id}/expedient/new"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-plus"></span> <spring:message code="expedient.list.user.nou"/></a>
+		</c:if>
 	</div>
 	<form:form id="expedientFiltreForm" action="" method="post" cssClass="well" commandName="expedientFiltreCommand">
 		<div class="row">
@@ -126,7 +123,7 @@ function getCookie(cname) {
 				<rip:inputText name="nom" inline="true" placeholderKey="expedient.list.user.placeholder.titol"/>
 			</div>
 			<div class="col-md-3">
-				<rip:inputSelect name="metaExpedientId" optionItems="${metaExpedients}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="expedient.list.user.placeholder.tipusExpedient" inline="true"/>
+				<rip:inputSelect name="metaExpedientId" optionItems="${metaExpedientsPermisLectura}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="expedient.list.user.placeholder.tipusExpedient" inline="true"/>
 			</div>
 			<div class="col-md-3">
 				<rip:inputSelect name="arxiuId" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="expedient.list.user.placeholder.arxiu" inline="true"/>
@@ -151,7 +148,7 @@ function getCookie(cname) {
 						<rip:inputDate name="dataTancatFi" inline="true" placeholderKey="expedient.list.user.placeholder.tancat.fi"/>
 					</div>
 				</div>
-				<rip:inputHidden name="escriptori"/>
+				<rip:inputHidden name="meusExpedients"/>
 			</div>
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
@@ -188,9 +185,20 @@ function getCookie(cname) {
 			<tr>
 				<th data-col-name="codiPropietariEscriptoriPare" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
+				<th data-col-name="metaNode.usuariActualDelete" data-visible="false"></th>
+				<th data-col-name="pare.id" data-visible="false"></th>
+				<th data-col-name="valid" data-visible="false"></th>
 				<th data-col-name="metaNode.nom" width="15%"><spring:message code="expedient.list.user.columna.tipus"/></th>
 				<th data-col-name="numero"><spring:message code="expedient.list.user.columna.numero"/></th>
-				<th data-col-name="nom" width="30%"><spring:message code="expedient.list.user.columna.titol"/></th>
+				<th data-col-name="nom" data-template="#cellNomTemplate" width="30%">
+					<spring:message code="expedient.list.user.columna.titol"/>
+					<script id="cellNomTemplate" type="text/x-jsrender">
+						{{if !valid}}
+						<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.expedient"/>"></span>
+						{{/if}}
+						{{:nom}}
+					</script>
+				</th>
 				<th data-col-name="arxiu.nom" width="15%"><spring:message code="expedient.list.user.columna.arxiu"/></th>
 				<th data-col-name="createdDate" data-type="datetime" data-converter="datetime" width="15%"><spring:message code="expedient.list.user.columna.createl"/></th>
 				<th data-col-name="estat" data-template="#cellEstatTemplate" width="10%">
@@ -211,15 +219,34 @@ function getCookie(cname) {
 							<ul class="dropdown-menu">
 								<li><a href="contingut/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.consultar"/></a></li>
 								{{if metaNode.usuariActualWrite}}
+									<li><a href="contingut/{{:pare.id}}/expedient/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li>
+								{{/if}}
+								{{if metaNode.usuariActualDelete}}
+									<li><a href="contingut/{{:pare.id}}/delete" data-confirm="<spring:message code="contingut.confirmacio.esborrar.node"/>"><span class="fa fa-trash-o"></span>&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+								{{/if}}
+								<li role="separator" class="divider"></li>
+								{{if metaNode.usuariActualWrite}}
 									{{if !codiPropietariEscriptoriPare}}
-									<li><a href="../expedient/{{:id}}/agafar" data-toggle="ajax"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+										<li><a href="expedient/{{:id}}/agafar" data-toggle="ajax"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
 									{{else codiPropietariEscriptoriPare != '${pageContext.request.userPrincipal.name}'}}
-									<li><a href="../expedient/{{:id}}/agafar" data-confirm="<spring:message code="expedient.list.user.agafar.confirm.1"/> {{:nomPropietariEscriptoriPare}}. <spring:message code="expedient.list.user.agafar.confirm.2"/>" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+										<li><a href="expedient/{{:id}}/agafar" data-confirm="<spring:message code="expedient.list.user.agafar.confirm.1"/> {{:nomPropietariEscriptoriPare}}. <spring:message code="expedient.list.user.agafar.confirm.2"/>" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+									{{/if}}
+									{{if codiPropietariEscriptoriPare == '${pageContext.request.userPrincipal.name}'}}
+										<li><a href="expedient/{{:id}}/alliberar" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+									{{/if}}
+									<li><a href="expedient/{{:id}}/relacionar" data-toggle="modal"><span class="fa fa-link"></span>&nbsp;<spring:message code="comu.boto.relacionar"/>...</a></li>
+									<li><a href="expedient/{{:id}}/acumular" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;<spring:message code="comu.boto.acumular"/>...</a></li>
+									{{if estat == 'OBERT'}}
+										{{if valid && estat == 'OBERT'}}
+											<li><a href="expedient/{{:id}}/tancar" data-toggle="modal"><span class="fa fa-check"></span>&nbsp;<spring:message code="comu.boto.tancar"/>...</a></li>
+										{{/if}}
+									{{else}}
+										<li><a href="expedient/{{:id}}/reobrir" data-toggle="modal"><span class="fa fa-undo"></span>&nbsp;<spring:message code="comu.boto.reobrir"/>...</a></li>
 									{{/if}}
 								{{/if}}
-								{{if codiPropietariEscriptoriPare == '${pageContext.request.userPrincipal.name}'}}
-								<li><a href="../expedient/{{:id}}/alliberar" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
-								{{/if}}
+								<li role="separator" class="divider"></li>
+								<li><a href="contingut/{{:id}}/log" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+								<li><a href="contingut/{{:id}}/exportar"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.exportar.eni"/></a></li>
 							</ul>
 						</div>
 					</script>

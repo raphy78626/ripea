@@ -44,6 +44,10 @@
 	margin-bottom: 0px;
 }
 
+.container-main>.panel-default {
+	margin-bottom: 10px;
+}
+
 .container-nocappeus {
 	padding-right: 15px;
     padding-left: 15px;

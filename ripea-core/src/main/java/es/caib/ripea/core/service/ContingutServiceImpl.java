@@ -1306,7 +1306,6 @@ public class ContingutServiceImpl implements ContingutService {
 			if (metadades != null) {
 				arxiuDetall.setEniVersio(metadades.getVersioNti());
 				arxiuDetall.setEniIdentificador(metadades.getIdentificador());
-				arxiuDetall.setSerieDocumental(metadades.getSerieDocumental());
 				arxiuDetall.setEniDataCaptura(metadades.getDataCaptura());
 				if (metadades.getOrigen() != null) {
 					switch (metadades.getOrigen()) {

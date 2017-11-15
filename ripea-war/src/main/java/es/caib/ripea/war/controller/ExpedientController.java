@@ -76,7 +76,7 @@ public class ExpedientController extends BaseUserController {
 	}
 
 	@RequestMapping(value = "/{expedientId}/alliberar", method = RequestMethod.GET)
-	public String expedientAlliberar(
+	public String alliberar(
 			HttpServletRequest request,
 			@PathVariable Long expedientId,
 			Model model) {

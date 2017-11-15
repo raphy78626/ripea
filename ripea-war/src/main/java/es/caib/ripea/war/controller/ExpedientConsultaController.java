@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
@@ -33,8 +32,8 @@ import org.springframework.web.util.WebUtils;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
-import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.service.ArxiuService;
+import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
@@ -56,12 +55,12 @@ public class ExpedientConsultaController extends BaseUserController {
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ExpedientUserController.session.filtre";
 	private static final String SESSION_ATTRIBUTE_SELECCIO = "ExpedientUserController.session.seleccio";
 	private static final String SESSION_ATTRIBUTE_METAEXP_ID = "ExpedientUserController.session.metaExpedient.id";
-	
-	/** Cookie per matenir la opció de si el botó "escriptori" està premut o no */
-	private static final String COOKIE_ESCRIPTORI = "escriptori";
+	private static final String COOKIE_MEUS_EXPEDIENTS = "meus_expedients";
 
 	@Autowired
 	private ArxiuService arxiuService;
+	@Autowired
+	private ContingutService contingutService;
 	@Autowired
 	private ExpedientService expedientService;
 	@Autowired
@@ -71,14 +70,16 @@ public class ExpedientConsultaController extends BaseUserController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
-			@CookieValue(value = COOKIE_ESCRIPTORI, defaultValue = "false") boolean escriptori,
+			@CookieValue(value = COOKIE_MEUS_EXPEDIENTS, defaultValue = "false") boolean meusExpedients,
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<MetaExpedientDto> metaExpedients = metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId());
 		model.addAttribute(
-				"metaExpedients",
-				metaExpedients);
+				"metaExpedientsPermisLectura",
+				metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId()));
+		model.addAttribute(
+				"metaExpedientsPermisCreacio",
+				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
 		model.addAttribute(
 				getFiltreCommand(request));
 		model.addAttribute(
@@ -95,7 +96,12 @@ public class ExpedientConsultaController extends BaseUserController {
 				EnumHelper.getOptionsForEnum(
 						ExpedientEstatEnumDto.class,
 						"expedient.estat.enum."));
-		model.addAttribute("escriptori", escriptori);
+		model.addAttribute("nomCookieMeusExpedients", COOKIE_MEUS_EXPEDIENTS);
+		model.addAttribute("meusExpedients", meusExpedients);
+		model.addAttribute(
+				"escriptori",
+				contingutService.getEscriptoriPerUsuariActual(
+						entitatActual.getId()));
 		return "expedientUserList";
 	}
 
@@ -264,8 +270,8 @@ public class ExpedientConsultaController extends BaseUserController {
 					SESSION_ATTRIBUTE_FILTRE,
 					filtreCommand);
 		}
-		Cookie c = WebUtils.getCookie(request, "escriptori");
-		filtreCommand.setEscriptori(c != null && "true".equals(c.getValue()));
+		Cookie cookie = WebUtils.getCookie(request, COOKIE_MEUS_EXPEDIENTS);
+		filtreCommand.setMeusExpedients(cookie != null && "true".equals(cookie.getValue()));
 		return filtreCommand;
 	}
 

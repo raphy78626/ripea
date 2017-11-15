@@ -496,8 +496,8 @@ public interface MetaExpedientService {
 			Long entitatId) throws NotFoundException;
 
 	/**
-	 * Consulta els meta-expedients actius per una entitat amb el permis WRITE per
-	 * a l'usuari actual.
+	 * Consulta els meta-expedients actius per una entitat amb el permis WRITE
+	 * per a l'usuari actual.
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
@@ -509,7 +509,7 @@ public interface MetaExpedientService {
 	public List<MetaExpedientDto> findActiusAmbEntitatPerModificacio(
 			Long entitatId) throws NotFoundException;
 	/**
-	 * Consulta els meta-expedients d' una entitat amb el permis READ per
+	 * Consulta els meta-expedients d'una entitat amb el permis READ per
 	 * a l'usuari actual.
 	 * 
 	 * @param entitatId
