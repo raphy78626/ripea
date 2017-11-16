@@ -1617,7 +1617,7 @@ public class ArxiuClientImpl implements ArxiuClient {
 			paramTarget.setTargetParent(targetNodeId);
 			request.setParam(paramTarget);
 			request.setServiceHeader(generarServiceHeader(capsalera));
-			copyFolder.setCopyFolderRequest(request);
+			copyFolder.setCopyCopyFolder(request);
 			JerseyResponse resposta = enviarPeticioRest(
 					metode,
 					copyFolder);

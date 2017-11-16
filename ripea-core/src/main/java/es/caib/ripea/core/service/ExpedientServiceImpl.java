@@ -22,6 +22,7 @@ import javax.swing.table.TableModel;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Persistable;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
@@ -48,7 +49,6 @@ import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DadaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaDadaEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
@@ -426,24 +426,20 @@ public class ExpedientServiceImpl implements ExpedientService {
 				false,
 				true);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<ExpedientSelectorDto> findPerUserAndTipus(
 			Long entitatId,
 			Long metaExpedientId) {
-		
 		logger.debug("Consultant els expedients segons el tipus per usuaris ("
 				+ "entitatId=" + entitatId + ", "
 				+ "metaExpedientId=" + metaExpedientId + ")");
-		
-		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		
 		MetaExpedientEntity metaExpedient = null;
 		if (metaExpedientId != null) {
 			metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
@@ -452,10 +448,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 					false,
 					true);
 		}
-		
 		List<MetaExpedientEntity> metaExpedientsPermesos = metaExpedientRepository.findByEntitatOrderByNomAsc(
 				entitat);
-		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		permisosHelper.filterGrantedAll(
 				metaExpedientsPermesos,
@@ -468,7 +462,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 				MetaNodeEntity.class,
 				new Permission[] {ExtendedPermission.READ},
 				auth);
-		
 		if (!metaExpedientsPermesos.isEmpty()) {
 			return conversioTipusHelper.convertirList(
 					expedientRepository.findByEntitatAndMetaExpedientOrderByNomAsc(
@@ -546,7 +539,9 @@ public class ExpedientServiceImpl implements ExpedientService {
 				true,
 				false);
 		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
-		ContingutEntity arrel = contingutHelper.findContingutArrel(expedient);
+		UsuariEntity usuariOriginal = expedient.getAgafatPer();
+		UsuariEntity usuariNou = usuariHelper.getUsuariAutenticat();
+		/*ContingutEntity arrel = contingutHelper.findContingutArrel(expedient);
 		UsuariEntity usuariOriginal = null;
 		if (arrel instanceof EscriptoriEntity)
 			usuariOriginal = ((EscriptoriEntity)arrel).getUsuari();
@@ -557,7 +552,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 		contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				escriptori,
-				null);
+				null);*/
+		expedient.updateAgafatPer(usuariNou);
 		// Avisa a l'usuari que li han pres
 		if (usuariOriginal != null) {
 			emailHelper.emailUsuariContingutAgafatSensePermis(
@@ -614,7 +610,9 @@ public class ExpedientServiceImpl implements ExpedientService {
 					"No es pot agafar un expedient no arrel");
 		}
 		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
-		ContingutEntity arrel = contingutHelper.findContingutArrel(expedient);
+		UsuariEntity usuariOriginal = expedient.getAgafatPer();
+		UsuariEntity usuariNou = usuariHelper.getUsuariAutenticat();
+		/*ContingutEntity arrel = contingutHelper.findContingutArrel(expedient);
 		UsuariEntity usuariOriginal = null;
 		if (arrel instanceof EscriptoriEntity)
 			usuariOriginal = ((EscriptoriEntity)arrel).getUsuari();
@@ -630,7 +628,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 		contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				escriptori,
-				null);
+				null);*/
+		expedient.updateAgafatPer(usuariNou);
 		// Avisa a l'usuari que li han pres
 		emailHelper.emailUsuariContingutAgafatSensePermis(
 				expedient,
@@ -665,14 +664,15 @@ public class ExpedientServiceImpl implements ExpedientService {
 				entitat,
 				null,
 				id);
-		// Comprova que el contenidor arrel és l'escriptori de l'usuari actual
+		/*/ Comprova que el contenidor arrel és l'escriptori de l'usuari actual
 		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
 				entitat,
 				expedient);
 		contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				expedient.getArxiu(),
-				null);
+				null);*/
+		expedient.updateAgafatPer(null);
 		// Registra al log l'alliberació de l'expedient
 		contingutLogHelper.log(
 				expedient,
@@ -702,10 +702,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 				entitat,
 				null,
 				id);
-		contingutHelper.ferIEnregistrarMoviment(
+		/*contingutHelper.ferIEnregistrarMoviment(
 				expedient,
 				expedient.getArxiu(),
-				null);
+				null);*/
+		expedient.updateAgafatPer(null);
 		// Registra al log l'alliberació de l'expedient
 		contingutLogHelper.log(
 				expedient,
@@ -929,41 +930,40 @@ public class ExpedientServiceImpl implements ExpedientService {
 					auth);
 		}
 		if (!metaExpedientsPermesos.isEmpty()) {
-			Long escriptoriId = null;
+			UsuariEntity agafatPer = null;
 			if (filtre.isMeusExpedients()) {
-				escriptoriId = contingutHelper.getEscriptoriPerUsuari(
-												entitat,
-												usuariHelper.getUsuariAutenticat()).getId();
+				agafatPer = usuariHelper.getUsuariAutenticat();
 			}
 			Map<String, String[]> ordenacioMap = new HashMap<String, String[]>();
-			ordenacioMap.put("numero", new String[] {"any", "codi", "sequencia"});
+			ordenacioMap.put("numero", new String[] {"codi", "any", "sequencia"});
+			Page<ExpedientEntity> paginaExpedients = expedientRepository.findByEntitatAndFiltre(
+					entitat,
+					arxiu == null,
+					arxiu,
+					metaExpedientsPermesos,
+					metaExpedient == null,
+					metaExpedient,
+					filtre.getNumero() == null || "".equals(filtre.getNumero().trim()),
+					filtre.getNumero(),
+					filtre.getNom() == null || filtre.getNom().isEmpty(),
+					filtre.getNom(),
+					filtre.getDataCreacioInici() == null,
+					filtre.getDataCreacioInici(),
+					filtre.getDataCreacioFi() == null,
+					filtre.getDataCreacioFi(),
+					filtre.getDataTancatInici() == null,
+					filtre.getDataTancatInici(),
+					filtre.getDataTancatFi() == null,
+					filtre.getDataTancatFi(),
+					filtre.getEstat() == null,
+					filtre.getEstat(),
+					agafatPer == null,
+					agafatPer,
+					paginacioHelper.toSpringDataPageable(
+							paginacioParams,
+							ordenacioMap));
 			return paginacioHelper.toPaginaDto(
-					expedientRepository.findByEntitatAndFiltre(
-							entitat,
-							arxiu == null,
-							arxiu,
-							metaExpedientsPermesos,
-							metaExpedient == null,
-							metaExpedient,
-							filtre.getNumero() == null || "".equals(filtre.getNumero().trim()),
-							filtre.getNumero(),
-							filtre.getNom() == null || filtre.getNom().isEmpty(),
-							filtre.getNom(),
-							filtre.getDataCreacioInici() == null,
-							filtre.getDataCreacioInici(),
-							filtre.getDataCreacioFi() == null,
-							filtre.getDataCreacioFi(),
-							filtre.getDataTancatInici() == null,
-							filtre.getDataTancatInici(),
-							filtre.getDataTancatFi() == null,
-							filtre.getDataTancatFi(),
-							filtre.getEstat() == null,
-							filtre.getEstat(),
-							escriptoriId == null,
-							escriptoriId,
-							paginacioHelper.toSpringDataPageable(
-									paginacioParams,
-									ordenacioMap)),
+					paginaExpedients,
 					ExpedientDto.class,
 					new Converter<ExpedientEntity, ExpedientDto>() {
 						@Override

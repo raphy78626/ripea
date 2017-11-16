@@ -84,6 +84,10 @@ public class ExpedientEntity extends NodeEntity {
 	protected String sistraUnitatAdministrativa;
 	@Column(name = "sistra_clau", length = 100)
 	protected String sistraClau;
+	@ManyToOne(optional = true, fetch = FetchType.EAGER)
+	@JoinColumn(name = "agafat_per_codi")
+	@ForeignKey(name = "ipa_agafatper_expedient_fk")
+	protected UsuariEntity agafatPer;
 	@ManyToMany(
 			cascade = {
 					CascadeType.DETACH,
@@ -100,7 +104,7 @@ public class ExpedientEntity extends NodeEntity {
 					@JoinColumn(name = "expedient_rel_id", referencedColumnName = "id")})
 	@ForeignKey(
 			name = "ipa_expedient_rel_exp_fk",
-			inverseName = "ipa_expedient_rel_rel_fk")	
+			inverseName = "ipa_expedient_rel_rel_fk")
 	protected List<ExpedientEntity> relacionatsAmb = new ArrayList<ExpedientEntity>();
 	@ManyToMany(
 			cascade = {
@@ -118,7 +122,7 @@ public class ExpedientEntity extends NodeEntity {
 					@JoinColumn(name = "expedient_id", referencedColumnName="id")})
 	@ForeignKey(
 			name = "ipa_expedient_rel_rel_fk",
-			inverseName = "ipa_expedient_rel_exp_fk")	
+			inverseName = "ipa_expedient_rel_exp_fk")
 	protected List<ExpedientEntity> relacionatsPer = new ArrayList<ExpedientEntity>();
 
 	public ArxiuEntity getArxiu() {
@@ -172,14 +176,17 @@ public class ExpedientEntity extends NodeEntity {
 	public String getSistraClau() {
 		return sistraClau;
 	}
-	public MetaExpedientEntity getMetaExpedient() {
-		return (MetaExpedientEntity)getMetaNode();
+	public UsuariEntity getAgafatPer() {
+		return agafatPer;
 	}
 	public List<ExpedientEntity> getRelacionatsAmb() {
 		return relacionatsAmb;
 	}
 	public List<ExpedientEntity> getRelacionatsPer() {
 		return relacionatsPer;
+	}
+	public MetaExpedientEntity getMetaExpedient() {
+		return (MetaExpedientEntity)getMetaNode();
 	}
 
 	@Transient
@@ -226,6 +233,10 @@ public class ExpedientEntity extends NodeEntity {
 		this.tancatMotiu = tancatMotiu;
 		if (ExpedientEstatEnumDto.TANCAT.equals(estat))
 			this.tancatData = new Date();
+	}
+	public void updateAgafatPer(
+			UsuariEntity usuari) {
+		this.agafatPer = usuari;
 	}
 
 	public void updateSistra(

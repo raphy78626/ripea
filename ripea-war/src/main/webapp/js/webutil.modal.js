@@ -240,7 +240,6 @@
 
 	$(document).ready(function() {
 		$('[data-toggle="modal"]', $(this)).each(function() {
-			console.log('>>> modal ' + $(this).attr('href'));
 			if (!$(this).attr('data-modal-eval')) {
 				$(this).webutilModal();
 				$(this).attr('data-modal-eval', 'true');

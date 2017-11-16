@@ -196,7 +196,7 @@ body {
 								</div>
 							</c:when>
 							<c:when test="${isRolActualUsuari}">
-								<a href="<c:url value="/escriptori"/>" class="btn btn-primary"><spring:message code="decorator.menu.escriptori"/></a>
+								<%--a href="<c:url value="/escriptori"/>" class="btn btn-primary"><spring:message code="decorator.menu.escriptori"/></a--%>
 								<a href="<c:url value="/expedient"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
 								<a href="<c:url value="/bustiaUser"/>" class="btn btn-primary">
 									<spring:message code="decorator.menu.busties"/>

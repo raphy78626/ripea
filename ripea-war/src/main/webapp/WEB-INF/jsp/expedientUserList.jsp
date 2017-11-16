@@ -176,7 +176,7 @@ function getCookie(cname) {
 			data-toggle="datatable" 
 			data-url="<c:url value="/expedient/datatable"/>" 
 			class="table table-bordered table-striped" 
-			data-default-order="6" 
+			data-default-order="11" 
 			data-default-dir="desc"
 			data-botons-template="#botonsTemplate"
 			data-selection-enabled="true"
@@ -187,6 +187,8 @@ function getCookie(cname) {
 				<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualDelete" data-visible="false"></th>
 				<th data-col-name="pare.id" data-visible="false"></th>
+				<th data-col-name="agafat" data-visible="false"></th>
+				<th data-col-name="agafatper.codi" data-visible="false"></th>
 				<th data-col-name="valid" data-visible="false"></th>
 				<th data-col-name="metaNode.nom" width="15%"><spring:message code="expedient.list.user.columna.tipus"/></th>
 				<th data-col-name="numero"><spring:message code="expedient.list.user.columna.numero"/></th>
@@ -211,7 +213,7 @@ function getCookie(cname) {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="nomPropietariEscriptoriPare" data-orderable="false" width="20%"><spring:message code="expedient.list.user.columna.agafatper"/></th>
+				<th data-col-name="agafatPer.nom" data-orderable="false" width="20%"><spring:message code="expedient.list.user.columna.agafatper"/></th>
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
@@ -226,13 +228,14 @@ function getCookie(cname) {
 								{{/if}}
 								<li role="separator" class="divider"></li>
 								{{if metaNode.usuariActualWrite}}
-									{{if !codiPropietariEscriptoriPare}}
+									{{if !agafat}}
 										<li><a href="expedient/{{:id}}/agafar" data-toggle="ajax"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
-									{{else codiPropietariEscriptoriPare != '${pageContext.request.userPrincipal.name}'}}
-										<li><a href="expedient/{{:id}}/agafar" data-confirm="<spring:message code="expedient.list.user.agafar.confirm.1"/> {{:nomPropietariEscriptoriPare}}. <spring:message code="expedient.list.user.agafar.confirm.2"/>" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
-									{{/if}}
-									{{if codiPropietariEscriptoriPare == '${pageContext.request.userPrincipal.name}'}}
-										<li><a href="expedient/{{:id}}/alliberar" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+									{{else}}
+										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}
+											<li><a href="expedient/{{:id}}/agafar" data-confirm="<spring:message code="expedient.list.user.agafar.confirm.1"/> {{:nomPropietariEscriptoriPare}}. <spring:message code="expedient.list.user.agafar.confirm.2"/>" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+										{{else}}
+											<li><a href="expedient/{{:id}}/alliberar" data-toggle="ajax"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+										{{/if}}
 									{{/if}}
 									<li><a href="expedient/{{:id}}/relacionar" data-toggle="modal"><span class="fa fa-link"></span>&nbsp;<spring:message code="comu.boto.relacionar"/>...</a></li>
 									<li><a href="expedient/{{:id}}/acumular" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;<spring:message code="comu.boto.acumular"/>...</a></li>

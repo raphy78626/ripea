@@ -48,7 +48,7 @@ public class RipeaController {
 			if (RolHelper.isUsuariActualAdministrador(request)) {
 				return "redirect:metaExpedient";
 			} else if (RolHelper.isUsuariActualUsuari(request)) {
-				return "redirect:escriptori";
+				return "redirect:expedient";
 			} else {
 				return "index";
 			}

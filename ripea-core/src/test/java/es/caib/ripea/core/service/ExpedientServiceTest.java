@@ -328,7 +328,7 @@ public class ExpedientServiceTest extends BaseServiceTest {
 						autenticarUsuari("user");
 						assertTrue(
 								expedientCreat.isAgafat());
-						assertEquals("user", expedientCreat.getAgafatUsuari());
+						assertEquals("user", expedientCreat.getAgafatPer().getCodi());
 						expedientService.alliberarUser(
 								entitatCreada.getId(),
 								expedientCreat.getId());
@@ -337,7 +337,7 @@ public class ExpedientServiceTest extends BaseServiceTest {
 								expedientCreat.getId());
 						assertTrue(
 								!alliberat.isAgafat());
-						assertNull(alliberat.getAgafatUsuari());
+						assertNull(alliberat.getAgafatPer());
 						expedientService.agafarUser(
 								entitatCreada.getId(),
 								expedientCreat.getId());
@@ -346,7 +346,7 @@ public class ExpedientServiceTest extends BaseServiceTest {
 								expedientCreat.getId());
 						assertTrue(
 								agafat.isAgafat());
-						assertEquals("user", agafat.getAgafatUsuari());
+						assertEquals("user", agafat.getAgafatPer().getCodi());
 					}
 				});
 	}
@@ -361,7 +361,7 @@ public class ExpedientServiceTest extends BaseServiceTest {
 						ExpedientDto expedientCreat = (ExpedientDto)elementsCreats.get(5);
 						assertTrue(
 								expedientCreat.isAgafat());
-						assertEquals("user", expedientCreat.getAgafatUsuari());
+						assertEquals("user", expedientCreat.getAgafatPer().getCodi());
 						autenticarUsuari("admin");
 						expedientService.alliberarAdmin(
 								entitatCreada.getId(),
@@ -372,7 +372,7 @@ public class ExpedientServiceTest extends BaseServiceTest {
 								expedientCreat.getId());
 						assertTrue(
 								!alliberat.isAgafat());
-						assertNull(alliberat.getAgafatUsuari());
+						assertNull(alliberat.getAgafatPer());
 						expedientService.agafarUser(
 								entitatCreada.getId(),
 								expedientCreat.getId());
@@ -381,10 +381,11 @@ public class ExpedientServiceTest extends BaseServiceTest {
 								expedientCreat.getId());
 						assertTrue(
 								agafat.isAgafat());
-						assertEquals("user", agafat.getAgafatUsuari());
+						assertEquals("user", agafat.getAgafatPer().getCodi());
 					}
 				});
 	}
+
 
 
 	private void donarPermisosArxiu(
@@ -463,6 +464,7 @@ public class ExpedientServiceTest extends BaseServiceTest {
 				metaExpedient,
 				arxiu);
 	}
+
 	class TestAmbElementsIExpedient extends TestAmbElementsCreats {
 		@Override
 		public void executar(List<Object> elementsCreats) {

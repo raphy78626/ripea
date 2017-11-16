@@ -18,6 +18,7 @@ import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
+import es.caib.ripea.core.entity.UsuariEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -76,7 +77,7 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			"and (:esNullTancatInici = true or e.createdDate >= :tancatInici) " +
 			"and (:esNullTancatFi = true or e.createdDate <= :tancatFi) " +
 			"and (:esNullEstat = true or e.estat = :estat) " +
-			"and (:isPareIdNull = true or :pareId = e.pare.id)")
+			"and (:esNullAgafatPer = true or e.agafatPer = :agafatPer)")
 	Page<ExpedientEntity> findByEntitatAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullArxiu") boolean esNullArxiu,
@@ -98,8 +99,8 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			@Param("tancatFi") Date tancatFi,
 			@Param("esNullEstat") boolean esNullEstat,
 			@Param("estat") ExpedientEstatEnumDto estat,
-			@Param("isPareIdNull") boolean isPareIdNull,
-			@Param("pareId") Long pareId,
+			@Param("esNullAgafatPer") boolean esNullAgafatPer,
+			@Param("agafatPer") UsuariEntity agafatPer,
 			Pageable pageable);
 
 	@Query(	"select" +

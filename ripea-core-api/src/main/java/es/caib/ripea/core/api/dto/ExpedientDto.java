@@ -30,6 +30,7 @@ public class ExpedientDto extends NodeDto {
 	private boolean sistraPublicat;
 	private String sistraUnitatAdministrativa;
 	private String sistraClau;
+	private UsuariDto agafatPer;
 
 	private String numero;
 
@@ -131,12 +132,19 @@ public class ExpedientDto extends NodeDto {
 	public void setSistraClau(String sistraClau) {
 		this.sistraClau = sistraClau;
 	}
+	public UsuariDto getAgafatPer() {
+		return agafatPer;
+	}
+	public void setAgafatPer(UsuariDto agafatPer) {
+		this.agafatPer = agafatPer;
+	}
 	public String getNumero() {
 		return numero;
 	}
 	public void setNumero(String numero) {
 		this.numero = numero;
 	}
+
 	public MetaExpedientDto getMetaExpedient() {
 		return (MetaExpedientDto)getMetaNode();
 	}
@@ -163,12 +171,8 @@ public class ExpedientDto extends NodeDto {
 	public String getNtiEstado() {
 		return ExpedientEstatEnumDto.OBERT.equals(estat) ? "Abierto" : "Cerrado";
 	}*/
-
 	public boolean isAgafat() {
-		return getEscriptoriPare() != null;
-	}
-	public String getAgafatUsuari() {
-		return getNomPropietariEscriptoriPare();
+		return agafatPer != null;
 	}
 
 	protected ExpedientDto copiarContenidor(ContingutDto original) {

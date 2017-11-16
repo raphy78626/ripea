@@ -7,7 +7,7 @@
 	<ol class="breadcrumb">
 		<c:forEach var="contingutPath" items="${contingut.path}" varStatus="status">
 			<li>
-				<c:choose>
+				<%--c:choose>
 					<c:when test="${contingutPath.escriptori}">
 						<c:choose>
 							<c:when test="${contingut.codiPropietariEscriptoriPare == pageContext.request.userPrincipal.name}">
@@ -18,7 +18,7 @@
 							</c:otherwise>
 						</c:choose>
 					</c:when>
-					<c:otherwise>
+					<c:otherwise--%>
 						<c:choose>
 							<c:when test="${contingutPath.expedient}"><a href="<c:url value="/contingut/${contingutPath.id}"/>"><span class="fa ${iconaExpedientObert}" title="<spring:message code="contingut.icona.expedient"/>"></span> ${contingutPath.nom}</a></c:when>
 							<c:when test="${contingutPath.document}"><a href="<c:url value="/contingut/${contingutPath.id}"/>"><span class="fa ${iconaDocument}" title="<spring:message code="contingut.icona.document"/>"></span> ${contingutPath.nom}</a></c:when>
@@ -36,8 +36,8 @@
 								</c:choose>
 							</c:when>
 						</c:choose>
-					</c:otherwise>
-				</c:choose>
+					<%--/c:otherwise>
+				</c:choose--%>
 			</li>
 		</c:forEach>
 		<li class="active">

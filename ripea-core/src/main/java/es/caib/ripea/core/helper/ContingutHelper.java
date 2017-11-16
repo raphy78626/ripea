@@ -181,6 +181,10 @@ public class ContingutHelper {
 			dto.setSistraUnitatAdministrativa(expedient.getSistraUnitatAdministrativa());
 			dto.setSistraClau(expedient.getSistraClau());
 			dto.setNumero(expedient.getNumero());
+			dto.setAgafatPer(
+					conversioTipusHelper.convertir(
+							expedient.getAgafatPer(),
+							UsuariDto.class));
 			dto.setArxiu((ArxiuDto)toContingutDto(expedient.getArxiu()));
 			metaNode = conversioTipusHelper.convertir(
 					expedient.getMetaNode(),

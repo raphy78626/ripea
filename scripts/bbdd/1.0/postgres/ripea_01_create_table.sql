@@ -302,7 +302,8 @@ CREATE TABLE IPA_EXPEDIENT
   SISTRA_BANTEL_NUM  character varying(16),
   SISTRA_PUBLICAT    boolean,
   SISTRA_UNITAT_ADM  character varying(9),
-  SISTRA_CLAU        character varying(100)
+  SISTRA_CLAU        character varying(100),
+  AGAFAT_PER_CODI    character varying(64)
 );
 
 

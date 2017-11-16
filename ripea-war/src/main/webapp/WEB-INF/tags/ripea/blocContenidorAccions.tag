@@ -5,7 +5,7 @@
 <%@ attribute name="contingut" required="true" rtexprvalue="true" type="java.lang.Object"%>
 <%@ attribute name="modeLlistat" required="true" rtexprvalue="true"%>
 <%@ attribute name="mostrarObrir" required="false" rtexprvalue="true"%>
-<c:set var="expedientPareObertOInexistent" value="${contingut.expedientPare.estat == 'OBERT' or empty contingut.expedientPare}"/>
+<c:set var="expedientPareObertOInexistent" value="${empty contingut.expedientPare or contingut.expedientPare.estat == 'OBERT'}"/>
 <c:set var="mostrarSeparador" value="${false}"/>
 <div <c:if test="${not empty id}">id="${id}" </c:if>class="dropdown<c:if test="${not modeLlistat}"> text-center</c:if><c:if test="${not empty className}"> ${className}</c:if>">
 	<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle<c:if test="${not modeLlistat}"> btn-xs</c:if>"><span class="fa fa-cog"></span><c:if test="${modeLlistat}">&nbsp;<spring:message code="comu.boto.accions"/></c:if>&nbsp;<span class="caret caret-white"></span></button>
@@ -14,7 +14,7 @@
 			<li><a href="${contingut.id}"><span class="fa fa-folder-open-o"></span>&nbsp;<spring:message code="comu.boto.consultar"/></a></li>
 			<c:set var="mostrarSeparador" value="${true}"/>
 		</c:if>
-		<c:if test="${not empty contingut.escriptoriPare and expedientPareObertOInexistent}">
+		<c:if test="${contingut.expedientPare.agafat and expedientPareObertOInexistent}">
 			<c:choose>
 				<c:when test="${contingut.expedient and (empty contingut.metaNode or contingut.metaNode.usuariActualWrite)}">
 					<li><a href="../contingut/${contingut.pare.id}/expedient/${contingut.id}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li>
@@ -81,7 +81,7 @@
 				<li><a href="../contingut/${contingut.pare.id}/document/${contingut.id}/descarregar"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a></li>
 				<c:set var="mostrarSeparador" value="${true}"/>
 			</c:if>
-			<c:if test="${not empty contingut.escriptoriPare and expedientPareObertOInexistent}">
+			<c:if test="${contingut.expedientPare.agafat and expedientPareObertOInexistent}">
 				<c:if test="${contingut.estat == 'CUSTODIAT'}">
 					<li><a href="../document/${contingut.id}/notificar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="comu.boto.notificar"/>...</a></li>
 					<li><a href="../document/${contingut.id}/publicar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-clipboard"></span>&nbsp;<spring:message code="comu.boto.publicar"/>...</a></li>

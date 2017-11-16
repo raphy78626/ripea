@@ -190,7 +190,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 		return null;
 	}
 
-	public EscriptoriDto getEscriptoriPare() {
+	/*public EscriptoriDto getEscriptoriPare() {
 		if (getPath() == null)
 			return null;
 		if (this instanceof EscriptoriDto) {
@@ -222,7 +222,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 		} else {
 			return null;
 		}
-	}
+	}*/
 
 	public List<ExpedientDto> getFillsExpedients() {
 		List<ExpedientDto> expedients = new ArrayList<ExpedientDto>();

@@ -137,7 +137,7 @@ ul.interessats {
 	width: 280px; !important
 }
 </style>
-<c:if test="${edicioOnlineActiva and contingut.document and not empty contingut.escriptoriPare}">
+<c:if test="${edicioOnlineActiva and contingut.document and contingut.metaNode.usuariActualWrite}">
 	<script src="http://www.java.com/js/deployJava.js"></script>
 <script type="text/javascript">
 var officeExecAttributes = {
@@ -628,7 +628,7 @@ $(document).ready(function() {
 										</ul>
 									</div>
 								</c:if>
-								<c:if test="${(contingut.escriptori or not empty contingut.escriptoriPare) and (contingut.escriptori or contingut.carpeta or ((contingut.expedient or contingut.document) and potModificarContingut))}">
+								<c:if test="${(contingut.escriptori or contingut.carpeta or ((contingut.expedient or contingut.document) and potModificarContingut))}">
 									<div id="botons-crear-contingut" class="btn-group">
 										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contingut.boto.crear.contingut"/>&nbsp;<span class="caret"></span></button>
 										<ul class="dropdown-menu text-left" role="menu">
