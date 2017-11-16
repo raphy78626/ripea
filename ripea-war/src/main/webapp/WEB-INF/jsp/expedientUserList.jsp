@@ -176,14 +176,13 @@ function getCookie(cname) {
 			data-toggle="datatable" 
 			data-url="<c:url value="/expedient/datatable"/>" 
 			class="table table-bordered table-striped" 
-			data-default-order="11" 
+			data-default-order="10" 
 			data-default-dir="desc"
 			data-botons-template="#botonsTemplate"
 			data-selection-enabled="true"
 			style="width:100%">
 		<thead>
 			<tr>
-				<th data-col-name="codiPropietariEscriptoriPare" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualDelete" data-visible="false"></th>
 				<th data-col-name="pare.id" data-visible="false"></th>
