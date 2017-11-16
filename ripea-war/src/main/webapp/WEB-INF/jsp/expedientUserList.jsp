@@ -188,11 +188,7 @@ function getCookie(cname) {
 				<th data-col-name="metaNode.usuariActualDelete" data-visible="false"></th>
 				<th data-col-name="pare.id" data-visible="false"></th>
 				<th data-col-name="agafat" data-visible="false"></th>
-<<<<<<< HEAD
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
-=======
-				<th data-col-name="agafatper.codi" data-visible="false"></th>
->>>>>>> branch 'ripea-1.0' of https://github.com/GovernIB/ripea.git
 				<th data-col-name="valid" data-visible="false"></th>
 				<th data-col-name="metaNode.nom" width="15%"><spring:message code="expedient.list.user.columna.tipus"/></th>
 				<th data-col-name="numero"><spring:message code="expedient.list.user.columna.numero"/></th>
