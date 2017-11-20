@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Random;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -34,13 +35,17 @@ import es.caib.ripea.ws.v1.bustia.RegistreAnotacio;
 public class BustiaV1Test {
 
 	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/v1/bustia";
-	private static final String USERNAME = null;
-	private static final String PASSWORD = null;
+	private static final String USERNAME = "admin";
+	private static final String PASSWORD = "admin15";
 
 
 
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
+		
+		Random generator = new Random(); 
+		int randomNumber = generator.nextInt(9999) + 1;
+		
 		RegistreAnotacio anotacio = new RegistreAnotacio(); 
 		anotacio.setAplicacioCodi("CLIENT_TEST");
 		anotacio.setAplicacioVersio("2");
@@ -58,10 +63,11 @@ public class BustiaV1Test {
         anotacio.setEntitatDescripcio("Descripció entitat");
         anotacio.setLlibreCodi("L01");
         anotacio.setLlibreDescripcio("llibre descripció");
-        anotacio.setNumero(28);
+        anotacio.setNumero(String.valueOf(randomNumber));
         anotacio.setIdiomaCodi("1");
         anotacio.setIdiomaDescripcio("Català");
         anotacio.setIdentificador("15/10/2015");
+        anotacio.setExpedientNumero(String.valueOf(randomNumber));
         
         File file = new File("c:/Feina/RIPEA/annexos/annex1.pdf");
         byte[] encodedContingut = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
@@ -72,10 +78,10 @@ public class BustiaV1Test {
         annex1.setFitxerContingutBase64(new String(encodedContingut));
         annex1.setFitxerTamany((int)(file.length()));
         annex1.setDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        
         annex1.setOrigenCiutadaAdmin("0");
         annex1.setNtiTipusDocument("TD01");
         annex1.setSicresTipusDocument("01");
+        annex1.setNtiElaboracioEstat("EE01");
         
         
         File file2 = new File("c:/Feina/RIPEA/annexos/annex2.pdf");
@@ -85,19 +91,35 @@ public class BustiaV1Test {
         annex2.setFitxerNom(file2.getName());
         annex2.setFitxerTipusMime(FilenameUtils.getExtension(file2.getName()));
         annex2.setFitxerContingutBase64(new String(encodedContingut2));
-        annex2.setFitxerTamany((int)(file.length()));
+        annex2.setFitxerTamany((int)(file2.length()));
         annex2.setDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        
         annex2.setOrigenCiutadaAdmin("1");
         annex2.setNtiTipusDocument("TD02");
         annex2.setSicresTipusDocument("02");
+        annex2.setNtiElaboracioEstat("EE01");
         
         anotacio.getAnnexos().add(annex1);
         anotacio.getAnnexos().add(annex2);
         
+        File file3 = new File("c:/Feina/RIPEA/annexos/justificant.pdf");
+        byte[] encodedContingut3 = Base64.encodeBase64(FileUtils.readFileToByteArray(file3));
+        RegistreAnnex justificant = new RegistreAnnex();
+        justificant.setTitol("justificant");
+        justificant.setFitxerNom(file3.getName());
+        justificant.setFitxerTipusMime(FilenameUtils.getExtension(file3.getName()));
+        justificant.setFitxerContingutBase64(new String(encodedContingut3));
+        justificant.setFitxerTamany((int)(file3.length()));
+        justificant.setDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        justificant.setOrigenCiutadaAdmin("1");
+        justificant.setNtiTipusDocument("TD02");
+        justificant.setSicresTipusDocument("02");
+        justificant.setNtiElaboracioEstat("EE01");
+        
+        anotacio.setJustificant(justificant);
+        
 		getBustiaServicePort().enviarAnotacioRegistreEntrada(
 				"A04003003", // "entitatCodi",
-				"A04013499", // "unitatAdministrativaCodi",
+				"A04019299", // "unitatAdministrativaCodi",
 				anotacio);
 	}
 

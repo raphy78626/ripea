@@ -157,6 +157,11 @@
 			<version>1.0.4</version>
 		</dependency>
 		<dependency>
+			<groupId>org.fundaciobit.plugins</groupId>
+			<artifactId>plugin-arxiu-caib</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jcl</artifactId>
 			<version>${slf4j.version}</version>

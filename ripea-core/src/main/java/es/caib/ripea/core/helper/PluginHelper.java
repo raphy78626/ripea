@@ -64,6 +64,7 @@ import es.caib.ripea.core.api.dto.UnitatOrganitzativaD3Dto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
+import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
@@ -75,6 +76,8 @@ import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
+import es.caib.ripea.core.entity.RegistreAnnexEntity;
+import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.plugin.ciutada.CiutadaDocument;
 import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
 import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat;
@@ -1001,6 +1004,53 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+	public ContingutArxiu arxiuExpedientPerAnotacioCrear(
+			RegistreEntity anotacio, 
+			BustiaEntity bustia) {
+		String accioDescripcio = "Creant un expedient temporal per anotacio de registre rebuda";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("nom", "EXP_REG_" + anotacio.getExpedientNumero());
+		accioParams.put("entitatId", bustia.getEntitat().getId().toString());
+		accioParams.put("entitatCodi", bustia.getEntitat().getCodi());
+		accioParams.put("entitatNom", bustia.getEntitat().getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
+					toArxiuExpedient(
+							null,
+							"EXP_REG_" + anotacio.getExpedientNumero(),
+							null,
+							Arrays.asList(bustia.getEntitat().getUnitatArrel()),
+							new Date(),
+							getPropertyPluginArxiuExpedientClassificacio(),
+							ExpedientEstatEnumDto.OBERT,
+							null,
+							getPropertyPluginArxiuExpedientSerieDocumental()));
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			
+			return expedientCreat;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
 
 	public void arxiuExpedientActualitzar(
 			ExpedientEntity expedient) {
@@ -1067,6 +1117,39 @@ public class PluginHelper {
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	public Expedient arxiuExpedientConsultarPerUuid(
+			String uuid) {
+		String accioDescripcio = "Consulta d'un expedient per uuid";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		long t0 = System.currentTimeMillis();
+		try {
+			Expedient arxiuExpedient = getArxiuPlugin().expedientDetalls(
+					uuid, 
+					null);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return arxiuExpedient;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
@@ -1323,6 +1406,59 @@ public class PluginHelper {
 								DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())));
 				document.updateArxiu(null);
 			}
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	public void arxiuDocumentAnnexCrear(
+			RegistreAnnexEntity annex,
+			BustiaEntity bustia,
+			FitxerDto fitxer,
+			ContingutArxiu expedient) {
+		String accioDescripcio = "Actualització de les dades d'un document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("títol", annex.getTitol());
+		accioParams.put("contingutPareId", expedient.getIdentificador());
+		accioParams.put("contingutPareNom", expedient.getNom());
+		accioParams.put("classificacioDocumental", getPropertyPluginArxiuDocumentSerieDocumental());
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().documentCrear(
+					toArxiuDocument(
+							null,
+							annex.getTitol(),
+							fitxer,
+							null,
+							null,
+							(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(annex.getOrigenCiutadaAdmin().getValor())] : null),
+							Arrays.asList(bustia.getEntitat().getUnitatArrel()),
+							annex.getDataCaptura(),
+							(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(annex.getNtiElaboracioEstat().getValor()) : null),
+							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(annex.getNtiTipusDocument().getValor()) : null),
+							getPropertyPluginArxiuDocumentSerieDocumental(),
+							DocumentEstat.ESBORRANY,
+							false),
+					expedient.getIdentificador());
+				
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
@@ -3439,4 +3575,14 @@ public class PluginHelper {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.escriptori.serie.documental");
 	}
 
+	private String getPropertyPluginArxiuExpedientClassificacio() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.expedient.classificacio");
+	}
+	private String getPropertyPluginArxiuExpedientSerieDocumental() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.expedient.serie.documental");
+	}
+	
+	private String getPropertyPluginArxiuDocumentSerieDocumental() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.document.serie.documental");
+	}
 }

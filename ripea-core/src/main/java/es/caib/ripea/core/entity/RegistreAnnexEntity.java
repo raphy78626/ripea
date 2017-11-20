@@ -69,7 +69,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	private String ntiTipusDocument;
 	@Column(name = "sicres_tipus_doc", length = 2, nullable = false)
 	private String sicresTipusDocument;
-	@Column(name = "nti_elaboracio_estat", length = 2)
+	@Column(name = "nti_elaboracio_estat", length = 4)
 	private String ntiElaboracioEstat;
 	@Column(name = "observacions", length = 50)
 	private String observacions;
