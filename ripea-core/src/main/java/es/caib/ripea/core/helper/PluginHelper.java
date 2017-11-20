@@ -1320,7 +1320,8 @@ public class PluginHelper {
 								document.getNtiTipoDocumental(),
 								classificacioDocumental,
 								DocumentEstat.ESBORRANY,
-								DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())));
+								DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())),
+						false);
 				document.updateArxiu(null);
 			}
 			integracioHelper.addAccioOk(
@@ -1495,7 +1496,8 @@ public class PluginHelper {
 							document.getNtiTipoDocumental(),
 							null,
 							DocumentEstat.DEFINITIU,
-							DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())));
+							DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())),
+					false);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
@@ -2946,7 +2948,7 @@ public class PluginHelper {
 			metadades.setFormat(format);
 		}
 		metadades.setOrgans(ntiOrgans);
-		metadades.addMetadadaAddicional(
+		metadades.getMetadadesAddicionals().put(
 				"eni:cod_clasificacion",
 				serieDocumental);
 		document.setMetadades(metadades);

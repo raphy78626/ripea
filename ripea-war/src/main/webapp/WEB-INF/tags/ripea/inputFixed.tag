@@ -7,6 +7,7 @@
 <%@ attribute name="required" required="false" rtexprvalue="true"%>
 <%@ attribute name="disabled" required="false" rtexprvalue="true"%>
 <%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
+<%@ attribute name="padding" required="false" rtexprvalue="true"%>
 <c:if test="${not empty name}">
 	<c:set var="campPath" value="${name}"/>
 	<c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
@@ -22,8 +23,18 @@
 		</c:choose>
 		<c:if test="${required}">*</c:if>
 	</label>
-	<div class="controls col-xs-${campInputSize}" style="padding-top:7px">
-		<jsp:doBody/>
-		<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
-	</div>
+	<c:choose>
+		<c:when test="${empty padding || padding}">
+			<div class="controls col-xs-${campInputSize}" style="padding-top:7px">
+				<jsp:doBody/>
+				<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
+			</div>
+		</c:when>
+		<c:otherwise>
+			<div class="controls col-xs-${campInputSize}" style="padding-bottom:9px">
+				<jsp:doBody/>
+				<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
+			</div>
+		</c:otherwise>
+	</c:choose>
 </div>
