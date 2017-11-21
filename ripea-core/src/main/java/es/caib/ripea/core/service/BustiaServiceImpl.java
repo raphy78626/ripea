@@ -1217,7 +1217,8 @@ public class BustiaServiceImpl implements BustiaService {
 		fitxer.setContentType(annex.getFitxerTipusMime());
 		fitxer.setTamany(contingut.length);
 		
-		pluginHelper.arxiuDocumentAnnexCrear(annex, bustia, fitxer, expedientCreat);
+		String uuidDocument = pluginHelper.arxiuDocumentAnnexCrear(annex, bustia, fitxer, expedientCreat);
+		annex.updateFitxerArxiuUuid(uuidDocument);
 	}
 
 	private void guardarFirmaAnnex(
@@ -1234,7 +1235,8 @@ public class BustiaServiceImpl implements BustiaService {
 			fitxer.setContentType(annex.getFirmaFitxerTipusMime());
 			fitxer.setTamany(contingut.length);
 			
-			pluginHelper.arxiuDocumentAnnexCrear(annex, bustia, fitxer, expedientCreat);
+			String uuidFirma = pluginHelper.arxiuDocumentAnnexCrear(annex, bustia, fitxer, expedientCreat);
+			annex.updateFirmaFitxerArxiuUuid(uuidFirma);
 		}
 	}
 

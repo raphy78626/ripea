@@ -1429,7 +1429,7 @@ public class PluginHelper {
 		}
 	}
 	
-	public void arxiuDocumentAnnexCrear(
+	public String arxiuDocumentAnnexCrear(
 			RegistreAnnexEntity annex,
 			BustiaEntity bustia,
 			FitxerDto fitxer,
@@ -1442,7 +1442,7 @@ public class PluginHelper {
 		accioParams.put("classificacioDocumental", getPropertyPluginArxiuDocumentSerieDocumental());
 		long t0 = System.currentTimeMillis();
 		try {
-			getArxiuPlugin().documentCrear(
+			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
 					toArxiuDocument(
 							null,
 							annex.getTitol(),
@@ -1465,6 +1465,8 @@ public class PluginHelper {
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
+			
+			return contingutFitxer.getIdentificador();
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(

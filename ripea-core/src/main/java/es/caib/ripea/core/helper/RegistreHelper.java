@@ -3,7 +3,6 @@
  */
 package es.caib.ripea.core.helper;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -179,14 +178,14 @@ public class RegistreHelper {
 	}
 	
 	public void comprovarDocumentsFirmesPerAnnex(RegistreAnnexDetallDto annex) {
-		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
+//		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
+//		
+//		File doc = new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime());
+//		File fir = new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime());
 		
-		File doc = new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime());
-		File fir = new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime());
-		
-		if (doc != null && doc.exists() && !doc.isDirectory())
+		if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty())
 			annex.setAmbDocument(true);
-		if (fir != null && fir.exists() && !fir.isDirectory())
+		if (annex.getFirmaFitxerArxiuUuid() != null && !annex.getFirmaFitxerArxiuUuid().isEmpty())
 			annex.setAmbFirma(true);
 	}
 	

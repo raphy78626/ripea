@@ -166,6 +166,13 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	public RegistreEntity getRegistre() {
 		return registre;
 	}
+	
+	public void updateFitxerArxiuUuid(String fitxerArxiuUuid) {
+		this.fitxerArxiuUuid = fitxerArxiuUuid;
+	}
+	public void updateFirmaFitxerArxiuUuid(String firmaFitxerArxiuUuid) {
+		this.firmaFitxerArxiuUuid = firmaFitxerArxiuUuid;
+	}
 
 	public static Builder getBuilder(
 			String titol,
