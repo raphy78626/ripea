@@ -49,8 +49,8 @@ public class BustiaWsV1Test extends BustiaBaseTest {
 		
 		// Envia l'anotació de registre.
 		getBustiaService().enviarAnotacioRegistreEntrada(
-				"A04019299",
-				"A04019299",
+				"A04019281",//Limit Tecnologies
+				"A04019281",
 				anotacio);
 	}
 }
