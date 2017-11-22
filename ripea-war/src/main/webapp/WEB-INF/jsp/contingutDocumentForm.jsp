@@ -64,7 +64,7 @@ $(document).ready(function() {
 		var lastSlashIndex = action.lastIndexOf('/');
 		var actionProcessed = action.substring(0, lastSlashIndex);
 		var $btn = $(this).find("button[type=submit]:focus");
-		if ($btn.length != 0) {
+		if ($btn.length == 0) {
 			if (action.endsWith("new")) {
 				actionProcessed += '/digital/new';
 			} else {
