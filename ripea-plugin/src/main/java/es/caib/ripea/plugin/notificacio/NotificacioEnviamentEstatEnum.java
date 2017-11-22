@@ -1,0 +1,27 @@
+package es.caib.ripea.plugin.notificacio;
+
+public enum NotificacioEnviamentEstatEnum {
+	
+	NOTIB_PENDENT,
+    NOTIB_ENVIADA,
+    ABSENT,
+    ADRESA_INCORRECTA,
+    DESCONEGUT,
+    ENVIADA_CI,
+    ENVIADA_DEH,
+    ENVIAMENT_PROGRAMAT,
+    ENTREGADA_OP,
+    ERROR_ENTREGA,
+    EXPIRADA,
+    EXTRAVIADA,
+    MORT,
+    LLEGIDA,
+    NOTIFICADA,
+    PENDENT_ENVIAMENT,
+    PENDENT_SEU,
+    PENDENT_CIE,
+    PENDENT_DEH,
+    REBUTJADA,
+    SENSE_INFORMACIO;
+	
+}

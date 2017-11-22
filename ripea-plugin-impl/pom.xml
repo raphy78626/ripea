@@ -177,6 +177,33 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.10.2</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>es.caib.notib</groupId>
+			<artifactId>notib-client</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>es.caib.jboss</groupId>
+			<artifactId>seyconsession-common</artifactId>
+			<version>1.5</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.ejb</groupId>
+			<artifactId>ejb-api</artifactId>
+			<version>3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-jmx</artifactId>
+			<version>4.2.2.GA</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>ma.glasnost.orika</groupId>
+		    <artifactId>orika-core</artifactId>
+		    <version>1.5.2</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

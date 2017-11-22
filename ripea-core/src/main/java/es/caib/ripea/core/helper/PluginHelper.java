@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -88,6 +89,14 @@ import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.Municipi;
 import es.caib.ripea.plugin.dadesext.Pais;
 import es.caib.ripea.plugin.dadesext.Provincia;
+import es.caib.ripea.plugin.notificacio.NotificacioDocument;
+import es.caib.ripea.plugin.notificacio.NotificacioEnviament;
+import es.caib.ripea.plugin.notificacio.NotificacioEnviamentTipusEnum;
+import es.caib.ripea.plugin.notificacio.NotificacioInformacioEnviament;
+import es.caib.ripea.plugin.notificacio.NotificacioPagadorCie;
+import es.caib.ripea.plugin.notificacio.NotificacioPagadorPostal;
+import es.caib.ripea.plugin.notificacio.NotificacioParametresSeu;
+import es.caib.ripea.plugin.notificacio.NotificacioPlugin;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocument;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocumentTipus;
 import es.caib.ripea.plugin.portafirmes.PortafirmesFluxBloc;
@@ -116,6 +125,8 @@ public class PluginHelper {
 	private CiutadaPlugin ciutadaPlugin;
 	private DadesExternesPlugin dadesExternesPlugin;
 	private IArxiuPlugin arxiuPlugin;
+	
+	private NotificacioPlugin notificacioPlugin;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -2588,7 +2599,61 @@ public class PluginHelper {
 					ex);
 		}
 	}
-
+	
+	//////////////////////////////////////////////////////
+	//	PLUGIN DE NOTIB
+	//////////////////////////////////////////////////////
+	public List<String> notibNotificacioEnviar(
+			XMLGregorianCalendar caducitat,
+			String concepte,
+			String descripcio,
+			NotificacioDocument document,
+			String emisorDir3Codi,
+			XMLGregorianCalendar enviamentDataProgramada,
+			NotificacioEnviamentTipusEnum enviamentTipus,
+			NotificacioEnviament[] enviaments,
+			NotificacioPagadorCie pagadorCie,
+			NotificacioPagadorPostal pagadorPostal,
+			NotificacioParametresSeu parametresSeu,
+			String procedimentCodi,
+		    Integer retard) {
+		
+		try {
+			return getNotibPlugin().notificacioAlta(
+					caducitat,
+					concepte,
+					descripcio,
+					document,
+					emisorDir3Codi,
+					enviamentDataProgramada,
+					enviamentTipus,
+					enviaments,
+					pagadorCie,
+					pagadorPostal,
+					parametresSeu,
+					procedimentCodi,
+					retard);
+		} catch (Exception ex) {
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_NOTIB,
+					"Error al donar de alta a una notificació",
+					ex);
+		}
+	}
+	
+	public NotificacioInformacioEnviament notibNotificacioComprovarEstat(
+			String registreNumero) {
+		
+		try {
+			return getNotibPlugin().notificacioConsultaEstat(
+					registreNumero);
+		} catch (Exception ex) {
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_NOTIB,
+					"Error al consultata una notificació (Número de registre:" + registreNumero + ")",
+					ex);
+		}
+	}
 
 
 	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
@@ -3402,6 +3467,24 @@ public class PluginHelper {
 		}
 		return dadesExternesPlugin;
 	}
+	
+	private NotificacioPlugin getNotibPlugin() {
+		if (notificacioPlugin == null) {
+			String pluginClass = getPropertyPluginNotificacio();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					notificacioPlugin = (NotificacioPlugin)clazz.newInstance();
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_NOTIB,
+							"Error al crear la instància del plugin de notificació amb Notib (Plugin class: " + pluginClass + ")",
+							ex);
+				}
+			}
+		}
+		return notificacioPlugin;
+	}
 
 	private String getPropertyPluginDadesUsuari() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.dades.usuari.class");
@@ -3439,6 +3522,10 @@ public class PluginHelper {
 	}
 	private String getPropertyPluginArxiuEscriptoriSerieDocumental() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.escriptori.serie.documental");
+	}
+	
+	private String getPropertyPluginNotificacio() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.notificacio.class");
 	}
 
 }

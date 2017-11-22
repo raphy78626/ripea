@@ -37,6 +37,7 @@ public class IntegracioHelper {
 	public static final String INTCODI_CONVERT = "CONVERT";
 	public static final String INTCODI_CALLBACK = "CALLBACK";
 	public static final String INTCODI_DADESEXT = "DADESEXT";
+	public static final String INTCODI_NOTIB = "NOTIB";
 
 	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = new HashMap<String, LinkedList<IntegracioAccioDto>>();
 	private Map<String, Integer> maxAccionsIntegracio = new HashMap<String, Integer>();
@@ -72,6 +73,9 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_DADESEXT));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_NOTIB));
 		return integracions;
 	}
 
@@ -209,6 +213,8 @@ public class IntegracioHelper {
 			integracio.setNom("Callback PF");
 		} else if (INTCODI_DADESEXT.equals(codi)) {
 			integracio.setNom("Dades ext.");
+		} else if (INTCODI_NOTIB.equals(codi)) {
+			integracio.setNom("Notib.");
 		}
 		return integracio;
 	}
