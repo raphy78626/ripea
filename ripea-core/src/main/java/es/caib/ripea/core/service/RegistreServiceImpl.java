@@ -18,6 +18,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.plugins.arxiu.api.Document;
+import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -39,6 +41,7 @@ import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
@@ -78,6 +81,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private BustiaHelper bustiaHelper;
 	@Resource
 	private RegistreHelper registreHelper;
+	@Resource
+	private PluginHelper pluginHelper;
 
 
 
@@ -281,12 +286,9 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 	}
 	
-	@Transactional(readOnly = true)
-	@Override
-	public FitxerDto getArxiuAnnex(
-			Long annexId, 
+	private FitxerDto getArxiuAnnexIntern(
+			RegistreAnnexEntity annex, 
 			AnnexArxiuTipusEnumDto tipus) {
-		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
 		String nomArxiu = annex.getId().toString();
 		String contentType = "";
 		String nomFinal = "";
@@ -305,6 +307,47 @@ public class RegistreServiceImpl implements RegistreService {
 		arxiu.setNom(nomFinal);
 		arxiu.setContentType(contentType);
 		arxiu.setContingut(contingutArxiu);
+		return arxiu;
+	}
+	
+	private FitxerDto getArxiuAnnexExtern(
+			RegistreAnnexEntity annex, 
+			AnnexArxiuTipusEnumDto tipus) {
+
+		Document document = null;
+		if (tipus == AnnexArxiuTipusEnumDto.DOCUMENT)
+			document = pluginHelper.arxiuDocumentConsultar(annex.getRegistre(), annex.getFitxerArxiuUuid(), null, true);
+		else
+			document = pluginHelper.arxiuDocumentConsultar(annex.getRegistre(), annex.getFirmaFitxerArxiuUuid(), null, true);
+		
+		FitxerDto arxiu = new FitxerDto();
+		
+		if (document != null) {
+			DocumentContingut documentContingut = document.getContingut();
+			if (documentContingut != null) {
+				arxiu.setNom(annex.getFitxerNom());
+				arxiu.setContentType(documentContingut.getTipusMime());
+				arxiu.setContingut(documentContingut.getContingut());
+				arxiu.setTamany(documentContingut.getContingut().length);
+			}
+		}
+		return arxiu;
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public FitxerDto getArxiuAnnex(
+			Long annexId, 
+			AnnexArxiuTipusEnumDto tipus) {
+		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
+		FitxerDto arxiu = new FitxerDto();
+		
+		if ((tipus == AnnexArxiuTipusEnumDto.DOCUMENT && annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) || 
+			(tipus == AnnexArxiuTipusEnumDto.FIRMA && annex.getFirmaFitxerArxiuUuid() != null && !annex.getFirmaFitxerArxiuUuid().isEmpty()))
+			arxiu = getArxiuAnnexExtern(annex, tipus);
+		else
+			arxiu = getArxiuAnnexIntern(annex, tipus);
+			
 		return arxiu;
 	}
 

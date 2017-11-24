@@ -69,7 +69,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	private String ntiTipusDocument;
 	@Column(name = "sicres_tipus_doc", length = 2, nullable = false)
 	private String sicresTipusDocument;
-	@Column(name = "nti_elaboracio_estat", length = 2)
+	@Column(name = "nti_elaboracio_estat", length = 4)
 	private String ntiElaboracioEstat;
 	@Column(name = "observacions", length = 50)
 	private String observacions;
@@ -165,6 +165,13 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	}
 	public RegistreEntity getRegistre() {
 		return registre;
+	}
+	
+	public void updateFitxerArxiuUuid(String fitxerArxiuUuid) {
+		this.fitxerArxiuUuid = fitxerArxiuUuid;
+	}
+	public void updateFirmaFitxerArxiuUuid(String firmaFitxerArxiuUuid) {
+		this.firmaFitxerArxiuUuid = firmaFitxerArxiuUuid;
 	}
 
 	public static Builder getBuilder(

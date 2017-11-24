@@ -32,6 +32,8 @@ public class RegistreAnnexDetallDto implements Serializable {
 	private String firmaFitxerTipusMime;
 	private String timestamp;
 	private String validacioOCSP;
+	private String fitxerArxiuUuid;
+	private String firmaFitxerArxiuUuid;
 	private boolean ambDocument;
 	private boolean ambFirma;
 	
@@ -171,6 +173,22 @@ public class RegistreAnnexDetallDto implements Serializable {
 
 	public void setValidacioOCSP(String validacioOCSP) {
 		this.validacioOCSP = validacioOCSP;
+	}
+
+	public String getFitxerArxiuUuid() {
+		return fitxerArxiuUuid;
+	}
+
+	public void setFitxerArxiuUuid(String fitxerArxiuUuid) {
+		this.fitxerArxiuUuid = fitxerArxiuUuid;
+	}
+
+	public String getFirmaFitxerArxiuUuid() {
+		return firmaFitxerArxiuUuid;
+	}
+
+	public void setFirmaFitxerArxiuUuid(String firmaFitxerArxiuUuid) {
+		this.firmaFitxerArxiuUuid = firmaFitxerArxiuUuid;
 	}
 
 	public boolean isAmbDocument() {

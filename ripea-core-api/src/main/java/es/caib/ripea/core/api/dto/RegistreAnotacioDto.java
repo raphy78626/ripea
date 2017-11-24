@@ -121,6 +121,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private String solicita;
 	private List<RegistreInteressat> interessats;
 	private List<RegistreAnnex> annexos;
+	private RegistreAnnex justificant;
 
 
 
@@ -339,6 +340,13 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setAnnexos(List<RegistreAnnex> annexos) {
 		this.annexos = annexos;
+	}
+
+	public RegistreAnnex getJustificant() {
+		return justificant;
+	}
+	public void setJustificant(RegistreAnnex justificant) {
+		this.justificant = justificant;
 	}
 
 	private static final long serialVersionUID = -8656873728034274066L;

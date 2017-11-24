@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.axis.encoding.Base64;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -24,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
@@ -34,6 +34,7 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.BustiaFiltreDto;
 import es.caib.ripea.core.api.dto.BustiaUserFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -700,7 +701,8 @@ public class BustiaServiceImpl implements BustiaService {
 				anotacio,
 				reglaAplicable);
 		registreRepository.saveAndFlush(anotacioEntity);
-		processarAnnexos(anotacioEntity, bustia);
+		ContingutArxiu expedientCreat = crearExpedientArxiuTemporal(anotacioEntity, bustia);
+		processarAnnexos(anotacioEntity, bustia, expedientCreat);
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
@@ -1113,7 +1115,16 @@ public class BustiaServiceImpl implements BustiaService {
 		return bustiaContingut;
 	}
 
-	private void processarAnnexos(RegistreEntity anotacio, BustiaEntity bustia) {
+	private ContingutArxiu crearExpedientArxiuTemporal(RegistreEntity anotacio, BustiaEntity bustia) {
+		
+			ContingutArxiu expedientCreat = pluginHelper.arxiuExpedientPerAnotacioCrear(
+					anotacio, 
+					bustia);
+			
+			return expedientCreat;
+	}
+	
+	private void processarAnnexos(RegistreEntity anotacio, BustiaEntity bustia, ContingutArxiu expedientCreat) {
 		try {
 			for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 				//si tenim contingut de fitxer i també referència del registre, hem de tornar una excepció
@@ -1122,8 +1133,8 @@ public class BustiaServiceImpl implements BustiaService {
 					throw new ValidationException(
 							"S'ha d'especificar o bé la referència del document o el contingut del document");
 				} else {
-					guardarDocumentAnnex (annex, bustia);
-					guardarFirmaAnnex(annex, bustia);
+					guardarDocumentAnnex (annex, bustia, expedientCreat);
+					guardarFirmaAnnex(annex, bustia, expedientCreat);
 				}
 				// Si l'anotació té una regla sistra llavors intenta extreure la informació dels identificadors
 				// del tràmit i del procediment de l'annex
@@ -1180,9 +1191,9 @@ public class BustiaServiceImpl implements BustiaService {
 
 	private void guardarDocumentAnnex(
 			RegistreAnnexEntity annex,
-			BustiaEntity bustia) throws IOException {
+			BustiaEntity bustia,
+			ContingutArxiu expedientCreat) throws IOException {
 		byte[] contingut = null;
-		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
 		if (annex.getFitxerContingutBase64() != null) {
 			contingut = Base64.decode(annex.getFitxerContingutBase64());
 		} else {
@@ -1199,20 +1210,33 @@ public class BustiaServiceImpl implements BustiaService {
 						"uuid=" + annex.getFitxerArxiuUuid() + ")");
 			}
 		}
-		FileUtils.writeByteArrayToFile(
-				new File(
-						pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime()),
-				contingut);
+		
+		FitxerDto fitxer = new FitxerDto();
+		fitxer.setNom(annex.getFitxerNom());
+		fitxer.setContingut(contingut);
+		fitxer.setContentType(annex.getFitxerTipusMime());
+		fitxer.setTamany(contingut.length);
+		
+		String uuidDocument = pluginHelper.arxiuDocumentAnnexCrear(annex, bustia, fitxer, expedientCreat);
+		annex.updateFitxerArxiuUuid(uuidDocument);
 	}
 
 	private void guardarFirmaAnnex(
 			RegistreAnnexEntity annex,
-			BustiaEntity bustia) throws IOException {
+			BustiaEntity bustia,
+			ContingutArxiu expedientCreat) throws IOException {
 		byte[] contingut = null;
-		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
 		if (annex.getFirmaFitxerContingutBase64() != null) {
 			contingut = Base64.decode(annex.getFirmaFitxerContingutBase64());
-			FileUtils.writeByteArrayToFile(new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime()), contingut);
+			
+			FitxerDto fitxer = new FitxerDto();
+			fitxer.setNom(annex.getFirmaFitxerNom());
+			fitxer.setContingut(contingut);
+			fitxer.setContentType(annex.getFirmaFitxerTipusMime());
+			fitxer.setTamany(contingut.length);
+			
+			String uuidFirma = pluginHelper.arxiuDocumentAnnexCrear(annex, bustia, fitxer, expedientCreat);
+			annex.updateFirmaFitxerArxiuUuid(uuidFirma);
 		}
 	}
 
