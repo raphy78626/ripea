@@ -3084,7 +3084,7 @@ public class PluginHelper {
 			metadades.setFormat(format);
 		}
 		metadades.setOrgans(ntiOrgans);
-		metadades.getMetadadesAddicionals().put(
+		metadades.addMetadadaAddicional(
 				"eni:cod_clasificacion",
 				serieDocumental);
 		document.setMetadades(metadades);
