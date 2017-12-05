@@ -14,8 +14,8 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.registre.Firma;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
 import es.caib.ripea.core.api.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -29,6 +29,7 @@ import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.FirmaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.RegistreInteressatEntity;
@@ -177,18 +178,6 @@ public class RegistreHelper {
 		return entity;
 	}
 	
-	public void comprovarDocumentsFirmesPerAnnex(RegistreAnnexDetallDto annex) {
-//		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
-//		
-//		File doc = new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime());
-//		File fir = new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime());
-		
-		if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty())
-			annex.setAmbDocument(true);
-		if (annex.getFirmaFitxerArxiuUuid() != null && !annex.getFirmaFitxerArxiuUuid().isEmpty())
-			annex.setAmbFirma(true);
-	}
-	
 	public byte[] getAnnexArxiuContingut(String nomArxiu) {
 		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
 		
@@ -252,12 +241,12 @@ public class RegistreHelper {
 		if (annexEntity.getNtiElaboracioEstat() != null)
 			annex.setNtiElaboracioEstat(annexEntity.getNtiElaboracioEstat().getValor());
 		annex.setObservacions(annexEntity.getObservacions());
-		annex.setFirmaMode(annexEntity.getFirmaMode());
-		annex.setFirmaFitxerNom(annexEntity.getFirmaFitxerNom());
-		annex.setFirmaFitxerTamany(annexEntity.getFirmaFitxerTamany());
-		annex.setFirmaFitxerTipusMime(annexEntity.getFitxerTipusMime());
-		annex.setFirmaFitxerArxiuUuid(annexEntity.getFirmaFitxerArxiuUuid());
-		annex.setFirmaCsv(annexEntity.getFirmaCsv());
+//		annex.setFirmaMode(annexEntity.getFirmaMode());
+//		annex.setFirmaFitxerNom(annexEntity.getFirmaFitxerNom());
+//		annex.setFirmaFitxerTamany(annexEntity.getFirmaFitxerTamany());
+//		annex.setFirmaFitxerTipusMime(annexEntity.getFitxerTipusMime());
+//		annex.setFirmaFitxerArxiuUuid(annexEntity.getFirmaFitxerArxiuUuid());
+//		annex.setFirmaCsv(annexEntity.getFirmaCsv());
 		annex.setTimestamp(annexEntity.getTimestamp());
 		annex.setValidacioOCSP(annexEntity.getValidacioOCSP());
 		return annex;
@@ -338,15 +327,38 @@ public class RegistreHelper {
 				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getNtiTipusDocument()),
 				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(registreAnnex.getSicresTipusDocument()),
 				registre,
-				registreAnnex.getFitxerContingutBase64(),
-				registreAnnex.getFirmaFitxerContingutBase64()).
+				registreAnnex.getFitxerContingutBase64()).
 				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
 				localitzacio(registreAnnex.getLocalitzacio()).
 				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getNtiElaboracioEstat())).
-				firmaCsv(registreAnnex.getFirmaCsv()).
 				observacions(registreAnnex.getObservacions()).
 				build();
+		
+		if (registreAnnex.getFirmes() != null && registreAnnex.getFirmes().size() > 0) {
+			for (Firma firma: registreAnnex.getFirmes()) {
+				annexEntity.getFirmes().add(
+						toFirmaEntity(
+								firma,
+								annexEntity));
+			}
+		}
+		
 		return annexEntity;
+	}
+	
+	private FirmaEntity toFirmaEntity(
+			Firma firma,
+			RegistreAnnexEntity annex) {
+		FirmaEntity firmaEntity = FirmaEntity.getBuilder(
+				firma.getTipus(), 
+				firma.getPerfil(), 
+				firma.getFitxerNom(), 
+				firma.getContingut(),
+				firma.getTipusMime(), 
+				firma.getCsvRegulacio(), 
+				annex).build();
+		
+		return firmaEntity;
 	}
 
 }

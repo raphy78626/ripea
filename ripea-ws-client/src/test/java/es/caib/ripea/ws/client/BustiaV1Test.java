@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import es.caib.ripea.ws.v1.bustia.BustiaV1;
 import es.caib.ripea.ws.v1.bustia.BustiaV1Service;
+import es.caib.ripea.ws.v1.bustia.Firma;
 import es.caib.ripea.ws.v1.bustia.RegistreAnnex;
 import es.caib.ripea.ws.v1.bustia.RegistreAnotacio;
 
@@ -82,6 +83,7 @@ public class BustiaV1Test {
         annex1.setNtiTipusDocument("TD01");
         annex1.setSicresTipusDocument("01");
         annex1.setNtiElaboracioEstat("EE01");
+        afegirFirmes(annex1);
         
         
         File file2 = new File("c:/Feina/RIPEA/annexos/annex2.pdf");
@@ -123,7 +125,28 @@ public class BustiaV1Test {
 				anotacio);
 	}
 
-
+	private void afegirFirmes(RegistreAnnex annex) throws IOException {
+		Firma firma = new Firma();
+		File firmaFile = new File("c:/Feina/RIPEA/annexos/signatura.pdf");
+        byte[] firmaContingut = Base64.encodeBase64(FileUtils.readFileToByteArray(firmaFile));
+        firma.setTipus("TF05");
+        firma.setPerfil("BES");
+        firma.setContingut(firmaContingut);
+        firma.setFitxerNom("signatura.pdf");
+        firma.setTipusMime("application/pdf");
+		
+		Firma firma2 = new Firma();
+		File firmaFile2 = new File("c:/Feina/RIPEA/annexos/signatura2.pdf");
+        byte[] firmaContingut2 = Base64.encodeBase64(FileUtils.readFileToByteArray(firmaFile2));
+		firma2.setTipus("TF05");
+		firma2.setPerfil("BES");
+		firma2.setContingut(firmaContingut2);
+		firma2.setFitxerNom("signatura2.pdf");
+		firma2.setTipusMime("application/pdf");
+		
+		annex.getFirmes().add(firma);
+		annex.getFirmes().add(firma2);
+	}
 
 	private BustiaV1 getBustiaServicePort() throws MalformedURLException {
 		URL url = new URL(ENDPOINT_ADDRESS + "?wsdl");

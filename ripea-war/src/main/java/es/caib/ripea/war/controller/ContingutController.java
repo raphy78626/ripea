@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
@@ -374,9 +373,25 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable String tipus) throws IOException {
-		FitxerDto fitxer = registreService.getArxiuAnnex(
-				annexId, 
-				AnnexArxiuTipusEnumDto.valueOf(tipus));
+		FitxerDto fitxer = registreService.getArxiuAnnex(annexId);
+		writeFileToResponse(
+				fitxer.getNom(),
+				fitxer.getContingut(),
+				response);
+		return null;
+	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{annexId}/firma/{firmaIndex}", method = RequestMethod.GET)
+	public String descarregarFirma(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
+			@PathVariable Long annexId,
+			@PathVariable int firmaIndex) throws IOException {
+		FitxerDto fitxer = registreService.getAnnexFirmaContingut(annexId,
+				firmaIndex);
+		
 		writeFileToResponse(
 				fitxer.getNom(),
 				fitxer.getContingut(),

@@ -1128,13 +1128,12 @@ public class BustiaServiceImpl implements BustiaService {
 		try {
 			for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 				//si tenim contingut de fitxer i també referència del registre, hem de tornar una excepció
-				if ((annex.getFitxerArxiuUuid() == null && annex.getFitxerContingutBase64() == null) ||
-					(annex.getFitxerArxiuUuid() != null && annex.getFitxerContingutBase64() != null)) {
+				if (annex.getFitxerArxiuUuid() == null && annex.getFitxerContingutBase64() == null) {
 					throw new ValidationException(
-							"S'ha d'especificar o bé la referència del document o el contingut del document");
+							"S'ha d'especificar o bé la referència del document o el contingut del document"
+							+ " per l'annex [" + annex.getTitol() + "]");
 				} else {
 					guardarDocumentAnnex (annex, bustia, expedientCreat);
-					guardarFirmaAnnex(annex, bustia, expedientCreat);
 				}
 				// Si l'anotació té una regla sistra llavors intenta extreure la informació dels identificadors
 				// del tràmit i del procediment de l'annex
@@ -1221,35 +1220,13 @@ public class BustiaServiceImpl implements BustiaService {
 		annex.updateFitxerArxiuUuid(uuidDocument);
 	}
 
-	private void guardarFirmaAnnex(
-			RegistreAnnexEntity annex,
-			BustiaEntity bustia,
-			ContingutArxiu expedientCreat) throws IOException {
-		byte[] contingut = null;
-		if (annex.getFirmaFitxerContingutBase64() != null) {
-			contingut = Base64.decode(annex.getFirmaFitxerContingutBase64());
-			
-			FitxerDto fitxer = new FitxerDto();
-			fitxer.setNom(annex.getFirmaFitxerNom());
-			fitxer.setContingut(contingut);
-			fitxer.setContentType(annex.getFirmaFitxerTipusMime());
-			fitxer.setTamany(contingut.length);
-			
-			String uuidFirma = pluginHelper.arxiuDocumentAnnexCrear(annex, bustia, fitxer, expedientCreat);
-			annex.updateFirmaFitxerArxiuUuid(uuidFirma);
-		}
-	}
-
 	private void eliminarContingutExistent(
 			RegistreEntity anotacio) throws IOException {
 		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
 		for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 			File doc = new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime());
-			File fir = new File(pathName + "/" + annex.getId() + "_f." + annex.getFirmaFitxerTipusMime());
 			if (doc != null)
 				Files.deleteIfExists(doc.toPath());
-			if (fir != null)
-				Files.deleteIfExists(fir.toPath());
 		}
 	}
 

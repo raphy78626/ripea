@@ -7,16 +7,6 @@
 <xs:element name="enviarDocumentResponse" type="tns:enviarDocumentResponse" />
 <xs:element name="enviarExpedient" type="tns:enviarExpedient" />
 <xs:element name="enviarExpedientResponse" type="tns:enviarExpedientResponse" />
-<xs:complexType name="enviarExpedient">
-<xs:sequence>
-<xs:element name="entitat" type="xs:string" />
-<xs:element name="unitatAdministrativa" type="xs:string" />
-<xs:element name="referenciaExpedient" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="enviarExpedientResponse">
-<xs:sequence />
-</xs:complexType>
 <xs:complexType name="enviarDocument">
 <xs:sequence>
 <xs:element name="entitat" type="xs:string" />
@@ -25,6 +15,16 @@
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="enviarDocumentResponse">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="enviarExpedient">
+<xs:sequence>
+<xs:element name="entitat" type="xs:string" />
+<xs:element name="unitatAdministrativa" type="xs:string" />
+<xs:element name="referenciaExpedient" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="enviarExpedientResponse">
 <xs:sequence />
 </xs:complexType>
 <xs:complexType name="enviarAnotacioRegistreEntrada">
@@ -78,13 +78,7 @@
 <xs:complexType name="registreAnnex">
 <xs:sequence>
 <xs:element minOccurs="0" name="dataCaptura" type="xs:dateTime" />
-<xs:element minOccurs="0" name="firmaCsv" type="xs:string" />
-<xs:element minOccurs="0" name="firmaFitxerArxiuUuid" type="xs:string" />
-<xs:element minOccurs="0" name="firmaFitxerContingutBase64" type="xs:string" />
-<xs:element minOccurs="0" name="firmaFitxerNom" type="xs:string" />
-<xs:element name="firmaFitxerTamany" type="xs:int" />
-<xs:element minOccurs="0" name="firmaFitxerTipusMime" type="xs:string" />
-<xs:element minOccurs="0" name="firmaMode" type="xs:int" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="firmes" nillable="true" type="tns:firma" />
 <xs:element minOccurs="0" name="fitxerArxiuUuid" type="xs:string" />
 <xs:element minOccurs="0" name="fitxerContingutBase64" type="xs:string" />
 <xs:element minOccurs="0" name="fitxerNom" type="xs:string" />
@@ -100,6 +94,16 @@
 <xs:element minOccurs="0" name="timestamp" type="xs:string" />
 <xs:element minOccurs="0" name="titol" type="xs:string" />
 <xs:element minOccurs="0" name="validacioOCSP" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="firma">
+<xs:sequence>
+<xs:element minOccurs="0" name="contingut" type="xs:base64Binary" />
+<xs:element minOccurs="0" name="csvRegulacio" type="xs:string" />
+<xs:element minOccurs="0" name="fitxerNom" type="xs:string" />
+<xs:element minOccurs="0" name="perfil" type="xs:string" />
+<xs:element minOccurs="0" name="tipus" type="xs:string" />
+<xs:element minOccurs="0" name="tipusMime" type="xs:string" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="registreInteressat">
@@ -129,41 +133,41 @@
 </xs:complexType>
 </xs:schema>
   </wsdl:types>
-  <wsdl:message name="enviarAnotacioRegistreEntrada">
-    <wsdl:part element="tns:enviarAnotacioRegistreEntrada" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="enviarDocument">
     <wsdl:part element="tns:enviarDocument" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="enviarAnotacioRegistreEntrada">
+    <wsdl:part element="tns:enviarAnotacioRegistreEntrada" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="enviarExpedientResponse">
     <wsdl:part element="tns:enviarExpedientResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="enviarDocumentResponse">
-    <wsdl:part element="tns:enviarDocumentResponse" name="parameters">
+  <wsdl:message name="enviarExpedient">
+    <wsdl:part element="tns:enviarExpedient" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="enviarAnotacioRegistreEntradaResponse">
     <wsdl:part element="tns:enviarAnotacioRegistreEntradaResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="enviarExpedient">
-    <wsdl:part element="tns:enviarExpedient" name="parameters">
+  <wsdl:message name="enviarDocumentResponse">
+    <wsdl:part element="tns:enviarDocumentResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="BustiaV1">
-    <wsdl:operation name="enviarExpedient">
-      <wsdl:input message="tns:enviarExpedient" name="enviarExpedient">
-    </wsdl:input>
-      <wsdl:output message="tns:enviarExpedientResponse" name="enviarExpedientResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="enviarDocument">
       <wsdl:input message="tns:enviarDocument" name="enviarDocument">
     </wsdl:input>
       <wsdl:output message="tns:enviarDocumentResponse" name="enviarDocumentResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="enviarExpedient">
+      <wsdl:input message="tns:enviarExpedient" name="enviarExpedient">
+    </wsdl:input>
+      <wsdl:output message="tns:enviarExpedientResponse" name="enviarExpedientResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="enviarAnotacioRegistreEntrada">
@@ -175,21 +179,21 @@
   </wsdl:portType>
   <wsdl:binding name="BustiaV1ServiceSoapBinding" type="tns:BustiaV1">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="enviarExpedient">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="enviarExpedient">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="enviarExpedientResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="enviarDocument">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="enviarDocument">
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="enviarDocumentResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="enviarExpedient">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="enviarExpedient">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="enviarExpedientResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -205,7 +209,7 @@
   </wsdl:binding>
   <wsdl:service name="BustiaV1Service">
     <wsdl:port binding="tns:BustiaV1ServiceSoapBinding" name="BustiaV1ServicePort">
-      <soap:address location="http://127.0.0.1:8080/ripea/ws/v1/bustia" />
+      <soap:address location="http://PROGRAMACIO14:8080/ripea/ws/v1/bustia" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -35,7 +35,7 @@ public class ArxiuDetallDto extends ArxiuContingutDto {
 	private String contingutTipusMime;
 	private String contingutArxiuNom;
 	
-	private List<ArxiuFirmaDto> firmes;
+	private List<FirmaDto> firmes;
 	private List<ArxiuContingutDto> fills;
 
 	public String getEniVersio() {
@@ -146,10 +146,10 @@ public class ArxiuDetallDto extends ArxiuContingutDto {
 	public void setContingutArxiuNom(String contingutArxiuNom) {
 		this.contingutArxiuNom = contingutArxiuNom;
 	}
-	public List<ArxiuFirmaDto> getFirmes() {
+	public List<FirmaDto> getFirmes() {
 		return firmes;
 	}
-	public void setFirmes(List<ArxiuFirmaDto> firmes) {
+	public void setFirmes(List<FirmaDto> firmes) {
 		this.firmes = firmes;
 	}
 	public List<ArxiuContingutDto> getFills() {

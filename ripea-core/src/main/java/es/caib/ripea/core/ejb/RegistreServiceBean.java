@@ -13,7 +13,6 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
@@ -108,8 +107,15 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public FitxerDto getArxiuAnnex(Long annexId, AnnexArxiuTipusEnumDto tipus) throws NotFoundException {
-		return delegate.getArxiuAnnex(annexId, tipus);
+	public FitxerDto getArxiuAnnex(Long annexId) throws NotFoundException {
+		return delegate.getArxiuAnnex(annexId);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public FitxerDto getAnnexFirmaContingut(Long annexId,
+			int indexFirma) throws NotFoundException {
+		return delegate.getAnnexFirmaContingut(annexId, indexFirma);
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
@@ -117,8 +116,12 @@ public interface RegistreService {
 	
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto getArxiuAnnex(
+			Long annexId) throws NotFoundException;
+	
+	@PreAuthorize("hasRole('tothom')")
+	public FitxerDto getAnnexFirmaContingut(
 			Long annexId,
-			AnnexArxiuTipusEnumDto tipus) throws NotFoundException;
+			int indexFirma) throws NotFoundException;
 	
 	/**
 	 * Retorna una llista d'annexos amb els les rutes dels fitxers asiciats

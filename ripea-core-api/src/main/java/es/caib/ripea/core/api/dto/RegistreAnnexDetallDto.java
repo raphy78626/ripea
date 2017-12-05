@@ -5,6 +5,7 @@ package es.caib.ripea.core.api.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Classe que representa una anotació de registre amb id.
@@ -25,15 +26,11 @@ public class RegistreAnnexDetallDto implements Serializable {
 	private String sicresTipusDocument;
 	private String ntiElaboracioEstat;
 	private String observacions;
-	private String firmaFitxerNom;
-	private Integer firmaFitxerTamany;
 	private Integer firmaMode;
-	private String firmaCsv;
-	private String firmaFitxerTipusMime;
 	private String timestamp;
 	private String validacioOCSP;
 	private String fitxerArxiuUuid;
-	private String firmaFitxerArxiuUuid;
+	private List<FirmaDto> firmes;
 	private boolean ambDocument;
 	private boolean ambFirma;
 	
@@ -127,36 +124,12 @@ public class RegistreAnnexDetallDto implements Serializable {
 		this.observacions = observacions;
 	}
 
-	public String getFirmaFitxerNom() {
-		return firmaFitxerNom;
-	}
-
-	public void setFirmaFitxerNom(String firmaFitxerNom) {
-		this.firmaFitxerNom = firmaFitxerNom;
-	}
-
 	public Integer getFirmaMode() {
 		return firmaMode;
 	}
 
 	public void setFirmaMode(Integer firmaMode) {
 		this.firmaMode = firmaMode;
-	}
-
-	public String getFirmaCsv() {
-		return firmaCsv;
-	}
-
-	public void setFirmaCsv(String firmaCsv) {
-		this.firmaCsv = firmaCsv;
-	}
-
-	public String getFirmaFitxerTipusMime() {
-		return firmaFitxerTipusMime;
-	}
-
-	public void setFirmaFitxerTipusMime(String firmaFitxerTipusMime) {
-		this.firmaFitxerTipusMime = firmaFitxerTipusMime;
 	}
 
 	public String getTimestamp() {
@@ -183,12 +156,12 @@ public class RegistreAnnexDetallDto implements Serializable {
 		this.fitxerArxiuUuid = fitxerArxiuUuid;
 	}
 
-	public String getFirmaFitxerArxiuUuid() {
-		return firmaFitxerArxiuUuid;
+	public List<FirmaDto> getFirmes() {
+		return firmes;
 	}
 
-	public void setFirmaFitxerArxiuUuid(String firmaFitxerArxiuUuid) {
-		this.firmaFitxerArxiuUuid = firmaFitxerArxiuUuid;
+	public void setFirmes(List<FirmaDto> firmes) {
+		this.firmes = firmes;
 	}
 
 	public boolean isAmbDocument() {
@@ -214,13 +187,4 @@ public class RegistreAnnexDetallDto implements Serializable {
 	public void setFitxerTamany(int fitxerTamany) {
 		this.fitxerTamany = fitxerTamany;
 	}
-
-	public Integer getFirmaFitxerTamany() {
-		return firmaFitxerTamany;
-	}
-
-	public void setFirmaFitxerTamany(Integer firmaFitxerTamany) {
-		this.firmaFitxerTamany = firmaFitxerTamany;
-	}
-
 }

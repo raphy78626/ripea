@@ -201,14 +201,14 @@ tr.clicable {
 					<table class="table table-bordered">
 						<thead>
 							<tr>
-								<th><spring:message code="registre.annex.detalls.camp.titol"/></th>
+								<th><h4><spring:message code="registre.detalls.pipella.annexos"/></h4></th>
 								<th style="width: 50px;"></th>
 							</tr>
 						</thead>
 						<tbody>
 							<c:forEach var="annex" items="${annexos}" varStatus="status">
 								<tr <c:if test="${status.index%2 == 0}">class="odd"</c:if>>
-									<td>${annex.titol}</td>
+									<td><h5 style="margin:0"><strong>${annex.titol}</strong></h5></td>
 									<td>
 										<button type="button" class="btn btn-default desplegable" href="#annex_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="annex_${status.index}">
 											<span class="fa fa-caret-down"></span>
@@ -217,47 +217,106 @@ tr.clicable {
 								</tr>
 								<tr class="collapse annex" id="annex_${status.index}">
 									<td colspan="2">
-										<div class="row">
-							        		<div class="col-xs-6">
-								        		<dl class="dl-horizontal">
-													<dt title="<spring:message code="registre.annex.detalls.camp.titol"/>"><spring:message code="registre.annex.detalls.camp.titol"/></dt><dd>${annex.titol}</dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.dataCaptura"/>"><spring:message code="registre.annex.detalls.camp.dataCaptura"/></dt><dd><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.localitzacio"/>"><spring:message code="registre.annex.detalls.camp.localitzacio"/></dt><dd>${annex.localitzacio}</dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.origenCiutadaAdmin"/>"><spring:message code="registre.annex.detalls.camp.origenCiutadaAdmin"/></dt><dd>${annex.origenCiutadaAdmin}</dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.ntiTipusDocument"/>"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument"/></dt><dd><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.sicresTipusDocument"/>"><spring:message code="registre.annex.detalls.camp.sicresTipusDocument"/></dt><dd><c:if test="${not empty annex.sicresTipusDocument}"><spring:message code="registre.annex.detalls.camp.sicresTipusDocument.${annex.sicresTipusDocument}"/></c:if></dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat"/>"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat"/></dt><dd><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.observacions"/>"><spring:message code="registre.annex.detalls.camp.observacions"/></dt><dd>${annex.observacions}</dd>
-												</dl>
-							        		</div>
-							        		<div class="col-xs-6">
-								        		<dl class="dl-horizontal">
-													<c:if test="${annex.ambDocument}">
-														<dt title="<spring:message code="registre.annex.detalls.camp.firmaFitxerNom"/>" class="file-dt"><spring:message code="registre.annex.detalls.camp.fitxerNom"/></dt>
-														<dd class="file-dd">
-															${annex.fitxerNom}
-															<a href="${registre.id}/annex/${annex.id}/arxiu/DOCUMENT" class="btn btn-default">
-									        					<span class="fa fa-download icona-doc"  title="Descarregar document"></span> <spring:message code="comu.boto.descarregar"/>
-															</a>
-														</dd>
-														<dt title="<spring:message code="registre.annex.detalls.camp.tamany"/>"><spring:message code="registre.annex.detalls.camp.tamany"/></dt><dd>${annex.fitxerTamany} bytes</dd>
-													</c:if>
-													<dt title="<spring:message code="registre.annex.detalls.camp.firmaMode"/>"><spring:message code="registre.annex.detalls.camp.firmaMode"/></dt><dd>${annex.firmaMode}</dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.firmaCsv"/>"><spring:message code="registre.annex.detalls.camp.firmaCsv"/></dt><dd>${annex.firmaCsv}</dd>
-													<dt title="<spring:message code="registre.annex.detalls.camp.validacioOCSP"/>"><spring:message code="registre.annex.detalls.camp.validacioOCSP"/></dt><dd>${annex.validacioOCSP}</dd>
-													<c:if test="${annex.ambFirma}">
-														<dt title="<spring:message code="registre.annex.detalls.camp.firmaFitxerNom"/>" class="file-dt"><spring:message code="registre.annex.detalls.camp.firmaFitxerNom"/></dt>
-														<dd class="file-dd">
-															${annex.firmaFitxerNom}
-															<a href="${registre.id}/annex/${annex.id}/arxiu/FIRMA" class="btn btn-default">
-									        					<span class="fa fa-download icona-doc"  title="Descarregar firma"></span> <spring:message code="comu.boto.descarregar"/>
-															</a>
-														</dd>
-														<dt title="<spring:message code="registre.annex.detalls.camp.tamany"/>"><spring:message code="registre.annex.detalls.camp.tamany"/></dt><dd>${annex.firmaFitxerTamany} bytes</dd>
-													</c:if>
-												</dl>
-							        		</div>
-							        	</div>
+										<div class="panel panel-default">
+											<div class="panel-heading"><h5 style="margin:0"><strong>Dades bàsiques</strong></h5></div>
+											<table class="table table-striped table-bordered">
+												<tbody>
+													<tr>
+														<td><strong><spring:message code="registre.annex.detalls.camp.titol"/></strong></td>
+														<td>${annex.titol}</td>
+													</tr>
+													<tr>
+														<td><strong><spring:message code="registre.annex.detalls.camp.dataCaptura"/></strong></td>
+														<td><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+													</tr>
+													<tr>
+														<td><strong><spring:message code="registre.annex.detalls.camp.localitzacio"/></strong></td>
+														<td>${annex.localitzacio}</td>
+													</tr>
+													<tr>
+														<td><strong><spring:message code="registre.annex.detalls.camp.origenCiutadaAdmin"/></strong></td>
+														<td>${annex.origenCiutadaAdmin}</td>
+													</tr>
+													<tr>
+														<td><strong><spring:message code="registre.annex.detalls.camp.ntiTipusDocument"/></strong></td>
+														<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
+													</tr>
+													<tr>
+														<td><strong><spring:message code="registre.annex.detalls.camp.sicresTipusDocument"/></strong></td>
+														<td><c:if test="${not empty annex.sicresTipusDocument}"><spring:message code="registre.annex.detalls.camp.sicresTipusDocument.${annex.sicresTipusDocument}"/></c:if></td>
+													</tr>
+													<tr>
+														<td><strong><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat"/></strong></td>
+														<td><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></td>
+													</tr>
+													<tr>
+														<td><strong><spring:message code="registre.annex.detalls.camp.observacions"/></strong></td>
+														<td>${annex.observacions}</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										<c:if test="${annex.ambDocument}">
+											<div class="panel panel-default">
+												<div class="panel-heading"><h5 style="margin:0"><strong>Info document</strong></h5></div>
+												<table class="table table-striped table-bordered">
+													<tbody>
+														<tr>
+															<td><strong><spring:message code="registre.annex.detalls.camp.fitxerNom"/></strong></td>
+															<td>
+																${annex.fitxerNom}
+																<a href="${registre.id}/annex/${annex.id}/arxiu/DOCUMENT" class="btn btn-default">
+																	<span class="fa fa-download icona-doc"  title="Descarregar document"></span> <spring:message code="comu.boto.descarregar"/>
+																</a>
+															</td>
+														</tr>
+														<tr>
+															<td><strong><spring:message code="registre.annex.detalls.camp.tamany"/></strong></td>
+															<td>${annex.fitxerTamany} bytes</td>
+														</tr>
+														<tr>
+															<td><strong><spring:message code="registre.annex.detalls.camp.firmaMode"/></strong></td>
+															<td>${annex.firmaMode}</td>
+														</tr>
+														<c:if test="${annex.ambFirma}">
+															<tr><td colspan="2">
+																<c:forEach var="firma" items="${annex.firmes}" varStatus="loop">
+																<div class="panel panel-default">
+																	<div class="panel-heading"><h5 style="margin:0"><strong><spring:message code="contingut.arxiu.grup.firma"/></strong></h5></div>
+																	<table class="table table-striped table-bordered">
+																		<tbody>
+																			<tr>
+																				<td><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></td>
+																				<td>${firma.tipus}</td>
+																			</tr>
+																			<tr>
+																				<td><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></td>
+																				<td>${firma.perfil}</td>
+																			</tr>
+																			<tr>
+																				<td><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></td>
+																				<td>${firma.csvRegulacio}</td>
+																			</tr>
+																			<tr>
+																				<td><strong><spring:message code="registre.annex.detalls.camp.fitxerNom"/></strong></td>
+																				<td>
+																					${firma.fitxerNom}
+																					<a href="${registre.id}/annex/${annex.id}/firma/${loop.index}" class="btn btn-default">
+																						<span class="fa fa-download icona-doc"  title="Descarregar firma"></span> <spring:message code="comu.boto.descarregar"/>
+																					</a>
+																				</td>
+																			</tr>
+																			
+																		</tbody>
+																	</table>
+																</div>
+																</c:forEach>
+															</td></tr>
+														</c:if>
+													</tbody>
+												</table>
+											</div>
+										</c:if>
 									</td>
 								</tr>
 							</c:forEach>

@@ -169,10 +169,6 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 				if (anexo.getOrigenCiudadanoAdmin() != null)
 					annex.setOrigenCiutadaAdmin(anexo.getOrigenCiudadanoAdmin().toString());
 				annex.setDataCaptura(anexo.getFechaCaptura());
-				annex.setFirmaMode(anexo.getModoFirma());
-				annex.setFirmaFitxerNom(anexo.getNombreFirmaAnexada());
-				annex.setFirmaFitxerTipusMime(anexo.getTipoMIMEFirmaAnexada());
-				annex.setFirmaCsv(anexo.getFirmacsv());
 				annexos.add(annex);
 			}
 			anotacio.setAnnexos(annexos);
