@@ -47,6 +47,7 @@ import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
+import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
@@ -1368,6 +1369,7 @@ public class PluginHelper {
 								fitxer,
 								null,
 								null,
+								null,
 								document.getNtiOrigen(),
 								Arrays.asList(document.getNtiOrgano()),
 								document.getDataCaptura(),
@@ -1394,6 +1396,7 @@ public class PluginHelper {
 								document.getArxiuUuid(),
 								document.getNom(),
 								fitxer,
+								null,
 								null,
 								null,
 								document.getNtiOrigen(),
@@ -1448,6 +1451,7 @@ public class PluginHelper {
 							annex.getTitol(),
 							fitxer,
 							null,
+							conversioTipusHelper.convertirList(annex.getFirmes(), FirmaDto.class),
 							null,
 							(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(annex.getOrigenCiutadaAdmin().getValor())] : null),
 							Arrays.asList(bustia.getEntitat().getUnitatArrel()),
@@ -1625,6 +1629,7 @@ public class PluginHelper {
 							document.getNom(),
 							null,
 							fitxerPdfFirmat,
+							null,
 							null,
 							document.getNtiOrigen(),
 							Arrays.asList(document.getNtiOrgano()),
@@ -2850,6 +2855,7 @@ public class PluginHelper {
 			String nom,
 			FitxerDto fitxer,
 			FitxerDto firmaPdf,
+			List<FirmaDto> firmes, 
 			String ntiIdentificador,
 			NtiOrigenEnumDto ntiOrigen,
 			List<String> ntiOrgans,
@@ -2983,6 +2989,24 @@ public class PluginHelper {
 			document.setFirmes(Arrays.asList(firmaPades));
 			extensio = DocumentExtensio.PDF;
 		}
+		
+		if (firmes != null && firmes.size() > 0) {
+			if (document.getFirmes() == null)
+				document.setFirmes(new ArrayList<Firma>());
+				
+			for (FirmaDto firmaDto: firmes) {
+				Firma firma = new Firma();
+				firma.setContingut(firmaDto.getContingut());
+				firma.setCsvRegulacio(firma.getCsvRegulacio());
+				firma.setFitxerNom(firmaDto.getFitxerNom());
+				firma.setPerfil(FirmaPerfil.valueOf(firmaDto.getPerfil()));
+				firma.setTipus(obtenirFirmaTipus(firmaDto.getTipus()));
+				firma.setTipusMime(firmaDto.getTipusMime());
+				
+				document.getFirmes().add(firma);
+			}
+		}
+		
 		if (extensio != null) {
 			metadades.setExtensio(extensio);
 			DocumentFormat format = null;
@@ -3537,6 +3561,44 @@ public class PluginHelper {
 			}
 		}
 		return dadesExternesPlugin;
+	}
+	
+	private FirmaTipus obtenirFirmaTipus(String tipusValor) {
+		FirmaTipus tipusFirma= null;
+		switch (DocumentNtiTipoFirmaEnumDto.valueOf(tipusValor)) {
+		case TF01:
+			tipusFirma = FirmaTipus.CSV;
+			break;
+		case TF02:
+			tipusFirma = FirmaTipus.XADES_DET;
+			break;
+		case TF03:
+			tipusFirma = FirmaTipus.XADES_ENV;
+			break;
+		case TF04:
+			tipusFirma = FirmaTipus.CADES_DET;
+			break;
+		case TF05:
+			tipusFirma = FirmaTipus.CADES_ATT;
+			break;
+		case TF06:
+			tipusFirma = FirmaTipus.PADES;
+			break;
+		case TF07:
+			tipusFirma = FirmaTipus.SMIME;
+			break;
+		case TF08:
+			tipusFirma = FirmaTipus.ODT;
+			break;
+		case TF09:
+			tipusFirma = FirmaTipus.OOXML;
+			break;
+		default:
+			tipusFirma = FirmaTipus.CSV;
+			break;
+		}
+		
+		return tipusFirma;
 	}
 
 	private String getPropertyPluginDadesUsuari() {

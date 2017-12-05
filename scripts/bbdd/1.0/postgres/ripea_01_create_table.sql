@@ -509,6 +509,21 @@ CREATE TABLE IPA_REGISTRE_ANNEX
   LASTMODIFIEDBY_CODI  character varying(256)
 );
 
+CREATE TABLE IPA_REGISTRE_ANNEX_FIRMA
+(
+  ID                   BIGINT                   	NOT NULL,
+  TIPUS		           character varying(30),
+  PERFIL    	       character varying(30),
+  FITXER_NOM           character varying(80),
+  TIPUS_MIME           character varying(30),
+  CSV_REGULACIO		   character varying(640),
+  ANNEX_ID             bigint(19)               	NOT NULL,
+  CREATEDDATE          timestamp without time zone,
+  CREATEDBY_CODI       character varying(256),
+  LASTMODIFIEDDATE     timestamp without time zone,
+  LASTMODIFIEDBY_CODI  character varying(256)
+);
+
 
 CREATE TABLE IPA_REGISTRE_INTER
 (

@@ -32,7 +32,7 @@ import es.caib.plugins.arxiu.api.Firma;
 import es.caib.ripea.core.api.dto.ArxiuContingutDto;
 import es.caib.ripea.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.ArxiuDetallDto;
-import es.caib.ripea.core.api.dto.ArxiuFirmaDto;
+import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
@@ -1458,9 +1458,9 @@ public class ContingutServiceImpl implements ContingutService {
 			arxiuDetall.setFills(detallFills);
 		}
 		if (firmes != null) {
-			List<ArxiuFirmaDto> detallFirmes = new ArrayList<ArxiuFirmaDto>();
+			List<FirmaDto> detallFirmes = new ArrayList<FirmaDto>();
 			for (Firma firma: firmes) {
-				ArxiuFirmaDto detallFirma = new ArxiuFirmaDto();
+				FirmaDto detallFirma = new FirmaDto();
 				if (firma.getTipus() != null) {
 					detallFirma.setTipus(firma.getTipus().name());
 				}

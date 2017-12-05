@@ -10,7 +10,7 @@ import java.io.Serializable;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ArxiuFirmaDto implements Serializable {
+public class FirmaDto implements Serializable {
 
 	private String tipus;
 	private String perfil;

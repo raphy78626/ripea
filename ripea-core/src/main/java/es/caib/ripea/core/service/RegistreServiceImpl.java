@@ -20,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
-import es.caib.ripea.core.api.dto.AnnexArxiuTipusEnumDto;
+import es.caib.plugins.arxiu.api.Firma;
+import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
@@ -34,6 +35,7 @@ import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.FirmaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
@@ -286,41 +288,16 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 	}
 	
-	private FitxerDto getArxiuAnnexIntern(
-			RegistreAnnexEntity annex, 
-			AnnexArxiuTipusEnumDto tipus) {
-		String nomArxiu = annex.getId().toString();
-		String contentType = "";
-		String nomFinal = "";
-		if (tipus == AnnexArxiuTipusEnumDto.DOCUMENT) {
-			nomArxiu += "_d";
-			contentType = annex.getFitxerTipusMime();
-			nomFinal = annex.getFitxerNom();
-		} else {
-			nomArxiu += "_f";
-			contentType = annex.getFirmaFitxerTipusMime();
-			nomFinal = annex.getFirmaFitxerNom();
-		}
-		byte[] contingutArxiu = registreHelper.getAnnexArxiuContingut(nomArxiu + "." + contentType);
-			
-		FitxerDto arxiu = new FitxerDto();
-		arxiu.setNom(nomFinal);
-		arxiu.setContentType(contentType);
-		arxiu.setContingut(contingutArxiu);
-		return arxiu;
-	}
 	
-	private FitxerDto getArxiuAnnexExtern(
-			RegistreAnnexEntity annex, 
-			AnnexArxiuTipusEnumDto tipus) {
-
-		Document document = null;
-		if (tipus == AnnexArxiuTipusEnumDto.DOCUMENT)
-			document = pluginHelper.arxiuDocumentConsultar(annex.getRegistre(), annex.getFitxerArxiuUuid(), null, true);
-		else
-			document = pluginHelper.arxiuDocumentConsultar(annex.getRegistre(), annex.getFirmaFitxerArxiuUuid(), null, true);
-		
+	@Transactional(readOnly = true)
+	@Override
+	public FitxerDto getArxiuAnnex(
+			Long annexId) {
+		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
 		FitxerDto arxiu = new FitxerDto();
+		
+		Document document = null;
+		document = pluginHelper.arxiuDocumentConsultar(annex.getRegistre(), annex.getFitxerArxiuUuid(), null, true);
 		
 		if (document != null) {
 			DocumentContingut documentContingut = document.getContingut();
@@ -336,18 +313,28 @@ public class RegistreServiceImpl implements RegistreService {
 	
 	@Transactional(readOnly = true)
 	@Override
-	public FitxerDto getArxiuAnnex(
-			Long annexId, 
-			AnnexArxiuTipusEnumDto tipus) {
+	public FitxerDto getAnnexFirmaContingut(
+			Long annexId,
+			int indexFirma) {
 		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
 		FitxerDto arxiu = new FitxerDto();
 		
-		if ((tipus == AnnexArxiuTipusEnumDto.DOCUMENT && annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) || 
-			(tipus == AnnexArxiuTipusEnumDto.FIRMA && annex.getFirmaFitxerArxiuUuid() != null && !annex.getFirmaFitxerArxiuUuid().isEmpty()))
-			arxiu = getArxiuAnnexExtern(annex, tipus);
-		else
-			arxiu = getArxiuAnnexIntern(annex, tipus);
-			
+		Document document = null;
+		document = pluginHelper.arxiuDocumentConsultar(annex.getRegistre(), annex.getFitxerArxiuUuid(), null, true);
+		
+		if (document != null) {
+			List<Firma> firmes = document.getFirmes();
+			if (firmes != null && firmes.size() > 0) {
+				Firma firma = firmes.get(indexFirma);
+				FirmaEntity firmaEntity = annex.getFirmes().get(indexFirma);
+				if (firma != null && firmaEntity != null) {
+					arxiu.setNom(firmaEntity.getFitxerNom());
+					arxiu.setContentType(firmaEntity.getTipusMime());
+					arxiu.setContingut(firma.getContingut());
+					arxiu.setTamany(firma.getContingut().length);
+				}
+			}
+		}
 		return arxiu;
 	}
 
@@ -391,7 +378,22 @@ public class RegistreServiceImpl implements RegistreService {
 		List<RegistreAnnexDetallDto> annexos = new ArrayList<RegistreAnnexDetallDto>();
 		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
 			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(annexEntity, RegistreAnnexDetallDto.class);
-			registreHelper.comprovarDocumentsFirmesPerAnnex(annex);
+			if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
+				Document document = pluginHelper.arxiuDocumentConsultar(contingut, annex.getFitxerArxiuUuid(), null, true);
+				annex.setAmbDocument(true);
+				
+				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
+					annex.setFirmes(conversioTipusHelper.convertirList(document.getFirmes(), FirmaDto.class));
+					annex.setAmbFirma(true);
+					for (int i = 0; i < annex.getFirmes().size(); i++) {
+						if (i < annexEntity.getFirmes().size()) {
+							FirmaDto firma = annex.getFirmes().get(i);
+							firma.setFitxerNom(annexEntity.getFirmes().get(i).getFitxerNom());
+							firma.setTipusMime(annexEntity.getFirmes().get(i).getTipusMime());
+						}
+					}
+				}
+			}
 			annexos.add(annex);
 		}
 		
