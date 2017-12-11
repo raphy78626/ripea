@@ -1,8 +1,5 @@
 package es.caib.ripea.plugin.notificacio;
 
-import java.util.Calendar;
-import java.util.List;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import es.caib.ripea.plugin.SistemaExternException;
@@ -31,7 +28,7 @@ public interface NotificacioPlugin {
 	 * @throws SistemaExternException
 	 *             Si hi ha hagut algun problema per a crear la notificació
 	 */
-	public List<String> notificacioAlta(
+	public String notificacioAlta(
 			XMLGregorianCalendar caducitat,
 			String concepte,
 			String descripcio,
@@ -39,7 +36,7 @@ public interface NotificacioPlugin {
 			String emisorDir3Codi,
 			XMLGregorianCalendar enviamentDataProgramada,
 			NotificacioEnviamentTipusEnum enviamentTipus,
-			NotificacioEnviament[] enviaments,
+			NotificacioEnviament enviament,
 			NotificacioPagadorCie pagadorCie,
 			NotificacioPagadorPostal pagadorPostal,
 			NotificacioParametresSeu parametresSeu,

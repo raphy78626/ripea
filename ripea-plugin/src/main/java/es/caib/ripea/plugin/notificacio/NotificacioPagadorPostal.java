@@ -2,6 +2,8 @@ package es.caib.ripea.plugin.notificacio;
 
 import java.util.Calendar;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 
 /**
  * Informació del pagador per a interactuar amb el Notib.
@@ -10,14 +12,14 @@ import java.util.Calendar;
  */
 public class NotificacioPagadorPostal {
 	
-	private Calendar contracteDataVigencia;
+	private XMLGregorianCalendar contracteDataVigencia;
     private String contracteNum;
     private String dir3Codi;
     private String facturacioClientCodi;
     
     
 	public NotificacioPagadorPostal(
-			Calendar contracteDataVigencia,
+			XMLGregorianCalendar contracteDataVigencia,
 			String contracteNum,
 			String dir3Codi,
 			String facturacioClientCodi) {
@@ -29,10 +31,10 @@ public class NotificacioPagadorPostal {
 	}
 
 
-	public Calendar getContracteDataVigencia() {
+	public XMLGregorianCalendar getContracteDataVigencia() {
 		return contracteDataVigencia;
 	}
-	public void setContracteDataVigencia(Calendar contracteDataVigencia) {
+	public void setContracteDataVigencia(XMLGregorianCalendar contracteDataVigencia) {
 		this.contracteDataVigencia = contracteDataVigencia;
 	}
 	

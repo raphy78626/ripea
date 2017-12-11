@@ -270,13 +270,13 @@ $(document).ready(function() {
 			$('#municipi').prop("disabled", true);
 		}
  	});
- 	$('select#provincia').change(function(valor) {
+ 	$('select#domiciliProvinciaCodi').change(function(valor) {
  		if ($(this).val() != '') {
  			$.ajax({
 				type: 'GET',
 				url: "<c:url value="/expedient/municipis/"/>" + $(this).val(),
 				success: function(data) {
-					var selMunicipi = $('#municipi');
+					var selMunicipi = $('#domiciliMunicipiCodiIne');
 					selMunicipi.empty();
 					selMunicipi.append("<option value=\"\"></option>");
 					if (data && data.length > 0) {
@@ -300,8 +300,8 @@ $(document).ready(function() {
 			});
  	 	} else {
  	 		var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
- 	 		$('#municipi').select2("destroy");
- 	 		$('#municipi').select2(select2Options);
+ 	 		$('#domiciliMunicipiCodiIne').select2("destroy");
+ 	 		$('#domiciliMunicipiCodiIne').select2(select2Options);
  	 	}
  	});
 
@@ -486,76 +486,94 @@ function canviVisibilitat(tipus) {
 	</c:choose>
 	
 	<form:form id="interessatform" action="${formAction}" method="post" cssClass="form-horizontal" commandName="interessatCommand">
+		
 		<form:hidden path="entitatId"/>
 		<form:hidden path="id"/>
 		<input type="hidden" id="id"/>
 		<!-- FILA: Tipus d'interessat -->
 		<rip:inputSelect name="tipus" textKey="interessat.form.camp.tipus" optionItems="${tipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" labelSize="2" />
-		<!-- FILA: Administració -->
-		<!-- Filtre de administració -->
-		<div class="row ">
-			<div class="col-xs-2"></div>
-			<div id="organ-filtre" class="col-xs-10 well collapse">
-				<div class="col-xs-12" id="organTitol"><span><spring:message code="interessat.form.organ.filtre.titol"/></span></div>
-				<div class="col-xs-6"><rip:inputText name="filtreCodiDir3" textKey="interessat.form.camp.organ.filtre.codi"/></div>
-				<div class="col-xs-6"><rip:inputText name="filtreDenominacio" textKey="interessat.form.camp.organ.filtre.denominacio"/></div>
-				<div class="col-xs-6"><rip:inputSelect name="filtreNivellAdministracio" textKey="interessat.form.camp.organ.filtre.nivell.administracio" optionItems="${nivellAdministracions}" optionTextAttribute="descripcio" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
-				<div class="col-xs-6"><rip:inputSelect name="filtreComunitat" textKey="interessat.form.camp.organ.filtre.comunitat" optionItems="${comunitats}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
-				<div class="col-xs-6"><rip:inputSelect name="filtreProvincia" textKey="interessat.form.camp.organ.filtre.provincies" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
-				<div class="col-xs-6"><rip:inputSelect name="filtreLocalitat" textKey="interessat.form.camp.organ.filtre.localitat" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codiDir3" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
-				<div class="col-xs-6"><rip:inputCheckbox name="filtreArrel" textKey="interessat.form.camp.organ.filtre.arrel" labelSize="4"/></div>
-				<div class="col-xs-6"><button id="filtre-btn" type="button" class="btn"><span class="fa fa-bars"></span>  <spring:message code="comu.boto.refrescar"/></button></div>
+		
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#dades" aria-controls="dades" role="tab" data-toggle="tab"><spring:message code="interessat.form.camp.tab.dades"/></a></li>
+			<li role="presentation"><a href="#adresa" aria-controls="avisofici" role="tab" data-toggle="tab"><spring:message code="interessat.form.camp.tab.adresa"/></a></li>
+		</ul>
+		<br/>
+		
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="dades">
+			
+				<!-- FILA: Administració -->
+				<!-- Filtre de administració -->
+				<div class="row ">
+					<div class="col-xs-2"></div>
+					<div id="organ-filtre" class="col-xs-10 well collapse">
+						<div class="col-xs-12" id="organTitol"><span><spring:message code="interessat.form.organ.filtre.titol"/></span></div>
+						<div class="col-xs-6"><rip:inputText name="filtreCodiDir3" textKey="interessat.form.camp.organ.filtre.codi"/></div>
+						<div class="col-xs-6"><rip:inputText name="filtreDenominacio" textKey="interessat.form.camp.organ.filtre.denominacio"/></div>
+						<div class="col-xs-6"><rip:inputSelect name="filtreNivellAdministracio" textKey="interessat.form.camp.organ.filtre.nivell.administracio" optionItems="${nivellAdministracions}" optionTextAttribute="descripcio" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+						<div class="col-xs-6"><rip:inputSelect name="filtreComunitat" textKey="interessat.form.camp.organ.filtre.comunitat" optionItems="${comunitats}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+						<div class="col-xs-6"><rip:inputSelect name="filtreProvincia" textKey="interessat.form.camp.organ.filtre.provincies" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+						<div class="col-xs-6"><rip:inputSelect name="filtreLocalitat" textKey="interessat.form.camp.organ.filtre.localitat" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codiDir3" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+						<div class="col-xs-6"><rip:inputCheckbox name="filtreArrel" textKey="interessat.form.camp.organ.filtre.arrel" labelSize="4"/></div>
+						<div class="col-xs-6"><button id="filtre-btn" type="button" class="btn"><span class="fa fa-bars"></span>  <spring:message code="comu.boto.refrescar"/></button></div>
+					</div>
+				</div>
+				<!-- Selector d'administració i botó per obrir filtre -->
+				<div class="row">
+					<div class="col-xs-12 organ"><rip:inputSelect name="organCodi" textKey="interessat.form.camp.organCodi" optionItems="${unitatsOrganitzatives}" optionTextAttribute="denominacio" optionValueAttribute="codi" emptyOption="true" required="true" optionMinimumResultsForSearch="6" labelSize="2"/></div>
+					<div class="col-xs-1 organ-btn"><button type="button" class="btn" data-toggle="collapse" data-target="#organ-filtre"><span class="fa fa-bars"></span></button></div>
+				</div>
+				<!-- FILA: Document interessat -->
+				<div class="row">
+					<div class="col-xs-6"><rip:inputSelect name="documentTipus" textKey="interessat.form.camp.document.tipus" optionItems="${documentTipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
+					<div class="col-xs-6"><rip:inputText name="documentNum" textKey="interessat.form.camp.document.numero" required="true"/></div>
+				</div>
+				<!-- FILA: Nom interessat -->
+				<rip:inputText name="nom" textKey="interessat.form.camp.nom" required="true" labelSize="2"/>
+				<!-- FILA: Llinatges interessat -->
+				<div class="row">
+					<div class="col-xs-6"><rip:inputText name="llinatge1" textKey="interessat.form.camp.llinatge1" required="true"/></div>
+					<div class="col-xs-6"><rip:inputText name="llinatge2" textKey="interessat.form.camp.llinatge2"/></div>
+				</div>	
+				<!-- FILA: Raó social -->
+				<rip:inputText name="raoSocial" textKey="interessat.form.camp.raoSocial" required="true" labelSize="2"/>
+				<!-- FILA: Correu electrònic i telèfon -->
+				<div class="row">
+					<div class="col-xs-6"><rip:inputText name="email" textKey="interessat.form.camp.email"/></div>
+					<div class="col-xs-6"><rip:inputText name="telefon" textKey="interessat.form.camp.telefon"/></div>
+				</div>
+				<!-- FILA: Observacions -->
+				<rip:inputTextarea name="observacions" textKey="interessat.form.camp.observacions" labelSize="2"/>
+				<!-- FILA: Notificació (idioma i autorització) -->
+				<div class="row">
+					<div class="col-xs-6"><rip:inputSelect name="preferenciaIdioma" textKey="interessat.form.camp.idioma" optionItems="${idiomaEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
+					<div class="col-xs-6"><rip:inputCheckbox name="notificacioAutoritzat" textKey="interessat.form.camp.autoritzat" labelSize="10"/></div>
+				</div>
+				
+				<div id="modal-botons" class="well">
+					<button id="btnSave" type="button" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+		 			<a href="<c:url value="/contingut/${expedientId}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+				</div>
+		
+			</div>
+			<div role="tabpanel" class="tab-pane" id="adresa">
+				<!-- FILA: País i província -->
+				<div class="row">
+					<div class="col-xs-6"><rip:inputSelect name="domiciliPaisCodiIso" textKey="interessat.form.camp.pais" optionItems="${paisos}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+					<div class="col-xs-6"><rip:inputSelect name="domiciliProvinciaCodi" textKey="interessat.form.camp.provincia" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+				</div>
+				<!-- FILA: Municipi i codi postal -->
+				<div class="row">
+					<div class="col-xs-6"><rip:inputSelect name="domiciliMunicipiCodiIne" textKey="interessat.form.camp.municipi" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+					<div class="col-xs-6"><rip:inputText name="domiciliPoblacio" textKey="interessat.form.camp.poblacio"/></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6"><rip:inputText name="domiciliLinea1" textKey="interessat.form.camp.domiciliLinea1"/></div>
+					<div class="col-xs-6"><rip:inputText name="domiciliLinea2" textKey="interessat.form.camp.domiciliLinea2"/></div>
+				</div>
 			</div>
 		</div>
-		<!-- Selector d'administració i botó per obrir filtre -->
-		<div class="row">
-			<div class="col-xs-12 organ"><rip:inputSelect name="organCodi" textKey="interessat.form.camp.organCodi" optionItems="${unitatsOrganitzatives}" optionTextAttribute="denominacio" optionValueAttribute="codi" emptyOption="true" required="true" optionMinimumResultsForSearch="6" labelSize="2"/></div>
-			<div class="col-xs-1 organ-btn"><button type="button" class="btn" data-toggle="collapse" data-target="#organ-filtre"><span class="fa fa-bars"></span></button></div>
-		</div>
-		<!-- FILA: Document interessat -->
-		<div class="row">
-			<div class="col-xs-6"><rip:inputSelect name="documentTipus" textKey="interessat.form.camp.document.tipus" optionItems="${documentTipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
-			<div class="col-xs-6"><rip:inputText name="documentNum" textKey="interessat.form.camp.document.numero" required="true"/></div>
-		</div>
-		<!-- FILA: Nom interessat -->
-		<rip:inputText name="nom" textKey="interessat.form.camp.nom" required="true" labelSize="2"/>
-		<!-- FILA: Llinatges interessat -->
-		<div class="row">
-			<div class="col-xs-6"><rip:inputText name="llinatge1" textKey="interessat.form.camp.llinatge1" required="true"/></div>
-			<div class="col-xs-6"><rip:inputText name="llinatge2" textKey="interessat.form.camp.llinatge2"/></div>
-		</div>	
-		<!-- FILA: Raó social -->
-		<rip:inputText name="raoSocial" textKey="interessat.form.camp.raoSocial" required="true" labelSize="2"/>
-		<!-- FILA: País i província -->
-		<div class="row">
-			<div class="col-xs-6"><rip:inputSelect name="pais" textKey="interessat.form.camp.pais" optionItems="${paisos}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
-			<div class="col-xs-6"><rip:inputSelect name="provincia" textKey="interessat.form.camp.provincia" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
-		</div>
-		<!-- FILA: Municipi i codi postal -->
-		<div class="row">
-			<div class="col-xs-6"><rip:inputSelect name="municipi" textKey="interessat.form.camp.municipi" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
-<%-- 			<div class="col-xs-6"><rip:inputText name="municipi" textKey="interessat.form.camp.municipi" required="true"/></div> --%>
-			<div class="col-xs-6"><rip:inputText name="codiPostal" textKey="interessat.form.camp.codiPostal" required="true"/></div>
-		</div>
-		<!-- FILA: Adressa -->
-		<rip:inputTextarea name="adresa" textKey="interessat.form.camp.adresa" required="true" labelSize="2"/>
-		<!-- FILA: Correu electrònic i telèfon -->
-		<div class="row">
-			<div class="col-xs-6"><rip:inputText name="email" textKey="interessat.form.camp.email"/></div>
-			<div class="col-xs-6"><rip:inputText name="telefon" textKey="interessat.form.camp.telefon"/></div>
-		</div>
-		<!-- FILA: Observacions -->
-		<rip:inputTextarea name="observacions" textKey="interessat.form.camp.observacions" labelSize="2"/>
-		<!-- FILA: Notificació (idioma i autorització) -->
-		<div class="row">
-			<div class="col-xs-6"><rip:inputSelect name="preferenciaIdioma" textKey="interessat.form.camp.idioma" optionItems="${idiomaEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
-			<div class="col-xs-6"><rip:inputCheckbox name="notificacioAutoritzat" textKey="interessat.form.camp.autoritzat" labelSize="10"/></div>
-		</div>
 		
-		<div id="modal-botons" class="well">
-			<button id="btnSave" type="button" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
- 			<a href="<c:url value="/contingut/${expedientId}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-		</div>
 	</form:form>
 
 	<div class="rmodal"></div>

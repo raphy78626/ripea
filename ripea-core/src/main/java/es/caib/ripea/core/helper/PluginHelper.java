@@ -2599,9 +2599,9 @@ public class PluginHelper {
 	}
 	
 	//////////////////////////////////////////////////////
-	//	PLUGIN DE NOTIB
+	//	PLUGIN DE NOTIB									//
 	//////////////////////////////////////////////////////
-	public List<String> notibNotificacioEnviar(
+	public String notibNotificacioEnviar(
 			XMLGregorianCalendar caducitat,
 			String concepte,
 			String descripcio,
@@ -2609,7 +2609,7 @@ public class PluginHelper {
 			String emisorDir3Codi,
 			XMLGregorianCalendar enviamentDataProgramada,
 			NotificacioEnviamentTipusEnum enviamentTipus,
-			NotificacioEnviament[] enviaments,
+			NotificacioEnviament enviament,
 			NotificacioPagadorCie pagadorCie,
 			NotificacioPagadorPostal pagadorPostal,
 			NotificacioParametresSeu parametresSeu,
@@ -2625,7 +2625,7 @@ public class PluginHelper {
 					emisorDir3Codi,
 					enviamentDataProgramada,
 					enviamentTipus,
-					enviaments,
+					enviament,
 					pagadorCie,
 					pagadorPostal,
 					parametresSeu,
@@ -2695,16 +2695,16 @@ public class PluginHelper {
 			persona.setNom(interessatPf.getNom());
 			persona.setLlinatge1(interessatPf.getLlinatge1());
 			persona.setLlinatge2(interessatPf.getLlinatge2());
-			persona.setPaisCodi(interessat.getPais());
-			persona.setProvinciaCodi(interessat.getProvincia());
-			persona.setMunicipiCodi(interessat.getMunicipi());
+			persona.setPaisCodi(interessat.getDomiciliPaisCodiIso());
+			persona.setProvinciaCodi(interessat.getDomiciliProvinciaCodi());
+			persona.setMunicipiCodi(interessat.getDomiciliMunicipiCodiIne());
 		} else if (interessat instanceof InteressatPersonaJuridicaEntity) {
-			InteressatPersonaFisicaEntity interessatPj = (InteressatPersonaFisicaEntity)interessat;
+			InteressatPersonaJuridicaEntity interessatPj = (InteressatPersonaJuridicaEntity)interessat;
 			persona.setNif(interessatPj.getDocumentNum());
-			persona.setNom(interessatPj.getNom());
-			persona.setPaisCodi(interessat.getPais());
-			persona.setProvinciaCodi(interessat.getProvincia());
-			persona.setMunicipiCodi(interessat.getMunicipi());
+			persona.setNom(interessatPj.getRaoSocial());
+			persona.setPaisCodi(interessat.getDomiciliPaisCodiIso());
+			persona.setProvinciaCodi(interessat.getDomiciliProvinciaCodi());
+			persona.setMunicipiCodi(interessat.getDomiciliMunicipiCodiIne());
 		} else if (interessat instanceof InteressatAdministracioEntity) {
 			throw new ValidationException(
 					interessat.getId(),

@@ -50,7 +50,7 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 						"dtype",
 						"tipus",
 						"destin_doctip",
-						"destin_docnum"})})
+						"destinatari_nif"})})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners(AuditingEntityListener.class)
 public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {

@@ -58,7 +58,7 @@ public class ExpedientInteressatController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		InteressatCommand interessatCommand = new InteressatCommand();
 		interessatCommand.setEntitatId(entitatActual.getId());
-		interessatCommand.setPais("724");
+		interessatCommand.setDomiciliPaisCodiIso("724");
 		model.addAttribute("interessatCommand", interessatCommand);
 		model.addAttribute("expedientId", expedientId);
 		ompleModel(request, model, entitatActual.getCodi());
@@ -78,8 +78,8 @@ public class ExpedientInteressatController extends BaseUserController {
 		model.addAttribute("interessatCommand", interessatCommand);
 		model.addAttribute("expedientId", expedientId);
 		ompleModel(request, model, entitatActual.getCodi());
-		if (interessatDto.getProvincia() != null) {
-			model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatDto.getProvincia()));
+		if (interessatDto.getDomiciliProvinciaCodi() != null) {
+			model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatDto.getDomiciliProvinciaCodi()));
 		}
 		if (interessatDto.isAdministracio()) {
 			List<UnitatOrganitzativaDto> unitats = new ArrayList<UnitatOrganitzativaDto>();
@@ -125,8 +125,8 @@ public class ExpedientInteressatController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("expedientId", expedientId);
 			ompleModel(request, model, entitatActual.getCodi());
-			if (interessatCommand.getProvincia() != null) {
-				model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatCommand.getProvincia()));
+			if (interessatCommand.getDomiciliProvinciaCodi() != null) {
+				model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatCommand.getDomiciliProvinciaCodi()));
 			}
 			model.addAttribute("interessatCommand", interessatCommand);
 			model.addAttribute("netejar", false);
@@ -194,7 +194,7 @@ public class ExpedientInteressatController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		InteressatCommand interessatCommand = new InteressatCommand();
 		interessatCommand.setEntitatId(entitatActual.getId());
-		interessatCommand.setPais("724");
+		interessatCommand.setDomiciliPaisCodiIso("724");
 		model.addAttribute("interessatCommand", interessatCommand);
 		model.addAttribute("expedientId", expedientId);
 		model.addAttribute("esRepresentant", true);
@@ -222,8 +222,8 @@ public class ExpedientInteressatController extends BaseUserController {
 		model.addAttribute("esRepresentant", true);
 		model.addAttribute("interessatId", interessatId);
 		ompleModel(request, model, entitatActual.getCodi());
-		if (representantDto.getProvincia() != null) {
-			model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(representantDto.getProvincia()));
+		if (representantDto.getDomiciliProvinciaCodi() != null) {
+			model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(representantDto.getDomiciliProvinciaCodi()));
 		}
 		return "expedientInteressatForm";
 	}
@@ -260,8 +260,8 @@ public class ExpedientInteressatController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("expedientId", expedientId);
 			ompleModel(request, model, entitatActual.getCodi());
-			if (interessatCommand.getProvincia() != null) {
-				model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatCommand.getProvincia()));
+			if (interessatCommand.getDomiciliProvinciaCodi() != null) {
+				model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatCommand.getDomiciliProvinciaCodi()));
 			}
 			model.addAttribute("esRepresentant", true);
 			model.addAttribute("interessatId", interessatId);

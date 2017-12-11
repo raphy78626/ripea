@@ -23,6 +23,7 @@ import es.caib.ripea.core.api.dto.DocumentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
+import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -36,6 +37,8 @@ import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
+import es.caib.ripea.core.entity.ServeiTipusEnum;
+import es.caib.ripea.core.entity.DocumentNotificacioEntity.Builder;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
@@ -43,6 +46,7 @@ import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.ExpedientHelper;
 import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPublicacioRepository;
+import es.caib.ripea.plugin.notificacio.NotificacioEnviamentTipusEnum;
 
 /**
  * Implementació dels mètodes per a gestionar expedients.
@@ -175,34 +179,66 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				annexos.add(annexEntity);
 			}
 		}
+		
 		DocumentNotificacioEntity notificacioEntity = DocumentNotificacioEntity.getBuilder(
+				notificacio.getTipus(),
 				expedient,
 				(notificacio.getEstat() != null) ? notificacio.getEstat() : DocumentEnviamentEstatEnumDto.PENDENT,
 				notificacio.getAssumpte(),
 				new Date(),
 				document,
-				notificacio.getTipus(),
-				interessat.getDocumentTipus(),
-				interessat.getDocumentNum(),
-				nom,
-				llinatge1,
-				llinatge2,
-				interessat.getPais(),
-				interessat.getProvincia(),
-				interessat.getMunicipi(),
-				interessat.isEsRepresentant(),
-				notificacioIdioma).
+				notificacio.getCaducitat(),
+				notificacio.getConcepte(),
+				notificacio.getDescripcio(),
+				notificacio.getEmisorDir3Codi(),
+				notificacio.getEnviamentDataProgramada(),
+				NotificacioEnviamentTipusEnum.valueOf(notificacio.getEnviamentTipus().name()),
+				notificacio.getProcedimentCodiSia(),
+				notificacio.getRetardPostal()).
+				annexos(annexos).
 				observacions(notificacio.getObservacions()).
 				unitatAdministrativa(expedient.getMetaExpedient().getUnitatAdministrativa()).
 				organCodi(expedient.getMetaExpedient().getNotificacioOrganCodi()).
 				llibreCodi(expedient.getMetaExpedient().getNotificacioLlibreCodi()).
-				avisTitol(notificacio.getAvisTitol()).
-				avisText(notificacio.getAvisText()).
-				avisTextSms(notificacio.getAvisTextSms()).
-				oficiTitol(notificacio.getOficiTitol()).
-				oficiText(notificacio.getOficiText()).
+				destinatariDocumentTipus(interessat.getDocumentTipus()).
+				destinatariNom(nom).
+				destinatariLlinatge1(llinatge1).
+				destinatariLlinatge2(llinatge2).
+				destinatariNif(interessat.getDocumentNum()).
+				destinatariTelefon(interessat.getTelefon()).
 				destinatariEmail(interessat.getEmail()).
-				annexos(annexos).
+				destinatariRepresentant(interessat.isEsRepresentant()).
+				dehObligat(notificacio.isDehObligat()).
+				dehNif(notificacio.getDehNif()).
+				notificaReferencia(notificacio.getNotificaReferencia()).
+				serveiTipus(ServeiTipusEnum.valueOf(notificacio.getServeiTipus().name())).
+				titularNom(notificacio.getTitularNom()).
+				titularLlinatge1(notificacio.getTitularLlinatge1()).
+				titularLlinatge2(notificacio.getTitularLlinatge2()).
+				titularNif(notificacio.getTitularNif()).
+				titularTelefon(notificacio.getTitularTelefon()).
+				titularEmail(notificacio.getTitularEmail()).
+				pagadorCieCodiDir3(notificacio.getPagadorCieCodiDir3()).
+				pagadorCieDataVigencia(notificacio.getPagadorCieDataVigencia()).
+				pagadorCorreusCodiDir3(notificacio.getPagadorCorreusCodiDir3()).
+				pagadorCorreusContracteNum(notificacio.getPagadorCorreusContracteNum()).
+				pagadorCorreusCodiClientFacturacio(notificacio.getPagadorCorreusCodiClientFacturacio()).
+				pagadorCorreusDataVigencia(notificacio.getPagadorCorreusDataVigencia()).
+				seuExpedientSerieDocumental(notificacio.getSeuExpedientSerieDocumental()).
+				seuExpedientUnitatOrganitzativa(notificacio.getSeuExpedientUnitatOrganitzativa()).
+				seuExpedientIdentificadorEni(notificacio.getSeuExpedientIdentificadorEni()).
+				seuExpedientTitol(notificacio.getSeuExpedientTitol()).
+				seuRegistreOficina(notificacio.getSeuRegistreOficina()).
+				seuRegistreLlibre(notificacio.getSeuRegistreLlibre()).
+				seuIdioma(notificacio.getSeuIdioma()).
+				seuAvisTitol(notificacio.getSeuAvisTitol()).
+				seuAvisText(notificacio.getSeuAvisText()).
+				seuAvisTextMobil(notificacio.getSeuAvisTextMobil()).
+				seuOficiTitol(notificacio.getSeuOficiTitol()).
+				seuOficiText(notificacio.getSeuOficiText()).
+				documentHash(notificacio.getDocumentHash()).
+				documentGenerarCsv(notificacio.isDocumentGenerarCsv()).
+				documentNormalitzat(notificacio.isDocumentNormalitzat()).
 				build();
 		if (DocumentNotificacioTipusEnumDto.ELECTRONICA.equals(notificacio.getTipus())) {
 			expedientHelper.ciutadaNotificacioEnviar(
@@ -272,24 +308,46 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 			estat = notificacio.getEstat();
 		}
 		entity.update(
-				estat,
-				notificacio.getAssumpte(),
 				notificacio.getObservacions(),
-				notificacio.getDestinatariDocumentTipus(),
-				notificacio.getDestinatariDocumentNum(),
-				notificacio.getDestinatariNom(),
-				notificacio.getDestinatariLlinatge1(),
-				notificacio.getDestinatariLlinatge2(),
-				notificacio.isDestinatariRepresentant(),
+				notificacio.getTipus(),
 				entity.getUnitatAdministrativa(),
 				entity.getOrganCodi(),
 				entity.getLlibreCodi(),
-				notificacio.getAvisTitol(),
-				notificacio.getAvisText(),
-				notificacio.getAvisTextSms(),
-				notificacio.getOficiTitol(),
-				notificacio.getOficiText(),
-				notificacio.getIdioma());
+				notificacio.getAssumpte(),
+				notificacio.getCaducitat(),
+				notificacio.getConcepte(),
+				notificacio.getDescripcio(),
+				notificacio.getEmisorDir3Codi(),
+				notificacio.getEnviamentDataProgramada(),
+				NotificacioEnviamentTipusEnum.valueOf(notificacio.getEnviamentTipus().name()),
+				notificacio.getProcedimentCodiSia(),
+				notificacio.getRetardPostal());
+		entity.updateDestinatari(
+				notificacio.getDestinatariDocumentTipus(),
+				notificacio.getDestinatariNom(),
+				notificacio.getDestinatariLlinatge1(),
+				notificacio.getDestinatariLlinatge2(),
+				notificacio.getDestinatariNif(),
+				notificacio.getDestinatariTelefon(),
+				notificacio.getDestinatariEmail(),
+				notificacio.isDestinatariRepresentant(),
+				notificacio.getDestinatariPaisCodi(),
+				notificacio.getDestinatariProvinciaCodi(),
+				notificacio.getDestinatariMunicipiCodi()
+				);
+		entity.updateSeu(
+				notificacio.getSeuExpedientSerieDocumental(),
+				notificacio.getSeuExpedientUnitatOrganitzativa(),
+				notificacio.getSeuExpedientIdentificadorEni(),
+				notificacio.getSeuExpedientTitol(),
+				notificacio.getSeuRegistreOficina(),
+				notificacio.getSeuRegistreLlibre(),
+				notificacio.getSeuIdioma(),
+				notificacio.getSeuAvisTitol(),
+				notificacio.getSeuAvisText(),
+				notificacio.getSeuAvisTextMobil(),
+				notificacio.getSeuOficiTitol(),
+				notificacio.getSeuOficiText());
 		DocumentNotificacioDto dto = conversioTipusHelper.convertir(
 				entity,
 				DocumentNotificacioDto.class);
@@ -437,12 +495,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 					notificacio.getDestinatariLlinatge1(),
 					notificacio.getDestinatariLlinatge2(),
 					notificacio.getDestinatariDocumentTipus(),
-					notificacio.getDestinatariDocumentNum(),
-					notificacio.getDestinatariPaisCodi(),
-					notificacio.getDestinatariProvinciaCodi(),
-					notificacio.getDestinatariMunicipiCodi(),
-					null,
-					null,
+					notificacio.getDestinatariNif(),
 					notificacio.getDestinatariEmail(),
 					null,
 					null,

@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
+import es.caib.ripea.plugin.notificacio.NotificacioEntregaPostalViaTipusEnum;
 
 /**
  * Classe del model de dades que representa un interessat.
@@ -71,16 +72,6 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	protected InteressatDocumentTipusEnumDto documentTipus;
 	@Column(name = "document_num", length = 17)
 	protected String documentNum;
-	@Column(name = "pais", length = 4)
-	protected String pais;
-	@Column(name = "provincia", length = 2)
-	protected String provincia;
-	@Column(name = "municipi", length = 5)
-	protected String municipi;
-	@Column(name = "adresa", length = 160)
-	protected String adresa;
-	@Column(name = "codi_postal", length = 5)
-	protected String codiPostal;
 	@Column(name = "email", length = 160)
 	protected String email;
 	@Column(name = "telefon", length = 20)
@@ -111,9 +102,89 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	private Long representantId;
 	@Transient
 	private Long representantIdentificador;
-
-
-
+	
+	
+	@Column(name = "dom_apartat", length = 10)
+	protected String domiciliApartatCorreus;
+	@Column(name = "dom_bloc", length = 50)
+	protected String domiciliBloc;
+	@Column(name = "dom_cie")
+	protected Integer domiciliCie;
+	@Column(name = "dom_codi_postal", length = 10)
+	protected String domiciliCodiPostal;
+	@Column(name = "dom_complem", length = 250)
+	protected String domiciliComplement;
+	@Column(name = "dom_escala", length = 50)
+	protected String domiciliEscala;
+	@Column(name = "dom_linea1", length = 50)
+	protected String domiciliLinea1;
+	@Column(name = "dom_linea2", length = 50)
+	protected String domiciliLinea2;
+	@Column(name = "dom_mun_codine", length = 5)
+	protected String domiciliMunicipiCodiIne;
+	@Column(name = "dom_num_num", length = 10)
+	protected String domiciliNumeracioNumero;
+	@Column(name = "dom_pai_codiso", length = 3)
+	protected String domiciliPaisCodiIso; // ISO-3166
+	@Column(name = "dom_planta", length = 50)
+	protected String domiciliPlanta;
+	@Column(name = "dom_poblacio", length = 30)
+	protected String domiciliPoblacio;
+	@Column(name = "dom_porta", length = 50)
+	protected String domiciliPorta;
+	@Column(name = "dom_portal", length = 50)
+	protected String domiciliPortal;
+	@Column(name = "dom_prv_codi", length = 2)
+	protected String domiciliProvinciaCodi;
+	@Column(name = "dom_num_puntkm", length = 10)
+	protected String domiciliNumeracioPuntKm;
+	@Column(name = "dom_via_nom", length = 100)
+	protected String domiciliViaNom;
+	@Column(name = "dom_via_tipus")
+	protected NotificacioEntregaPostalViaTipusEnum domiciliViaTipus;
+	
+	
+	public void updateAdresa(
+			String domiciliApartatCorreus,
+			String domiciliBloc,
+			Integer domiciliCie,
+			String domiciliCodiPostal,
+			String domiciliComplement,
+			String domiciliEscala,
+			String domiciliLinea1,
+			String domiciliLinea2,
+			String domiciliMunicipiCodiIne,
+			String domiciliNumeracioNumero,
+			String domiciliPaisCodiIso,
+			String domiciliPlanta,
+			String domiciliPoblacio,
+			String domiciliPorta,
+			String domiciliPortal,
+			String domiciliProvinciaCodi,
+			String domiciliNumeracioPuntKm,
+			String domiciliViaNom,
+			NotificacioEntregaPostalViaTipusEnum domiciliViaTipus) {
+		this.domiciliApartatCorreus = domiciliApartatCorreus;
+		this.domiciliBloc = domiciliBloc;
+		this.domiciliCie = domiciliCie;
+		this.domiciliCodiPostal = domiciliCodiPostal;
+		this.domiciliComplement = domiciliComplement;
+		this.domiciliEscala = domiciliEscala;
+		this.domiciliLinea1 = domiciliLinea1;
+		this.domiciliLinea2 = domiciliLinea2;
+		this.domiciliMunicipiCodiIne = domiciliMunicipiCodiIne;
+		this.domiciliNumeracioNumero = domiciliNumeracioNumero;
+		this.domiciliPaisCodiIso = domiciliPaisCodiIso;
+		this.domiciliPlanta = domiciliPlanta;
+		this.domiciliPoblacio = domiciliPoblacio;
+		this.domiciliPorta = domiciliPorta;
+		this.domiciliPortal = domiciliPortal;
+		this.domiciliProvinciaCodi = domiciliProvinciaCodi;
+		this.domiciliNumeracioPuntKm = domiciliNumeracioPuntKm;
+		this.domiciliViaNom = domiciliViaNom;
+		this.domiciliViaTipus = domiciliViaTipus;
+	}
+	
 	public InteressatDocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
 	}
@@ -126,41 +197,6 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	}
 	public void setDocumentNum(String documentNum) {
 		this.documentNum = documentNum;
-	}
-
-	public String getPais() {
-		return pais;
-	}
-	public void setPais(String pais) {
-		this.pais = pais;
-	}
-
-	public String getProvincia() {
-		return provincia;
-	}
-	public void setProvincia(String provincia) {
-		this.provincia = provincia;
-	}
-
-	public String getMunicipi() {
-		return municipi;
-	}
-	public void setMunicipi(String municipi) {
-		this.municipi = municipi;
-	}
-
-	public String getAdresa() {
-		return adresa;
-	}
-	public void setAdresa(String adresa) {
-		this.adresa = adresa;
-	}
-
-	public String getCodiPostal() {
-		return codiPostal;
-	}
-	public void setCodiPostal(String codiPostal) {
-		this.codiPostal = codiPostal;
 	}
 
 	public String getEmail() {
@@ -215,10 +251,157 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	public long getVersion() {
 		return version;
 	}
-
 	public void setVersion(long version) {
 		this.version = version;
 	}
+	
+	public String getDomiciliApartatCorreus() {
+		return domiciliApartatCorreus;
+	}
+	public void setDomiciliApartatCorreus(String domiciliApartatCorreus) {
+		this.domiciliApartatCorreus = domiciliApartatCorreus;
+	}
+	
+	public String getDomiciliBloc() {
+		return domiciliBloc;
+	}
+	public void setDomiciliBloc(String domiciliBloc) {
+		this.domiciliBloc = domiciliBloc;
+	}
+	
+	public Integer getDomiciliCie() {
+		return domiciliCie;
+	}
+	public void setDomiciliCie(Integer domiciliCie) {
+		this.domiciliCie = domiciliCie;
+	}
+	
+	public String getDomiciliCodiPostal() {
+		return domiciliCodiPostal;
+	}
+	public void setDomiciliCodiPostal(String domiciliCodiPostal) {
+		this.domiciliCodiPostal = domiciliCodiPostal;
+	}
+	
+	public String getDomiciliComplement() {
+		return domiciliComplement;
+	}
+	public void setDomiciliComplement(String domiciliComplement) {
+		this.domiciliComplement = domiciliComplement;
+	}
+	
+	public String getDomiciliEscala() {
+		return domiciliEscala;
+	}
+	public void setDomiciliEscala(String domiciliEscala) {
+		this.domiciliEscala = domiciliEscala;
+	}
+	
+	public String getDomiciliLinea1() {
+		return domiciliLinea1;
+	}
+	public void setDomiciliLinea1(String domiciliLinea1) {
+		this.domiciliLinea1 = domiciliLinea1;
+	}
+	
+	public String getDomiciliLinea2() {
+		return domiciliLinea2;
+	}
+	public void setDomiciliLinea2(String domiciliLinea2) {
+		this.domiciliLinea2 = domiciliLinea2;
+	}
+	
+	public String getDomiciliMunicipiCodiIne() {
+		return domiciliMunicipiCodiIne;
+	}
+	public void setDomiciliMunicipiCodiIne(String domiciliMunicipiCodiIne) {
+		this.domiciliMunicipiCodiIne = domiciliMunicipiCodiIne;
+	}
+	
+	public String getDomiciliNumeracioNumero() {
+		return domiciliNumeracioNumero;
+	}
+	public void setDomiciliNumeracioNumero(String domiciliNumeracioNumero) {
+		this.domiciliNumeracioNumero = domiciliNumeracioNumero;
+	}
+	
+	public String getDomiciliPaisCodiIso() {
+		return domiciliPaisCodiIso;
+	}
+	public void setDomiciliPaisCodiIso(String domiciliPaisCodiIso) {
+		this.domiciliPaisCodiIso = domiciliPaisCodiIso;
+	}
+	
+	public String getDomiciliPlanta() {
+		return domiciliPlanta;
+	}
+	public void setDomiciliPlanta(String domiciliPlanta) {
+		this.domiciliPlanta = domiciliPlanta;
+	}
+	
+	public String getDomiciliPoblacio() {
+		return domiciliPoblacio;
+	}
+	public void setDomiciliPoblacio(String domiciliPoblacio) {
+		this.domiciliPoblacio = domiciliPoblacio;
+	}
+	
+	public String getDomiciliPorta() {
+		return domiciliPorta;
+	}
+	public void setDomiciliPorta(String domiciliPorta) {
+		this.domiciliPorta = domiciliPorta;
+	}
+	
+	public String getDomiciliPortal() {
+		return domiciliPortal;
+	}
+	public void setDomiciliPortal(String domiciliPortal) {
+		this.domiciliPortal = domiciliPortal;
+	}
+	
+	public String getDomiciliProvinciaCodi() {
+		return domiciliProvinciaCodi;
+	}
+	public void setDomiciliProvinciaCodi(String domiciliProvinciaCodi) {
+		this.domiciliProvinciaCodi = domiciliProvinciaCodi;
+	}
+	
+	public String getDomiciliNumeracioPuntKm() {
+		return domiciliNumeracioPuntKm;
+	}
+	public void setDomiciliNumeracioPuntKm(String domiciliNumeracioPuntKm) {
+		this.domiciliNumeracioPuntKm = domiciliNumeracioPuntKm;
+	}
+	
+	public String getDomiciliViaNom() {
+		return domiciliViaNom;
+	}
+	public void setDomiciliViaNom(String domiciliViaNom) {
+		this.domiciliViaNom = domiciliViaNom;
+	}
+	
+	public NotificacioEntregaPostalViaTipusEnum getDomiciliViaTipus() {
+		return domiciliViaTipus;
+	}
+	public void setDomiciliViaTipus(NotificacioEntregaPostalViaTipusEnum domiciliViaTipus) {
+		this.domiciliViaTipus = domiciliViaTipus;
+	}
+	
+	public void setNotificacioAutoritzat(boolean notificacioAutoritzat) {
+		this.notificacioAutoritzat = notificacioAutoritzat;
+	}
+	public void setEsRepresentant(boolean esRepresentant) {
+		this.esRepresentant = esRepresentant;
+	}
+	
+	public void setRepresentantId(Long representantId) {
+		this.representantId = representantId;
+	}
+	public void setRepresentantIdentificador(Long representantIdentificador) {
+		this.representantIdentificador = representantIdentificador;
+	}
+	
 	
 	public abstract String getIdentificador();
 	

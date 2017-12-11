@@ -88,7 +88,7 @@ public class NotificacioPluginNotib implements NotificacioPlugin {
 	
 	
 	@Override
-	public List<String> notificacioAlta(
+	public String notificacioAlta(
 			XMLGregorianCalendar caducitat,
 			String concepte,
 			String descripcio,
@@ -96,7 +96,7 @@ public class NotificacioPluginNotib implements NotificacioPlugin {
 			String emisorDir3Codi,
 			XMLGregorianCalendar enviamentDataProgramada,
 			NotificacioEnviamentTipusEnum enviamentTipus,
-			NotificacioEnviament[] enviaments,
+			NotificacioEnviament enviament,
 			NotificacioPagadorCie pagadorCie,
 			NotificacioPagadorPostal pagadorPostal,
 			NotificacioParametresSeu parametresSeu,
@@ -113,30 +113,23 @@ public class NotificacioPluginNotib implements NotificacioPlugin {
 		notificacio.setEnviamentTipus(
 				EnviamentTipusEnum.fromValue(enviamentTipus.name()));
 		
-		for(NotificacioEnviament e : enviaments) {
-			Enviament enviament = new Enviament();
-			Persona[] persones = new Persona[e.getDestinataris().length];
-			for(NotificacioPersona persona : e.getDestinataris())
-				enviament.getDestinataris().add(
-						ConversioHelper.convertir(persona, Persona.class));
-			EntregaDeh entregaDeh = new EntregaDeh();
-			entregaDeh.setObligat(enviament.getEntregaDeh().isObligat());
-			entregaDeh.setProcedimentCodi(enviament.getEntregaDeh().getProcedimentCodi());
-			enviament.setEntregaDeh(
-					ConversioHelper.convertir(e.getEntregaDeh(), EntregaDeh.class));
-			enviament.setEntregaPostal(
-					ConversioHelper.convertir(e.getEntregaPostal(), EntregaPostal.class));
-			enviament.getEntregaPostal().setTipus(
-					EntregaPostalTipusEnum.fromValue(e.getEntregaPostal().getTipus().name()));
-			enviament.getEntregaPostal().setViaTipus(
-					EntregaPostalViaTipusEnum.fromValue(e.getEntregaPostal().getViaTipus().name()));
-			enviament.setReferencia(e.getReferencia());
-			enviament.setServeiTipus(
-					ServeiTipusEnum.fromValue(e.getServeiTipus().name()));
-			enviament.setTitular(
-					ConversioHelper.convertir(e.getTitular(), Persona.class));
-	        notificacio.getEnviaments().add(enviament);
-		}
+		Enviament e = new Enviament();
+		e.getDestinataris().add(
+				ConversioHelper.convertir(enviament.getDestinatari(), Persona.class));
+		e.setEntregaDeh(
+				ConversioHelper.convertir(enviament.getEntregaDeh(), EntregaDeh.class));
+		e.setEntregaPostal(
+				ConversioHelper.convertir(enviament.getEntregaPostal(), EntregaPostal.class));
+		e.getEntregaPostal().setTipus(
+				EntregaPostalTipusEnum.fromValue(enviament.getEntregaPostal().getTipus().name()));
+		e.getEntregaPostal().setViaTipus(
+				EntregaPostalViaTipusEnum.fromValue(enviament.getEntregaPostal().getViaTipus().name()));
+		e.setReferencia(enviament.getReferencia());
+		e.setServeiTipus(
+				ServeiTipusEnum.fromValue(enviament.getServeiTipus().name()));
+		e.setTitular(
+				ConversioHelper.convertir(enviament.getTitular(), Persona.class));
+        notificacio.getEnviaments().add(e);
 		
 		notificacio.setPagadorCie(
 				ConversioHelper.convertir(pagadorCie, PagadorCie.class));
@@ -147,13 +140,16 @@ public class NotificacioPluginNotib implements NotificacioPlugin {
 		notificacio.setProcedimentCodi(procedimentCodi);
 		notificacio.setRetard(retard);
 		
-		List<String> results = null;
 		try {
-			results = getNotificacioRestClient().alta(notificacio);
-		} catch (Exception e) {
-			throw new SistemaExternException("Error al cridar a la funció REST de alta del Notib", e);
+			List<String> results = getNotificacioRestClient().alta(notificacio);
+			if(results.size() < 1) 
+				throw new Exception("La alta de notificació no ha retornat cap referencia");
+			if(results.size() > 1) 
+				throw new Exception("La alta de notificació ha retornat mes de una referencia");
+			return results.get(0);
+		} catch (Exception ex) {
+			throw new SistemaExternException("Error al cridar a la funció REST de alta del Notib", ex);
 		}
-		return results;
 	}
 	
 	@Override

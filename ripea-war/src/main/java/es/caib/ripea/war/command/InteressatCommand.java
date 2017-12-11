@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.war.command;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -16,6 +17,7 @@ import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.InteressatTipusEnumDto;
+import es.caib.ripea.plugin.notificacio.NotificacioEntregaPostalViaTipusEnum;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
 import es.caib.ripea.war.command.InteressatCommand.PersonaFisica;
 import es.caib.ripea.war.command.InteressatCommand.PersonaJuridica;
@@ -62,19 +64,6 @@ public class InteressatCommand  {
 	@Size(max = 9, groups = {PersonaFisica.class, PersonaJuridica.class}, message = "max.size")
 	protected String documentNum;
 	
-	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
-	@Size(max = 4, groups={PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
-	protected String pais;
-	@Size(max = 2, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
-	protected String provincia;
-	@Size(max = 5, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
-	protected String municipi;
-	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
-	@Size(max = 160, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
-	protected String adresa;
-	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
-	@Size(max = 5, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
-	protected String codiPostal;
 	@Size(max = 160, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
 	protected String email;
 	@Size(max = 20, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
@@ -96,6 +85,64 @@ public class InteressatCommand  {
 	protected String filtreProvincia;
 	protected String filtreLocalitat;
 	protected Boolean filtreArrel;
+	
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 10, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliApartatCorreus;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 50, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliBloc;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	protected Integer domiciliCie;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 10, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliCodiPostal;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 250, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliComplement;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 50, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliEscala;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 50, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliLinea1;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 50, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliLinea2;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 5, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliMunicipiCodiIne;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 10, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliNumeracioNumero;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 3, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliPaisCodiIso; // ISO-3166
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 50, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliPlanta;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 30, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliPoblacio;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 50, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliPorta;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 50, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliPortal;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 2, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliProvinciaCodi;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 10, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliNumeracioPuntKm;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	@Size(max = 100, groups = {PersonaFisica.class, PersonaJuridica.class, Administracio.class}, message = "max.size")
+	protected String domiciliViaNom;
+	@NotEmpty(groups = {PersonaFisica.class, PersonaJuridica.class})
+	protected NotificacioEntregaPostalViaTipusEnum domiciliViaTipus;
+	
+	
 
 	public Long getId() {
 		return id;
@@ -150,36 +197,6 @@ public class InteressatCommand  {
 	}
 	public void setDocumentNum(String documentNum) {
 		this.documentNum = documentNum;
-	}
-	public String getPais() {
-		return pais;
-	}
-	public void setPais(String pais) {
-		this.pais = pais;
-	}
-	public String getProvincia() {
-		return provincia;
-	}
-	public void setProvincia(String provincia) {
-		this.provincia = provincia;
-	}
-	public String getMunicipi() {
-		return municipi;
-	}
-	public void setMunicipi(String municipi) {
-		this.municipi = municipi;
-	}
-	public String getAdresa() {
-		return adresa;
-	}
-	public void setAdresa(String adresa) {
-		this.adresa = adresa;
-	}
-	public String getCodiPostal() {
-		return codiPostal;
-	}
-	public void setCodiPostal(String codiPostal) {
-		this.codiPostal = codiPostal;
 	}
 	public String getEmail() {
 		return email;
@@ -266,6 +283,122 @@ public class InteressatCommand  {
 	public void setFiltreArrel(Boolean filtreArrel) {
 		this.filtreArrel = filtreArrel;
 	}
+	
+	public String getDomiciliApartatCorreus() {
+		return domiciliApartatCorreus;
+	}
+	public void setDomiciliApartatCorreus(String domiciliApartatCorreus) {
+		this.domiciliApartatCorreus = domiciliApartatCorreus;
+	}
+	public String getDomiciliBloc() {
+		return domiciliBloc;
+	}
+	public void setDomiciliBloc(String domiciliBloc) {
+		this.domiciliBloc = domiciliBloc;
+	}
+	public Integer getDomiciliCie() {
+		return domiciliCie;
+	}
+	public void setDomiciliCie(Integer domiciliCie) {
+		this.domiciliCie = domiciliCie;
+	}
+	public String getDomiciliCodiPostal() {
+		return domiciliCodiPostal;
+	}
+	public void setDomiciliCodiPostal(String domiciliCodiPostal) {
+		this.domiciliCodiPostal = domiciliCodiPostal;
+	}
+	public String getDomiciliComplement() {
+		return domiciliComplement;
+	}
+	public void setDomiciliComplement(String domiciliComplement) {
+		this.domiciliComplement = domiciliComplement;
+	}
+	public String getDomiciliEscala() {
+		return domiciliEscala;
+	}
+	public void setDomiciliEscala(String domiciliEscala) {
+		this.domiciliEscala = domiciliEscala;
+	}
+	public String getDomiciliLinea1() {
+		return domiciliLinea1;
+	}
+	public void setDomiciliLinea1(String domiciliLinea1) {
+		this.domiciliLinea1 = domiciliLinea1;
+	}
+	public String getDomiciliLinea2() {
+		return domiciliLinea2;
+	}
+	public void setDomiciliLinea2(String domiciliLinea2) {
+		this.domiciliLinea2 = domiciliLinea2;
+	}
+	public String getDomiciliMunicipiCodiIne() {
+		return domiciliMunicipiCodiIne;
+	}
+	public void setDomiciliMunicipiCodiIne(String domiciliMunicipiCodiIne) {
+		this.domiciliMunicipiCodiIne = domiciliMunicipiCodiIne;
+	}
+	public String getDomiciliNumeracioNumero() {
+		return domiciliNumeracioNumero;
+	}
+	public void setDomiciliNumeracioNumero(String domiciliNumeracioNumero) {
+		this.domiciliNumeracioNumero = domiciliNumeracioNumero;
+	}
+	public String getDomiciliPaisCodiIso() {
+		return domiciliPaisCodiIso;
+	}
+	public void setDomiciliPaisCodiIso(String domiciliPaisCodiIso) {
+		this.domiciliPaisCodiIso = domiciliPaisCodiIso;
+	}
+	public String getDomiciliPlanta() {
+		return domiciliPlanta;
+	}
+	public void setDomiciliPlanta(String domiciliPlanta) {
+		this.domiciliPlanta = domiciliPlanta;
+	}
+	public String getDomiciliPoblacio() {
+		return domiciliPoblacio;
+	}
+	public void setDomiciliPoblacio(String domiciliPoblacio) {
+		this.domiciliPoblacio = domiciliPoblacio;
+	}
+	public String getDomiciliPorta() {
+		return domiciliPorta;
+	}
+	public void setDomiciliPorta(String domiciliPorta) {
+		this.domiciliPorta = domiciliPorta;
+	}
+	public String getDomiciliPortal() {
+		return domiciliPortal;
+	}
+	public void setDomiciliPortal(String domiciliPortal) {
+		this.domiciliPortal = domiciliPortal;
+	}
+	public String getDomiciliProvinciaCodi() {
+		return domiciliProvinciaCodi;
+	}
+	public void setDomiciliProvinciaCodi(String domiciliProvinciaCodi) {
+		this.domiciliProvinciaCodi = domiciliProvinciaCodi;
+	}
+	public String getDomiciliNumeracioPuntKm() {
+		return domiciliNumeracioPuntKm;
+	}
+	public void setDomiciliNumeracioPuntKm(String domiciliNumeracioPuntKm) {
+		this.domiciliNumeracioPuntKm = domiciliNumeracioPuntKm;
+	}
+	public String getDomiciliViaNom() {
+		return domiciliViaNom;
+	}
+	public void setDomiciliViaNom(String domiciliViaNom) {
+		this.domiciliViaNom = domiciliViaNom;
+	}
+	public NotificacioEntregaPostalViaTipusEnum getDomiciliViaTipus() {
+		return domiciliViaTipus;
+	}
+	public void setDomiciliViaTipus(NotificacioEntregaPostalViaTipusEnum domiciliViaTipus) {
+		this.domiciliViaTipus = domiciliViaTipus;
+	}
+	
 	
 	public static InteressatCommand asCommand(InteressatDto dto) {
 		InteressatCommand command = ConversioTipusHelper.convertir(

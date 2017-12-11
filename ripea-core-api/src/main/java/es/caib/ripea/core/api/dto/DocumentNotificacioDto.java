@@ -11,207 +11,436 @@ import java.util.Date;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class DocumentNotificacioDto extends DocumentEnviamentDto {
-
+	
 	private DocumentNotificacioTipusEnumDto tipus;
-	private Date dataRecepcio;
-	private String registreNumero;
+	
+	private Date caducitat;
+	private String concepte;
+	private String descripcio;
+	private String emisorDir3Codi;
+	private Date enviamentDataProgramada;
+	private NotificacioEnviamentTipusEnumDto enviamentTipus;
+	
 	private InteressatDocumentTipusEnumDto destinatariDocumentTipus;
-	private String destinatariDocumentNum;
 	private String destinatariNom;
 	private String destinatariLlinatge1;
 	private String destinatariLlinatge2;
+	private String destinatariNif;
+	private String destinatariTelefon;
+	private String destinatariEmail;
+	private boolean destinatariRepresentant;
 	private String destinatariPaisCodi;
 	private String destinatariProvinciaCodi;
 	private String destinatariMunicipiCodi;
-	private String destinatariEmail;
-	private boolean destinatariRepresentant;
-	private String avisTitol;
-	private String avisText;
-	private String avisTextSms;
-	private String oficiTitol;
-	private String oficiText;
-	private InteressatIdiomaEnumDto idioma;
-	private Date enviamentData;
-	private Integer enviamentCount;
-	private boolean enviamentError;
-	private String enviamentErrorDescripcio;
-	private Date processamentData;
-	private Integer processamentCount;
-	private boolean processamentError;
-	private String processamentErrorDescripcio;
-
-
-
+	
+	private boolean dehObligat;
+	private String dehNif;
+	
+	private String notificaReferencia;
+	private ServeiTipusEnumDto serveiTipus;
+    
+	private String titularNom;
+	private String titularLlinatge1;
+	private String titularLlinatge2;
+	private String titularNif;
+	private String titularTelefon;
+	private String titularEmail;
+	
+	private String pagadorCieCodiDir3;
+	private Date pagadorCieDataVigencia;
+	
+	private String pagadorCorreusCodiDir3;
+	private String pagadorCorreusContracteNum;
+	private String pagadorCorreusCodiClientFacturacio;
+	private Date pagadorCorreusDataVigencia;
+	
+	private String seuExpedientSerieDocumental;
+	private String seuExpedientUnitatOrganitzativa;
+	private String seuExpedientIdentificadorEni;
+	private String seuExpedientTitol;
+	private String seuRegistreOficina;
+	private String seuRegistreLlibre;
+	private InteressatIdiomaEnumDto seuIdioma;
+	private String seuAvisTitol;
+	private String seuAvisText;
+	private String seuAvisTextMobil;
+	private String seuOficiTitol;
+	private String seuOficiText;
+	
+	private String procedimentCodiSia;
+	private Integer retardPostal;
+	
+	private String documentHash;
+	private boolean documentNormalitzat;
+	private boolean documentGenerarCsv;
+	
+	
 	public DocumentNotificacioTipusEnumDto getTipus() {
 		return tipus;
 	}
 	public void setTipus(DocumentNotificacioTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
-	public Date getDataRecepcio() {
-		return dataRecepcio;
+	
+	public Date getCaducitat() {
+		return caducitat;
 	}
-	public void setDataRecepcio(Date dataRecepcio) {
-		this.dataRecepcio = dataRecepcio;
+	public void setCaducitat(Date caducitat) {
+		this.caducitat = caducitat;
 	}
-	public String getRegistreNumero() {
-		return registreNumero;
+	
+	public String getConcepte() {
+		return concepte;
 	}
-	public void setRegistreNumero(String registreNumero) {
-		this.registreNumero = registreNumero;
+	public void setConcepte(String concepte) {
+		this.concepte = concepte;
 	}
+	
+	public String getDescripcio() {
+		return descripcio;
+	}
+	public void setDescripcio(String descripcio) {
+		this.descripcio = descripcio;
+	}
+	
+	public String getEmisorDir3Codi() {
+		return emisorDir3Codi;
+	}
+	public void setEmisorDir3Codi(String emisorDir3Codi) {
+		this.emisorDir3Codi = emisorDir3Codi;
+	}
+	
+	public Date getEnviamentDataProgramada() {
+		return enviamentDataProgramada;
+	}
+	public void setEnviamentDataProgramada(Date enviamentDataProgramada) {
+		this.enviamentDataProgramada = enviamentDataProgramada;
+	}
+	
+	public NotificacioEnviamentTipusEnumDto getEnviamentTipus() {
+		return enviamentTipus;
+	}
+	public void setEnviamentTipus(NotificacioEnviamentTipusEnumDto enviamentTipus) {
+		this.enviamentTipus = enviamentTipus;
+	}
+	
 	public InteressatDocumentTipusEnumDto getDestinatariDocumentTipus() {
 		return destinatariDocumentTipus;
 	}
 	public void setDestinatariDocumentTipus(InteressatDocumentTipusEnumDto destinatariDocumentTipus) {
 		this.destinatariDocumentTipus = destinatariDocumentTipus;
 	}
-	public String getDestinatariDocumentNum() {
-		return destinatariDocumentNum;
-	}
-	public void setDestinatariDocumentNum(String destinatariDocumentNum) {
-		this.destinatariDocumentNum = destinatariDocumentNum;
-	}
+	
 	public String getDestinatariNom() {
 		return destinatariNom;
 	}
 	public void setDestinatariNom(String destinatariNom) {
 		this.destinatariNom = destinatariNom;
 	}
+	
 	public String getDestinatariLlinatge1() {
 		return destinatariLlinatge1;
 	}
 	public void setDestinatariLlinatge1(String destinatariLlinatge1) {
 		this.destinatariLlinatge1 = destinatariLlinatge1;
 	}
+	
 	public String getDestinatariLlinatge2() {
 		return destinatariLlinatge2;
 	}
 	public void setDestinatariLlinatge2(String destinatariLlinatge2) {
 		this.destinatariLlinatge2 = destinatariLlinatge2;
 	}
-	public String getDestinatariPaisCodi() {
-		return destinatariPaisCodi;
+	
+	public String getDestinatariNif() {
+		return destinatariNif;
 	}
-	public void setDestinatariPaisCodi(String destinatariPaisCodi) {
-		this.destinatariPaisCodi = destinatariPaisCodi;
+	public void setDestinatariNif(String destinatariNif) {
+		this.destinatariNif = destinatariNif;
 	}
-	public String getDestinatariProvinciaCodi() {
-		return destinatariProvinciaCodi;
+	
+	public String getDestinatariTelefon() {
+		return destinatariTelefon;
 	}
-	public void setDestinatariProvinciaCodi(String destinatariProvinciaCodi) {
-		this.destinatariProvinciaCodi = destinatariProvinciaCodi;
+	public void setDestinatariTelefon(String destinatariTelefon) {
+		this.destinatariTelefon = destinatariTelefon;
 	}
-	public String getDestinatariMunicipiCodi() {
-		return destinatariMunicipiCodi;
-	}
-	public void setDestinatariMunicipiCodi(String destinatariMunicipiCodi) {
-		this.destinatariMunicipiCodi = destinatariMunicipiCodi;
-	}
+	
 	public String getDestinatariEmail() {
 		return destinatariEmail;
 	}
 	public void setDestinatariEmail(String destinatariEmail) {
 		this.destinatariEmail = destinatariEmail;
 	}
+	
 	public boolean isDestinatariRepresentant() {
 		return destinatariRepresentant;
 	}
 	public void setDestinatariRepresentant(boolean destinatariRepresentant) {
 		this.destinatariRepresentant = destinatariRepresentant;
 	}
-	public String getAvisTitol() {
-		return avisTitol;
+	
+	public String getDestinatariPaisCodi() {
+		return destinatariPaisCodi;
 	}
-	public void setAvisTitol(String avisTitol) {
-		this.avisTitol = avisTitol;
+	public void setDestinatariPaisCodi(String destinatariPaisCodi) {
+		this.destinatariPaisCodi = destinatariPaisCodi;
 	}
-	public String getAvisText() {
-		return avisText;
+	
+	public String getDestinatariProvinciaCodi() {
+		return destinatariProvinciaCodi;
 	}
-	public void setAvisText(String avisText) {
-		this.avisText = avisText;
+	public void setDestinatariProvinciaCodi(String destinatariProvinciaCodi) {
+		this.destinatariProvinciaCodi = destinatariProvinciaCodi;
 	}
-	public String getAvisTextSms() {
-		return avisTextSms;
+	
+	public String getDestinatariMunicipiCodi() {
+		return destinatariMunicipiCodi;
 	}
-	public void setAvisTextSms(String avisTextSms) {
-		this.avisTextSms = avisTextSms;
+	public void setDestinatariMunicipiCodi(String destinatariMunicipiCodi) {
+		this.destinatariMunicipiCodi = destinatariMunicipiCodi;
 	}
-	public String getOficiTitol() {
-		return oficiTitol;
+	
+	public boolean isDehObligat() {
+		return dehObligat;
 	}
-	public void setOficiTitol(String oficiTitol) {
-		this.oficiTitol = oficiTitol;
+	public void setDehObligat(boolean dehObligat) {
+		this.dehObligat = dehObligat;
 	}
-	public String getOficiText() {
-		return oficiText;
+	
+	public String getDehNif() {
+		return dehNif;
 	}
-	public void setOficiText(String oficiText) {
-		this.oficiText = oficiText;
+	public void setDehNif(String dehNif) {
+		this.dehNif = dehNif;
 	}
-	public InteressatIdiomaEnumDto getIdioma() {
-		return idioma;
+	
+	public String getNotificaReferencia() {
+		return notificaReferencia;
 	}
-	public void setIdioma(InteressatIdiomaEnumDto idioma) {
-		this.idioma = idioma;
+	public void setNotificaReferencia(String notificaReferencia) {
+		this.notificaReferencia = notificaReferencia;
 	}
-	public Date getEnviamentData() {
-		return enviamentData;
+	
+	public ServeiTipusEnumDto getServeiTipus() {
+		return serveiTipus;
 	}
-	public void setEnviamentData(Date enviamentData) {
-		this.enviamentData = enviamentData;
+	public void setServeiTipus(ServeiTipusEnumDto serveiTipus) {
+		this.serveiTipus = serveiTipus;
 	}
-	public Integer getEnviamentCount() {
-		return enviamentCount;
+	
+	public String getTitularNom() {
+		return titularNom;
 	}
-	public void setEnviamentCount(Integer enviamentCount) {
-		this.enviamentCount = enviamentCount;
+	public void setTitularNom(String titularNom) {
+		this.titularNom = titularNom;
 	}
-	public boolean isEnviamentError() {
-		return enviamentError;
+	
+	public String getTitularLlinatge1() {
+		return titularLlinatge1;
 	}
-	public void setEnviamentError(boolean enviamentError) {
-		this.enviamentError = enviamentError;
+	public void setTitularLlinatge1(String titularLlinatge1) {
+		this.titularLlinatge1 = titularLlinatge1;
 	}
-	public String getEnviamentErrorDescripcio() {
-		return enviamentErrorDescripcio;
+	
+	public String getTitularLlinatge2() {
+		return titularLlinatge2;
 	}
-	public void setEnviamentErrorDescripcio(String enviamentErrorDescripcio) {
-		this.enviamentErrorDescripcio = enviamentErrorDescripcio;
+	public void setTitularLlinatge2(String titularLlinatge2) {
+		this.titularLlinatge2 = titularLlinatge2;
 	}
-	public Date getProcessamentData() {
-		return processamentData;
+	
+	public String getTitularNif() {
+		return titularNif;
 	}
-	public void setProcessamentData(Date processamentData) {
-		this.processamentData = processamentData;
+	public void setTitularNif(String titularNif) {
+		this.titularNif = titularNif;
 	}
-	public Integer getProcessamentCount() {
-		return processamentCount;
+	
+	public String getTitularTelefon() {
+		return titularTelefon;
 	}
-	public void setProcessamentCount(Integer processamentCount) {
-		this.processamentCount = processamentCount;
+	public void setTitularTelefon(String titularTelefon) {
+		this.titularTelefon = titularTelefon;
 	}
-	public boolean isProcessamentError() {
-		return processamentError;
+	
+	public String getTitularEmail() {
+		return titularEmail;
 	}
-	public void setProcessamentError(boolean processamentError) {
-		this.processamentError = processamentError;
+	public void setTitularEmail(String titularEmail) {
+		this.titularEmail = titularEmail;
 	}
-	public String getProcessamentErrorDescripcio() {
-		return processamentErrorDescripcio;
+	
+	public String getPagadorCieCodiDir3() {
+		return pagadorCieCodiDir3;
 	}
-	public void setProcessamentErrorDescripcio(String processamentErrorDescripcio) {
-		this.processamentErrorDescripcio = processamentErrorDescripcio;
+	public void setPagadorCieCodiDir3(String pagadorCieCodiDir3) {
+		this.pagadorCieCodiDir3 = pagadorCieCodiDir3;
 	}
+	
+	public Date getPagadorCieDataVigencia() {
+		return pagadorCieDataVigencia;
+	}
+	public void setPagadorCieDataVigencia(Date pagadorCieDataVigencia) {
+		this.pagadorCieDataVigencia = pagadorCieDataVigencia;
+	}
+	
+	public String getPagadorCorreusCodiDir3() {
+		return pagadorCorreusCodiDir3;
+	}
+	public void setPagadorCorreusCodiDir3(String pagadorCorreusCodiDir3) {
+		this.pagadorCorreusCodiDir3 = pagadorCorreusCodiDir3;
+	}
+	
+	public String getPagadorCorreusContracteNum() {
+		return pagadorCorreusContracteNum;
+	}
+	public void setPagadorCorreusContracteNum(String pagadorCorreusContracteNum) {
+		this.pagadorCorreusContracteNum = pagadorCorreusContracteNum;
+	}
+	
+	public String getPagadorCorreusCodiClientFacturacio() {
+		return pagadorCorreusCodiClientFacturacio;
+	}
+	public void setPagadorCorreusCodiClientFacturacio(String pagadorCorreusCodiClientFacturacio) {
+		this.pagadorCorreusCodiClientFacturacio = pagadorCorreusCodiClientFacturacio;
+	}
+	
+	public Date getPagadorCorreusDataVigencia() {
+		return pagadorCorreusDataVigencia;
+	}
+	public void setPagadorCorreusDataVigencia(Date pagadorCorreusDataVigencia) {
+		this.pagadorCorreusDataVigencia = pagadorCorreusDataVigencia;
+	}
+	
+	public String getSeuExpedientSerieDocumental() {
+		return seuExpedientSerieDocumental;
+	}
+	public void setSeuExpedientSerieDocumental(String seuExpedientSerieDocumental) {
+		this.seuExpedientSerieDocumental = seuExpedientSerieDocumental;
+	}
+	
+	public String getSeuExpedientUnitatOrganitzativa() {
+		return seuExpedientUnitatOrganitzativa;
+	}
+	public void setSeuExpedientUnitatOrganitzativa(String seuExpedientUnitatOrganitzativa) {
+		this.seuExpedientUnitatOrganitzativa = seuExpedientUnitatOrganitzativa;
+	}
+	
+	public String getSeuExpedientIdentificadorEni() {
+		return seuExpedientIdentificadorEni;
+	}
+	public void setSeuExpedientIdentificadorEni(String seuExpedientIdentificadorEni) {
+		this.seuExpedientIdentificadorEni = seuExpedientIdentificadorEni;
+	}
+	
+	public String getSeuExpedientTitol() {
+		return seuExpedientTitol;
+	}
+	public void setSeuExpedientTitol(String seuExpedientTitol) {
+		this.seuExpedientTitol = seuExpedientTitol;
+	}
+	
+	public String getSeuRegistreOficina() {
+		return seuRegistreOficina;
+	}
+	public void setSeuRegistreOficina(String seuRegistreOficina) {
+		this.seuRegistreOficina = seuRegistreOficina;
+	}
+	
+	public String getSeuRegistreLlibre() {
+		return seuRegistreLlibre;
+	}
+	public void setSeuRegistreLlibre(String seuRegistreLlibre) {
+		this.seuRegistreLlibre = seuRegistreLlibre;
+	}
+	
+	public InteressatIdiomaEnumDto getSeuIdioma() {
+		return seuIdioma;
+	}
+	public void setSeuIdioma(InteressatIdiomaEnumDto seuIdioma) {
+		this.seuIdioma = seuIdioma;
+	}
+	
+	public String getSeuAvisTitol() {
+		return seuAvisTitol;
+	}
+	public void setSeuAvisTitol(String seuAvisTitol) {
+		this.seuAvisTitol = seuAvisTitol;
+	}
+	
+	public String getSeuAvisText() {
+		return seuAvisText;
+	}
+	public void setSeuAvisText(String seuAvisText) {
+		this.seuAvisText = seuAvisText;
+	}
+	
+	public String getSeuAvisTextMobil() {
+		return seuAvisTextMobil;
+	}
+	public void setSeuAvisTextMobil(String seuAvisTextMobil) {
+		this.seuAvisTextMobil = seuAvisTextMobil;
+	}
+	
+	public String getSeuOficiTitol() {
+		return seuOficiTitol;
+	}
+	public void setSeuOficiTitol(String seuOficiTitol) {
+		this.seuOficiTitol = seuOficiTitol;
+	}
+	
+	public String getSeuOficiText() {
+		return seuOficiText;
+	}
+	public void setSeuOficiText(String seuOficiText) {
+		this.seuOficiText = seuOficiText;
+	}
+	
+	public String getProcedimentCodiSia() {
+		return procedimentCodiSia;
+	}
+	public void setProcedimentCodiSia(String procedimentCodiSia) {
+		this.procedimentCodiSia = procedimentCodiSia;
+	}
+	
+	public Integer getRetardPostal() {
+		return retardPostal;
+	}
+	public void setRetardPostal(Integer retardPostal) {
+		this.retardPostal = retardPostal;
+	}
+	
+	public String getDocumentHash() {
+		return documentHash;
+	}
+	public void setDocumentHash(String documentHash) {
+		this.documentHash = documentHash;
+	}
+	
+	public boolean isDocumentNormalitzat() {
+		return documentNormalitzat;
+	}
+	public void setDocumentNormalitzat(boolean documentNormalitzat) {
+		this.documentNormalitzat = documentNormalitzat;
+	}
+	
+	public boolean isDocumentGenerarCsv() {
+		return documentGenerarCsv;
+	}
+	public void setDocumentGenerarCsv(boolean documentGenerarCsv) {
+		this.documentGenerarCsv = documentGenerarCsv;
+	}
+	
+	
+	
 	public String getDestinatariNomSencerRepresentantAmbDocument() {
-		if (destinatariDocumentNum != null) {
-			return destinatariDocumentNum + " - " + getDestinatariNomSencerRepresentant();
+		if (destinatariNif != null) {
+			return destinatariNif + " - " + getDestinatariNomSencerRepresentant();
 		} else {
 			return getDestinatariNomSencerRepresentant();
 		}
 	}
-
 	public String getDestinatariNomSencerRepresentant() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getDestinatariNomSencer());
@@ -223,8 +452,8 @@ public class DocumentNotificacioDto extends DocumentEnviamentDto {
 		return sb.toString();
 	}
 	public String getDestinatariNomSencerAmbDocument() {
-		if (destinatariDocumentNum != null) {
-			return destinatariDocumentNum + " - " + getDestinatariNomSencer();
+		if (destinatariNif != null) {
+			return destinatariNif + " - " + getDestinatariNomSencer();
 		} else {
 			return getDestinatariNomSencer();
 		}

@@ -7,7 +7,7 @@ package es.caib.ripea.plugin.notificacio;
  */
 public class NotificacioEnviament {
 	
-	private NotificacioPersona[] destinataris;
+	private NotificacioPersona destinatari;
 	private NotificacioEntregaDeh entregaDeh;
 	private NotificacioEntregaPostal entregaPostal;
 	private String referencia;
@@ -16,14 +16,14 @@ public class NotificacioEnviament {
     
     
 	public NotificacioEnviament(
-			NotificacioPersona[] destinataris,
+			NotificacioPersona destinatari,
 			NotificacioEntregaDeh entregaDeh,
 			NotificacioEntregaPostal entregaPostal,
 			String referencia,
 			NotificacioServeiTipusEnum serveiTipus,
 			NotificacioPersona titular) {
 		super();
-		this.destinataris = destinataris;
+		this.destinatari = destinatari;
 		this.entregaDeh = entregaDeh;
 		this.entregaPostal = entregaPostal;
 		this.referencia = referencia;
@@ -32,11 +32,11 @@ public class NotificacioEnviament {
 	}
 	
 	
-	public NotificacioPersona[] getDestinataris() {
-		return destinataris;
+	public NotificacioPersona getDestinatari() {
+		return destinatari;
 	}
-	public void setDestinataris(NotificacioPersona[] destinataris) {
-		this.destinataris = destinataris;
+	public void setDestinatari(NotificacioPersona destinataris) {
+		this.destinatari = destinataris;
 	}
 	
 	public NotificacioEntregaDeh getEntregaDeh() {

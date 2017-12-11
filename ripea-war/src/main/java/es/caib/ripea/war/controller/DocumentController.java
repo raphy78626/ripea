@@ -232,12 +232,11 @@ public class DocumentController extends BaseUserController {
 				model);
 		DocumentNotificacioCommand command = new DocumentNotificacioCommand();
 		MetaExpedientDto metaExpedient = expedient.getMetaExpedient();
-		command.setDocumentId(documentId);
-		command.setAvisTitol(metaExpedient.getNotificacioAvisTitol());
-		command.setAvisText(metaExpedient.getNotificacioAvisText());
-		command.setAvisTextSms(metaExpedient.getNotificacioAvisTextSms());
-		command.setOficiTitol(metaExpedient.getNotificacioOficiTitol());
-		command.setOficiText(metaExpedient.getNotificacioOficiText());
+		command.setSeuAvisTitol(metaExpedient.getNotificacioAvisTitol());
+		command.setSeuAvisText(metaExpedient.getNotificacioAvisText());
+		command.setSeuAvisTextMobil(metaExpedient.getNotificacioAvisTextSms());
+		command.setSeuOficiTitol(metaExpedient.getNotificacioOficiTitol());
+		command.setSeuOficiText(metaExpedient.getNotificacioOficiText());
 		model.addAttribute(command);
 		return "notificacioForm";
 	}

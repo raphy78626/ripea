@@ -19,11 +19,6 @@ public abstract class InteressatDto implements Serializable {
 	protected InteressatTipusEnumDto tipus;
 	protected InteressatDocumentTipusEnumDto documentTipus;
 	protected String documentNum;
-	protected String pais;
-	protected String provincia;
-	protected String municipi;
-	protected String adresa;
-	protected String codiPostal;
 	protected String email;
 	protected String telefon;
 	protected String observacions;
@@ -32,6 +27,26 @@ public abstract class InteressatDto implements Serializable {
 	protected Long representantId;
 	protected String representantIdentificador;
 	protected String identificador;
+	
+	protected String domiciliApartatCorreus;
+	protected String domiciliBloc;
+	protected Integer domiciliCie;
+	protected String domiciliCodiPostal;
+	protected String domiciliComplement;
+	protected String domiciliEscala;
+	protected String domiciliLinea1;
+	protected String domiciliLinea2;
+	protected String domiciliMunicipiCodiIne;
+	protected String domiciliNumeracioNumero;
+	protected String domiciliPaisCodiIso;
+	protected String domiciliPlanta;
+	protected String domiciliPoblacio;
+	protected String domiciliPorta;
+	protected String domiciliPortal;
+	protected String domiciliProvinciaCodi;
+	protected String domiciliNumeracioPuntKm;
+	protected String domiciliViaNom;
+	protected NotificacioEntregaPostalViaTipusEnumDto domiciliViaTipus;
 	
 	public Long getId() {
 		return id;
@@ -54,36 +69,6 @@ public abstract class InteressatDto implements Serializable {
 	}
 	public void setDocumentNum(String documentNum) {
 		this.documentNum = documentNum;
-	}
-	public String getPais() {
-		return pais;
-	}
-	public void setPais(String pais) {
-		this.pais = pais;
-	}
-	public String getProvincia() {
-		return provincia;
-	}
-	public void setProvincia(String provincia) {
-		this.provincia = provincia;
-	}
-	public String getMunicipi() {
-		return municipi;
-	}
-	public void setMunicipi(String municipi) {
-		this.municipi = municipi;
-	}
-	public String getAdresa() {
-		return adresa;
-	}
-	public void setAdresa(String adresa) {
-		this.adresa = adresa;
-	}
-	public String getCodiPostal() {
-		return codiPostal;
-	}
-	public void setCodiPostal(String codiPostal) {
-		this.codiPostal = codiPostal;
 	}
 	public String getEmail() {
 		return email;
@@ -133,7 +118,126 @@ public abstract class InteressatDto implements Serializable {
 	public void setIdentificador(String identificador) {
 		this.identificador = identificador;
 	}
-
+	
+	
+	
+	public String getDomiciliApartatCorreus() {
+		return domiciliApartatCorreus;
+	}
+	public void setDomiciliApartatCorreus(String domiciliApartatCorreus) {
+		this.domiciliApartatCorreus = domiciliApartatCorreus;
+	}
+	public String getDomiciliBloc() {
+		return domiciliBloc;
+	}
+	public void setDomiciliBloc(String domiciliBloc) {
+		this.domiciliBloc = domiciliBloc;
+	}
+	public Integer getDomiciliCie() {
+		return domiciliCie;
+	}
+	public void setDomiciliCie(Integer domiciliCie) {
+		this.domiciliCie = domiciliCie;
+	}
+	public String getDomiciliCodiPostal() {
+		return domiciliCodiPostal;
+	}
+	public void setDomiciliCodiPostal(String domiciliCodiPostal) {
+		this.domiciliCodiPostal = domiciliCodiPostal;
+	}
+	public String getDomiciliComplement() {
+		return domiciliComplement;
+	}
+	public void setDomiciliComplement(String domiciliComplement) {
+		this.domiciliComplement = domiciliComplement;
+	}
+	public String getDomiciliEscala() {
+		return domiciliEscala;
+	}
+	public void setDomiciliEscala(String domiciliEscala) {
+		this.domiciliEscala = domiciliEscala;
+	}
+	public String getDomiciliLinea1() {
+		return domiciliLinea1;
+	}
+	public void setDomiciliLinea1(String domiciliLinea1) {
+		this.domiciliLinea1 = domiciliLinea1;
+	}
+	public String getDomiciliLinea2() {
+		return domiciliLinea2;
+	}
+	public void setDomiciliLinea2(String domiciliLinea2) {
+		this.domiciliLinea2 = domiciliLinea2;
+	}
+	public String getDomiciliMunicipiCodiIne() {
+		return domiciliMunicipiCodiIne;
+	}
+	public void setDomiciliMunicipiCodiIne(String domiciliMunicipiCodiIne) {
+		this.domiciliMunicipiCodiIne = domiciliMunicipiCodiIne;
+	}
+	public String getDomiciliNumeracioNumero() {
+		return domiciliNumeracioNumero;
+	}
+	public void setDomiciliNumeracioNumero(String domiciliNumeracioNumero) {
+		this.domiciliNumeracioNumero = domiciliNumeracioNumero;
+	}
+	public String getDomiciliPaisCodiIso() {
+		return domiciliPaisCodiIso;
+	}
+	public void setDomiciliPaisCodiIso(String domiciliPaisCodiIso) {
+		this.domiciliPaisCodiIso = domiciliPaisCodiIso;
+	}
+	public String getDomiciliPlanta() {
+		return domiciliPlanta;
+	}
+	public void setDomiciliPlanta(String domiciliPlanta) {
+		this.domiciliPlanta = domiciliPlanta;
+	}
+	public String getDomiciliPoblacio() {
+		return domiciliPoblacio;
+	}
+	public void setDomiciliPoblacio(String domiciliPoblacio) {
+		this.domiciliPoblacio = domiciliPoblacio;
+	}
+	public String getDomiciliPorta() {
+		return domiciliPorta;
+	}
+	public void setDomiciliPorta(String domiciliPorta) {
+		this.domiciliPorta = domiciliPorta;
+	}
+	public String getDomiciliPortal() {
+		return domiciliPortal;
+	}
+	public void setDomiciliPortal(String domiciliPortal) {
+		this.domiciliPortal = domiciliPortal;
+	}
+	public String getDomiciliProvinciaCodi() {
+		return domiciliProvinciaCodi;
+	}
+	public void setDomiciliProvinciaCodi(String domiciliProvinciaCodi) {
+		this.domiciliProvinciaCodi = domiciliProvinciaCodi;
+	}
+	public String getDomiciliNumeracioPuntKm() {
+		return domiciliNumeracioPuntKm;
+	}
+	public void setDomiciliNumeracioPuntKm(String domiciliNumeracioPuntKm) {
+		this.domiciliNumeracioPuntKm = domiciliNumeracioPuntKm;
+	}
+	public String getDomiciliViaNom() {
+		return domiciliViaNom;
+	}
+	public void setDomiciliViaNom(String domiciliViaNom) {
+		this.domiciliViaNom = domiciliViaNom;
+	}
+	public NotificacioEntregaPostalViaTipusEnumDto getDomiciliViaTipus() {
+		return domiciliViaTipus;
+	}
+	public void setDomiciliViaTipus(NotificacioEntregaPostalViaTipusEnumDto domiciliViaTipus) {
+		this.domiciliViaTipus = domiciliViaTipus;
+	}
+	
+	
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

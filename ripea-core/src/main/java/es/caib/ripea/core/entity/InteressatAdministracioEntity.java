@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.InteressatDocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
+import es.caib.ripea.plugin.notificacio.NotificacioEntregaPostalViaTipusEnum;
 
 /**
  * Classe del model de dades que representa un interessat de tipus administració pública.
@@ -53,11 +54,6 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			String organNom,
 			InteressatDocumentTipusEnumDto documentTipus,
 			String documentNum,
-			String pais,
-			String provincia,
-			String municipi,
-			String adresa,
-			String codiPostal,
 			String email,
 			String telefon,
 			String observacions,
@@ -67,11 +63,6 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 		this.organNom = organNom;
 		this.documentTipus = documentTipus;
 		this.documentNum = documentNum;
-		this.pais = pais;
-		this.provincia =  provincia;
-		this.municipi =  municipi;
-		this.adresa =  adresa;
-		this.codiPostal =  codiPostal;
 		this.email =  email;
 		this.telefon =  telefon;
 		this.observacions =  observacions;
@@ -104,11 +95,6 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			String organNom,
 			InteressatDocumentTipusEnumDto documentTipus,
 			String documentNum,
-			String pais,
-			String provincia,
-			String municipi,
-			String adresa,
-			String codiPostal,
 			String email,
 			String telefon,
 			String observacions,
@@ -121,11 +107,6 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				organNom,
 				documentTipus,
 				documentNum,
-				pais,
-				provincia,
-				municipi,
-				adresa,
-				codiPostal,
 				email,
 				telefon,
 				observacions,
@@ -147,11 +128,6 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				String organNom,
 				InteressatDocumentTipusEnumDto documentTipus,
 				String documentNum,
-				String pais,
-				String provincia,
-				String municipi,
-				String adresa,
-				String codiPostal,
 				String email,
 				String telefon,
 				String observacions,
@@ -164,11 +140,6 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			built.organNom = organNom;
 			built.documentTipus = documentTipus;
 			built.documentNum = documentNum;
-			built.pais = pais;
-			built.provincia =  provincia;
-			built.municipi =  municipi;
-			built.adresa =  adresa;
-			built.codiPostal =  codiPostal;
 			built.email =  email;
 			built.telefon =  telefon;
 			built.observacions =  observacions;
@@ -177,6 +148,47 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			built.expedient =  expedient;
 			built.representant =  representant;
 			built.esRepresentant = false;
+		}
+		public Builder adresa(
+				String domiciliApartatCorreus,
+				String domiciliBloc,
+				Integer domiciliCie,
+				String domiciliCodiPostal,
+				String domiciliComplement,
+				String domiciliEscala,
+				String domiciliLinea1,
+				String domiciliLinea2,
+				String domiciliMunicipiCodiIne,
+				String domiciliNumeracioNumero,
+				String domiciliPaisCodiIso,
+				String domiciliPlanta,
+				String domiciliPoblacio,
+				String domiciliPorta,
+				String domiciliPortal,
+				String domiciliProvinciaCodi,
+				String domiciliNumeracioPuntKm,
+				String domiciliViaNom,
+				NotificacioEntregaPostalViaTipusEnum domiciliViaTipus) {
+			built.domiciliApartatCorreus = domiciliApartatCorreus;
+			built.domiciliBloc = domiciliBloc;
+			built.domiciliCie = domiciliCie;
+			built.domiciliCodiPostal = domiciliCodiPostal;
+			built.domiciliComplement = domiciliComplement;
+			built.domiciliEscala = domiciliEscala;
+			built.domiciliLinea1 = domiciliLinea1;
+			built.domiciliLinea2 = domiciliLinea2;
+			built.domiciliMunicipiCodiIne = domiciliMunicipiCodiIne;
+			built.domiciliNumeracioNumero = domiciliNumeracioNumero;
+			built.domiciliPaisCodiIso = domiciliPaisCodiIso;
+			built.domiciliPlanta = domiciliPlanta;
+			built.domiciliPoblacio = domiciliPoblacio;
+			built.domiciliPorta = domiciliPorta;
+			built.domiciliPortal = domiciliPortal;
+			built.domiciliProvinciaCodi = domiciliProvinciaCodi;
+			built.domiciliNumeracioPuntKm = domiciliNumeracioPuntKm;
+			built.domiciliViaNom = domiciliViaNom;
+			built.domiciliViaTipus = domiciliViaTipus;
+			return this;
 		}
 		public InteressatAdministracioEntity build() {
 			return built;

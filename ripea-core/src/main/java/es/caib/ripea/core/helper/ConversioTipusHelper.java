@@ -4,8 +4,13 @@
 package es.caib.ripea.core.helper;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
@@ -95,6 +100,14 @@ public class ConversioTipusHelper {
 		if (items == null)
 			return null;
 		return getMapperFacade().mapAsSet(items, targetType);
+	}
+	
+	public static XMLGregorianCalendar dateToXMLGregorianCalendar(
+			Date date) throws DatatypeConfigurationException {
+		GregorianCalendar gregorianCalendar = new GregorianCalendar();
+		gregorianCalendar.setTime(date);
+		DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
+		return dataTypeFactory.newXMLGregorianCalendar(gregorianCalendar);
 	}
 
 

@@ -19,6 +19,7 @@ import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.dto.NotificacioEntregaPostalViaTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -41,6 +42,7 @@ import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.InteressatRepository;
+import es.caib.ripea.plugin.notificacio.NotificacioEntregaPostalViaTipusEnum;
 
 /**
  * Implementació dels mètodes per a gestionar la versió de l'aplicació.
@@ -146,36 +148,70 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatPersonaFisicaDto.getLlinatge2(),
 					interessatPersonaFisicaDto.getDocumentTipus(),
 					interessatPersonaFisicaDto.getDocumentNum(),
-					interessatPersonaFisicaDto.getPais(),
-					interessatPersonaFisicaDto.getProvincia(),
-					interessatPersonaFisicaDto.getMunicipi(),
-					interessatPersonaFisicaDto.getAdresa(),
-					interessatPersonaFisicaDto.getCodiPostal(),
 					interessatPersonaFisicaDto.getEmail(),
 					interessatPersonaFisicaDto.getTelefon(),
 					interessatPersonaFisicaDto.getObservacions(),
 					interessatPersonaFisicaDto.getPreferenciaIdioma(),
 					interessatPersonaFisicaDto.getNotificacioAutoritzat(),
 					expedient,
-					null).build();
+					null).
+					adresa(
+							interessatPersonaFisicaDto.getDomiciliApartatCorreus(),
+							interessatPersonaFisicaDto.getDomiciliBloc(),
+							interessatPersonaFisicaDto.getDomiciliCie(),
+							interessatPersonaFisicaDto.getDomiciliCodiPostal(),
+							interessatPersonaFisicaDto.getDomiciliComplement(),
+							interessatPersonaFisicaDto.getDomiciliEscala(),
+							interessatPersonaFisicaDto.getDomiciliLinea1(),
+							interessatPersonaFisicaDto.getDomiciliLinea2(),
+							interessatPersonaFisicaDto.getDomiciliMunicipiCodiIne(),
+							interessatPersonaFisicaDto.getDomiciliNumeracioNumero(),
+							interessatPersonaFisicaDto.getDomiciliPaisCodiIso(),
+							interessatPersonaFisicaDto.getDomiciliPlanta(),
+							interessatPersonaFisicaDto.getDomiciliPoblacio(),
+							interessatPersonaFisicaDto.getDomiciliPorta(),
+							interessatPersonaFisicaDto.getDomiciliPortal(),
+							interessatPersonaFisicaDto.getDomiciliProvinciaCodi(),
+							interessatPersonaFisicaDto.getDomiciliNumeracioPuntKm(),
+							interessatPersonaFisicaDto.getDomiciliViaNom(),
+							NotificacioEntregaPostalViaTipusEnum.valueOf(
+									interessatPersonaFisicaDto.getDomiciliViaTipus().name())).
+					build();
 		} else if (interessat.isPersonaJuridica()) {
 			InteressatPersonaJuridicaDto interessatPersonaJuridicaDto = (InteressatPersonaJuridicaDto)interessat;
 			interessatEntity = InteressatPersonaJuridicaEntity.getBuilder(
 					interessatPersonaJuridicaDto.getRaoSocial(),
 					interessatPersonaJuridicaDto.getDocumentTipus(),
 					interessatPersonaJuridicaDto.getDocumentNum(),
-					interessatPersonaJuridicaDto.getPais(),
-					interessatPersonaJuridicaDto.getProvincia(),
-					interessatPersonaJuridicaDto.getMunicipi(),
-					interessatPersonaJuridicaDto.getAdresa(),
-					interessatPersonaJuridicaDto.getCodiPostal(),
 					interessatPersonaJuridicaDto.getEmail(),
 					interessatPersonaJuridicaDto.getTelefon(),
 					interessatPersonaJuridicaDto.getObservacions(),
 					interessatPersonaJuridicaDto.getPreferenciaIdioma(),
 					interessatPersonaJuridicaDto.getNotificacioAutoritzat(),
 					expedient,
-					null).build();
+					null).
+					adresa(
+							interessatPersonaJuridicaDto.getDomiciliApartatCorreus(),
+							interessatPersonaJuridicaDto.getDomiciliBloc(),
+							interessatPersonaJuridicaDto.getDomiciliCie(),
+							interessatPersonaJuridicaDto.getDomiciliCodiPostal(),
+							interessatPersonaJuridicaDto.getDomiciliComplement(),
+							interessatPersonaJuridicaDto.getDomiciliEscala(),
+							interessatPersonaJuridicaDto.getDomiciliLinea1(),
+							interessatPersonaJuridicaDto.getDomiciliLinea2(),
+							interessatPersonaJuridicaDto.getDomiciliMunicipiCodiIne(),
+							interessatPersonaJuridicaDto.getDomiciliNumeracioNumero(),
+							interessatPersonaJuridicaDto.getDomiciliPaisCodiIso(),
+							interessatPersonaJuridicaDto.getDomiciliPlanta(),
+							interessatPersonaJuridicaDto.getDomiciliPoblacio(),
+							interessatPersonaJuridicaDto.getDomiciliPorta(),
+							interessatPersonaJuridicaDto.getDomiciliPortal(),
+							interessatPersonaJuridicaDto.getDomiciliProvinciaCodi(),
+							interessatPersonaJuridicaDto.getDomiciliNumeracioPuntKm(),
+							interessatPersonaJuridicaDto.getDomiciliViaNom(),
+							NotificacioEntregaPostalViaTipusEnum.valueOf(
+									interessatPersonaJuridicaDto.getDomiciliViaTipus().name())).
+					build();
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
 			UnitatOrganitzativaDto unitat = findUnitatsOrganitzativesByCodi(interessatAdministracioDto.getOrganCodi());
@@ -184,18 +220,35 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					unitat.getDenominacio(),
 					interessatAdministracioDto.getDocumentTipus(),
 					interessatAdministracioDto.getDocumentNum(),
-					interessatAdministracioDto.getPais(),
-					interessatAdministracioDto.getProvincia(),
-					interessatAdministracioDto.getMunicipi(),
-					interessatAdministracioDto.getAdresa(),
-					interessatAdministracioDto.getCodiPostal(),
 					interessatAdministracioDto.getEmail(),
 					interessatAdministracioDto.getTelefon(),
 					interessatAdministracioDto.getObservacions(),
 					interessatAdministracioDto.getPreferenciaIdioma(),
 					interessatAdministracioDto.getNotificacioAutoritzat(),
 					expedient,
-					null).build();
+					null).
+					adresa(
+							interessatAdministracioDto.getDomiciliApartatCorreus(),
+							interessatAdministracioDto.getDomiciliBloc(),
+							interessatAdministracioDto.getDomiciliCie(),
+							interessatAdministracioDto.getDomiciliCodiPostal(),
+							interessatAdministracioDto.getDomiciliComplement(),
+							interessatAdministracioDto.getDomiciliEscala(),
+							interessatAdministracioDto.getDomiciliLinea1(),
+							interessatAdministracioDto.getDomiciliLinea2(),
+							interessatAdministracioDto.getDomiciliMunicipiCodiIne(),
+							interessatAdministracioDto.getDomiciliNumeracioNumero(),
+							interessatAdministracioDto.getDomiciliPaisCodiIso(),
+							interessatAdministracioDto.getDomiciliPlanta(),
+							interessatAdministracioDto.getDomiciliPoblacio(),
+							interessatAdministracioDto.getDomiciliPorta(),
+							interessatAdministracioDto.getDomiciliPortal(),
+							interessatAdministracioDto.getDomiciliProvinciaCodi(),
+							interessatAdministracioDto.getDomiciliNumeracioPuntKm(),
+							interessatAdministracioDto.getDomiciliViaNom(),
+							NotificacioEntregaPostalViaTipusEnum.valueOf(
+									interessatAdministracioDto.getDomiciliViaTipus().name())).
+					build();
 		}
 		if (pare != null)
 			interessatEntity.setEsRepresentant(true);
@@ -304,16 +357,32 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatPersonaFisicaDto.getLlinatge2(),
 					interessatPersonaFisicaDto.getDocumentTipus(),
 					interessatPersonaFisicaDto.getDocumentNum(),
-					interessatPersonaFisicaDto.getPais(),
-					interessatPersonaFisicaDto.getProvincia(),
-					interessatPersonaFisicaDto.getMunicipi(),
-					interessatPersonaFisicaDto.getAdresa(),
-					interessatPersonaFisicaDto.getCodiPostal(),
 					interessatPersonaFisicaDto.getEmail(),
 					interessatPersonaFisicaDto.getTelefon(),
 					interessatPersonaFisicaDto.getObservacions(),
 					interessatPersonaFisicaDto.getPreferenciaIdioma(),
 					interessatPersonaFisicaDto.getNotificacioAutoritzat());
+			interessatEntity.updateAdresa(
+					interessatPersonaFisicaDto.getDomiciliApartatCorreus(),
+					interessatPersonaFisicaDto.getDomiciliBloc(),
+					interessatPersonaFisicaDto.getDomiciliCie(),
+					interessatPersonaFisicaDto.getDomiciliCodiPostal(),
+					interessatPersonaFisicaDto.getDomiciliComplement(),
+					interessatPersonaFisicaDto.getDomiciliEscala(),
+					interessatPersonaFisicaDto.getDomiciliLinea1(),
+					interessatPersonaFisicaDto.getDomiciliLinea2(),
+					interessatPersonaFisicaDto.getDomiciliMunicipiCodiIne(),
+					interessatPersonaFisicaDto.getDomiciliNumeracioNumero(),
+					interessatPersonaFisicaDto.getDomiciliPaisCodiIso(),
+					interessatPersonaFisicaDto.getDomiciliPlanta(),
+					interessatPersonaFisicaDto.getDomiciliPoblacio(),
+					interessatPersonaFisicaDto.getDomiciliPorta(),
+					interessatPersonaFisicaDto.getDomiciliPortal(),
+					interessatPersonaFisicaDto.getDomiciliProvinciaCodi(),
+					interessatPersonaFisicaDto.getDomiciliNumeracioPuntKm(),
+					interessatPersonaFisicaDto.getDomiciliViaNom(),
+					NotificacioEntregaPostalViaTipusEnum.valueOf(
+							interessatPersonaFisicaDto.getDomiciliViaTipus().name()));
 		} else if (interessat.isPersonaJuridica()) {
 			InteressatPersonaJuridicaDto interessatPersonaJuridicaDto = (InteressatPersonaJuridicaDto)interessat;
 			interessatEntity = interessatRepository.findPersonaJuridicaById(interessat.getId());
@@ -321,16 +390,32 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatPersonaJuridicaDto.getRaoSocial(),
 					interessatPersonaJuridicaDto.getDocumentTipus(),
 					interessatPersonaJuridicaDto.getDocumentNum(),
-					interessatPersonaJuridicaDto.getPais(),
-					interessatPersonaJuridicaDto.getProvincia(),
-					interessatPersonaJuridicaDto.getMunicipi(),
-					interessatPersonaJuridicaDto.getAdresa(),
-					interessatPersonaJuridicaDto.getCodiPostal(),
 					interessatPersonaJuridicaDto.getEmail(),
 					interessatPersonaJuridicaDto.getTelefon(),
 					interessatPersonaJuridicaDto.getObservacions(),
 					interessatPersonaJuridicaDto.getPreferenciaIdioma(),
 					interessatPersonaJuridicaDto.getNotificacioAutoritzat());
+			interessatEntity.updateAdresa(
+					interessatPersonaJuridicaDto.getDomiciliApartatCorreus(),
+					interessatPersonaJuridicaDto.getDomiciliBloc(),
+					interessatPersonaJuridicaDto.getDomiciliCie(),
+					interessatPersonaJuridicaDto.getDomiciliCodiPostal(),
+					interessatPersonaJuridicaDto.getDomiciliComplement(),
+					interessatPersonaJuridicaDto.getDomiciliEscala(),
+					interessatPersonaJuridicaDto.getDomiciliLinea1(),
+					interessatPersonaJuridicaDto.getDomiciliLinea2(),
+					interessatPersonaJuridicaDto.getDomiciliMunicipiCodiIne(),
+					interessatPersonaJuridicaDto.getDomiciliNumeracioNumero(),
+					interessatPersonaJuridicaDto.getDomiciliPaisCodiIso(),
+					interessatPersonaJuridicaDto.getDomiciliPlanta(),
+					interessatPersonaJuridicaDto.getDomiciliPoblacio(),
+					interessatPersonaJuridicaDto.getDomiciliPorta(),
+					interessatPersonaJuridicaDto.getDomiciliPortal(),
+					interessatPersonaJuridicaDto.getDomiciliProvinciaCodi(),
+					interessatPersonaJuridicaDto.getDomiciliNumeracioPuntKm(),
+					interessatPersonaJuridicaDto.getDomiciliViaNom(),
+					NotificacioEntregaPostalViaTipusEnum.valueOf(
+							interessatPersonaJuridicaDto.getDomiciliViaTipus().name()));
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
 			interessatEntity = interessatRepository.findAdministracioById(interessat.getId());
@@ -340,16 +425,32 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					unitat.getDenominacio(),
 					interessatAdministracioDto.getDocumentTipus(),
 					interessatAdministracioDto.getDocumentNum(),
-					interessatAdministracioDto.getPais(),
-					interessatAdministracioDto.getProvincia(),
-					interessatAdministracioDto.getMunicipi(),
-					interessatAdministracioDto.getAdresa(),
-					interessatAdministracioDto.getCodiPostal(),
 					interessatAdministracioDto.getEmail(),
 					interessatAdministracioDto.getTelefon(),
 					interessatAdministracioDto.getObservacions(),
 					interessatAdministracioDto.getPreferenciaIdioma(),
 					interessatAdministracioDto.getNotificacioAutoritzat());
+			interessatEntity.updateAdresa(
+					interessatAdministracioDto.getDomiciliApartatCorreus(),
+					interessatAdministracioDto.getDomiciliBloc(),
+					interessatAdministracioDto.getDomiciliCie(),
+					interessatAdministracioDto.getDomiciliCodiPostal(),
+					interessatAdministracioDto.getDomiciliComplement(),
+					interessatAdministracioDto.getDomiciliEscala(),
+					interessatAdministracioDto.getDomiciliLinea1(),
+					interessatAdministracioDto.getDomiciliLinea2(),
+					interessatAdministracioDto.getDomiciliMunicipiCodiIne(),
+					interessatAdministracioDto.getDomiciliNumeracioNumero(),
+					interessatAdministracioDto.getDomiciliPaisCodiIso(),
+					interessatAdministracioDto.getDomiciliPlanta(),
+					interessatAdministracioDto.getDomiciliPoblacio(),
+					interessatAdministracioDto.getDomiciliPorta(),
+					interessatAdministracioDto.getDomiciliPortal(),
+					interessatAdministracioDto.getDomiciliProvinciaCodi(),
+					interessatAdministracioDto.getDomiciliNumeracioPuntKm(),
+					interessatAdministracioDto.getDomiciliViaNom(),
+					NotificacioEntregaPostalViaTipusEnum.valueOf(
+							interessatAdministracioDto.getDomiciliViaTipus().name()));
 		}
 		interessatEntity = interessatRepository.save(interessatEntity);
 		// Registra al log la modificació de l'interessat
