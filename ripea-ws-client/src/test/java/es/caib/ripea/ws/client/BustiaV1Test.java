@@ -78,11 +78,11 @@ public class BustiaV1Test {
         annex1.setFitxerTipusMime(FilenameUtils.getExtension(file.getName()));
         annex1.setFitxerContingutBase64(new String(encodedContingut));
         annex1.setFitxerTamany((int)(file.length()));
-        annex1.setDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        annex1.setOrigenCiutadaAdmin("0");
-        annex1.setNtiTipusDocument("TD01");
+        annex1.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        annex1.setEniOrigen("0");
+        annex1.setEniEstatElaboracio("EE01");
+        annex1.setEniTipusDocumental("TD01");
         annex1.setSicresTipusDocument("01");
-        annex1.setNtiElaboracioEstat("EE01");
         afegirFirmes(annex1);
         
         
@@ -94,11 +94,11 @@ public class BustiaV1Test {
         annex2.setFitxerTipusMime(FilenameUtils.getExtension(file2.getName()));
         annex2.setFitxerContingutBase64(new String(encodedContingut2));
         annex2.setFitxerTamany((int)(file2.length()));
-        annex2.setDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        annex2.setOrigenCiutadaAdmin("1");
-        annex2.setNtiTipusDocument("TD02");
+        annex2.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        annex2.setEniOrigen("1");
+        annex2.setEniEstatElaboracio("EE01");
+        annex2.setEniTipusDocumental("TD02");
         annex2.setSicresTipusDocument("02");
-        annex2.setNtiElaboracioEstat("EE01");
         
         anotacio.getAnnexos().add(annex1);
         anotacio.getAnnexos().add(annex2);
@@ -111,11 +111,11 @@ public class BustiaV1Test {
         justificant.setFitxerTipusMime(FilenameUtils.getExtension(file3.getName()));
         justificant.setFitxerContingutBase64(new String(encodedContingut3));
         justificant.setFitxerTamany((int)(file3.length()));
-        justificant.setDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        justificant.setOrigenCiutadaAdmin("1");
-        justificant.setNtiTipusDocument("TD02");
+        justificant.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        justificant.setEniOrigen("1");
+        justificant.setEniEstatElaboracio("EE01");
+        justificant.setEniTipusDocumental("TD02");
         justificant.setSicresTipusDocument("02");
-        justificant.setNtiElaboracioEstat("EE01");
         
         anotacio.setJustificant(justificant);
         
