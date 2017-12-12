@@ -29,17 +29,8 @@ public class RegistreAnnex {
 	private String ntiElaboracioEstat;
 	private String observacions;
 	private List<Firma> firmes;
-//	private Integer firmaMode;
-//	private String firmaFitxerNom;
-//	private int firmaFitxerTamany;
-//	private String firmaFitxerTipusMime;
-//	private String firmaFitxerArxiuUuid;
-//	private String firmaFitxerContingutBase64;
-//	private String firmaCsv;
 	private String timestamp;
 	private String validacioOCSP;
-
-
 
 	public Long getId() {
 		return id;
@@ -125,54 +116,12 @@ public class RegistreAnnex {
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
 	}
-public List<Firma> getFirmes() {
+	public List<Firma> getFirmes() {
 		return firmes;
 	}
 	public void setFirmes(List<Firma> firmes) {
 		this.firmes = firmes;
 	}
-	//	public Integer getFirmaMode() {
-//		return firmaMode;
-//	}
-//	public void setFirmaMode(Integer firmaMode) {
-//		this.firmaMode = firmaMode;
-//	}
-//	public String getFirmaFitxerNom() {
-//		return firmaFitxerNom;
-//	}
-//	public void setFirmaFitxerNom(String firmaFitxerNom) {
-//		this.firmaFitxerNom = firmaFitxerNom;
-//	}
-//	public int getFirmaFitxerTamany() {
-//		return firmaFitxerTamany;
-//	}
-//	public void setFirmaFitxerTamany(int firmaFitxerTamany) {
-//		this.firmaFitxerTamany = firmaFitxerTamany;
-//	}
-//	public String getFirmaFitxerTipusMime() {
-//		return firmaFitxerTipusMime;
-//	}
-//	public void setFirmaFitxerTipusMime(String firmaFitxerTipusMime) {
-//		this.firmaFitxerTipusMime = firmaFitxerTipusMime;
-//	}
-//	public String getFirmaFitxerArxiuUuid() {
-//		return firmaFitxerArxiuUuid;
-//	}
-//	public void setFirmaFitxerArxiuUuid(String firmaFitxerArxiuUuid) {
-//		this.firmaFitxerArxiuUuid = firmaFitxerArxiuUuid;
-//	}
-//	public String getFirmaFitxerContingutBase64() {
-//		return firmaFitxerContingutBase64;
-//	}
-//	public void setFirmaFitxerContingutBase64(String firmaFitxerContingutBase64) {
-//		this.firmaFitxerContingutBase64 = firmaFitxerContingutBase64;
-//	}
-//	public String getFirmaCsv() {
-//		return firmaCsv;
-//	}
-//	public void setFirmaCsv(String firmaCsv) {
-//		this.firmaCsv = firmaCsv;
-//	}
 	public String getTimestamp() {
 		return timestamp;
 	}

@@ -10,9 +10,6 @@
 		<java.version>1.6</java.version>
 		<ripea.version>0.1</ripea.version>
 		<github.global.server>github</github.global.server>
-		<!--spring.version>4.2.5.RELEASE</spring.version>
-		<spring-security.version>4.0.4.RELEASE</spring-security.version> 
-		<spring-data-jpa.version>1.9.4.RELEASE</spring-data-jpa.version -->
 		<spring.version>3.2.17.RELEASE</spring.version>
 		<spring-security.version>3.2.9.RELEASE</spring-security.version>
 		<spring-data-jpa.version>1.6.6.RELEASE</spring-data-jpa.version>
@@ -24,7 +21,7 @@
 		<xdocreport.version>1.0.3</xdocreport.version>
 		<portafib.version>1.1.0</portafib.version>
 		<regweb.version>3.0.5</regweb.version>
-		<dir3caib.version>1.0.3</dir3caib.version>
+		<dir3caib.version>1.0.7</dir3caib.version>
 		<slf4j.version>1.5.11</slf4j.version>
 	</properties>
 	<modules>
@@ -84,14 +81,4 @@
 			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
-	<!-- COM UTILITZAR: AFEGIR AQUEST CODI AL pom.xml -->
-	<!--
-	<repositories>
-		<repository>
-			<id>github-governib-maven-repos</id>
-			<name>GitHub GovernIB Maven Repository</name>
-			<url>http://GovernIB.github.io/maven/maven/</url> 
-		</repository>
-	</repositories>
-	-->
 </project>

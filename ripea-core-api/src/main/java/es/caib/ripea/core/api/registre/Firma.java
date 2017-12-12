@@ -1,13 +1,14 @@
 package es.caib.ripea.core.api.registre;
 
 public class Firma {
+
 	private String tipus;
 	private String perfil;
 	private String fitxerNom;
 	private byte[] contingut;
 	private String tipusMime;
 	private String csvRegulacio;
-	
+
 	public String getTipus() {
 		return tipus;
 	}
@@ -44,4 +45,5 @@ public class Firma {
 	public void setCsvRegulacio(String csvRegulacio) {
 		this.csvRegulacio = csvRegulacio;
 	}
+
 }

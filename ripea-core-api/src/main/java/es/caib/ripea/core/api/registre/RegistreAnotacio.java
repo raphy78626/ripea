@@ -52,8 +52,6 @@ public class RegistreAnotacio {
 	private List<RegistreAnnex> annexos;
 	private RegistreAnnex justificant;
 
-
-
 	public String getNumero() {
 		return numero;
 	}
