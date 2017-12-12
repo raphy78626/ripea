@@ -230,16 +230,16 @@ public class RegistreHelper {
 		annex.setFitxerTamany(annexEntity.getFitxerTamany());
 		annex.setFitxerTipusMime(annexEntity.getFitxerTipusMime());
 		annex.setFitxerArxiuUuid(annexEntity.getFitxerArxiuUuid());
-		annex.setDataCaptura(annexEntity.getDataCaptura());
+		annex.setEniDataCaptura(annexEntity.getDataCaptura());
 		annex.setLocalitzacio(annexEntity.getLocalitzacio());
 		if (annexEntity.getOrigenCiutadaAdmin() != null)
-			annex.setOrigenCiutadaAdmin(annexEntity.getOrigenCiutadaAdmin().getValor());
+			annex.setEniOrigen(annexEntity.getOrigenCiutadaAdmin().getValor());
 		if (annexEntity.getNtiTipusDocument() != null)
-			annex.setNtiTipusDocument(annexEntity.getNtiTipusDocument().getValor());
+			annex.setEniTipusDocumental(annexEntity.getNtiTipusDocument().getValor());
 		if (annexEntity.getSicresTipusDocument() != null)
 			annex.setSicresTipusDocument(annexEntity.getSicresTipusDocument().getValor());
 		if (annexEntity.getNtiElaboracioEstat() != null)
-			annex.setNtiElaboracioEstat(annexEntity.getNtiElaboracioEstat().getValor());
+			annex.setEniEstatElaboracio(annexEntity.getNtiElaboracioEstat().getValor());
 		annex.setObservacions(annexEntity.getObservacions());
 //		annex.setFirmaMode(annexEntity.getFirmaMode());
 //		annex.setFirmaFitxerNom(annexEntity.getFirmaFitxerNom());
@@ -322,15 +322,15 @@ public class RegistreHelper {
 				registreAnnex.getFitxerNom(),
 				registreAnnex.getFitxerTamany(),
 				registreAnnex.getFitxerArxiuUuid(),
-				registreAnnex.getDataCaptura(),
-				RegistreAnnexOrigenEnum.valorAsEnum(registreAnnex.getOrigenCiutadaAdmin()),
-				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getNtiTipusDocument()),
+				registreAnnex.getEniDataCaptura(),
+				RegistreAnnexOrigenEnum.valorAsEnum(registreAnnex.getEniOrigen()),
+				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getEniTipusDocumental()),
 				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(registreAnnex.getSicresTipusDocument()),
 				registre,
 				registreAnnex.getFitxerContingutBase64()).
 				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
 				localitzacio(registreAnnex.getLocalitzacio()).
-				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getNtiElaboracioEstat())).
+				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getEniEstatElaboracio())).
 				observacions(registreAnnex.getObservacions()).
 				build();
 		

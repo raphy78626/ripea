@@ -112,9 +112,9 @@ public class BustiaWsAnotacioRegistreSistraTest extends BustiaBaseTest {
 				annex.setTitol(arxiuAux.getName());
 				annex.setFitxerNom(arxiuAux.getName());
 				annex.setFitxerTamany((int) arxiuAux.length());
-				annex.setDataCaptura(ara);
-				annex.setOrigenCiutadaAdmin("0");
-				annex.setNtiTipusDocument("TD99");
+				annex.setEniDataCaptura(ara);
+				annex.setEniOrigen("0");
+				annex.setEniTipusDocumental("TD99");
 				annex.setSicresTipusDocument("03");
 				
 				// Llegeix el contingut del fitxer i ho guarda en base 64

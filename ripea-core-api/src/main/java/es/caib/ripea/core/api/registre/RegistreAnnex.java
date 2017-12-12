@@ -21,12 +21,12 @@ public class RegistreAnnex {
 	private String fitxerTipusMime;
 	private String fitxerArxiuUuid;
 	private String fitxerContingutBase64;
-	private Date dataCaptura;
-	private String localitzacio;
-	private String origenCiutadaAdmin;
-	private String ntiTipusDocument;
+	private Date eniDataCaptura;
+	private String eniOrigen;
+	private String eniEstatElaboracio;
+	private String eniTipusDocumental;
 	private String sicresTipusDocument;
-	private String ntiElaboracioEstat;
+	private String localitzacio;
 	private String observacions;
 	private List<Firma> firmes;
 	private String timestamp;
@@ -74,29 +74,29 @@ public class RegistreAnnex {
 	public void setFitxerContingutBase64(String fitxerContingutBase64) {
 		this.fitxerContingutBase64 = fitxerContingutBase64;
 	}
-	public Date getDataCaptura() {
-		return dataCaptura;
+	public Date getEniDataCaptura() {
+		return eniDataCaptura;
 	}
-	public void setDataCaptura(Date dataCaptura) {
-		this.dataCaptura = dataCaptura;
+	public void setEniDataCaptura(Date eniDataCaptura) {
+		this.eniDataCaptura = eniDataCaptura;
 	}
-	public String getLocalitzacio() {
-		return localitzacio;
+	public String getEniOrigen() {
+		return eniOrigen;
 	}
-	public void setLocalitzacio(String localitzacio) {
-		this.localitzacio = localitzacio;
+	public void setEniOrigen(String eniOrigen) {
+		this.eniOrigen = eniOrigen;
 	}
-	public String getOrigenCiutadaAdmin() {
-		return origenCiutadaAdmin;
+	public String getEniEstatElaboracio() {
+		return eniEstatElaboracio;
 	}
-	public void setOrigenCiutadaAdmin(String origenCiutadaAdmin) {
-		this.origenCiutadaAdmin = origenCiutadaAdmin;
+	public void setEniEstatElaboracio(String eniEstatElaboracio) {
+		this.eniEstatElaboracio = eniEstatElaboracio;
 	}
-	public String getNtiTipusDocument() {
-		return ntiTipusDocument;
+	public String getEniTipusDocumental() {
+		return eniTipusDocumental;
 	}
-	public void setNtiTipusDocument(String ntiTipusDocument) {
-		this.ntiTipusDocument = ntiTipusDocument;
+	public void setEniTipusDocumental(String eniTipusDocumental) {
+		this.eniTipusDocumental = eniTipusDocumental;
 	}
 	public String getSicresTipusDocument() {
 		return sicresTipusDocument;
@@ -104,11 +104,11 @@ public class RegistreAnnex {
 	public void setSicresTipusDocument(String sicresTipusDocument) {
 		this.sicresTipusDocument = sicresTipusDocument;
 	}
-	public String getNtiElaboracioEstat() {
-		return ntiElaboracioEstat;
+	public String getLocalitzacio() {
+		return localitzacio;
 	}
-	public void setNtiElaboracioEstat(String ntiElaboracioEstat) {
-		this.ntiElaboracioEstat = ntiElaboracioEstat;
+	public void setLocalitzacio(String localitzacio) {
+		this.localitzacio = localitzacio;
 	}
 	public String getObservacions() {
 		return observacions;

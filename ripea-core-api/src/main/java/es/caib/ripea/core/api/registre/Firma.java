@@ -7,6 +7,7 @@ public class Firma {
 	private String fitxerNom;
 	private byte[] contingut;
 	private String tipusMime;
+	private String csv;
 	private String csvRegulacio;
 
 	public String getTipus() {
@@ -38,6 +39,12 @@ public class Firma {
 	}
 	public void setTipusMime(String tipusMime) {
 		this.tipusMime = tipusMime;
+	}
+	public String getCsv() {
+		return csv;
+	}
+	public void setCsv(String csv) {
+		this.csv = csv;
 	}
 	public String getCsvRegulacio() {
 		return csvRegulacio;
