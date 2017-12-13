@@ -162,13 +162,13 @@ public class RegistrePluginRegweb3 implements RegistrePlugin {
 				annex.setTitol(anexo.getTitulo());
 				annex.setFitxerNom(anexo.getNombreFicheroAnexado());
 				annex.setFitxerTipusMime(anexo.getTipoMIMEFicheroAnexado());
-				annex.setNtiTipusDocument(anexo.getTipoDocumental());
-				annex.setNtiElaboracioEstat(anexo.getValidezDocumento());
+				annex.setEniTipusDocumental(anexo.getTipoDocumental());
+				annex.setEniEstatElaboracio(anexo.getValidezDocumento());
 				annex.setSicresTipusDocument(anexo.getTipoDocumento());
 				annex.setObservacions(anexo.getObservaciones());
 				if (anexo.getOrigenCiudadanoAdmin() != null)
-					annex.setOrigenCiutadaAdmin(anexo.getOrigenCiudadanoAdmin().toString());
-				annex.setDataCaptura(anexo.getFechaCaptura());
+					annex.setEniOrigen(anexo.getOrigenCiudadanoAdmin().toString());
+				annex.setEniDataCaptura(anexo.getFechaCaptura());
 				annexos.add(annex);
 			}
 			anotacio.setAnnexos(annexos);
