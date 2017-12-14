@@ -12,15 +12,8 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.ripea.core.api.dto.LocalitatDto;
-import es.caib.ripea.core.api.dto.PaginaDto;
-import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.dto.ProvinciaRw3Dto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaD3Dto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.dto.UnitatsFiltreDto;
-import es.caib.ripea.core.api.exception.NotFoundException;
-import es.caib.ripea.core.api.service.UnitatsOrganitzativesService;
+import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
 
 /**
  * Implementació de UnitatsOrganitzativesService com a EJB que empra una clase
@@ -30,9 +23,46 @@ import es.caib.ripea.core.api.service.UnitatsOrganitzativesService;
  */
 @Stateless
 @Interceptors(SpringBeanAutowiringInterceptor.class)
-public class UnitatsOrganitzativesServiceBean implements UnitatsOrganitzativesService {
+public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaService {
 
 	@Autowired
+	private UnitatOrganitzativaService delegate;
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> findByEntitat(
+			String entitatCodi) {
+		return delegate.findByEntitat(entitatCodi);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public UnitatOrganitzativaDto findByCodi(
+			String codi) {
+		return delegate.findByCodi(codi);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> findByFiltre(
+			String codiDir3, 
+			String denominacio, 
+			String nivellAdm,
+			String comunitat, 
+			String provincia, 
+			String municipi, 
+			Boolean arrel) {
+		return delegate.findByFiltre(
+				codiDir3,
+				denominacio,
+				nivellAdm,
+				comunitat,
+				provincia,
+				municipi,
+				arrel);
+	}
+
+	/*@Autowired
 	UnitatsOrganitzativesService delegate;
 
 	@Override
@@ -58,6 +88,6 @@ public class UnitatsOrganitzativesServiceBean implements UnitatsOrganitzativesSe
 	@RolesAllowed("tothom")
 	public List<ProvinciaRw3Dto> findProvinciesPerComunitat(String codiComunitat) throws NotFoundException {
 		return delegate.findProvinciesPerComunitat(codiComunitat);
-	}
+	}*/
 	
 }

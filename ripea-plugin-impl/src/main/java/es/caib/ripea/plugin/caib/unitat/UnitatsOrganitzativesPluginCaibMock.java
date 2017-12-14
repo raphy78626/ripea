@@ -8,10 +8,7 @@ import java.io.ObjectInputStream;
 import java.util.List;
 
 import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.unitat.Localitat;
-import es.caib.ripea.plugin.unitat.ProvinciaRw3;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
-import es.caib.ripea.plugin.unitat.UnitatOrganitzativaD3;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
 
 /**
@@ -48,7 +45,7 @@ public class UnitatsOrganitzativesPluginCaibMock implements UnitatsOrganitzative
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	@Override
 	public List<UnitatOrganitzativaD3> cercaUnitatsD3(
 			String codiUnitat, 
@@ -75,6 +72,14 @@ public class UnitatsOrganitzativesPluginCaibMock implements UnitatsOrganitzative
 					"codiLocalitat=" + codiLocalitat + ")",
 					ex);
 		}
+	}*/
+
+	@Override
+	public List<UnitatOrganitzativa> cercaUnitats(String codiUnitat, String denominacioUnitat,
+			Long codiNivellAdministracio, Long codiComunitat, Boolean ambOficines, Boolean esUnitatArrel,
+			Long codiProvincia, String codiLocalitat) throws SistemaExternException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
@@ -85,26 +90,6 @@ public class UnitatsOrganitzativesPluginCaibMock implements UnitatsOrganitzative
 		Object obj = ois.readObject();
 		ois.close();
 		return obj;
-	}
-
-	@Override
-	public List<ProvinciaRw3> getProvinciaPerComunitat(Long codiComunitat) throws SistemaExternException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Localitat> getLocalitatsPerProvincia(Long codiProvincia) throws SistemaExternException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<UnitatOrganitzativa> cercaUnitats(String codiUnitat, String denominacioUnitat,
-			Long codiNivellAdministracio, Long codiComunitat, Boolean ambOficines, Boolean esUnitatArrel,
-			Long codiProvincia, String codiLocalitat) throws SistemaExternException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

@@ -297,10 +297,14 @@ public class BustiaServiceImpl implements BustiaService {
 				id,
 				false);
 		if (bustia.isPerDefecte()) {
-			logger.error("No es pot esborrar la bústia per defecte (bustiaId=" + id + ")");
-			throw new NotFoundException(
+			String missatgeError = "No es pot esborrar la bústia per defecte (" +
+					"bustiaId=" + id + ", " +
+					"unitatOrganitzativaCodi=" + bustia.getUnitatCodi() + ")";
+			logger.error(missatgeError);
+			throw new ValidationException(
 					id,
-					BustiaEntity.class);
+					BustiaEntity.class,
+					missatgeError);
 		}
 		bustiaRepository.delete(bustia);
 		// Registra al log l'eliminació de la bústia
@@ -443,7 +447,7 @@ public class BustiaServiceImpl implements BustiaService {
 					public BustiaDto convert(BustiaEntity source) {
 						return toBustiaDto(
 								source,
-								true,
+								false,
 								true);
 					}
 				});
@@ -646,12 +650,12 @@ public class BustiaServiceImpl implements BustiaService {
 	public void registreAnotacioCrear(
 			String entitatUnitatCodi,
 			RegistreTipusEnum tipus,
-			String unitatAdministrativa,
+			String unitatOrganitzativa,
 			RegistreAnotacio anotacio) {
 		logger.debug("Creant anotació de registre a la bústia ("
 				+ "entitatUnitatCodi=" + entitatUnitatCodi + ", "
 				+ "tipus=" + tipus + ", "
-				+ "unitatAdministrativa=" + unitatAdministrativa + ","
+				+ "unitatOrganitzativa=" + unitatOrganitzativa + ","
 				+ "anotacio=" + anotacio.getIdentificador() + ")");
 		EntitatEntity entitatPerUnitat = entitatRepository.findByUnitatArrel(entitatUnitatCodi);
 		if (entitatPerUnitat == null) {
@@ -664,17 +668,9 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				false);
-		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
-				entitat.getCodi(),
-				unitatAdministrativa);
-		if (unitat == null) {
-			throw new NotFoundException(
-					unitatAdministrativa,
-					UnitatOrganitzativaDto.class);
-		}
-		BustiaEntity bustia = bustiaHelper.findBustiaPerDefecte(
+		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				entitat,
-				unitat);
+				unitatOrganitzativa);
 		RegistreEntity registreRepetit = registreRepository.findByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndData(
 				anotacio.getEntitatCodi(),
 				anotacio.getLlibreCodi(),
@@ -692,12 +688,12 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
-				unitatAdministrativa,
+				unitatOrganitzativa,
 				anotacio);
 		RegistreEntity anotacioEntity = registreHelper.toRegistreEntity(
 				entitat,
 				tipus,
-				unitatAdministrativa,
+				unitatOrganitzativa,
 				anotacio,
 				reglaAplicable);
 		registreRepository.saveAndFlush(anotacioEntity);

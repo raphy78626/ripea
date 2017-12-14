@@ -39,59 +39,25 @@ public interface UnitatsOrganitzativesPlugin {
 	 */
 	public UnitatOrganitzativa findAmbCodi(
 			String codi) throws SistemaExternException;
-	
+
 	/**
 	 * Retorna la llista d'unitats organitzatives filles donat un filtre.
 	 * 
-	 * @param codiUnitat
+	 * @param codi
 	 *            Codi de la unitat.
-	 * @param denominacioUnitat
+	 * @param denominacio
 	 *            Denominació de la unitat de la unitat
-	 * @param codiNivellAdministracio
+	 * @param nivellAdministracio
 	 *            Nivell de administració de la unitat.
-	 * @param codiComunitat
+	 * @param comunitatAutonoma
 	 *            Codi de la comunitat de la unitat.
 	 * @param ambOficines
 	 *            Indica si les unitats retornades tenen oficines.
 	 * @param esUnitatArrel
 	 *            Indica si les unitats retornades són unitats arrel.
-	 * @param codiProvincia
+	 * @param provincia
 	 *            Codi de la provincia de la unitat.
-	 * @param codiLocalitat
-	 *            Codi de la localitat de la unitat.
-	 *            
-	 * @return La llista d'unitats organitzatives.
-	 * @throws SistemaExternException
-	 *            Si es produeix un error al consultar les unitats organitzatives.
-	 */
-	public List<UnitatOrganitzativaD3> cercaUnitatsD3(
-			String codiUnitat,
-			String denominacioUnitat,
-			Long codiNivellAdministracio,
-			Long codiComunitat,
-			Boolean ambOficines,
-			Boolean esUnitatArrel,
-			Long codiProvincia,
-			String codiLocalitat) throws SistemaExternException;
-	
-	/**
-	 * Retorna la llista d'unitats organitzatives filles donat un filtre.
-	 * 
-	 * @param codiUnitat
-	 *            Codi de la unitat.
-	 * @param denominacioUnitat
-	 *            Denominació de la unitat de la unitat
-	 * @param codiNivellAdministracio
-	 *            Nivell de administració de la unitat.
-	 * @param codiComunitat
-	 *            Codi de la comunitat de la unitat.
-	 * @param ambOficines
-	 *            Indica si les unitats retornades tenen oficines.
-	 * @param esUnitatArrel
-	 *            Indica si les unitats retornades són unitats arrel.
-	 * @param codiProvincia
-	 *            Codi de la provincia de la unitat.
-	 * @param codiLocalitat
+	 * @param localitat
 	 *            Codi de la localitat de la unitat.
 	 *            
 	 * @return La llista d'unitats organitzatives.
@@ -99,38 +65,13 @@ public interface UnitatsOrganitzativesPlugin {
 	 *            Si es produeix un error al consultar les unitats organitzatives.
 	 */
 	public List<UnitatOrganitzativa> cercaUnitats(
-			String codiUnitat,
-			String denominacioUnitat,
-			Long codiNivellAdministracio,
-			Long codiComunitat,
-			Boolean ambOficines,
+			String codi, 
+			String denominacio,
+			Long nivellAdministracio, 
+			Long comunitatAutonoma, 
+			Boolean ambOficines, 
 			Boolean esUnitatArrel,
-			Long codiProvincia,
-			String codiLocalitat) throws SistemaExternException;
-	
-	/**
-	 * Retorna la llista de províncies per CC
-	 * 
-	 * @param codiComunitat
-	 *            Codi de la comunitat .
-	 * @return La llista de localitats
-	 * @throws SistemaExternException
-	 *            Si es produeix un error al consultar les localitats
-	 */
-	public List<ProvinciaRw3> getProvinciaPerComunitat(
-			Long codiComunitat) throws SistemaExternException;
-	
-	/**
-	 * Retorna la llista de localitats per província
-	 * 
-	 * @param codiProvincia
-	 *            Codi de la provincia de la unitat.
-	 * @return La llista de localitats
-	 * @throws SistemaExternException
-	 *            Si es produeix un error al consultar les localitats
-	 */
-	public List<Localitat> getLocalitatsPerProvincia(
-			Long codiProvincia) throws SistemaExternException;
-
+			Long provincia, 
+			String municipi) throws SistemaExternException;
 
 }

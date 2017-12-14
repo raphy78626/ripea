@@ -3,33 +3,8 @@
  */
 package es.caib.ripea.war.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import es.caib.ripea.core.api.dto.ComunitatDto;
-import es.caib.ripea.core.api.dto.LocalitatDto;
-import es.caib.ripea.core.api.dto.MunicipiDto;
-import es.caib.ripea.core.api.dto.NivellAdministracioDto;
-import es.caib.ripea.core.api.dto.ProvinciaDto;
-import es.caib.ripea.core.api.dto.ProvinciaRw3Dto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.service.DadesExternesService;
-import es.caib.ripea.core.api.service.UnitatsOrganitzativesService;
-import es.caib.ripea.war.command.UnitatsFiltreCommand;
-import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.RequestSessionHelper;
 
 /**
  * Controlador per a les consultes ajax dels usuaris normals.
@@ -39,8 +14,8 @@ import es.caib.ripea.war.helper.RequestSessionHelper;
 @Controller
 @RequestMapping("/unitatajax") // No podem posar "/ajaxuser" per mor del AjaxInterceptor
 public class AjaxUnitatsController extends BaseAdminController {
-	
-	private static final String SESSION_ATTRIBUTE_FILTRE = "AjaxUnitatsController.session.filtre";
+
+	/*private static final String SESSION_ATTRIBUTE_FILTRE = "AjaxUnitatsController.session.filtre";
 
 	@Autowired
 	private DadesExternesService dadesExternesService;
@@ -73,10 +48,9 @@ public class AjaxUnitatsController extends BaseAdminController {
 		model.addAttribute("comunitats", comunitats);
 		model.addAttribute("provincies", provincies);
 		model.addAttribute("localitats", localitats);
-		
 		return "unitatSearch";
 	}
-	
+
 	@RequestMapping(value = "/unitats/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
@@ -89,7 +63,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 						null),
 				"codigo");
 	}
-	
+
 	@RequestMapping(value = "/unitats", method = RequestMethod.POST)
 	public String unitatsPost(
 			HttpServletRequest request,
@@ -104,7 +78,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		}
 		return "redirect:/unitatajax/unitats";
 	}
-	
+
 	@RequestMapping(value = "/localitats", method = RequestMethod.POST)
 	@ResponseBody
 	public List<LocalitatDto> getLocalitats(
@@ -114,7 +88,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		
 		return unitatsOrganitzativesService.findLocalitatsPerProvincia(codiProvincia);
 	}
-	
+
 	@RequestMapping(value = "/provincies", method = RequestMethod.POST)
 	@ResponseBody
 	public List<ProvinciaRw3Dto> getProvincies(
@@ -124,7 +98,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		
 		return unitatsOrganitzativesService.findProvinciesPerComunitat(codiComunitat);
 	}
-	
+
 	private UnitatsFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
 		UnitatsFiltreCommand unitatsFiltreCommand = (UnitatsFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
@@ -138,5 +112,6 @@ public class AjaxUnitatsController extends BaseAdminController {
 					unitatsFiltreCommand);
 		}
 		return unitatsFiltreCommand;
-	}
+	}*/
+
 }

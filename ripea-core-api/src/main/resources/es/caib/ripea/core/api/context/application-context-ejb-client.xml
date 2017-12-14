@@ -8,10 +8,6 @@
 				http://www.springframework.org/schema/jee
 				http://www.springframework.org/schema/jee/spring-jee-3.0.xsd">
 
-	<!-- jee:local-slsb
-			id="aclService"
-			jndi-name="ripea/AclServiceBean/local"
-			business-interface="org.springframework.security.acls.model.AclService"/-->
 	<jee:local-slsb
 			id="aplicacioService"
 			jndi-name="ripea/AplicacioServiceBean/local"
@@ -32,14 +28,6 @@
 			id="contingutService"
 			jndi-name="ripea/ContingutServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.ContingutService"/>
-	<jee:local-slsb
-			id="dadesExternesService"
-			jndi-name="ripea/DadesExternesServiceBean/local"
-			business-interface="es.caib.ripea.core.api.service.DadesExternesService"/>
-	<jee:local-slsb
-			id="unitatsOrganitzativesService"
-			jndi-name="ripea/UnitatsOrganitzativesServiceBean/local"
-			business-interface="es.caib.ripea.core.api.service.UnitatsOrganitzativesService"/>
 	<jee:local-slsb
 			id="documentService"
 			jndi-name="ripea/DocumentServiceBean/local"
@@ -80,6 +68,14 @@
 			id="reglaService"
 			jndi-name="ripea/ReglaServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.ReglaService"/>
+	<jee:local-slsb
+			id="dadesExternesService"
+			jndi-name="ripea/DadesExternesServiceBean/local"
+			business-interface="es.caib.ripea.core.api.service.DadesExternesService"/>
+	<jee:local-slsb
+			id="unitatOrganitzativaService"
+			jndi-name="ripea/UnitatOrganitzativaServiceBean/local"
+			business-interface="es.caib.ripea.core.api.service.UnitatOrganitzativaService"/>
 	<jee:local-slsb
 			id="execucioMassivaService"
 			jndi-name="ripea/ExecucioMassivaServiceBean/local"

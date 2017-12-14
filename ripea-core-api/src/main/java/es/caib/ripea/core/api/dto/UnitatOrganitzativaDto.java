@@ -30,7 +30,7 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private String codiPostal;
 	private String nomLocalitat;
 	private String localitat;
-	
+
 	private String adressa;
 	private Long tipusVia;
 	private String nomVia;

@@ -234,7 +234,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -252,7 +252,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	@PreAuthorize("hasRole('IPA_BSTWS')")
 	public void registreAnotacioCrear(
 			String entitatCodi,
 			String referencia) throws NotFoundException;

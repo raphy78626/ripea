@@ -319,12 +319,11 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 		this.numVia = numVia;
 	}
 
-	private static final long serialVersionUID = -5602898182576627524L;
-
-
 	@Override
 	public int compareTo(UnitatOrganitzativa o) {
 		return denominacio.compareToIgnoreCase(o.getDenominacio());
 	}
+
+	private static final long serialVersionUID = -5602898182576627524L;
 
 }

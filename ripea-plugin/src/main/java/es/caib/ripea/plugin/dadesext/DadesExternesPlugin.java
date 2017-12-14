@@ -31,8 +31,8 @@ public interface DadesExternesPlugin {
 	 * @throws SistemaExternException
 	 *             Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
-	public List<Comunitat> comunitatFindAll() throws SistemaExternException;
-	
+	public List<ComunitatAutonoma> comunitatFindAll() throws SistemaExternException;
+
 	/**
 	 * Consulta la llista de províncies disponibles.
 	 * 
@@ -54,15 +54,6 @@ public interface DadesExternesPlugin {
 	public List<Provincia> provinciaFindByComunitat(
 			String comunitatCodi) throws SistemaExternException;
 
-//	/**
-//	 * Consulta la llista de municipis disponibles.
-//	 * 
-//	 * @return la llista de municipis.
-//	 * @throws SistemaExternException
-//	 *             Si hi ha hagut algun problema per dur a terme l'acció.
-//	 */
-//	public List<Municipi> municipiFindAll() throws SistemaExternException;
-	
 	/**
 	 * Consulta la llista de municipis d'una província.
 	 * 
@@ -92,7 +83,7 @@ public interface DadesExternesPlugin {
 	 *            Si es produeix un error al consultar els nivells d'administració.
 	 */
 	public List<NivellAdministracio> nivellAdministracioFindAll() throws SistemaExternException;
-	
+
 	/**
 	 * Retorna el llistat de tipus de via
 	 * 

@@ -23,10 +23,6 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import org.jsoup.Connection.Method;
-import org.jsoup.Connection.Response;
-import org.jsoup.Jsoup;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -35,10 +31,7 @@ import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWs;
 import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWsService;
 import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.unitat.Localitat;
-import es.caib.ripea.plugin.unitat.ProvinciaRw3;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
-import es.caib.ripea.plugin.unitat.UnitatOrganitzativaD3;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.ripea.plugin.utils.PropertiesHelper;
 
@@ -52,32 +45,31 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(String pareCodi) throws SistemaExternException {
 		try {
-			List<UnitatOrganitzativa> unitats = new ArrayList<UnitatOrganitzativa>();
 			UnidadTF unidadPare = getObtenerUnidadesService().obtenerUnidad(
 					pareCodi,
 					null,
 					null);
-			List<UnidadTF> unidades = getObtenerUnidadesService().obtenerArbolUnidades(
-					pareCodi,
-					null,
-					null);//df.format(new Date()));
-			unidades.add(0, unidadPare);
-			if (unidades != null) {
-				for (UnidadTF unidad: unidades) {
-					if ("V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
-						unitats.add(toUnitatOrganitzativa(unidad));
-						/*unitats.add(new UnitatOrganitzativa(
-								unidad.getCodigo(),
-								unidad.getDenominacion(),
-								unidad.getCodigo(), // CifNif
-								unidad.getFechaAltaOficial(),
-								unidad.getCodigoEstadoEntidad(),
-								unidad.getCodUnidadSuperior(),
-								unidad.getCodUnidadRaiz()));*/
+			if (unidadPare != null) {
+				List<UnitatOrganitzativa> unitats = new ArrayList<UnitatOrganitzativa>();
+				List<UnidadTF> unidades = getObtenerUnidadesService().obtenerArbolUnidades(
+						pareCodi,
+						null,
+						null);//df.format(new Date()));
+				if (unidades != null) {
+					unidades.add(0, unidadPare);
+					for (UnidadTF unidad: unidades) {
+						if ("V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
+							unitats.add(toUnitatOrganitzativa(unidad));
+						}
 					}
+				} else {
+					unitats.add(toUnitatOrganitzativa(unidadPare));
 				}
+				return unitats;
+			} else {
+				throw new SistemaExternException(
+						"No s'han trobat la unitat pare (pareCodi=" + pareCodi + ")");
 			}
-			return unitats;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via WS (" +
@@ -85,7 +77,7 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					ex);
 		}
 	}
-	
+
 	@Override
 	public UnitatOrganitzativa findAmbCodi(String codi) throws SistemaExternException {
 		try {
@@ -112,73 +104,25 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		}
 	}
 
-	@Override
-	public List<UnitatOrganitzativaD3> cercaUnitatsD3(
-			String codiUnitat, 
-			String denominacioUnitat,
-			Long codiNivellAdministracio, 
-			Long codiComunitat, 
-			Boolean ambOficines, 
-			Boolean esUnitatArrel,
-			Long codiProvincia, 
-			String codiLocalitat) throws SistemaExternException {
-		try {
-			URL url = new URL(getServiceCercaUrl()
-					+ "?codigo=" + (codiUnitat != null ? codiUnitat : "")
-					+ "&denominacion=" + (denominacioUnitat != null ? denominacioUnitat : "")
-					+ "&codNivelAdministracion=" + (codiNivellAdministracio != null ? codiNivellAdministracio : "-1")
-					+ "&codComunidadAutonoma=" + (codiComunitat != null ? codiComunitat : "-1")
-					+ "&conOficinas=" + (ambOficines != null && ambOficines ? "true" : "false")
-					+ "&unidadRaiz=" + (esUnitatArrel != null && esUnitatArrel ? "true" : "false")
-					+ "&provincia="+ (codiProvincia != null ? codiProvincia : "-1")
-					+ "&localidad=" + (codiLocalitat != null ? codiLocalitat : "-1"));
-			HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
-			httpConnection.setRequestMethod("GET");
-			httpConnection.setDoInput(true);
-			httpConnection.setDoOutput(true);
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			List<UnitatOrganitzativaD3> unitats = mapper.readValue(
-					httpConnection.getInputStream(), 
-					TypeFactory.defaultInstance().constructCollectionType(
-							List.class,  
-							UnitatOrganitzativaD3.class));
-			Collections.sort(unitats);
-			return unitats;
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'han pogut consultar les unitats organitzatives via REST (" +
-					"codiUnitat=" + codiUnitat + ", " +
-					"denominacioUnitat=" + denominacioUnitat + ", " +
-					"codiNivellAdministracio=" + codiNivellAdministracio + ", " +
-					"codiComunitat=" + codiComunitat + ", " +
-					"ambOficines=" + ambOficines + ", " +
-					"esUnitatArrel=" + esUnitatArrel + ", " +
-					"codiProvincia=" + codiProvincia + ", " +
-					"codiLocalitat=" + codiLocalitat + ")",
-					ex);
-		}
-	}
-	
 	public List<UnitatOrganitzativa> cercaUnitats(
-			String codiUnitat, 
-			String denominacioUnitat,
-			Long codiNivellAdministracio, 
-			Long codiComunitat, 
+			String codi, 
+			String denominacio,
+			Long nivellAdministracio, 
+			Long comunitatAutonoma, 
 			Boolean ambOficines, 
 			Boolean esUnitatArrel,
-			Long codiProvincia, 
-			String codiLocalitat) throws SistemaExternException {
+			Long provincia, 
+			String municipi) throws SistemaExternException {
 		try {
 			URL url = new URL(getServiceCercaUrl()
-					+ "?codigo=" + codiUnitat
-					+ "&denominacion=" + denominacioUnitat
-					+ "&codNivelAdministracion=" + (codiNivellAdministracio != null ? codiNivellAdministracio : "-1")
-					+ "&codComunidadAutonoma=" + (codiComunitat != null ? codiComunitat : "-1")
+					+ "?codigo=" + codi
+					+ "&denominacion=" + denominacio
+					+ "&codNivelAdministracion=" + (nivellAdministracio != null ? nivellAdministracio : "-1")
+					+ "&codComunidadAutonoma=" + (comunitatAutonoma != null ? comunitatAutonoma : "-1")
 					+ "&conOficinas=" + (ambOficines != null && ambOficines ? "true" : "false")
 					+ "&unidadRaiz=" + (esUnitatArrel != null && esUnitatArrel ? "true" : "false")
-					+ "&provincia="+ (codiProvincia != null ? codiProvincia : "-1")
-					+ "&localidad=" + (codiLocalitat != null ? codiLocalitat : "-1"));
+					+ "&provincia="+ (provincia != null ? provincia : "-1")
+					+ "&localidad=" + (municipi != null ? municipi : "-1"));
 			HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
@@ -195,17 +139,19 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via REST (" +
-					"codiUnitat=" + codiUnitat + ", " +
-					"denominacioUnitat=" + denominacioUnitat + ", " +
-					"codiNivellAdministracio=" + codiNivellAdministracio + ", " +
-					"codiComunitat=" + codiComunitat + ", " +
+					"codi=" + codi + ", " +
+					"denominacio=" + denominacio + ", " +
+					"nivellAdministracio=" + nivellAdministracio + ", " +
+					"comunitatAutonoma=" + comunitatAutonoma + ", " +
 					"ambOficines=" + ambOficines + ", " +
 					"esUnitatArrel=" + esUnitatArrel + ", " +
-					"codiProvincia=" + codiProvincia + ", " +
-					"codiLocalitat=" + codiLocalitat + ")",
+					"provincia=" + provincia + ", " +
+					"municipi=" + municipi + ")",
 					ex);
 		}
 	}
+
+
 
 	private Dir3CaibObtenerUnidadesWs getObtenerUnidadesService() throws MalformedURLException {
 		Dir3CaibObtenerUnidadesWs client = null;
@@ -242,83 +188,6 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					connectTimeout);
 		}
 		return client;
-	}
-	
-	public List<Localitat> getLocalitatsPerProvincia(
-			Long codiProvincia) throws SistemaExternException {
-		try {
-			
-			String usuari = getRegWeb3RestServiceUser();
-			String contrasenya = getRegWeb3RestServicePassword();
-			
-			String url = getRegWeb3RestServiceUrl() + "/obtenerLocalidadesProvincia?id=" + codiProvincia;
-			
-			Response responseGet = Jsoup.connect(url)
-					.method(Method.GET)
-					.execute();
-			Response responseLogin = Jsoup.
-				connect("https://proves.caib.es/regweb3/rest/j_security_check").
-				data("j_username", usuari).
-				data("j_password", contrasenya).
-				cookies(responseGet.cookies()).
-				ignoreContentType(true).
-				method(Method.POST).
-				execute();
-				
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			List<Localitat> localitats = mapper.readValue(
-					responseLogin.body(), 
-					TypeFactory.defaultInstance().constructCollectionType(
-							List.class,  
-							Localitat.class));
-			return localitats;
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'han pogut consultar les localitats via REST (" +
-					"codiProvincia=" + codiProvincia + ")",
-					ex);
-		}
-	}
-	
-	private String getServiceUrl() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.url");
-	}
-	private String getServiceUsername() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.username");
-	}
-	private String getServicePassword() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.password");
-	}
-	private boolean isLogMissatgesActiu() {
-		return PropertiesHelper.getProperties().getAsBoolean(
-				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.log.actiu");
-	}
-	private Integer getServiceTimeout() {
-		String key = "es.caib.ripea.plugin.unitats.organitzatives.dir3.service.timeout";
-		if (PropertiesHelper.getProperties().getProperty(key) != null)
-			return PropertiesHelper.getProperties().getAsInt(key);
-		else
-			return null;
-	}
-	private String getServiceCercaUrl() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.unitats.cerca.dir3.service.url");
-	}
-	private String getRegWeb3RestServiceUrl() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.regweb3.rest.base.url");
-	}
-	private String getRegWeb3RestServiceUser() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.regweb3.rest.user");
-	}
-	private String getRegWeb3RestServicePassword() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.regweb3.rest.password");
 	}
 
 	private UnitatOrganitzativa toUnitatOrganitzativa(UnidadTF unidad) {
@@ -379,41 +248,33 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			}
 		}
 	}
-
-	@Override
-	public List<ProvinciaRw3> getProvinciaPerComunitat(Long codiComunitat) throws SistemaExternException {
-		try {
-			
-			String usuari = getRegWeb3RestServiceUser();
-			String contrasenya = getRegWeb3RestServicePassword();
-			
-			String url = getRegWeb3RestServiceUrl() + "/obtenerProvincias?id=" + codiComunitat;
-			
-			Response responseGet = Jsoup.connect(url)
-					.method(Method.GET)
-					.execute();
-			Response responseLogin = Jsoup.
-				connect("https://proves.caib.es/regweb3/rest/j_security_check").
-				data("j_username", usuari).
-				data("j_password", contrasenya).
-				cookies(responseGet.cookies()).
-				ignoreContentType(true).
-				method(Method.POST).
-				execute();
-				
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			List<ProvinciaRw3> provincies = mapper.readValue(
-					responseLogin.body(), 
-					TypeFactory.defaultInstance().constructCollectionType(
-							List.class,  
-							ProvinciaRw3.class));
-			return provincies;
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'han pogut consultar les provincies via REST (" +
-					"codiComunitat=" + codiComunitat + ")",
-					ex);
-		}
+	
+	private String getServiceUrl() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.url");
 	}
+	private String getServiceUsername() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.username");
+	}
+	private String getServicePassword() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.password");
+	}
+	private boolean isLogMissatgesActiu() {
+		return PropertiesHelper.getProperties().getAsBoolean(
+				"es.caib.ripea.plugin.unitats.organitzatives.dir3.service.log.actiu");
+	}
+	private Integer getServiceTimeout() {
+		String key = "es.caib.ripea.plugin.unitats.organitzatives.dir3.service.timeout";
+		if (PropertiesHelper.getProperties().getProperty(key) != null)
+			return PropertiesHelper.getProperties().getAsInt(key);
+		else
+			return null;
+	}
+	private String getServiceCercaUrl() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugin.unitats.cerca.dir3.service.url");
+	}
+
 }

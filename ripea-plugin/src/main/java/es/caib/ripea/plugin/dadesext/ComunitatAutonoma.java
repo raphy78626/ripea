@@ -6,17 +6,17 @@ package es.caib.ripea.plugin.dadesext;
 import java.io.Serializable;
 
 /**
- * Informació d'una unitat organitzativa.
+ * Informació d'una comunitat autònoma.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class Comunitat implements Serializable {
+public class ComunitatAutonoma implements Serializable {
 
 	private Long codi;
 	private Long codiPais;
 	private String nom;
 
-	public Comunitat(
+	public ComunitatAutonoma(
 			Long codi,
 			Long codiPais,
 			String nom) {

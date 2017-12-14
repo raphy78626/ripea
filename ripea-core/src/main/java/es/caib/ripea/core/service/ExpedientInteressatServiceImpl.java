@@ -30,16 +30,12 @@ import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
 import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
-import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.HibernateHelper;
-import es.caib.ripea.core.helper.PermisosHelper;
-import es.caib.ripea.core.helper.PluginHelper;
-import es.caib.ripea.core.repository.EntitatRepository;
-import es.caib.ripea.core.repository.ExpedientRepository;
+import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.repository.InteressatRepository;
 
 /**
@@ -51,16 +47,8 @@ import es.caib.ripea.core.repository.InteressatRepository;
 public class ExpedientInteressatServiceImpl implements ExpedientInteressatService {
 
 	@Resource
-	private EntitatRepository entitatRepository;
-	@Resource
-	private ExpedientRepository expedientRepository;
-	@Resource
 	private InteressatRepository interessatRepository;
 
-	@Resource
-	private CacheHelper cacheHelper;
-	@Resource
-	private PluginHelper pluginHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
@@ -68,9 +56,9 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
-	private PermisosHelper permisosHelper;
-	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 
 
@@ -178,7 +166,8 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					null).build();
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
-			UnitatOrganitzativaDto unitat = findUnitatsOrganitzativesByCodi(interessatAdministracioDto.getOrganCodi());
+			UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findAmbCodi(
+					interessatAdministracioDto.getOrganCodi());
 			interessatEntity = InteressatAdministracioEntity.getBuilder(
 					unitat.getCodi(),
 					unitat.getDenominacio(),
@@ -334,7 +323,8 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 		} else {
 			InteressatAdministracioDto interessatAdministracioDto = (InteressatAdministracioDto)interessat;
 			interessatEntity = interessatRepository.findAdministracioById(interessat.getId());
-			UnitatOrganitzativaDto unitat = findUnitatsOrganitzativesByCodi(interessatAdministracioDto.getOrganCodi());
+			UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findAmbCodi(
+					interessatAdministracioDto.getOrganCodi());
 			((InteressatAdministracioEntity)interessatEntity).update(
 					unitat.getCodi(),
 					unitat.getDenominacio(),
@@ -717,43 +707,6 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 				administracions,
 				InteressatAdministracioDto.class);
 	}
-
-	@Override
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByEntitat(String entitatCodi) {
-		return cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).toDadesList();
-	}
-
-	@Override
-	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
-		try {
-			return cacheHelper.findUnitatOrganitzativaPerCodi(codi);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-//			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	@Override
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByFiltre(
-			String codiDir3, 
-			String denominacio,
-			String nivellAdm, 
-			String comunitat, 
-			String provincia, 
-			String localitat, 
-			Boolean arrel) {
-		return pluginHelper.unitatsOrganitzativesFindByFiltre(
-				codiDir3, 
-				denominacio,
-				nivellAdm, 
-				comunitat, 
-				provincia, 
-				localitat, 
-				arrel);
-	}
-
-
 
 	private static final Logger logger = LoggerFactory.getLogger(ExpedientInteressatServiceImpl.class);
 

@@ -67,16 +67,6 @@ body {
 	position: absolute;
 	right: 0px;
 }
-#organ-filtre {
-	width: calc(83.33333333% - 30px);
-	margin-right: 15px;
-	margin-left: 15px;
-	margin-bottom: 10px;
-	padding: 10px 0px 5px 0px;
-}
-#organ-filtre .form-group{ 
-	margin-bottom: 5px;
-}
 #filtre-btn {
 	float: right;
 }
@@ -117,28 +107,22 @@ interessatNoms['${interessat.id}'] = "${interessat.nom}";
 </c:if>
 </c:forEach>
 $(document).ready(function() {
-
 	var munOrgan = '';
 	var netejar = <c:out value="${empty interessatCommand.id and empty netejar}"/>;
 	var organsCarregats = <c:out value="${not empty unitatsOrganitzatives}"/>;
-
 	$body = $("body");
-
 	$(document).on({
 		ajaxStart: function() { $body.addClass("loading");    },
 		ajaxStop: function() { $body.removeClass("loading"); }    
 	});
-	
 	// Posicionam el botó de l'administració
 	$('select#organCodi').closest(".controls").css('width', 'calc(83.33333333% - 50px)');
-	
 	$('form').submit(function() {
 		$('form input').removeAttr('disabled');
 		return true;
 	});
  	$('select#tipus').change(function() {
  		munOrgan = '';
-
 		$('#pais').prop("disabled", false);
 		$('#provincia').prop("disabled", false);
 		$('#municipi').prop("disabled", false);
@@ -146,8 +130,6 @@ $(document).ready(function() {
 		$('#adresa').prop("readonly", false);
 		$('#documentTipus').prop("disabled", false);
 		$('#documentNum').prop("readonly", false);
-
-		// Netejar
 		if (netejar) {
 			$('input#documentNum').val('');
 			$('input#nom').val('');
@@ -163,16 +145,13 @@ $(document).ready(function() {
 			$('#pais').change();
  		}
  		netejar = true;
-
 		var tipusInt = 1;
-		
  		if (this.value == '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.PERSONA_FISICA%>') {
  			tipusInt = 1;
  		} else if (this.value == '<%=es.caib.ripea.core.api.dto.InteressatTipusEnumDto.PERSONA_JURIDICA%>') {
  			tipusInt = 2;
  	 	} else {
  	 		tipusInt = 3;
-
  	 		if (organsCarregats == false) {
  	 			$.ajax({
  					type: 'GET',
@@ -198,7 +177,6 @@ $(document).ready(function() {
  				});
  			 	organsCarregats = true
  	 	 	}
- 	 	 	
 			$('#pais').prop("disabled", true);
 			$('#provincia').prop("disabled", true);
 			$('#municipi').prop("disabled", true);
@@ -211,7 +189,6 @@ $(document).ready(function() {
 
  		}
  		canviVisibilitat(tipusInt);
- 		
  	});
  	if ($("#id").val() != '') {
 		$('select#tipus').prop( "disabled", true );
@@ -304,8 +281,6 @@ $(document).ready(function() {
  	 		$('#municipi').select2(select2Options);
  	 	}
  	});
-
-
 	$('select#filtreComunitat').change(function(valor) {
 		var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
  		if ($(this).val() != '') {
@@ -340,7 +315,6 @@ $(document).ready(function() {
  		$('#filtreLocalitat').select2("destroy");
 	 	$('#filtreLocalitat').select2(select2Options);
  	});
- 	 	 	 	 	
 	$('select#filtreProvincia').change(function(valor) {
  		if ($(this).val() != '') {
  			$.ajax({
@@ -374,7 +348,6 @@ $(document).ready(function() {
  	 		$('#filtreLocalitat').select2(select2Options);
  	 	}
  	});
- 	 	 	 	 	
 	$('#filtre-btn').click(function(){
 		var cod = $('#filtreCodiDir3').val();
 		var den = $('#filtreDenominacio').val();
@@ -413,11 +386,9 @@ $(document).ready(function() {
 				selOrgan.select2(select2Options);
 				selOrgan.change();
 				selOrgan.select2("open");
-				
 			}
 		});
 	});
-
 	$('#btnSave').click(function(){
 		$('#tipus').prop( "disabled", false );
 		$('#pais').prop("disabled", false);
@@ -429,9 +400,7 @@ $(document).ready(function() {
 		$('#documentNum').prop("readonly", false);
 		$('#interessatform').submit();
 	});
-	
 	$('select#tipus').change();
-// 	$('#pais').change();
 });
 
 function canviVisibilitat(tipus) {
@@ -447,14 +416,12 @@ function canviVisibilitat(tipus) {
 		$('input#llinatge1').closest(".form-group").addClass('ocult');
 		$('input#llinatge2').closest(".form-group").addClass('ocult');
 	}
-		
 	$('input#raoSocial').prop( "disabled", (tipus != 2) );
 	if (tipus == 2) {
 		$('input#raoSocial').closest(".form-group").removeClass('ocult');
 	} else {
 		$('input#raoSocial').closest(".form-group").addClass('ocult');
 	}
-	
 	$('select#organCodi').prop( "disabled", (tipus != 3) );
 	if (tipus == 3) {
 		$('select#organCodi').closest(".form-group").removeClass('ocult');
@@ -464,13 +431,11 @@ function canviVisibilitat(tipus) {
 		$('.organ-btn').addClass('ocult');
 		$('#organ-filtre').removeClass('in');
 	}
-
 	$("label[for='pais']").text("<spring:message code="interessat.form.camp.pais"/>" + (tipus != 3 ? " *" : ""))
 	$("label[for='provincia']").text("<spring:message code="interessat.form.camp.provincia"/>" + (tipus != 3 ? " *" : ""))
 	$("label[for='municipi']").text("<spring:message code="interessat.form.camp.municipi"/>" + (tipus != 3 ? " *" : ""))
 	$("label[for='adresa']").text("<spring:message code="interessat.form.camp.adresa"/>" + (tipus != 3 ? " *" : ""))
 	$("label[for='codiPostal']").text("<spring:message code="interessat.form.camp.codiPostal"/>" + (tipus != 3 ? " *" : ""))
-
 }
 </script>
 </head>
@@ -494,23 +459,33 @@ function canviVisibilitat(tipus) {
 		<!-- FILA: Administració -->
 		<!-- Filtre de administració -->
 		<div class="row ">
-			<div class="col-xs-2"></div>
-			<div id="organ-filtre" class="col-xs-10 well collapse">
-				<div class="col-xs-12" id="organTitol"><span><spring:message code="interessat.form.organ.filtre.titol"/></span></div>
-				<div class="col-xs-6"><rip:inputText name="filtreCodiDir3" textKey="interessat.form.camp.organ.filtre.codi"/></div>
-				<div class="col-xs-6"><rip:inputText name="filtreDenominacio" textKey="interessat.form.camp.organ.filtre.denominacio"/></div>
-				<div class="col-xs-6"><rip:inputSelect name="filtreNivellAdministracio" textKey="interessat.form.camp.organ.filtre.nivell.administracio" optionItems="${nivellAdministracions}" optionTextAttribute="descripcio" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
-				<div class="col-xs-6"><rip:inputSelect name="filtreComunitat" textKey="interessat.form.camp.organ.filtre.comunitat" optionItems="${comunitats}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
-				<div class="col-xs-6"><rip:inputSelect name="filtreProvincia" textKey="interessat.form.camp.organ.filtre.provincies" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
-				<div class="col-xs-6"><rip:inputSelect name="filtreLocalitat" textKey="interessat.form.camp.organ.filtre.localitat" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codiDir3" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
-				<div class="col-xs-6"><rip:inputCheckbox name="filtreArrel" textKey="interessat.form.camp.organ.filtre.arrel" labelSize="4"/></div>
-				<div class="col-xs-6"><button id="filtre-btn" type="button" class="btn"><span class="fa fa-bars"></span>  <spring:message code="comu.boto.refrescar"/></button></div>
+			<div id="organ-filtre" class="col-xs-10 collapse pull-right">
+				<div class="panel panel-default ">
+					<div class="panel-heading">
+						<h3 class="panel-title"><spring:message code="interessat.form.organ.filtre.titol"/></h3>
+					</div>
+					<div class="panel-body">
+						<div class="col-xs-6"><rip:inputSelect name="filtreNivellAdministracio" textKey="interessat.form.camp.organ.filtre.nivell" optionItems="${nivellAdministracions}" optionTextAttribute="descripcio" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+						<div class="col-xs-6"><rip:inputSelect name="filtreComunitat" textKey="interessat.form.camp.organ.filtre.comunitat" optionItems="${comunitats}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+						<div class="col-xs-6"><rip:inputSelect name="filtreProvincia" textKey="interessat.form.camp.organ.filtre.provincia" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+						<div class="col-xs-6"><rip:inputSelect name="filtreLocalitat" textKey="interessat.form.camp.organ.filtre.municipi" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codiDir3" emptyOption="true" optionMinimumResultsForSearch="6"/></div>
+						<div class="col-xs-6"><rip:inputText name="filtreCodiDir3" textKey="interessat.form.camp.organ.filtre.codi"/></div>
+						<div class="col-xs-6"><rip:inputText name="filtreDenominacio" textKey="interessat.form.camp.organ.filtre.denominacio"/></div>
+						<div class="col-xs-6"><rip:inputCheckbox name="filtreArrel" textKey="interessat.form.camp.organ.filtre.arrel" labelSize="4"/></div>
+						<div class="col-xs-6">
+							<button id="filtre-btn" type="button" class="btn btn-default">
+								<span class="fa fa-download"></span>
+								<spring:message code="interessat.form.organ.filtre.actualitzar"/>
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<!-- Selector d'administració i botó per obrir filtre -->
 		<div class="row">
 			<div class="col-xs-12 organ"><rip:inputSelect name="organCodi" textKey="interessat.form.camp.organCodi" optionItems="${unitatsOrganitzatives}" optionTextAttribute="denominacio" optionValueAttribute="codi" emptyOption="true" required="true" optionMinimumResultsForSearch="6" labelSize="2"/></div>
-			<div class="col-xs-1 organ-btn"><button type="button" class="btn" data-toggle="collapse" data-target="#organ-filtre"><span class="fa fa-bars"></span></button></div>
+			<div class="col-xs-1 organ-btn"><button type="button" class="btn btn-default" data-toggle="collapse" data-target="#organ-filtre"><span class="fa fa-bars"></span></button></div>
 		</div>
 		<!-- FILA: Document interessat -->
 		<div class="row">

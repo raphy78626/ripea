@@ -26,6 +26,7 @@ import es.caib.ripea.core.api.dto.ProvinciaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.service.DadesExternesService;
 import es.caib.ripea.core.api.service.ExpedientInteressatService;
+import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
 import es.caib.ripea.war.command.InteressatCommand;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
 import es.caib.ripea.war.command.InteressatCommand.PersonaFisica;
@@ -44,6 +45,8 @@ public class ExpedientInteressatController extends BaseUserController {
 
 	@Autowired
 	private ExpedientInteressatService expedientInteressatService;
+	@Autowired
+	private UnitatOrganitzativaService unitatOrganitzativaService;
 	@Autowired
 	private DadesExternesService dadesExternesService;
 
@@ -84,7 +87,8 @@ public class ExpedientInteressatController extends BaseUserController {
 		if (interessatDto.isAdministracio()) {
 			List<UnitatOrganitzativaDto> unitats = new ArrayList<UnitatOrganitzativaDto>();
 			try {
-				UnitatOrganitzativaDto unitat = expedientInteressatService.findUnitatsOrganitzativesByCodi(interessatCommand.getOrganCodi());
+				UnitatOrganitzativaDto unitat = unitatOrganitzativaService.findByCodi(
+						interessatCommand.getOrganCodi());
 				unitats.add(unitat);
 			} catch (Exception e) {
 				MissatgesHelper.warning(request, getMessage(request, "interessat.controller.unitat.error"));
@@ -261,7 +265,10 @@ public class ExpedientInteressatController extends BaseUserController {
 			model.addAttribute("expedientId", expedientId);
 			ompleModel(request, model, entitatActual.getCodi());
 			if (interessatCommand.getProvincia() != null) {
-				model.addAttribute("municipis", dadesExternesService.findMunicipisPerProvincia(interessatCommand.getProvincia()));
+				model.addAttribute(
+						"municipis",
+						dadesExternesService.findMunicipisPerProvincia(
+								interessatCommand.getProvincia()));
 			}
 			model.addAttribute("esRepresentant", true);
 			model.addAttribute("interessatId", interessatId);
@@ -324,15 +331,13 @@ public class ExpedientInteressatController extends BaseUserController {
 		
 	}
 	
-	
-	
 	@RequestMapping(value = "/organ/{codi}", method = RequestMethod.GET)
 	@ResponseBody
 	public UnitatOrganitzativaDto getByCodi(
 			HttpServletRequest request,
 			@PathVariable String codi,
 			Model model) {
-		return expedientInteressatService.findUnitatsOrganitzativesByCodi(codi);
+		return unitatOrganitzativaService.findByCodi(codi);
 	}
 	
 	@RequestMapping(value = "/provincies/{codiComunitat}", method = RequestMethod.GET)
@@ -359,7 +364,7 @@ public class ExpedientInteressatController extends BaseUserController {
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return expedientInteressatService.findUnitatsOrganitzativesByEntitat(entitatActual.getCodi());
+		return unitatOrganitzativaService.findByEntitat(entitatActual.getCodi());
 	}
 	
 	@RequestMapping(value = "/organ/filtre", method = RequestMethod.POST)
@@ -374,7 +379,7 @@ public class ExpedientInteressatController extends BaseUserController {
 			@RequestParam(value = "localitat", required = false) String localitat,
 			@RequestParam(value = "arrel", required = false) String arrel,
 			Model model) {
-		return expedientInteressatService.findUnitatsOrganitzativesByFiltre(
+		return unitatOrganitzativaService.findByFiltre(
 				codiDir3,
 				denominacio,
 				nivellAdm,
@@ -383,13 +388,10 @@ public class ExpedientInteressatController extends BaseUserController {
 				localitat,
 				"true".equals(arrel));
 	}
-	
+
+
+
 	private void ompleModel(HttpServletRequest request, Model model, String entitatActualCodi) {
-//		try {
-//			model.addAttribute("unitatsOrganitzatives", interessatService.findUnitatsOrganitzativesByEntitat(entitatActualCodi));
-//		} catch (Exception e) {
-//			MissatgesHelper.warning(request, getMessage(request, "interessat.controller.unitat.error"));
-//		}
 		try {
 			model.addAttribute("paisos", dadesExternesService.findPaisos());
 		} catch (Exception e) {

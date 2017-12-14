@@ -25,7 +25,7 @@ import es.caib.dir3caib.ws.api.catalogo.CatTipoVia;
 import es.caib.dir3caib.ws.api.catalogo.Dir3CaibObtenerCatalogosWs;
 import es.caib.dir3caib.ws.api.catalogo.Dir3CaibObtenerCatalogosWsService;
 import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.dadesext.Comunitat;
+import es.caib.ripea.plugin.dadesext.ComunitatAutonoma;
 import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.EntitatGeografica;
 import es.caib.ripea.plugin.dadesext.Municipi;
@@ -42,14 +42,10 @@ import es.caib.ripea.plugin.utils.PropertiesHelper;
  */
 public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 	
-	// Dades per consultar els municipis únicament una vegada al dia
-	public static List<Municipi> municipis = null;
-	public static Long momentConsultaMunicipis = 0L;
-
 	@Override
-	public List<es.caib.ripea.plugin.dadesext.Pais> paisFindAll() throws SistemaExternException {
+	public List<Pais> paisFindAll() throws SistemaExternException {
 		try {
-			List<Pais> paisos = new ArrayList<Pais>();;
+			List<Pais> paisos = new ArrayList<Pais>();
 			List<CatPais> catPaisos = getCatalegService().obtenerCatPais();
 			if (catPaisos != null) {
 				for (CatPais catPais: catPaisos) {
@@ -73,13 +69,13 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 	}
 
 	@Override
-	public List<Comunitat> comunitatFindAll() throws SistemaExternException {
+	public List<ComunitatAutonoma> comunitatFindAll() throws SistemaExternException {
 		try {
-			List<Comunitat> comunitats = new ArrayList<Comunitat>();;
+			List<ComunitatAutonoma> comunitats = new ArrayList<ComunitatAutonoma>();
 			List<CatComunidadAutonomaTF> catComunitats = getCatalegService().obtenerCatComunidadAutonoma();
 			if (catComunitats != null) {
 				for (CatComunidadAutonomaTF catComunitat: catComunitats) {
-					Comunitat comunitat = new Comunitat(
+					ComunitatAutonoma comunitat = new ComunitatAutonoma(
 							catComunitat.getCodigoComunidad(), 
 							catComunitat.getCodigoPais(), 
 							catComunitat.getDescripcionComunidad());
@@ -100,7 +96,7 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 	@Override
 	public List<Provincia> provinciaFindAll() throws SistemaExternException {
 		try {
-			List<Provincia> provincies = new ArrayList<Provincia>();;
+			List<Provincia> provincies = new ArrayList<Provincia>();
 			List<CatProvinciaTF> catProvincies = getCatalegService().obtenerCatProvincia();
 			if (catProvincies != null) {
 				for (CatProvinciaTF catProvincia: catProvincies) {
@@ -127,8 +123,7 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 			String comunitatCodi) throws SistemaExternException {
 		List<Provincia> provinciesComunitat = new ArrayList<Provincia>();
 		Long comunitatCodiNum = null;
-		try { comunitatCodiNum = Long.parseLong(comunitatCodi); } catch (Exception e) {}
-
+		comunitatCodiNum = Long.parseLong(comunitatCodi);
 		if (comunitatCodiNum != null) {
 			List<Provincia> provincies = provinciaFindAll();
 			for (Provincia provincia: provincies) {
@@ -139,64 +134,33 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 		return provinciesComunitat;
 	}
 
-//	@Override
-	public List<Municipi> municipiFindAll() throws SistemaExternException {
-		// Tornem a per la petició per obtenir els municipis, únicament si:
-		// 1. Encara no s'han consultat
-		// 2. Si ja fa més d'un dia (86400000ms) que s'ha consultat
-		if (municipis == null || (momentConsultaMunicipis < System.currentTimeMillis() - 86400000)) {
-			try {
-				List<Municipi> localitats = new ArrayList<Municipi>();
-				List<CatLocalidadTF> catLocalitats = getCatalegService().obtenerCatLocalidad();
-				if (catLocalitats != null) {
-					for (CatLocalidadTF catLocalitat: catLocalitats) {
-						Municipi localitat = new Municipi(
-								catLocalitat.getCodigoLocalidad(), 
-								catLocalitat.getCodigoEntidadGeografica(), 
-								catLocalitat.getCodigoProvincia(), 
-								catLocalitat.getDescripcionLocalidad());
-						localitats.add(localitat);
-					}
-				}
-				Collections.sort(localitats);
-				municipis = localitats;
-				momentConsultaMunicipis = System.currentTimeMillis();
-				return localitats;
-			} catch (Exception ex) {
-				LOGGER.error(
-						"No s'han pogut consultar les localitats",
-						ex);
-				throw new SistemaExternException(
-						"No s'han pogut consultar les localitats",
-						ex);
-			}
-		} else {
-			return municipis;
-		}
-	}
-	
 	@Override
 	public List<Municipi> municipiFindByProvincia(
 			String provinciaCodi) throws SistemaExternException {
-		List<Municipi> municipisProvincia = new ArrayList<Municipi>();
-		
-//		Long provinciaCodiNum = null;
-//		try { provinciaCodiNum = Long.parseLong(provinciaCodi); } catch (Exception e) {}
-
-		if (provinciaCodi != null && !provinciaCodi.isEmpty()) {
-			List<Municipi> municipis = municipiFindAll();
-			for (Municipi municipi: municipis) {
-				if (provinciaCodi.equals(municipi.getCodiProvincia()))
-					municipisProvincia.add(municipi);
+		try {
+			List<Municipi> municipisProvincia = new ArrayList<Municipi>();
+			if (provinciaCodi != null && !provinciaCodi.isEmpty()) {
+				List<Municipi> municipis = municipiFindAll();
+				for (Municipi municipi: municipis) {
+					if (provinciaCodi.equals(municipi.getCodiProvincia()))
+						municipisProvincia.add(municipi);
+				}
 			}
+			return municipisProvincia;
+		} catch (Exception ex) {
+			LOGGER.error(
+					"No s'han pogut consultar els municipis de la província " + provinciaCodi,
+					ex);
+			throw new SistemaExternException(
+					"No s'han pogut consultar els municipis de la província " + provinciaCodi,
+					ex);
 		}
-		return municipisProvincia;
 	}
 
 	@Override
 	public List<EntitatGeografica> entitatGeograficaFindAll() throws SistemaExternException {
 		try {
-			List<EntitatGeografica> entitatsGeografiques = new ArrayList<EntitatGeografica>();;
+			List<EntitatGeografica> entitatsGeografiques = new ArrayList<EntitatGeografica>();
 			List<CatEntidadGeograficaTF> catEntitatsGeografiques = getCatalegService().obtenerCatEntidadGeografica();
 			if (catEntitatsGeografiques != null) {
 				for (CatEntidadGeograficaTF catEntitatGeografica: catEntitatsGeografiques) {
@@ -220,7 +184,7 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 	@Override
 	public List<NivellAdministracio> nivellAdministracioFindAll() throws SistemaExternException {
 		try {
-			List<NivellAdministracio> nivellsAdministracio = new ArrayList<NivellAdministracio>();;
+			List<NivellAdministracio> nivellsAdministracio = new ArrayList<NivellAdministracio>();
 			List<CatNivelAdministracion> catNivellsAdministracio = getCatalegService().obtenerCatNivelAdministracion();
 			if (catNivellsAdministracio != null) {
 				for (CatNivelAdministracion catNivellAdministracio: catNivellsAdministracio) {
@@ -244,7 +208,7 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 	@Override
 	public List<TipusVia> tipusViaFindAll() throws SistemaExternException {
 		try {
-			List<TipusVia> tipusVia = new ArrayList<TipusVia>();;
+			List<TipusVia> tipusVia = new ArrayList<TipusVia>();
 			List<CatTipoVia> catTiposVia = getCatalegService().obtenerCatTipoVia();
 			if (catTiposVia != null) {
 				for (CatTipoVia catTipoVia: catTiposVia) {
@@ -262,6 +226,36 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 			throw new SistemaExternException(
 					"No s'han pogut consultar els tipus de via",
 					ex);
+		}
+	}
+
+
+
+	private List<Municipi> municipis = null;
+	private Long municipisDataActualitzacio = 0L;
+	private List<Municipi> municipiFindAll() throws MalformedURLException {
+		// Tornem a per la petició per obtenir els municipis, únicament si:
+		// 1. Encara no s'han consultat
+		// 2. Si ja fa més d'un dia (86400000ms) que s'ha consultat
+		if (municipis == null || (municipisDataActualitzacio < System.currentTimeMillis() - 86400000)) {
+			List<Municipi> municipis = new ArrayList<Municipi>();
+			List<CatLocalidadTF> catLocalitats = getCatalegService().obtenerCatLocalidad();
+			if (catLocalitats != null) {
+				for (CatLocalidadTF catLocalitat: catLocalitats) {
+					Municipi localitat = new Municipi(
+							catLocalitat.getCodigoLocalidad(), 
+							catLocalitat.getCodigoEntidadGeografica(), 
+							catLocalitat.getCodigoProvincia(), 
+							catLocalitat.getDescripcionLocalidad());
+					municipis.add(localitat);
+				}
+			}
+			Collections.sort(municipis);
+			this.municipis = municipis;
+			municipisDataActualitzacio = System.currentTimeMillis();
+			return municipis;
+		} else {
+			return this.municipis;
 		}
 	}
 

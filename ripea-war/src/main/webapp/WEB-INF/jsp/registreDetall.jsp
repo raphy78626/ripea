@@ -67,47 +67,144 @@ tr.clicable {
 	</ul>
 	<div class="tab-content">
 		<div class="tab-pane active in" id="informacio" role="tabpanel">
-			<dl class="dl-horizontal">
-				<dt><spring:message code="registre.detalls.camp.extracte"/></dt><dd>${registre.extracte}</dd>
-				<dt><spring:message code="registre.detalls.camp.data"/></dt><dd><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-				<dt><spring:message code="registre.detalls.camp.data.origen"/></dt><dd><fmt:formatDate value="${registre.dataOrigen}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-				<dt><spring:message code="registre.detalls.camp.numero"/></dt><dd>${registre.numero}</dd>
-				<c:if test="${registre.registreTipus == 'ENTRADA'}">
-					<dt><spring:message code="registre.detalls.camp.desti"/></dt><dd>${registre.unitatAdministrativaDescripcio} (${registre.unitatAdministrativa})</dd>				
-				</c:if>
-				<c:if test="${registre.registreTipus == 'SORTIDA'}">
-					<dt><spring:message code="registre.detalls.camp.origen"/></dt><dd>${registre.unitatAdministrativaDescripcio} (${registre.unitatAdministrativa})</dd>
-				</c:if>
-				<dt><spring:message code="registre.detalls.camp.entitat"/></dt><dd>${registre.entitatDescripcio} (${registre.entitatCodi})</dd>
-				<dt><spring:message code="registre.detalls.camp.oficina"/></dt><dd>${registre.oficinaDescripcio} (${registre.oficinaCodi})</dd>
-				<dt><spring:message code="registre.detalls.camp.oficina.origen"/></dt><dd>${registre.oficinaOrigenDescripcio} (${registre.oficinaOrigenCodi})</dd>
-				<dt><spring:message code="registre.detalls.camp.llibre"/></dt><dd>${registre.llibreDescripcio} (${registre.llibreCodi})</dd>
-				<dt><spring:message code="registre.detalls.camp.tipus"/></dt><dd><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></dd>
-				<dt><spring:message code="registre.detalls.camp.assumpte.tipus"/></dt><dd>${registre.assumpteTipusDescripcio} (${registre.assumpteTipusCodi})</dd>
-				<c:if test="${not empty registre.assumpteCodi}">
-					<dt><spring:message code="registre.detalls.camp.assumpte.codi"/></dt><dd>${registre.assumpteCodi}</dd>
-				</c:if>
-				<dt><spring:message code="registre.detalls.camp.idioma"/></dt><dd>${registre.idiomaDescripcio} (${registre.idiomaCodi})</dd>
-				<c:if test="${not empty registre.transportTipusCodi}">
-					<dt><spring:message code="registre.detalls.camp.transport.tipus"/></dt><dd>${registre.transportTipusDescripcio} (${registre.transportTipusCodi})</dd>
-				</c:if>
-				<c:if test="${not empty registre.transportNumero}">
-					<dt><spring:message code="registre.detalls.camp.transport.numero"/></dt><dd>${registre.transportNumero}</dd>
-				</c:if>
-				<c:if test="${not empty registre.usuariCodi}">
-					<dt><spring:message code="registre.detalls.camp.usuari"/></dt><dd>${registre.usuariNom} (${registre.usuariCodi})</dd>
-				</c:if>
-				<c:if test="${not empty registre.aplicacioCodi}">
-					<dt><spring:message code="registre.detalls.camp.aplicacio"/></dt><dd>${registre.aplicacioCodi} ${registre.aplicacioVersio}</dd>
-				</c:if>
-				<c:if test="${not empty registre.expedientNumero}">
-					<dt><spring:message code="registre.detalls.camp.expedient"/></dt><dd>${registre.expedientNumero}</dd>
-				</c:if>
-				<c:if test="${not empty registre.observacions}">
-					<dt><spring:message code="registre.detalls.camp.observacions"/></dt><dd>${registre.observacions}</dd>
-				</c:if>
-				<dt><spring:message code="registre.detalls.camp.ripea.alta"/></dt><dd><fmt:formatDate value="${registre.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-			</dl>
+			<table class="table table-bordered">
+			<tbody>
+				<tr>
+					<td><strong><spring:message code="registre.detalls.camp.tipus"/></strong></td>
+					<td><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></td>
+				</tr>
+				<tr>
+					<td><strong><spring:message code="registre.detalls.camp.numero"/></strong></td>
+					<td>${registre.identificador}</td>
+				</tr>
+				<tr>
+					<td><strong><spring:message code="registre.detalls.camp.data"/></strong></td>
+					<td><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+				</tr>
+				<tr>
+					<td><strong><spring:message code="registre.detalls.camp.oficina"/></strong></td>
+					<td>${registre.oficinaDescripcio} (${registre.oficinaCodi})</td>
+				</tr>
+			</tbody>
+			</table>
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><spring:message code="registre.detalls.titol.obligatories"/></h3>
+						</div>
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.llibre"/></strong></td>
+									<td>${registre.llibreDescripcio} (${registre.llibreCodi})</td>
+								</tr>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.extracte"/></strong></td>
+									<td>${registre.extracte}</td>
+								</tr>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.docfis"/></strong></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td><strong>
+										<c:if test="${registre.registreTipus == 'ENTRADA'}"><spring:message code="registre.detalls.camp.desti"/></c:if>
+										<c:if test="${registre.registreTipus == 'SORTIDA'}"><spring:message code="registre.detalls.camp.origen"/></c:if>
+									</strong></td>
+									<td>${registre.unitatAdministrativaDescripcio} (${registre.unitatAdministrativa})</td>
+									
+								</tr>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.assumpte.tipus"/></strong></td>
+									<td>${registre.assumpteTipusDescripcio} (${registre.assumpteTipusCodi})</td>
+								</tr>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.idioma"/></strong></td>
+									<td>${registre.idiomaDescripcio} (${registre.idiomaCodi})</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><spring:message code="registre.detalls.titol.opcionals"/></h3>
+						</div>
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<td colspan="2"><strong><spring:message code="registre.detalls.camp.assumpte.codi"/></strong></td>
+									<td colspan="2">(${registre.assumpteCodi})</td>
+								</tr>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.refext"/></strong></td>
+									<td></td>
+									<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
+									<td>${registre.expedientNumero}</td>
+								</tr>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.transport.tipus"/></strong></td>
+									<td>${registre.transportTipusDescripcio} (${registre.transportTipusCodi})</td>
+									<td><strong><spring:message code="registre.detalls.camp.transport.num"/></strong></td>
+									<td>${registre.transportNumero}</td>
+								</tr>
+								<tr>
+									<td colspan="2"><strong><spring:message code="registre.detalls.camp.origen.oficina"/></strong></td>
+									<td colspan="2">${registre.oficinaOrigenDescripcio} (${registre.oficinaOrigenCodi})</td>
+								</tr>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.origen.num"/></strong></td>
+									<td></td>
+									<td><strong><spring:message code="registre.detalls.camp.origen.data"/></strong></td>
+									<td><fmt:formatDate value="${registre.dataOrigen}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+								</tr>
+								<tr>
+									<td colspan="2"><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>
+									<td colspan="2">${registre.observacions}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<spring:message code="registre.detalls.titol.seguiment"/>
+						<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-seguiment"><span class="fa fa-chevron-down"></span></button>
+					</h3>
+				</div>
+				<div id="collapse-seguiment" class="panel-collapse collapse" role="tabpanel" aria-labelledby="dadesSeguiment">
+					<table class="table table-bordered">
+					<tbody>
+						<c:if test="${not empty registre.entitatCodi}">
+							<tr>
+								<td><strong><spring:message code="registre.detalls.camp.entitat"/></strong></td>
+								<td>${registre.entitatDescripcio} (${registre.entitatCodi})</td>
+							</tr>
+						</c:if>
+						<c:if test="${not empty registre.aplicacioCodi}">
+							<tr>
+								<td><strong><spring:message code="registre.detalls.camp.aplicacio"/></strong></td>
+								<td>${registre.aplicacioCodi} ${registre.aplicacioVersio}</td>
+							</tr>
+						</c:if>
+						<c:if test="${not empty registre.usuariCodi}">
+							<tr>
+								<td><strong><spring:message code="registre.detalls.camp.usuari"/></strong></td>
+								<td>${registre.usuariNom} (${registre.usuariCodi})</td>
+							</tr>
+						</c:if>
+						<tr>
+							<td><strong><spring:message code="registre.detalls.camp.ripea.alta"/></strong></td>
+							<td><fmt:formatDate value="${registre.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+						</tr>
+					</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 		<div class="tab-pane" id="interessats" role="tabpanel">
 			<c:choose>
@@ -198,7 +295,110 @@ tr.clicable {
 		<div class="tab-pane" id="annexos" role="tabpanel">
 			<c:choose>
 				<c:when test="${not empty annexos}">
-					<table class="table table-bordered">
+					<c:forEach var="annex" items="${annexos}" varStatus="status">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<span class="fa fa-file"></span>
+									${annex.titol}
+									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
+								</h3>
+							</div>
+							<div id="collapse-annex-${status.index}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="dadesAnnex${status.index}">
+								<table class="table table-bordered">
+								<tbody>
+									<tr>
+										<td><strong><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></strong></td>
+										<td><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+									</tr>
+									<tr>
+										<td><strong><spring:message code="registre.annex.detalls.camp.eni.origen"/></strong></td>
+										<td>${annex.origenCiutadaAdmin}</td>
+									</tr>
+									<tr>
+										<td><strong><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></strong></td>
+										<td><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></td>
+									</tr>
+									<tr>
+										<td><strong><spring:message code="registre.annex.detalls.camp.eni.tipus.documental"/></strong></td>
+										<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
+									</tr>
+									<tr>
+										<td><strong><spring:message code="registre.annex.detalls.camp.sicres.tipus.document"/></strong></td>
+										<td><c:if test="${not empty annex.sicresTipusDocument}"><spring:message code="registre.annex.detalls.camp.sicresTipusDocument.${annex.sicresTipusDocument}"/></c:if></td>
+									</tr>
+									<c:if test="${not empty annex.localitzacio}">
+										<tr>
+											<td><strong><spring:message code="registre.annex.detalls.camp.localitzacio"/></strong></td>
+											<td>${annex.localitzacio}</td>
+										</tr>
+									</c:if>
+									<c:if test="${not empty annex.observacions}">
+										<tr>
+											<td><strong><spring:message code="registre.annex.detalls.camp.observacions"/></strong></td>
+											<td>${annex.observacions}</td>
+										</tr>
+									</c:if>
+									<tr>
+										<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
+										<td>
+											${annex.fitxerNom} (${annex.fitxerTamany} bytes)
+											<a href="${registre.id}/annex/${annex.id}/arxiu/DOCUMENT" class="btn btn-default btn-sm pull-right">
+												<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
+											</a>
+										</td>
+									</tr>
+									<c:if test="${annex.ambFirma}">
+										<tr>
+											<td colspan="2">
+												<c:forEach var="firma" items="${annex.firmes}" varStatus="status">
+													<div class="panel panel-default">
+														<div class="panel-heading">
+															<h3 class="panel-title">
+																<span class="fa fa-certificate"></span>
+																<spring:message code="registre.annex.detalls.camp.firma"/> ${status.index + 1}
+															</h3>
+														</div>
+														<table class="table table-bordered">
+														<tbody>
+															<tr>
+																<td><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></td>
+																<td>${firma.tipus}</td>
+															</tr>
+															<tr>
+																<td><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></td>
+																<td>${firma.perfil}</td>
+															</tr>
+															<tr>
+																<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
+																<td>
+																	${firma.fitxerNom}
+																	<a href="${registre.id}/annex/${annex.id}/firma/${status.index}" class="btn btn-default btn-sm pull-right">
+																		<span class="fa fa-download"  title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
+																	</a>
+																</td>
+															</tr>
+															<c:if test="${not empty firma.csvRegulacio}">
+																<tr>
+																	<td><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></td>
+																	<td>${firma.csvRegulacio}</td>
+																</tr>
+															</c:if>
+														</tbody>
+														</table>
+													</div>
+												</c:forEach>
+											</td>
+										</tr>
+									</c:if>
+								</table>
+							</div>
+						</div>
+					</c:forEach>
+				
+				
+				
+					<%--table class="table table-bordered">
 						<thead>
 							<tr>
 								<th><h4><spring:message code="registre.detalls.pipella.annexos"/></h4></th>
@@ -321,7 +521,7 @@ tr.clicable {
 								</tr>
 							</c:forEach>
 						</tbody>
-					</table>
+					</table--%>
 				</c:when>
 				<c:otherwise>
 					<div class="row col-xs-12">

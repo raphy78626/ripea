@@ -16,7 +16,6 @@ import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.service.ExpedientInteressatService;
 
 /**
@@ -162,35 +161,4 @@ public class ExpedientInteressatServiceBean implements ExpedientInteressatServic
 				organCodi);
 	}
 
-	@Override
-	@RolesAllowed("tothom")
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByEntitat(String entitatCodi) {
-		return delegate.findUnitatsOrganitzativesByEntitat(entitatCodi);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi) {
-		return delegate.findUnitatsOrganitzativesByCodi(codi);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByFiltre(
-			String codiDir3, 
-			String denominacio,
-			String nivellAdm, 
-			String comunitat, 
-			String provincia, 
-			String localitat, 
-			Boolean arrel) {
-		return delegate.findUnitatsOrganitzativesByFiltre(
-				codiDir3, 
-				denominacio, 
-				nivellAdm, 
-				comunitat, 
-				provincia, 
-				localitat, 
-				arrel);
-	}
 }

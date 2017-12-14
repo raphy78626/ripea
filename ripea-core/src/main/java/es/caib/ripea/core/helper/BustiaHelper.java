@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.helper;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
@@ -75,7 +77,7 @@ public class BustiaHelper {
 				bustiaUnitatCodis.add(bustia.getUnitatCodi());
 		}
 		// Consulta l'arbre
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findUnitatsOrganitzativesPerEntitatAmbPermesos(
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerEntitatAmbCodisPermesos(
 				entitat.getCodi(),
 				bustiaUnitatCodis);
 		if (ambContadorElementsPendents && !busties.isEmpty()) {
@@ -130,66 +132,39 @@ public class BustiaHelper {
 		return arbre;
 	}
 
-	/** Troba la bústica per defecte per a la unitat administrativa. Si la unitat no té
-	 * bústia, llavors mira la 1a de les unitats organitzatives superiors que tingui bústia,
-	 * si cap en té llavors crea la bústia per a la unitat organitzativa arrel.
-	 * 
-	 * @param entitat
-	 * @param unitat
-	 * @return
-	 */
-	public BustiaEntity findBustiaPerDefecte(
+	public BustiaEntity findBustiaDesti(
 			EntitatEntity entitat,
-			UnitatOrganitzativaDto unitat) {
-		
-		BustiaEntity bustia = null;
-		String unitatOrganitzativaCodi;
-		String unitatSuperiorCodi;
-		String unitatArrelCodi = unitat.getCodiUnitatArrel();		
-		// Busca la bústia mentre no es trobi la per defecte en la unitat o les seves superiors fins la arrel
-		do {
-			// Guarda el codi de la unitat actual i de la immediatament superior
-			unitatOrganitzativaCodi = unitat.getCodi();
-			unitatSuperiorCodi = unitat.getCodiUnitatSuperior();
-			// Busca la bústia per defecte per la unitat actual
-			bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
-					entitat,
-					unitatOrganitzativaCodi);
-			// Si la bústia no existeix continua mirant amb la unitat superior
-			if (bustia == null) {
-				unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
-						entitat.getCodi(),
-						unitatSuperiorCodi);	
-				if (unitat == null)
-					throw new NotFoundException(unitatSuperiorCodi, UnitatOrganitzativaDto.class);
-			}
-		} while(bustia == null && unitatArrelCodi.compareTo(unitatOrganitzativaCodi) != 0);		
-		
-		// Si la bústia no existeix la crea per a la unitat superior
-		if (bustia == null) {
-			// Cerca la bústia superior
-			BustiaEntity bustiaPare = bustiaRepository.findByEntitatAndUnitatCodiAndPareNull(
-					entitat,
-					unitatOrganitzativaCodi);
-			// Si la bústia superior no existeix la crea
-			if (bustiaPare == null) {
-				bustiaPare = bustiaRepository.save(
-						BustiaEntity.getBuilder(
-								entitat,
-								unitat.getDenominacio(),
-								unitatOrganitzativaCodi,
-								null).build());
-			}
-			// Crea la nova bústia
-			BustiaEntity entity = BustiaEntity.getBuilder(
-					entitat,
-					unitat.getDenominacio() + " (default)",
+			String unitatOrganitzativaCodi) {
+		// Cerca la bústia per defecte de la unitat organitzativa especificada. Si
+		// la unitat no te bústia per defecte va pujant a l'arbre fins a trobar la
+		// primera unitat que en tengui.
+		List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
+				entitat.getCodi(),
+				unitatOrganitzativaCodi);
+		if (path == null || path.isEmpty()) {
+			throw new NotFoundException(
 					unitatOrganitzativaCodi,
-					bustiaPare).build();
-			entity.updatePerDefecte(true);
-			bustia = bustiaRepository.save(entity);
+					UnitatOrganitzativaDto.class);
 		}
-		return bustia;
+		Collections.reverse(path);
+		BustiaEntity bustiaDesti = null;
+		for (UnitatOrganitzativaDto unitat: path) {
+			BustiaEntity bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
+					entitat,
+					unitat.getCodi());
+			if (bustia != null) {
+				bustiaDesti = bustia;
+				break;
+			}
+		}
+		if (bustiaDesti == null) {
+			throw new ValidationException(
+					unitatOrganitzativaCodi,
+					UnitatOrganitzativaDto.class,
+					"No s'ha trobat cap bústia destí per a la unitat organitzativa (" +
+					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
+		}
+		return bustiaDesti;
 	}
 
 	public void evictElementsPendentsBustia(

@@ -8,10 +8,9 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
+import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
 import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
 /**
@@ -271,47 +270,5 @@ public interface ExpedientInteressatService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<InteressatAdministracioDto> findByFiltreAdministracio(
 			String organCodi) throws NotFoundException;
-
-	/**
-	 * Consulta les unitats organitzatives de la entitat.
-	 * 
-	 * @param entitatCodi
-	 *            Atribut codi de l'entitat a la qual pertany l'interessat.
-	 * @return La llista d'unitats organitzatives trobades.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByEntitat(String entitatCodi);
-
-	/**
-	 * Consulta una unitat organitzativa per codi.
-	 * 
-	 *            Atribut codi de l'unitat.
-	 * @return La unitats organitzativa trobada.
-	 * @param codi
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	public UnitatOrganitzativaDto findUnitatsOrganitzativesByCodi(String codi);
-	
-	/**
-	 * Consulta una unitats organitzative segons el filtre passat.
-	 * 
-	 *            Atribut codi de l'unitat.
-	 * @return La unitats organitzativa trobada.
-	 * @param codi
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesByFiltre(
-			String codiDir3, 
-			String denominacio, 
-			String nivellAdm,
-			String comunitat, 
-			String provincia, 
-			String localitat, 
-			Boolean arrel);
 
 }

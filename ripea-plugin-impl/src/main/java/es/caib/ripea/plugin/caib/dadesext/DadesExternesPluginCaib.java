@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.dadesext.Comunitat;
+import es.caib.ripea.plugin.dadesext.ComunitatAutonoma;
 import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.EntitatGeografica;
 import es.caib.ripea.plugin.dadesext.Municipi;
@@ -79,7 +79,7 @@ public class DadesExternesPluginCaib implements DadesExternesPlugin {
 	}
 	
 	@Override
-	public List<Comunitat> comunitatFindAll() throws SistemaExternException {
+	public List<ComunitatAutonoma> comunitatFindAll() throws SistemaExternException {
 		String url = getBaseUrl() + "/services/ccaa/format/JSON/idioma/ca";
 		String errorDescripcio = "No s'ha pogut consultar la llista de comunitats (" +
 				"url=" + url + ")";
@@ -89,16 +89,16 @@ public class DadesExternesPluginCaib implements DadesExternesPlugin {
 			httpConnection.setDoInput(true);
 			httpConnection.setDoOutput(true);
 			ObjectMapper mapper = new ObjectMapper();
-			List<Comunitat> comunitats = mapper.readValue(
+			List<ComunitatAutonoma> comunitats = mapper.readValue(
 					httpConnection.getInputStream(), 
 					TypeFactory.defaultInstance().constructCollectionType(
 							List.class,  
 							Provincia.class));
 			Collections.sort(
 					comunitats,
-					new Comparator<Comunitat>() {
+					new Comparator<ComunitatAutonoma>() {
 						@Override
-						public int compare(Comunitat p1, Comunitat p2) {
+						public int compare(ComunitatAutonoma p1, ComunitatAutonoma p2) {
 							return p1.getNom().compareToIgnoreCase(p2.getNom());
 						}
 					});

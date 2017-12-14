@@ -248,57 +248,6 @@ public class CacheHelper {
 	public void evictUnitatsOrganitzativesPerEntitat(
 			String entitatCodi) {
 	}
-	
-//	@Cacheable(value = "unitatsOrganitzativesList", key="#entitatCodi")
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesListPerEntitat(
-			String entitatCodi) {
-		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
-		return pluginHelper.unitatsOrganitzativesFindListByPare(
-				entitat.getUnitatArrel());
-	}
-//	@CacheEvict(value = "unitatsOrganitzativesList", key="#entitatCodi")
-	public void evictUnitatsOrganitzativesListPerEntitat(
-			String entitatCodi) {
-	}
-
-	@Cacheable(value = "unitatOrganitzativa", key="#organCodi")
-	public UnitatOrganitzativaDto findUnitatOrganitzativaPerCodi(
-			String organCodi) throws Exception {
-			UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(organCodi);
-		if (unitat != null) {
-			unitat.setAdressa(
-					getAdressa(
-							unitat.getTipusVia(), 
-							unitat.getNomVia(), 
-							unitat.getNumVia()));
-			if (unitat.getCodiPais() != null && !"".equals(unitat.getCodiPais()))
-				unitat.setCodiPais(("000" + unitat.getCodiPais()).substring(unitat.getCodiPais().length()));
-			if(unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat()))
-				unitat.setCodiComunitat(("00" + unitat.getCodiComunitat()).substring(unitat.getCodiComunitat().length()));
-			
-			if ((unitat.getCodiProvincia() == null || "".equals(unitat.getCodiProvincia())) && 
-					unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat())) {
-				List<ProvinciaDto> provincies = findProvinciesPerComunitat(unitat.getCodiComunitat());
-				if (provincies != null && provincies.size() == 1) {
-					unitat.setCodiProvincia(provincies.get(0).getCodi());
-				}		
-			}
-			if (unitat.getCodiProvincia() != null && !"".equals(unitat.getCodiProvincia())) {
-				unitat.setCodiProvincia(("00" + unitat.getCodiProvincia()).substring(unitat.getCodiProvincia().length()));
-				
-				if (unitat.getLocalitat() == null && unitat.getNomLocalitat() != null) {
-					MunicipiDto municipi = findMunicipiAmbNom(
-							unitat.getCodiProvincia(), 
-							unitat.getNomLocalitat());
-					if (municipi != null)
-						unitat.setLocalitat(municipi.getCodi());
-					else
-						logger.error("UNITAT ORGANITZATIVA. No s'ha trobat la localitat amb el nom: '" + unitat.getNomLocalitat() + "'");
-				}
-			}
-		}
-		return unitat;
-	}
 
 	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
 	public long countElementsPendentsBustiesUsuari(
@@ -351,7 +300,6 @@ public class CacheHelper {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesPaisosFindAll(),
 				PaisDto.class);
-//		return pluginHelper.findPaisos();
 	}
 	
 	@Cacheable(value = "comunitats")
@@ -359,7 +307,6 @@ public class CacheHelper {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesComunitatsFindAll(),
 				ComunitatDto.class);
-//		return pluginHelper.findComunitats();
 	}
 
 	@Cacheable(value = "provincies")
@@ -367,7 +314,6 @@ public class CacheHelper {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesProvinciesFindAll(),
 				ProvinciaDto.class);
-//		return pluginHelper.findProvincies();
 	}
 
 	@Cacheable(value = "provinciesPerComunitat", key="#comunitatCodi")
@@ -375,82 +321,26 @@ public class CacheHelper {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesProvinciesFindAmbComunitat(comunitatCodi),
 				ProvinciaDto.class);
-//		List<ProvinciaDto> provinciesComunitat = new ArrayList<ProvinciaDto>();
-//		
-//		Long comunitatCodiNum = null;
-//		try { comunitatCodiNum = Long.parseLong(comunitatCodi); } catch (Exception e) {}
-//
-//		if (comunitatCodiNum != null) {
-//			List<ProvinciaDto> provincies = findProvincies();
-//			for (ProvinciaDto provincia: provincies) {
-//				if (comunitatCodiNum.equals(provincia.getCodiComunitat()))
-//					provinciesComunitat.add(provincia);
-//			}
-//		}
-//		return provinciesComunitat;
 	}
-	
-//	@Cacheable(value = "municipis")
-//	public List<MunicipiDto> findMunicipis() {
-//		return conversioTipusHelper.convertirList(
-//				pluginHelper.dadesExternesMunicipisFindAll(),
-//				MunicipiDto.class);
-////		return pluginHelper.findLocalitats();
-//	}
 
 	@Cacheable(value = "municipisPerProvincia", key="#provinciaCodi")
 	public List<MunicipiDto> findMunicipisPerProvincia(String provinciaCodi) {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesMunicipisFindAmbProvincia(provinciaCodi),
 				MunicipiDto.class);
-//		List<MunicipiDto> municipisProvincia = new ArrayList<MunicipiDto>();
-//		
-//		Long provinciaCodiNum = null;
-//		try { provinciaCodiNum = Long.parseLong(provinciaCodi); } catch (Exception e) {}
-//
-//		if (provinciaCodiNum != null) {
-//			List<MunicipiDto> municipis = findMunicipis();
-//			for (MunicipiDto municipi: municipis) {
-//				if (provinciaCodiNum.equals(municipi.getCodiProvincia()))
-//					municipisProvincia.add(municipi);
-//			}
-//		}
-//		return municipisProvincia;
 	}
 
-	@Cacheable(value = "municipisAmbNom", key="#municipiNom")
-	public MunicipiDto findMunicipiAmbNom(String provinciaCodi, String nom) {
-		MunicipiDto municipi = null;
-		List<MunicipiDto> municipis = findMunicipisPerProvincia(provinciaCodi);
-		if (municipis != null) {
-			for (MunicipiDto mun: municipis) {
-												
-				if (	mun.getNom().equals(nom) //|| 
-						//(mun.getNom().equals("Palma") && nom.equals("Palma de Mallorca")) || 							// Excepció: Palma
-						//(mun.getNom().equals("Maó") && nom.equals("Maó-Mahón")) ||									// Excepció: Maó
-						//(mun.getNom().equals("Santa Eulalia del Río") && nom.equals("Santa Eulària des Riu")) ||		// Excepció: Santa Eulària des Riu
-						//(mun.getNom().equals("Deyá") && nom.equals("Deià"))											// Excepció: Deià
-				) { 
-					municipi = mun;
-					break;
-				}
-			}
-			if (municipi == null) {
-				logger.error("No s'ha trobat cap municipi amb el nom: '" + nom + "' a la provincia " + provinciaCodi);
-			}
-		}
-		return municipi;
-	}
-	
 	@Cacheable(value = "nivellAdministracio")
 	public List<NivellAdministracioDto> findNivellAdministracio() {
-		return pluginHelper.findNivellAdministracio();
+		return pluginHelper.dadesExternesNivellsAdministracioAll();
 	}
-	
+
 	@Cacheable(value = "tipusVia")
 	public List<TipusViaDto	> findTipusVia() {
-		return pluginHelper.findTipusVia();
+		return pluginHelper.dadesExternesTipusViaAll();
 	}
+
+
 
 	private ValidacioErrorDto crearValidacioError(
 			MetaDadaEntity metaDada,
@@ -488,28 +378,7 @@ public class CacheHelper {
 		usuaris.add(usuariCodi);
 	}
 
-	private String getAdressa(
-			Long tipusVia,
-			String nomVia,
-			String numVia) {
-		
-		String adressa = "";
-		if (tipusVia != null) {
-			List<TipusViaDto> tipus = findTipusVia();
-			for (TipusViaDto tvia: tipus) {
-				if (tvia.getCodi().equals(tipusVia)) {
-					adressa = tvia.getDescripcio() + " ";
-					break;
-				}
-			}
-		}
-		
-		adressa += nomVia;
-		if (numVia != null) {
-			adressa += ", " + numVia;
-		}
-		return adressa;
-	}
+	
 	
 	private static final Logger logger = LoggerFactory.getLogger(CacheHelper.class);
 

@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.helper;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,11 +14,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
-import es.caib.ripea.core.api.dto.PaginaDto;
-import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaD3Dto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.dto.UnitatsFiltreDto;
 
 
 /**
@@ -39,49 +36,47 @@ public class UnitatOrganitzativaHelper {
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 
+
+
 	public UnitatOrganitzativaDto findPerEntitatAndCodi(
 			String entitatCodi,
-			String unitatCodi) {
+			String unitatOrganitzativaCodi) {
 		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi);
 		for (UnitatOrganitzativaDto unitat: arbre.toDadesList()) {
-			if (unitat.getCodi().equals(unitatCodi)) {
+			if (unitat.getCodi().equals(unitatOrganitzativaCodi)) {
 				return unitat;
 			}
 		}
 		return null;
 	}
-	
-	public UnitatOrganitzativaDto findPerCodi(
-			String unitatCodi) throws Exception{
-		UnitatOrganitzativaDto unitat = cacheHelper.findUnitatOrganitzativaPerCodi(unitatCodi);
-		return unitat;
-	}
-	
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesListPerEntitat(
-			String entitatCodi) {
-		List<UnitatOrganitzativaDto> llista = cacheHelper.findUnitatsOrganitzativesListPerEntitat(entitatCodi);
-		return llista;
-	}
-	
-	public PaginaDto<UnitatOrganitzativaD3Dto> findUnitatsOrganitzativesPerDatatable(
-			UnitatsFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) {
-		
-		List<UnitatOrganitzativaD3Dto> unitats = pluginHelper.unitatsOrganitzativesD3FindByFiltre(
-				filtre.getCodi(), 
-				filtre.getDenominacio(), 
-				filtre.getNivellAdministracio(), 
-				filtre.getComunitat(), 
-				filtre.getProvincia(), 
-				filtre.getLocalitat(), 
-				filtre.isUnitatArrel());
-		
-		PaginaDto<UnitatOrganitzativaD3Dto> resultPagina = paginacioHelper.toPaginaDto(unitats, UnitatOrganitzativaD3Dto.class);
-		
-		return resultPagina;
+
+	public UnitatOrganitzativaDto findAmbCodi(
+			String unitatOrganitzativaCodi) {
+		return pluginHelper.unitatsOrganitzativesFindByCodi(
+				unitatOrganitzativaCodi);
 	}
 
-	public ArbreDto<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitatAmbPermesos(
+	public List<UnitatOrganitzativaDto> findPath(
+			String entitatCodi,
+			String unitatOrganitzativaCodi) {
+		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi);
+		List<UnitatOrganitzativaDto> superiors = new ArrayList<UnitatOrganitzativaDto>();
+		String codiActual = unitatOrganitzativaCodi;
+		do {
+			UnitatOrganitzativaDto unitatActual = cercaDinsArbreAmbCodi(
+					arbre,
+					codiActual);
+			if (unitatActual != null) {
+				superiors.add(unitatActual);
+				codiActual = unitatActual.getCodiUnitatSuperior();
+			} else {
+				codiActual = null;
+			}
+		} while (codiActual != null);
+		return superiors;
+	}
+
+	public ArbreDto<UnitatOrganitzativaDto> findPerEntitatAmbCodisPermesos(
 			String entitatCodi,
 			Set<String> unitatCodiPermesos) {
 		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).clone();
@@ -114,14 +109,14 @@ public class UnitatOrganitzativaHelper {
 		return arbre;
 	}
 
-	public UnitatOrganitzativaDto findConselleriaPerUnitatOrganitzativa(
+	public UnitatOrganitzativaDto findConselleria(
 			String entitatCodi,
-			String unitatCodi) {
+			String unitatOrganitzativaCodi) {
 		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).clone();
 		UnitatOrganitzativaDto unitatConselleria = null;
 		for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
 			UnitatOrganitzativaDto uo = node.getDades();
-			if (uo.getCodi().equals(unitatCodi)) {
+			if (uo.getCodi().equals(unitatOrganitzativaCodi)) {
 				ArbreNodeDto<UnitatOrganitzativaDto> nodeActual = node;
 				while (nodeActual.getNivell() > 1) {
 					nodeActual = nodeActual.getPare();
@@ -132,6 +127,21 @@ public class UnitatOrganitzativaHelper {
 			}
 		}
 		return unitatConselleria;
+	}
+
+
+
+	private UnitatOrganitzativaDto cercaDinsArbreAmbCodi(
+			ArbreDto<UnitatOrganitzativaDto> arbre,
+			String unitatOrganitzativaCodi) {
+		UnitatOrganitzativaDto trobada = null;
+		for (UnitatOrganitzativaDto unitat: arbre.toDadesList()) {
+			if (unitat.getCodi().equals(unitatOrganitzativaCodi)) {
+				trobada = unitat;
+				break;
+			}
+		}
+		return trobada;
 	}
 
 }
