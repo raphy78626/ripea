@@ -263,7 +263,7 @@
         <dependent-module archiveName="bcprov-jdk14-1.38.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/bouncycastle/bcprov-jdk14/1.38/bcprov-jdk14-1.38.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="arxiudigital-apirest-1.0.4.jar" deploy-path="/" handle="module:/resource/arxiudigital-apirest-1.0/arxiudigital-apirest-1.0">
+        <dependent-module archiveName="arxiudigital-apirest-1.0.4.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/arxiudigital/arxiudigital-apirest/1.0.4/arxiudigital-apirest-1.0.4.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="plugins-api-1.0.0.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/fundaciobit/plugins/plugins-api/1.0.0/plugins-api-1.0.0.jar">
@@ -284,6 +284,51 @@
         <dependent-module archiveName="jsoup-1.10.2.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/jsoup/jsoup/1.10.2/jsoup-1.10.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="notib-client-0.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/notib/notib-client/0.1/notib-client-0.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cxf-rt-bindings-soap-2.3.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/cxf/cxf-rt-bindings-soap/2.3.1/cxf-rt-bindings-soap-2.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cxf-api-2.3.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/cxf/cxf-api/2.3.1/cxf-api-2.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cxf-common-utilities-2.3.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/cxf/cxf-common-utilities/2.3.1/cxf-common-utilities-2.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="woodstox-core-asl-4.0.8.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/codehaus/woodstox/woodstox-core-asl/4.0.8/woodstox-core-asl-4.0.8.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="stax2-api-3.0.2.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/codehaus/woodstox/stax2-api/3.0.2/stax2-api-3.0.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="XmlSchema-1.4.7.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/ws/commons/schema/XmlSchema/1.4.7/XmlSchema-1.4.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="neethi-2.0.4.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/neethi/neethi/2.0.4/neethi-2.0.4.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cxf-common-schemas-2.3.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/cxf/cxf-common-schemas/2.3.1/cxf-common-schemas-2.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cxf-tools-common-2.3.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/cxf/cxf-tools-common/2.3.1/cxf-tools-common-2.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="wsdl4j-1.6.2.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/wsdl4j/wsdl4j/1.6.2/wsdl4j-1.6.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jaxb-impl-2.1.13.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/sun/xml/bind/jaxb-impl/2.1.13/jaxb-impl-2.1.13.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cxf-rt-core-2.3.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/cxf/cxf-rt-core/2.3.1/cxf-rt-core-2.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cxf-rt-databinding-jaxb-2.3.1.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/apache/cxf/cxf-rt-databinding-jaxb/2.3.1/cxf-rt-databinding-jaxb-2.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="seyconsession-common-1.5.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/es/caib/jboss/seyconsession-common/1.5/seyconsession-common-1.5.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="joda-time-1.6.2.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/joda-time/joda-time/1.6.2/joda-time-1.6.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -299,7 +344,7 @@
         <dependent-module archiveName="plugin-arxiu-api-1.0.0.jar" deploy-path="/" handle="module:/resource/plugin-arxiu-api/plugin-arxiu-api">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="commons-codec-1.10.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/commons-codec/commons-codec/1.10/commons-codec-1.10.jar">
+        <dependent-module archiveName="commons-codec-1.9.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/commons-codec/commons-codec/1.9/commons-codec-1.9.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>

@@ -150,6 +150,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			built.esRepresentant = false;
 		}
 		public Builder adresa(
+				String domiciliTipusEnum,
 				String domiciliApartatCorreus,
 				String domiciliBloc,
 				Integer domiciliCie,
@@ -159,6 +160,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				String domiciliLinea1,
 				String domiciliLinea2,
 				String domiciliMunicipiCodiIne,
+				String domiciliNumeracioTipus,
 				String domiciliNumeracioNumero,
 				String domiciliPaisCodiIso,
 				String domiciliPlanta,
@@ -169,6 +171,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 				String domiciliNumeracioPuntKm,
 				String domiciliViaNom,
 				NotificacioEntregaPostalViaTipusEnum domiciliViaTipus) {
+			built.domiciliTipusEnum = domiciliTipusEnum;
 			built.domiciliApartatCorreus = domiciliApartatCorreus;
 			built.domiciliBloc = domiciliBloc;
 			built.domiciliCie = domiciliCie;
@@ -178,6 +181,7 @@ public class InteressatAdministracioEntity extends InteressatEntity {
 			built.domiciliLinea1 = domiciliLinea1;
 			built.domiciliLinea2 = domiciliLinea2;
 			built.domiciliMunicipiCodiIne = domiciliMunicipiCodiIne;
+			built.domiciliNumeracioTipus = domiciliNumeracioTipus;
 			built.domiciliNumeracioNumero = domiciliNumeracioNumero;
 			built.domiciliPaisCodiIso = domiciliPaisCodiIso;
 			built.domiciliPlanta = domiciliPlanta;

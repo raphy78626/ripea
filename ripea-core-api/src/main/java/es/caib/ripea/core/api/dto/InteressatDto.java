@@ -28,6 +28,7 @@ public abstract class InteressatDto implements Serializable {
 	protected String representantIdentificador;
 	protected String identificador;
 	
+	protected String domiciliTipusEnum;
 	protected String domiciliApartatCorreus;
 	protected String domiciliBloc;
 	protected Integer domiciliCie;
@@ -37,6 +38,7 @@ public abstract class InteressatDto implements Serializable {
 	protected String domiciliLinea1;
 	protected String domiciliLinea2;
 	protected String domiciliMunicipiCodiIne;
+	protected String domiciliNumeracioTipus;
 	protected String domiciliNumeracioNumero;
 	protected String domiciliPaisCodiIso;
 	protected String domiciliPlanta;
@@ -121,6 +123,12 @@ public abstract class InteressatDto implements Serializable {
 	
 	
 	
+	public String getDomiciliTipusEnum() {
+		return domiciliTipusEnum;
+	}
+	public void setDomiciliTipusEnum(String domiciliTipusEnum) {
+		this.domiciliTipusEnum = domiciliTipusEnum;
+	}
 	public String getDomiciliApartatCorreus() {
 		return domiciliApartatCorreus;
 	}
@@ -174,6 +182,13 @@ public abstract class InteressatDto implements Serializable {
 	}
 	public void setDomiciliMunicipiCodiIne(String domiciliMunicipiCodiIne) {
 		this.domiciliMunicipiCodiIne = domiciliMunicipiCodiIne;
+	}
+	
+	public String getDomiciliNumeracioTipus() {
+		return domiciliNumeracioTipus;
+	}
+	public void setDomiciliNumeracioTipus(String domiciliNumeracioTipus) {
+		this.domiciliNumeracioTipus = domiciliNumeracioTipus;
 	}
 	public String getDomiciliNumeracioNumero() {
 		return domiciliNumeracioNumero;

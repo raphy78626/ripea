@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.ripea.core.api.dto.DomiciliTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.InteressatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
@@ -28,8 +29,11 @@ import es.caib.ripea.core.api.service.DadesExternesService;
 import es.caib.ripea.core.api.service.ExpedientInteressatService;
 import es.caib.ripea.war.command.InteressatCommand;
 import es.caib.ripea.war.command.InteressatCommand.Administracio;
+import es.caib.ripea.war.command.InteressatCommand.ApartatCorreus;
+import es.caib.ripea.war.command.InteressatCommand.NacionalEstranger;
 import es.caib.ripea.war.command.InteressatCommand.PersonaFisica;
 import es.caib.ripea.war.command.InteressatCommand.PersonaJuridica;
+import es.caib.ripea.war.command.InteressatCommand.SenseNormalitzar;
 import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.ValidationHelper;
 
@@ -106,21 +110,41 @@ public class ExpedientInteressatController extends BaseUserController {
 		List<Class<?>> grups = new ArrayList<Class<?>>();
 		if (interessatCommand.getTipus() != null) {
 			switch (interessatCommand.getTipus()) {
-			case PERSONA_FISICA:
-				grups.add(PersonaFisica.class);
-				break;
-			case PERSONA_JURIDICA:
-				grups.add(PersonaJuridica.class);
-				break;
-			case ADMINISTRACIO:
-				grups.add(Administracio.class);
-				break;
+				case PERSONA_FISICA:
+					grups.add(PersonaFisica.class);
+					break;
+				case PERSONA_JURIDICA:
+					grups.add(PersonaJuridica.class);
+					break;
+				case ADMINISTRACIO:
+					grups.add(Administracio.class);
+					break;
 			}
 		}
 		new ValidationHelper(validator).isValid(
 				interessatCommand,
 				bindingResult,
 				grups.toArray(new Class[grups.size()]));
+		
+		List<Class<?>> grupsDomiciliTipus = new ArrayList<Class<?>>();
+		if (interessatCommand.getDomiciliTipusEnum() != null) {
+			DomiciliTipusEnumDto domiciliTipusEnum = DomiciliTipusEnumDto.valueOf(interessatCommand.getDomiciliTipusEnum());
+			switch (domiciliTipusEnum) {
+				case NACIONAL_ESTRANGER:
+					grupsDomiciliTipus.add(NacionalEstranger.class);
+					break;
+				case APARTAT_CORREUS:
+					grupsDomiciliTipus.add(ApartatCorreus.class);
+					break;
+				case SENSE_NORMALITZAR:
+					grupsDomiciliTipus.add(SenseNormalitzar.class);
+					break;
+			}
+		}
+		new ValidationHelper(validator).isValid(
+				interessatCommand,
+				bindingResult,
+				grupsDomiciliTipus.toArray(new Class[grupsDomiciliTipus.size()]));
 		
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("expedientId", expedientId);

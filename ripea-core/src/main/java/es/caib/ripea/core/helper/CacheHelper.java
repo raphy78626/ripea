@@ -392,7 +392,7 @@ public class CacheHelper {
 	
 //	@Cacheable(value = "municipis")
 //	public List<MunicipiDto> findMunicipis() {
-//		return conversioTipusHelper.convertirList(
+//		return conversioTipusHelper.convertirList(sud
 //				pluginHelper.dadesExternesMunicipisFindAll(),
 //				MunicipiDto.class);
 ////		return pluginHelper.findLocalitats();

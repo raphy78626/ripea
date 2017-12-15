@@ -104,6 +104,8 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	private Long representantIdentificador;
 	
 	
+	@Column(name = "dom_tipus", length = 30)
+	protected String domiciliTipusEnum;
 	@Column(name = "dom_apartat", length = 10)
 	protected String domiciliApartatCorreus;
 	@Column(name = "dom_bloc", length = 50)
@@ -122,6 +124,8 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	protected String domiciliLinea2;
 	@Column(name = "dom_mun_codine", length = 5)
 	protected String domiciliMunicipiCodiIne;
+	@Column(name = "dom_num_tipus", length = 30)
+	protected String domiciliNumeracioTipus;
 	@Column(name = "dom_num_num", length = 10)
 	protected String domiciliNumeracioNumero;
 	@Column(name = "dom_pai_codiso", length = 3)
@@ -145,6 +149,7 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	
 	
 	public void updateAdresa(
+			String domiciliTipusEnum,
 			String domiciliApartatCorreus,
 			String domiciliBloc,
 			Integer domiciliCie,
@@ -154,6 +159,7 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 			String domiciliLinea1,
 			String domiciliLinea2,
 			String domiciliMunicipiCodiIne,
+			String domiciliNumeracioTipus,
 			String domiciliNumeracioNumero,
 			String domiciliPaisCodiIso,
 			String domiciliPlanta,
@@ -164,6 +170,7 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 			String domiciliNumeracioPuntKm,
 			String domiciliViaNom,
 			NotificacioEntregaPostalViaTipusEnum domiciliViaTipus) {
+		this.domiciliTipusEnum = domiciliTipusEnum;
 		this.domiciliApartatCorreus = domiciliApartatCorreus;
 		this.domiciliBloc = domiciliBloc;
 		this.domiciliCie = domiciliCie;
@@ -173,6 +180,7 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		this.domiciliLinea1 = domiciliLinea1;
 		this.domiciliLinea2 = domiciliLinea2;
 		this.domiciliMunicipiCodiIne = domiciliMunicipiCodiIne;
+		this.domiciliNumeracioTipus = domiciliNumeracioTipus;
 		this.domiciliNumeracioNumero = domiciliNumeracioNumero;
 		this.domiciliPaisCodiIso = domiciliPaisCodiIso;
 		this.domiciliPlanta = domiciliPlanta;
@@ -255,6 +263,24 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		this.version = version;
 	}
 	
+	
+	
+	public String getDomiciliTipusEnum() {
+		return domiciliTipusEnum;
+	}
+
+	public void setDomiciliTipusEnum(String domiciliTipusEnum) {
+		this.domiciliTipusEnum = domiciliTipusEnum;
+	}
+
+	public String getDomiciliNumeracioTipus() {
+		return domiciliNumeracioTipus;
+	}
+
+	public void setDomiciliNumeracioTipus(String domiciliNumeracioTipus) {
+		this.domiciliNumeracioTipus = domiciliNumeracioTipus;
+	}
+
 	public String getDomiciliApartatCorreus() {
 		return domiciliApartatCorreus;
 	}

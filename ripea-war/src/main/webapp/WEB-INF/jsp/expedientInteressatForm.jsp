@@ -1,3 +1,4 @@
+<%@page import="es.caib.ripea.core.api.dto.ViaTipusEnumDto"%>
 <%@page import="es.caib.ripea.war.helper.EnumHelper"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib tagdir="/WEB-INF/tags/ripea" prefix="rip"%>
@@ -14,6 +15,15 @@ Boolean esRepresentant = (Boolean)request.getAttribute("esRepresentant");
 if (esRepresentant != null && esRepresentant) {
 	tipusEnum.remove(2);
 }
+java.util.List<EnumHelper.HtmlOption> domiciliTipusEnum = EnumHelper.getOptionsForEnum(
+		es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.class,
+		"interessat.tipus.domicili.enum.");
+java.util.List<EnumHelper.HtmlOption> viaTipusEnum = EnumHelper.getOptionsForEnum(
+		es.caib.ripea.core.api.dto.ViaTipusEnumDto.class,
+		"registre.interessat.tipus.via.enum.");
+java.util.List<EnumHelper.HtmlOption> numeracioTipusEnum = EnumHelper.getOptionsForEnum(
+		es.caib.ripea.core.api.dto.NumeracioTipusEnumDto.class,
+		"registre.interessat.tipus.numeracio.enum.");
 pageContext.setAttribute(
 		"tipusEnumOptions",
 		tipusEnum);
@@ -27,6 +37,15 @@ pageContext.setAttribute(
 		es.caib.ripea.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto.class,
 				"interessat.idioma.enum."));
+pageContext.setAttribute(
+		"domiciliTipusEnum",
+		domiciliTipusEnum);
+pageContext.setAttribute(
+		"viaTipusEnum",
+		viaTipusEnum);
+pageContext.setAttribute(
+		"numeracioTipusEnum",
+		numeracioTipusEnum);
 %>
 
 <c:set var="titol">
@@ -213,6 +232,42 @@ $(document).ready(function() {
  		canviVisibilitat(tipusInt);
  		
  	});
+ 	
+	if ("${empty interessatCommand.domiciliTipusEnum}" || "${interessatCommand.domiciliTipusEnum}" == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.NACIONAL_ESTRANGER%>') {
+		$('.POBLACIO').removeClass('ocult');
+		$('.NE').removeClass('ocult');
+		$('.AC').addClass('ocult');
+		$('.NN').addClass('ocult');
+	} else if ("${interessatCommand.domiciliTipusEnum}" == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.APARTAT_CORREUS%>') {
+		$('.POBLACIO').removeClass('ocult');
+		$('.NE').addClass('ocult');
+		$('.AC').removeClass('ocult');
+		$('.NN').addClass('ocult');
+	} else if ("${interessatCommand.domiciliTipusEnum}" == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.SENSE_NORMALITZAR%>') {
+		$('.POBLACIO').addClass('ocult');
+		$('.NE').addClass('ocult');
+		$('.AC').addClass('ocult');
+		$('.NN').removeClass('ocult');
+	}
+	$('select#domiciliTipusEnum').change(function() {
+		if (this.value == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.NACIONAL_ESTRANGER%>') {
+			$('.POBLACIO').removeClass('ocult');
+			$('.NE').removeClass('ocult');
+			$('.AC').addClass('ocult');
+			$('.NN').addClass('ocult');
+ 		} else if (this.value == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.APARTAT_CORREUS%>') {
+ 			$('.POBLACIO').removeClass('ocult');
+ 			$('.NE').addClass('ocult');
+ 			$('.AC').removeClass('ocult');
+			$('.NN').addClass('ocult');
+ 		} else if (this.value == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.SENSE_NORMALITZAR%>') {
+ 			$('.POBLACIO').addClass('ocult');
+ 			$('.NE').addClass('ocult');
+			$('.AC').addClass('ocult');
+			$('.NN').removeClass('ocult');
+ 		}
+	});
+	
  	if ($("#id").val() != '') {
 		$('select#tipus').prop( "disabled", true );
 	}
@@ -300,8 +355,8 @@ $(document).ready(function() {
 			});
  	 	} else {
  	 		var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
- 	 		$('#domiciliMunicipiCodiIne').select2("destroy");
- 	 		$('#domiciliMunicipiCodiIne').select2(select2Options);
+ 	 		$('#municipi').select2("destroy");
+ 	 		$('#municipi').select2(select2Options);
  	 	}
  	});
 
@@ -487,21 +542,19 @@ function canviVisibilitat(tipus) {
 	
 	<form:form id="interessatform" action="${formAction}" method="post" cssClass="form-horizontal" commandName="interessatCommand">
 		
-		<form:hidden path="entitatId"/>
-		<form:hidden path="id"/>
-		<input type="hidden" id="id"/>
-		<!-- FILA: Tipus d'interessat -->
-		<rip:inputSelect name="tipus" textKey="interessat.form.camp.tipus" optionItems="${tipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" labelSize="2" />
-		
-		<ul class="nav nav-tabs" role="tablist">
-			<li role="presentation" class="active"><a href="#dades" aria-controls="dades" role="tab" data-toggle="tab"><spring:message code="interessat.form.camp.tab.dades"/></a></li>
-			<li role="presentation"><a href="#adresa" aria-controls="avisofici" role="tab" data-toggle="tab"><spring:message code="interessat.form.camp.tab.adresa"/></a></li>
+		<ul class="nav nav-tabs">
+		  <li class="active"><a data-toggle="tab" href="#dades"><spring:message code="interessat.form.camp.tab.dades"/></a></li>
+		  <li><a data-toggle="tab" href="#adresa"><spring:message code="interessat.form.camp.tab.adresa"/></a></li>
 		</ul>
-		<br/>
 		
 		<div class="tab-content">
-			<div role="tabpanel" class="tab-pane active" id="dades">
-			
+  			<div id="dades" class="tab-pane fade in active">
+  
+				<form:hidden path="entitatId"/>
+				<form:hidden path="id"/>
+				<input type="hidden" id="id"/>
+				<!-- FILA: Tipus d'interessat -->
+				<rip:inputSelect name="tipus" textKey="interessat.form.camp.tipus" optionItems="${tipusEnumOptions}" optionTextKeyAttribute="text" optionValueAttribute="value" labelSize="2" />
 				<!-- FILA: Administració -->
 				<!-- Filtre de administració -->
 				<div class="row ">
@@ -537,6 +590,17 @@ function canviVisibilitat(tipus) {
 				</div>	
 				<!-- FILA: Raó social -->
 				<rip:inputText name="raoSocial" textKey="interessat.form.camp.raoSocial" required="true" labelSize="2"/>
+				<!-- FILA: País i província -->
+				<div class="row">
+					<div class="col-xs-6"><rip:inputSelect name="domiciliPaisCodiIso" textKey="interessat.form.camp.pais" optionItems="${paisos}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+					<div class="col-xs-6"><rip:inputSelect name="domiciliProvinciaCodi" textKey="interessat.form.camp.provincia" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+				</div>
+				<!-- FILA: Municipi i codi postal -->
+				<div class="row">
+					<div class="col-xs-6"><rip:inputSelect name="domiciliMunicipiCodiIne" textKey="interessat.form.camp.municipi" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+		<%-- 			<div class="col-xs-6"><rip:inputText name="municipi" textKey="interessat.form.camp.municipi" required="true"/></div> --%>
+					<div class="col-xs-6"><rip:inputText name="domiciliCodiPostal" textKey="interessat.form.camp.codiPostal" required="true"/></div>
+				</div>
 				<!-- FILA: Correu electrònic i telèfon -->
 				<div class="row">
 					<div class="col-xs-6"><rip:inputText name="email" textKey="interessat.form.camp.email"/></div>
@@ -550,30 +614,54 @@ function canviVisibilitat(tipus) {
 					<div class="col-xs-6"><rip:inputCheckbox name="notificacioAutoritzat" textKey="interessat.form.camp.autoritzat" labelSize="10"/></div>
 				</div>
 				
-				<div id="modal-botons" class="well">
-					<button id="btnSave" type="button" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-		 			<a href="<c:url value="/contingut/${expedientId}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-				</div>
-		
 			</div>
-			<div role="tabpanel" class="tab-pane" id="adresa">
-				<!-- FILA: País i província -->
-				<div class="row">
-					<div class="col-xs-6"><rip:inputSelect name="domiciliPaisCodiIso" textKey="interessat.form.camp.pais" optionItems="${paisos}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
-					<div class="col-xs-6"><rip:inputSelect name="domiciliProvinciaCodi" textKey="interessat.form.camp.provincia" optionItems="${provincies}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
+			<div id="adresa" class="tab-pane">
+				<rip:inputSelect name="domiciliTipusEnum" textKey="interessat.form.camp.tipus.domicili" optionItems="${domiciliTipusEnum}" optionTextKeyAttribute="text" optionValueAttribute="value" labelSize="2" />
+				
+				<div class="POBLACIO row">
+					<div class="col-xs-12"><rip:inputText name="domiciliPoblacio" textKey="interessat.form.camp.poblacio" required="true" labelSize="2" /></div>
 				</div>
-				<!-- FILA: Municipi i codi postal -->
-				<div class="row">
-					<div class="col-xs-6"><rip:inputSelect name="domiciliMunicipiCodiIne" textKey="interessat.form.camp.municipi" optionItems="${municipis}" optionTextAttribute="nom" optionValueAttribute="codi" emptyOption="true" optionMinimumResultsForSearch="6" required="true"/></div>
-					<div class="col-xs-6"><rip:inputText name="domiciliPoblacio" textKey="interessat.form.camp.poblacio"/></div>
+				<div class="NE">
+					<div class="row">
+						<div class="col-xs-6"><rip:inputSelect name="domiciliViaTipus" textKey="interessat.form.camp.via.tipus" optionItems="${viaTipusEnum}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
+						<div class="col-xs-6"><rip:inputText name="domiciliViaNom" textKey="interessat.form.camp.via.nom" required="true" /></div>
+					</div>
+					<div class="row">
+						<div class="col-xs-6"><rip:inputSelect name="domiciliNumeracioTipus" textKey="interessat.form.camp.numeracio.tipus" optionItems="${numeracioTipusEnum}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
+						<div class="col-xs-6"><rip:inputText name="domiciliNumeracioValor" textKey="interessat.form.camp.numeracio.valor" required="true" /></div>
+					</div>
+					<div class="row">
+						<div class="col-xs-6"><rip:inputText name="domiciliBloc" textKey="interessat.form.camp.bloc" /></div>
+						<div class="col-xs-6"><rip:inputText name="domiciliEscala" textKey="interessat.form.camp.escala" /></div>
+					</div>
+					<div class="row">
+						<div class="col-xs-6"><rip:inputText name="domiciliPlanta" textKey="interessat.form.camp.planta" /></div>
+						<div class="col-xs-6"><rip:inputText name="domiciliPorta" textKey="interessat.form.camp.porta" /></div>
+					</div>
+					<div class="row">
+						<div class="col-xs-6"><rip:inputText name="domiciliPortal" textKey="interessat.form.camp.portal" /></div>
+						<div class="col-xs-6"><rip:inputText name="domiciliComplement" textKey="interessat.form.camp.complement" /></div>
+					</div>
 				</div>
-				<div class="row">
-					<div class="col-xs-6"><rip:inputText name="domiciliLinea1" textKey="interessat.form.camp.domiciliLinea1"/></div>
-					<div class="col-xs-6"><rip:inputText name="domiciliLinea2" textKey="interessat.form.camp.domiciliLinea2"/></div>
+				<div class="AC">
+					<div class="row">
+						<div class="col-xs-6"><rip:inputText name="domiciliApartatCorreus" textKey="interessat.form.camp.apartat.correus" required="true" /></div>
+						<div class="col-xs-6"><rip:inputText name="domiciliCie" textKey="interessat.form.camp.codi.cie" /></div>
+					</div>
+				</div>
+				<div class="NN">
+					<div class="row">
+						<div class="col-xs-12"><rip:inputText name="domiciliLinea1" textKey="interessat.form.camp.linea1" required="true" labelSize="2" /></div>
+						<div class="col-xs-12"><rip:inputText name="domiciliLinea2" textKey="interessat.form.camp.linea2" required="true" labelSize="2" /></div>
+					</div>
 				</div>
 			</div>
 		</div>
 		
+		<div id="modal-botons" class="well">
+			<button id="btnSave" type="button" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+ 			<a href="<c:url value="/contingut/${expedientId}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+		</div>
 	</form:form>
 
 	<div class="rmodal"></div>

@@ -16,9 +16,6 @@
         <dependent-module archiveName="ripea-plugin-impl-0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ripea-plugin-impl/ripea-plugin-impl">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="arxiudigital-apirest-1.0.4.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/arxiudigital-apirest-1.0/arxiudigital-apirest-1.0">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="ripea-plugin-0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ripea-plugin/ripea-plugin">
             <dependency-type>uses</dependency-type>
         </dependent-module>

@@ -32,9 +32,9 @@ public class InteressatPaisValidator implements ConstraintValidator<InteressatPa
 			InteressatCommand interessat = (InteressatCommand)value;
 			boolean valid = true;
 			
-			if (interessat.getPais() != null) {
-				if ("724".equals(interessat.getPais())) {
-					if (interessat.getProvincia() == null || "".equals(interessat.getProvincia())) {
+			if (interessat.getDomiciliPaisCodiIso() != null) {
+				if ("724".equals(interessat.getDomiciliPaisCodiIso())) {
+					if (interessat.getDomiciliProvinciaCodi() == null || "".equals(interessat.getDomiciliProvinciaCodi())) {
 						context
 							.buildConstraintViolationWithTemplate(
 									MessageHelper.getInstance().getMessage("interessat.form.valid.provincia"))
@@ -42,7 +42,7 @@ public class InteressatPaisValidator implements ConstraintValidator<InteressatPa
 							.addConstraintViolation();
 						valid = false;
 					}
-					if (interessat.getMunicipi() == null || "".equals(interessat.getMunicipi())) {
+					if (interessat.getDomiciliMunicipiCodiIne() == null || "".equals(interessat.getDomiciliMunicipiCodiIne())) {
 						context
 							.buildConstraintViolationWithTemplate(
 									MessageHelper.getInstance().getMessage("interessat.form.valid.municipi"))

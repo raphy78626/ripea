@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -118,7 +117,7 @@ public class DocumentNotificacioCommand {
 	@NotEmpty(groups = {Electronica.class})
 	@Size(max = 6, groups = {Electronica.class})
 	private String procedimentCodiSia;
-	private Integer retardPostal;
+	private String retardPostal;
 	
 	@NotEmpty(groups = {Electronica.class})
 	@Size(max = 40, groups = {Electronica.class})
@@ -129,6 +128,7 @@ public class DocumentNotificacioCommand {
 	private boolean documentGenerarCsv;
 	
 	private List<Long> annexos;
+	
 	
 	
 	public Long getId() {
@@ -418,10 +418,10 @@ public class DocumentNotificacioCommand {
 		this.procedimentCodiSia = procedimentCodiSia;
 	}
 	
-	public Integer getRetardPostal() {
+	public String getRetardPostal() {
 		return retardPostal;
 	}
-	public void setRetardPostal(Integer retardPostal) {
+	public void setRetardPostal(String retardPostal) {
 		this.retardPostal = retardPostal;
 	}
 	

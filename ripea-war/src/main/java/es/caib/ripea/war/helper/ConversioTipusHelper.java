@@ -6,11 +6,14 @@ package es.caib.ripea.war.helper;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
+import ma.glasnost.orika.metadata.Type;
 
 /**
  * Helper per a convertir entre diferents formats de documents.
@@ -21,7 +24,13 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 public class ConversioTipusHelper {
 
 	private static MapperFactory mapperFactory;
-
+	
+	
+	public ConversioTipusHelper() {
+		mapperFactory = new DefaultMapperFactory.Builder().build();
+	}
+	
+	
 	public static <T> T convertir(Object source, Class<T> targetType) {
 		if (source == null)
 			return null;
@@ -41,8 +50,10 @@ public class ConversioTipusHelper {
 
 
 	private static MapperFacade getMapperFacade() {
-		if (mapperFactory == null)
+		if (mapperFactory == null) {
 			mapperFactory = new DefaultMapperFactory.Builder().build();
+		}
+		
 		return mapperFactory.getMapperFacade();
 	}
 

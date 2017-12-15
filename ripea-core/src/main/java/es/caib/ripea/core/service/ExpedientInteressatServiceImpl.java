@@ -156,6 +156,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					expedient,
 					null).
 					adresa(
+							interessatPersonaFisicaDto.getDomiciliTipusEnum(),
 							interessatPersonaFisicaDto.getDomiciliApartatCorreus(),
 							interessatPersonaFisicaDto.getDomiciliBloc(),
 							interessatPersonaFisicaDto.getDomiciliCie(),
@@ -165,6 +166,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 							interessatPersonaFisicaDto.getDomiciliLinea1(),
 							interessatPersonaFisicaDto.getDomiciliLinea2(),
 							interessatPersonaFisicaDto.getDomiciliMunicipiCodiIne(),
+							interessatPersonaFisicaDto.getDomiciliNumeracioTipus(),
 							interessatPersonaFisicaDto.getDomiciliNumeracioNumero(),
 							interessatPersonaFisicaDto.getDomiciliPaisCodiIso(),
 							interessatPersonaFisicaDto.getDomiciliPlanta(),
@@ -191,6 +193,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					expedient,
 					null).
 					adresa(
+							interessatPersonaJuridicaDto.getDomiciliTipusEnum(),
 							interessatPersonaJuridicaDto.getDomiciliApartatCorreus(),
 							interessatPersonaJuridicaDto.getDomiciliBloc(),
 							interessatPersonaJuridicaDto.getDomiciliCie(),
@@ -200,6 +203,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 							interessatPersonaJuridicaDto.getDomiciliLinea1(),
 							interessatPersonaJuridicaDto.getDomiciliLinea2(),
 							interessatPersonaJuridicaDto.getDomiciliMunicipiCodiIne(),
+							interessatPersonaJuridicaDto.getDomiciliNumeracioTipus(),
 							interessatPersonaJuridicaDto.getDomiciliNumeracioNumero(),
 							interessatPersonaJuridicaDto.getDomiciliPaisCodiIso(),
 							interessatPersonaJuridicaDto.getDomiciliPlanta(),
@@ -228,6 +232,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					expedient,
 					null).
 					adresa(
+							interessatAdministracioDto.getDomiciliTipusEnum(),
 							interessatAdministracioDto.getDomiciliApartatCorreus(),
 							interessatAdministracioDto.getDomiciliBloc(),
 							interessatAdministracioDto.getDomiciliCie(),
@@ -237,6 +242,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 							interessatAdministracioDto.getDomiciliLinea1(),
 							interessatAdministracioDto.getDomiciliLinea2(),
 							interessatAdministracioDto.getDomiciliMunicipiCodiIne(),
+							interessatAdministracioDto.getDomiciliNumeracioTipus(),
 							interessatAdministracioDto.getDomiciliNumeracioNumero(),
 							interessatAdministracioDto.getDomiciliPaisCodiIso(),
 							interessatAdministracioDto.getDomiciliPlanta(),
@@ -363,6 +369,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatPersonaFisicaDto.getPreferenciaIdioma(),
 					interessatPersonaFisicaDto.getNotificacioAutoritzat());
 			interessatEntity.updateAdresa(
+					interessatPersonaFisicaDto.getDomiciliTipusEnum(),
 					interessatPersonaFisicaDto.getDomiciliApartatCorreus(),
 					interessatPersonaFisicaDto.getDomiciliBloc(),
 					interessatPersonaFisicaDto.getDomiciliCie(),
@@ -372,6 +379,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatPersonaFisicaDto.getDomiciliLinea1(),
 					interessatPersonaFisicaDto.getDomiciliLinea2(),
 					interessatPersonaFisicaDto.getDomiciliMunicipiCodiIne(),
+					interessatPersonaFisicaDto.getDomiciliNumeracioTipus(),
 					interessatPersonaFisicaDto.getDomiciliNumeracioNumero(),
 					interessatPersonaFisicaDto.getDomiciliPaisCodiIso(),
 					interessatPersonaFisicaDto.getDomiciliPlanta(),
@@ -396,6 +404,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatPersonaJuridicaDto.getPreferenciaIdioma(),
 					interessatPersonaJuridicaDto.getNotificacioAutoritzat());
 			interessatEntity.updateAdresa(
+					interessatPersonaJuridicaDto.getDomiciliTipusEnum(),
 					interessatPersonaJuridicaDto.getDomiciliApartatCorreus(),
 					interessatPersonaJuridicaDto.getDomiciliBloc(),
 					interessatPersonaJuridicaDto.getDomiciliCie(),
@@ -405,6 +414,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatPersonaJuridicaDto.getDomiciliLinea1(),
 					interessatPersonaJuridicaDto.getDomiciliLinea2(),
 					interessatPersonaJuridicaDto.getDomiciliMunicipiCodiIne(),
+					interessatPersonaJuridicaDto.getDomiciliNumeracioTipus(),
 					interessatPersonaJuridicaDto.getDomiciliNumeracioNumero(),
 					interessatPersonaJuridicaDto.getDomiciliPaisCodiIso(),
 					interessatPersonaJuridicaDto.getDomiciliPlanta(),
@@ -431,6 +441,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatAdministracioDto.getPreferenciaIdioma(),
 					interessatAdministracioDto.getNotificacioAutoritzat());
 			interessatEntity.updateAdresa(
+					interessatAdministracioDto.getDomiciliTipusEnum(),
 					interessatAdministracioDto.getDomiciliApartatCorreus(),
 					interessatAdministracioDto.getDomiciliBloc(),
 					interessatAdministracioDto.getDomiciliCie(),
@@ -440,6 +451,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					interessatAdministracioDto.getDomiciliLinea1(),
 					interessatAdministracioDto.getDomiciliLinea2(),
 					interessatAdministracioDto.getDomiciliMunicipiCodiIne(),
+					interessatAdministracioDto.getDomiciliNumeracioTipus(),
 					interessatAdministracioDto.getDomiciliNumeracioNumero(),
 					interessatAdministracioDto.getDomiciliPaisCodiIso(),
 					interessatAdministracioDto.getDomiciliPlanta(),
