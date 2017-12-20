@@ -173,11 +173,11 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 	@Column(name = "proces_error_desc", length = 2048)
 	private String processamentErrorDescripcio;
 
-	@Column(name = "doc_hash", length = 40) // , nullable = false)
+	@Column(name = "doc_hash", length = 40, nullable = false)
 	private String documentHash;
-	@Column(name = "doc_normalitzat") // , nullable = false)
+	@Column(name = "doc_normalitzat", nullable = false)
 	private boolean documentNormalitzat;
-	@Column(name = "doc_gen_csv") // , nullable = false)
+	@Column(name = "doc_gen_csv", nullable = false)
 	private boolean documentGenerarCsv;
 
 	public DocumentNotificacioTipusEnumDto getTipus() {
