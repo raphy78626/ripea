@@ -11,8 +11,9 @@ package es.caib.ripea.core.api.dto;
  */
 public enum DomiciliTipusEnumDto {
 
-	NACIONAL_ESTRANGER,
-	APARTAT_CORREUS,
-	SENSE_NORMALITZAR
+	NACIONAL,
+    ESTRANGER,
+    APARTAT_CORREUS,
+    SENSE_NORMALITZAR;
 	
 }

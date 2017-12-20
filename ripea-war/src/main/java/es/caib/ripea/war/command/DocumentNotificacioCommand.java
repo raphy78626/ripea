@@ -19,8 +19,9 @@ import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.core.api.dto.NotificacioEnviamentTipusEnumDto;
-import es.caib.ripea.core.entity.ServeiTipusEnum;
+import es.caib.ripea.core.api.dto.ServeiTipusEnumDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
+import es.caib.ripea.war.validation.StringNumeric;
 
 /**
  * Command per a gestionar les notificacions de documents.
@@ -33,23 +34,17 @@ public class DocumentNotificacioCommand {
 	@NotNull
 	private DocumentNotificacioTipusEnumDto tipus;
 	private DocumentEnviamentEstatEnumDto estat;
-	@NotEmpty(groups = {Create.class, Update.class})
-	@Size(max = 64, groups = {Create.class, Update.class})
-	private String assumpte;
-	@Size(groups = {Create.class, Update.class}, max = 256)
-	private String observacions;
 	
 	private Date caducitat;
-	@NotEmpty(groups = {Electronica.class})
+	@NotEmpty(groups = {Create.class, Update.class, Electronica.class})
 	@Size(max = 50, groups = {Electronica.class})
-	private String concepte;
+	private String assumpte;
 	@Size(max = 100, groups = {Electronica.class})
-	private String descripcio;
+	private String observacions;
 	@NotEmpty(groups = {Electronica.class})
 	@Size(max = 9, groups = {Electronica.class})
 	private String emisorDir3Codi;
 	private Date enviamentDataProgramada;
-	@NotEmpty(groups = {Electronica.class})
 	private NotificacioEnviamentTipusEnumDto enviamentTipus;
 	
 	@NotNull(groups = {Electronica.class})
@@ -61,7 +56,7 @@ public class DocumentNotificacioCommand {
 	
 	@Size(max = 20, groups = {Electronica.class})
 	private String notificaReferencia;
-	private ServeiTipusEnum serveiTipus;
+	private ServeiTipusEnumDto serveiTipus;
     
 	@Size(max = 100, groups = {Electronica.class})
 	private String titularNom;
@@ -89,42 +84,41 @@ public class DocumentNotificacioCommand {
 	private String pagadorCorreusCodiClientFacturacio;
 	private Date pagadorCorreusDataVigencia;
 	
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 10)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 10, groups = {Electronica.class})
 	private String seuExpedientSerieDocumental;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 10)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 10, groups = {Electronica.class})
 	private String seuExpedientUnitatOrganitzativa;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 52)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 52, groups = {Electronica.class})
 	private String seuExpedientIdentificadorEni;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 256, groups = {Electronica.class})
 	private String seuExpedientTitol;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 256, groups = {Electronica.class})
 	private String seuRegistreOficina;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 256, groups = {Electronica.class})
 	private String seuRegistreLlibre;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 256, groups = {Electronica.class})
 	private String seuIdioma;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 256, groups = {Electronica.class})
 	private String seuAvisTitol;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 256, groups = {Electronica.class})
 	private String seuAvisText;
 	@Size(max = 256, groups = {Electronica.class})
 	private String seuAvisTextMobil;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 256, groups = {Electronica.class})
 	private String seuOficiTitol;
-	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
+	@NotEmpty(groups = {Electronica.class}) @Size(max = 256, groups = {Electronica.class})
 	private String seuOficiText;
 	
 	@NotEmpty(groups = {Electronica.class})
 	@Size(max = 6, groups = {Electronica.class})
 	private String procedimentCodiSia;
+	@StringNumeric(groups = {Electronica.class})
 	private String retardPostal;
 	
 	@NotEmpty(groups = {Electronica.class})
 	@Size(max = 40, groups = {Electronica.class})
 	private String documentHash;
-	@NotEmpty(groups = {Electronica.class})
 	private boolean documentNormalitzat;
-	@NotEmpty(groups = {Electronica.class})
 	private boolean documentGenerarCsv;
 	
 	private List<Long> annexos;
@@ -152,20 +146,6 @@ public class DocumentNotificacioCommand {
 		this.estat = estat;
 	}
 	
-	public String getAssumpte() {
-		return assumpte;
-	}
-	public void setAssumpte(String assumpte) {
-		this.assumpte = assumpte;
-	}
-	
-	public String getObservacions() {
-		return observacions;
-	}
-	public void setObservacions(String observacions) {
-		this.observacions = observacions;
-	}
-	
 	public Date getCaducitat() {
 		return caducitat;
 	}
@@ -173,18 +153,17 @@ public class DocumentNotificacioCommand {
 		this.caducitat = caducitat;
 	}
 	
-	public String getConcepte() {
-		return concepte;
+	public String getAssumpte() {
+		return assumpte;
 	}
-	public void setConcepte(String concepte) {
-		this.concepte = concepte;
+	public void setAssumpte(String assumpte) {
+		this.assumpte = assumpte;
 	}
-	
-	public String getDescripcio() {
-		return descripcio;
+	public String getObservacions() {
+		return observacions;
 	}
-	public void setDescripcio(String descripcio) {
-		this.descripcio = descripcio;
+	public void setObservacions(String observacions) {
+		this.observacions = observacions;
 	}
 	
 	public String getEmisorDir3Codi() {
@@ -236,10 +215,10 @@ public class DocumentNotificacioCommand {
 		this.notificaReferencia = notificaReferencia;
 	}
 	
-	public ServeiTipusEnum getServeiTipus() {
+	public ServeiTipusEnumDto getServeiTipus() {
 		return serveiTipus;
 	}
-	public void setServeiTipus(ServeiTipusEnum serveiTipus) {
+	public void setServeiTipus(ServeiTipusEnumDto serveiTipus) {
 		this.serveiTipus = serveiTipus;
 	}
 	

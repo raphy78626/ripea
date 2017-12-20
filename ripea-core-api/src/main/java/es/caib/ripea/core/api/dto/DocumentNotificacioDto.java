@@ -15,8 +15,6 @@ public class DocumentNotificacioDto extends DocumentEnviamentDto {
 	private DocumentNotificacioTipusEnumDto tipus;
 	
 	private Date caducitat;
-	private String concepte;
-	private String descripcio;
 	private String emisorDir3Codi;
 	private Date enviamentDataProgramada;
 	private NotificacioEnviamentTipusEnumDto enviamentTipus;
@@ -87,20 +85,6 @@ public class DocumentNotificacioDto extends DocumentEnviamentDto {
 	}
 	public void setCaducitat(Date caducitat) {
 		this.caducitat = caducitat;
-	}
-	
-	public String getConcepte() {
-		return concepte;
-	}
-	public void setConcepte(String concepte) {
-		this.concepte = concepte;
-	}
-	
-	public String getDescripcio() {
-		return descripcio;
-	}
-	public void setDescripcio(String descripcio) {
-		this.descripcio = descripcio;
 	}
 	
 	public String getEmisorDir3Codi() {

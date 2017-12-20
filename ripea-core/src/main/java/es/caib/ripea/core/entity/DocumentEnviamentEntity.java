@@ -62,12 +62,12 @@ public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {
 	@Column(name = "estat", nullable = false)
 	@Enumerated(EnumType.STRING)
 	protected DocumentEnviamentEstatEnumDto estat;
-	@Column(name = "assumpte", length = 256, nullable = false)
+	@Column(name = "assumpte", length = 50, nullable = false)
 	protected String assumpte;
 	@Column(name = "data_enviament", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	protected Date dataEnviament;
-	@Column(name = "observacions", length = 256)
+	@Column(name = "observacions", length = 100)
 	protected String observacions;
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "document_id")

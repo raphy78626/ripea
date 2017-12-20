@@ -12,6 +12,7 @@ import org.fundaciobit.plugins.utils.Base64;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
+import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.entity.DocumentEntity;
@@ -25,6 +26,7 @@ import es.caib.ripea.plugin.ciutada.CiutadaNotificacioResultat;
 import es.caib.ripea.plugin.notificacio.NotificacioDocument;
 import es.caib.ripea.plugin.notificacio.NotificacioEntregaDeh;
 import es.caib.ripea.plugin.notificacio.NotificacioEntregaPostal;
+import es.caib.ripea.plugin.notificacio.NotificacioEntregaPostalTipusEnum;
 import es.caib.ripea.plugin.notificacio.NotificacioEnviament;
 import es.caib.ripea.plugin.notificacio.NotificacioEnviamentEstatEnum;
 import es.caib.ripea.plugin.notificacio.NotificacioInformacioEnviament;
@@ -44,6 +46,8 @@ public class ExpedientHelper {
 
 	@Resource
 	private PluginHelper pluginHelper;
+	@Resource
+	private DocumentHelper documentHelper;
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
@@ -180,15 +184,17 @@ public class ExpedientHelper {
 			DocumentNotificacioEntity notificacio,
 			InteressatEntity destinatari) {
 		try {
-			DocumentEntity d = notificacio.getDocument();
+			FitxerDto fitxer = documentHelper.getFitxerAssociat(
+					notificacio.getDocument(),
+					null);
 			String referencia = pluginHelper.notibNotificacioEnviar(
 					ConversioTipusHelper.dateToXMLGregorianCalendar(
 							notificacio.getCaducitat()),
-					notificacio.getConcepte(),
-					notificacio.getDescripcio(),
+					notificacio.getAssumpte(),
+					notificacio.getObservacions(),
 					new NotificacioDocument(
-							d.getFitxerNom(),
-							Base64.encode(d.getFitxerContingut()),
+							fitxer.getNom(),
+							Base64.encode(fitxer.getContingut()),
 							notificacio.isDocumentGenerarCsv(),
 							notificacio.getDocumentHash(),
 							null,
@@ -207,7 +213,7 @@ public class ExpedientHelper {
 									notificacio.getDestinatariEmail(),
 									notificacio.getDestinatariTelefon()),
 							new NotificacioEntregaDeh(
-									notificacio.getProcedimentCodiSia(), 
+									notificacio.getDehNif(), 
 									notificacio.getDehObligat()),
 							new NotificacioEntregaPostal(
 									destinatari.getDomiciliApartatCorreus(),
@@ -230,7 +236,8 @@ public class ExpedientHelper {
 									destinatari.getDomiciliPortal(),
 									destinatari.getDomiciliProvinciaCodi(),
 									destinatari.getDomiciliNumeracioPuntKm(),
-									null,
+									NotificacioEntregaPostalTipusEnum.valueOf(
+											destinatari.getDomiciliTipusEnum()),
 									destinatari.getDomiciliViaNom(),
 									destinatari.getDomiciliViaTipus()),
 							null,

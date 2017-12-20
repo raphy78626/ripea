@@ -130,7 +130,10 @@ public class ExpedientInteressatController extends BaseUserController {
 		if (interessatCommand.getDomiciliTipusEnum() != null) {
 			DomiciliTipusEnumDto domiciliTipusEnum = DomiciliTipusEnumDto.valueOf(interessatCommand.getDomiciliTipusEnum());
 			switch (domiciliTipusEnum) {
-				case NACIONAL_ESTRANGER:
+				case NACIONAL:
+					grupsDomiciliTipus.add(NacionalEstranger.class);
+					break;
+				case ESTRANGER:
 					grupsDomiciliTipus.add(NacionalEstranger.class);
 					break;
 				case APARTAT_CORREUS:

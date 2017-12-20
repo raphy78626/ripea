@@ -238,6 +238,7 @@ public class DocumentController extends BaseUserController {
 		command.setSeuOficiTitol(metaExpedient.getNotificacioOficiTitol());
 		command.setSeuOficiText(metaExpedient.getNotificacioOficiText());
 		model.addAttribute(command);
+		
 		return "notificacioForm";
 	}
 

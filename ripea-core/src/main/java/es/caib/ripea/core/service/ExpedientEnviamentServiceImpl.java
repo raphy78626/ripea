@@ -188,8 +188,6 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				new Date(),
 				document,
 				notificacio.getCaducitat(),
-				notificacio.getConcepte(),
-				notificacio.getDescripcio(),
 				notificacio.getEmisorDir3Codi(),
 				notificacio.getEnviamentDataProgramada(),
 				NotificacioEnviamentTipusEnum.valueOf(notificacio.getEnviamentTipus().name()),
@@ -241,7 +239,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				documentNormalitzat(notificacio.isDocumentNormalitzat()).
 				build();
 		if (DocumentNotificacioTipusEnumDto.ELECTRONICA.equals(notificacio.getTipus())) {
-			expedientHelper.ciutadaNotificacioEnviar(
+			expedientHelper.notibNotificacioEnviar(
 					notificacioEntity,
 					interessat);
 		}
@@ -315,8 +313,6 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 				entity.getLlibreCodi(),
 				notificacio.getAssumpte(),
 				notificacio.getCaducitat(),
-				notificacio.getConcepte(),
-				notificacio.getDescripcio(),
 				notificacio.getEmisorDir3Codi(),
 				notificacio.getEnviamentDataProgramada(),
 				NotificacioEnviamentTipusEnum.valueOf(notificacio.getEnviamentTipus().name()),
@@ -503,13 +499,13 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 					true,
 					null,
 					null).build();
-			return expedientHelper.ciutadaNotificacioEnviar(
+			return expedientHelper.notibNotificacioEnviar(
 					notificacio,
 					destinatari);
 		} else if (
 				DocumentEnviamentEstatEnumDto.ENVIAT_OK.equals(notificacio.getEstat()) ||
 				DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR.equals(notificacio.getEstat())) {
-			return expedientHelper.ciutadaNotificacioComprovarEstat(
+			return expedientHelper.notibNotificacioComprovarEstat(
 					notificacio);
 		} else {
 			// Si arriba aquí vol dir que no hi ha res a reintentar
@@ -560,7 +556,7 @@ public class ExpedientEnviamentServiceImpl implements ExpedientEnviamentService 
 		logger.debug("Aplicant regles a " + pendents.size() + " notificacions pendents");
 		if (!pendents.isEmpty()) {
 			for (DocumentNotificacioEntity pendent: pendents) {
-				expedientHelper.ciutadaNotificacioComprovarEstat(
+				expedientHelper.notibNotificacioComprovarEstat(
 						pendent);
 			}
 		} else {

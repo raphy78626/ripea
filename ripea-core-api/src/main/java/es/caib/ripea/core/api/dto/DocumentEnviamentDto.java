@@ -17,9 +17,11 @@ public abstract class DocumentEnviamentDto extends AuditoriaDto {
 
 	private Long id;
 	private DocumentEnviamentEstatEnumDto estat;
+	
 	private String assumpte;
-	private Date dataEnviament;
 	private String observacions;
+	
+	private Date dataEnviament;
 	private DocumentDto document;
 	private List<DocumentDto> annexos;
 
@@ -43,17 +45,17 @@ public abstract class DocumentEnviamentDto extends AuditoriaDto {
 	public void setAssumpte(String assumpte) {
 		this.assumpte = assumpte;
 	}
-	public Date getDataEnviament() {
-		return dataEnviament;
-	}
-	public void setDataEnviament(Date dataEnviament) {
-		this.dataEnviament = dataEnviament;
-	}
 	public String getObservacions() {
 		return observacions;
 	}
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
+	}
+	public Date getDataEnviament() {
+		return dataEnviament;
+	}
+	public void setDataEnviament(Date dataEnviament) {
+		this.dataEnviament = dataEnviament;
 	}
 	public DocumentDto getDocument() {
 		return document;

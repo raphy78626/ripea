@@ -90,23 +90,34 @@ $(document).ready(function() {
 				<li role="presentation"><a href="#tab-pagadors" aria-controls="tab-pagadors" role="tab" data-toggle="tab"><spring:message code="notificacio.form.camp.tab.organismes.pagadors"/></a></li>
 				<li role="presentation"><a href="#tab-seu" aria-controls="tab-seu" role="tab" data-toggle="tab"><spring:message code="notificacio.form.camp.tab.seu"/></a></li>
 
-				<li role="presentation"><a href="#dades" aria-controls="dades" role="tab" data-toggle="tab"><spring:message code="notificacio.form.camp.tab.dades"/></a></li>
+				<%-- <li role="presentation"><a href="#dades" aria-controls="dades" role="tab" data-toggle="tab"><spring:message code="notificacio.form.camp.tab.dades"/></a></li>
 				<li role="presentation"><a href="#avisofici" aria-controls="avisofici" role="tab" data-toggle="tab"><spring:message code="notificacio.form.camp.tab.avisofici"/></a></li>
-				<li role="presentation"><a href="#annexos" aria-controls="annexos" role="tab" data-toggle="tab"><spring:message code="notificacio.form.camp.tab.annexos"/></a></li>
+				<li role="presentation"><a href="#annexos" aria-controls="annexos" role="tab" data-toggle="tab"><spring:message code="notificacio.form.camp.tab.annexos"/></a></li> --%>
 			</ul>
 			<br/>
 		</c:if>
 		<rip:inputHidden name="id"/>
 		<div class="tab-content">
 			<div role="tabpanel" class="tab-pane active" id="tab-informacio-general">
+				<c:choose>
+					<c:when test="${empty documentNotificacioCommand.id}">
+						<div class="row">
+							<div class="col-xs-12"><rip:inputSelect name="tipus" textKey="notificacio.form.camp.tipus" optionItems="${notificacioTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true" labelSize="2"/></div>
+						</div>
+					</c:when>
+					<c:otherwise>
+						<rip:inputHidden name="tipus"/>
+					</c:otherwise>
+				</c:choose>
 				<div class="row">
-					<div class="col-xs-12"><rip:inputSelect name="enviamentTipus" textKey="notificacio.form.camp.tipus.enviament" optionItems="${enviamentTipus}" optionTextKeyAttribute="text" optionValueAttribute="value" labelSize="2" /></div>
+					<div class="col-xs-6"><rip:inputSelect name="enviamentTipus" textKey="notificacio.form.camp.tipus.enviament" optionItems="${enviamentTipus}" optionTextKeyAttribute="text" optionValueAttribute="value" /></div>
+					<div class="col-xs-6"><rip:inputText name="emisorDir3Codi" textKey="notificacio.form.camp.dir3.emissor"/></div>
 				</div>
 				<div class="row">
-					<div class="col-xs-12"><rip:inputText name="concepte" textKey="notificacio.form.camp.concepte" labelSize="2"/></div>
+					<div class="col-xs-12"><rip:inputText name="assumpte" textKey="notificacio.form.camp.concepte" labelSize="2"/></div>
 				</div>
 				<div class="row">
-					<div class="col-xs-12"><rip:inputTextarea name="descripcio" textKey="notificacio.form.camp.descripcio" labelSize="2"/></div>
+					<div class="col-xs-12"><rip:inputTextarea name="observacions" textKey="notificacio.form.camp.descripcio" labelSize="2"/></div>
 				</div>
 				<div class="row">
 					<div class="col-xs-6"><rip:inputDate name="caducitat" textKey="notificacio.form.camp.data.caducitat"/></div>
@@ -160,7 +171,7 @@ $(document).ready(function() {
 				</div>
 				<div class="row"><div class="col-xs-12"><h4><spring:message code="notificacio.form.camp.enviament.entrega.deh"/></h4></div></div>
 				<div class="row">
-					<div class="col-xs-6"><rip:inputText name="dehNif" textKey="notificacio.form.camp.enviament.deh.codi.sia"/></div>
+					<div class="col-xs-6"><rip:inputText name="dehNif" textKey="notificacio.form.camp.enviament.deh.nif"/></div>
 					<div class="col-xs-6"><rip:inputCheckbox name="dehObligat" textKey="notificacio.form.camp.enviament.deh.obligat"/></div>
 				</div>
 			</div>
@@ -219,8 +230,7 @@ $(document).ready(function() {
 			</div>
 			
 			
-			
-			<div role="tabpanel" class="tab-pane" id="dades">
+			<%-- <div role="tabpanel" class="tab-pane" id="dades">
 				<c:choose>
 					<c:when test="${empty documentNotificacioCommand.id}">
 						<rip:inputSelect name="tipus" textKey="notificacio.form.camp.tipus" optionItems="${notificacioTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
@@ -243,7 +253,9 @@ $(document).ready(function() {
 			</div>
 			<div role="tabpanel" class="tab-pane" id="annexos">
 				<rip:inputSelect name="annexos" textKey="notificacio.form.camp.annexos" optionItems="${annexos}" emptyOption="true" optionValueAttribute="id" optionTextAttribute="nom" placeholderKey="notificacio.form.camp.annexos"/>
-			</div>
+			</div> --%>
+			
+			
 		</div>
 		<c:choose>
 			<c:when test="${empty document}"><c:set var="urlTancar"><c:url value="/contingut/${expedientId}"/></c:set></c:when>

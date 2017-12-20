@@ -57,21 +57,18 @@ public class NotificacioPluginNotib implements NotificacioPlugin {
 	
 	private String getBaseUrl() throws SistemaExternException {
 		String base_url = PropertiesHelper.getProperties().getProperty(KEY_BASE_URL);
-		if(base_url != null && !base_url.equals(""))
-			throw new SistemaExternException("No s'ha configurat la propietat: " + KEY_BASE_URL);
-		return base_url;
+		if(base_url != null && !base_url.equals("")) return base_url;
+		throw new SistemaExternException("No s'ha configurat la propietat: " + KEY_BASE_URL);
 	}
 	private String getUsername() throws SistemaExternException {
 		String username = PropertiesHelper.getProperties().getProperty(KEY_USERNAME);
-		if(username != null && !username.equals(""))
-			throw new SistemaExternException("No s'ha configurat la propietat: " + KEY_USERNAME);
-		return username;
+		if(username != null && !username.equals("")) return username;
+		throw new SistemaExternException("No s'ha configurat la propietat: " + KEY_USERNAME);
 	}
 	private String getPassword() throws SistemaExternException {
 		String password = PropertiesHelper.getProperties().getProperty(KEY_PASSWORD);
-		if(password != null && !password.equals(""))
-			throw new SistemaExternException("No s'ha configurat la propietat: " + KEY_PASSWORD);
-		return password;
+		if(password != null && !password.equals("")) return password;
+		throw new SistemaExternException("No s'ha configurat la propietat: " + KEY_PASSWORD);
 	}
 	
 	private NotificacioRestClient notificacioRestClient;
@@ -131,10 +128,18 @@ public class NotificacioPluginNotib implements NotificacioPlugin {
 				ConversioHelper.convertir(enviament.getTitular(), Persona.class));
         notificacio.getEnviaments().add(e);
 		
-		notificacio.setPagadorCie(
-				ConversioHelper.convertir(pagadorCie, PagadorCie.class));
-		notificacio.setPagadorPostal(
-				ConversioHelper.convertir(pagadorPostal, PagadorPostal.class));
+        PagadorCie pCie = new PagadorCie();
+        pCie.setDir3Codi(pagadorCie.getDir3Codi());
+        pCie.setContracteDataVigencia(pagadorCie.getContracteDataVigencia());
+		notificacio.setPagadorCie(pCie);
+		
+		PagadorPostal pPostal = new PagadorPostal();
+		pPostal.setContracteDataVigencia(pagadorPostal.getContracteDataVigencia());
+		pPostal.setContracteNum(pagadorPostal.getContracteNum());
+		pPostal.setDir3Codi(pagadorPostal.getDir3Codi());
+		pPostal.setFacturacioClientCodi(pagadorPostal.getFacturacioClientCodi());
+		notificacio.setPagadorPostal(pPostal);
+		
 		notificacio.setParametresSeu(
 				ConversioHelper.convertir(parametresSeu, ParametresSeu.class));
 		notificacio.setProcedimentCodi(procedimentCodi);

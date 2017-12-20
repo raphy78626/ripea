@@ -233,7 +233,12 @@ $(document).ready(function() {
  		
  	});
  	
-	if ("${empty interessatCommand.domiciliTipusEnum}" || "${interessatCommand.domiciliTipusEnum}" == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.NACIONAL_ESTRANGER%>') {
+	if ("${empty interessatCommand.domiciliTipusEnum}" || "${interessatCommand.domiciliTipusEnum}" == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.NACIONAL%>') {
+		$('.POBLACIO').removeClass('ocult');
+		$('.NE').removeClass('ocult');
+		$('.AC').addClass('ocult');
+		$('.NN').addClass('ocult');
+	} else if ("${empty interessatCommand.domiciliTipusEnum}" || "${interessatCommand.domiciliTipusEnum}" == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.ESTRANGER%>') {
 		$('.POBLACIO').removeClass('ocult');
 		$('.NE').removeClass('ocult');
 		$('.AC').addClass('ocult');
@@ -250,7 +255,12 @@ $(document).ready(function() {
 		$('.NN').removeClass('ocult');
 	}
 	$('select#domiciliTipusEnum').change(function() {
-		if (this.value == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.NACIONAL_ESTRANGER%>') {
+		if (this.value == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.NACIONAL%>') {
+			$('.POBLACIO').removeClass('ocult');
+			$('.NE').removeClass('ocult');
+			$('.AC').addClass('ocult');
+			$('.NN').addClass('ocult');
+ 		} else if (this.value == '<%=es.caib.ripea.core.api.dto.DomiciliTipusEnumDto.ESTRANGER%>') {
 			$('.POBLACIO').removeClass('ocult');
 			$('.NE').removeClass('ocult');
 			$('.AC').addClass('ocult');
