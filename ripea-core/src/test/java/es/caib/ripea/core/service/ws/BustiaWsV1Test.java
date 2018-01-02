@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.security.crypto.codec.Base64;
-
 import es.caib.ripea.core.api.registre.RegistreAnnex;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.registre.RegistreInteressat;
@@ -95,7 +93,7 @@ public class BustiaWsV1Test extends BustiaBaseTest {
 				
 				// Llegeix el contingut del fitxer i ho guarda en base 64
 				byte[] contingut = Files.readAllBytes(arxiuAux.toPath());
-				annex.setFitxerContingutBase64(new String(Base64.encode(contingut)));
+				annex.setFitxerContingut(contingut);
 
 				annexos.add(annex);
 			}
@@ -135,7 +133,7 @@ public class BustiaWsV1Test extends BustiaBaseTest {
 				
 				// Llegeix el contingut del fitxer i ho guarda en base 64
 				byte[] contingut = Files.readAllBytes(arxiuAux.toPath());
-				annex.setFitxerContingutBase64(new String(Base64.encode(contingut)));
+				annex.setFitxerContingut(contingut);
 			}
 		} catch (Exception e) {
 			System.err.println("Error adjuntant els annexos a l'anotació: " + e.getLocalizedMessage());

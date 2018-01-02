@@ -22,7 +22,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Test;
-import org.springframework.security.crypto.codec.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -119,7 +118,7 @@ public class BustiaWsAnotacioRegistreSistraTest extends BustiaBaseTest {
 				
 				// Llegeix el contingut del fitxer i ho guarda en base 64
 				byte[] contingut = Files.readAllBytes(arxiuAux.toPath());
-				annex.setFitxerContingutBase64(new String(Base64.encode(contingut)));
+				annex.setFitxerContingut(contingut);
 
 				annexos.add(annex);
 			}

@@ -104,6 +104,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private String assumpteDescripcio;
 	private String referencia;
 	private String expedientNumero;
+	private String numeroOrigen;
 	private String idiomaCodi;
 	private String idiomaDescripcio;
 	private String transportTipusCodi;
@@ -121,7 +122,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private String solicita;
 	private List<RegistreInteressat> interessats;
 	private List<RegistreAnnex> annexos;
-	private RegistreAnnex justificant;
+	private RegistreAnnexDetallDto justificant;
 
 
 
@@ -239,6 +240,12 @@ public class RegistreAnotacioDto extends ContingutDto {
 	public void setExpedientNumero(String expedientNumero) {
 		this.expedientNumero = expedientNumero;
 	}
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
+	public void setNumeroOrigen(String numeroOrigen) {
+		this.numeroOrigen = numeroOrigen;
+	}
 	public String getIdiomaCodi() {
 		return idiomaCodi;
 	}
@@ -342,10 +349,10 @@ public class RegistreAnotacioDto extends ContingutDto {
 		this.annexos = annexos;
 	}
 
-	public RegistreAnnex getJustificant() {
+	public RegistreAnnexDetallDto getJustificant() {
 		return justificant;
 	}
-	public void setJustificant(RegistreAnnex justificant) {
+	public void setJustificant(RegistreAnnexDetallDto justificant) {
 		this.justificant = justificant;
 	}
 

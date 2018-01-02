@@ -444,6 +444,7 @@ CREATE TABLE IPA_REGISTRE
   ASSUMPTE_DESC        character varying(100),
   REFERENCIA           character varying(16),
   EXPEDIENT_NUM        character varying(80),
+  NUM_ORIG 			   character varying(80),
   IDIOMA_CODI          character varying(2)     NOT NULL,
   IDIOMA_DESC          character varying(100),
   TRANSPORT_TIPUS_CODI character varying(2),
@@ -474,7 +475,8 @@ CREATE TABLE IPA_REGISTRE
   SISTRA_ID_PROC       character varying(100),
   DATA_ORIG            timestamp without time zone,
   OFICINA_ORIG_CODI    character varying(21),
-  OFICINA_ORIG_DESC    character varying(100)
+  OFICINA_ORIG_DESC    character varying(100),
+  JUSTIFICANT_ARXIU_UUID character varying(100)
 );
 
 

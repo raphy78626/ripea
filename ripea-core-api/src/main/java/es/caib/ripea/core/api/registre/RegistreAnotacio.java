@@ -33,6 +33,7 @@ public class RegistreAnotacio {
 	private String assumpteDescripcio;
 	private String referencia;
 	private String expedientNumero;
+	private String numeroOrigen;
 	private String idiomaCodi;
 	private String idiomaDescripcio;
 	private String transportTipusCodi;
@@ -165,6 +166,12 @@ public class RegistreAnotacio {
 	}
 	public void setExpedientNumero(String expedientNumero) {
 		this.expedientNumero = expedientNumero;
+	}
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
+	public void setNumeroOrigen(String numeroOrigen) {
+		this.numeroOrigen = numeroOrigen;
 	}
 	public String getIdiomaCodi() {
 		return idiomaCodi;

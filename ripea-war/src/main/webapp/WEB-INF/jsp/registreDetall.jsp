@@ -105,7 +105,7 @@ tr.clicable {
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.docfis"/></strong></td>
-									<td></td>
+									<td>${registre.documentacioFisicaCodi} - ${registre.documentacioFisicaDescripcio}</td>
 								</tr>
 								<tr>
 									<td><strong>
@@ -140,7 +140,7 @@ tr.clicable {
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.refext"/></strong></td>
-									<td></td>
+									<td>${registre.referencia}</td>
 									<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
 									<td>${registre.expedientNumero}</td>
 								</tr>
@@ -156,7 +156,7 @@ tr.clicable {
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.origen.num"/></strong></td>
-									<td></td>
+									<td>${registre.numeroOrigen}</td>
 									<td><strong><spring:message code="registre.detalls.camp.origen.data"/></strong></td>
 									<td><fmt:formatDate value="${registre.dataOrigen}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
 								</tr>
@@ -205,6 +205,67 @@ tr.clicable {
 					</table>
 				</div>
 			</div>
+			
+<!-- 			JUSTIFICANT -->
+			<c:if test="${not empty registre.justificant}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<spring:message code="registre.detalls.titol.justificant"/>
+							<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-justificant"><span class="fa fa-chevron-down"></span></button>
+						</h3>
+					</div>
+					<div id="collapse-justificant" class="panel-collapse collapse" role="tabpanel" aria-labelledby="justificant">
+						<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<td><strong><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></strong></td>
+								<td><c:if test="${not empty registre.justificant.dataCaptura}"><fmt:formatDate value="${registre.justificant.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if></td>
+							</tr>
+							<tr>
+								<td><strong><spring:message code="registre.annex.detalls.camp.eni.origen"/></strong></td>
+								<td><c:if test="${not empty registre.justificant.origenCiutadaAdmin}">${registre.justificant.origenCiutadaAdmin}</c:if></td>
+							</tr>
+							<tr>
+								<td><strong><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></strong></td>
+								<td><c:if test="${not empty registre.justificant.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${registre.justificant.ntiElaboracioEstat}"/></c:if></td>
+							</tr>
+							<tr>
+								<td><strong><spring:message code="registre.annex.detalls.camp.eni.tipus.documental"/></strong></td>
+								<td><c:if test="${not empty registre.justificant.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${registre.justificant.ntiTipusDocument}"/></c:if></td>
+							</tr>
+							<tr>
+								<td><strong><spring:message code="registre.annex.detalls.camp.sicres.tipus.document"/></strong></td>
+								<td><c:if test="${not empty registre.justificant.sicresTipusDocument}"><spring:message code="registre.annex.detalls.camp.sicresTipusDocument.${registre.justificant.sicresTipusDocument}"/></c:if></td>
+							</tr>
+							<c:if test="${not empty registre.justificant.localitzacio}">
+								<tr>
+									<td><strong><spring:message code="registre.annex.detalls.camp.localitzacio"/></strong></td>
+									<td>${registre.justificant.localitzacio}</td>
+								</tr>
+							</c:if>
+							<c:if test="${not empty registre.justificant.observacions}">
+								<tr>
+									<td><strong><spring:message code="registre.annex.detalls.camp.observacions"/></strong></td>
+									<td>${registre.justificant.observacions}</td>
+								</tr>
+							</c:if>
+							<tr>
+								<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
+								<td>
+									${registre.justificant.fitxerNom} (${registre.justificant.fitxerTamany} bytes)
+									<a href="${registre.id}/justificant" class="btn btn-default btn-sm pull-right">
+										<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
+									</a>
+								</td>
+							</tr>
+						</tbody>
+						</table>
+					</div>
+				</div>
+			</c:if>
+<!-- 			FI JUSTIFICANT -->
+			
 		</div>
 		<div class="tab-pane" id="interessats" role="tabpanel">
 			<c:choose>
@@ -309,11 +370,11 @@ tr.clicable {
 								<tbody>
 									<tr>
 										<td><strong><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></strong></td>
-										<td><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+										<td><c:if test="${not empty annex.dataCaptura}"><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if></td>
 									</tr>
 									<tr>
 										<td><strong><spring:message code="registre.annex.detalls.camp.eni.origen"/></strong></td>
-										<td>${annex.origenCiutadaAdmin}</td>
+										<td><c:if test="${not empty annex.origenCiutadaAdmin}">${annex.origenCiutadaAdmin}</c:if></td>
 									</tr>
 									<tr>
 										<td><strong><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></strong></td>
@@ -396,132 +457,6 @@ tr.clicable {
 						</div>
 					</c:forEach>
 				
-				
-				
-					<%--table class="table table-bordered">
-						<thead>
-							<tr>
-								<th><h4><spring:message code="registre.detalls.pipella.annexos"/></h4></th>
-								<th style="width: 50px;"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach var="annex" items="${annexos}" varStatus="status">
-								<tr <c:if test="${status.index%2 == 0}">class="odd"</c:if>>
-									<td><h5 style="margin:0"><strong>${annex.titol}</strong></h5></td>
-									<td>
-										<button type="button" class="btn btn-default desplegable" href="#annex_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="annex_${status.index}">
-											<span class="fa fa-caret-down"></span>
-										</button>
-									</td>
-								</tr>
-								<tr class="collapse annex" id="annex_${status.index}">
-									<td colspan="2">
-										<div class="panel panel-default">
-											<div class="panel-heading"><h5 style="margin:0"><strong>Dades bàsiques</strong></h5></div>
-											<table class="table table-striped table-bordered">
-												<tbody>
-													<tr>
-														<td><strong><spring:message code="registre.annex.detalls.camp.titol"/></strong></td>
-														<td>${annex.titol}</td>
-													</tr>
-													<tr>
-														<td><strong><spring:message code="registre.annex.detalls.camp.dataCaptura"/></strong></td>
-														<td><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
-													</tr>
-													<tr>
-														<td><strong><spring:message code="registre.annex.detalls.camp.localitzacio"/></strong></td>
-														<td>${annex.localitzacio}</td>
-													</tr>
-													<tr>
-														<td><strong><spring:message code="registre.annex.detalls.camp.origenCiutadaAdmin"/></strong></td>
-														<td>${annex.origenCiutadaAdmin}</td>
-													</tr>
-													<tr>
-														<td><strong><spring:message code="registre.annex.detalls.camp.ntiTipusDocument"/></strong></td>
-														<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
-													</tr>
-													<tr>
-														<td><strong><spring:message code="registre.annex.detalls.camp.sicresTipusDocument"/></strong></td>
-														<td><c:if test="${not empty annex.sicresTipusDocument}"><spring:message code="registre.annex.detalls.camp.sicresTipusDocument.${annex.sicresTipusDocument}"/></c:if></td>
-													</tr>
-													<tr>
-														<td><strong><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat"/></strong></td>
-														<td><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></td>
-													</tr>
-													<tr>
-														<td><strong><spring:message code="registre.annex.detalls.camp.observacions"/></strong></td>
-														<td>${annex.observacions}</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-										<c:if test="${annex.ambDocument}">
-											<div class="panel panel-default">
-												<div class="panel-heading"><h5 style="margin:0"><strong>Info document</strong></h5></div>
-												<table class="table table-striped table-bordered">
-													<tbody>
-														<tr>
-															<td><strong><spring:message code="registre.annex.detalls.camp.fitxerNom"/></strong></td>
-															<td>
-																${annex.fitxerNom}
-																<a href="${registre.id}/annex/${annex.id}/arxiu/DOCUMENT" class="btn btn-default">
-																	<span class="fa fa-download icona-doc"  title="Descarregar document"></span> <spring:message code="comu.boto.descarregar"/>
-																</a>
-															</td>
-														</tr>
-														<tr>
-															<td><strong><spring:message code="registre.annex.detalls.camp.tamany"/></strong></td>
-															<td>${annex.fitxerTamany} bytes</td>
-														</tr>
-														<tr>
-															<td><strong><spring:message code="registre.annex.detalls.camp.firmaMode"/></strong></td>
-															<td>${annex.firmaMode}</td>
-														</tr>
-														<c:if test="${annex.ambFirma}">
-															<tr><td colspan="2">
-																<c:forEach var="firma" items="${annex.firmes}" varStatus="loop">
-																<div class="panel panel-default">
-																	<div class="panel-heading"><h5 style="margin:0"><strong><spring:message code="contingut.arxiu.grup.firma"/></strong></h5></div>
-																	<table class="table table-striped table-bordered">
-																		<tbody>
-																			<tr>
-																				<td><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></td>
-																				<td>${firma.tipus}</td>
-																			</tr>
-																			<tr>
-																				<td><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></td>
-																				<td>${firma.perfil}</td>
-																			</tr>
-																			<tr>
-																				<td><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></td>
-																				<td>${firma.csvRegulacio}</td>
-																			</tr>
-																			<tr>
-																				<td><strong><spring:message code="registre.annex.detalls.camp.fitxerNom"/></strong></td>
-																				<td>
-																					${firma.fitxerNom}
-																					<a href="${registre.id}/annex/${annex.id}/firma/${loop.index}" class="btn btn-default">
-																						<span class="fa fa-download icona-doc"  title="Descarregar firma"></span> <spring:message code="comu.boto.descarregar"/>
-																					</a>
-																				</td>
-																			</tr>
-																			
-																		</tbody>
-																	</table>
-																</div>
-																</c:forEach>
-															</td></tr>
-														</c:if>
-													</tbody>
-												</table>
-											</div>
-										</c:if>
-									</td>
-								</tr>
-							</c:forEach>
-						</tbody>
-					</table--%>
 				</c:when>
 				<c:otherwise>
 					<div class="row col-xs-12">

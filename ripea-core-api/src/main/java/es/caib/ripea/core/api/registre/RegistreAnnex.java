@@ -20,7 +20,7 @@ public class RegistreAnnex {
 	private int fitxerTamany;
 	private String fitxerTipusMime;
 	private String fitxerArxiuUuid;
-	private String fitxerContingutBase64;
+	private byte[] fitxerContingut;
 	private Date eniDataCaptura;
 	private String eniOrigen;
 	private String eniEstatElaboracio;
@@ -68,11 +68,11 @@ public class RegistreAnnex {
 	public void setFitxerArxiuUuid(String fitxerArxiuUuid) {
 		this.fitxerArxiuUuid = fitxerArxiuUuid;
 	}
-	public String getFitxerContingutBase64() {
-		return fitxerContingutBase64;
+	public byte[] getFitxerContingut() {
+		return fitxerContingut;
 	}
-	public void setFitxerContingutBase64(String fitxerContingutBase64) {
-		this.fitxerContingutBase64 = fitxerContingutBase64;
+	public void setFitxerContingut(byte[] fitxerContingut) {
+		this.fitxerContingut = fitxerContingut;
 	}
 	public Date getEniDataCaptura() {
 		return eniDataCaptura;

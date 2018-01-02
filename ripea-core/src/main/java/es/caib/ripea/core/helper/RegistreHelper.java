@@ -142,6 +142,7 @@ public class RegistreHelper {
 		assumpteDescripcio(anotacio.getAssumpteDescripcio()).
 		referencia(anotacio.getReferencia()).
 		expedientNumero(anotacio.getExpedientNumero()).
+		numeroOrigen(anotacio.getNumeroOrigen()).
 		idiomaDescripcio(anotacio.getIdiomaDescripcio()).
 		transportTipusCodi(anotacio.getTransportTipusCodi()).
 		transportTipusDescripcio(anotacio.getTransportTipusDescripcio()).
@@ -175,6 +176,11 @@ public class RegistreHelper {
 								entity));
 			}
 		}
+		
+		if (anotacio.getJustificant() != null && anotacio.getJustificant().getFitxerArxiuUuid() != null) {
+			entity.updateJustificantUuid(anotacio.getJustificant().getFitxerArxiuUuid());
+		}
+		
 		return entity;
 	}
 	
@@ -327,7 +333,7 @@ public class RegistreHelper {
 				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getEniTipusDocumental()),
 				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(registreAnnex.getSicresTipusDocument()),
 				registre,
-				registreAnnex.getFitxerContingutBase64()).
+				registreAnnex.getFitxerContingut()).
 				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
 				localitzacio(registreAnnex.getLocalitzacio()).
 				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getEniEstatElaboracio())).

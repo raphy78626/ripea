@@ -138,4 +138,10 @@ public class RegistreServiceBean implements RegistreService {
 		return delegate.findPerBackofficeSistra(identificadorProcediment, identificadorTramit, procesEstatSistra, desdeDate, finsDate);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public FitxerDto getJustificant(Long registreId) throws NotFoundException {
+		return delegate.getJustificant(registreId);
+	}
+
 }

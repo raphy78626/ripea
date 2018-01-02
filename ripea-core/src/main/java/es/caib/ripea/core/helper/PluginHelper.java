@@ -57,6 +57,7 @@ import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesDocumentTipusDto;
 import es.caib.ripea.core.api.dto.TipusViaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.exception.PropietatNotFoundException;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.BustiaEntity;
@@ -430,8 +431,10 @@ public class PluginHelper {
 			RegistreEntity anotacio, 
 			BustiaEntity bustia) {
 		String accioDescripcio = "Creant un expedient temporal per anotacio de registre rebuda";
+		String nomExpedient = "EXP_REG_" + anotacio.getExpedientNumero() + "_" + System.currentTimeMillis();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("nom", "EXP_REG_" + anotacio.getExpedientNumero());
+		accioParams.put("nom", nomExpedient);
 		accioParams.put("entitatId", bustia.getEntitat().getId().toString());
 		accioParams.put("entitatCodi", bustia.getEntitat().getCodi());
 		accioParams.put("entitatNom", bustia.getEntitat().getNom());
@@ -440,7 +443,7 @@ public class PluginHelper {
 			ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
 					toArxiuExpedient(
 							null,
-							"EXP_REG_" + anotacio.getExpedientNumero(),
+							nomExpedient,
 							null,
 							Arrays.asList(bustia.getEntitat().getUnitatArrel()),
 							new Date(),
@@ -795,7 +798,6 @@ public class PluginHelper {
 								document.getDataCaptura(),
 								document.getNtiEstadoElaboracion(),
 								document.getNtiTipoDocumental(),
-								classificacioDocumental,
 								DocumentEstat.ESBORRANY,
 								DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())),
 						contingutPare.getArxiuUuid());
@@ -824,7 +826,6 @@ public class PluginHelper {
 								document.getDataCaptura(),
 								document.getNtiEstadoElaboracion(),
 								document.getNtiTipoDocumental(),
-								classificacioDocumental,
 								DocumentEstat.ESBORRANY,
 								DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())));
 				document.updateArxiu(null);
@@ -862,7 +863,6 @@ public class PluginHelper {
 		accioParams.put("títol", annex.getTitol());
 		accioParams.put("contingutPareId", expedient.getIdentificador());
 		accioParams.put("contingutPareNom", expedient.getNom());
-		accioParams.put("classificacioDocumental", getPropertyPluginArxiuDocumentSerieDocumental());
 		long t0 = System.currentTimeMillis();
 		try {
 			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
@@ -878,7 +878,6 @@ public class PluginHelper {
 							annex.getDataCaptura(),
 							(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(annex.getNtiElaboracioEstat().getValor()) : null),
 							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(annex.getNtiTipusDocument().getValor()) : null),
-							getPropertyPluginArxiuDocumentSerieDocumental(),
 							DocumentEstat.ESBORRANY,
 							false),
 					expedient.getIdentificador());
@@ -1056,7 +1055,6 @@ public class PluginHelper {
 							document.getDataCaptura(),
 							document.getNtiEstadoElaboracion(),
 							document.getNtiTipoDocumental(),
-							null,
 							DocumentEstat.DEFINITIU,
 							DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())));
 			integracioHelper.addAccioOk(
@@ -2317,7 +2315,6 @@ public class PluginHelper {
 			Date ntiDataCaptura,
 			DocumentNtiEstadoElaboracionEnumDto ntiEstatElaboracio,
 			DocumentNtiTipoDocumentalEnumDto ntiTipusDocumental,
-			String serieDocumental,
 			DocumentEstat estat,
 			boolean enPaper) {
 		Document document = new Document();
@@ -2563,9 +2560,6 @@ public class PluginHelper {
 			metadades.setFormat(format);
 		}
 		metadades.setOrgans(ntiOrgans);
-		metadades.addMetadadaAddicional(
-				"eni:cod_clasificacion",
-				serieDocumental);
 		document.setMetadades(metadades);
 		document.setContingut(contingut);
 		document.setEstat(estat);
@@ -3082,20 +3076,23 @@ public class PluginHelper {
 	}
 
 	private String getPropertyPluginArxiuEscriptoriClassificacio() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.escriptori.classificacio");
+		return getPropertyAmbComprovacio("es.caib.ripea.plugin.arxiu.escriptori.classificacio");
 	}
 	private String getPropertyPluginArxiuEscriptoriSerieDocumental() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.escriptori.serie.documental");
+		return getPropertyAmbComprovacio("es.caib.ripea.plugin.arxiu.escriptori.serie.documental");
 	}
 
 	private String getPropertyPluginArxiuExpedientClassificacio() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.expedient.classificacio");
+		return getPropertyAmbComprovacio("es.caib.ripea.anotacions.registre.expedient.classificacio");
 	}
 	private String getPropertyPluginArxiuExpedientSerieDocumental() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.expedient.serie.documental");
+		return getPropertyAmbComprovacio("es.caib.ripea.anotacions.registre.expedient.serie.documental");
 	}
 	
-	private String getPropertyPluginArxiuDocumentSerieDocumental() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.arxiu.document.serie.documental");
+	private String getPropertyAmbComprovacio(String propertyCodi) {
+		String valor = PropertiesHelper.getProperties().getProperty(propertyCodi);
+		if (valor == null || valor.isEmpty())
+			throw new PropietatNotFoundException(propertyCodi, "Aquesta property <<<" + propertyCodi + ">>> no té valor o és buit");
+		return valor;
 	}
 }

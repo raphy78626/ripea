@@ -17,7 +17,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.Handler;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
@@ -71,12 +70,12 @@ public class BustiaV1Test {
         anotacio.setExpedientNumero(String.valueOf(randomNumber));
         
         File file = new File("c:/Feina/RIPEA/annexos/annex1.pdf");
-        byte[] encodedContingut = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+        byte[] encodedContingut = FileUtils.readFileToByteArray(file);
         RegistreAnnex annex1 = new RegistreAnnex();
         annex1.setTitol("annexproves1");
         annex1.setFitxerNom(file.getName());
         annex1.setFitxerTipusMime(FilenameUtils.getExtension(file.getName()));
-        annex1.setFitxerContingutBase64(new String(encodedContingut));
+        annex1.setFitxerContingut(encodedContingut);
         annex1.setFitxerTamany((int)(file.length()));
         annex1.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         annex1.setEniOrigen("0");
@@ -87,12 +86,12 @@ public class BustiaV1Test {
         
         
         File file2 = new File("c:/Feina/RIPEA/annexos/annex2.pdf");
-        byte[] encodedContingut2 = Base64.encodeBase64(FileUtils.readFileToByteArray(file2));
+        byte[] encodedContingut2 = FileUtils.readFileToByteArray(file2);
         RegistreAnnex annex2 = new RegistreAnnex();
         annex2.setTitol("annexproves2");
         annex2.setFitxerNom(file2.getName());
         annex2.setFitxerTipusMime(FilenameUtils.getExtension(file2.getName()));
-        annex2.setFitxerContingutBase64(new String(encodedContingut2));
+        annex2.setFitxerContingut(encodedContingut2);
         annex2.setFitxerTamany((int)(file2.length()));
         annex2.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         annex2.setEniOrigen("1");
@@ -104,18 +103,19 @@ public class BustiaV1Test {
         anotacio.getAnnexos().add(annex2);
         
         File file3 = new File("c:/Feina/RIPEA/annexos/justificant.pdf");
-        byte[] encodedContingut3 = Base64.encodeBase64(FileUtils.readFileToByteArray(file3));
+        byte[] encodedContingut3 = FileUtils.readFileToByteArray(file3);
         RegistreAnnex justificant = new RegistreAnnex();
         justificant.setTitol("justificant");
         justificant.setFitxerNom(file3.getName());
         justificant.setFitxerTipusMime(FilenameUtils.getExtension(file3.getName()));
-        justificant.setFitxerContingutBase64(new String(encodedContingut3));
+        justificant.setFitxerContingut(encodedContingut3);
         justificant.setFitxerTamany((int)(file3.length()));
         justificant.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         justificant.setEniOrigen("1");
         justificant.setEniEstatElaboracio("EE01");
         justificant.setEniTipusDocumental("TD02");
         justificant.setSicresTipusDocument("02");
+        justificant.setFitxerArxiuUuid("9f33c5c7-7d0f-4d70-9082-c541a42cc041");
         
         anotacio.setJustificant(justificant);
         
@@ -128,7 +128,7 @@ public class BustiaV1Test {
 	private void afegirFirmes(RegistreAnnex annex) throws IOException {
 		Firma firma = new Firma();
 		File firmaFile = new File("c:/Feina/RIPEA/annexos/signatura.pdf");
-        byte[] firmaContingut = Base64.encodeBase64(FileUtils.readFileToByteArray(firmaFile));
+        byte[] firmaContingut = FileUtils.readFileToByteArray(firmaFile);
         firma.setTipus("TF05");
         firma.setPerfil("BES");
         firma.setContingut(firmaContingut);
@@ -137,7 +137,7 @@ public class BustiaV1Test {
 		
 		Firma firma2 = new Firma();
 		File firmaFile2 = new File("c:/Feina/RIPEA/annexos/signatura2.pdf");
-        byte[] firmaContingut2 = Base64.encodeBase64(FileUtils.readFileToByteArray(firmaFile2));
+        byte[] firmaContingut2 = FileUtils.readFileToByteArray(firmaFile2);
 		firma2.setTipus("TF05");
 		firma2.setPerfil("BES");
 		firma2.setContingut(firmaContingut2);

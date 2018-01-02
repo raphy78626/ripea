@@ -381,6 +381,20 @@ public class ContingutController extends BaseUserController {
 		return null;
 	}
 	
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/justificant", method = RequestMethod.GET)
+	public String descarregarJustificant(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long contingutId,
+			@PathVariable Long registreId) throws IOException {
+		FitxerDto fitxer = registreService.getJustificant(registreId);
+		writeFileToResponse(
+				fitxer.getNom(),
+				fitxer.getContingut(),
+				response);
+		return null;
+	}
+	
 	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{annexId}/firma/{firmaIndex}", method = RequestMethod.GET)
 	public String descarregarFirma(
 			HttpServletRequest request,

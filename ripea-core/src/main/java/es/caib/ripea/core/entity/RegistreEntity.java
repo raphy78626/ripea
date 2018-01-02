@@ -92,6 +92,8 @@ public class RegistreEntity extends ContingutEntity {
 	private String referencia;
 	@Column(name = "expedient_num", length = 80)
 	private String expedientNumero;
+	@Column(name = "num_orig", length = 80)
+	private String numeroOrigen;
 	@Column(name = "idioma_codi", length = 2, nullable = false)
 	private String idiomaCodi;
 	@Column(name = "idioma_desc", length = 100)
@@ -164,6 +166,10 @@ public class RegistreEntity extends ContingutEntity {
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreAnnexEntity> annexos = new ArrayList<RegistreAnnexEntity>();
+	
+	@Column(name = "justificant_arxiu_uuid", length = 100)
+	private String justificantArxiuUuid;
+	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "regla_id")
 	@ForeignKey(name = "ipa_regla_registre_fk")
@@ -237,6 +243,9 @@ public class RegistreEntity extends ContingutEntity {
 	public String getExpedientNumero() {
 		return expedientNumero;
 	}
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
 	public String getIdiomaCodi() {
 		return idiomaCodi;
 	}
@@ -306,6 +315,9 @@ public class RegistreEntity extends ContingutEntity {
 	public List<RegistreAnnexEntity> getAnnexos() {
 		return annexos;
 	}
+	public String getJustificantArxiuUuid() {
+		return justificantArxiuUuid;
+	}
 	public ReglaEntity getRegla() {
 		return regla;
 	}
@@ -343,7 +355,9 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateIdentificadorProcedimentSistra(String identificadorProcediment) {
 		this.identificadorProcedimentSistra = identificadorProcediment;
 	}
-	
+	public void updateJustificantUuid(String justificantArxiuUuid) {
+		this.justificantArxiuUuid = justificantArxiuUuid;
+	}
 
 	public static Builder getBuilder(
 			EntitatEntity entitat,
@@ -455,6 +469,10 @@ public class RegistreEntity extends ContingutEntity {
 		}
 		public Builder expedientNumero(String expedientNumero) {
 			built.expedientNumero = expedientNumero;
+			return this;
+		}
+		public Builder numeroOrigen(String numeroOrigen) {
+			built.numeroOrigen = numeroOrigen;
 			return this;
 		}
 		public Builder idiomaDescripcio(String idiomaDescripcio) {

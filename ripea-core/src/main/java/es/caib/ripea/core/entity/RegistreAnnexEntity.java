@@ -93,7 +93,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	private long version = 0;
 
 	@Transient
-	private String fitxerContingutBase64;
+	private byte[] fitxerContingut;
 	
 	@OneToMany(
 			mappedBy = "annex",
@@ -165,7 +165,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			RegistreAnnexNtiTipusDocumentEnum ntiTipusDocument,
 			RegistreAnnexSicresTipusDocumentEnum sicresTipusDocument,
 			RegistreEntity registre,
-			String fitxerContingutBase64) {
+			byte[] fitxerContingut) {
 		return new Builder(
 				titol,
 				fitxerNom,
@@ -176,7 +176,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 				ntiTipusDocument,
 				sicresTipusDocument,
 				registre,
-				fitxerContingutBase64);
+				fitxerContingut);
 	}
 	public static class Builder {
 		RegistreAnnexEntity built;
@@ -190,7 +190,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 				RegistreAnnexNtiTipusDocumentEnum ntiTipusDocument,
 				RegistreAnnexSicresTipusDocumentEnum sicresTipusDocument,
 				RegistreEntity registre,
-				String fitxerContingutBase64) {
+				byte[] fitxerContingut) {
 			built = new RegistreAnnexEntity();
 			built.titol = titol;
 			built.fitxerNom = fitxerNom;
@@ -204,7 +204,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			if (sicresTipusDocument != null)
 				built.sicresTipusDocument = sicresTipusDocument.getValor();
 			built.registre = registre;
-			built.fitxerContingutBase64 = fitxerContingutBase64;
+			built.fitxerContingut = fitxerContingut;
 			built.firmes = new ArrayList<FirmaEntity>();
 		}
 		public Builder fitxerTipusMime(String fitxerTipusMime) {
@@ -312,8 +312,8 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 
 	private static final long serialVersionUID = -2299453443943600172L;
 
-	public String getFitxerContingutBase64() {
-		return fitxerContingutBase64;
+	public byte[] getFitxerContingut() {
+		return fitxerContingut;
 	}
 	public List<FirmaEntity> getFirmes() {
 		return firmes;

@@ -13,7 +13,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.axis.encoding.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -686,6 +685,17 @@ public class BustiaServiceImpl implements BustiaService {
 					"numero=" + anotacio.getNumero() + ", " +
 					"data=" + anotacio.getData() + ")");
 		}
+		
+		if (anotacio.getJustificant() != null && anotacio.getJustificant().getFitxerArxiuUuid() == null) {
+			throw new ValidationException(
+					"El justificant adjuntat no conté un uuid (" +
+					"entitatCodi=" + anotacio.getEntitatCodi() + ", " +
+					"llibreCodi=" + anotacio.getLlibreCodi() + ", " +
+					"tipus=" + RegistreTipusEnum.ENTRADA.getValor() + ", " +
+					"numero=" + anotacio.getNumero() + ", " +
+					"data=" + anotacio.getData() + ")");
+		}
+		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
@@ -697,8 +707,12 @@ public class BustiaServiceImpl implements BustiaService {
 				anotacio,
 				reglaAplicable);
 		registreRepository.saveAndFlush(anotacioEntity);
-		ContingutArxiu expedientCreat = crearExpedientArxiuTemporal(anotacioEntity, bustia);
-		processarAnnexos(anotacioEntity, bustia, expedientCreat);
+		
+		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
+			ContingutArxiu expedientCreat = crearExpedientArxiuTemporal(anotacioEntity, bustia);
+			processarAnnexos(anotacioEntity, bustia, expedientCreat);
+		}
+		
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
@@ -1124,7 +1138,7 @@ public class BustiaServiceImpl implements BustiaService {
 		try {
 			for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 				//si tenim contingut de fitxer i també referència del registre, hem de tornar una excepció
-				if (annex.getFitxerArxiuUuid() == null && annex.getFitxerContingutBase64() == null) {
+				if (annex.getFitxerArxiuUuid() == null && annex.getFitxerContingut() == null) {
 					throw new ValidationException(
 							"S'ha d'especificar o bé la referència del document o el contingut del document"
 							+ " per l'annex [" + annex.getTitol() + "]");
@@ -1169,7 +1183,7 @@ public class BustiaServiceImpl implements BustiaService {
 	 */
 	private void processarAnnexSistra(RegistreEntity anotacio, RegistreAnnexEntity annex) {
 		try {
-			org.w3c.dom.Document doc = XmlHelper.getDocumentFromContent(Base64.decode(annex.getFitxerContingutBase64()));
+			org.w3c.dom.Document doc = XmlHelper.getDocumentFromContent(annex.getFitxerContingut());
 			if (annex.getFitxerNom().equals("DatosPropios.xml")) {
 				String identificadorProcediment = XmlHelper.getNodeValue(doc.getDocumentElement(), "INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO");
 				anotacio.updateIdentificadorProcedimentSistra(identificadorProcediment);
@@ -1189,8 +1203,8 @@ public class BustiaServiceImpl implements BustiaService {
 			BustiaEntity bustia,
 			ContingutArxiu expedientCreat) throws IOException {
 		byte[] contingut = null;
-		if (annex.getFitxerContingutBase64() != null) {
-			contingut = Base64.decode(annex.getFitxerContingutBase64());
+		if (annex.getFitxerContingut() != null) {
+			contingut = annex.getFitxerContingut();
 		} else {
 			Document arxiuDocument = pluginHelper.arxiuDocumentConsultar(
 					bustia,

@@ -3,10 +3,8 @@
  */
 package es.caib.ripea.core.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -19,7 +17,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -85,12 +82,12 @@ public abstract class ContingutEntity extends RipeaAuditable<Long> {
 	@JoinColumn(name = "contmov_id")
 	@ForeignKey(name = "ipa_contmov_contingut_fk")
 	protected ContingutMovimentEntity darrerMoviment;
-	@OneToMany(
-			mappedBy = "contingut",
-			fetch = FetchType.LAZY,
-			orphanRemoval = true)
-	@OrderBy("createdDate ASC")
-	protected List<AlertaEntity> alertes = new ArrayList<AlertaEntity>();
+//	@OneToMany(
+//			mappedBy = "contingut",
+//			fetch = FetchType.LAZY,
+//			orphanRemoval = true)
+//	@OrderBy("createdDate ASC")
+//	protected List<AlertaEntity> alertes = new ArrayList<AlertaEntity>();
 	@Version
 	private long version = 0;
 

@@ -124,8 +124,20 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				contingut,
 				registreId);
-		return (RegistreAnotacioDto)contingutHelper.toContingutDto(
+		RegistreAnotacioDto registreAnotacio = (RegistreAnotacioDto)contingutHelper.toContingutDto(
 				registre);
+		
+		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
+			RegistreAnnexDetallDto justificant = getJustificantPerRegistre(
+					entitat, 
+					contingut, 
+					registre.getJustificantArxiuUuid(), 
+					true);
+			
+			registreAnotacio.setJustificant(justificant);
+		}
+		
+		return registreAnotacio;
 	}
 
 	@Transactional
@@ -313,6 +325,28 @@ public class RegistreServiceImpl implements RegistreService {
 	
 	@Transactional(readOnly = true)
 	@Override
+	public FitxerDto getJustificant(
+			Long registreId) {
+		RegistreEntity registre = registreRepository.findOne(registreId);
+		FitxerDto arxiu = new FitxerDto();
+		
+		Document document = null;
+		document = pluginHelper.arxiuDocumentConsultar(registre, registre.getJustificantArxiuUuid(), null, true);
+		
+		if (document != null) {
+			DocumentContingut documentContingut = document.getContingut();
+			if (documentContingut != null) {
+				arxiu.setNom(documentContingut.getArxiuNom() == null ? (document.getNom() + "." + document.getContingut().getTipusMime()) : documentContingut.getArxiuNom());
+				arxiu.setContentType(documentContingut.getTipusMime());
+				arxiu.setContingut(documentContingut.getContingut());
+				arxiu.setTamany(documentContingut.getContingut().length);
+			}
+		}
+		return arxiu;
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
 	public FitxerDto getAnnexFirmaContingut(
 			Long annexId,
 			int indexFirma) {
@@ -400,6 +434,8 @@ public class RegistreServiceImpl implements RegistreService {
 		return annexos;
 	}
 	
+	
+	
 	@Transactional (readOnly = true)
 	@Override
 	public RegistreAnotacioDto findAmbIdentificador(String identificador) {
@@ -456,6 +492,28 @@ public class RegistreServiceImpl implements RegistreService {
 				desdeDate,
 				finsDate == null,
 				finsDate);
+	}
+	
+	private RegistreAnnexDetallDto getJustificantPerRegistre(
+			EntitatEntity entitat,
+			ContingutEntity contingut,
+			String justificantUuid,
+			boolean ambContingut) throws NotFoundException {
+		logger.debug("Obtenint anotació de registre ("
+				+ "entitatId=" + entitat.getId() + ", "
+				+ "contingutId=" + contingut.getId() + ", "
+				+ "justificantUuid=" + justificantUuid + ")");
+		
+
+		RegistreAnnexDetallDto annex = new RegistreAnnexDetallDto();
+		Document document = pluginHelper.arxiuDocumentConsultar(contingut, justificantUuid, null, ambContingut);
+		annex.setFitxerNom(document.getContingut().getArxiuNom() == null ? (document.getNom() + "." + document.getContingut().getTipusMime()) : document.getContingut().getArxiuNom());
+		annex.setFitxerTamany(document.getContingut().getContingut().length);
+		annex.setFitxerTipusMime(document.getContingut().getTipusMime());
+		annex.setTitol(document.getNom());
+		annex.setAmbDocument(true);
+		
+		return annex;
 	}
 
 	private boolean reglaAplicar(
