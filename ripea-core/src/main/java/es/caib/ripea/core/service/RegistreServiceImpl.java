@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.Firma;
+import es.caib.ripea.core.api.dto.AlertaDto;
 import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -31,6 +32,7 @@ import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
+import es.caib.ripea.core.api.service.AlertaService;
 import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -85,8 +87,10 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreHelper registreHelper;
 	@Resource
 	private PluginHelper pluginHelper;
-
-
+	
+	@Resource
+	private AlertaService alertaService;
+	
 
 	@Transactional(readOnly = true)
 	@Override
@@ -190,7 +194,17 @@ public class RegistreServiceImpl implements RegistreService {
 			logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
 			if (!pendents.isEmpty()) {
 				for (RegistreEntity pendent: pendents) {
-					reglaAplicar(pendent);
+					try {
+						reglaAplicar(pendent);
+					} catch (Exception e) {
+						Throwable rootCause = ExceptionUtils.getRootCause(e);
+						AlertaDto alerta = new AlertaDto();
+						alerta.setText(ExceptionUtils.getStackTrace(rootCause));
+						alerta.setLlegida(false);
+						alerta.setContingutId(pendent.getId());
+						alertaService.create(alerta);
+						throw e;
+					}
 				}
 			} else {
 				logger.debug("No hi ha registres pendents de processar");
@@ -215,19 +229,28 @@ public class RegistreServiceImpl implements RegistreService {
 			Integer minutsEntreReintents;
 			Calendar properProcessamentCal = Calendar.getInstance();
 			for (RegistreEntity pendent: pendents) {
-				// Comprova si ha passat el temps entre reintents o ha d'esperar
-				boolean esperar = false;
-				darrerProcessament = pendent.getProcesData();
-				minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
-				if (darrerProcessament != null && minutsEntreReintents != null) {
-					// Calcula el temps pel proper intent
-					properProcessamentCal.setTime(darrerProcessament);
-					properProcessamentCal.add(Calendar.MINUTE, minutsEntreReintents);
-					ara  = new Date();
-					esperar = ara.before(properProcessamentCal.getTime());
+				try {
+					// Comprova si ha passat el temps entre reintents o ha d'esperar
+					boolean esperar = false;
+					darrerProcessament = pendent.getProcesData();
+					minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
+					if (darrerProcessament != null && minutsEntreReintents != null) {
+						// Calcula el temps pel proper intent
+						properProcessamentCal.setTime(darrerProcessament);
+						properProcessamentCal.add(Calendar.MINUTE, minutsEntreReintents);
+						ara  = new Date();
+						esperar = ara.before(properProcessamentCal.getTime());
+					}
+					if (!esperar)
+						reglaAplicar(pendent);
+				} catch (Exception e) {
+					Throwable rootCause = ExceptionUtils.getRootCause(e);
+					AlertaDto alerta = new AlertaDto();
+					alerta.setText(ExceptionUtils.getStackTrace(rootCause));
+					alerta.setLlegida(false);
+					alerta.setContingutId(pendent.getId());
+					alertaService.create(alerta);
 				}
-				if (!esperar)
-					reglaAplicar(pendent);
 			}
 		} else {
 			logger.debug("No hi ha registres pendents de processar");

@@ -458,12 +458,17 @@ $(document).ready(function() {
 			</div>
 		</c:if>
 		<div class="${contingutClass}">
-			<c:if test="${contingut.node and not contingut.valid}">
+			<c:if test="${contingut.node and (not contingut.valid or contingut.alerta)}">
 				<div id="botons-errors-validacio" class="alert well-sm alert-warning alert-dismissable">
 					<span class="fa fa-exclamation-triangle"></span>
 					<c:choose>
-						<c:when test="${contingut.expedient}"><spring:message code="contingut.errors.expedient"/></c:when>
-						<c:when test="${contingut.document}"><spring:message code="contingut.errors.document"/></c:when>
+						<c:when test="${not contingut.valid and contingut.alerta and contingut.expedient}"><spring:message code="contingut.errors.expedient.dual"/></c:when>
+						<c:when test="${not contingut.valid and not contingut.alerta and contingut.expedient}"><spring:message code="contingut.errors.expedient"/></c:when>
+						<c:when test="${contingut.valid and contingut.alerta and contingut.expedient}"><spring:message code="contingut.errors.expedient.segonpla"/></c:when>
+						
+						<c:when test="${not contingut.valid and contingut.alerta and contingut.document}"><spring:message code="contingut.errors.document.dual"/></c:when>
+						<c:when test="${not contingut.valid and not contingut.alerta and contingut.document}"><spring:message code="contingut.errors.document"/></c:when>
+						<c:when test="${contingut.valid and contingut.alerta and contingut.document}"><spring:message code="contingut.errors.document.segonpla"/></c:when>
 					</c:choose>
 					<a href="../contingut/${contingut.id}/errors" class="btn btn-xs btn-default pull-right" data-toggle="modal"><spring:message code="contingut.errors.mesinfo"/></a>
 				</div>

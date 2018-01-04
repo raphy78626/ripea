@@ -10,10 +10,12 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
+import es.caib.ripea.core.api.dto.AlertaDto;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto.ExecucioMassivaEstatDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
+import es.caib.ripea.core.entity.AlertaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
 import ma.glasnost.orika.CustomConverter;
@@ -75,6 +77,18 @@ public class ConversioTipusHelper {
 						
 						if (source.getContingut() instanceof DocumentEntity)
 							target.setContingut(convertir((DocumentEntity)source.getContingut(), DocumentDto.class));
+						
+						return target;
+					}
+				});
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<AlertaEntity, AlertaDto>() {
+					public AlertaDto convert(AlertaEntity source, Type<? extends AlertaDto> destinationClass) {
+						AlertaDto target = new AlertaDto();
+						target.setId(source.getId());
+						target.setText(source.getText());
+						target.setLlegida(source.getLlegida().booleanValue());
+						target.setContingutId(source.getContingut().getId());
 						
 						return target;
 					}

@@ -188,6 +188,7 @@ function getCookie(cname) {
 				<th data-col-name="pare.id" data-visible="false"></th>
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
+				<th data-col-name="alerta" data-visible="false"></th>
 				<th data-col-name="valid" data-visible="false"></th>
 				<th data-col-name="metaNode.nom" width="15%"><spring:message code="expedient.list.user.columna.tipus"/></th>
 				<th data-col-name="numero"><spring:message code="expedient.list.user.columna.numero"/></th>
@@ -195,7 +196,15 @@ function getCookie(cname) {
 					<spring:message code="expedient.list.user.columna.titol"/>
 					<script id="cellNomTemplate" type="text/x-jsrender">
 						{{if !valid}}
-						<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.expedient"/>"></span>
+							{{if alerta}}
+								<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.expedient.dual"/>"></span>
+							{{else}}
+								<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.expedient"/>"></span>
+							{{/if}}
+						{{else}}
+							{{if alerta}}
+								<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.expedient.segonpla"/>"></span>
+							{{/if}}
 						{{/if}}
 						{{:nom}}
 					</script>

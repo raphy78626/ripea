@@ -71,6 +71,7 @@ import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
+import es.caib.ripea.core.repository.AlertaRepository;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
@@ -117,6 +118,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private DocumentNotificacioRepository documentNotificacioRepository;
 	@Resource
 	private DocumentPublicacioRepository documentPublicacioRepository;
+	@Resource
+	private AlertaRepository alertaRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -962,7 +965,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 					paginacioHelper.toSpringDataPageable(
 							paginacioParams,
 							ordenacioMap));
-			return paginacioHelper.toPaginaDto(
+			PaginaDto<ExpedientDto> result = paginacioHelper.toPaginaDto(
 					paginaExpedients,
 					ExpedientDto.class,
 					new Converter<ExpedientEntity, ExpedientDto>() {
@@ -973,6 +976,11 @@ public class ExpedientServiceImpl implements ExpedientService {
 									true);
 						}
 					});
+			for(ExpedientDto e : result)
+				e.setAlerta(alertaRepository.countByLlegidaAndContingutId(
+						false,
+						e.getId())>0);
+			return result;
 		} else {
 			return paginacioHelper.getPaginaDtoBuida(
 					ExpedientDto.class);
