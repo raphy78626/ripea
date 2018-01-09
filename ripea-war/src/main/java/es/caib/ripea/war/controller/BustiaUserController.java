@@ -40,6 +40,7 @@ import es.caib.ripea.war.command.BustiaUserFiltreCommand;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
+import es.caib.ripea.war.command.ExpedientFiltreCommand;
 import es.caib.ripea.war.command.MarcarProcessatCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
@@ -209,6 +210,20 @@ public class BustiaUserController extends BaseUserController {
 				model,
 				contingutId);
 		return "bustiaPendentContingutAddexp";
+	}
+	@RequestMapping(value = "/addexp/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse bustiaPendentAddexpDatatable(
+			HttpServletRequest request,
+			ExpedientFiltreCommand filtre,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				expedientService.findAmbFiltreUser(
+						entitatActual.getId(), 
+						ExpedientFiltreCommand.asDto(filtre), 
+						DatatablesHelper.getPaginacioDtoFromRequest(request)));
 	}
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/addexp", method = RequestMethod.POST)
 	public String bustiaPendentAddexpPost(
