@@ -73,6 +73,7 @@ import es.caib.ripea.core.entity.MetaDadaEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.MetaNodeMetaDadaEntity;
 import es.caib.ripea.core.entity.NodeEntity;
+import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
@@ -1617,6 +1618,11 @@ public class ContingutServiceImpl implements ContingutService {
 				bustiaId,
 				true);
 		bustiaHelper.evictElementsPendentsBustia(entitat, bustia);
+		
+		// Si el contingut és una anotació de registre s'ha de 
+		// tancar l'expedient temporal 
+		if (ContingutTipusEnumDto.REGISTRE == contingut.getTipus())
+			pluginHelper.arxiuExpedientTemporalTancar((RegistreEntity)contingut);
 		
 		return publicarComentariPerContingut(
 				entitatId,

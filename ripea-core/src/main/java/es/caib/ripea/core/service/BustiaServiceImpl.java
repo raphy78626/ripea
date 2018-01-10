@@ -710,6 +710,8 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
 			ContingutArxiu expedientCreat = crearExpedientArxiuTemporal(anotacioEntity, bustia);
+			anotacioEntity.updateExpedientArxiuUuid(expedientCreat.getIdentificador());
+			registreRepository.saveAndFlush(anotacioEntity);
 			processarAnnexos(anotacioEntity, bustia, expedientCreat);
 		}
 		
