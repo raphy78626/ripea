@@ -75,7 +75,7 @@ tr.clicable {
 				</tr>
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.numero"/></strong></td>
-					<td>${registre.identificador}</td>
+					<td>${registre.numero}</td>
 				</tr>
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.data"/></strong></td>
@@ -295,9 +295,11 @@ tr.clicable {
 										</c:otherwise>
 									</c:choose>
 									<td>
-										<button type="button" class="btn btn-default desplegable" href="#detalls_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_${status.index}">
-											<span class="fa fa-caret-down"></span>
-										</button>
+										<c:if test="${interessat.tipus != 'ADMINISTRACIO'}">
+											<button type="button" class="btn btn-default desplegable" href="#detalls_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_${status.index}">
+												<span class="fa fa-caret-down"></span>
+											</button>
+										</c:if>
 									</td>
 								</tr>
 								<tr class="collapse detall" id="detalls_${status.index}">
