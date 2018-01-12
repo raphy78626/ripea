@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
+import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
@@ -511,6 +512,15 @@ public class RegistreServiceImpl implements RegistreService {
 		annex.setFitxerTamany(document.getContingut().getContingut().length);
 		annex.setFitxerTipusMime(document.getContingut().getTipusMime());
 		annex.setTitol(document.getNom());
+		annex.setSicresTipusDocument(document.getTipus().name());
+		DocumentMetadades metadades = document.getMetadades();
+		if (metadades != null) {
+			annex.setDataCaptura(metadades.getDataCaptura());
+			annex.setOrigenCiutadaAdmin(metadades.getOrigen().name());
+			annex.setNtiElaboracioEstat(metadades.getEstatElaboracio().name());
+			annex.setNtiTipusDocument(metadades.getTipusDocumental().name());
+		}
+		
 		annex.setAmbDocument(true);
 		
 		return annex;
