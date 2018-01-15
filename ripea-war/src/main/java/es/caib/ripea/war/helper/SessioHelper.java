@@ -16,6 +16,7 @@ public class SessioHelper {
 
 	public static final String SESSION_ATTRIBUTE_AUTH_PROCESSADA = "SessioHelper.autenticacioProcessada";
 	public static final String SESSION_ATTRIBUTE_CONTENIDOR_VISTA = "SessioHelper.contenidorVista";
+	private static final String SESSION_ATTRIBUTE_PIPELLA_ANOT_REG = "SessioHelper.pipellaAnotacioRegistre";
 
 
 
@@ -46,6 +47,19 @@ public class SessioHelper {
 	}
 	public static String getContenidorVista(HttpServletRequest request) {
 		return (String)request.getSession().getAttribute(SESSION_ATTRIBUTE_CONTENIDOR_VISTA);
+	}
+	
+	public static void marcatLlegit(
+			HttpServletRequest request) {
+		request.getSession().setAttribute(
+				SESSION_ATTRIBUTE_PIPELLA_ANOT_REG,
+				new Boolean(true));
+	}
+	public static boolean desmarcarLlegit(
+			HttpServletRequest request) {
+		Boolean llegit = (Boolean) request.getSession().getAttribute(SESSION_ATTRIBUTE_PIPELLA_ANOT_REG);
+		request.getSession().removeAttribute(SESSION_ATTRIBUTE_PIPELLA_ANOT_REG);
+		return llegit != null && llegit;
 	}
 
 }

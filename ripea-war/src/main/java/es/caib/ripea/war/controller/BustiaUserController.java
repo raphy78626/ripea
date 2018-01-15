@@ -31,6 +31,7 @@ import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
+import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
@@ -43,8 +44,8 @@ import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
 import es.caib.ripea.war.command.MarcarProcessatCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
@@ -58,7 +59,8 @@ import es.caib.ripea.war.helper.RequestSessionHelper;
 public class BustiaUserController extends BaseUserController {
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaUserController.session.filtre";
-
+	private static final String SESSION_ATTRIBUTE_FILTRE_ADDEXP = "ExpedientFilterCommand.session.filtre.";
+	
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
@@ -69,6 +71,8 @@ public class BustiaUserController extends BaseUserController {
 	private ExpedientService expedientService;
 	@Autowired
 	private MetaExpedientService metaExpedientService;
+	@Autowired
+	private ArxiuService arxiuService;
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -206,17 +210,28 @@ public class BustiaUserController extends BaseUserController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		omplirModelPerAfegirAExpedient(
+				bustiaId,
+				contingutTipus,
+				contingutId,
 				entitatActual,
+				getFiltreExpedientCommand(
+						request,
+						SESSION_ATTRIBUTE_FILTRE_ADDEXP + bustiaId + "." + contingutTipus + "." + contingutId),
 				model,
 				contingutId);
 		return "bustiaPendentContingutAddexp";
 	}
-	@RequestMapping(value = "/addexp/datatable", method = RequestMethod.GET)
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/addexp/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse bustiaPendentAddexpDatatable(
 			HttpServletRequest request,
-			ExpedientFiltreCommand filtre,
+			@PathVariable Long bustiaId,
+			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
+			@PathVariable Long contingutId,
 			Model model) {
+		ExpedientFiltreCommand filtre = getFiltreExpedientCommand(
+				request,
+				SESSION_ATTRIBUTE_FILTRE_ADDEXP + bustiaId + "." + contingutTipus + "." + contingutId);
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,
@@ -226,34 +241,50 @@ public class BustiaUserController extends BaseUserController {
 						DatatablesHelper.getPaginacioDtoFromRequest(request)));
 	}
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/addexp", method = RequestMethod.POST)
+	public String bustiaPendentAddexpFiltrar(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
+			@PathVariable Long contingutId,
+			@Valid ExpedientFiltreCommand expedientFiltreCommand,
+			BindingResult bindingResult,
+			@RequestParam(value = "accio", required = false) String accio,
+			Model model) {
+		if("filtrar".equals(accio)) {
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE_ADDEXP + bustiaId + "." + contingutTipus + "." + contingutId,
+					expedientFiltreCommand);
+			return "redirect:./addexp";
+		} else {
+			RequestSessionHelper.esborrarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE_ADDEXP + bustiaId + "." + contingutTipus + "." + contingutId);
+			return "redirect:./addexp";
+		}
+	}
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/addexp/{expedientId}", method = RequestMethod.POST)
 	public String bustiaPendentAddexpPost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
 			@PathVariable Long contingutId,
-			@Valid ContingutMoureCopiarEnviarCommand command,
-			BindingResult bindingResult,
+			@PathVariable Long expedientId,
 			Model model) {
+		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			omplirModelPerAfegirAExpedient(
-					entitatActual,
-					model,
-					contingutId);
-			return "bustiaPendentContingutAddexp";
-		}
 		expedientService.afegirContingutBustia(
 				entitatActual.getId(),
-				command.getDestiId(),
+				expedientId,
 				bustiaId,
 				contingutTipus,
 				contingutId);
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../../pendent",
+				"redirect:/modal/tancar",
 				"bustia.controller.pendent.contingut.addexp.ok");
 	}
-
+	
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.GET)
 	public String bustiaPendentReenviarGet(
 			HttpServletRequest request,
@@ -384,9 +415,16 @@ public class BustiaUserController extends BaseUserController {
 	}
 
 	private void omplirModelPerAfegirAExpedient(
+			Long bustiaId,
+			BustiaContingutPendentTipusEnumDto contingutTipus,
+			Long contingutId,
 			EntitatDto entitatActual,
+			ExpedientFiltreCommand expedientFiltreCommand,
 			Model model,
 			Long contenidorOrigenId) {
+		model.addAttribute("bustiaId", bustiaId);
+		model.addAttribute("contingutTipus", contingutTipus);
+		model.addAttribute("contingutId", contingutId);
 		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
 		model.addAttribute(
 				"contenidorDesti",
@@ -394,6 +432,11 @@ public class BustiaUserController extends BaseUserController {
 		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
 		command.setOrigenId(contenidorOrigenId);
 		model.addAttribute(command);
+		model.addAttribute("expedientFiltreCommand", expedientFiltreCommand);
+		model.addAttribute(
+				"arxius",
+				arxiuService.findPermesosPerUsuari(
+						entitatActual.getId()));
 	}
 
 	private void omplirModelPerReenviar(
@@ -444,6 +487,23 @@ public class BustiaUserController extends BaseUserController {
 					filtreCommand);
 		}
 		return filtreCommand;
+	}
+	
+	private ExpedientFiltreCommand getFiltreExpedientCommand(
+			HttpServletRequest request,
+			String KEY) {
+		
+		ExpedientFiltreCommand expedientFiltreCommand = (ExpedientFiltreCommand) RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				KEY);
+		if(expedientFiltreCommand == null) {
+			expedientFiltreCommand = new ExpedientFiltreCommand();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					KEY,
+					expedientFiltreCommand);
+		}
+		return expedientFiltreCommand;
 	}
 	
 	

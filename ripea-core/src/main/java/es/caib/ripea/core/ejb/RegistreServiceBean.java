@@ -144,4 +144,15 @@ public class RegistreServiceBean implements RegistreService {
 		return delegate.getJustificant(registreId);
 	}
 
+	@Override
+	public RegistreAnotacioDto marcarLlegida(
+			Long entitatId,
+			Long contingutId,
+			Long registreId) {
+		return delegate.marcarLlegida(
+				entitatId,
+				contingutId,
+				registreId);
+	}
+
 }

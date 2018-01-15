@@ -26,7 +26,8 @@ public class ExpedientFiltreDto implements Serializable {
 	private Date dataTancatInici;
 	private Date dataTancatFi;
 	private boolean meusExpedients;
-
+	private String search;
+	
 
 	public Long getArxiuId() {
 		return arxiuId;
@@ -89,7 +90,13 @@ public class ExpedientFiltreDto implements Serializable {
 	public void setMeusExpedients(boolean meusExpedients) {
 		this.meusExpedients = meusExpedients;
 	}
-
+	public String getSearch() {
+		return search;
+	}
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

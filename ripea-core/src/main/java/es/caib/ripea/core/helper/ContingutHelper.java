@@ -192,6 +192,16 @@ public class ContingutHelper {
 			dto.setMetaNode(metaNode);
 			dto.setValid(
 					cacheHelper.findErrorsValidacioPerNode(expedient).isEmpty());
+			dto.setAmbRegistresSenseLlegir(false);
+			for(ContingutEntity c: expedient.getFills()) {
+				if(c instanceof RegistreEntity) {
+					Boolean llegida = ((RegistreEntity) c).getLlegida();
+					if(llegida != null && !llegida) {
+						dto.setAmbRegistresSenseLlegir(true);
+						break;
+					}
+				}
+			}
 			resposta = dto;
 		} else if (deproxied instanceof DocumentEntity) {
 			DocumentEntity document = (DocumentEntity)deproxied;
@@ -273,6 +283,7 @@ public class ContingutHelper {
 			RegistreAnotacioDto dto = conversioTipusHelper.convertir(
 					registre,
 					RegistreAnotacioDto.class);
+			dto.setLlegida(registre.getLlegida() == null || registre.getLlegida());
 			resposta = dto;
 		}
 		resposta.setId(contingut.getId());

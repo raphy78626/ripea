@@ -476,7 +476,8 @@ CREATE TABLE IPA_REGISTRE
   DATA_ORIG            timestamp without time zone,
   OFICINA_ORIG_CODI    character varying(21),
   OFICINA_ORIG_DESC    character varying(100),
-  JUSTIFICANT_ARXIU_UUID character varying(100)
+  JUSTIFICANT_ARXIU_UUID character varying(100),
+  LLEGIDA              boolean
 );
 
 

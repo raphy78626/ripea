@@ -557,6 +557,49 @@ public class RegistreServiceImpl implements RegistreService {
 			return false;
 		}
 	}
+	
+	@Transactional
+	@Override
+	public RegistreAnotacioDto marcarLlegida(
+			Long entitatId,
+			Long contingutId,
+			Long registreId) {
+		logger.debug("Marcan com a llegida l'anotació de registre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "contingutId=" + contingutId + ", "
+				+ "registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		if (contingut instanceof BustiaEntity) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					contingutId,
+					true);
+		} else {
+			// Comprova l'accés al path del contenidor pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
+					true,
+					false,
+					false,
+					true);
+		}
+		RegistreEntity registre = registreRepository.findByPareAndId(
+					contingut,
+					registreId);
+		registre.updateLlegida(true);
+		
+		return (RegistreAnotacioDto) contingutHelper.toContingutDto(
+				registre);		
+	}
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 

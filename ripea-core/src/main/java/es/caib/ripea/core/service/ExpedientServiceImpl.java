@@ -959,6 +959,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 					filtre.getEstat(),
 					agafatPer == null,
 					agafatPer,
+					filtre.getSearch() == null,
+					filtre.getSearch(),
 					paginacioHelper.toSpringDataPageable(
 							paginacioParams,
 							ordenacioMap));
@@ -1050,7 +1052,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private ExpedientDto toExpedientDto(
 			ExpedientEntity expedient,
 			boolean ambPathIPermisos) {
-		return (ExpedientDto)contingutHelper.toContingutDto(
+		
+		ExpedientDto expedientDto = (ExpedientDto) contingutHelper.toContingutDto(
 				expedient,
 				ambPathIPermisos,
 				false,
@@ -1059,6 +1062,17 @@ public class ExpedientServiceImpl implements ExpedientService {
 				ambPathIPermisos,
 				false,
 				false);
+		expedientDto.setAmbRegistresSenseLlegir(false);
+		for(ContingutEntity contingut: expedient.getFills()) {
+			if(contingut instanceof RegistreEntity) {
+				Boolean llegida = ((RegistreEntity) contingut).getLlegida();
+				if(llegida != null && !llegida) {
+					expedientDto.setAmbRegistresSenseLlegir(true);
+					break;
+				}
+			}
+		}
+		return expedientDto;
 	}
 
 	private void moureContingutPendentDeBustiaAExpedient(
@@ -1072,6 +1086,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 				null);
 		if (contingut instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)contingut;
+			registre.updateLlegida(false);
 			if (registre.getRegla() != null) {
 				throw new ValidationException(
 						contingutId,

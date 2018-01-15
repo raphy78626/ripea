@@ -174,7 +174,9 @@ public class RegistreEntity extends ContingutEntity {
 	@JoinColumn(name = "regla_id")
 	@ForeignKey(name = "ipa_regla_registre_fk")
 	private ReglaEntity regla;
-
+	
+	@Column(name = "llegida")
+	private Boolean llegida;
 
 
 	public RegistreTipusEnum getRegistreTipus() {
@@ -321,7 +323,10 @@ public class RegistreEntity extends ContingutEntity {
 	public ReglaEntity getRegla() {
 		return regla;
 	}
-
+	public Boolean getLlegida() {
+		return llegida;
+	}
+	
 	public void updateRebuig(
 			String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
@@ -357,6 +362,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateJustificantUuid(String justificantArxiuUuid) {
 		this.justificantArxiuUuid = justificantArxiuUuid;
+	}
+	public void updateLlegida(Boolean llegida) {
+		this.llegida = llegida;
 	}
 
 	public static Builder getBuilder(
@@ -556,6 +564,10 @@ public class RegistreEntity extends ContingutEntity {
 			built.dataOrigen = dataOrigen;
 			built.oficinaOrigenCodi = oficinaOrigenCodi;
 			built.oficinaOrigenDescripcio = oficinaOrigenDescripcio;
+			return this;
+		}
+		public Builder llegida(Boolean llegida) {
+			built.llegida = llegida;
 			return this;
 		}
 		public RegistreEntity build() {

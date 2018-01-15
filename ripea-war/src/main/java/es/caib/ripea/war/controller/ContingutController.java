@@ -110,6 +110,7 @@ public class ContingutController extends BaseUserController {
 				request,
 				entitatActual,
 				contingut,
+				SessioHelper.desmarcarLlegit(request),
 				model);
 		return "contingut";
 	}
@@ -363,6 +364,27 @@ public class ContingutController extends BaseUserController {
 						registreId));
 		
 		return "registreDetall";
+	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/llegir", method = RequestMethod.GET)
+	public String registreMarcarLlegida(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
+			Model model) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		registreService.marcarLlegida(
+				entitatActual.getId(),
+				contingutId,
+				registreId);
+		SessioHelper.marcatLlegit(request);		
+		
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../",
+				"contingut.registre.missatge.anotacio.marcada");
 	}
 	
 	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", method = RequestMethod.GET)
@@ -634,6 +656,7 @@ public class ContingutController extends BaseUserController {
 			HttpServletRequest request,
 			EntitatDto entitatActual,
 			ContingutDto contingut,
+			boolean pipellaAnotacionsRegistre,
 			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		model.addAttribute("contingut", contingut);
 		model.addAttribute(
@@ -712,6 +735,7 @@ public class ContingutController extends BaseUserController {
 		model.addAttribute(
 				"pluginArxiuActiu",
 				aplicacioService.isPluginArxiuActiu());
+		model.addAttribute("pipellaAnotacionsRegistre", pipellaAnotacionsRegistre);
 	}
 
 	private void omplirModelPerMoureOCopiar(
