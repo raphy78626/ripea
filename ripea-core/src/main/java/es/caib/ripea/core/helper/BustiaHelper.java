@@ -146,7 +146,7 @@ public class BustiaHelper {
 					unitatOrganitzativaCodi,
 					UnitatOrganitzativaDto.class);
 		}
-		Collections.reverse(path);
+//		Collections.reverse(path);
 		BustiaEntity bustiaDesti = null;
 		for (UnitatOrganitzativaDto unitat: path) {
 			BustiaEntity bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
