@@ -45,6 +45,7 @@ import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.ExpedientHelper;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
@@ -87,6 +88,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreHelper registreHelper;
 	@Resource
 	private PluginHelper pluginHelper;
+	@Resource
+	private ExpedientHelper expedientHelper;
 	
 	@Resource
 	private AlertaService alertaService;
@@ -197,12 +200,9 @@ public class RegistreServiceImpl implements RegistreService {
 					try {
 						reglaAplicar(pendent);
 					} catch (Exception e) {
-						Throwable rootCause = ExceptionUtils.getRootCause(e);
-						AlertaDto alerta = new AlertaDto();
-						alerta.setText(ExceptionUtils.getStackTrace(rootCause));
-						alerta.setLlegida(false);
-						alerta.setContingutId(pendent.getId());
-						alertaService.create(alerta);
+						expedientHelper.crearAlerta(
+								pendent.getId(),
+								e);
 						throw e;
 					}
 				}
@@ -244,12 +244,9 @@ public class RegistreServiceImpl implements RegistreService {
 					if (!esperar)
 						reglaAplicar(pendent);
 				} catch (Exception e) {
-					Throwable rootCause = ExceptionUtils.getRootCause(e);
-					AlertaDto alerta = new AlertaDto();
-					alerta.setText(ExceptionUtils.getStackTrace(rootCause));
-					alerta.setLlegida(false);
-					alerta.setContingutId(pendent.getId());
-					alertaService.create(alerta);
+					expedientHelper.crearAlerta(
+							pendent.getId(),
+							e);
 				}
 			}
 		} else {

@@ -10,10 +10,13 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 
+import es.caib.ripea.core.api.dto.AlertaDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.service.AlertaService;
 import es.caib.ripea.core.entity.DocumentNotificacioEntity;
+import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
@@ -35,7 +38,9 @@ public class ExpedientHelper {
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
-
+	
+	@Resource
+	private AlertaService alertaService;
 
 
 	public boolean ciutadaNotificacioEnviar(
@@ -153,8 +158,22 @@ public class ExpedientHelper {
 					ExceptionUtils.getStackTrace(rootCause),
 					null,
 					false);
+			crearAlerta(
+					notificacio.getExpedient().getId(),
+					ex);
 			return false;
 		}
+	}
+	
+	public void crearAlerta(
+			Long expedientId,
+			Exception e) {
+		Throwable rootCause = ExceptionUtils.getRootCause(e);
+		AlertaDto alerta = new AlertaDto();
+		alerta.setText(ExceptionUtils.getStackTrace(rootCause));
+		alerta.setLlegida(false);
+		alerta.setContingutId(expedientId);
+		alertaService.create(alerta);
 	}
 
 }

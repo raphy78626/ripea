@@ -17,10 +17,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import es.caib.ripea.core.api.exception.NotFoundException;
+import es.caib.ripea.core.api.service.AlertaService;
 import es.caib.ripea.core.api.service.ExecucioMassivaService;
 import es.caib.ripea.core.api.service.SegonPlaService;
 import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaEntity.ExecucioMassivaTipus;
+import es.caib.ripea.core.helper.ExpedientHelper;
 import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.repository.ExecucioMassivaContingutRepository;
 import es.caib.ripea.core.repository.ExecucioMassivaRepository;
@@ -33,8 +35,18 @@ import es.caib.ripea.core.repository.ExecucioMassivaRepository;
 @Service
 public class SegonPlaServiceImpl implements SegonPlaService {
 	
+	
+	@Resource
+	private ExpedientHelper expedientHelper;
+	
+	
 	@Autowired
 	private ExecucioMassivaService execucioMassivaService;
+	
+	@Autowired
+	private AlertaService alertaService;
+	
+	
 	@Resource
 	private ExecucioMassivaRepository execucioMassivaRepository;
 	@Resource
@@ -55,8 +67,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		} catch (Exception ex) {}
 		
 		while (active) {
+			Long cmasiu_id = null;
+			boolean alertat = false;
 			try {
-				Long cmasiu_id = execucioMassivaService.getExecucionsMassivesActiva(ultimaExecucioMassiva);
+				cmasiu_id = execucioMassivaService.getExecucionsMassivesActiva(ultimaExecucioMassiva);
 				if (cmasiu_id != null) {
 					try {
 						execucioMassivaService.executarExecucioMassiva(cmasiu_id);
@@ -67,6 +81,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 						if (errMsg == null || "".equals(errMsg))
 							errMsg = e.getMessage();
 						execucioMassivaService.generaInformeError(cmasiu_id, errMsg);
+						
+						ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findOne(cmasiu_id);
+						expedientHelper.crearAlerta(
+								emc.getContingut().getId(),
+								e);
+						alertat = true;
 					}
 					ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findOne(cmasiu_id);
 					if (emc == null)
@@ -80,6 +100,14 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			} catch (Exception e) {
 				logger.error("La execució de execucions massives ha estat interromput");
 				active = false;
+				
+				if(!alertat && cmasiu_id != null) {
+					ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findOne(cmasiu_id);
+					expedientHelper.crearAlerta(
+							emc.getContingut().getId(),
+							e);
+					alertat = true;
+				}
 			}
 		}
 	}
