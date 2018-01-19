@@ -961,6 +961,8 @@ public class ExpedientServiceImpl implements ExpedientService {
 					agafatPer,
 					filtre.getSearch() == null,
 					filtre.getSearch(),
+					filtre.getTipusId() == null,
+					filtre.getTipusId(),
 					paginacioHelper.toSpringDataPageable(
 							paginacioParams,
 							ordenacioMap));

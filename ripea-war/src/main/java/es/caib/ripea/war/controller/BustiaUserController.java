@@ -437,6 +437,9 @@ public class BustiaUserController extends BaseUserController {
 				"arxius",
 				arxiuService.findPermesosPerUsuari(
 						entitatActual.getId()));
+		model.addAttribute(
+				"expedientTipus",
+				metaExpedientService.findByEntitat(entitatActual.getId()));
 	}
 
 	private void omplirModelPerReenviar(

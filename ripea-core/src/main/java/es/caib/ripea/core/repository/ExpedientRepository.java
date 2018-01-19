@@ -78,7 +78,8 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			"and (:esNullTancatFi = true or e.createdDate <= :tancatFi) " +
 			"and (:esNullEstat = true or e.estat = :estat) " +
 			"and (:esNullAgafatPer = true or e.agafatPer = :agafatPer) " +
-			"and (:esNullSearch = true or lower(e.nom) like lower('%'||:search||'%') or lower(e.codi||'/'||e.sequencia||'/'||e.any) like lower('%'||:search||'%'))")
+			"and (:esNullSearch = true or lower(e.nom) like lower('%'||:search||'%') or lower(e.codi||'/'||e.sequencia||'/'||e.any) like lower('%'||:search||'%'))" +
+			"and (:esNullTipusId = true or e.metaNode.id = :tipusId) ")
 	Page<ExpedientEntity> findByEntitatAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullArxiu") boolean esNullArxiu,
@@ -104,6 +105,8 @@ public interface ExpedientRepository extends JpaRepository<ExpedientEntity, Long
 			@Param("agafatPer") UsuariEntity agafatPer,
 			@Param("esNullSearch") boolean esNullSearch,
 			@Param("search") String search,
+			@Param("esNullTipusId") boolean esNullTipusId,
+			@Param("tipusId") Long tipusId,
 			Pageable pageable);
 
 	@Query(	"select" +

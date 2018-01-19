@@ -76,6 +76,7 @@ pageContext.setAttribute(
 				$("#nom").val("");
 				$("#arxiuId").prop('selectedIndex', 0).change();
 				$("#estat").prop('selectedIndex', 0).change();
+				$("#tipusId").prop('selectedIndex', 0).change();
 			});
 			
 			var expedientId;
@@ -106,6 +107,13 @@ pageContext.setAttribute(
 		});
 	
 	</script>
+	
+	<style>
+		.selected td {
+    		background-color: LightYellow !important;
+    		color: black !important;
+ 		}
+	</style>
 </head>
 <body>
 <c:set var="mfns"><spring:message code="bustia.pendent.addexp.missatge.fila.no.seleccionada"/></c:set>
@@ -121,12 +129,15 @@ pageContext.setAttribute(
 			<rip:inputText name="nom" inline="true" placeholderKey="expedient.list.user.placeholder.titol"/>
 		</div>
 		<div class="no-padding-right col-sm-4 collapse">
+			<rip:inputSelect name="tipusId" optionItems="${expedientTipus}" optionValueAttribute="id" optionTextAttribute="identificador" emptyOption="true" placeholderKey="expedient.list.user.placeholder.tipus" inline="true"/>
+		</div>
+		<div class="no-margin-bottom  no-padding-left col-sm-4 collapse">
 			<rip:inputSelect name="arxiuId" optionItems="${arxius}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="expedient.list.user.placeholder.arxiu" inline="true"/>
 		</div>
-		<div class="no-margin-bottom no-padding-left col-sm-4 collapse">
+		<div class="no-margin-bottom col-sm-4 collapse">
 			<rip:inputSelect name="estat" optionItems="${estatExpedientEnum}" optionTextKeyAttribute="text" optionValueAttribute="value" emptyOption="true" placeholderKey="expedient.list.user.placeholder.estat" inline="true"/>
 		</div>
-		<div class="col-sm-5 collapse"></div>
+		<div class="col-sm-1 collapse"></div>
 		<div class="no-padding-left no-padding-right col-sm-3 pull-right">
 			<div class="pull-right">
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
@@ -146,9 +157,9 @@ pageContext.setAttribute(
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
-				<th data-col-name="numero" data-orderable="false"><spring:message code="bustia.pendent.addexp.columna.numero"/></th>
+				<th data-col-name="numero" data-orderable="false" width="10%"><spring:message code="bustia.pendent.addexp.columna.numero"/></th>
 				<th data-col-name="nom" data-orderable="false" width="30%"><spring:message code="bustia.pendent.addexp.columna.titol"/></th>
-				<th data-col-name="tipus" data-orderable="false" width="30%"><spring:message code="bustia.pendent.addexp.columna.tipus"/></th>
+				<th data-col-name="metaNode.codi" data-orderable="false" width="15%"><spring:message code="bustia.pendent.addexp.columna.tipus"/></th>
 				<th data-col-name="arxiu.nom" data-orderable="false" width="15%"><spring:message code="bustia.pendent.addexp.columna.arxiu"/></th>
 				<th data-col-name="estat" data-orderable="false" data-template="#cellEstatTemplate" width="10%">
 					<spring:message code="bustia.pendent.addexp.columna.estat"/>

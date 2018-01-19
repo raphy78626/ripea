@@ -30,6 +30,8 @@ public class ExpedientFiltreCommand {
 	private boolean meusExpedients;
 	private String search;
 	
+	private Long tipusId;
+	
 
 	public Long getArxiuId() {
 		return arxiuId;
@@ -98,6 +100,14 @@ public class ExpedientFiltreCommand {
 	public void setSearch(String search) {
 		this.search = search;
 	}
+		
+	public Long getTipusId() {
+		return tipusId;
+	}
+	public void setTipusId(Long tipusId) {
+		this.tipusId = tipusId;
+	}
+	
 	
 	public static ExpedientFiltreCommand asCommand(ExpedientFiltreDto dto) {
 		return ConversioTipusHelper.convertir(

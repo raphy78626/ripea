@@ -28,6 +28,8 @@ public class ExpedientFiltreDto implements Serializable {
 	private boolean meusExpedients;
 	private String search;
 	
+	private Long tipusId;
+	
 
 	public Long getArxiuId() {
 		return arxiuId;
@@ -96,6 +98,14 @@ public class ExpedientFiltreDto implements Serializable {
 	public void setSearch(String search) {
 		this.search = search;
 	}
+	
+	public Long getTipusId() {
+		return tipusId;
+	}
+	public void setTipusId(Long tipusId) {
+		this.tipusId = tipusId;
+	}
+	
 	
 	@Override
 	public String toString() {
