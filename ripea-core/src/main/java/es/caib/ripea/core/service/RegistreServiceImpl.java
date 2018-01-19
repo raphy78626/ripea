@@ -512,7 +512,6 @@ public class RegistreServiceImpl implements RegistreService {
 		annex.setFitxerTamany(document.getContingut().getContingut().length);
 		annex.setFitxerTipusMime(document.getContingut().getTipusMime());
 		annex.setTitol(document.getNom());
-		annex.setSicresTipusDocument(document.getTipus().name());
 		DocumentMetadades metadades = document.getMetadades();
 		if (metadades != null) {
 			annex.setDataCaptura(metadades.getDataCaptura());
