@@ -183,6 +183,7 @@ $(document).ready(function() {
 							<th><spring:message code="contingut.log.columna.usuari"/></th>
 							<th><spring:message code="contingut.log.columna.origen"/></th>
 							<th><spring:message code="contingut.log.columna.desti"/></th>
+							<th><spring:message code="contingut.log.columna.comentari"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -212,6 +213,7 @@ $(document).ready(function() {
 										<c:when test="${moviment.desti.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
 									</c:choose>#${moviment.desti.id}
 								</td>
+								<td>${moviment.comentari}</td>
 							</tr>
 						</c:forEach>
 					</tbody>

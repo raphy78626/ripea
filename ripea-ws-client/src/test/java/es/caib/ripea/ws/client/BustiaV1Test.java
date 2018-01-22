@@ -49,9 +49,9 @@ public class BustiaV1Test {
 		RegistreAnotacio anotacio = new RegistreAnotacio(); 
 		anotacio.setAplicacioCodi("CLIENT_TEST");
 		anotacio.setAplicacioVersio("2");
-		anotacio.setAssumpteCodi("CodA");
+		anotacio.setAssumpteCodi("A1");
         anotacio.setAssumpteDescripcio("Descripcio CodA");
-        anotacio.setAssumpteTipusCodi("TD01");
+        anotacio.setAssumpteTipusCodi("A1");
         anotacio.setAssumpteDescripcio("Assumpte de proves");
         anotacio.setUsuariCodi("u104848");
         anotacio.setUsuariNom("VHZ");
@@ -121,7 +121,7 @@ public class BustiaV1Test {
         
 		getBustiaServicePort().enviarAnotacioRegistreEntrada(
 				"A04003003", // "entitatCodi",
-				"A04019299", // "unitatAdministrativaCodi",
+				"A04013529", // "unitatAdministrativaCodi",
 				anotacio);
 	}
 

@@ -34,7 +34,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	@Query("from RegistreEntity r " +
 		    "where r.procesEstat = es.caib.ripea.core.api.registre.RegistreProcesEstatEnum.PENDENT " +
 			"	and r.regla is not null " +
-		    "	and r.regla.backofficeTipus <> es.caib.ripea.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
+		    "	and (r.regla.backofficeTipus is null or r.regla.backofficeTipus <> es.caib.ripea.core.api.dto.BackofficeTipusEnumDto.SISTRA) " +
 		    "order by r.data asc")
 	List<RegistreEntity> findAmbReglaPendentProcessar();
 	

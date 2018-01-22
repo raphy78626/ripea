@@ -33,8 +33,8 @@ import es.caib.ripea.core.api.service.ws.BustiaV0WsService.BustiaContingutTipus;
 public class BustiaWsTest {
 
 	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/bustia";
-	private static final String USERNAME = "tomeud";
-	private static final String PASSWORD = "tomeud";
+	private static final String USERNAME = "admin";
+	private static final String PASSWORD = "admin15";
 
 	public static void main(String[] args) {
 		try {

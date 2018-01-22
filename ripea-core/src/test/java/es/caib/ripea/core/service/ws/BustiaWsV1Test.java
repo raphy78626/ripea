@@ -45,6 +45,7 @@ public class BustiaWsV1Test extends BustiaBaseTest {
 		anotacio.setIdentificador(numeroIdentificador);
 		anotacio.setExtracte("Extracte " + numeroIdentificador);
 		anotacio.setOficinaCodi("0");
+		anotacio.setAssumpteCodi("A1");
 		anotacio.setAssumpteTipusCodi("0");
 		anotacio.setIdiomaCodi("CA");
 		anotacio.setEntitatCodi("?");
@@ -59,8 +60,8 @@ public class BustiaWsV1Test extends BustiaBaseTest {
 		
 		// Envia l'anotació de registre.
 		getBustiaService().enviarAnotacioRegistreEntrada(
-				"A04019299",
-				"A04019299",
+				"A04003003",
+				"A04013529",
 				anotacio);
 	}
 	
@@ -129,6 +130,7 @@ public class BustiaWsV1Test extends BustiaBaseTest {
 				annex.setEniDataCaptura(ara);
 				annex.setEniOrigen("0");
 				annex.setEniTipusDocumental("TD99");
+				annex.setFitxerArxiuUuid("9f33c5c7-7d0f-4d70-9082-c541a42cc041");
 //				annex.setSicresTipusDocument("03");
 				
 				// Llegeix el contingut del fitxer i ho guarda en base 64
