@@ -300,13 +300,13 @@ public class BustiaUserController extends BaseUserController {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../" + bustiaId,
-					"contenidor.controller.registre.reintentat.ok");
+					"contingut.admin.controller.registre.reintentat.ok");
 		} else {
 			MissatgesHelper.error(
 					request,
 					getMessage(
 							request, 
-							"contenidor.controller.registre.reintentat.error",
+							"contingut.admin.controller.registre.reintentat.error",
 							null));
 			return "redirect:../" + registreId;
 		}

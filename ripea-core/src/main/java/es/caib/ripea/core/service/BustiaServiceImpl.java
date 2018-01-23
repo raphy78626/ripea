@@ -45,6 +45,7 @@ import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.entity.BustiaEntity;
@@ -1106,7 +1107,7 @@ public class BustiaServiceImpl implements BustiaService {
 			if (RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
 				bustiaContingut.setError(true);
 			}
-			bustiaContingut.setProcesAutomatic(anotacio.getRegla() != null);
+			bustiaContingut.setProcesAutomatic(anotacio.getRegla() != null && (RegistreProcesEstatEnum.PENDENT == anotacio.getProcesEstat() || RegistreProcesEstatSistraEnum.PENDENT == anotacio.getProcesEstatSistra()));
 		} else if (deproxied instanceof ExpedientEntity) {
 			bustiaContingut.setTipus(BustiaContingutPendentTipusEnumDto.EXPEDIENT);
 		} else if (deproxied instanceof ExpedientEntity) {

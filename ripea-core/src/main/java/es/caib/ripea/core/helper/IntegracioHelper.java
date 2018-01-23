@@ -146,7 +146,7 @@ public class IntegracioHelper {
 
 
 
-	private LinkedList<IntegracioAccioDto> getLlistaAccions(
+	private synchronized LinkedList<IntegracioAccioDto> getLlistaAccions(
 			String integracioCodi) {
 		LinkedList<IntegracioAccioDto> accions = accionsIntegracio.get(integracioCodi);
 		if (accions == null) {
