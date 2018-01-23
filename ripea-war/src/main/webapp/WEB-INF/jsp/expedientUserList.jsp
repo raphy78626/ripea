@@ -218,7 +218,7 @@ function getCookie(cname) {
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
-								<li><a href="contingut/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.consultar"/></a></li>
+								<li><a href="contingut/{{:id}}"><span class="fa fa-folder-open-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.gestionar"/></a></li>
 								{{if metaNode.usuariActualWrite}}
 									<li><a href="contingut/{{:pare.id}}/expedient/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;<spring:message code="comu.boto.modificar"/>...</a></li>
 								{{/if}}
