@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import es.caib.ripea.core.entity.AlertaEntity;
-import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.ContingutEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -41,5 +41,45 @@ public interface AlertaRepository extends JpaRepository<AlertaEntity, Long> {
 			"   a.contingut.id = :id " +
 			"AND " +
 			"   a.llegida = :llegida")
-	long countByLlegidaAndContingutId(@Param("llegida") boolean llegida, @Param("id") Long id);
+	long countByLlegidaAndContingutId(
+			@Param("llegida") boolean llegida,
+			@Param("id") Long id);
+	
+	@Query("select " +
+			"   count(a) " +
+			"from " +
+			"   AlertaEntity a " +
+			"where " +
+			"   a.contingut in :continguts " +
+			"AND " +
+			"   a.llegida = :llegida")
+	long countByLlegidaAndContinguts(
+			@Param("llegida") boolean llegida,
+			@Param("continguts") List<ContingutEntity> continguts);
+	
+	@Query("select " +
+			"   a " +
+			"from " +
+			"   AlertaEntity a " +
+			"where " +
+			"   a.contingut in :continguts " +
+			"AND " +
+			"   a.llegida = :llegida")
+	Page<AlertaEntity> findByLlegidaAndContinguts(
+			@Param("llegida") boolean llegida,
+			@Param("continguts") List<ContingutEntity> continguts,
+			Pageable pageable);
+	
+	@Query("select " +
+			"   a " +
+			"from " +
+			"   AlertaEntity a " +
+			"where " +
+			"   a.contingut in :continguts " +
+			"AND " +
+			"   a.llegida = :llegida")
+	List<AlertaEntity> findByLlegidaAndContinguts(
+			@Param("llegida") boolean llegida,
+			@Param("continguts") List<ContingutEntity> continguts,
+			Sort sort);
 }

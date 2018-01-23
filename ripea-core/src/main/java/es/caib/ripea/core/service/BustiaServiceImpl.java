@@ -74,6 +74,7 @@ import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
 import es.caib.ripea.core.helper.XmlHelper;
+import es.caib.ripea.core.repository.AlertaRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.ContingutComentariRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
@@ -106,6 +107,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private ContingutRepository contingutRepository;
 	@Resource
 	private ContingutComentariRepository contingutComentariRepository;
+	@Resource
+	private AlertaRepository alertaRepository;
 
 	@Resource
 	private PermisosHelper permisosHelper;
@@ -1121,6 +1124,10 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 		
 		bustiaContingut.setNumComentaris(contingutComentariRepository.countByContingut(contingut));
+				
+		bustiaContingut.setAlerta(alertaRepository.countByLlegidaAndContingutId(
+				false,
+				contingut.getId()) > 0);
 		
 		return bustiaContingut;
 	}

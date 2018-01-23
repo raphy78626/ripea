@@ -38,9 +38,10 @@ public class ExpedientHelper {
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
-	
 	@Resource
-	private AlertaService alertaService;
+	private MessageHelper messageHelper;
+	@Resource
+	private AlertaHelper alertaHelper;
 
 
 	public boolean ciutadaNotificacioEnviar(
@@ -148,6 +149,12 @@ public class ExpedientHelper {
 					null,
 					recepcio,
 					entregadaORebutjada);
+			alertaHelper.crearAlerta(
+					notificacio.getExpedient().getId(),
+					messageHelper.getMessage(
+							"alertes.segon.pla.notificacions",
+							new Object[] {notificacio.getId()}),
+					null);
 			return true;
 		} catch (Exception ex) {
 			Throwable rootCause = ExceptionUtils.getRootCause(ex);
@@ -158,22 +165,14 @@ public class ExpedientHelper {
 					ExceptionUtils.getStackTrace(rootCause),
 					null,
 					false);
-			crearAlerta(
+			alertaHelper.crearAlerta(
 					notificacio.getExpedient().getId(),
+					messageHelper.getMessage(
+							"alertes.segon.pla.notificacions.error",
+							new Object[] {notificacio.getId()}),
 					ex);
 			return false;
 		}
-	}
-	
-	public void crearAlerta(
-			Long expedientId,
-			Exception e) {
-		Throwable rootCause = ExceptionUtils.getRootCause(e);
-		AlertaDto alerta = new AlertaDto();
-		alerta.setText(ExceptionUtils.getStackTrace(rootCause));
-		alerta.setLlegida(false);
-		alerta.setContingutId(expedientId);
-		alertaService.create(alerta);
 	}
 
 }

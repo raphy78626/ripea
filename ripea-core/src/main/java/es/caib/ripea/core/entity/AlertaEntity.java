@@ -26,8 +26,10 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 @EntityListeners(AuditingEntityListener.class)
 public class AlertaEntity extends RipeaAuditable<Long> {
 	
-	@Column(name = "text", length = 2048, nullable = false)
+	@Column(name = "text", length = 256, nullable = false)
 	private String text;
+	@Column(name = "error", length = 2048)
+	private String error;
 	@Column(name = "llegida", nullable = false)
 	private Boolean llegida;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
@@ -40,6 +42,10 @@ public class AlertaEntity extends RipeaAuditable<Long> {
 		return text;
 	}
 	
+	public String getError() {
+		return error;
+	}
+
 	public Boolean getLlegida() {
 		return llegida;
 	}
@@ -50,8 +56,10 @@ public class AlertaEntity extends RipeaAuditable<Long> {
 
 	public void update(
 			String text,
+			String error,
 			boolean llegida) {
 		this.text = text;
+		this.error = error;
 		this.llegida = new Boolean(llegida);
 	}
 	
@@ -66,6 +74,8 @@ public class AlertaEntity extends RipeaAuditable<Long> {
 	 * 
 	 * @param text
 	 *            El valor de l'atribut text.
+	 * @param error
+	 *            El error opcional de l'alerta.
 	 * @param llegida
 	 *            El valor de l'atribut llegida.
 	 * @param contingut
@@ -75,10 +85,12 @@ public class AlertaEntity extends RipeaAuditable<Long> {
 	 */
 	public static Builder getBuilder(
 			String text,
+			String error,
 			boolean llegida,
 			ContingutEntity contingut) {
 		return new Builder(
 				text,
+				error,
 				llegida,
 				contingut);
 	}
@@ -92,10 +104,12 @@ public class AlertaEntity extends RipeaAuditable<Long> {
 		AlertaEntity built;
 		Builder(
 				String text,
+				String error,
 				boolean llegida,
 				ContingutEntity contingut) {
 			built = new AlertaEntity();
 			built.text = text;
+			built.error = error;
 			built.llegida = new Boolean(llegida);
 			built.contingut = contingut;
 		}

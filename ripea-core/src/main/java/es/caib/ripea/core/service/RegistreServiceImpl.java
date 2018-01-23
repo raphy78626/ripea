@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.Firma;
-import es.caib.ripea.core.api.dto.AlertaDto;
 import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -32,7 +31,6 @@ import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
-import es.caib.ripea.core.api.service.AlertaService;
 import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -40,12 +38,14 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.FirmaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.helper.AlertaHelper;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.ExpedientHelper;
+import es.caib.ripea.core.helper.MessageHelper;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
@@ -90,9 +90,10 @@ public class RegistreServiceImpl implements RegistreService {
 	private PluginHelper pluginHelper;
 	@Resource
 	private ExpedientHelper expedientHelper;
-	
 	@Resource
-	private AlertaService alertaService;
+	private MessageHelper messageHelper;
+	@Resource
+	private AlertaHelper alertaHelper;
 	
 
 	@Transactional(readOnly = true)
@@ -200,8 +201,11 @@ public class RegistreServiceImpl implements RegistreService {
 					try {
 						reglaAplicar(pendent);
 					} catch (Exception e) {
-						expedientHelper.crearAlerta(
+						alertaHelper.crearAlerta(
 								pendent.getId(),
+								messageHelper.getMessage(
+										"alertes.segon.pla.aplicar.regles.error",
+										new Object[] {pendent.getId()}),
 								e);
 						throw e;
 					}
@@ -241,11 +245,15 @@ public class RegistreServiceImpl implements RegistreService {
 						ara  = new Date();
 						esperar = ara.before(properProcessamentCal.getTime());
 					}
-					if (!esperar)
+					if (!esperar) {
 						reglaAplicar(pendent);
+					}
 				} catch (Exception e) {
-					expedientHelper.crearAlerta(
+					alertaHelper.crearAlerta(
 							pendent.getId(),
+							messageHelper.getMessage(
+									"alertes.segon.pla.aplicar.regles.backoffice.sistra.error",
+									new Object[] {pendent.getId()}),
 							e);
 				}
 			}
@@ -559,6 +567,14 @@ public class RegistreServiceImpl implements RegistreService {
 		try {
 			reglaHelper.aplicar(anotacio.getId());
 			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
+			
+			alertaHelper.crearAlerta(
+					anotacio.getId(),
+					messageHelper.getMessage(
+							"alertes.segon.pla.aplicar.regles",
+							new Object[] {anotacio.getId()}),
+					null);
+			
 			return true;
 		} catch (Exception ex) {
 			String procesError;
@@ -574,6 +590,14 @@ public class RegistreServiceImpl implements RegistreService {
 					"id=" + anotacio.getId() + ", " +
 					"núm.=" + anotacio.getIdentificador() + "): " +
 					procesError);
+			
+			alertaHelper.crearAlerta(
+					anotacio.getId(),
+					messageHelper.getMessage(
+							"alertes.segon.pla.aplicar.regles.error",
+							new Object[] {anotacio.getId()}),
+					ex);
+			
 			return false;
 		}
 	}

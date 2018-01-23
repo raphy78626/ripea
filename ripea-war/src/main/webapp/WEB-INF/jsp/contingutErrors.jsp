@@ -29,7 +29,7 @@
 			});
 			
 			$('#taulaAlertes').on('rowinfo.dataTable', function(e, td, rowData) {
-				$(td).append(rowData.text);
+				$(td).append(rowData.error);
 				webutilModalAdjustHeight();
 			});
 			
@@ -60,8 +60,8 @@
 				<thead>
 					<tr>
 						<th data-col-name="id" data-visible="false">#</th>
-						<th data-col-name="text" data-visible="false">#</th>
-						<th data-col-name="textResum" data-orderable="false" width="90%"><spring:message code="contingut.error.llista.text"/></th>
+						<th data-col-name="error" data-visible="false">#</th>
+						<th data-col-name="text" data-orderable="false" width="90%"><spring:message code="contingut.error.llista.text"/></th>
 						<th data-col-name="id" data-orderable="false" data-template="#cellAccionsRegistreTemplate" width="10%">
 							<script id="cellAccionsRegistreTemplate" type="text/x-jsrender">
 								<button class="btn btn-default" href="errors/{{:id}}/llegir" data-toggle="ajax" data-confirm="<spring:message code="contingut.error.confirmacio.llegir"/>">

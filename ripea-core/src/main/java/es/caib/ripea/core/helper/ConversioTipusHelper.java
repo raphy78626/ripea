@@ -87,6 +87,7 @@ public class ConversioTipusHelper {
 						AlertaDto target = new AlertaDto();
 						target.setId(source.getId());
 						target.setText(source.getText());
+						target.setError(source.getError());
 						target.setLlegida(source.getLlegida().booleanValue());
 						target.setContingutId(source.getContingut().getId());
 						

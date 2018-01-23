@@ -14,6 +14,7 @@ public class AlertaDto {
 	
 	private Long id;
 	private String text;
+	private String error;
 	private boolean llegida;
 	private Long contingutId;
 	
@@ -32,6 +33,13 @@ public class AlertaDto {
 		this.text = text;
 	}
 	
+	public String getError() {
+		return error;
+	}
+	public void setError(String error) {
+		this.error = error;
+	}
+	
 	public boolean isLlegida() {
 		return llegida;
 	}
@@ -44,11 +52,6 @@ public class AlertaDto {
 	}
 	public void setContingutId(Long contingutId) {
 		this.contingutId = contingutId;
-	}
-	
-	
-	public String getTextResum() {
-		return text.length() < 90 ? text + " ..." : text.substring(0, 90) + " ...";
 	}
 	
 	

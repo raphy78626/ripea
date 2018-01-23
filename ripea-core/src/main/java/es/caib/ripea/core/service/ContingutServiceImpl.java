@@ -767,9 +767,18 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				false,
 				ambVersions);
+		
+		
 		result.setAlerta(alertaRepository.countByLlegidaAndContingutId(
 				false,
 				result.getId()) > 0);
+				
+		List<ContingutEntity> continguts = contingutRepository.findRegistresByPareId(result.getId());
+		if(!continguts.isEmpty() && alertaRepository.countByLlegidaAndContinguts(
+				false,
+				continguts
+				) > 0) result.setAlerta(true);
+		
 		return result;
 	}
 

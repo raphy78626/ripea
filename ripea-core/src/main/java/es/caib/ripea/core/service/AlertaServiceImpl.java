@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -48,6 +50,7 @@ public class AlertaServiceImpl implements AlertaService {
 				alerta.getContingutId());
 		AlertaEntity entity = AlertaEntity.getBuilder(
 				alerta.getText(),
+				alerta.getError(),
 				alerta.isLlegida(),
 				contingut).build();
 		return conversioTipusHelper.convertir(
@@ -67,6 +70,7 @@ public class AlertaServiceImpl implements AlertaService {
 				alerta.getContingutId());
 		entity.update(
 				alerta.getText(),
+				alerta.getError(),
 				alerta.isLlegida());
 		entity.updateContingut(
 				contingut);
@@ -126,18 +130,20 @@ public class AlertaServiceImpl implements AlertaService {
 			PaginacioParamsDto paginacioParams) {
 		logger.debug("Consulta de totes les alertes paginades (paginacioParams=" + paginacioParams + ")");
 		PaginaDto<AlertaDto> resposta;
-		if (paginacioHelper.esPaginacioActivada(paginacioParams)) {
+		List<ContingutEntity> continguts = contingutRepository.findRegistresByPareId(contingutId);
+		continguts.add(contingutRepository.findOne(contingutId));
+		if (paginacioHelper.esPaginacioActivada(paginacioParams)) {	
 			resposta = paginacioHelper.toPaginaDto(
-					alertaRepository.findByLlegidaAndContingutId(
+					alertaRepository.findByLlegidaAndContinguts(
 							llegida,
-							contingutId,
+							continguts,
 							paginacioHelper.toSpringDataPageable(paginacioParams)),
 					AlertaDto.class);
 		} else {
 			resposta = paginacioHelper.toPaginaDto(
-					alertaRepository.findByLlegidaAndContingutId(
+					alertaRepository.findByLlegidaAndContinguts(
 							llegida,
-							contingutId,
+							continguts,
 							paginacioHelper.toSpringDataSort(paginacioParams)),
 					AlertaDto.class);
 		}
