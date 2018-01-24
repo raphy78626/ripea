@@ -108,14 +108,14 @@ public class EmailHelper {
 			}
 			missatge.setText(
 					"Nou element rebut a la bústia:\n" +
-					"\tEntitat: " + bustia.getEntitat().getNom() + "\n" +
+					"\tEntitat: " + ((bustia != null && bustia.getEntitat() != null) ? bustia.getEntitat().getNom() : "") + "\n" +
 					"\tUnitat organitzativa: " + unitatOrganitzativa + "\n" +
-					"\tBústia: " + bustia.getNom() + "\n\n" +
+					"\tBústia: " + (bustia != null ? bustia.getNom() : "") + "\n\n" +
 					"Dades de l'element: \n" +
 					"\tTipus: " + tipus + "\n" +
-					"\tNom: " + contingut.getNom() + "\n" +
-					"\tRemitent: " + contenidorMoviment.getRemitent().getNom() + "\n" +
-					"\tComentari: " + contenidorMoviment.getComentari() + "\n");
+					"\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
+					"\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
+					"\tComentari: " + (contenidorMoviment != null ? contenidorMoviment.getComentari() : "") + "\n");
 			mailSender.send(missatge);
 		}
 	}

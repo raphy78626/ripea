@@ -77,7 +77,7 @@ public class ReglaHelper {
 		ReglaEntity reglaAplicable = null;
 		for (ReglaEntity regla: regles) {
 			if (regla.getUnitatCodi() == null || regla.getUnitatCodi().equals(unitatAdministrativa)) {
-				if (anotacio.getAssumpteTipusCodi() != null && anotacio.getAssumpteTipusCodi().equals(regla.getAssumpteCodi())) {
+				if (anotacio.getAssumpteCodi() != null && anotacio.getAssumpteCodi().equals(regla.getAssumpteCodi())) {
 					reglaAplicable = regla;
 					break;
 				}
