@@ -663,6 +663,37 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+	public void arxiuExpedientEsborrarPerUuid(
+			String uuid) {
+		String accioDescripcio = "Eliminació d'un expedient";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("uuid", uuid);
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().expedientEsborrar(uuid);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
 
 	public void arxiuExpedientTancar(
 			ExpedientEntity expedient) {

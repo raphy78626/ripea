@@ -3,9 +3,7 @@
  */
 package es.caib.ripea.core.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +67,6 @@ import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.PluginHelper;
-import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
@@ -1158,10 +1155,10 @@ public class BustiaServiceImpl implements BustiaService {
 			}
 		} catch (Exception ex) {
 			try {
-				eliminarContingutExistent(anotacio);
+				eliminarContingutExistent(expedientCreat.getIdentificador());
 			} catch (Exception ex2) {
 				logger.error(
-						"Error al eliminar els continguts relacionats amb els annexos de l'anotació de registre",
+						"Error al eliminar l'expedient temporal creat al registre digital",
 						ex2);
 			}
 			throw new BustiaServiceException(
@@ -1232,13 +1229,8 @@ public class BustiaServiceImpl implements BustiaService {
 	}
 
 	private void eliminarContingutExistent(
-			RegistreEntity anotacio) throws IOException {
-		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.ripea.bustia.contingut.documents.dir");
-		for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
-			File doc = new File(pathName + "/" + annex.getId() + "_d." + annex.getFitxerTipusMime());
-			if (doc != null)
-				Files.deleteIfExists(doc.toPath());
-		}
+			String expedientUuid) {
+		pluginHelper.arxiuExpedientEsborrarPerUuid(expedientUuid);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
