@@ -37,7 +37,6 @@ public class ExpedientDto extends NodeDto {
 	private boolean ambRegistresSenseLlegir;
 
 
-
 	public ArxiuDto getArxiu() {
 		return arxiu;
 	}
@@ -184,7 +183,7 @@ public class ExpedientDto extends NodeDto {
 	public boolean isAgafat() {
 		return agafatPer != null;
 	}
-
+	
 	protected ExpedientDto copiarContenidor(ContingutDto original) {
 		ExpedientDto copia = new ExpedientDto();
 		copia.setId(original.getId());

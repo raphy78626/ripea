@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.ripea.core.api.dto.AlertaDto;
 import es.caib.ripea.core.api.dto.ArxiuDto;
 import es.caib.ripea.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
@@ -32,6 +33,7 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.service.ArxiuService;
+import es.caib.ripea.core.api.service.AlertaService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.ExpedientService;
@@ -73,6 +75,9 @@ public class BustiaUserController extends BaseUserController {
 	private MetaExpedientService metaExpedientService;
 	@Autowired
 	private ArxiuService arxiuService;
+	@Autowired
+	private AlertaService alertaService;
+	
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -394,6 +399,48 @@ public class BustiaUserController extends BaseUserController {
 				request,
 				"redirect:/bustiaUser",
 				"bustia.controller.pendent.contingut.reenviat.ok");
+	}
+	
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes", method = RequestMethod.GET)
+	public String bustiaListatAlertes(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long contingutId,
+			Model model) {
+		
+		model.addAttribute("bustiaId", bustiaId);
+		model.addAttribute("contingutId", contingutId);
+		return "registreErrors";
+	}
+	
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse bustiaListatAlertesDatatable(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long contingutId,
+			Model model) {
+		
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				alertaService.findPaginatByLlegida(
+						false,
+						contingutId,
+						DatatablesHelper.getPaginacioDtoFromRequest(request)));
+	}
+	
+	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes/{alertaId}/llegir", method = RequestMethod.GET)
+	@ResponseBody
+	public void bustiaListatAlertesLlegir(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long contingutId,
+			@PathVariable Long alertaId,
+			Model model) {
+		
+		AlertaDto alerta = alertaService.find(alertaId);
+		alerta.setLlegida(true);
+		alertaService.update(alerta);
 	}
 	
 	@ResponseBody

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.ripea.core.api.dto.AlertaDto;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
@@ -42,6 +43,7 @@ import es.caib.ripea.core.api.dto.NodeDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
+import es.caib.ripea.core.api.service.AlertaService;
 import es.caib.ripea.core.api.service.AplicacioService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ContingutService;
@@ -89,6 +91,8 @@ public class ContingutController extends BaseUserController {
 	private BustiaService bustiaService;
 	@Autowired
 	private RegistreService registreService;
+	@Autowired
+	private AlertaService alertaService;
 
 	@Autowired
 	private BeanGeneratorHelper beanGeneratorHelper;
@@ -319,6 +323,32 @@ public class ContingutController extends BaseUserController {
 						entitatActual.getId(),
 						contingutId));
 		return "contingutErrors";
+	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/errors/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse errorsDatatable(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			Model model) {
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				alertaService.findPaginatByLlegida(
+						false,
+						contingutId,
+						DatatablesHelper.getPaginacioDtoFromRequest(request)));
+	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/errors/{alertaId}/llegir", method = RequestMethod.GET)
+	@ResponseBody
+	public void llegirAlerta(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			@PathVariable Long alertaId,
+			Model model) {
+		AlertaDto alerta = alertaService.find(alertaId);
+		alerta.setLlegida(true);
+		alertaService.update(alerta);
 	}
 
 	@RequestMapping(value = "/contingut/{contingutId}/registre/datatable", method = RequestMethod.GET)

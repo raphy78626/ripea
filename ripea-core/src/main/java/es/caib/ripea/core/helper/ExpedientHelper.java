@@ -10,10 +10,13 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 
+import es.caib.ripea.core.api.dto.AlertaDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.service.AlertaService;
 import es.caib.ripea.core.entity.DocumentNotificacioEntity;
+import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
@@ -35,7 +38,10 @@ public class ExpedientHelper {
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
-
+	@Resource
+	private MessageHelper messageHelper;
+	@Resource
+	private AlertaHelper alertaHelper;
 
 
 	public boolean ciutadaNotificacioEnviar(
@@ -143,6 +149,12 @@ public class ExpedientHelper {
 					null,
 					recepcio,
 					entregadaORebutjada);
+			alertaHelper.crearAlerta(
+					notificacio.getExpedient().getId(),
+					messageHelper.getMessage(
+							"alertes.segon.pla.notificacions",
+							new Object[] {notificacio.getId()}),
+					null);
 			return true;
 		} catch (Exception ex) {
 			Throwable rootCause = ExceptionUtils.getRootCause(ex);
@@ -153,6 +165,12 @@ public class ExpedientHelper {
 					ExceptionUtils.getStackTrace(rootCause),
 					null,
 					false);
+			alertaHelper.crearAlerta(
+					notificacio.getExpedient().getId(),
+					messageHelper.getMessage(
+							"alertes.segon.pla.notificacions.error",
+							new Object[] {notificacio.getId()}),
+					ex);
 			return false;
 		}
 	}

@@ -39,11 +39,14 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.FirmaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.helper.AlertaHelper;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
 import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.ExpedientHelper;
+import es.caib.ripea.core.helper.MessageHelper;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
@@ -86,8 +89,13 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreHelper registreHelper;
 	@Resource
 	private PluginHelper pluginHelper;
-
-
+	@Resource
+	private ExpedientHelper expedientHelper;
+	@Resource
+	private MessageHelper messageHelper;
+	@Resource
+	private AlertaHelper alertaHelper;
+	
 
 	@Transactional(readOnly = true)
 	@Override
@@ -191,7 +199,17 @@ public class RegistreServiceImpl implements RegistreService {
 			logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
 			if (!pendents.isEmpty()) {
 				for (RegistreEntity pendent: pendents) {
-					reglaAplicar(pendent);
+					try {
+						reglaAplicar(pendent);
+					} catch (Exception e) {
+						alertaHelper.crearAlerta(
+								pendent.getId(),
+								messageHelper.getMessage(
+										"alertes.segon.pla.aplicar.regles.error",
+										new Object[] {pendent.getId()}),
+								e);
+						throw e;
+					}
 				}
 			} else {
 				logger.debug("No hi ha registres pendents de processar");
@@ -216,19 +234,29 @@ public class RegistreServiceImpl implements RegistreService {
 			Integer minutsEntreReintents;
 			Calendar properProcessamentCal = Calendar.getInstance();
 			for (RegistreEntity pendent: pendents) {
-				// Comprova si ha passat el temps entre reintents o ha d'esperar
-				boolean esperar = false;
-				darrerProcessament = pendent.getProcesData();
-				minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
-				if (darrerProcessament != null && minutsEntreReintents != null) {
-					// Calcula el temps pel proper intent
-					properProcessamentCal.setTime(darrerProcessament);
-					properProcessamentCal.add(Calendar.MINUTE, minutsEntreReintents);
-					ara  = new Date();
-					esperar = ara.before(properProcessamentCal.getTime());
+				try {
+					// Comprova si ha passat el temps entre reintents o ha d'esperar
+					boolean esperar = false;
+					darrerProcessament = pendent.getProcesData();
+					minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
+					if (darrerProcessament != null && minutsEntreReintents != null) {
+						// Calcula el temps pel proper intent
+						properProcessamentCal.setTime(darrerProcessament);
+						properProcessamentCal.add(Calendar.MINUTE, minutsEntreReintents);
+						ara  = new Date();
+						esperar = ara.before(properProcessamentCal.getTime());
+					}
+					if (!esperar) {
+						reglaAplicar(pendent);
+					}
+				} catch (Exception e) {
+					alertaHelper.crearAlerta(
+							pendent.getId(),
+							messageHelper.getMessage(
+									"alertes.segon.pla.aplicar.regles.backoffice.sistra.error",
+									new Object[] {pendent.getId()}),
+							e);
 				}
-				if (!esperar)
-					reglaAplicar(pendent);
 			}
 		} else {
 			logger.debug("No hi ha registres pendents de processar");
@@ -548,6 +576,14 @@ public class RegistreServiceImpl implements RegistreService {
 		try {
 			reglaHelper.aplicar(anotacio.getId());
 			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
+			
+			alertaHelper.crearAlerta(
+					anotacio.getId(),
+					messageHelper.getMessage(
+							"alertes.segon.pla.aplicar.regles",
+							new Object[] {anotacio.getId()}),
+					null);
+			
 			return true;
 		} catch (Exception ex) {
 			String procesError;
@@ -563,6 +599,14 @@ public class RegistreServiceImpl implements RegistreService {
 					"id=" + anotacio.getId() + ", " +
 					"núm.=" + anotacio.getIdentificador() + "): " +
 					procesError);
+			
+			alertaHelper.crearAlerta(
+					anotacio.getId(),
+					messageHelper.getMessage(
+							"alertes.segon.pla.aplicar.regles.error",
+							new Object[] {anotacio.getId()}),
+					ex);
+			
 			return false;
 		}
 	}

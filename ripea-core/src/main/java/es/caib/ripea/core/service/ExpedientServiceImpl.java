@@ -71,9 +71,11 @@ import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
+import es.caib.ripea.core.repository.AlertaRepository;
 import es.caib.ripea.core.repository.ArxiuRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.CarpetaRepository;
+import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
 import es.caib.ripea.core.repository.DocumentNotificacioRepository;
 import es.caib.ripea.core.repository.DocumentPublicacioRepository;
@@ -117,6 +119,10 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private DocumentNotificacioRepository documentNotificacioRepository;
 	@Resource
 	private DocumentPublicacioRepository documentPublicacioRepository;
+	@Resource
+	private AlertaRepository alertaRepository;
+	@Resource
+	private ContingutRepository contingutRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -966,7 +972,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 					paginacioHelper.toSpringDataPageable(
 							paginacioParams,
 							ordenacioMap));
-			return paginacioHelper.toPaginaDto(
+			PaginaDto<ExpedientDto> result = paginacioHelper.toPaginaDto(
 					paginaExpedients,
 					ExpedientDto.class,
 					new Converter<ExpedientEntity, ExpedientDto>() {
@@ -977,6 +983,21 @@ public class ExpedientServiceImpl implements ExpedientService {
 									true);
 						}
 					});
+			for(ExpedientDto e : result) {
+				boolean enAlerta = alertaRepository.countByLlegidaAndContingutId(
+						false,
+						e.getId()
+						) > 0;
+						
+				List<ContingutEntity> continguts = contingutRepository.findRegistresByPareId(e.getId());
+				if(!continguts.isEmpty() && alertaRepository.countByLlegidaAndContinguts(
+						false,
+						continguts
+						) > 0) enAlerta = true;
+				
+				e.setAlerta(enAlerta);
+			}
+			return result;
 		} else {
 			return paginacioHelper.getPaginaDtoBuida(
 					ExpedientDto.class);

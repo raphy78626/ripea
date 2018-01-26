@@ -7,7 +7,11 @@
 				http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 				http://www.springframework.org/schema/jee
 				http://www.springframework.org/schema/jee/spring-jee-3.0.xsd">
-
+				
+	<jee:local-slsb
+			id="alertaService"
+			jndi-name="ripea/AlertaServiceBean/local"
+			business-interface="es.caib.ripea.core.api.service.AlertaService"/>
 	<jee:local-slsb
 			id="aplicacioService"
 			jndi-name="ripea/AplicacioServiceBean/local"

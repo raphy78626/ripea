@@ -54,6 +54,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	RegistreEntity findByPareAndId(
 			ContingutEntity pare,
 			Long id);
+	
+	List<RegistreEntity> findByPareId(
+			Long pareId);
 
 	/*List<RegistreEntity> findByPareAndMotiuRebuigNullOrderByDataAsc(
 			ContingutEntity pare);*/

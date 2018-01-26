@@ -1,4 +1,17 @@
 
+CREATE TABLE IPA_ALERTA
+(
+  ID                   NUMBER(19)               NOT NULL,
+  TEXT                 VARCHAR2(256)            NOT NULL,
+  ERROR                VARCHAR2(2048),
+  LLEGIDA              NUMBER(1)                NOT NULL,
+  CONTINGUT_ID         NUMBER(19),
+  CREATEDBY_CODI       VARCHAR2(64),
+  CREATEDDATE          TIMESTAMP(6),
+  LASTMODIFIEDBY_CODI  VARCHAR2(64),
+  LASTMODIFIEDDATE     TIMESTAMP(6)
+);
+
 CREATE TABLE IPA_USUARI
 (
   CODI          VARCHAR2(64)                    NOT NULL,

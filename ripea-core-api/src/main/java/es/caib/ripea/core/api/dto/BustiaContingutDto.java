@@ -29,6 +29,8 @@ public class BustiaContingutDto implements Serializable {
 	private boolean procesAutomatic;
 	private boolean error;
 	private long numComentaris;
+	
+	private boolean alerta;
 
 	public Long getId() {
 		return id;
@@ -103,6 +105,15 @@ public class BustiaContingutDto implements Serializable {
 	public void setNumComentaris(long numComentaris) {
 		this.numComentaris = numComentaris;
 	}
+	
+	public boolean isAlerta() {
+		return alerta;
+	}
+	public void setAlerta(boolean alerta) {
+		this.alerta = alerta;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

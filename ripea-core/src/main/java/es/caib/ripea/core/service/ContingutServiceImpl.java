@@ -32,7 +32,6 @@ import es.caib.plugins.arxiu.api.Firma;
 import es.caib.ripea.core.api.dto.ArxiuContingutDto;
 import es.caib.ripea.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.ArxiuDetallDto;
-import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
@@ -48,6 +47,7 @@ import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
+import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -87,6 +87,7 @@ import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
+import es.caib.ripea.core.repository.AlertaRepository;
 import es.caib.ripea.core.repository.ContingutComentariRepository;
 import es.caib.ripea.core.repository.ContingutRepository;
 import es.caib.ripea.core.repository.DadaRepository;
@@ -125,6 +126,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private ContingutComentariRepository contingutComentariRepository;
 	@Resource
 	private DocumentRepository documentRepository;
+	@Resource
+	private AlertaRepository alertaRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -755,7 +758,7 @@ public class ContingutServiceImpl implements ContingutService {
 					false,
 					true);
 		}
-		return contingutHelper.toContingutDto(
+		ContingutDto result = contingutHelper.toContingutDto(
 				contingut,
 				true,
 				ambFills,
@@ -764,6 +767,19 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				false,
 				ambVersions);
+		
+		
+		result.setAlerta(alertaRepository.countByLlegidaAndContingutId(
+				false,
+				result.getId()) > 0);
+				
+		List<ContingutEntity> continguts = contingutRepository.findRegistresByPareId(result.getId());
+		if(!continguts.isEmpty() && alertaRepository.countByLlegidaAndContinguts(
+				false,
+				continguts
+				) > 0) result.setAlerta(true);
+		
+		return result;
 	}
 
 	@Transactional(readOnly = true)

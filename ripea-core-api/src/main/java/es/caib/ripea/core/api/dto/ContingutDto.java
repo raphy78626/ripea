@@ -30,9 +30,10 @@ public abstract class ContingutDto extends AuditoriaDto {
 	protected String darrerMovimentComentari;
 
 	protected boolean perConvertirJson;
-
-
-
+	
+	private boolean alerta;
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -110,6 +111,8 @@ public abstract class ContingutDto extends AuditoriaDto {
 			}
 		}
 	}
+	
+	
 
 	public ContingutDto getPare() {
 		if (getPath() != null && !getPath().isEmpty())
@@ -389,7 +392,14 @@ public abstract class ContingutDto extends AuditoriaDto {
 			return null;
 		}
 	}
-
+	
+	public boolean isAlerta() {
+		return alerta;
+	}
+	public void setAlerta(boolean alerta) {
+		this.alerta = alerta;
+	}
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

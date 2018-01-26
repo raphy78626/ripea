@@ -1,4 +1,17 @@
 
+CREATE TABLE IPA_ALERTA
+(
+  ID                   BIGINT                          NOT NULL,
+  TEXT                 character varying(256)          NOT NULL,
+  ERROR                character varying(2048),
+  LLEGIDA              boolean                         NOT NULL,
+  CONTINGUT_ID         bigint,
+  CREATEDBY_CODI       character varying(64),
+  CREATEDDATE          timestamp without time zone,
+  LASTMODIFIEDBY_CODI  character varying(64),
+  LASTMODIFIEDDATE     timestamp without time zone
+);
+
 CREATE TABLE IPA_USUARI
 (
   CODI          character varying(64)           NOT NULL,

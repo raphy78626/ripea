@@ -149,4 +149,15 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("entitat") EntitatEntity entitat,
 			@Param("pares") List<? extends ContingutEntity> pares);
 	
+	@Query("select " +
+			"   c " +
+			"from " +
+			"   ContingutEntity c " +
+			"where " +
+			"   type(c) = es.caib.ripea.core.entity.RegistreEntity " +
+			"AND " +
+			"   c.pare.id = :pareId")
+	List<ContingutEntity> findRegistresByPareId(
+			@Param("pareId") Long pareId);
+	
 }

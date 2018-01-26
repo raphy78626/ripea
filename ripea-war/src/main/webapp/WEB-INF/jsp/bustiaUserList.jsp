@@ -86,12 +86,16 @@ $(document).ready(function() {
 				<th data-col-name="error" data-visible="false"></th>
 				<th data-col-name="procesAutomatic" data-visible="false"></th>
 				<th data-col-name="tipus" data-visible="false"></th>
+				<th data-col-name="alerta" data-visible="false"></th>
 				<th data-col-name="nom" data-template="#contingutTemplate">
 					<spring:message code="bustia.pendent.columna.contingut"/>
 					<script id="contingutTemplate" type="text/x-jsrender">
 						{{if tipus == 'REGISTRE'}}<span class="fa fa-book" title="<spring:message code="bustia.pendent.tipus.enum.REGISTRE"/>"></span>{{else tipus == 'EXPEDIENT'}}<span class="fa fa-briefcase" title="<spring:message code="bustia.pendent.tipus.enum.EXPEDIENT"/>"></span>{{else tipus == 'DOCUMENT'}}<span class="fa fa-file" title="<spring:message code="bustia.pendent.tipus.enum.DOCUMENT"/>"></span>{{/if}}
 						{{:nom}}
 						{{if error}}<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.pendent.registre.estat.error"/>"></span>{{/if}}
+						{{if alerta}}
+							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.registre.segonpla"/>"></span>
+						{{/if}}
 					</script>
 				</th>
 				<th data-col-name="remitent"><spring:message code="bustia.pendent.columna.remitent"/></th>
@@ -155,6 +159,9 @@ $(document).ready(function() {
 										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 									{{/if}}			
 									<%--li><a href="../../bustiaUser/${bustia.id}/pendent/contingut/{{:id}}/agafar" data-toggle="modal"><span class="fa fa-thumbs-o-up"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.agafar"/></a></li--%>
+								{{/if}}
+								{{if alerta}}
+									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
 								{{/if}}
 							</ul>
 						</div>

@@ -21,6 +21,8 @@ import es.caib.ripea.core.api.service.ExecucioMassivaService;
 import es.caib.ripea.core.api.service.SegonPlaService;
 import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaEntity.ExecucioMassivaTipus;
+import es.caib.ripea.core.helper.AlertaHelper;
+import es.caib.ripea.core.helper.MessageHelper;
 import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.repository.ExecucioMassivaContingutRepository;
 import es.caib.ripea.core.repository.ExecucioMassivaRepository;
@@ -33,8 +35,16 @@ import es.caib.ripea.core.repository.ExecucioMassivaRepository;
 @Service
 public class SegonPlaServiceImpl implements SegonPlaService {
 	
+	
+	@Resource
+	private AlertaHelper alertaHelper;
+	@Resource
+	private MessageHelper messageHelper;
+	
 	@Autowired
 	private ExecucioMassivaService execucioMassivaService;
+	
+	
 	@Resource
 	private ExecucioMassivaRepository execucioMassivaRepository;
 	@Resource
@@ -55,11 +65,23 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		} catch (Exception ex) {}
 		
 		while (active) {
+			Long cmasiu_id = null;
+			boolean alertat = false;
 			try {
-				Long cmasiu_id = execucioMassivaService.getExecucionsMassivesActiva(ultimaExecucioMassiva);
+				cmasiu_id = execucioMassivaService.getExecucionsMassivesActiva(ultimaExecucioMassiva);
 				if (cmasiu_id != null) {
+					ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findOne(cmasiu_id);
+					
 					try {
 						execucioMassivaService.executarExecucioMassiva(cmasiu_id);
+						
+						if (emc != null)
+							alertaHelper.crearAlerta(
+									emc.getContingut().getId(),
+									messageHelper.getMessage(
+											"alertes.segon.pla.execucio.massiva",
+											new Object[] {cmasiu_id}),
+									null);
 					}
 					catch (Exception e) {
 						// recuperem l'error de la aplicació
@@ -67,8 +89,17 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 						if (errMsg == null || "".equals(errMsg))
 							errMsg = e.getMessage();
 						execucioMassivaService.generaInformeError(cmasiu_id, errMsg);
+						
+						if (emc != null)
+							alertaHelper.crearAlerta(
+									emc.getContingut().getId(),
+									messageHelper.getMessage(
+											"alertes.segon.pla.executar.execucio.massiva.error",
+											new Object[] {cmasiu_id}),
+									e);
+						
+						alertat = true;
 					}
-					ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findOne(cmasiu_id);
 					if (emc == null)
 						throw new NotFoundException(cmasiu_id, ExecucioMassivaContingutEntity.class);
 					ultimaExecucioMassiva = emc.getExecucioMassiva().getId();
@@ -80,6 +111,17 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			} catch (Exception e) {
 				logger.error("La execució de execucions massives ha estat interromput");
 				active = false;
+				
+				if(!alertat && cmasiu_id != null) {
+					ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findOne(cmasiu_id);
+					alertaHelper.crearAlerta(
+							emc.getContingut().getId(),
+							messageHelper.getMessage(
+									"alertes.segon.pla.execucio.massiva.error",
+									new Object[] {cmasiu_id}),
+							e);
+					alertat = true;
+				}
 			}
 		}
 	}
