@@ -27,6 +27,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
 	private String procesError;
 	private Integer procesIntents;
+	
 
 	public RegistreTipusEnum getRegistreTipus() {
 		return registreTipus;
@@ -355,7 +356,18 @@ public class RegistreAnotacioDto extends ContingutDto {
 	public void setJustificant(RegistreAnnexDetallDto justificant) {
 		this.justificant = justificant;
 	}
-
+	
+	
+	private Boolean llegida;
+	
+	public Boolean getLlegida() {
+		return llegida;
+	}
+	public void setLlegida(Boolean llegida) {
+		this.llegida = llegida;
+	}
+	
+	
 	private static final long serialVersionUID = -8656873728034274066L;
 
 }

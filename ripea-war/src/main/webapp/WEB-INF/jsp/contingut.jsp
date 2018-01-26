@@ -329,6 +329,13 @@ $(document).ready(function() {
 	$('form#nodeDades td .form-group').on('clone.multifield', function(event, clon) {
 		$('input', clon).change(nodeDadesInputChange);
 	});
+	
+	if(${pipellaAnotacionsRegistre}) {
+		$('#contingut').removeClass( "active in" );
+		$('#registres').addClass( "active in" );
+		$('#pipella-contingut').removeClass( "active" );
+		$('#pipella-registres').addClass( "active" );
+	}
 });
 </script>
 </head>
@@ -472,7 +479,7 @@ $(document).ready(function() {
 			<%-- Pipelles --%>
 			<%--          --%>
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#contingut" data-toggle="tab">
+				<li class="active" id="pipella-contingut"><a href="#contingut" data-toggle="tab">
 					<spring:message code="contingut.tab.contingut"/>&nbsp;<span class="badge">${contingut.fillsNoRegistresCount}</span></a>
 				</li>
 				<c:if test="${contingut.document or contingut.expedient}">
@@ -481,8 +488,17 @@ $(document).ready(function() {
 					</li>
 				</c:if>
 				<c:if test="${contingut.expedient}">
-					<li>
-						<a href="#registres" data-toggle="tab"><spring:message code="contingut.tab.registres"/>&nbsp;<span class="badge" id="registres-count">${contingut.fillsRegistresCount}</span></a>
+					<li id="pipella-registres">
+						<a href="#registres" data-toggle="tab">
+							<spring:message code="contingut.tab.registres"/>&nbsp;
+							<span class="badge" id="registres-count">${contingut.fillsRegistresCount}</span>
+							<c:if test="${contingut.ambRegistresSenseLlegir}">
+								<span class="fa-stack" aria-hidden="true">
+	          						<i class="fa fa-certificate fa-stack-1x" style="color: darkturquoise; font-size: 20px;"></i>
+	          						<i class="fa-stack-1x" style="color: white;font-style: normal;font-weight: bold;">N</i>
+	        					</span>
+							</c:if>
+						</a>
 					</li>
 					<li>
 						<a href="#interessats" data-toggle="tab"><spring:message code="contingut.tab.interessats"/>&nbsp;<span class="badge" id="interessats-count">${interessatsCount}</span></a>
@@ -729,14 +745,21 @@ $(document).ready(function() {
 							<thead>
 								<tr>
 									<th data-col-name="id" data-visible="false">#</th>
-									<th data-col-name="registreTipus" data-template="#cellTipusTemplate" data-orderable="false" width="10%">
+									<th data-col-name="llegida" data-visible="false"></th>
+									<th data-col-name="registreTipus" data-template="#cellTipusTemplate" data-orderable="false" width="12%">
 										<spring:message code="contingut.registre.columna.tipus"/>
 										<script id="cellTipusTemplate" type="text/x-jsrender">
 											{{:~eval('registreTipusText["' + registreTipus + '"]')}}
+											{{if !llegida}}
+												<span class="fa-stack" aria-hidden="true">
+          											<i class="fa fa-certificate fa-stack-1x" style="color: darkturquoise; font-size: 20px;"></i>
+          											<i class="fa-stack-1x" style="color: white;font-style: normal;font-weight: bold;">N</i>
+        										</span>
+											{{/if}}
 										</script>
 									</th>
 									<th data-col-name="identificador" data-orderable="false" width="10%"><spring:message code="contingut.registre.columna.identificador"/></th>
-									<th data-col-name="data" data-converter="datetime" data-orderable="false" width="20%"><spring:message code="contingut.registre.columna.data"/></th>
+									<th data-col-name="data" data-converter="datetime" data-orderable="false" width="18%"><spring:message code="contingut.registre.columna.data"/></th>
 									<th data-col-name="extracte" data-orderable="false" width="40%"><spring:message code="contingut.registre.columna.extracte"/></th>
 									<th data-col-name="id" data-orderable="false" data-template="#cellAccionsRegistreTemplate" width="10%">
 										<script id="cellAccionsRegistreTemplate" type="text/x-jsrender">
@@ -745,6 +768,9 @@ $(document).ready(function() {
 												<ul class="dropdown-menu">
 													<li><a href="../contingut/${contingut.id}/registre/{{:id}}" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
 													<li><a href="../contingut/{{:id}}/log" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+													{{if !llegida}}
+														<li><a href="<c:url value="/contingut/${contingut.id}/registre/{{:id}}/llegir"/>" data-confirm="<spring:message code="contingut.registre.missatge.confirmacio"/>"><span class="fa fa-check-square-o"></span>&nbsp;&nbsp;<spring:message code="contingut.registre.accio.llegida"/></a></li>
+													{{/if}}
 												</ul>
 											</div>
 										</script>

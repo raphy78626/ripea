@@ -183,6 +183,7 @@ function getCookie(cname) {
 			style="width:100%">
 		<thead>
 			<tr>
+				<th data-col-name="ambRegistresSenseLlegir" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualWrite" data-visible="false"></th>
 				<th data-col-name="metaNode.usuariActualDelete" data-visible="false"></th>
 				<th data-col-name="pare.id" data-visible="false"></th>
@@ -201,14 +202,20 @@ function getCookie(cname) {
 					</script>
 				</th>
 				<th data-col-name="arxiu.nom" width="15%"><spring:message code="expedient.list.user.columna.arxiu"/></th>
-				<th data-col-name="createdDate" data-type="datetime" data-converter="datetime" width="15%"><spring:message code="expedient.list.user.columna.createl"/></th>
-				<th data-col-name="estat" data-template="#cellEstatTemplate" width="10%">
+				<th data-col-name="createdDate" data-type="datetime" data-converter="datetime" width="14%"><spring:message code="expedient.list.user.columna.createl"/></th>
+				<th data-col-name="estat" data-template="#cellEstatTemplate" width="11%">
 					<spring:message code="expedient.list.user.columna.estat"/>
 					<script id="cellEstatTemplate" type="text/x-jsrender">
 						{{if estat == 'OBERT'}}
 							<span class="label label-default"><span class="fa fa-folder-open"></span> <spring:message code="expedient.estat.enum.OBERT"/></span>
 						{{else}}
 							<span class="label label-success"><span class="fa fa-folder"></span> <spring:message code="expedient.estat.enum.TANCAT"/></span>
+						{{/if}}
+						{{if ambRegistresSenseLlegir}}
+							<span class="fa-stack" aria-hidden="true">
+          						<i class="fa fa-certificate fa-stack-1x" style="color: darkturquoise; font-size: 20px;"></i>
+          						<i class="fa-stack-1x" style="color: white;font-style: normal;font-weight: bold;">N</i>
+        					</span>
 						{{/if}}
 					</script>
 				</th>

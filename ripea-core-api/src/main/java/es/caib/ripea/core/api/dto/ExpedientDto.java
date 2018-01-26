@@ -33,6 +33,8 @@ public class ExpedientDto extends NodeDto {
 	private UsuariDto agafatPer;
 
 	private String numero;
+	
+	private boolean ambRegistresSenseLlegir;
 
 
 
@@ -149,6 +151,14 @@ public class ExpedientDto extends NodeDto {
 		return (MetaExpedientDto)getMetaNode();
 	}
 
+	public boolean isAmbRegistresSenseLlegir() {
+		return ambRegistresSenseLlegir;
+	}
+	public void setAmbRegistresSenseLlegir(boolean ambRegistresSenseLlegir) {
+		this.ambRegistresSenseLlegir = ambRegistresSenseLlegir;
+	}
+	
+	
 	/*public String getNtiVersionUrl() {
 		return "http://administracionelectronica.gob.es/ENI/XSD/V" + ntiVersion + "/expediente-e";
 	}

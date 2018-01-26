@@ -211,4 +211,22 @@ public interface RegistreService {
 			RegistreProcesEstatSistraEnum procesEstatSistra, 
 			Date desdeDate, 
 			Date finsDate);
+	
+	/**
+	 * Marca com a llegida una anotació de registre
+	 * 
+	* @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param contingutId
+	 *            Atribut id del contingut pare a on està situada l'anotació.
+	 * @param registreId
+	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
+	 *            
+	 * @return L'anotació modificada
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public RegistreAnotacioDto marcarLlegida(
+			Long entitatId,
+			Long contingutId,
+			Long registreId);
 }
