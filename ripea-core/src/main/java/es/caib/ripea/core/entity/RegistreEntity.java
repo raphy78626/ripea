@@ -92,6 +92,8 @@ public class RegistreEntity extends ContingutEntity {
 	private String referencia;
 	@Column(name = "expedient_num", length = 80)
 	private String expedientNumero;
+	@Column(name = "expedient_arxiu_uuid", length = 100)
+	private String expedientArxiuUuid;
 	@Column(name = "num_orig", length = 80)
 	private String numeroOrigen;
 	@Column(name = "idioma_codi", length = 2, nullable = false)
@@ -245,6 +247,9 @@ public class RegistreEntity extends ContingutEntity {
 	public String getExpedientNumero() {
 		return expedientNumero;
 	}
+	public String getExpedientArxiuUuid() {
+		return expedientArxiuUuid;
+	}
 	public String getNumeroOrigen() {
 		return numeroOrigen;
 	}
@@ -365,6 +370,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateLlegida(Boolean llegida) {
 		this.llegida = llegida;
+	}
+	public void updateExpedientArxiuUuid(String expedientArxiuUuid) {
+		this.expedientArxiuUuid = expedientArxiuUuid;
 	}
 
 	public static Builder getBuilder(
