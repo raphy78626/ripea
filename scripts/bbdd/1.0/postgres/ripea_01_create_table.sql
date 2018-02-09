@@ -73,7 +73,7 @@ CREATE TABLE IPA_METADOCUMENT
   PASSARELA_CUSTIP        character varying(64),
   PLANTILLA_NOM           character varying(256),
   PLANTILLA_CONTENT_TYPE  character varying(256),
-  PLANTILLA_CONTINGUT     bytea
+  PLANTILLA_CONTINGUT     oid
 );
 
 
@@ -341,7 +341,7 @@ CREATE TABLE IPA_DOCUMENT
   CUSTODIA_CSV         character varying(256),
   FITXER_NOM           character varying(256),
   FITXER_CONTENT_TYPE  character varying(256),
-  FITXER_CONTINGUT     bytea,
+  FITXER_CONTINGUT     oid,
   VERSIO_DARRERA       character varying(32),
   VERSIO_COUNT         integer                  NOT NULL,
   NTI_VERSION          character varying(5)     NOT NULL,
@@ -533,7 +533,7 @@ CREATE TABLE IPA_REGISTRE_ANNEX_FIRMA
   FITXER_NOM           character varying(80),
   TIPUS_MIME           character varying(30),
   CSV_REGULACIO		   character varying(640),
-  ANNEX_ID             bigint(19)               	NOT NULL,
+  ANNEX_ID             bigint                    	NOT NULL,
   CREATEDDATE          timestamp without time zone,
   CREATEDBY_CODI       character varying(256),
   LASTMODIFIEDDATE     timestamp without time zone,
