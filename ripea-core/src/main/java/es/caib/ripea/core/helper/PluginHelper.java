@@ -730,6 +730,39 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+	public void arxiuExpedientTemporalTancar(
+			RegistreEntity registre) {
+		String accioDescripcio = "Tancament d'un expedient temporal relacionada amb una anotació de registre";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().expedientTancar(
+					registre.getExpedientArxiuUuid());
+			registre.updateArxiuEsborrat();
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
 
 	public void arxiuExpedientReobrir(
 			ExpedientEntity expedient) {
@@ -895,6 +928,11 @@ public class PluginHelper {
 		accioParams.put("contingutPareId", expedient.getIdentificador());
 		accioParams.put("contingutPareNom", expedient.getNom());
 		long t0 = System.currentTimeMillis();
+		
+		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
+		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty())
+			estatDocument = DocumentEstat.DEFINITIU;
+		
 		try {
 			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
 					toArxiuDocument(
@@ -909,7 +947,7 @@ public class PluginHelper {
 							annex.getDataCaptura(),
 							(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(annex.getNtiElaboracioEstat().getValor()) : null),
 							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(annex.getNtiTipusDocument().getValor()) : null),
-							DocumentEstat.ESBORRANY,
+							estatDocument,
 							false),
 					expedient.getIdentificador());
 				

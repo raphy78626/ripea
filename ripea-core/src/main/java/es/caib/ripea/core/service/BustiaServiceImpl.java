@@ -711,6 +711,8 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
 			ContingutArxiu expedientCreat = crearExpedientArxiuTemporal(anotacioEntity, bustia);
+			anotacioEntity.updateExpedientArxiuUuid(expedientCreat.getIdentificador());
+			registreRepository.saveAndFlush(anotacioEntity);
 			processarAnnexos(anotacioEntity, bustia, expedientCreat);
 		}
 		
@@ -1162,7 +1164,7 @@ public class BustiaServiceImpl implements BustiaService {
 			}
 		} catch (Exception ex) {
 			try {
-				eliminarContingutExistent(expedientCreat.getIdentificador());
+				eliminarContingutExistent(anotacio.getExpedientArxiuUuid());
 			} catch (Exception ex2) {
 				logger.error(
 						"Error al eliminar l'expedient temporal creat al registre digital",

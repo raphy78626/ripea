@@ -6,6 +6,7 @@ package es.caib.ripea.core.helper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +147,7 @@ public class IntegracioHelper {
 
 
 
-	private synchronized LinkedList<IntegracioAccioDto> getLlistaAccions(
+	private LinkedList<IntegracioAccioDto> getLlistaAccions(
 			String integracioCodi) {
 		LinkedList<IntegracioAccioDto> accions = accionsIntegracio.get(integracioCodi);
 		if (accions == null) {
@@ -156,7 +157,10 @@ public class IntegracioHelper {
 					accions);
 		} else {
 			int index = 0;
-			for (IntegracioAccioDto accio: accions) {
+			
+			Iterator<IntegracioAccioDto> iterator = accions.iterator();
+			while (iterator.hasNext()) {
+				IntegracioAccioDto accio = iterator.next();
 				accio.setIndex(new Long(index++));
 			}
 		}
