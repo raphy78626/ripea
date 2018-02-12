@@ -77,7 +77,7 @@ $(document).ready(function() {
 		data-url="<c:url value="/bustiaUser/datatable"/>"
 		data-filter="#bustiaUserFiltreCommand"
 		data-info-type="search"
-		data-default-order="7"
+		data-default-order="8"
 		data-default-dir="desc">
 		<thead>
 			<tr>
