@@ -298,7 +298,7 @@ public class JdbcMutableAclService extends JdbcAclService implements MutableAclS
 	 */
 	public MutableAcl updateAcl(MutableAcl acl) throws NotFoundException {
 		Assert.notNull(acl.getId(), "Object Identity doesn't provide an identifier");
-		if (acl.getEntries().size() > 0) {
+//		if (acl.getEntries().size() > 0) {
 	        // Delete this ACL's ACEs in the acl_entry table
 	        deleteEntries(retrieveObjectIdentityPrimaryKey(acl.getObjectIdentity()));
 	
@@ -313,13 +313,13 @@ public class JdbcMutableAclService extends JdbcAclService implements MutableAclS
 	
 	        // Retrieve the ACL via superclass (ensures cache registration, proper retrieval etc)
 	        return (MutableAcl) super.readAclById(acl.getObjectIdentity());
-		} else {
-			// Change the mutable columns in acl_object_identity
-			updateObjectIdentity(acl);
-	
-			// Retrieve the ACL via superclass (ensures cache registration, proper retrieval etc)
-			return (MutableAcl)super.readAclById(acl.getObjectIdentity());
-		}
+//		} else {
+//			// Change the mutable columns in acl_object_identity
+//			updateObjectIdentity(acl);
+//	
+//			// Retrieve the ACL via superclass (ensures cache registration, proper retrieval etc)
+//			return (MutableAcl)super.readAclById(acl.getObjectIdentity());
+//		}
 	}
 
 	private void clearCacheIncludingChildren(ObjectIdentity objectIdentity) {
