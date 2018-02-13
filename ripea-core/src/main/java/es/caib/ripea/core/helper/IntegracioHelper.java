@@ -4,6 +4,7 @@
 package es.caib.ripea.core.helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ public class IntegracioHelper {
 	public static final String INTCODI_CALLBACK = "CALLBACK";
 	public static final String INTCODI_DADESEXT = "DADESEXT";
 
-	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = new HashMap<String, LinkedList<IntegracioAccioDto>>();
+	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = Collections.synchronizedMap(new HashMap<String, LinkedList<IntegracioAccioDto>>());
 	private Map<String, Integer> maxAccionsIntegracio = new HashMap<String, Integer>();
 
 
@@ -149,22 +150,24 @@ public class IntegracioHelper {
 
 	private LinkedList<IntegracioAccioDto> getLlistaAccions(
 			String integracioCodi) {
-		LinkedList<IntegracioAccioDto> accions = accionsIntegracio.get(integracioCodi);
-		if (accions == null) {
-			accions = new LinkedList<IntegracioAccioDto>();
-			accionsIntegracio.put(
-					integracioCodi,
-					accions);
-		} else {
-			int index = 0;
-			
-			Iterator<IntegracioAccioDto> iterator = accions.iterator();
-			while (iterator.hasNext()) {
-				IntegracioAccioDto accio = iterator.next();
-				accio.setIndex(new Long(index++));
+		synchronized(accionsIntegracio){
+			LinkedList<IntegracioAccioDto> accions = accionsIntegracio.get(integracioCodi);
+			if (accions == null) {
+				accions = new LinkedList<IntegracioAccioDto>();
+				accionsIntegracio.put(
+						integracioCodi,
+						accions);
+			} else {
+				int index = 0;
+				
+				Iterator<IntegracioAccioDto> iterator = accions.iterator();
+				while (iterator.hasNext()) {
+					IntegracioAccioDto accio = iterator.next();
+					accio.setIndex(new Long(index++));
+				}
 			}
+			return accions;
 		}
-		return accions;
 	}
 	private int getMaxAccions(
 			String integracioCodi) {
