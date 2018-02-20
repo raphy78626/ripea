@@ -2518,7 +2518,7 @@ public class PluginHelper {
 			for (FirmaDto firmaDto: firmes) {
 				Firma firma = new Firma();
 				firma.setContingut(firmaDto.getContingut());
-				firma.setCsvRegulacio(firma.getCsvRegulacio());
+				firma.setCsvRegulacio(firmaDto.getCsvRegulacio());
 				firma.setFitxerNom(firmaDto.getFitxerNom());
 				firma.setPerfil(FirmaPerfil.valueOf(firmaDto.getPerfil()));
 				firma.setTipus(obtenirFirmaTipus(firmaDto.getTipus()));

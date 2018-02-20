@@ -444,15 +444,20 @@ public class RegistreServiceImpl implements RegistreService {
 			if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
 				Document document = pluginHelper.arxiuDocumentConsultar(contingut, annex.getFitxerArxiuUuid(), null, true);
 				annex.setAmbDocument(true);
+				if (document.getContingut() != null)
+					annex.setFitxerTamany((int)document.getContingut().getTamany());
 				
 				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
 					annex.setFirmes(conversioTipusHelper.convertirList(document.getFirmes(), FirmaDto.class));
 					annex.setAmbFirma(true);
+					
+					int j = 0;
 					for (int i = 0; i < annex.getFirmes().size(); i++) {
-						if (i < annexEntity.getFirmes().size()) {
-							FirmaDto firma = annex.getFirmes().get(i);
-							firma.setFitxerNom(annexEntity.getFirmes().get(i).getFitxerNom());
-							firma.setTipusMime(annexEntity.getFirmes().get(i).getTipusMime());
+						FirmaDto firma = annex.getFirmes().get(i); 
+						if ((i > 0 || firma.getTipus() != "TF01") && j < annexEntity.getFirmes().size()) {
+							firma.setFitxerNom(annexEntity.getFirmes().get(j).getFitxerNom());
+							firma.setTipusMime(annexEntity.getFirmes().get(j).getTipusMime());
+							j++;
 						}
 					}
 				}
