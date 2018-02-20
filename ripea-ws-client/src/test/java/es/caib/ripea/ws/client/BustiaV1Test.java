@@ -69,10 +69,10 @@ public class BustiaV1Test {
         anotacio.setIdentificador("15/10/2015");
         anotacio.setExpedientNumero(String.valueOf(randomNumber));
         
-        File file = new File("c:/Feina/RIPEA/annexos/annex1.pdf");
+        File file = new File("c:/Feina/RIPEA/annexos/foto.jpg");
         byte[] encodedContingut = FileUtils.readFileToByteArray(file);
         RegistreAnnex annex1 = new RegistreAnnex();
-        annex1.setTitol("annexproves1");
+        annex1.setTitol("algo");
         annex1.setFitxerNom(file.getName());
         annex1.setFitxerTipusMime(FilenameUtils.getExtension(file.getName()));
         annex1.setFitxerContingut(encodedContingut);
@@ -100,7 +100,7 @@ public class BustiaV1Test {
         annex2.setSicresTipusDocument("02");
         
         anotacio.getAnnexos().add(annex1);
-        anotacio.getAnnexos().add(annex2);
+//        anotacio.getAnnexos().add(annex2);
         
         File file3 = new File("c:/Feina/RIPEA/annexos/justificant.pdf");
         byte[] encodedContingut3 = FileUtils.readFileToByteArray(file3);
@@ -117,7 +117,7 @@ public class BustiaV1Test {
         justificant.setSicresTipusDocument("02");
         justificant.setFitxerArxiuUuid("9f33c5c7-7d0f-4d70-9082-c541a42cc041");
         
-        anotacio.setJustificant(justificant);
+//        anotacio.setJustificant(justificant);
         
 		getBustiaServicePort().enviarAnotacioRegistreEntrada(
 				"A04003003", // "entitatCodi",
@@ -127,25 +127,27 @@ public class BustiaV1Test {
 
 	private void afegirFirmes(RegistreAnnex annex) throws IOException {
 		Firma firma = new Firma();
-		File firmaFile = new File("c:/Feina/RIPEA/annexos/signatura.pdf");
+		File firmaFile = new File("c:/Feina/RIPEA/annexos/2018-01-24_CAdES_Detached_foto_jpg.csig");
         byte[] firmaContingut = FileUtils.readFileToByteArray(firmaFile);
-        firma.setTipus("TF05");
+        firma.setTipus("TF04");
         firma.setPerfil("BES");
         firma.setContingut(firmaContingut);
-        firma.setFitxerNom("signatura.pdf");
-        firma.setTipusMime("application/pdf");
+        firma.setFitxerNom("2018-01-24_CAdES_Detached_foto_jpg.csig");
+        firma.setTipusMime(FilenameUtils.getExtension(firma.getFitxerNom()));
+        firma.setCsvRegulacio("Regulació CSV 1");
 		
 		Firma firma2 = new Firma();
-		File firmaFile2 = new File("c:/Feina/RIPEA/annexos/signatura2.pdf");
+		File firmaFile2 = new File("c:/Feina/RIPEA/annexos/2018-01-24_CAdES_Detached_foto_jpg.csig");
         byte[] firmaContingut2 = FileUtils.readFileToByteArray(firmaFile2);
-		firma2.setTipus("TF05");
-		firma2.setPerfil("BES");
+		firma2.setTipus("TF04");
+		firma2.setPerfil("EPES");
 		firma2.setContingut(firmaContingut2);
-		firma2.setFitxerNom("signatura2.pdf");
-		firma2.setTipusMime("application/pdf");
+		firma2.setFitxerNom("2018-01-24_CAdES_Detached_foto_jpg.csig");
+		firma2.setTipusMime(FilenameUtils.getExtension(firma.getFitxerNom()));
+		firma2.setCsvRegulacio("Regulació CSV 2");
 		
 		annex.getFirmes().add(firma);
-		annex.getFirmes().add(firma2);
+//		annex.getFirmes().add(firma2);
 	}
 
 	private BustiaV1 getBustiaServicePort() throws MalformedURLException {
