@@ -501,7 +501,7 @@ CREATE TABLE IPA_REGISTRE_ANNEX
   TITOL                character varying(200)   NOT NULL,
   FITXER_NOM           character varying(80)    NOT NULL,
   FITXER_TAMANY        integer                  NOT NULL,
-  FITXER_MIME          character varying(30),
+  FITXER_MIME          character varying(100),
   FITXER_GESDOC_ID     character varying(100)   NOT NULL,
   DATA_CAPTURA         timestamp without time zone NOT NULL,
   LOCALITZACIO         character varying(80),
