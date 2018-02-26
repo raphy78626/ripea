@@ -48,9 +48,9 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 	private String raoSocial;
 	@Column(name = "pais", length = 4)
 	private String pais;
-	@Column(name = "provincia", length = 2)
+	@Column(name = "provincia", length = 100)
 	private String provincia;
-	@Column(name = "municipi", length = 5)
+	@Column(name = "municipi", length = 100)
 	private String municipi;
 	@Column(name = "adresa", length = 160)
 	private String adresa;
