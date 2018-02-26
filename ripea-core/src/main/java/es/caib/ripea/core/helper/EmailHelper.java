@@ -87,17 +87,19 @@ public class EmailHelper {
 			ContingutEntity contingut,
 			ContingutMovimentEntity contenidorMoviment) {
 		logger.debug("Enviament emails nou contenidor a la bústia (" +
-				"bustiaId=" + bustia.getId() + ")" +
-				"contingutId=" + contingut.getId() + ")");
+				"bustiaId=" + (bustia != null ? bustia.getId() : "") + ")" +
+				"contingutId=" + (contingut != null ? contingut.getId() : "") + ")");
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		if (emplenarDestinataris(
 				missatge,
 				bustia)) {
 			missatge.setFrom(getRemitent());
-			String unitatOrganitzativa = getUnitatOrganitzativaNom(
-					bustia.getEntitat(),
-					bustia.getUnitatCodi());
-			missatge.setSubject(PREFIX_RIPEA + " Nou element rebut a la bústia: " + bustia.getNom());
+			String unitatOrganitzativa = ""; 
+			if (bustia != null)
+				unitatOrganitzativa = getUnitatOrganitzativaNom(
+						bustia.getEntitat(),
+						bustia.getUnitatCodi());
+			missatge.setSubject(PREFIX_RIPEA + " Nou element rebut a la bústia: " + (bustia != null ? bustia.getNom() : ""));
 			String tipus = "desconegut";
 			if (contingut instanceof ExpedientEntity) {
 				tipus = "expedient";

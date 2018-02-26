@@ -444,8 +444,6 @@ public class RegistreServiceImpl implements RegistreService {
 			if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
 				Document document = pluginHelper.arxiuDocumentConsultar(contingut, annex.getFitxerArxiuUuid(), null, true);
 				annex.setAmbDocument(true);
-				if (document.getContingut() != null)
-					annex.setFitxerTamany((int)document.getContingut().getTamany());
 				
 				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
 					annex.setFirmes(conversioTipusHelper.convertirList(document.getFirmes(), FirmaDto.class));
