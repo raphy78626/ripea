@@ -53,7 +53,7 @@
 					<spring:message code="bustia.list.columna.unitat"/>
 					<script id="denominacioTemplate" type="text/x-jsrender">
 						{{if unitat}}
-							{{:unitat.denominacio}}
+							{{:unitatCodi}} - {{:unitat.denominacio}}
 						{{else}}
 							{{:unitatCodi}}
 						{{/if}}

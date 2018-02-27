@@ -433,6 +433,10 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				true,
 				false);
+		
+		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
+		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatCodi"});
+		
 		PaginaDto<BustiaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				bustiaRepository.findByEntitatAndUnitatCodiAndBustiaNomFiltrePaginat(
 						entitat,
@@ -440,7 +444,7 @@ public class BustiaServiceImpl implements BustiaService {
 						filtre.getUnitatCodi(),
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
 						filtre.getNom(),
-						paginacioHelper.toSpringDataPageable(paginacioParams)),
+						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				BustiaDto.class,
 				new Converter<BustiaEntity, BustiaDto>() {
 					@Override
