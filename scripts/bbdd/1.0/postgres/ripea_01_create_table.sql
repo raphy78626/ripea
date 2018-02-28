@@ -535,6 +535,7 @@ CREATE TABLE IPA_REGISTRE_ANNEX_FIRMA
   TIPUS_MIME           character varying(30),
   CSV_REGULACIO		   character varying(640),
   ANNEX_ID             bigint                    	NOT NULL,
+  AUTOFIRMA            boolean,
   CREATEDDATE          timestamp without time zone,
   CREATEDBY_CODI       character varying(256),
   LASTMODIFIEDDATE     timestamp without time zone,

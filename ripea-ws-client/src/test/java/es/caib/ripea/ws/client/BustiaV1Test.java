@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.ws.client;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -35,8 +37,8 @@ import es.caib.ripea.ws.v1.bustia.RegistreAnotacio;
 public class BustiaV1Test {
 
 	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/v1/bustia";
-	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "admin15";
+	private static final String USERNAME = "tomeud";
+	private static final String PASSWORD = "tomeud15";
 
 
 
@@ -99,8 +101,7 @@ public class BustiaV1Test {
         annex2.setEniTipusDocumental("TD02");
         annex2.setSicresTipusDocument("02");
         
-        anotacio.getAnnexos().add(annex1);
-//        anotacio.getAnnexos().add(annex2);
+        anotacio.getAnnexos().add(annex2);
         
         File file3 = new File("c:/Feina/RIPEA/annexos/justificant.pdf");
         byte[] encodedContingut3 = FileUtils.readFileToByteArray(file3);
@@ -117,12 +118,18 @@ public class BustiaV1Test {
         justificant.setSicresTipusDocument("02");
         justificant.setFitxerArxiuUuid("9f33c5c7-7d0f-4d70-9082-c541a42cc041");
         
-//        anotacio.setJustificant(justificant);
+        anotacio.setJustificant(justificant);
         
-		getBustiaServicePort().enviarAnotacioRegistreEntrada(
-				"A04003003", // "entitatCodi",
-				"A04013529", // "unitatAdministrativaCodi",
-				anotacio);
+        try {
+    		getBustiaServicePort().enviarAnotacioRegistreEntrada(
+    				"A04003003", // "entitatCodi",
+    				"A04013529", // "unitatAdministrativaCodi",
+    				anotacio);        	
+        } catch (Exception e) {
+        	System.err.println("Error invocant el WS: " + e.getMessage());
+        	e.printStackTrace();
+        	fail();
+        }
 	}
 
 	private void afegirFirmes(RegistreAnnex annex) throws IOException {
@@ -147,7 +154,7 @@ public class BustiaV1Test {
 		firma2.setCsvRegulacio("Regulació CSV 2");
 		
 		annex.getFirmes().add(firma);
-//		annex.getFirmes().add(firma2);
+		annex.getFirmes().add(firma2);
 	}
 
 	private BustiaV1 getBustiaServicePort() throws MalformedURLException {

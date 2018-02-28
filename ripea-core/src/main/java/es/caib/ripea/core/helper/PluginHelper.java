@@ -67,6 +67,7 @@ import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPortafirmesEntity;
 import es.caib.ripea.core.entity.EscriptoriEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.FirmaEntity;
 import es.caib.ripea.core.entity.InteressatAdministracioEntity;
 import es.caib.ripea.core.entity.InteressatEntity;
 import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
@@ -94,6 +95,7 @@ import es.caib.ripea.plugin.portafirmes.PortafirmesPlugin;
 import es.caib.ripea.plugin.portafirmes.PortafirmesPrioritatEnum;
 import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 import es.caib.ripea.plugin.registre.RegistrePlugin;
+import es.caib.ripea.plugin.signatura.SignaturaPlugin;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.ripea.plugin.usuari.DadesUsuari;
@@ -115,6 +117,7 @@ public class PluginHelper {
 	private CiutadaPlugin ciutadaPlugin;
 	private DadesExternesPlugin dadesExternesPlugin;
 	private IArxiuPlugin arxiuPlugin;
+	private SignaturaPlugin signaturaPlugin;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -2251,8 +2254,73 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+	public boolean signaturaSignarAnnexos() {
+		return this.getPropertyPluginSignaturaSignarAnnexos();
+	}
+	
+	public FirmaEntity signaturaSignar(
+			RegistreAnnexEntity annex
+			) {
+						
+		String accioDescripcio = "Signatura del document des del servidor";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put(
+				"annexId",
+				annex.getId().toString());
+		accioParams.put(
+				"annexNom",
+				annex.getFitxerNom());
 
+		long t0 = System.currentTimeMillis();
+		try {
+			String motiu = "Autofirma en servidor de RIPEA";
+			
+			byte [] firmaContingut = getSignaturaPlugin().signar(
+					annex.getId().toString(),
+					annex.getFitxerNom(),
+					motiu,
+					annex.getFitxerContingut());
 
+			String tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
+			String perfil = FirmaPerfil.BES.toString();
+			String fitxerNom = annex.getFitxerNom();
+			String tipusMime = "xsig";
+			String csvRegulacio = null;
+
+			FirmaEntity firma = FirmaEntity.getBuilder(
+					tipus, 
+					perfil, 
+					fitxerNom + "_xades_detached.xml", 
+					firmaContingut, 
+					tipusMime, 
+					csvRegulacio, 
+					true,	// autofirma des de Ripea
+					annex).build();
+
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_SIGNATURA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return firma;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error en accedir al plugin de signatura";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_SIGNATURA,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_SIGNATURA,
+					errorDescripcio,
+					ex);
+		}
+	}
 
 	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
 			UnitatOrganitzativa unitatOrganitzativa,
@@ -3063,6 +3131,23 @@ public class PluginHelper {
 		}
 		return ciutadaPlugin;
 	}
+	private SignaturaPlugin getSignaturaPlugin() {
+		if (signaturaPlugin == null) {
+			String pluginClass = getPropertyPluginSignatura();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					signaturaPlugin = (SignaturaPlugin)clazz.newInstance();
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_SIGNATURA,
+							"Error al crear la instància del plugin de signatura",
+							ex);
+				}
+			}
+		}
+		return signaturaPlugin;
+	}
 	private DadesExternesPlugin getDadesExternesPlugin() {
 		if (dadesExternesPlugin == null) {
 			String pluginClass = getPropertyPluginDadesExternes();
@@ -3157,7 +3242,13 @@ public class PluginHelper {
 	private String getPropertyPluginArxiuExpedientSerieDocumental() {
 		return getPropertyAmbComprovacio("es.caib.ripea.anotacions.registre.expedient.serie.documental");
 	}
-	
+	private String getPropertyPluginSignatura() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.signatura.class");
+	}
+	private boolean getPropertyPluginSignaturaSignarAnnexos() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.ripea.plugin.signatura.signarAnnexos");
+	}
+
 	private String getPropertyAmbComprovacio(String propertyCodi) {
 		String valor = PropertiesHelper.getProperties().getProperty(propertyCodi);
 		if (valor == null || valor.isEmpty())

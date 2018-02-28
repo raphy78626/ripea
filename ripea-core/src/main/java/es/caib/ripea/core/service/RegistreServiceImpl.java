@@ -457,6 +457,7 @@ public class RegistreServiceImpl implements RegistreService {
 						if ((i > 0 || firma.getTipus() != "TF01") && j < annexEntity.getFirmes().size()) {
 							firma.setFitxerNom(annexEntity.getFirmes().get(j).getFitxerNom());
 							firma.setTipusMime(annexEntity.getFirmes().get(j).getTipusMime());
+							firma.setAutofirma(annexEntity.getFirmes().get(j).getAutofirma());
 							j++;
 						}
 					}

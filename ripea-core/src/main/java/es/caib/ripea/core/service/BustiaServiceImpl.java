@@ -51,6 +51,7 @@ import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
+import es.caib.ripea.core.entity.FirmaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.ReglaEntity;
@@ -1232,7 +1233,13 @@ public class BustiaServiceImpl implements BustiaService {
 		fitxer.setContingut(contingut);
 		fitxer.setContentType(annex.getFitxerTipusMime());
 		fitxer.setTamany(contingut.length);
-		
+
+		if (pluginHelper.signaturaSignarAnnexos() && annex.getFirmes().size() == 0) {
+			// Ripea signa amb el plugin de signatures els annexos sense firmes
+			FirmaEntity firma = pluginHelper.signaturaSignar(annex);
+			annex.getFirmes().add(firma);
+		}
+
 		String uuidDocument = pluginHelper.arxiuDocumentAnnexCrear(annex, bustia, fitxer, expedientCreat);
 		annex.updateFitxerArxiuUuid(uuidDocument);
 	}
