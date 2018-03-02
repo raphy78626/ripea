@@ -28,6 +28,7 @@ public class RegistreInteressat {
 	private String canalPreferent;
 	private String observacions;
 	private RegistreInteressat representant;
+	private RegistreInteressat representat;
 
 
 
@@ -138,6 +139,12 @@ public class RegistreInteressat {
 	}
 	public void setRepresentant(RegistreInteressat representant) {
 		this.representant = representant;
+	}
+	public RegistreInteressat getRepresentat() {
+		return representat;
+	}
+	public void setRepresentat(RegistreInteressat representat) {
+		this.representat = representat;
 	}
 
 }

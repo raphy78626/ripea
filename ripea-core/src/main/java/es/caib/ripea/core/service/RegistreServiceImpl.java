@@ -136,6 +136,8 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreAnotacioDto registreAnotacio = (RegistreAnotacioDto)contingutHelper.toContingutDto(
 				registre);
 		
+		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());
+		
 		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
 			RegistreAnnexDetallDto justificant = getJustificantPerRegistre(
 					entitat, 
@@ -365,7 +367,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (document != null) {
 			DocumentContingut documentContingut = document.getContingut();
 			if (documentContingut != null) {
-				arxiu.setNom(documentContingut.getArxiuNom() == null ? (document.getNom() + "." + document.getContingut().getTipusMime()) : documentContingut.getArxiuNom());
+				arxiu.setNom(obtenirJustificantNom(document));
 				arxiu.setContentType(documentContingut.getTipusMime());
 				arxiu.setContingut(documentContingut.getContingut());
 				arxiu.setTamany(documentContingut.getContingut().length);
@@ -539,7 +541,8 @@ public class RegistreServiceImpl implements RegistreService {
 
 		RegistreAnnexDetallDto annex = new RegistreAnnexDetallDto();
 		Document document = pluginHelper.arxiuDocumentConsultar(contingut, justificantUuid, null, ambContingut);
-		annex.setFitxerNom(document.getContingut().getArxiuNom() == null ? (document.getNom() + "." + document.getContingut().getTipusMime()) : document.getContingut().getArxiuNom());
+		
+		annex.setFitxerNom(obtenirJustificantNom(document));
 		annex.setFitxerTamany(document.getContingut().getContingut().length);
 		annex.setFitxerTipusMime(document.getContingut().getTipusMime());
 		annex.setTitol(document.getNom());
@@ -654,6 +657,44 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		return (RegistreAnotacioDto) contingutHelper.toContingutDto(
 				registre);		
+	}
+	
+	private String obtenirJustificantNom(Document document) {
+		String fileName = "";
+		String fileExtension = "";
+		
+		if (document.getContingut() != null) { 
+			if (document.getContingut().getTipusMime() != null)
+				fileExtension = document.getContingut().getTipusMime();
+			
+			if (document.getContingut().getArxiuNom() != null && !document.getContingut().getArxiuNom().isEmpty()) {
+				fileName = document.getContingut().getArxiuNom();
+				fileExtension = document.getContingut().getTipusMime();
+			} else {
+				fileName = document.getNom();
+			}
+		} else {
+			fileName = document.getNom();
+		}
+		
+		String fragment = "";
+    	if (fileName.length() > 4)
+    		fragment = fileName.substring(fileName.length() -5);
+    	
+    	if (fragment.contains("."))
+    		return fileName;
+    	
+    	if (!fileExtension.isEmpty()) {
+    		if (fileExtension.contains("/")) {
+    			fileName += ("." + fileExtension.split("/")[1]);
+    		} else if (fileExtension.contains(".")) {
+    			fileName += fileExtension;
+    		} else {
+    			fileName += "." + fileExtension;
+    		}
+    	}
+    	
+		return fileName;
 	}
 	
 

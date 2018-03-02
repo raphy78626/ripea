@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -44,6 +45,7 @@ import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.exception.PermissionDeniedException;
 import es.caib.ripea.core.api.exception.ValidationException;
+import es.caib.ripea.core.api.registre.RegistreInteressat;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
@@ -1008,6 +1010,15 @@ public class ContingutHelper {
 			}
 		}
 		return pathDto;
+	}
+	
+	public void tractarInteressats(List<RegistreInteressat> interessats) {
+		ListIterator<RegistreInteressat> iter = interessats.listIterator();
+		while(iter.hasNext()){
+		    if(iter.next().getRepresentat() != null){
+		        iter.remove();
+		    }
+		}
 	}
 
 	private Long getCountByContingut(
