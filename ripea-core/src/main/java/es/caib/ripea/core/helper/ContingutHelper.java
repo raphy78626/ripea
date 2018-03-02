@@ -808,7 +808,7 @@ public class ContingutHelper {
 
 	public Set<String> findUsuarisAmbPermisReadPerContenidor(
 			ContingutEntity contingut) {
-		List<PermisDto> permisos = null;
+		List<PermisDto> permisos = new ArrayList<PermisDto>();
 		if (contingut instanceof BustiaEntity) {
 			permisos = permisosHelper.findPermisos(
 					contingut.getId(),
