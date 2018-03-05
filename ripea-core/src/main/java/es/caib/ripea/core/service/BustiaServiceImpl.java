@@ -911,7 +911,7 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaOrigen);
 		if (contingut instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)contingut;
-			if (registre.getRegla() != null) {
+			if (registre.getRegla() != null && (RegistreProcesEstatEnum.PENDENT == registre.getProcesEstat() || RegistreProcesEstatSistraEnum.PENDENT == registre.getProcesEstatSistra())) {
 				throw new ValidationException(
 						contingutId,
 						ContingutEntity.class,

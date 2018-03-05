@@ -42,6 +42,8 @@ import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.entity.ArxiuEntity;
 import es.caib.ripea.core.entity.BustiaEntity;
@@ -1110,7 +1112,7 @@ public class ExpedientServiceImpl implements ExpedientService {
 		if (contingut instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)contingut;
 			registre.updateLlegida(false);
-			if (registre.getRegla() != null) {
+			if (registre.getRegla() != null && (RegistreProcesEstatEnum.PENDENT == registre.getProcesEstat() || RegistreProcesEstatSistraEnum.PENDENT == registre.getProcesEstatSistra())) {
 				throw new ValidationException(
 						contingutId,
 						ContingutEntity.class,
