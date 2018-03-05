@@ -1637,8 +1637,11 @@ public class ContingutServiceImpl implements ContingutService {
 		
 		// Si el contingut és una anotació de registre s'ha de 
 		// tancar l'expedient temporal 
-		if (ContingutTipusEnumDto.REGISTRE == contingut.getTipus())
-			pluginHelper.arxiuExpedientTemporalTancar((RegistreEntity)contingut);
+		if (ContingutTipusEnumDto.REGISTRE == contingut.getTipus()) {
+			RegistreEntity registre = (RegistreEntity)contingut;
+			if (registre.getAnnexos() != null && registre.getAnnexos().size() > 0)
+				pluginHelper.arxiuExpedientTemporalTancar(registre);
+		}
 		
 		return publicarComentariPerContingut(
 				entitatId,
