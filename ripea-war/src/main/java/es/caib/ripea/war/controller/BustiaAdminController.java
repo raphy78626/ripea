@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.war.command.BustiaCommand;
 import es.caib.ripea.war.command.BustiaFiltreCommand;
@@ -200,13 +201,21 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		bustiaService.delete(
-				entitatActual.getId(),
-				bustiaId);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../bustiaAdmin",
-				"bustia.controller.esborrat.ok");
+		try {
+			bustiaService.delete(
+					entitatActual.getId(),
+					bustiaId);
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:../../bustiaAdmin",
+					"bustia.controller.esborrat.ok");
+		} catch (RuntimeException ve) {
+			return getAjaxControllerReturnValueError(
+					request,
+					"redirect:../../bustiaAdmin",
+					"bustia.controller.esborrat.error.validacio",
+					new Object[] {ve.getMessage()});			
+		}
 	}
 
 	@RequestMapping(value = "/findAmbEntitat", method = RequestMethod.GET)

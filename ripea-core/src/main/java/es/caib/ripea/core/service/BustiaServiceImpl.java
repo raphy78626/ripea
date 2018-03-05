@@ -297,24 +297,37 @@ public class BustiaServiceImpl implements BustiaService {
 				id,
 				false);
 		if (bustia.isPerDefecte()) {
-			String missatgeError = "No es pot esborrar la bústia per defecte (" +
-					"bustiaId=" + id + ", " +
-					"unitatOrganitzativaCodi=" + bustia.getUnitatCodi() + ")";
-			logger.error(missatgeError);
-			throw new ValidationException(
-					id,
-					BustiaEntity.class,
-					missatgeError);
+			// Valida que si s'esborra encara hi hagi una altra per defecte d'alternativa
+			BustiaEntity bustiaPerDefecteAlternativa = null;
+			List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
+					entitat.getCodi(),
+					bustia.getUnitatCodi());
+			if (path != null && !path.isEmpty()) {
+				BustiaEntity bustiaAux;
+				for (UnitatOrganitzativaDto unitat: path) {
+					bustiaAux = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
+							entitat,
+							unitat.getCodi());
+					if (bustiaAux != null && ! bustiaAux.getId().equals(id)) {
+						bustiaPerDefecteAlternativa = bustia;
+						break;
+					}
+				}
+				if (bustiaPerDefecteAlternativa == null) {
+					String missatgeError = "No es pot esborrar la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
+							"bustiaId=" + id + ", " +
+							"unitatOrganitzativaCodi=" + bustia.getUnitatCodi() + ")";
+					logger.error(missatgeError);
+					throw new ValidationException(
+							id,
+							BustiaEntity.class,
+							missatgeError);
+				}			
+			}
 		}
+		
 		bustiaRepository.delete(bustia);
-		// Registra al log l'eliminació de la bústia
-		contingutLogHelper.log(
-				bustia,
-				LogTipusEnumDto.ELIMINACIO,
-				null,
-				null,
-				true,
-				true);
+
 		return toBustiaDto(
 				bustia,
 				false,
