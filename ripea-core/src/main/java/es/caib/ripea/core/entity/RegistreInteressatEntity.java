@@ -162,7 +162,7 @@ public class RegistreInteressatEntity extends RipeaAuditable<Long> {
 			String emailHabilitat,
 			RegistreInteressatCanalEnum canalPreferent) {
 		Builder representantBuilder;
-		if (nom != null) {
+		if (RegistreInteressatTipusEnum.PERSONA_FIS == tipus) {
 			representantBuilder = getBuilder(
 					tipus,
 					documentTipus,

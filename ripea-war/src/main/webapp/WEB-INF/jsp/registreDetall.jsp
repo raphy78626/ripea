@@ -482,15 +482,17 @@ tr.clicable {
 																<td><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></td>
 																<td>${firma.perfil}</td>
 															</tr>
-															<tr>
-																<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
-																<td>
-																	${firma.fitxerNom}
-																	<a href="${registre.id}/annex/${annex.id}/firma/${status.index}" class="btn btn-default btn-sm pull-right">
-																		<span class="fa fa-download"  title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
-																	</a>
-																</td>
-															</tr>
+															<c:if test="${firma.tipus != 'TF06'}">
+																<tr>
+																	<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
+																	<td>
+																		${firma.fitxerNom}
+																		<a href="${registre.id}/annex/${annex.id}/firma/${status.index}" class="btn btn-default btn-sm pull-right">
+																			<span class="fa fa-download"  title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
+																		</a>
+																	</td>
+																</tr>
+															</c:if>
 															<c:if test="${not empty firma.csvRegulacio}">
 																<tr>
 																	<td><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></td>

@@ -6,6 +6,7 @@ package es.caib.ripea.core.service;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -452,9 +453,13 @@ public class RegistreServiceImpl implements RegistreService {
 					annex.setAmbFirma(true);
 					
 					int j = 0;
-					for (int i = 0; i < annex.getFirmes().size(); i++) {
-						FirmaDto firma = annex.getFirmes().get(i); 
-						if ((i > 0 || firma.getTipus() != "TF01") && j < annexEntity.getFirmes().size()) {
+					
+					Iterator<FirmaDto> it = annex.getFirmes().iterator();
+					while (it.hasNext()) {
+						FirmaDto firma = it.next();
+						if (firma.getTipus() == "TF01") {
+							it.remove();
+						} else if (j < annexEntity.getFirmes().size()) {
 							firma.setFitxerNom(annexEntity.getFirmes().get(j).getFitxerNom());
 							firma.setTipusMime(annexEntity.getFirmes().get(j).getTipusMime());
 							j++;
