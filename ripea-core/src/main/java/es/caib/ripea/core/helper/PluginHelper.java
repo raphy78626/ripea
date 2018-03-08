@@ -2285,13 +2285,13 @@ public class PluginHelper {
 			String tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
 			String perfil = FirmaPerfil.BES.toString();
 			String fitxerNom = annex.getFitxerNom();
-			String tipusMime = "xsig";
+			String tipusMime = "csig";
 			String csvRegulacio = null;
 
 			FirmaEntity firma = FirmaEntity.getBuilder(
 					tipus, 
 					perfil, 
-					fitxerNom + "_xades_detached.xml", 
+					fitxerNom + "_cades_detached.csig", 
 					firmaContingut, 
 					tipusMime, 
 					csvRegulacio, 

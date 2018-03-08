@@ -58,7 +58,7 @@ public class BustiaV1Test {
         anotacio.setUsuariCodi("u104848");
         anotacio.setUsuariNom("VHZ");
         anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        anotacio.setExtracte("Prova2");
+        anotacio.setExtracte("Anotació amb annexos sense firma per provar autofirma servidor");
         anotacio.setOficinaCodi("10");
         anotacio.setOficinaDescripcio("Oficina de proves");
         anotacio.setEntitatCodi("codientitat");

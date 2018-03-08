@@ -57,11 +57,11 @@ public class SignaturaPluginPortafib implements SignaturaPlugin {
 			// Guarda el contingut en un arxiu temporal
 			sourceFile = getArxiuTemporal(id, contingut);
 			String source = sourceFile.getAbsolutePath();
-			String dest = source + "_xades_detached.xml";
+			String dest = source + "_cades_detached.csig";
 		
 			// XADES DETACHED
 			IRubricGenerator rubricGenerator = null;
-			String signType = FileInfoSignature.SIGN_TYPE_XADES; // XADES
+			String signType = FileInfoSignature.SIGN_TYPE_CADES; // CAdES
 			int signMode = FileInfoSignature.SIGN_MODE_EXPLICIT; // Detached
 			boolean userRequiresTimeStamp = false;
 			signFile(
@@ -76,6 +76,7 @@ public class SignaturaPluginPortafib implements SignaturaPlugin {
 					plugin);
 			
 			// Llegeix la firma del fitxer de destí
+			destFile = new File(dest);
 			firmaContingut = FileUtils.readFileToByteArray(destFile);
 			return firmaContingut;
 		} catch (Exception e) {
@@ -90,11 +91,11 @@ public class SignaturaPluginPortafib implements SignaturaPlugin {
 
 	}  
 	
-	private static final String FIRMASERVIDOR = "FIRMASERVIDOR";
+	private static final String FIRMASERVIDOR_RIPEA = "FIRMASERVIDOR_RIPEA";
 	private static final String autofirmaBasePath;
 	static {
 		String tempDir = System.getProperty("java.io.tmpdir");
-		final File base = new File(tempDir, FIRMASERVIDOR);
+		final File base = new File(tempDir, FIRMASERVIDOR_RIPEA);
 		base.mkdirs();
 		autofirmaBasePath = base.getAbsolutePath();
 	}
@@ -102,7 +103,7 @@ public class SignaturaPluginPortafib implements SignaturaPlugin {
 	/** Mètode per guardar el contingut en un arxiu temporal en disc. */
 	private File getArxiuTemporal(String id, byte[] contingut) throws IOException {
 		// Crea l'arxiu temporal
-		File fitxerTmp = new File(autofirmaBasePath + File.separatorChar + id, id + "_original");
+		File fitxerTmp = new File(autofirmaBasePath, id + "_original");
         fitxerTmp.getParentFile().mkdirs();
         // Escriu el contingut al fitxer temporal
         FileUtils.writeByteArrayToFile(fitxerTmp, contingut);
