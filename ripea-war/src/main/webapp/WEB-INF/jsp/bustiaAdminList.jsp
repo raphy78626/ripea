@@ -27,15 +27,8 @@
 				<rip:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
 			<div class="col-md-3">
-				<rip:inputText name="unitatCodi" inline="true" placeholderKey="bustia.list.filtre.unitat"/>
+				<rip:inputText name="unitatCodi" inline="true" placeholderKey="bustia.list.filtre.unitat.codidir3"/>
 			</div>
-<%--
-				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-				<c:url value="/unitatajax/unitats" var="urlConsultaFiltre"/>
-				<rip:inputLovSuggest name="unitatCodi" urlConsultaInicial="${urlConsultaInicial}" urlConsultaFiltre="${urlConsultaFiltre}" codiProperty="codi" nomProperty="denominacio" showDesc="true" placeholderKey="bustia.list.filtre.unitat"  inline="true"/>
---%>
-<%-- 				<rip:inputSuggest name="unitatCodi" urlConsultaInicial="${urlConsultaInicial}" urlConsultaLlistat="${urlConsultaLlistat}" codiProperty="codi" nomProperty="denominacio" placeholderKey="bustia.list.filtre.unitat" inline="true"/> --%>
-<%-- 				<rip:inputText name="unitatCodi" inline="true" placeholderKey="bustia.list.filtre.unitat"/> --%>
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
