@@ -482,7 +482,7 @@ tr.clicable {
 																<td><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></td>
 																<td>${firma.perfil}</td>
 															</tr>
-															<c:if test="${firma.tipus != 'TF06'}">
+															<c:if test="${firma.tipus != 'TF06' and firma.tipus != 'TF05'}">
 																<tr>
 																	<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 																	<td>
