@@ -513,11 +513,22 @@ tr.clicable {
 				
 				</c:when>
 				<c:otherwise>
-					<div class="row col-xs-12">
-						<div class="well">
-							<spring:message code="registre.annex.buit"/>
-						</div>
-					</div>
+					<c:choose>
+						<c:when test="${not empty annexosErrorMsg}">
+							<div class="row col-xs-12">
+								<div class="alert alert-danger">
+									${annexosErrorMsg}
+								</div>
+							</div>						
+						</c:when>
+						<c:otherwise>
+							<div class="row col-xs-12">
+								<div class="well">
+									<spring:message code="registre.annex.buit"/>
+								</div>
+							</div>
+						</c:otherwise>
+					</c:choose>				
 				</c:otherwise>
 			</c:choose>
 		</div>

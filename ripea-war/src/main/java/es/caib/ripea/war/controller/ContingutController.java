@@ -386,12 +386,23 @@ public class ContingutController extends BaseUserController {
 						contingutId,
 						registreId));
 		
-		model.addAttribute(
-				"annexos",
-				registreService.getAnnexosAmbArxiu(
-						entitatActual.getId(),
-						contingutId,
-						registreId));
+		try {
+			model.addAttribute(
+					"annexos",
+					registreService.getAnnexosAmbArxiu(
+							entitatActual.getId(),
+							contingutId,
+							registreId));
+		} catch (RuntimeException re) {
+			String annexosErrorMsg = getMessage(
+					request, 
+					"contingut.user.annexos.error",
+					new Object[] {re.getMessage()}); 
+			MissatgesHelper.error(
+					request,
+					annexosErrorMsg);
+			model.addAttribute("annexosErrorMsg", annexosErrorMsg);
+		}
 		
 		return "registreDetall";
 	}

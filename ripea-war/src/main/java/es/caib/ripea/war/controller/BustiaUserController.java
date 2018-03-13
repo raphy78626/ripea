@@ -387,18 +387,28 @@ public class BustiaUserController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			return "bustiaContingutMarcarProcessat";
 		}
-		contingutService.marcarProcessat(
-				entitatActual.getId(), 
-				contingutId,
-				"<span class='label label-default'>" + 
-				getMessage(
-						request, 
-						"bustia.pendent.accio.marcat.processat") + 
-				"</span> " + command.getMotiu());
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:/bustiaUser",
-				"bustia.controller.pendent.contingut.reenviat.ok");
+		try {
+			contingutService.marcarProcessat(
+					entitatActual.getId(), 
+					contingutId,
+					"<span class='label label-default'>" + 
+					getMessage(
+							request, 
+							"bustia.pendent.accio.marcat.processat") + 
+					"</span> " + command.getMotiu());
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:/bustiaUser",
+					"bustia.controller.pendent.contingut.reenviat.ok");
+		} catch (RuntimeException re) {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"bustia.pendent.accio.marcar.processat.error",
+							new Object[] {re.getMessage()}));			
+			return "bustiaContingutMarcarProcessat";
+		}
 	}
 	
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes", method = RequestMethod.GET)
