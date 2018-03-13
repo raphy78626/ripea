@@ -2625,6 +2625,15 @@ public class PluginHelper {
 			case ZIP:
 				format = DocumentFormat.ZIP;
 				break;
+			case CSIG:
+				format = DocumentFormat.CSIG;
+				break;
+			case XSIG:
+				format = DocumentFormat.XSIG;
+				break;
+			case XML:
+				format = DocumentFormat.XML;
+				break;
 			}
 			metadades.setFormat(format);
 		}
