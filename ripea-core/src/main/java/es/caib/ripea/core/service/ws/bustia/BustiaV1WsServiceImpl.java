@@ -177,9 +177,9 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				throw new ValidationException(
 						"El contingut de la firma ha d'estar informat pel tipus TF04");
 		} else if (DocumentNtiTipoFirmaEnumDto.TF05.equals(firmaTipus)) {
-			if (firma.getContingut() == null)
+			if (firma.getContingut() != null)
 				throw new ValidationException(
-						"El contingut de la firma ha d'estar informat pel tipus TF05");
+						"El tipus de firma TF05 (CADES ATTACHED) no permet contingut en la firma");
 		}		
 	}
 
