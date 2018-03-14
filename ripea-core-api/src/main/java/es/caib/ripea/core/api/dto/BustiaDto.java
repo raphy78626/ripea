@@ -96,6 +96,18 @@ public class BustiaDto extends ContingutDto {
 			return nom;
 		}
 	}
+	
+	/** Marca el nom de default al costat del nom per assenyalar que la bústia és per defecte. 
+	 * S'utilitza a l'arbre de selecció de bústies.
+	 */
+	private static final String DEFAULT = " (default)";
+	public String getNomDefault() {
+		StringBuilder str = new StringBuilder(super.getNom());
+		if (this.isPerDefecte())
+			str.append(DEFAULT);
+		return str.toString();
+	}
+
 
 	protected CarpetaDto copiarContenidor(ContingutDto original) {
 		CarpetaDto copia = new CarpetaDto();
