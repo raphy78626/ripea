@@ -362,6 +362,7 @@ public class RegistreHelper {
 				firma.getContingut(),
 				firma.getTipusMime(), 
 				firma.getCsvRegulacio(), 
+				false, // no és una autofirma de Ripea
 				annex).build();
 		
 		return firmaEntity;

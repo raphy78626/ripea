@@ -470,6 +470,10 @@ tr.clicable {
 															<h3 class="panel-title">
 																<span class="fa fa-certificate"></span>
 																<spring:message code="registre.annex.detalls.camp.firma"/> ${status.index + 1}
+																<c:if test="${firma.autofirma}">
+																	(<spring:message code="registre.annex.detalls.camp.firma.autoFirma"/> 
+																		<span class="fa fa-info-circle" title="<spring:message code="registre.annex.detalls.camp.firma.autoFirma.info" />"></span>)
+																</c:if>
 															</h3>
 														</div>
 														<table class="table table-bordered">

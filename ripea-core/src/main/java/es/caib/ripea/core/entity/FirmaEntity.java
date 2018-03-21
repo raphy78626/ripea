@@ -34,6 +34,8 @@ public class FirmaEntity extends RipeaAuditable<Long> {
 	private String tipusMime;
 	@Column(name = "csv_regulacio")
 	private String csvRegulacio;
+	@Column(name = "autofirma")
+	private Boolean autofirma = false;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "annex_id")
@@ -71,6 +73,10 @@ public class FirmaEntity extends RipeaAuditable<Long> {
 		return csvRegulacio;
 	}
 
+	public boolean getAutofirma() {
+		return autofirma != null ? autofirma : false ;
+	}
+
 	public RegistreAnnexEntity getAnnex() {
 		return annex;
 	}
@@ -83,6 +89,7 @@ public class FirmaEntity extends RipeaAuditable<Long> {
 			byte[] contingut,
 			String tipusMime,
 			String csvRegulacio,
+			boolean autofirma,
 			RegistreAnnexEntity annex) {
 		return new Builder(
 				tipus,
@@ -91,6 +98,7 @@ public class FirmaEntity extends RipeaAuditable<Long> {
 				contingut,
 				tipusMime,
 				csvRegulacio,
+				autofirma,
 				annex);
 	}
 	public static class Builder {
@@ -102,6 +110,7 @@ public class FirmaEntity extends RipeaAuditable<Long> {
 				byte[] contingut,
 				String tipusMime,
 				String csvRegulacio,
+				boolean autofirma,
 				RegistreAnnexEntity annex) {
 			built = new FirmaEntity();
 			
@@ -111,6 +120,7 @@ public class FirmaEntity extends RipeaAuditable<Long> {
 			built.contingut = contingut;
 			built.tipusMime = tipusMime;
 			built.csvRegulacio =csvRegulacio;
+			built.autofirma = autofirma;
 			built.annex = annex;
 		}
 		public FirmaEntity build() {

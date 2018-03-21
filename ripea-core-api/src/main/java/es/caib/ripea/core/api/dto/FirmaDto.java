@@ -18,6 +18,7 @@ public class FirmaDto implements Serializable {
 	private byte[] contingut;
 	private String tipusMime;
 	private String csvRegulacio;
+	private Boolean autofirma = false;
 
 	public String getTipus() {
 		return tipus;
@@ -55,7 +56,12 @@ public class FirmaDto implements Serializable {
 	public void setCsvRegulacio(String csvRegulacio) {
 		this.csvRegulacio = csvRegulacio;
 	}
-
+	public boolean getAutofirma() {
+		return autofirma != null ? autofirma.booleanValue() : false;
+	}
+	public void setAutofirma(boolean autofirma) {
+		this.autofirma = autofirma;
+	}
 	public String getContingutComString() {
 		if (contingut != null) {
 			return new String(contingut);
