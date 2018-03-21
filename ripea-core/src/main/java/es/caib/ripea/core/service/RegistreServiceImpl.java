@@ -23,6 +23,7 @@ import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.Firma;
+import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -391,6 +392,15 @@ public class RegistreServiceImpl implements RegistreService {
 		if (document != null) {
 			List<Firma> firmes = document.getFirmes();
 			if (firmes != null && firmes.size() > 0) {
+				
+				Iterator<Firma> it = firmes.iterator();
+				while (it.hasNext()) {
+					Firma firma = it.next();
+					if (firma.getTipus() == FirmaTipus.CSV) {
+						it.remove();
+					}
+				}
+				
 				Firma firma = firmes.get(indexFirma);
 				FirmaEntity firmaEntity = annex.getFirmes().get(indexFirma);
 				if (firma != null && firmaEntity != null) {
