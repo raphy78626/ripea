@@ -52,6 +52,11 @@ public class CarpetaEntity extends ContingutEntity {
 		}
 	}
 
+	@Override
+	public String getContingutType() {
+		return "carpeta";
+	}
+	
 	private static final long serialVersionUID = -2299453443943600172L;
 
 }

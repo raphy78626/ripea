@@ -320,6 +320,11 @@ public class ExpedientEntity extends NodeEntity {
 		}
 	}
 
+	@Override
+	public String getContingutType() {
+		return "expedient";
+	}
+	
 	private static final long serialVersionUID = -2299453443943600172L;
 
 }

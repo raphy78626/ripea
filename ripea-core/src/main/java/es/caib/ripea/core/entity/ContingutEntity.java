@@ -188,6 +188,10 @@ public abstract class ContingutEntity extends RipeaAuditable<Long> {
 			return false;
 		return true;
 	}
+	
+	public String getContingutType() {
+		return "desconegut";
+	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
 

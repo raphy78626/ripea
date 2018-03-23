@@ -125,6 +125,18 @@ public class AplicacioServiceImpl implements AplicacioService {
 		return toUsuariDtoAmbRols(
 				usuariRepository.findOne(auth.getName()));
 	}
+	
+	@Transactional
+	@Override
+	public UsuariDto updateUsuariActual(UsuariDto dto) {
+		logger.debug("Actualitzant configuració de usuari actual");
+		UsuariEntity usuari = usuariRepository.findOne(dto.getCodi());
+		usuari.update(
+				dto.getRebreEmailsBustia(), 
+				dto.getRebreEmailsAgrupats());
+		
+		return toUsuariDtoAmbRols(usuari);
+	}
 
 	@Transactional(readOnly = true)
 	@Override

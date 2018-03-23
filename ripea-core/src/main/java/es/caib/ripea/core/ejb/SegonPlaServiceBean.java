@@ -29,5 +29,15 @@ public class SegonPlaServiceBean implements SegonPlaService {
 		delegate.comprovarExecucionsMassives();		
 	}
 
+	@Override
+	public void comprovarEnviamentEmailsNoAgrupatsBustia() {
+		delegate.comprovarEnviamentEmailsNoAgrupatsBustia();
+	}
+
+	@Override
+	public void comprovarEnviamentEmailsAgrupatsBustia() {
+		delegate.comprovarEnviamentEmailsAgrupatsBustia();
+	}
+
 	
 }

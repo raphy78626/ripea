@@ -14,12 +14,14 @@ CREATE TABLE IPA_ALERTA
 
 CREATE TABLE IPA_USUARI
 (
-  CODI          character varying(64)           NOT NULL,
-  INICIALITZAT  boolean,
-  NIF           character varying(9)            NOT NULL,
-  NOM           character varying(200),
-  EMAIL         character varying(200),
-  VERSION       bigint                          NOT NULL
+  CODI          		character varying(64)       NOT NULL,
+  INICIALITZAT  		boolean,
+  NIF           		character varying(9)        NOT NULL,
+  NOM           		character varying(200),
+  EMAIL         		character varying(200),
+  REBRE_EMAILS  		boolean,
+  EMAILS_AGRUPATS		boolean,
+  VERSION       		bigint                      NOT NULL
 );
 
 
@@ -212,6 +214,21 @@ CREATE TABLE IPA_CONT_MOV
   LASTMODIFIEDBY_CODI  character varying(64)
 );
 
+CREATE TABLE IPA_CONT_MOV_EMAIL 
+(
+  ID 					BIGINT 					NOT NULL, 
+  DESTINATARI_CODI		character varying(64) 	NOT NULL, 
+  DESTINATARI_EMAIL		character varying(256) 	NOT NULL,
+  ENVIAMENT_AGRUPAT		boolean					NOT NULL,
+  BUSTIA_ID 			BIGINT 					NOT NULL,
+  CONTINGUT_MOVIMENT_ID BIGINT 					NOT NULL, 
+  CONTINGUT_ID 			BIGINT 					NOT NULL,
+  UNITAT_ORGANITZATIVA 	character varying(256),
+  CREATEDDATE          	timestamp without time zone,
+  LASTMODIFIEDDATE     	timestamp without time zone,
+  CREATEDBY_CODI       	character varying(64),
+  LASTMODIFIEDBY_CODI  	character varying(64)
+);
 
 CREATE TABLE IPA_CONT_LOG
 (

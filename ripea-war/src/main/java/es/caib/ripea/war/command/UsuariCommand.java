@@ -1,9 +1,14 @@
 /**
  * 
  */
-package es.caib.ripea.core.api.dto;
+package es.caib.ripea.war.command;
 
 import java.io.Serializable;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import es.caib.ripea.core.api.dto.UsuariDto;
+import es.caib.ripea.war.helper.ConversioTipusHelper;
 
 
 /**
@@ -11,7 +16,7 @@ import java.io.Serializable;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class UsuariDto implements Serializable {
+public class UsuariCommand implements Serializable {
 
 	private String codi;
 	private String nom;
@@ -63,7 +68,22 @@ public class UsuariDto implements Serializable {
 	public void setRebreEmailsAgrupats(Boolean rebreEmailsAgrupats) {
 		this.rebreEmailsAgrupats = rebreEmailsAgrupats;
 	}
+	
+	public static UsuariCommand asCommand(UsuariDto dto) {
+		return ConversioTipusHelper.convertir(
+				dto,
+				UsuariCommand.class);
+	}
+	public static UsuariDto asDto(UsuariCommand command) {
+		return ConversioTipusHelper.convertir(
+				command,
+				UsuariDto.class);
+	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 	private static final long serialVersionUID = -139254994389509932L;
 
 }

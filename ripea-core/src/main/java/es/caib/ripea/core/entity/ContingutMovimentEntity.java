@@ -47,7 +47,6 @@ public class ContingutMovimentEntity extends RipeaAuditable<Long> {
 	protected String comentari;
 
 
-
 	public ContingutEntity getContingut() {
 		return contingut;
 	}

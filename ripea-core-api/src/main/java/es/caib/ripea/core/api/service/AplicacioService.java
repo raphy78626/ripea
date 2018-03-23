@@ -45,6 +45,14 @@ public interface AplicacioService {
 	 */
 	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
 	public UsuariDto getUsuariActual();
+	
+	/**
+	 * Modifica la configuració de l'usuari actual
+	 * 
+	 * @return L'usuari actual.
+	 */
+	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	public UsuariDto updateUsuariActual(UsuariDto asDto);
 
 	/**
 	 * Obté un usuari donat el seu codi.

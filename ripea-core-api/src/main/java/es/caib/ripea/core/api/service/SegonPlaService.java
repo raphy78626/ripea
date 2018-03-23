@@ -16,5 +16,9 @@ public interface SegonPlaService {
 	 */
 //	@PreAuthorize("hasRole('tothom')")
 	public void comprovarExecucionsMassives();
+
+	public void comprovarEnviamentEmailsNoAgrupatsBustia();
+
+	public void comprovarEnviamentEmailsAgrupatsBustia();
 	
 }

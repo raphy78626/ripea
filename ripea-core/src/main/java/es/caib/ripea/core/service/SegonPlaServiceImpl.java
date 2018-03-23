@@ -5,7 +5,9 @@ package es.caib.ripea.core.service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,17 +17,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ExecucioMassivaService;
 import es.caib.ripea.core.api.service.SegonPlaService;
+import es.caib.ripea.core.entity.ContingutMovimentEmailEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaEntity.ExecucioMassivaTipus;
 import es.caib.ripea.core.helper.AlertaHelper;
+import es.caib.ripea.core.helper.CacheHelper;
+import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.MessageHelper;
 import es.caib.ripea.core.helper.PropertiesHelper;
+import es.caib.ripea.core.repository.ContingutMovimentEmailRepository;
+import es.caib.ripea.core.repository.ContingutMovimentRepository;
 import es.caib.ripea.core.repository.ExecucioMassivaContingutRepository;
 import es.caib.ripea.core.repository.ExecucioMassivaRepository;
+import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
  * Implementació dels mètodes per a gestionar documents.
@@ -40,6 +49,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private AlertaHelper alertaHelper;
 	@Resource
 	private MessageHelper messageHelper;
+	@Resource
+	private EmailHelper emailHelper;
+	@Resource
+	private CacheHelper cacheHelper;
 	
 	@Autowired
 	private ExecucioMassivaService execucioMassivaService;
@@ -49,6 +62,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private ExecucioMassivaRepository execucioMassivaRepository;
 	@Resource
 	private ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
+	@Resource
+	private ContingutMovimentRepository contingutMovimentRepository;
+	@Resource
+	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
+	@Resource
+	private UsuariRepository usuariRepository;
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	
@@ -123,6 +142,49 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 					alertat = true;
 				}
 			}
+		}
+	}
+	
+	@Override
+	@Transactional
+	@Scheduled(fixedDelayString = "${config:es.caib.ripea.segonpla.email.bustia.periode.enviament.no.agrupat}")
+	public void comprovarEnviamentEmailsNoAgrupatsBustia() {
+		comprovarEnviamentEmailsBustia(false);
+	}
+	
+	@Override
+	@Transactional
+	@Scheduled(cron = "${config:es.caib.ripea.segonpla.email.bustia.cron.enviament.agrupat}")
+	public void comprovarEnviamentEmailsAgrupatsBustia() {
+		comprovarEnviamentEmailsBustia(true);
+	}
+	
+	private void comprovarEnviamentEmailsBustia(boolean agrupats) {
+		
+		List<ContingutMovimentEmailEntity> moviments = null;
+		
+		if (agrupats)
+			moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatTrueOrderByDestinatariAscBustiaAsc();
+		else
+			moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatFalseOrderByDestinatariAscBustiaAsc();
+		
+		HashMap<String, List<ContingutMovimentEmailEntity>> contingutsEmail = new HashMap<String, List<ContingutMovimentEmailEntity>>();
+		for (ContingutMovimentEmailEntity contingutEmail : moviments) {
+			if (contingutsEmail.containsKey(contingutEmail.getEmail())) {
+				contingutsEmail.get(contingutEmail.getEmail()).add(contingutEmail);
+			} else {
+				List<ContingutMovimentEmailEntity> lContingutEmails = new ArrayList<ContingutMovimentEmailEntity>();
+				lContingutEmails.add(contingutEmail);
+				contingutsEmail.put(contingutEmail.getEmail(), lContingutEmails);
+			}
+		}
+		
+		for (String email: contingutsEmail.keySet()) {
+			emailHelper.sendEmailBustiaPendentContingut(
+					email,
+					agrupats,
+					contingutsEmail.get(email));
+			contingutMovimentEmailRepository.delete(contingutsEmail.get(email));
 		}
 	}
 	

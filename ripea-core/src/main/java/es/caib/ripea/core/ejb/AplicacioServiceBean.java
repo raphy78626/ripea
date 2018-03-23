@@ -51,6 +51,12 @@ public class AplicacioServiceBean implements AplicacioService {
 	public UsuariDto getUsuariActual() {
 		return delegate.getUsuariActual();
 	}
+	
+	@Override
+	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	public UsuariDto updateUsuariActual(UsuariDto usuari) {
+		return delegate.updateUsuariActual(usuari);
+	}
 
 	@Override
 	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})

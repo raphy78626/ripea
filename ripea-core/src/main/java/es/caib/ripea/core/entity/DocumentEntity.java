@@ -354,6 +354,11 @@ public class DocumentEntity extends NodeEntity {
 		}
 	}
 
+	@Override
+	public String getContingutType() {
+		return "document";
+	}
+	
 	private static final long serialVersionUID = -2299453443943600172L;
 
 }
