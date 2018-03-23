@@ -843,7 +843,6 @@ public class ContingutHelper {
 			ContingutEntity contingut,
 			ContingutEntity desti,
 			String comentari) {
-		
 		UsuariEntity usuariAutenticat = usuariHelper.getUsuariAutenticat();
 		if (usuariAutenticat == null && contingut.getDarrerMoviment() != null)
 			usuariHelper.generarUsuariAutenticat(

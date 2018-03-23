@@ -642,7 +642,7 @@ public class BustiaServiceImpl implements BustiaService {
 				contingutMoviment,
 				true,
 				true);
-		// Avisam per correu als responsables de la bústia de destí
+//		// Avisam per correu als responsables de la bústia de destí
 		emailHelper.emailBustiaPendentContingut(
 				bustia,
 				contingut,

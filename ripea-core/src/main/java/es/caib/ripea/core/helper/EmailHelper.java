@@ -19,9 +19,11 @@ import org.springframework.stereotype.Component;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.CarpetaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
+import es.caib.ripea.core.entity.ContingutMovimentEmailEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -29,6 +31,8 @@ import es.caib.ripea.core.entity.ExecucioMassivaEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
+import es.caib.ripea.core.repository.ContingutMovimentEmailRepository;
+import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.plugin.usuari.DadesUsuari;
 
 /**
@@ -41,6 +45,11 @@ public class EmailHelper {
 
 	private static final String PREFIX_RIPEA = "[RIPEA]";
 
+	@Resource
+	private UsuariRepository usuariRepository;
+	@Resource
+	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
+	
 	@Resource
 	private JavaMailSender mailSender;
 
@@ -86,40 +95,95 @@ public class EmailHelper {
 			BustiaEntity bustia,
 			ContingutEntity contingut,
 			ContingutMovimentEntity contenidorMoviment) {
-		logger.debug("Enviament emails nou contenidor a la bústia (" +
+		logger.debug("Desant emails nou contenidor a la bústia per a enviament (" +
 				"bustiaId=" + (bustia != null ? bustia.getId() : "") + ")" +
 				"contingutId=" + (contingut != null ? contingut.getId() : "") + ")");
-		SimpleMailMessage missatge = new SimpleMailMessage();
-		if (emplenarDestinataris(
-				missatge,
-				bustia)) {
-			missatge.setFrom(getRemitent());
-			String unitatOrganitzativa = ""; 
-			if (bustia != null)
-				unitatOrganitzativa = getUnitatOrganitzativaNom(
-						bustia.getEntitat(),
-						bustia.getUnitatCodi());
-			missatge.setSubject(PREFIX_RIPEA + " Nou element rebut a la bústia: " + (bustia != null ? bustia.getNom() : ""));
-			String tipus = "desconegut";
-			if (contingut instanceof ExpedientEntity) {
-				tipus = "expedient";
-			} else if (contingut instanceof DocumentEntity) {
-				tipus = "document";
-			} else if (contingut instanceof CarpetaEntity) {
-				tipus = "carpeta";
-			}
-			missatge.setText(
-					"Nou element rebut a la bústia:\n" +
-					"\tEntitat: " + ((bustia != null && bustia.getEntitat() != null) ? bustia.getEntitat().getNom() : "") + "\n" +
-					"\tUnitat organitzativa: " + unitatOrganitzativa + "\n" +
-					"\tBústia: " + (bustia != null ? bustia.getNom() : "") + "\n\n" +
-					"Dades de l'element: \n" +
-					"\tTipus: " + tipus + "\n" +
-					"\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
-					"\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
-					"\tComentari: " + (contenidorMoviment != null ? contenidorMoviment.getComentari() : "") + "\n");
-			mailSender.send(missatge);
+		List<UsuariDto> destinataris = obtenirCodiDestinatarisPerEmail(bustia);
+		String unitatOrganitzativa = ""; 
+		if (bustia != null && !destinataris.isEmpty())
+			unitatOrganitzativa = getUnitatOrganitzativaNom(
+					bustia.getEntitat(),
+					bustia.getUnitatCodi());
+		List<ContingutMovimentEmailEntity> movEmails = new ArrayList<ContingutMovimentEmailEntity>();
+		for (UsuariDto destinatari: destinataris) {
+			ContingutMovimentEmailEntity contingutMovimentEmail = ContingutMovimentEmailEntity.getBuilder(
+					destinatari.getCodi(), 
+					destinatari.getEmail(),
+					destinatari.getRebreEmailsAgrupats(),
+					bustia, 
+					contenidorMoviment, 
+					contingut, 
+					unitatOrganitzativa).build();
+			movEmails.add(contingutMovimentEmail);
 		}
+		contingutMovimentEmailRepository.save(movEmails);
+	}
+	
+	public void sendEmailBustiaPendentContingut(
+			String emailDestinatari,
+			boolean enviarAgrupat,
+			List<ContingutMovimentEmailEntity> contingutMovimentEmails) {
+		logger.debug("Enviament emails nou contenidor a bústies");
+
+		
+		if (enviarAgrupat && contingutMovimentEmails.size() > 1) {
+			
+			SimpleMailMessage missatge = new SimpleMailMessage();
+			missatge.setTo(emailDestinatari);
+			missatge.setFrom(getRemitent());
+			missatge.setSubject(PREFIX_RIPEA + " Nous elements rebuts a les bústies");
+			
+			BustiaEntity bustia = null;
+			EntitatEntity entitat = null;
+			String text = "";
+			Integer contadorElement = 1;
+			
+			for (ContingutMovimentEmailEntity contingutEmail: contingutMovimentEmails) {
+				if (bustia == null || !contingutEmail.getBustia().getId().equals(bustia.getId())) { 
+					bustia = contingutEmail.getBustia();
+					entitat = bustia != null ? bustia.getEntitat() : null;
+					text += "\nNous elements rebuts a la bústia:\n" +
+							"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
+							"\tUnitat organitzativa: " + contingutEmail.getUnitatOrganitzativa() + "\n" +
+							"\tBústia: " + (bustia != null ? bustia.getNom() : "") + "\n\n";
+					contadorElement = 1;
+				}
+				ContingutEntity contingut = contingutEmail.getContingut();
+				ContingutMovimentEntity contenidorMoviment = contingutEmail.getContingutMoviment();
+				String tipus = contingut.getContingutType();
+				text += "\t" + contadorElement++ + ". Dades de l'element: \n" +
+						"\t\tTipus: " + tipus + "\n" +
+						"\t\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
+						"\t\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
+						"\t\tComentari: " + (contenidorMoviment != null ? contenidorMoviment.getComentari() : "") + "\n";
+			}
+			missatge.setText(text);
+			mailSender.send(missatge);
+		} else {
+			for (ContingutMovimentEmailEntity contingutEmail: contingutMovimentEmails) {
+				SimpleMailMessage missatge = new SimpleMailMessage();
+				missatge.setTo(emailDestinatari);
+				missatge.setFrom(getRemitent());
+				missatge.setSubject(PREFIX_RIPEA + " Nou element rebut a la bústia: " + (contingutEmail.getBustia() != null ? contingutEmail.getBustia().getNom() : ""));
+				BustiaEntity bustia = contingutEmail.getBustia();
+				EntitatEntity entitat = bustia != null ? bustia.getEntitat() : null;
+				ContingutEntity contingut = contingutEmail.getContingut();
+				ContingutMovimentEntity contenidorMoviment = contingutEmail.getContingutMoviment();
+				String tipus = contingut.getContingutType();
+				missatge.setText(
+						"Nou element rebut a la bústia:\n" +
+						"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
+						"\tUnitat organitzativa: " + contingutEmail.getUnitatOrganitzativa() + "\n" +
+						"\tBústia: " + (bustia != null ? bustia.getNom() : "") + "\n\n" +
+						"Dades de l'element: \n" +
+						"\tTipus: " + tipus + "\n" +
+						"\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
+						"\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
+						"\tComentari: " + (contenidorMoviment != null ? contenidorMoviment.getComentari() : "") + "\n");
+				mailSender.send(missatge);
+			}
+		}
+		
 	}
 
 	public void emailBustiaPendentRegistre(
@@ -173,14 +237,32 @@ public class EmailHelper {
 	}
 
 
+	public List<UsuariDto> obtenirCodiDestinatarisPerEmail(BustiaEntity bustia) {
+		List<UsuariDto> destinataris = new ArrayList<UsuariDto>();
+		Set<String> usuaris = contenidorHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
+		for (String usuari: usuaris) {
+			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(usuari);
+			if (dadesUsuari != null && dadesUsuari.getEmail() != null) {
+				UsuariEntity user = usuariRepository.findOne(usuari);
+				if (user == null || user.isRebreEmailsBustia()) {
+					UsuariDto u = new UsuariDto();
+					u.setCodi(usuari);
+					u.setEmail(dadesUsuari.getEmail());
+					u.setRebreEmailsAgrupats(user == null ? true : user.isRebreEmailsAgrupats());
+					destinataris.add(u);
+				}
+			}
+		}
+		return destinataris;
+	}
+	
 	private boolean emplenarDestinataris(
 			MailMessage mailMessage,
 			BustiaEntity bustia) {
 		List<String> destinataris = new ArrayList<String>();
 		Set<String> usuaris = contenidorHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
 		for (String usuari: usuaris) {
-			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(
-					usuari);
+			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(usuari);
 			if (dadesUsuari != null && dadesUsuari.getEmail() != null)
 				destinataris.add(dadesUsuari.getEmail());
 		}

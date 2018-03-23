@@ -20,6 +20,10 @@
 			es.caib.ripea.war.helper.EntitatHelper.getRequestParameterCanviEntitat());
 
 	pageContext.setAttribute(
+			"dadesUsuariActual",
+			es.caib.ripea.war.helper.SessioHelper.getUsuariActual(request));
+	
+	pageContext.setAttribute(
 			"rolActual",
 			es.caib.ripea.war.helper.RolHelper.getRolActual(request));
 	pageContext.setAttribute(
@@ -149,9 +153,14 @@ body {
 							<ul class="dropdown-menu">
 								<li>
 									<a href="<c:url value="/massiu/consulta/0"/>" data-toggle="modal" data-maximized="true">
-									<spring:message code="decorator.menu.accions.massives.user"/>
-								</a>
-							</li>
+										<spring:message code="decorator.menu.accions.massives.user"/>
+									</a>
+								</li>
+								<li>
+									<a href="<c:url value="/usuari/configuracio"/>" data-toggle="modal" data-maximized="true">
+										<spring:message code="decorator.menu.configuracio.user"/>
+									</a>
+								</li>
 							</ul>
 						</li>
 					</ul>

@@ -627,6 +627,11 @@ public class RegistreEntity extends ContingutEntity {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String getContingutType() {
+		return "Anotació de registre";
+	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
 }
