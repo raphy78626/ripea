@@ -102,7 +102,7 @@ public class SignaturaPluginTest {
 		
 		// Ruta destí a la carpeta selenium del directori temporal
 		String folderPath = System.getProperty("java.io.tmpdir") + "ripea";
-		String filePath = folderPath + File.separator + "keystore.jks";
+		String filePath = folderPath + File.separator + "truststore.jks";
 		// Mira si existeix, si no el crea
 		File file = new File(filePath);
 		if (!file.exists()) {
