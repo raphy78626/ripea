@@ -1160,6 +1160,7 @@ public class BustiaServiceImpl implements BustiaService {
 	}
 	
 	private void processarAnnexos(RegistreEntity anotacio, BustiaEntity bustia, ContingutArxiu expedientCreat) {
+		boolean isExpedientFinal = false;
 		try {
 			for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 				//si tenim contingut de fitxer i també referència del registre, hem de tornar una excepció
@@ -1169,6 +1170,7 @@ public class BustiaServiceImpl implements BustiaService {
 							+ " per l'annex [" + annex.getTitol() + "]");
 				} else {
 					guardarDocumentAnnex (annex, bustia, expedientCreat);
+					isExpedientFinal = true;
 				}
 				// Si l'anotació té una regla sistra llavors intenta extreure la informació dels identificadors
 				// del tràmit i del procediment de l'annex
@@ -1182,10 +1184,13 @@ public class BustiaServiceImpl implements BustiaService {
 			}
 		} catch (Exception ex) {
 			try {
-				eliminarContingutExistent(anotacio.getExpedientArxiuUuid());
+				if (isExpedientFinal)
+					pluginHelper.arxiuExpedientTemporalTancar(anotacio);
+				else
+					eliminarContingutExistent(anotacio.getExpedientArxiuUuid());
 			} catch (Exception ex2) {
 				logger.error(
-						"Error al eliminar l'expedient temporal creat al registre digital",
+						"Error al eliminar o tancar l'expedient creat l'arxiu digital",
 						ex2);
 			}
 			throw new BustiaServiceException(
