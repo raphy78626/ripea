@@ -12,13 +12,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.IntegracioAccioDto;
 import es.caib.ripea.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.ripea.core.api.dto.IntegracioDto;
+import es.caib.ripea.core.entity.UsuariEntity;
 
 /**
  * Mètodes per a la gestió d'integracions.
@@ -27,6 +32,9 @@ import es.caib.ripea.core.api.dto.IntegracioDto;
  */
 @Component
 public class IntegracioHelper {
+	
+	@Resource
+	private UsuariHelper usuariHelper;
 
 	public static final int DEFAULT_MAX_ACCIONS = 20;
 
@@ -188,6 +196,7 @@ public class IntegracioHelper {
 	private void addAccio(
 			String integracioCodi,
 			IntegracioAccioDto accio) {
+		afegirParametreUsuari(accio);
 		LinkedList<IntegracioAccioDto> accions = getLlistaAccions(integracioCodi);
 		int max = getMaxAccions(integracioCodi);
 		while (accions.size() >= max) {
@@ -196,6 +205,20 @@ public class IntegracioHelper {
 		accions.add(
 				0,
 				accio);
+	}
+	
+	private void afegirParametreUsuari(
+			IntegracioAccioDto accio) {
+		String usuariNomCodi = "";
+		UsuariEntity usuari = usuariHelper.getUsuariAutenticat();
+		if (usuari != null) {
+			usuariNomCodi = usuari.getNom() + " (" + usuari.getCodi() + ")";
+		} else {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (auth != null)
+				usuariNomCodi = auth.getName();
+		}
+		accio.getParametres().put("usuari", usuariNomCodi);
 	}
 
 	private IntegracioDto novaIntegracio(

@@ -434,7 +434,7 @@ public class PluginHelper {
 			RegistreEntity anotacio, 
 			BustiaEntity bustia) {
 		String accioDescripcio = "Creant un expedient temporal per anotacio de registre rebuda";
-		String nomExpedient = "EXP_REG_" + anotacio.getExpedientNumero() + "_" + System.currentTimeMillis();
+		String nomExpedient = "EXP_REG_" + anotacio.getNumero() + "_" + System.currentTimeMillis();
 		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("nom", nomExpedient);
@@ -739,6 +739,12 @@ public class PluginHelper {
 		String accioDescripcio = "Tancament d'un expedient temporal relacionada amb una anotació de registre";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
+		accioParams.put("expedientNumero", registre.getExpedientNumero());
+		accioParams.put("registreNom", registre.getNom());
+		accioParams.put("registreNumero", registre.getNumero());
+		accioParams.put("registreEntitat", registre.getEntitatCodi());
+		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
+		
 		long t0 = System.currentTimeMillis();
 		try {
 			getArxiuPlugin().expedientTancar(

@@ -399,7 +399,7 @@ public class BustiaUserController extends BaseUserController {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:/bustiaUser",
-					"bustia.controller.pendent.contingut.reenviat.ok");
+					"bustia.controller.pendent.contingut.marcat.processat.ok");
 		} catch (RuntimeException re) {
 			MissatgesHelper.error(
 					request,

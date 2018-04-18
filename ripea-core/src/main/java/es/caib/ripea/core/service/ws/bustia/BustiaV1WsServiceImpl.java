@@ -3,6 +3,9 @@
  */
 package es.caib.ripea.core.service.ws.bustia;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -12,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.DocumentNtiTipoFirmaEnumDto;
+import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.Firma;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
@@ -20,6 +24,7 @@ import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ReglaService;
 import es.caib.ripea.core.api.service.ws.BustiaV1WsService;
+import es.caib.ripea.core.helper.IntegracioHelper;
 
 /**
  * Implementació dels mètodes per al servei d'enviament de
@@ -40,6 +45,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	private ReglaService reglaService;
 	@Resource
 	private BustiaService bustiaService;
+	@Resource
+	private IntegracioHelper integracioHelper;
 
 
 
@@ -48,18 +55,50 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			String entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
+		
 		String registreNumero = (registreEntrada != null) ? registreEntrada.getIdentificador() : null;
-		logger.debug(
-				"Processant enviament d'anotació de registre d'entrada al servei web de bústia (" +
-				"entitat:" + entitat + ", " +
-				"unitatAdministrativa:" + unitatAdministrativa + ", " +
-				"numero:" + registreNumero + ")");
-		validarAnotacioRegistre(registreEntrada);
-		bustiaService.registreAnotacioCrear(
-				entitat,
-				RegistreTipusEnum.ENTRADA,
-				unitatAdministrativa,
-				registreEntrada);
+
+		//Dades pel monitor d'integracions
+		String accioDescripcio = "Crida del WS d'Enviament d'anotació de registre d'entrada";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("entitat", entitat);
+		accioParams.put("unitatAdministrativa", unitatAdministrativa);
+		accioParams.put("numero", registreNumero);
+		accioParams.put("tipusRegistre", RegistreTipusEnum.ENTRADA.toString());
+		long t0 = System.currentTimeMillis();
+		///
+		
+		try {
+			logger.debug(
+					"Processant enviament d'anotació de registre d'entrada al servei web de bústia (" +
+					"entitat:" + entitat + ", " +
+					"unitatAdministrativa:" + unitatAdministrativa + ", " +
+					"numero:" + registreNumero + ")");
+			validarAnotacioRegistre(registreEntrada);
+			bustiaService.registreAnotacioCrear(
+					entitat,
+					RegistreTipusEnum.ENTRADA,
+					unitatAdministrativa,
+					registreEntrada);
+			
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_REGISTRE,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0);
+		} catch (RuntimeException ex) {
+			String errorDescripcio = "Error al cridar el WS d'Enviament d'anotació de registre d'entrada";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_REGISTRE,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw ex;
+		}
 	}
 
 	@Override
