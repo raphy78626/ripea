@@ -57,12 +57,13 @@
 								'				</div>' +
 								'				<div class="modal-body" style="padding:0">' +
 								'					<iframe frameborder="0" height="100" width="100%"></iframe>' +
+								'					<div class="datatable-dades-carregant" style="text-align: center; padding-bottom: 100px;"><span class="fa fa-circle-o-notch fa-spin fa-3x"></span></div>' +
 								'				</div>' +
 								'				<div class="modal-footer"></div>' +
 								'			</div>' +
 								'		</div>' +
 								'	</div>' +
-								'</div>');						
+								'</div>');
 							elementPerEvaluar.data("modal-id", modalDivId);
 							$('#' + modalDivId).webutilModalShow({
 								adjustHeight: plugin.settings.adjustHeight,
@@ -78,6 +79,7 @@
 								dataTableId: dataTableId,
 								elementRetorn: plugin.settings.elementRetorn
 							});
+							
 						} else {
 							$('#' + modalDivId).webutilModalShow({
 								adjustHeight: plugin.settings.adjustHeight,
@@ -95,6 +97,7 @@
 						}
 						$('#' + modalDivId).data('elementRetorn', plugin.settings.elementRetorn);
 						$('#' + modalDivId).on('hide.bs.modal', function() {
+							$('#frameModal').remove();
 							var valorCodi = localStorage['relval_' + modalDivId];
 							var nomElementRetorn = $(this).data('elementRetorn');
 							if (nomElementRetorn != null && valorCodi != undefined && valorCodi != '') {
@@ -102,6 +105,7 @@
 								$(nomElementRetorn).trigger('blur');
 							}
 						});
+						
 					} else {
 						window.open(href, '_blank');
 					}
@@ -135,6 +139,11 @@
 						iframe.css('height', '' + settings.height + 'px');
 					iframe.attr("src", settings.contentUrl);
 					iframe.load(function() {
+						//S'oculta l'icone loader
+						$('.modal-body .datatable-dades-carregant').hide();
+						if(!iframe.attr("hidden")){
+							iframe.show();
+						}
 						// Copiar el titol de la modal
 						var titol = $(this).contents().find("title").html();
 						$('.modal-header h4', $(this).parent().parent()).html(titol);
@@ -155,6 +164,10 @@
 									});
 								} else {
 									clon.on('click', function () {
+										iframe.hide();
+										$('.modal-body .datatable-dades-carregant').css('padding-bottom', '0px');
+										$('.modal-body .datatable-dades-carregant').css('padding-top', '60px');
+										$('.modal-body .datatable-dades-carregant').show();
 										element.click();
 										return false;
 									});
@@ -165,6 +178,9 @@
 						}
 						// Evaluar URL del formulari
 						var dataForm = $('body', $(iframe).contents()).data('modal-form');
+						
+						
+						
 						var modalForm = (dataForm) ? $(dataForm, $(iframe).contents()) : $(settings.elementForm, $(iframe).contents());
 						if (modalForm.length) {
 							modalForm.attr('action', webutilUrlAmbPrefix(modalForm.attr('action'), '/modal'));
@@ -246,5 +262,6 @@
 			}
 		});
 	});
+	
 
 }(jQuery));
