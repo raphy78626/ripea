@@ -139,7 +139,12 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		});
 		$(this).find('select.select2-hidden-accessible').each(function( index ) {
 			if ($(this).data("netejar") == undefined || $(this).data("netejar"))
-				$(this).select2({theme: "bootstrap"}).trigger("change");
+				if ($(this).data("toggle") == "suggest") {
+					$(this).val(null).trigger("change");
+				} else {
+					$(this).select2({theme: "bootstrap"}).trigger("change");
+				}
+			
 		});
 	}
 
@@ -382,6 +387,78 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 			}
 		});
 	}
+	
+	$.fn.webutilInputSuggest = function() {
+		var value = $(this).data('currentValue');
+		var urlInicial = $(this).data('urlInicial') + "/" + value;
+		var suggestValue = $(this).data('suggestValue');
+		var suggestText = $(this).data('suggestText');
+		var suggest = $(this);
+
+		// Preselected value
+		if (value) {
+			$.ajax({
+				url: urlInicial,
+				async: false,
+				success: function(resposta) {
+					suggest.append(
+								$('<option>', {
+									value: resposta[suggestValue],
+									text: resposta[suggestText],
+									selected: value == resposta[suggestValue]
+								}));
+				}
+			});
+		}
+		
+		$(this).select2({
+		    placeholder: $(this).data('placeholder'),
+		    theme: "bootstrap",
+		    allowClear: true,
+		    minimumInputLength: $(this).data('minimumInputLength'),
+		    ajax: {
+		    	delay: 500,
+		    	url: function(params){
+					return $(this).data('urlLlistat') + "/" + params.term;
+				},
+				processResults: function (data) {
+					results = [];
+					for (var i = 0; i < data.length; i++) {
+						var item = data[i];
+						results.push({
+							id: item[suggestValue],
+							text: item[suggestText]
+						});
+					}
+					
+					suggest.trigger({type: 'select2:updateOptions'});
+					
+					return {
+						results: results
+					};
+				}
+		    }
+		});
+		$(this).on('select2:open', function() {
+			webutilModalAdjustHeight();
+		});
+		$(this).on('select2:updateOptions', function() {
+			setTimeout(function() {
+				webutilModalAdjustHeight();
+			}, 200);
+		});
+		$(this).on('select2:close', function() {
+			webutilModalAdjustHeight();
+		});
+	}
+	$.fn.webutilInputSuggestEval = function() {
+		$('[data-toggle="suggest"]', this).each(function() {
+			if (!$(this).attr('data-suggest-eval')) {
+				$(this).webutilInputSuggest();
+				$(this).attr('data-suggest-eval', 'true');
+			}
+		});
+	}
 
 	$.fn.webutilDatepicker = function() {
 		$(this).datepicker({
@@ -457,6 +534,12 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 				$(this).attr('data-select2-eval', 'true');
 			}
 		});
+		$('[data-toggle="suggest"]', this).each(function() {
+			if (!$(this).attr('data-suggest-eval')) {
+				$(this).webutilInputSuggest();
+				$(this).attr('data-suggest-eval', 'true');
+			}
+		});
 		$('[data-toggle="datepicker"]', this).each(function() {
 			if (!$(this).attr('data-datepicker-eval')) {
 				$(this).webutilDatepicker();
@@ -479,6 +562,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		});
 	}
 	$(document).ready(function() {
+		
 		$(this).webutilTogglesEval();
 	});
 

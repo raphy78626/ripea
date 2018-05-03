@@ -11,6 +11,12 @@
 <html>
 <head>
 	<title>${titol}</title>
+	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
+	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	<rip:modalHead/>
 </head>
 <body>
@@ -18,7 +24,17 @@
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="bustiaCommand" role="form">
 		<form:hidden path="id"/>
 		<form:hidden path="pareId"/>
-		<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/>
+		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+		<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+		<rip:inputSuggest 
+			name="unitatCodi" 
+			urlConsultaInicial="${urlConsultaInicial}" 
+			urlConsultaLlistat="${urlConsultaLlistat}" 
+			inline="false" 
+			placeholderKey="bustia.form.camp.unitat"
+			suggestValue="codi"
+			suggestText="nom" />
+<%-- 		<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/> --%>
 		<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>

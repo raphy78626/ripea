@@ -157,6 +157,10 @@ public class UnitatOrganitzativaDto implements Serializable {
 		this.numVia = numVia;
 	}
 
+	public String getNom() {
+		return this.denominacio + " (" + this.codi + ")";
+	}
+	
 	private static final long serialVersionUID = -5602898182576627524L;
 
 }

@@ -218,6 +218,8 @@ public class IntegracioHelper {
 			if (auth != null)
 				usuariNomCodi = auth.getName();
 		}
+		if(accio.getParametres() == null)
+			accio.setParametres(new HashMap<String, String>());
 		accio.getParametres().put("usuari", usuariNomCodi);
 	}
 
