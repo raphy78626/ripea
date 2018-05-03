@@ -223,10 +223,13 @@ public class ReglaHelper {
 						regla.getEntitat(),
 						pendentBustia);
 			}
+			
+			Date dataProcesOk = new Date();
 			pendent.updateProces(
-					new Date(),
+					dataProcesOk,
 					RegistreProcesEstatEnum.PROCESSAT, // (ReglaTipusEnumDto.BUSTIA.equals(regla.getTipus())) ? RegistreProcesEstatEnum.PROCESSAT_VISIBLE : RegistreProcesEstatEnum.PROCESSAT_OCULT,
 					error);
+			pendent.updateDataDistribucioAsincrona(dataProcesOk);
 			// Si la regla és del tipus backoffice marca com a esborrat el contingut una vegada processat
 			if (ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
 				pendent.updateEsborrat(1);

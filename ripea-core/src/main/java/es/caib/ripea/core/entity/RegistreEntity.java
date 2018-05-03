@@ -179,7 +179,12 @@ public class RegistreEntity extends ContingutEntity {
 	
 	@Column(name = "llegida")
 	private Boolean llegida;
-
+	
+	@Column(name = "data_dist_asinc")
+	private Date dataDistribucioAsincrona;
+	
+	@Column(name = "reintents_dist_asinc")
+	private Integer reintentsDistribucioAsincrona;
 
 	public RegistreTipusEnum getRegistreTipus() {
 		return RegistreTipusEnum.valorAsEnum(registreTipus);
@@ -331,6 +336,9 @@ public class RegistreEntity extends ContingutEntity {
 	public Boolean getLlegida() {
 		return llegida;
 	}
+	public Date getDataDistribucioAsincrona() {
+		return dataDistribucioAsincrona;
+	}
 	
 	public void updateRebuig(
 			String motiuRebuig) {
@@ -356,6 +364,26 @@ public class RegistreEntity extends ContingutEntity {
 			this.procesError = null;
 		}
 	}
+	
+	public void updateDistribucioAsincrona(
+			Date procesData,
+			String procesError) {
+		this.dataDistribucioAsincrona = procesData;
+		if (reintentsDistribucioAsincrona == null) {
+			reintentsDistribucioAsincrona = new Integer(1);
+		} else {
+			reintentsDistribucioAsincrona = new Integer(reintentsDistribucioAsincrona.intValue() + 1);
+		}
+		if (procesError != null) {
+			if (procesError.length() > ERROR_MAX_LENGTH)
+				this.procesError = procesError.substring(0, ERROR_MAX_LENGTH);	
+			else
+				this.procesError = procesError;
+		} else {
+			this.procesError = null;
+		}
+	}
+	
 	public void updateProcesSistra(RegistreProcesEstatSistraEnum procesEstatSistra) {
 		this.procesEstatSistra = procesEstatSistra;
 	}
@@ -373,6 +401,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateExpedientArxiuUuid(String expedientArxiuUuid) {
 		this.expedientArxiuUuid = expedientArxiuUuid;
+	}
+	public void updateDataDistribucioAsincrona(Date dataDistribucioAsincrona) {
+		this.dataDistribucioAsincrona = dataDistribucioAsincrona;
 	}
 
 	public static Builder getBuilder(

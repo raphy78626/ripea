@@ -68,6 +68,12 @@ public interface RegistreService {
 	 * de registre que no siguin regles de tipus backoffice de tipus Sistra.
 	 */
 	public void reglaAplicarPendents();
+	
+	/**
+	 * Distribueix periòdicament les anotacions de registre que han arribat
+	 * al RIPEA i s'han quedat pendents de distribuir de forma asíncrona.
+	 */
+	public void distribuirAnotacionsPendents();
 
 	/**
 	 * Processa periòdicament les regles de tipus backoffice Sistra pendents d'aplicar 

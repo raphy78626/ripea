@@ -155,4 +155,10 @@ public class RegistreServiceBean implements RegistreService {
 				registreId);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public void distribuirAnotacionsPendents() {
+		delegate.distribuirAnotacionsPendents();
+	}
+
 }

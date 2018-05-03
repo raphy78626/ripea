@@ -115,7 +115,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.createdDate <= :dataFi) " +
 			"and (:esNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.comentari) like lower('%'||:filtre||'%')) " +
-			"and ((:esNullEstat = true and (c.esborrat = 0 or c.esborrat = 1)) or (c.esborrat = :estat))")
+			"and ((:esNullEstat = true and (c.esborrat = 0 or c.esborrat = 1)) or (c.esborrat = :estat)) " +
+			"and (type(c) != es.caib.ripea.core.entity.RegistreEntity or c.dataDistribucioAsincrona is not null)")
 	public Page<ContingutEntity> findBustiaPendentByPareAndFiltre(
 			@Param("esPareNull") boolean esPareNull,
 			@Param("pare") ContingutEntity pare,
@@ -143,6 +144,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"    c.entitat = :entitat " +
 			"and c.pare in (:pares) " +
 			"and c.esborrat = 0 " +
+			" and (type(c) != es.caib.ripea.core.entity.RegistreEntity or c.dataDistribucioAsincrona is not null) " +
 			"group by " +
 			"    c.pare")
 	List<Object[]> countByPares(

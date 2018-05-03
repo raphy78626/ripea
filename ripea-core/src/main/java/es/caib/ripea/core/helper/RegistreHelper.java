@@ -8,11 +8,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.registre.Firma;
@@ -45,6 +48,12 @@ public class RegistreHelper {
 
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	
+	@Resource
+	private AlertaHelper alertaHelper;
+	
+	@Resource
+	private MessageHelper messageHelper;
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -131,7 +140,7 @@ public class RegistreHelper {
 				anotacio.getLlibreCodi(),
 				anotacio.getAssumpteTipusCodi(),
 				anotacio.getIdiomaCodi(),
-				(regla != null) ? RegistreProcesEstatEnum.PENDENT : RegistreProcesEstatEnum.NO_PROCES,
+				(regla != null || (anotacio.getAnnexos() != null && !anotacio.getAnnexos().isEmpty())) ? RegistreProcesEstatEnum.PENDENT : RegistreProcesEstatEnum.NO_PROCES,
 				null).
 		entitatCodi(anotacio.getEntitatCodi()).
 		entitatDescripcio(anotacio.getEntitatDescripcio()).
@@ -366,6 +375,24 @@ public class RegistreHelper {
 				annex).build();
 		
 		return firmaEntity;
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void processarErrorAsincron(RegistreEntity anotacio, Exception e) {
+		alertaHelper.crearAlerta(
+				anotacio.getId(),
+				messageHelper.getMessage(
+						"alertes.segon.pla.distribuir.anotacions.error",
+						new Object[] {anotacio.getId()}),
+				e);
+		Date dataProcesOk = new Date();
+		anotacio.updateProces(
+				dataProcesOk,
+				RegistreProcesEstatEnum.ERROR,
+				e.getMessage());
+		anotacio.updateDistribucioAsincrona(
+				null, 
+				e.getMessage());
 	}
 
 }

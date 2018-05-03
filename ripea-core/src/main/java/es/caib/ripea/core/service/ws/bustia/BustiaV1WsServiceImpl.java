@@ -74,7 +74,9 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					"entitat:" + entitat + ", " +
 					"unitatAdministrativa:" + unitatAdministrativa + ", " +
 					"numero:" + registreNumero + ")");
+			
 			validarAnotacioRegistre(registreEntrada);
+			
 			bustiaService.registreAnotacioCrear(
 					entitat,
 					RegistreTipusEnum.ENTRADA,
@@ -133,6 +135,31 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 
 	private void validarAnotacioRegistre(
 			RegistreAnotacio registreEntrada) {
+		
+		// Validació d'obligatorietat de camps
+		validarObligatorietatRegistre(registreEntrada);
+		
+		// Validació de format de camps
+		validarFormatCampsRegistre(registreEntrada);
+		
+		// Validació d'annexos
+		if (registreEntrada.getAnnexos() != null && registreEntrada.getAnnexos().size() > 0)
+			for (RegistreAnnex annex : registreEntrada.getAnnexos())
+				validarAnnex(annex);
+		
+		// Validació de precedència de justificant
+		if (registreEntrada.getJustificant() != null && registreEntrada.getJustificant().getFitxerArxiuUuid() == null) {
+			throw new ValidationException(
+					"El justificant adjuntat no conté un uuid (" +
+					"entitatCodi=" + registreEntrada.getEntitatCodi() + ", " +
+					"llibreCodi=" + registreEntrada.getLlibreCodi() + ", " +
+					"tipus=" + RegistreTipusEnum.ENTRADA.getValor() + ", " +
+					"numero=" + registreEntrada.getNumero() + ", " +
+					"data=" + registreEntrada.getData() + ")");
+		}
+	}
+	
+	private void validarObligatorietatRegistre(RegistreAnotacio registreEntrada) {
 		if (registreEntrada.getNumero() == null) {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'numero'");
@@ -165,10 +192,10 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'idiomaCodi'");
 		}
+	}
+	
+	private void validarFormatCampsRegistre(RegistreAnotacio registreEntrada) {
 		
-		if (registreEntrada.getAnnexos() != null && registreEntrada.getAnnexos().size() > 0)
-			for (RegistreAnnex annex : registreEntrada.getAnnexos())
-				validarAnnex(annex);
 	}
 
 	/** Valida que l'annex:

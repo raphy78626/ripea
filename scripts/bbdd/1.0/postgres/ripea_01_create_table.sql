@@ -508,7 +508,9 @@ CREATE TABLE IPA_REGISTRE
   OFICINA_ORIG_DESC    character varying(100),
   JUSTIFICANT_ARXIU_UUID character varying(100),
   LLEGIDA              boolean,
-  EXPEDIENT_ARXIU_UUID  character varying(100)
+  EXPEDIENT_ARXIU_UUID  character varying(100),
+  DATA_DIST_ASINC	   timestamp without time zone,
+  REINTENTS_DIST_ASINC   integer
 );
 
 

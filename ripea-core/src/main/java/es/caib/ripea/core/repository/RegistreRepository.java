@@ -38,6 +38,18 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 		    "order by r.data asc")
 	List<RegistreEntity> findAmbReglaPendentProcessar();
 	
+	/** Consulta les anotacions de registre pendents de distribuïr
+	 * que s'han rebut anteriorment via WS
+	 * @return
+	 */
+	@Query("from RegistreEntity r " +
+			"where (r.procesEstat = es.caib.ripea.core.api.registre.RegistreProcesEstatEnum.PENDENT or r.procesEstat = es.caib.ripea.core.api.registre.RegistreProcesEstatEnum.ERROR)" +
+			"	and (r.reintentsDistribucioAsincrona is null or r.reintentsDistribucioAsincrona <= :maxReintents) " +
+			"   and r.dataDistribucioAsincrona is null" + 
+		    " order by r.data asc")
+	List<RegistreEntity> findPendentsDistribuir(
+			@Param("maxReintents") int maxReintents);
+	
 	/** Consulta les anotacions de registre pendents de processar amb regles per a tipus backoffice sistra que
 	 * estiguin en estat pendent o error de sistra i que no hagin superat el nombre de reintents.
 	 * @return
