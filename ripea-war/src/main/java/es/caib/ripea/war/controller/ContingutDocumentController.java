@@ -382,7 +382,42 @@ public class ContingutDocumentController extends BaseUserController {
 		else
 			return "redirect:../../escriptori";
 	}
+	
+	@RequestMapping(value = "/{contingutId}/document/{documentId}/descarregarImprimible", method = RequestMethod.GET)
+	public String descarregarImprimible(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long contingutId,
+			@PathVariable Long documentId) throws IOException {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		ContingutDto contingut = contingutService.findAmbIdUser(
+				entitatActual.getId(),
+				documentId,
+				true,
+				false);
+		if (contingut instanceof DocumentDto) {
+			FitxerDto fitxer = documentService.descarregarImprimible(
+					entitatActual.getId(),
+					documentId,
+					null);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+			return null;
+		}
+		MissatgesHelper.error(
+				request, 
+				getMessage(
+						request, 
+						"document.controller.descarregar.error"));
+		if (contingut.getPare() != null)
+			return "redirect:../../contingut/" + contingutId;
+		else
+			return "redirect:../../escriptori";
 
+	}
+	
 	@RequestMapping(value = "/{contingutId}/document/{documentId}/versio/{versio}/descarregar", method = RequestMethod.GET)
 	public String descarregarVersio(
 			HttpServletRequest request,

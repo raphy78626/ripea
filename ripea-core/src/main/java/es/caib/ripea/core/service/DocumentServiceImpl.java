@@ -580,7 +580,46 @@ public class DocumentServiceImpl implements DocumentService {
 				document,
 				versio);
 	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public FitxerDto descarregarImprimible(
+			Long entitatId,
+			Long id,
+			String versio) {
+		logger.debug("Descarregant contingut del document ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ", "
+				+ "versio=" + versio + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		DocumentEntity document = entityComprovarHelper.comprovarDocument(
+				entitat,
+				null,
+				id,
+				true,
+				false,
+				false);
+		// Per a consultes no es comprova el contenidor arrel
+		// Comprova l'accés al path del document
+		contingutHelper.comprovarPermisosPathContingut(
+				document,
+				true,
+				false,
+				false,
+				true);
+		
+		
+		FitxerDto fitxer = pluginHelper.arxiuDocumentVersioImprimible(
+				document);
+		
 
+		return fitxer; 
+	}
+	
 	@Transactional
 	@Override
 	public void portafirmesEnviar(

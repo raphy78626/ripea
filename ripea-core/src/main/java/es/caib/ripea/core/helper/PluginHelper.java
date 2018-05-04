@@ -1267,6 +1267,52 @@ public class PluginHelper {
 		}
 	}
 
+	public FitxerDto arxiuDocumentVersioImprimible(
+			DocumentEntity document) {
+		String accioDescripcio = "Obtenir versió imprimible del document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", document.getId().toString());
+		accioParams.put("títol", document.getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			
+//			DocumentContingut documentContingut = getArxiuPlugin().documentImprimible(
+//					document.getArxiuUuid());
+//			FitxerDto fitxer = new FitxerDto();
+//			fitxer.setNom(documentContingut.getArxiuNom());
+//			fitxer.setContentType(documentContingut.getTipusMime());
+//			fitxer.setTamany(documentContingut.getTamany());
+//			fitxer.setContingut(documentContingut.getContingut());
+			
+			FitxerDto imprimible = documentHelper.getFitxerAssociat(
+						document);
+			
+
+			
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return imprimible;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+
 	public void arxiuCarpetaActualitzar(
 			CarpetaEntity carpeta,
 			ContingutEntity contingutPare) {

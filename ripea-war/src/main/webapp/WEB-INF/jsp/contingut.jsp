@@ -615,6 +615,7 @@ $(document).ready(function() {
 								<c:choose>
 									<c:when test="${not contingut.custodiat}">
 										<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar" class="btn btn-default pull-right"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a>
+										<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregarImprimible" class="btn btn-default pull-right"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregarImprimible"/></a>
 									</c:when>
 									<c:otherwise>
 										<a href="../contingut/${contingut.id}/document/${contingut.id}/descarregar" class="btn btn-default pull-right"><span class="fa fa-download"></span>&nbsp;<spring:message code="contingut.document.descarregar.firmat"/></a>
