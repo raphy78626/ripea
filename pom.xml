@@ -19,6 +19,7 @@
 		<groovy.version>2.1.6</groovy.version>
 		<jackson.version>2.7.0</jackson.version>
 		<xdocreport.version>1.0.3</xdocreport.version>
+		<bouncycastle.version>1.46</bouncycastle.version>
 		<portafib.version>1.1.0</portafib.version>
 		<regweb.version>3.0.5</regweb.version>
 		<dir3caib.version>1.0.7</dir3caib.version>

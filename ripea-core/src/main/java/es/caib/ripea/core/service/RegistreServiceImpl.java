@@ -12,6 +12,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -440,24 +441,39 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				contingut,
 				registreId);
-
 		List<RegistreAnnexDetallDto> annexos = new ArrayList<RegistreAnnexDetallDto>();
 		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(annexEntity, RegistreAnnexDetallDto.class);
+			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(
+					annexEntity,
+					RegistreAnnexDetallDto.class);
 			if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
-				Document document = pluginHelper.arxiuDocumentConsultar(contingut, annex.getFitxerArxiuUuid(), null, true);
+				Document document = pluginHelper.arxiuDocumentConsultar(
+						contingut,
+						annex.getFitxerArxiuUuid(),
+						null,
+						true);
 				annex.setAmbDocument(true);
-				
 				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
-					annex.setFirmes(conversioTipusHelper.convertirList(document.getFirmes(), FirmaDto.class));
+					byte[] documentContingut = document.getContingut().getContingut();
+					byte[] firmaContingut = null;
+					ValidateSignatureResponse validateSignatureResponse = pluginHelper.validaSignaturaObtenirInformacio(
+							documentContingut,
+							firmaContingut);
+					System.out.println(">>> validateSignatureResponse: " + validateSignatureResponse);
+					System.out.println(">>>    signFormat: " + validateSignatureResponse.getSignFormat());
+					System.out.println(">>>    signProfile: " + validateSignatureResponse.getSignProfile());
+					System.out.println(">>>    signType: " + validateSignatureResponse.getSignType());
+					System.out.println(">>>    signatureDetailInfo: " + validateSignatureResponse.getSignatureDetailInfo());
+					annex.setFirmes(
+							conversioTipusHelper.convertirList(
+									document.getFirmes(),
+									FirmaDto.class));
 					annex.setAmbFirma(true);
-					
 					int j = 0;
-					
 					Iterator<FirmaDto> it = annex.getFirmes().iterator();
 					while (it.hasNext()) {
 						FirmaDto firma = it.next();
-						if (firma.getTipus() == "TF01") {
+						if ("TF01".equals(firma.getTipus())) {
 							it.remove();
 						} else if (j < annexEntity.getFirmes().size()) {
 							firma.setFitxerNom(annexEntity.getFirmes().get(j).getFitxerNom());
@@ -469,12 +485,9 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 			annexos.add(annex);
 		}
-		
 		return annexos;
 	}
-	
-	
-	
+
 	@Transactional (readOnly = true)
 	@Override
 	public RegistreAnotacioDto findAmbIdentificador(String identificador) {
@@ -532,7 +545,51 @@ public class RegistreServiceImpl implements RegistreService {
 				finsDate == null,
 				finsDate);
 	}
-	
+
+	@Transactional
+	@Override
+	public RegistreAnotacioDto marcarLlegida(
+			Long entitatId,
+			Long contingutId,
+			Long registreId) {
+		logger.debug("Marcan com a llegida l'anotació de registre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "contingutId=" + contingutId + ", "
+				+ "registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		if (contingut instanceof BustiaEntity) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					contingutId,
+					true);
+		} else {
+			// Comprova l'accés al path del contenidor pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
+					true,
+					false,
+					false,
+					true);
+		}
+		RegistreEntity registre = registreRepository.findByPareAndId(
+					contingut,
+					registreId);
+		registre.updateLlegida(true);
+		
+		return (RegistreAnotacioDto) contingutHelper.toContingutDto(
+				registre);		
+	}
+
+
+
 	private RegistreAnnexDetallDto getJustificantPerRegistre(
 			EntitatEntity entitat,
 			ContingutEntity contingut,
@@ -620,48 +677,6 @@ public class RegistreServiceImpl implements RegistreService {
 			
 			return false;
 		}
-	}
-	
-	@Transactional
-	@Override
-	public RegistreAnotacioDto marcarLlegida(
-			Long entitatId,
-			Long contingutId,
-			Long registreId) {
-		logger.debug("Marcan com a llegida l'anotació de registre ("
-				+ "entitatId=" + entitatId + ", "
-				+ "contingutId=" + contingutId + ", "
-				+ "registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
-				entitat,
-				contingutId,
-				null);
-		if (contingut instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
-					entitat,
-					contingutId,
-					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					contingut,
-					true,
-					false,
-					false,
-					true);
-		}
-		RegistreEntity registre = registreRepository.findByPareAndId(
-					contingut,
-					registreId);
-		registre.updateLlegida(true);
-		
-		return (RegistreAnotacioDto) contingutHelper.toContingutDto(
-				registre);		
 	}
 	
 	private String obtenirJustificantNom(Document document) {

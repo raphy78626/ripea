@@ -476,7 +476,7 @@ tr.clicable {
 														<tbody>
 															<tr>
 																<td><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></td>
-																<td>${firma.tipus}</td>
+																<td><spring:message code="document.nti.tipfir.enum.${firma.tipus}"/></td>
 															</tr>
 															<tr>
 																<td><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></td>

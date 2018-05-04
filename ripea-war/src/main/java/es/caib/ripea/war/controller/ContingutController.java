@@ -385,8 +385,13 @@ public class ContingutController extends BaseUserController {
 						entitatActual.getId(),
 						contingutId,
 						registreId));
-		
-		try {
+		model.addAttribute(
+				"annexos",
+				registreService.getAnnexosAmbArxiu(
+						entitatActual.getId(),
+						contingutId,
+						registreId));
+		/*try {
 			model.addAttribute(
 					"annexos",
 					registreService.getAnnexosAmbArxiu(
@@ -402,8 +407,7 @@ public class ContingutController extends BaseUserController {
 					request,
 					annexosErrorMsg);
 			model.addAttribute("annexosErrorMsg", annexosErrorMsg);
-		}
-		
+		}*/
 		return "registreDetall";
 	}
 	

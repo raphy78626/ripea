@@ -1479,7 +1479,8 @@ public class ContingutServiceImpl implements ContingutService {
 			for (Firma firma: firmes) {
 				FirmaDto detallFirma = new FirmaDto();
 				if (firma.getTipus() != null) {
-					detallFirma.setTipus(firma.getTipus().name());
+					detallFirma.setTipus(
+							firma.getTipus().name());
 				}
 				if (firma.getPerfil() != null) {
 					detallFirma.setPerfil(firma.getPerfil().name());
