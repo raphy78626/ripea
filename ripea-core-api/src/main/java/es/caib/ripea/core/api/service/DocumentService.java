@@ -335,4 +335,6 @@ public interface DocumentService {
 			String arxiuNom,
 			byte[] arxiuContingut) throws NotFoundException, SistemaExternException;
 
+	FitxerDto descarregarImprimible(Long entitatId, Long id, String versio);
+
 }

@@ -119,6 +119,18 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Override
 	@RolesAllowed("tothom")
+	public FitxerDto descarregarImprimible(
+			Long entitatId,
+			Long id,
+			String versio) {
+		return delegate.descarregarImprimible(
+				entitatId,
+				id,
+				versio);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
 	public void portafirmesEnviar(
 			Long entitatId,
 			Long id,
