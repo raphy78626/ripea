@@ -7,7 +7,11 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.PaginaDto;
+import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 
 /**
@@ -71,5 +75,22 @@ public interface UnitatOrganitzativaService {
 			String provincia, 
 			String localitat, 
 			Boolean arrel);
+
+
+	/**
+	 * 
+	 * @param entitatActual
+	 * 				
+	 */
+	void synchronize(EntitatDto entitatActual);
+
+	/**
+	 * @param entitatId
+	 * @param filtre
+	 * @param paginacioParams
+	 * @return La pàgina d'unitats organitzatives que compleixen el filtre.
+	 */
+	PaginaDto<UnitatOrganitzativaDto> findAmbFiltre(Long entitatId, UnitatOrganitzativaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams);
 
 }

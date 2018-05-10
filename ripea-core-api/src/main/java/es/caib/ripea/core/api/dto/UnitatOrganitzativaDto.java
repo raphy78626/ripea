@@ -13,6 +13,7 @@ import java.util.Date;
  */
 public class UnitatOrganitzativaDto implements Serializable {
 
+	private Long id;
 	private String codi;
 	private String denominacio;
 	private String nifCif;
@@ -36,6 +37,12 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private String nomVia;
 	private String numVia; 
 
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getCodi() {
 		return codi;
 	}

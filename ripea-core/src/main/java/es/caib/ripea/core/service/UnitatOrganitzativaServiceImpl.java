@@ -3,21 +3,37 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
+import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
+import es.caib.ripea.core.api.dto.PaginaDto;
+import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
 import es.caib.ripea.core.api.dto.TipusViaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
+import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 import es.caib.ripea.core.helper.CacheHelper;
+import es.caib.ripea.core.helper.ConversioTipusHelper;
+import es.caib.ripea.core.helper.EntityComprovarHelper;
+import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.PaginacioHelper.Converter;
+import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 
 /**
  * Implementació del servei de gestió d'entitats.
@@ -31,9 +47,109 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	private CacheHelper cacheHelper;
 	@Resource
 	private PluginHelper pluginHelper;
+	@Resource
+	private EntityComprovarHelper entityComprovarHelper;
+	@Resource
+	private PaginacioHelper paginacioHelper;
+	@Resource
+	private ConversioTipusHelper conversioTipusHelper;
+	@Resource
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 
+	@Override
+	public void synchronize(EntitatDto entitatActual){
+		
+		List<UnitatOrganitzativaDto> unitatsOrganitzativesPerEntitat = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatActual.getCodi()).toDadesList();
+		
+		for(UnitatOrganitzativaDto unitatOrganitzativa: unitatsOrganitzativesPerEntitat){
+			create(entitatActual.getId() ,unitatOrganitzativa);
+		}
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public PaginaDto<UnitatOrganitzativaDto> findAmbFiltre(
+			Long entitatId,
+			UnitatOrganitzativaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		logger.debug("Cercant les unitats organitzatives segons el filtre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "filtre=" + filtre + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 
-
+		
+		PaginaDto<UnitatOrganitzativaDto> resultPagina =  paginacioHelper.toPaginaDto(
+				unitatOrganitzativaRepository.findByEntitatAndUnitatCodiAndUnitatDenominacioFiltrePaginat(
+						entitat.getUnitatArrel(),
+						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
+						filtre.getCodi(),
+						filtre.getDenominacio() == null || filtre.getDenominacio().isEmpty(), 
+						filtre.getDenominacio(),
+						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
+				UnitatOrganitzativaDto.class,
+				new Converter<UnitatOrganitzativaEntity, UnitatOrganitzativaDto>() {
+					@Override
+					public UnitatOrganitzativaDto convert(UnitatOrganitzativaEntity source) {
+						return toUnitatOrganitzativaDto(
+								source);
+					}
+				});
+		return resultPagina;
+	}
+	
+	
+	
+	public UnitatOrganitzativaDto toUnitatOrganitzativaDto(
+			UnitatOrganitzativaEntity source) {
+		return conversioTipusHelper.convertir(
+				source, 
+				UnitatOrganitzativaDto.class);
+	}
+	
+	public void create(
+			Long entitatId,
+			UnitatOrganitzativaDto unitatOrganitzativa) {
+		logger.debug("Creant una nova unitat organitzativa ("
+				+ "entitatId=" + entitatId + ", "
+				+ "unitatOrganitzativa=" + unitatOrganitzativa + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		UnitatOrganitzativaEntity entity = UnitatOrganitzativaEntity.getBuilder(
+				unitatOrganitzativa.getCodi(),
+				unitatOrganitzativa.getDenominacio(),
+				unitatOrganitzativa.getNifCif(),
+				unitatOrganitzativa.getCodiUnitatSuperior(),
+				unitatOrganitzativa.getCodiUnitatArrel(),
+				unitatOrganitzativa.getDataCreacioOficial(),
+				unitatOrganitzativa.getDataSupressioOficial(),
+				unitatOrganitzativa.getDataExtincioFuncional(),
+				unitatOrganitzativa.getDataAnulacio(),
+				unitatOrganitzativa.getEstat(), 
+				unitatOrganitzativa.getCodiPais(),
+				unitatOrganitzativa.getCodiComunitat(),
+				unitatOrganitzativa.getCodiProvincia(),
+				unitatOrganitzativa.getCodiPostal(),
+				unitatOrganitzativa.getNomLocalitat(),
+				unitatOrganitzativa.getLocalitat(),
+				unitatOrganitzativa.getAdressa(),
+				unitatOrganitzativa.getTipusVia(),
+				unitatOrganitzativa.getNomVia(),
+				unitatOrganitzativa.getNumVia(),
+				false).build();
+		unitatOrganitzativaRepository.save(entity);
+		
+	}
+	
 	@Override
 	public List<UnitatOrganitzativaDto> findByEntitat(
 			String entitatCodi) {
