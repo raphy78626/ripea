@@ -55,16 +55,8 @@
 				<th data-col-name="unitatCodi" data-visible="false"></th>
 				<th data-col-name="entitat.codi" data-visible="false"></th>
 				<th data-col-name="nom"><spring:message code="bustia.list.columna.nom"/></th>
-				<th data-col-name="unitat" data-template="#denominacioTemplate">
-					<spring:message code="bustia.list.columna.unitat"/>
-					<script id="denominacioTemplate" type="text/x-jsrender">
-						{{if unitat}}
-							{{:unitatCodi}} - {{:unitat.denominacio}}
-						{{else}}
-							{{:unitatCodi}}
-						{{/if}}
-					</script>
-				</th>
+				<th data-col-name="unitatOrganitzativa.codi"><spring:message code="bustia.list.columna.unitat.codi"/></th>
+				<th data-col-name="unitatOrganitzativa.denominacio"><spring:message code="bustia.list.columna.unitat.nom"/></th>			
 				<th data-col-name="perDefecte" data-template="#cellPerDefecteTemplate">
 					<spring:message code="bustia.list.columna.per.defecte"/>
 					<script id="cellPerDefecteTemplate" type="text/x-jsrender">

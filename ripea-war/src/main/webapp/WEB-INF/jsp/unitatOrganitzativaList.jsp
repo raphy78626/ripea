@@ -22,7 +22,7 @@
 </head>
 <body>
 	<div class="text-right" data-toggle="botons-titol">
-		<a href="<c:url value="/unitatOrganitzativa/synchronize"/>" class="btn btn-default"><span class="fa fa-sync"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
+		<a href="<c:url value="/unitatOrganitzativa/synchronize"/>" class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
 	</div>
 
 		<form:form action="" method="post" cssClass="well" commandName="unitatOrganitzativaFiltreCommand">

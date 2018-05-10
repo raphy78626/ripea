@@ -6,8 +6,12 @@ package es.caib.ripea.core.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
@@ -24,6 +28,12 @@ public class BustiaEntity extends ContingutEntity {
 
 	@Column(name = "unitat_codi", length = 9, nullable = false)
 	protected String unitatCodi;
+	
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "unitat_id")
+	@ForeignKey(name = "ipa_unitat_organitzativa_bustia_fk")
+	protected UnitatOrganitzativaEntity unitatOrganitzativa;
+	
 	@Column(name = "per_defecte")
 	protected boolean perDefecte;
 	@Column(name = "activa")
@@ -31,6 +41,9 @@ public class BustiaEntity extends ContingutEntity {
 
 
 
+	public UnitatOrganitzativaEntity getUnitatOrganitzativa() {
+		return unitatOrganitzativa;
+	}
 	public String getUnitatCodi() {
 		return unitatCodi;
 	}

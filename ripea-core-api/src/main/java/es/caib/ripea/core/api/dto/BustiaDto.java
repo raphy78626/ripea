@@ -8,6 +8,8 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 
+
+
 /**
  * Informació d'una bústia.
  * 
@@ -19,6 +21,7 @@ public class BustiaDto extends ContingutDto {
 	private String unitatConselleriaCodi;
 	private boolean activa;
 	private boolean perDefecte;
+	private UnitatOrganitzativaDto unitatOrganitzativa;
 
 	private List<PermisDto> permisos;
 	private boolean usuariActualRead;
@@ -27,6 +30,12 @@ public class BustiaDto extends ContingutDto {
 
 
 
+	public UnitatOrganitzativaDto getUnitatOrganitzativa() {
+		return unitatOrganitzativa;
+	}
+	public void setUnitatOrganitzativa(UnitatOrganitzativaDto unitatOrganitzativa) {
+		this.unitatOrganitzativa = unitatOrganitzativa;
+	}
 	public String getUnitatCodi() {
 		return unitatCodi;
 	}

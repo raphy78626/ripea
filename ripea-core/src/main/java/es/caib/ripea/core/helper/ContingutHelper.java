@@ -275,10 +275,16 @@ public class ContingutHelper {
 					bustia.getUnitatCodi());
 			if (unitatConselleria != null)
 				dto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
-			UnitatOrganitzativaDto unitatOrganitzativa = unitatOrganitzativaHelper.findPerEntitatAndCodi(
-					bustia.getEntitat().getCodi(),
-					bustia.getUnitatCodi());
-			dto.setUnitat(unitatOrganitzativa);
+//===============================================================================================================
+//			UnitatOrganitzativaDto unitatOrganitzativa = unitatOrganitzativaHelper.findPerEntitatAndCodi(
+//					bustia.getEntitat().getCodi(),
+//					bustia.getUnitatCodi());
+//			dto.setUnitat(unitatOrganitzativa);
+//===============================================================================================================
+			dto.setUnitatOrganitzativa(
+					conversioTipusHelper.convertir(
+							bustia.getUnitatOrganitzativa(),
+							UnitatOrganitzativaDto.class));
 			resposta = dto;
 		} else if (deproxied instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)deproxied;
