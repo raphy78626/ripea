@@ -40,11 +40,32 @@
 		</div>
 		<div class="row">
 			<div class="col-md-6">
-				<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="unitatCodi" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
 				<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="${unitatCodiUrlPrefix}bustiaAdmin/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
+				<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
 			</div>
 			<div class="col-md-6">
-			
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h2><spring:message code="bustia.form.titol.modificar"/></h2>
+					</div>
+					<div class="panel-body">
+						<form:form action="${formAction}" method="post" commandName="bustiaCommand" role="form">
+							<form:hidden path="id"/>
+							<form:hidden path="pareId"/>
+							<div class="col-md-12">
+								<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/>
+							</div>
+							<div class="col-md-12">
+								<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
+							</div>
+							<div class="row">
+								<div class="col-md-push-2 col-md-10">
+									<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+								</div>
+							</div>						
+						</form:form>
+					</div>
+				</div>
 			</div>
 		</div>
 	</form:form>

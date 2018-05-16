@@ -7,12 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.service.BustiaService;
+import es.caib.ripea.war.command.BustiaCommand;
 import es.caib.ripea.war.command.BustiaFiltreCommand;
 import es.caib.ripea.war.helper.RequestSessionHelper;
 
@@ -34,7 +36,8 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			Model model) {
+			Model model,
+			Long bustiaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		model.addAttribute("bustiaFiltreCommand", bustiaFiltreCommand);
@@ -50,7 +53,18 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 						true,
 						false,
 						true));
-		System.out.println("datil");
+		BustiaDto bustia = null;
+		if (bustiaId != null)
+			bustia = bustiaService.findById(
+					entitatActual.getId(),
+					bustiaId);
+		BustiaCommand command = null;
+		if (bustia != null)
+			command = BustiaCommand.asCommand(bustia);
+		else
+			command = new BustiaCommand();
+		model.addAttribute("bustiaCommand", command);
+		command.setEntitatId(entitatActual.getId());
 		return "bustiaAdminOrganigrama";
 	}
 
