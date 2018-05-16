@@ -11,10 +11,10 @@
 <html>
 <head>
 	<title>${titol}</title>
-	<link href="<c:url value="/webjars/select2/4.0.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/select2.min.js"/>"></script>
-	<script src="<c:url value="/webjars/select2/4.0.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<rip:modalHead/>
 <script type="text/javascript">
@@ -55,7 +55,17 @@ $(document).ready(function() {
 				<rip:inputText name="nom" textKey="regla.form.camp.nom" required="true"/>
 				<rip:inputTextarea name="descripcio" textKey="regla.form.camp.descripcio"/>
 				<rip:inputText name="assumpteCodi" textKey="regla.form.camp.assumpte.codi" required="true"/>
-				<rip:inputText name="unitatCodi" textKey="regla.form.camp.unitat"/>
+<%-- 				<rip:inputText name="unitatCodi" textKey="regla.form.camp.unitat"/> --%>
+				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+				<rip:inputSuggest 
+					name="unitatCodi" 
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="false" 
+					placeholderKey="bustia.form.camp.unitat"
+					suggestValue="codi"
+					suggestText="nom" />
 			</div>
 			<div role="tabpanel" class="tab-pane" id="especifiques">
 				<div id="camps_tipus_EXP_COMU">

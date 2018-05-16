@@ -79,6 +79,7 @@
 			</c:if>
 			<c:if test="${contingut.documentTipus != 'FISIC'}">
 				<li><a href="../contingut/${contingut.pare.id}/document/${contingut.id}/descarregar"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregar"/></a></li>
+				<li><a href="../contingut/${contingut.pare.id}/document/${contingut.id}/descarregarImprimible"><span class="fa fa-download"></span>&nbsp;<spring:message code="comu.boto.descarregarImprimible"/></a></li>
 				<c:set var="mostrarSeparador" value="${true}"/>
 			</c:if>
 			<c:if test="${contingut.expedientPare.agafat and expedientPareObertOInexistent}">
