@@ -16,6 +16,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
+import es.caib.ripea.core.api.dto.PortafirmesCallbackEstatEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.DocumentService;
@@ -32,8 +33,6 @@ public class DocumentServiceBean implements DocumentService {
 
 	@Autowired
 	DocumentService delegate;
-
-
 
 	@Override
 	@RolesAllowed("tothom")
@@ -70,31 +69,6 @@ public class DocumentServiceBean implements DocumentService {
 			Long id) {
 		return delegate.findById(entitatId, id);
 	}
-
-	/*@Override
-	@RolesAllowed("tothom")
-	public List<DocumentVersioDto> findVersionsByDocument(
-			Long entitatId,
-			Long id) {
-		return delegate.findVersionsByDocument(entitatId, id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public DocumentVersioDto findDarreraVersio(
-			Long entitatId,
-			Long id) {
-		return delegate.findDarreraVersio(entitatId, id);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public DocumentVersioDto findVersio(
-			Long entitatId,
-			Long id,
-			int versio) {
-		return delegate.findVersio(entitatId, id, versio);
-	}*/
 
 	@Override
 	public List<DocumentDto> findAmbExpedientIPermisRead(
@@ -158,7 +132,7 @@ public class DocumentServiceBean implements DocumentService {
 	@Override
 	public Exception portafirmesCallback(
 			long documentId,
-			PortafirmesCallbackEstatEnum estat) {
+			PortafirmesCallbackEstatEnumDto estat) {
 		return delegate.portafirmesCallback(documentId, estat);
 	}
 

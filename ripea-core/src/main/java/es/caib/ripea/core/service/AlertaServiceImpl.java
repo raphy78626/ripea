@@ -5,10 +5,9 @@ package es.caib.ripea.core.service;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +18,7 @@ import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.AlertaService;
 import es.caib.ripea.core.entity.AlertaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
+import es.caib.ripea.core.helper.AlertaHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.repository.AlertaRepository;
@@ -31,33 +31,35 @@ import es.caib.ripea.core.repository.ContingutRepository;
  */
 @Service
 public class AlertaServiceImpl implements AlertaService {
-	
-	@Resource
+
+	@Autowired
 	private ContingutRepository contingutRepository;
-	@Resource
+	@Autowired
 	private AlertaRepository alertaRepository;
-	@Resource
+
+	@Autowired
+	private AlertaHelper alertaHelper;
+	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
-	@Resource
+	@Autowired
 	private PaginacioHelper paginacioHelper;
-	
-	
+
+
+
 	@Override
 	@Transactional
 	public AlertaDto create(AlertaDto alerta) {
 		logger.debug("Creant una nova alerta (alerta=" + alerta + ")");
-		ContingutEntity contingut = contingutRepository.findOne(
-				alerta.getContingutId());
-		AlertaEntity entity = AlertaEntity.getBuilder(
+		AlertaEntity entity = alertaHelper.crearAlerta(
 				alerta.getText(),
 				alerta.getError(),
 				alerta.isLlegida(),
-				contingut).build();
+				alerta.getContingutId());
 		return conversioTipusHelper.convertir(
 				alertaRepository.save(entity),
 				AlertaDto.class);
 	}
-	
+
 	@Override
 	@Transactional
 	public AlertaDto update(
@@ -78,7 +80,7 @@ public class AlertaServiceImpl implements AlertaService {
 				entity,
 				AlertaDto.class);
 	}
-	
+
 	@Override
 	@Transactional
 	public AlertaDto delete(
@@ -91,8 +93,9 @@ public class AlertaServiceImpl implements AlertaService {
 				entity,
 				AlertaDto.class);
 	}
-	
+
 	@Override
+	@Transactional(readOnly = true)
 	public AlertaDto find(
 			Long id) {
 		logger.debug("Cercant alerta (id=" + id +  ")");
@@ -121,7 +124,7 @@ public class AlertaServiceImpl implements AlertaService {
 		}
 		return resposta;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public PaginaDto<AlertaDto> findPaginatByLlegida(
@@ -149,8 +152,7 @@ public class AlertaServiceImpl implements AlertaService {
 		}
 		return resposta;
 	}
-	
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(AlertaServiceImpl.class);
-	
+
 }

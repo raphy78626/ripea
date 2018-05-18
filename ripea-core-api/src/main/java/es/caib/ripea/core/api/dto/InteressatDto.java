@@ -7,7 +7,6 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-
 /**
  * Informació d'un interessat.
  * 
@@ -134,11 +133,6 @@ public abstract class InteressatDto implements Serializable {
 		this.identificador = identificador;
 	}
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
-
 	public boolean isPersonaFisica() {
 		return this instanceof InteressatPersonaFisicaDto;
 	}
@@ -147,6 +141,26 @@ public abstract class InteressatDto implements Serializable {
 	}
 	public boolean isAdministracio() {
 		return this instanceof InteressatAdministracioDto;
+	}
+
+	public abstract String getNomComplet();
+	public String getNomCompletAmbDocument() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getNomComplet());
+		if (documentNum != null) {
+			sb.append(" - ");
+			if (documentTipus != null) {
+				sb.append(documentTipus.name());
+				sb.append(": ");
+			}
+			sb.append(documentNum);
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 
 	private static final long serialVersionUID = -139254994389509932L;

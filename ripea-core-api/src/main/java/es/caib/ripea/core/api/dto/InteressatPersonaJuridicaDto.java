@@ -27,6 +27,10 @@ public class InteressatPersonaJuridicaDto extends InteressatDto {
 		this.raoSocial = raoSocial;
 	}
 
+	public String getNomComplet() {
+		return raoSocial;
+	}
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

@@ -28,6 +28,7 @@ import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
+import es.caib.ripea.core.api.dto.PortafirmesCallbackEstatEnumDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.ContingutEntity;
@@ -201,100 +202,112 @@ public class DocumentHelper {
 					document,
 					documentPortafirmes.getAssumpte(),
 					PortafirmesPrioritatEnum.valueOf(documentPortafirmes.getPrioritat().name()),
-					documentPortafirmes.getDataCaducitat(),
+					documentPortafirmes.getCaducitatData(),
 					documentPortafirmes.getDocumentTipus(),
 					documentPortafirmes.getResponsables(),
 					documentPortafirmes.getFluxTipus(),
 					documentPortafirmes.getFluxId(),
 					null);
-			documentPortafirmes.updateEnviament(
-					true,
-					false,
-					null,
+			documentPortafirmes.updateEnviat(
+					new Date(),
 					portafirmesId);
 			return null;
 		} catch (SistemaExternException ex) {
 			Throwable rootCause = ExceptionUtils.getRootCause(ex);
 			if (rootCause == null) rootCause = ex;
-			documentPortafirmes.updateEnviament(
-					true,
-					true,
+			documentPortafirmes.updateEnviatError(
 					ExceptionUtils.getStackTrace(rootCause),
 					null);
 			return ex;
 		}
 	}
 
-	public boolean portafirmesProcessarFirma(
+	public Exception portafirmesProcessar(
 			DocumentPortafirmesEntity documentPortafirmes) {
 		DocumentEntity document = documentPortafirmes.getDocument();
-		document.updateEstat(
-				DocumentEstatEnumDto.FIRMAT);
-		PortafirmesDocument portafirmesDocument = null;
-		try {
-			portafirmesDocument = pluginHelper.portafirmesDownload(
-					documentPortafirmes);
-		} catch (SistemaExternException ex) {
-			Throwable rootCause = ExceptionUtils.getRootCause(ex);
-			if (rootCause == null) rootCause = ex;
-			documentPortafirmes.updateProcessament(
-					true,
-					true,
-					ExceptionUtils.getStackTrace(rootCause),
-					false);
-			return false;
-		}
-		if (portafirmesDocument.isCustodiat()) {
-			// El document ja ha estat custodiat pel portafirmes
-			document.updateInformacioCustodia(
-					new Date(),
-					portafirmesDocument.getCustodiaId(),
-					portafirmesDocument.getCustodiaUrl());
-			documentPortafirmes.updateProcessament(
-					true,
-					false,
-					null,
-					false);
-			return true;
-		} else {
-			// Envia el document a custòdia
+		PortafirmesCallbackEstatEnumDto callbackEstat = documentPortafirmes.getCallbackEstat();
+		if (PortafirmesCallbackEstatEnumDto.FIRMAT.equals(callbackEstat)) {
+			document.updateEstat(
+					DocumentEstatEnumDto.FIRMAT);
+			PortafirmesDocument portafirmesDocument = null;
+			// Descarrega el document firmat del portafirmes
 			try {
-				FitxerDto fitxer = new FitxerDto();
-				fitxer.setNom(portafirmesDocument.getArxiuNom());
-				fitxer.setContingut(portafirmesDocument.getArxiuContingut());
-				fitxer.setContentType("application/pdf");
-				documentPortafirmes.updateProcessament(
-						true,
-						false,
-						null,
-						false);
-				String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
-						document,
-						fitxer);
-				document.updateInformacioCustodia(
-						new Date(),
-						custodiaDocumentId,
-						document.getCustodiaCsv());
-				actualitzarVersionsDocument(document);
-				contingutLogHelper.log(
-						documentPortafirmes.getDocument(),
-						LogTipusEnumDto.ARXIU_CUSTODIAT,
-						custodiaDocumentId,
-						null,
-						false,
-						false);
-				return true;
-			} catch (SistemaExternException ex) {
+				portafirmesDocument = pluginHelper.portafirmesDownload(
+						documentPortafirmes);
+			} catch (Exception ex) {
 				Throwable rootCause = ExceptionUtils.getRootCause(ex);
 				if (rootCause == null) rootCause = ex;
-				documentPortafirmes.updateProcessament(
-						true,
-						true,
+				documentPortafirmes.updateProcessatError(
 						ExceptionUtils.getStackTrace(rootCause),
-						false);
-				return false;
+						null);
+				return null;
+			}
+			try {
+				if (portafirmesDocument.isCustodiat()) {
+					// Si el document ja ha estat custodiat pel portafirmes
+					// actualitza la informació de custòdia.
+					document.updateInformacioCustodia(
+							new Date(),
+							portafirmesDocument.getCustodiaId(),
+							portafirmesDocument.getCustodiaUrl());
+					documentPortafirmes.updateProcessat(
+							true,
+							new Date());
+				} else {
+					// Si el document no ha estat custodiat pel portafirmes
+					// actualitza la informació de firma a l'arxiu.
+					FitxerDto fitxer = new FitxerDto();
+					fitxer.setNom(portafirmesDocument.getArxiuNom());
+					fitxer.setContingut(portafirmesDocument.getArxiuContingut());
+					fitxer.setContentType("application/pdf");
+					documentPortafirmes.updateProcessat(
+							true,
+							new Date());
+					String custodiaDocumentId = pluginHelper.arxiuDocumentGuardarPdfFirmat(
+							document,
+							fitxer);
+					document.updateInformacioCustodia(
+							new Date(),
+							custodiaDocumentId,
+							document.getCustodiaCsv());
+					actualitzarVersionsDocument(document);
+					contingutLogHelper.log(
+							documentPortafirmes.getDocument(),
+							LogTipusEnumDto.ARXIU_CUSTODIAT,
+							custodiaDocumentId,
+							null,
+							false,
+							false);
+				}
+			} catch (Exception ex) {
+				Throwable rootCause = ExceptionUtils.getRootCause(ex);
+				if (rootCause == null) rootCause = ex;
+				documentPortafirmes.updateProcessatError(
+						ExceptionUtils.getStackTrace(rootCause),
+						null);
 			}
 		}
+		if (PortafirmesCallbackEstatEnumDto.REBUTJAT.equals(callbackEstat)) {
+			try {
+				documentPortafirmes.getDocument().updateEstat(
+						DocumentEstatEnumDto.REDACCIO);
+				documentPortafirmes.updateProcessat(
+						false,
+						new Date());
+				contingutLogHelper.log(
+						documentPortafirmes.getDocument(),
+						LogTipusEnumDto.PFIRMA_REBUIG,
+						documentPortafirmes.getPortafirmesId(),
+						null,
+						false,
+						false);
+			} catch (Exception ex) {
+				Throwable rootCause = ExceptionUtils.getRootCause(ex);
+				if (rootCause == null) rootCause = ex;
+				return ex;
+			}
+		}
+		return null;
 	}
 
 	public void actualitzarVersionsDocument(

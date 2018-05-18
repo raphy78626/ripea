@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentPortafirmesDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
+import es.caib.ripea.core.api.dto.PortafirmesCallbackEstatEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.SistemaExternException;
@@ -22,13 +23,6 @@ import es.caib.ripea.core.api.exception.ValidationException;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface DocumentService {
-
-	public enum PortafirmesCallbackEstatEnum {
-		DOCUMENT_PAUSAT,
-		DOCUMENT_PENDENT,
-		DOCUMENT_FIRMAT,
-		DOCUMENT_REBUTJAT
-	}
 
 	/**
 	 * Crea un nou document a dins un contenidor.
@@ -242,7 +236,7 @@ public interface DocumentService {
 	 */
 	public Exception portafirmesCallback(
 			long documentId,
-			PortafirmesCallbackEstatEnum estat) throws NotFoundException;
+			PortafirmesCallbackEstatEnumDto estat) throws NotFoundException;
 
 	/**
 	 * Reintenta la custòdia d'un document firmat amb portafirmes que ha donat

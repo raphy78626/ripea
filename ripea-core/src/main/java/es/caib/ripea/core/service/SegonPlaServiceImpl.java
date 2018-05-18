@@ -96,11 +96,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 						
 						if (emc != null)
 							alertaHelper.crearAlerta(
-									emc.getContingut().getId(),
 									messageHelper.getMessage(
 											"alertes.segon.pla.execucio.massiva",
 											new Object[] {cmasiu_id}),
-									null);
+									null,
+									emc.getContingut().getId());
 					}
 					catch (Exception e) {
 						// recuperem l'error de la aplicació
@@ -111,11 +111,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 						
 						if (emc != null)
 							alertaHelper.crearAlerta(
-									emc.getContingut().getId(),
 									messageHelper.getMessage(
 											"alertes.segon.pla.executar.execucio.massiva.error",
 											new Object[] {cmasiu_id}),
-									e);
+									e,
+									emc.getContingut().getId());
 						
 						alertat = true;
 					}
@@ -134,11 +134,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				if(!alertat && cmasiu_id != null) {
 					ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findOne(cmasiu_id);
 					alertaHelper.crearAlerta(
-							emc.getContingut().getId(),
 							messageHelper.getMessage(
 									"alertes.segon.pla.execucio.massiva.error",
 									new Object[] {cmasiu_id}),
-							e);
+							e,
+							emc.getContingut().getId());
 					alertat = true;
 				}
 			}

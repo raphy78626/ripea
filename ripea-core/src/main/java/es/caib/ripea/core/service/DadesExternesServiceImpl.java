@@ -30,34 +30,36 @@ public class DadesExternesServiceImpl implements DadesExternesService {
 
 	@Resource
 	private CacheHelper cacheHelper;
-	
+
 	@Override
 	public List<PaisDto> findPaisos() {
 		LOGGER.debug("Cercant tots els paisos");
 		return cacheHelper.findPaisos();
 	}
-	
+
 	@Override
 	public List<ComunitatDto> findComunitats() {
 		LOGGER.debug("Cercant totes les comunitats");
 		return cacheHelper.findComunitats();
 	}
-	
+
 	@Override
 	public List<ProvinciaDto> findProvincies() {
 		LOGGER.debug("Cercant totes les províncies");
 		return cacheHelper.findProvincies();
 	}
-	
+
 	@Override
 	public List<ProvinciaDto> findProvinciesPerComunitat(String comunitatCodi) {
-		LOGGER.debug("Cercant totes les províncies de la comunitat (comunitatCodi=" + comunitatCodi + ")");
+		LOGGER.debug("Cercant totes les províncies de la comunitat (" +
+				"comunitatCodi=" + comunitatCodi + ")");
 		return cacheHelper.findProvinciesPerComunitat(comunitatCodi);
 	}
 
 	@Override
 	public List<MunicipiDto> findMunicipisPerProvincia(String provinciaCodi) {
-		LOGGER.debug("Cercant els municipis de la província (provinciaCodi=" + provinciaCodi + ")");
+		LOGGER.debug("Cercant els municipis de la província (" +
+				"provinciaCodi=" + provinciaCodi + ")");
 		return cacheHelper.findMunicipisPerProvincia(provinciaCodi);
 	}
 
@@ -66,7 +68,7 @@ public class DadesExternesServiceImpl implements DadesExternesService {
 		LOGGER.debug("Cercant els nivells de les administracions");
 		return cacheHelper.findNivellAdministracio();
 	}
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesExternesServiceImpl.class);
 
 }

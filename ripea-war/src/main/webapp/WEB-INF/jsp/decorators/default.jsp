@@ -14,15 +14,13 @@
 			es.caib.ripea.war.helper.EntitatHelper.getEntitatActual(request));
 	pageContext.setAttribute(
 			"countElementsPendentsBusties",
-			es.caib.ripea.war.helper.ElementsPendentsBustiaHelper.getCount(request));
+			es.caib.ripea.war.helper.ElementsPendentsBustiaHelper.countElementsPendentsBusties(request));
 	pageContext.setAttribute(
 			"requestParameterCanviEntitat",
 			es.caib.ripea.war.helper.EntitatHelper.getRequestParameterCanviEntitat());
-
 	pageContext.setAttribute(
 			"dadesUsuariActual",
 			es.caib.ripea.war.helper.SessioHelper.getUsuariActual(request));
-	
 	pageContext.setAttribute(
 			"rolActual",
 			es.caib.ripea.war.helper.RolHelper.getRolActual(request));
@@ -31,16 +29,19 @@
 			es.caib.ripea.war.helper.RolHelper.getRolsUsuariActual(request));
 	pageContext.setAttribute(
 			"isRolActualSuperusuari",
-			es.caib.ripea.war.helper.RolHelper.isUsuariActualSuperusuari(request));
+			es.caib.ripea.war.helper.RolHelper.isRolActualSuperusuari(request));
 	pageContext.setAttribute(
 			"isRolActualAdministrador",
-			es.caib.ripea.war.helper.RolHelper.isUsuariActualAdministrador(request));
+			es.caib.ripea.war.helper.RolHelper.isRolActualAdministrador(request));
 	pageContext.setAttribute(
 			"isRolActualUsuari",
-			es.caib.ripea.war.helper.RolHelper.isUsuariActualUsuari(request));
+			es.caib.ripea.war.helper.RolHelper.isRolActualUsuari(request));
 	pageContext.setAttribute(
 			"requestParameterCanviRol",
 			es.caib.ripea.war.helper.RolHelper.getRequestParameterCanviRol());
+	pageContext.setAttribute(
+			"teAccesExpedients",
+			es.caib.ripea.war.helper.ExpedientHelper.teAccesExpedients(request));
 %>
 <c:set var="hiHaEntitats" value="${fn:length(sessionEntitats) > 0}"/>
 <c:set var="hiHaMesEntitats" value="${fn:length(sessionEntitats) > 1}"/>
@@ -205,8 +206,8 @@ body {
 								</div>
 							</c:when>
 							<c:when test="${isRolActualUsuari}">
-								<%-->a href="<c:url value="/escriptori"/>" class="btn btn-primary"><spring:message code="decorator.menu.escriptori"/></a--%>
-								<c:if test="${isUsuariAccesExpedients}">
+								<%--a href="<c:url value="/escriptori"/>" class="btn btn-primary"><spring:message code="decorator.menu.escriptori"/></a--%>
+								<c:if test="${teAccesExpedients}">
 									<a href="<c:url value="/expedient"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
 								</c:if>
 								<a href="<c:url value="/bustiaUser"/>" class="btn btn-primary">

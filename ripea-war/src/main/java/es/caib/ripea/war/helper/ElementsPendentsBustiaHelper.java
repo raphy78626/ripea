@@ -16,25 +16,24 @@ import es.caib.ripea.core.api.service.BustiaService;
  */
 public class ElementsPendentsBustiaHelper {
 
-	private static final String REQUEST_PARAMETER_COUNT = "ElementsPendentsBustiatHelper.countElementsPendentsBustia";
+	private static final String REQUEST_PARAMETER_PENDENTS_BUSTIA_COUNT = "ElementsPendentsBustiatHelper.countElementsPendentsBustia";
 
 
 
-	public static Long countElementsPendentsBustia(
+	public static Long countElementsPendentsBusties(
 			HttpServletRequest request,
 			BustiaService bustiaService) {
-		Long count = null;
-		if (!RequestHelper.isError(request) && bustiaService != null && RolHelper.isUsuariActualUsuari(request)) {
+		Long count = (Long)request.getAttribute(REQUEST_PARAMETER_PENDENTS_BUSTIA_COUNT);
+		if (count == null && !RequestHelper.isError(request) && bustiaService != null && RolHelper.isRolActualUsuari(request)) {
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);
-			count = bustiaService.contingutPendentBustiesAllCount(
-					entitat.getId());
-			request.setAttribute(REQUEST_PARAMETER_COUNT, new Long(count));
+			count = new Long(bustiaService.contingutPendentBustiesAllCount(entitat.getId()));
+			request.setAttribute(REQUEST_PARAMETER_PENDENTS_BUSTIA_COUNT, count);
 		}
 		return count;
 	}
 
-	public static Long getCount(HttpServletRequest request) {
-		return (Long)request.getAttribute(REQUEST_PARAMETER_COUNT);
+	public static Long countElementsPendentsBusties(HttpServletRequest request) {
+		return (Long)request.getAttribute(REQUEST_PARAMETER_PENDENTS_BUSTIA_COUNT);
 	}
 
 }

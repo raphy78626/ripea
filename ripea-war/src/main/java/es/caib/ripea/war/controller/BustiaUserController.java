@@ -456,7 +456,7 @@ public class BustiaUserController extends BaseUserController {
 	@ResponseBody
 	@RequestMapping(value = "/getNumPendents", method = RequestMethod.GET)
 	public Long bustaGetNumeroPendents(HttpServletRequest request) {
-		Long ret = ElementsPendentsBustiaHelper.countElementsPendentsBustia(request, bustiaService);
+		Long ret = ElementsPendentsBustiaHelper.countElementsPendentsBusties(request, bustiaService);
 		return ret;
 	}
 

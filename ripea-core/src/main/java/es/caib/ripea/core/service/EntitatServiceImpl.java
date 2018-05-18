@@ -67,7 +67,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public EntitatDto create(EntitatDto entitat) {
-		logger.debug("Creant una nova entitat (entitat=" + entitat + ")");
+		logger.debug("Creant una nova entitat (" +
+				"entitat=" + entitat + ")");
 		EntitatEntity entity = EntitatEntity.getBuilder(
 				entitat.getCodi(),
 				entitat.getNom(),
@@ -83,7 +84,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	public EntitatDto update(
 			EntitatDto entitat) {
-		logger.debug("Actualitzant entitat existent (entitat=" + entitat + ")");
+		logger.debug("Actualitzant entitat existent (" +
+				"entitat=" + entitat + ")");
 		EntitatEntity entity = entityComprovarHelper.comprovarEntitat(
 				entitat.getId(),
 				false,
@@ -105,9 +107,9 @@ public class EntitatServiceImpl implements EntitatService {
 	public EntitatDto updateActiva(
 			Long id,
 			boolean activa) {
-		logger.debug("Actualitzant propietat activa d'una entitat existent ("
-				+ "id=" + id + ", "
-				+ "activa=" + activa + ")");
+		logger.debug("Actualitzant propietat activa d'una entitat existent (" +
+				"id=" + id + ", " +
+				"activa=" + activa + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -124,7 +126,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public EntitatDto delete(
 			Long id) {
-		logger.debug("Esborrant entitat (id=" + id +  ")");
+		logger.debug("Esborrant entitat (" +
+				"id=" + id +  ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -142,7 +145,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@Transactional(readOnly = true)
 	@Override
 	public EntitatDto findById(Long id) {
-		logger.debug("Consulta de l'entitat (id=" + id + ")");
+		logger.debug("Consulta de l'entitat (" +
+				"id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -158,7 +162,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@Transactional(readOnly = true)
 	@Override
 	public EntitatDto findByCodi(String codi) {
-		logger.debug("Consulta de l'entitat amb codi (codi=" + codi + ")");
+		logger.debug("Consulta de l'entitat amb codi (" +
+				"codi=" + codi + ")");
 		EntitatDto entitat = conversioTipusHelper.convertir(
 				entitatRepository.findByCodi(codi),
 				EntitatDto.class);
@@ -170,7 +175,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams) {
-		logger.debug("Consulta de totes les entitats paginades (paginacioParams=" + paginacioParams + ")");
+		logger.debug("Consulta de totes les entitats paginades (" +
+				"paginacioParams=" + paginacioParams + ")");
 		PaginaDto<EntitatDto> resposta;
 		if (paginacioHelper.esPaginacioActivada(paginacioParams)) {
 			resposta = paginacioHelper.toPaginaDto(
@@ -197,7 +203,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	public List<EntitatDto> findAccessiblesUsuariActual() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Consulta les entitats accessibles per l'usuari actual (usuari=" + auth.getName() + ")");
+		logger.debug("Consulta les entitats accessibles per l'usuari actual (" +
+				"usuari=" + auth.getName() + ")");
 		return cacheHelper.findEntitatsAccessiblesUsuari(auth.getName());
 	}
 
@@ -205,7 +212,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	public List<PermisDto> findPermisSuper(
 			Long id) {
-		logger.debug("Consulta com a superusuari dels permisos de l'entitat (id=" + id + ")");
+		logger.debug("Consulta com a superusuari dels permisos de l'entitat (" +
+				"id=" + id + ")");
 		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -221,9 +229,9 @@ public class EntitatServiceImpl implements EntitatService {
 	public void updatePermisSuper(
 			Long id,
 			PermisDto permis) {
-		logger.debug("Modificació com a superusuari del permis de l'entitat ("
-				+ "id=" + id + ", "
-				+ "permis=" + permis + ")");
+		logger.debug("Modificació com a superusuari del permis de l'entitat (" +
+				"id=" + id + ", " +
+				"permis=" + permis + ")");
 		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -240,9 +248,9 @@ public class EntitatServiceImpl implements EntitatService {
 	public void deletePermisSuper(
 			Long id,
 			Long permisId) {
-		logger.debug("Eliminació com a superusuari del permis de l'entitat ("
-				+ "id=" + id + ", "
-				+ "permisId=" + permisId + ")");
+		logger.debug("Eliminació com a superusuari del permis de l'entitat (" +
+				"id=" + id + ", " +
+				"permisId=" + permisId + ")");
 		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -259,7 +267,8 @@ public class EntitatServiceImpl implements EntitatService {
 	public List<PermisDto> findPermisAdmin(
 			Long id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Consulta com a administrador del permis de l'entitat (id=" + id + ")");
+		logger.debug("Consulta com a administrador del permis de l'entitat (" +
+				"id=" + id + ")");
 		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -286,9 +295,9 @@ public class EntitatServiceImpl implements EntitatService {
 			Long id,
 			PermisDto permis) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Modificació com a administrador del permis de l'entitat ("
-				+ "id=" + id + ", "
-				+ "permis=" + permis + ")");
+		logger.debug("Modificació com a administrador del permis de l'entitat (" +
+				"id=" + id + ", " +
+				"permis=" + permis + ")");
 		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -308,6 +317,7 @@ public class EntitatServiceImpl implements EntitatService {
 				EntitatEntity.class,
 				permis);
 	}
+
 	@Transactional
 	@Override
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
@@ -315,9 +325,9 @@ public class EntitatServiceImpl implements EntitatService {
 			Long id,
 			Long permisId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Eliminació com a administrador del permis de l'entitat ("
-				+ "id=" + id + ", "
-				+ "permisId=" + permisId + ")");
+		logger.debug("Eliminació com a administrador del permis de l'entitat (" +
+				"id=" + id + ", " +
+				"permisId=" + permisId + ")");
 		entityComprovarHelper.comprovarEntitat(
 				id,
 				false,
@@ -329,7 +339,9 @@ public class EntitatServiceImpl implements EntitatService {
 				new Permission[] {ExtendedPermission.ADMINISTRATION},
 				auth);
 		if (!esAdministradorEntitat) {
-			logger.error("Aquest usuari no té permisos d'administrador sobre l'entitat (id=" + id + ", usuari=" + auth.getName() + ")");
+			logger.error("Aquest usuari no té permisos d'administrador sobre l'entitat (" +
+					"id=" + id + ", " +
+					"usuari=" + auth.getName() + ")");
 			throw new SecurityException("Sense permisos per administrar aquesta entitat");
 		}
 		permisosHelper.deletePermis(
@@ -337,8 +349,6 @@ public class EntitatServiceImpl implements EntitatService {
 				EntitatEntity.class,
 				permisId);
 	}
-
-
 
 	private static final Logger logger = LoggerFactory.getLogger(EntitatServiceImpl.class);
 

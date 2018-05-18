@@ -378,8 +378,6 @@ public class CacheHelper {
 		usuaris.add(usuariCodi);
 	}
 
-	
-	
 	private static final Logger logger = LoggerFactory.getLogger(CacheHelper.class);
 
 }

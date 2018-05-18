@@ -18,8 +18,8 @@ import es.caib.portafib.ws.callback.api.v1.CallBackFault;
 import es.caib.portafib.ws.callback.api.v1.PortaFIBCallBackWs;
 import es.caib.portafib.ws.callback.api.v1.PortaFIBEvent;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.ripea.core.api.dto.PortafirmesCallbackEstatEnumDto;
 import es.caib.ripea.core.api.service.DocumentService;
-import es.caib.ripea.core.api.service.DocumentService.PortafirmesCallbackEstatEnum;
 import es.caib.ripea.core.helper.IntegracioHelper;
 
 /**
@@ -59,20 +59,20 @@ public class PortaFIBCallBackWsImpl implements PortaFIBCallBackWs {
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("documentId", new Long(documentId).toString());
 		accioParams.put("estat", new Integer(estat).toString());
-		PortafirmesCallbackEstatEnum estatEnum;
+		PortafirmesCallbackEstatEnumDto estatEnum;
 		switch (estat) {
 		case 0:
 		case 50:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_PENDENT;
+			estatEnum = PortafirmesCallbackEstatEnumDto.PENDENT;
 			break;
 		case 60:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_FIRMAT;
+			estatEnum = PortafirmesCallbackEstatEnumDto.FIRMAT;
 			break;
 		case 70:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_REBUTJAT;
+			estatEnum = PortafirmesCallbackEstatEnumDto.REBUTJAT;
 			break;
 		case 80:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_PAUSAT;
+			estatEnum = PortafirmesCallbackEstatEnumDto.PAUSAT;
 			break;
 		default:
 			String errorDescripcio = "No es reconeix el codi d'estat (" + estat + ")";

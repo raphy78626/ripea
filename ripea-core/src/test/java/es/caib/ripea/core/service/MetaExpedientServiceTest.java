@@ -63,15 +63,17 @@ public class MetaExpedientServiceTest extends BaseServiceTest {
 		metaExpedientCreate.setCodi("TEST1");
 		metaExpedientCreate.setNom("Metadocument de test");
 		metaExpedientCreate.setDescripcio("Descripció de test");
-		metaExpedientCreate.setClassificacioDocumental("1234");
+		metaExpedientCreate.setSerieDocumental("1234");
 		metaExpedientCreate.setClassificacioSia("1234");
-		metaExpedientCreate.setUnitatAdministrativa("1234");
 		metaExpedientCreate.setNotificacioActiva(false);
-		metaExpedientCreate.setNotificacioOrganCodi("1234");
-		metaExpedientCreate.setNotificacioLlibreCodi("1234");
+		metaExpedientCreate.setNotificacioSeuProcedimentCodi("1234");
+		metaExpedientCreate.setNotificacioSeuRegistreLlibre("1234");
+		metaExpedientCreate.setNotificacioSeuRegistreOficina("1234");
+		metaExpedientCreate.setNotificacioSeuRegistreOrgan("1234");
+		metaExpedientCreate.setNotificacioSeuExpedientUnitatOrganitzativa("1234");
 		metaExpedientCreate.setNotificacioAvisTitol("1234");
 		metaExpedientCreate.setNotificacioAvisText("1234");
-		metaExpedientCreate.setNotificacioAvisTextSms("1234");
+		metaExpedientCreate.setNotificacioAvisTextMobil("1234");
 		metaExpedientCreate.setNotificacioOficiTitol("1234");
 		metaExpedientCreate.setNotificacioOficiText("1234");
 		metaExpedientCreate.setPareId(null);
@@ -79,15 +81,17 @@ public class MetaExpedientServiceTest extends BaseServiceTest {
 		metaExpedientUpdate.setCodi("TEST2");
 		metaExpedientUpdate.setNom("Metadocument de test2");
 		metaExpedientUpdate.setDescripcio("Descripció de test2");
-		metaExpedientUpdate.setClassificacioDocumental("12341");
+		metaExpedientUpdate.setSerieDocumental("12341");
 		metaExpedientUpdate.setClassificacioSia("12342");
-		metaExpedientUpdate.setUnitatAdministrativa("12343");
 		metaExpedientUpdate.setNotificacioActiva(true);
-		metaExpedientUpdate.setNotificacioOrganCodi("12344");
-		metaExpedientUpdate.setNotificacioLlibreCodi("12345");
+		metaExpedientUpdate.setNotificacioSeuProcedimentCodi("1234");
+		metaExpedientUpdate.setNotificacioSeuRegistreLlibre("1234");
+		metaExpedientUpdate.setNotificacioSeuRegistreOficina("1234");
+		metaExpedientUpdate.setNotificacioSeuRegistreOrgan("1234");
+		metaExpedientUpdate.setNotificacioSeuExpedientUnitatOrganitzativa("1234");
 		metaExpedientUpdate.setNotificacioAvisTitol("12346");
 		metaExpedientUpdate.setNotificacioAvisText("12347");
-		metaExpedientUpdate.setNotificacioAvisTextSms("12348");
+		metaExpedientUpdate.setNotificacioAvisTextMobil("12348");
 		metaExpedientUpdate.setNotificacioOficiTitol("12349");
 		metaExpedientUpdate.setNotificacioOficiText("12340");
 		metaExpedientUpdate.setPareId(null);
@@ -240,23 +244,29 @@ public class MetaExpedientServiceTest extends BaseServiceTest {
 				original.getDescripcio(),
 				perComprovar.getDescripcio());
 		assertEquals(
-				original.getClassificacioDocumental(),
-				perComprovar.getClassificacioDocumental());
+				original.getSerieDocumental(),
+				perComprovar.getSerieDocumental());
 		assertEquals(
 				original.getClassificacioSia(),
 				perComprovar.getClassificacioSia());
 		assertEquals(
-				original.getUnitatAdministrativa(),
-				perComprovar.getUnitatAdministrativa());
-		assertEquals(
 				original.isNotificacioActiva(),
 				perComprovar.isNotificacioActiva());
 		assertEquals(
-				original.getNotificacioOrganCodi(),
-				perComprovar.getNotificacioOrganCodi());
+				original.getNotificacioSeuProcedimentCodi(),
+				perComprovar.getNotificacioSeuProcedimentCodi());
 		assertEquals(
-				original.getNotificacioLlibreCodi(),
-				perComprovar.getNotificacioLlibreCodi());
+				original.getNotificacioSeuRegistreLlibre(),
+				perComprovar.getNotificacioSeuRegistreLlibre());
+		assertEquals(
+				original.getNotificacioSeuRegistreOficina(),
+				perComprovar.getNotificacioSeuRegistreOficina());
+		assertEquals(
+				original.getNotificacioSeuRegistreOrgan(),
+				perComprovar.getNotificacioSeuRegistreOrgan());
+		assertEquals(
+				original.getNotificacioSeuExpedientUnitatOrganitzativa(),
+				perComprovar.getNotificacioSeuExpedientUnitatOrganitzativa());
 		assertEquals(
 				original.getNotificacioAvisTitol(),
 				perComprovar.getNotificacioAvisTitol());
@@ -264,8 +274,8 @@ public class MetaExpedientServiceTest extends BaseServiceTest {
 				original.getNotificacioAvisText(),
 				perComprovar.getNotificacioAvisText());
 		assertEquals(
-				original.getNotificacioAvisTextSms(),
-				perComprovar.getNotificacioAvisTextSms());
+				original.getNotificacioAvisTextMobil(),
+				perComprovar.getNotificacioAvisTextMobil());
 		assertEquals(
 				original.getNotificacioOficiTitol(),
 				perComprovar.getNotificacioOficiTitol());

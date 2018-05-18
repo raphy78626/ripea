@@ -58,7 +58,7 @@ public class PortafirmesPluginPortafibTest {
 		uploadDocument.setTitol("(RIP) Document per firmar");
 		uploadDocument.setArxiuNom("document_firma.pdf");
 		uploadDocument.setArxiuContingut(
-			IOUtils.toByteArray(getClass().getResource(
+			IOUtils.toByteArray(getClass().getResourceAsStream(
 	        		"/es/caib/ripea/plugin/caib/document_firma.pdf")));
 		uploadDocument.setFirmat(false);
 	}

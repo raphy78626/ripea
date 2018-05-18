@@ -11,8 +11,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -26,6 +24,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -46,29 +45,43 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 						"expedient_id",
 						"document_id",
 						"assumpte",
-						"data_enviament",
-						"dtype",
-						"tipus",
-						"destin_doctip",
-						"destin_docnum"})})
+						"enviat_data",
+						"dtype"})})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners(AuditingEntityListener.class)
 public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {
 
+	@Column(name = "estat", nullable = false)
+	protected DocumentEnviamentEstatEnumDto estat;
+	@Column(name = "assumpte", length = 256, nullable = false)
+	protected String assumpte;
+	@Column(name = "observacions", length = 256)
+	protected String observacions;
+	@Column(name = "enviat_data")
+	@Temporal(TemporalType.TIMESTAMP)
+	protected Date enviatData;
+	@Column(name = "processat_data")
+	@Temporal(TemporalType.TIMESTAMP)
+	protected Date processatData;
+	@Column(name = "cancelat_data")
+	@Temporal(TemporalType.TIMESTAMP)
+	protected Date cancelatData;
+	@Column(name = "error")
+	protected boolean error;
+	@Column(name = "error_desc", length = ERROR_DESC_TAMANY)
+	protected String errorDescripcio;
+	@Column(name = "intent_num")
+	protected int intentNum;
+	@Column(name = "intent_data")
+	@Temporal(TemporalType.TIMESTAMP)
+	protected Date intentData;
+	@Column(name = "intent_proxim_data")
+	@Temporal(TemporalType.TIMESTAMP)
+	protected Date intentProximData;
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "expedient_id")
 	@ForeignKey(name = "ipa_expedient_docenv_fk")
 	protected ExpedientEntity expedient;
-	@Column(name = "estat", nullable = false)
-	@Enumerated(EnumType.STRING)
-	protected DocumentEnviamentEstatEnumDto estat;
-	@Column(name = "assumpte", length = 256, nullable = false)
-	protected String assumpte;
-	@Column(name = "data_enviament", nullable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	protected Date dataEnviament;
-	@Column(name = "observacions", length = 256)
-	protected String observacions;
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "document_id")
 	@ForeignKey(name = "ipa_document_docenv_fk")
@@ -84,22 +97,41 @@ public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {
 	@Version
 	private long version = 0;
 
-
-
-	public ExpedientEntity getExpedient() {
-		return expedient;
-	}
 	public DocumentEnviamentEstatEnumDto getEstat() {
 		return estat;
 	}
 	public String getAssumpte() {
 		return assumpte;
 	}
-	public Date getDataEnviament() {
-		return dataEnviament;
-	}
 	public String getObservacions() {
 		return observacions;
+	}
+	public Date getEnviatData() {
+		return enviatData;
+	}
+	public Date getProcessatData() {
+		return processatData;
+	}
+	public Date getCancelatData() {
+		return cancelatData;
+	}
+	public boolean isError() {
+		return error;
+	}
+	public String getErrorDescripcio() {
+		return errorDescripcio;
+	}
+	public int getIntentNum() {
+		return intentNum;
+	}
+	public Date getIntentData() {
+		return intentData;
+	}
+	public Date getIntentProximData() {
+		return intentProximData;
+	}
+	public ExpedientEntity getExpedient() {
+		return expedient;
 	}
 	public DocumentEntity getDocument() {
 		return document;
@@ -112,52 +144,79 @@ public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {
 		annexos.add(annex);
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((assumpte == null) ? 0 : assumpte.hashCode());
-		result = prime * result + ((dataEnviament == null) ? 0 : dataEnviament.hashCode());
-		result = prime * result + ((document == null) ? 0 : document.hashCode());
-		result = prime * result + ((expedient == null) ? 0 : expedient.hashCode());
-		return result;
+	public void updateEnviat(
+			Date enviatData) {
+		this.estat = DocumentEnviamentEstatEnumDto.ENVIAT;
+		this.enviatData = enviatData;
+		this.error = false;
+		this.errorDescripcio = null;
+		this.intentNum = 0;
+		this.intentData = null;
+		this.intentProximData = null;
 	}
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DocumentEnviamentEntity other = (DocumentEnviamentEntity) obj;
-		if (assumpte == null) {
-			if (other.assumpte != null)
-				return false;
-		} else if (!assumpte.equals(other.assumpte))
-			return false;
-		if (dataEnviament == null) {
-			if (other.dataEnviament != null)
-				return false;
-		} else if (!dataEnviament.equals(other.dataEnviament))
-			return false;
-		if (document == null) {
-			if (other.document != null)
-				return false;
-		} else if (!document.equals(other.document))
-			return false;
-		if (expedient == null) {
-			if (other.expedient != null)
-				return false;
-		} else if (!expedient.equals(other.expedient))
-			return false;
-		return true;
+	public void updateEnviatError(
+			String errorDescripcio,
+			Date intentProximData) {
+		this.estat = DocumentEnviamentEstatEnumDto.PENDENT;
+		this.error = true;
+		this.errorDescripcio = StringUtils.abbreviate(errorDescripcio, ERROR_DESC_TAMANY);
+		this.enviatData = null;
+		this.intentNum = intentNum++;
+		this.intentData = new Date();
+		this.intentProximData = intentProximData;
+	}
+
+	public void updateProcessat(
+			boolean processat,
+			Date processatData) {
+		this.estat = (processat) ? DocumentEnviamentEstatEnumDto.PROCESSAT : DocumentEnviamentEstatEnumDto.REBUTJAT;
+		this.processatData = processatData;
+		this.error = false;
+		this.errorDescripcio = null;
+		this.intentNum = 0;
+		this.intentData = null;
+		this.intentProximData = null;
+	}
+	public void updateProcessatError(
+			String errorDescripcio,
+			Date intentProximData) {
+		this.estat = DocumentEnviamentEstatEnumDto.ENVIAT;
+		this.error = true;
+		this.errorDescripcio = StringUtils.abbreviate(errorDescripcio, ERROR_DESC_TAMANY);
+		this.processatData = null;
+		this.intentNum = intentNum++;
+		this.intentData = new Date();
+		this.intentProximData = intentProximData;
+	}
+
+	public void updateCancelat(
+			Date cancelatData) {
+		this.estat = DocumentEnviamentEstatEnumDto.CANCELAT;
+		this.cancelatData = cancelatData;
+		this.error = false;
+		this.errorDescripcio = null;
+		this.intentNum = 0;
+		this.intentData = null;
+		this.intentProximData = null;
+	}
+
+	protected void inicialitzar() {
+		this.estat = DocumentEnviamentEstatEnumDto.PENDENT;
+		this.enviatData = null;
+		this.processatData = null;
+		this.cancelatData = null;
+		this.error = false;
+		this.errorDescripcio = null;
+		this.intentNum = 0;
+		this.intentData = null;
+		this.intentProximData = null;
 	}
 
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}
 
+	private static final int ERROR_DESC_TAMANY = 2048;
 	private static final long serialVersionUID = -2299453443943600172L;
 
 }

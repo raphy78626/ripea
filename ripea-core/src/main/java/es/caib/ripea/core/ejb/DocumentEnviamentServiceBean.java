@@ -15,7 +15,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.ripea.core.api.dto.DocumentEnviamentDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
-import es.caib.ripea.core.api.service.ExpedientEnviamentService;
+import es.caib.ripea.core.api.service.DocumentEnviamentService;
 
 /**
  * Implementació de ContenidorService com a EJB que empra una clase
@@ -25,22 +25,20 @@ import es.caib.ripea.core.api.service.ExpedientEnviamentService;
  */
 @Stateless
 @Interceptors(SpringBeanAutowiringInterceptor.class)
-public class ExpedientEnviamentServiceBean implements ExpedientEnviamentService {
+public class DocumentEnviamentServiceBean implements DocumentEnviamentService {
 
 	@Autowired
-	ExpedientEnviamentService delegate;
+	DocumentEnviamentService delegate;
 
 	@Override
 	@RolesAllowed("tothom")
 	public DocumentNotificacioDto notificacioCreate(
 			Long entitatId,
 			Long documentId,
-			Long interessatId,
 			DocumentNotificacioDto notificacio) {
 		return delegate.notificacioCreate(
 				entitatId,
 				documentId,
-				interessatId,
 				notificacio);
 	}
 
@@ -48,11 +46,11 @@ public class ExpedientEnviamentServiceBean implements ExpedientEnviamentService 
 	@RolesAllowed("tothom")
 	public DocumentNotificacioDto notificacioUpdate(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			DocumentNotificacioDto notificacio) {
 		return delegate.notificacioUpdate(
 				entitatId,
-				expedientId,
+				documentId,
 				notificacio);
 	}
 
@@ -60,23 +58,11 @@ public class ExpedientEnviamentServiceBean implements ExpedientEnviamentService 
 	@RolesAllowed("tothom")
 	public DocumentNotificacioDto notificacioDelete(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			Long notificacioId) {
 		return delegate.notificacioDelete(
 				entitatId,
-				expedientId,
-				notificacioId);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public boolean notificacioRetry(
-			Long entitatId,
-			Long expedientId,
-			Long notificacioId) {
-		return delegate.notificacioRetry(
-				entitatId,
-				expedientId,
+				documentId,
 				notificacioId);
 	}
 
@@ -84,17 +70,12 @@ public class ExpedientEnviamentServiceBean implements ExpedientEnviamentService 
 	@RolesAllowed("tothom")
 	public DocumentNotificacioDto notificacioFindAmbId(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			Long notificacioId) {
 		return delegate.notificacioFindAmbId(
 				entitatId,
-				expedientId,
+				documentId,
 				notificacioId);
-	}
-
-	@Override
-	public void notificacioProcessarPendents() {
-		delegate.notificacioProcessarPendents();
 	}
 
 	@Override
@@ -113,11 +94,11 @@ public class ExpedientEnviamentServiceBean implements ExpedientEnviamentService 
 	@RolesAllowed("tothom")
 	public DocumentPublicacioDto publicacioUpdate(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			DocumentPublicacioDto publicacio) {
 		return delegate.publicacioUpdate(
 				entitatId,
-				expedientId,
+				documentId,
 				publicacio);
 	}
 
@@ -125,11 +106,11 @@ public class ExpedientEnviamentServiceBean implements ExpedientEnviamentService 
 	@RolesAllowed("tothom")
 	public DocumentPublicacioDto publicacioFindAmbId(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			Long publicacioId) {
 		return delegate.publicacioFindAmbId(
 				entitatId,
-				expedientId,
+				documentId,
 				publicacioId);
 	}
 	
@@ -137,22 +118,37 @@ public class ExpedientEnviamentServiceBean implements ExpedientEnviamentService 
 	@RolesAllowed("tothom")
 	public DocumentPublicacioDto publicacioDelete(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			Long publicacioId) {
 		return delegate.publicacioDelete(
 				entitatId,
-				expedientId,
+				documentId,
 				publicacioId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<DocumentEnviamentDto> enviamentFindAmbExpedient(
+	public List<DocumentEnviamentDto> findAmbExpedient(
 			Long entitatId,
 			Long expedientId) {
-		return delegate.enviamentFindAmbExpedient(
+		return delegate.findAmbExpedient(
 				entitatId,
 				expedientId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<DocumentEnviamentDto> findAmbDocument(
+			Long entitatId,
+			Long documentId) {
+		return delegate.findAmbDocument(
+				entitatId,
+				documentId);
+	}
+
+	@Override
+	public void notificacioActualitzarEstat() {
+		delegate.notificacioActualitzarEstat();
 	}
 
 }

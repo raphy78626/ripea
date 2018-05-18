@@ -76,7 +76,7 @@ public class ExpedientConsultaController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"metaExpedientsPermisLectura",
-				metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId()));
+				metaExpedientService.findActiusAmbEntitatPerLectura(entitatActual.getId()));
 		model.addAttribute(
 				"metaExpedientsPermisCreacio",
 				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));

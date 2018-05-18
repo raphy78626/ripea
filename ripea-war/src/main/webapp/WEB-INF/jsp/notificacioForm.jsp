@@ -25,22 +25,22 @@ $(document).ready(function() {
 			$('ul.nav-tabs li').addClass('disabled');
 			$('ul.nav-tabs li a[href="#annexos"]').removeAttr('data-toggle');
 			$('ul.nav-tabs li').addClass('disabled');
-			$('input#avisTitol').prop('disabled', true);
-			$('textarea#avisText').prop('disabled', true);
-			$('textarea#avisTextSms').prop('disabled', true);
-			$('input#oficiTitol').prop('disabled', true);
-			$('textarea#oficiText').prop('disabled', true);
+			$('input#seuAvisTitol').prop('disabled', true);
+			$('textarea#seuAvisText').prop('disabled', true);
+			$('textarea#seuAvisTextMobil').prop('disabled', true);
+			$('input#seuOficiTitol').prop('disabled', true);
+			$('textarea#seuOficiText').prop('disabled', true);
 			$('select#estat').prop('disabled', false);
 		} else {
 			$('ul.nav-tabs li a[href="#avisofici"]').attr('data-toggle', 'tab');
 			$('ul.nav-tabs li').removeClass('disabled');
 			$('ul.nav-tabs li a[href="#annexos"]').attr('data-toggle', 'tab');
 			$('ul.nav-tabs li').removeClass('disabled');
-			$('input#avisTitol').prop('disabled', false);
-			$('textarea#avisText').prop('disabled', false);
-			$('textarea#avisTextSms').prop('disabled', false);
-			$('input#oficiTitol').prop('disabled', false);
-			$('textarea#oficiText').prop('disabled', false);
+			$('input#seuAvisTitol').prop('disabled', false);
+			$('textarea#seuAvisText').prop('disabled', false);
+			$('textarea#seuAvisTextMobil').prop('disabled', false);
+			$('input#seuOficiTitol').prop('disabled', false);
+			$('textarea#seuOficiText').prop('disabled', false);
 			$('select#estat').prop('disabled', true);
 			$('select#estat').val('PENDENT');
 		}
@@ -77,15 +77,15 @@ $(document).ready(function() {
 				</c:choose>
 				<rip:inputSelect name="estat" textKey="notificacio.form.camp.estat" optionItems="${notificacioEstatEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 				<rip:inputSelect name="interessatId" textKey="notificacio.form.camp.destinatari" optionItems="${interessats}" optionValueAttribute="id" optionTextAttribute="identificador" placeholderKey="notificacio.form.camp.destinatari"/>
-				<rip:inputText name="assumpte" textKey="notificacio.form.camp.assumpte" required="true"/>
-				<rip:inputTextarea name="observacions" textKey="notificacio.form.camp.observacions"/>
+				<rip:inputText name="assumpte" textKey="notificacio.form.camp.concepte" required="true"/>
+				<rip:inputTextarea name="observacions" textKey="notificacio.form.camp.descripcio"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="avisofici">
-				<rip:inputText name="avisTitol" textKey="notificacio.form.camp.avis.titol"/>
-				<rip:inputTextarea name="avisText" textKey="notificacio.form.camp.avis.text"/>
-				<rip:inputTextarea name="avisTextSms" textKey="notificacio.form.camp.avis.textsms"/>
-				<rip:inputText name="oficiTitol" textKey="notificacio.form.camp.ofici.titol"/>
-				<rip:inputTextarea name="oficiText" textKey="notificacio.form.camp.ofici.text"/>
+				<rip:inputText name="seuAvisTitol" textKey="notificacio.form.camp.avis.titol"/>
+				<rip:inputTextarea name="seuAvisText" textKey="notificacio.form.camp.avis.text"/>
+				<rip:inputTextarea name="seuAvisTextMobil" textKey="notificacio.form.camp.avis.text.mobil"/>
+				<rip:inputText name="seuOficiTitol" textKey="notificacio.form.camp.ofici.titol"/>
+				<rip:inputTextarea name="seuOficiText" textKey="notificacio.form.camp.ofici.text"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="annexos">
 				<rip:inputSelect name="annexos" textKey="notificacio.form.camp.annexos" optionItems="${annexos}" emptyOption="true" optionValueAttribute="id" optionTextAttribute="nom" placeholderKey="notificacio.form.camp.annexos"/>

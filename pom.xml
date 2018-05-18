@@ -6,8 +6,6 @@
 	<version>0.1</version>
 	<packaging>pom</packaging>
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.6</java.version>
 		<ripea.version>0.1</ripea.version>
 		<github.global.server>github</github.global.server>
 		<spring.version>3.2.17.RELEASE</spring.version>
@@ -16,13 +14,20 @@
 		<hibernate.version>3.6.5.Final</hibernate.version>
 		<hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
 		<ehcache.version>2.10.1</ehcache.version>
+		<orika.version>1.1.7</orika.version>
+		<!--orika.version>1.4.6</orika.version-->
 		<groovy.version>2.1.6</groovy.version>
 		<jackson.version>2.7.0</jackson.version>
 		<xdocreport.version>1.0.3</xdocreport.version>
+		<bouncycastle.version>1.46</bouncycastle.version>
+		<cxf.version>2.2.12</cxf.version>
 		<portafib.version>1.1.0</portafib.version>
 		<regweb.version>3.0.5</regweb.version>
 		<dir3caib.version>1.0.7</dir3caib.version>
 		<slf4j.version>1.5.11</slf4j.version>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<modules>
 		<module>ripea-core</module>

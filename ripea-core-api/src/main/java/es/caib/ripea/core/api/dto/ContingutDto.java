@@ -407,6 +407,4 @@ public abstract class ContingutDto extends AuditoriaDto {
 
 	protected abstract ContingutDto copiarContenidor(ContingutDto original);
 
-	private static final long serialVersionUID = -139254994389509932L;
-
 }

@@ -307,11 +307,11 @@ public class ContingutMassiuController extends BaseUserOAdminController {
 		List<ExecucioMassivaDto> execucionsMassives = new ArrayList<ExecucioMassivaDto>();
 		
 		UsuariDto usuariActual = null;
-		if (RolHelper.isUsuariActualAdministrador(request)) {
+		if (RolHelper.isRolActualAdministrador(request)) {
 			model.addAttribute(
 					"titolConsulta",
 					getMessage(request, "accio.massiva.consulta.titol.gobal"));
-		} else if (RolHelper.isUsuariActualUsuari(request)) {
+		} else if (RolHelper.isRolActualUsuari(request)) {
 			usuariActual = aplicacioService.getUsuariActual();
 			model.addAttribute(
 					"titolConsulta",
@@ -337,7 +337,7 @@ public class ContingutMassiuController extends BaseUserOAdminController {
 			HttpServletRequest request,
 			@PathVariable Long execucioMassivaId) {
 		
-		if (RolHelper.isUsuariActualUsuari(request)) 
+		if (RolHelper.isRolActualUsuari(request)) 
 			getEntitatActualComprovantPermisos(request);
 		
 		return execucioMassivaService.findContingutPerExecucioMassiva(execucioMassivaId);

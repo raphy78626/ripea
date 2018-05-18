@@ -26,8 +26,6 @@ public class EntitatDto extends AuditoriaDto {
 	private boolean usuariActualRead;
 	private boolean usuariActualAdministration;
 
-
-
 	public Long getId() {
 		return id;
 	}
@@ -100,7 +98,5 @@ public class EntitatDto extends AuditoriaDto {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
-
-	private static final long serialVersionUID = -139254994389509932L;
 
 }

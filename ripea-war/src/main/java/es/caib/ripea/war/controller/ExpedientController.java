@@ -28,6 +28,7 @@ import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.ContingutService;
+import es.caib.ripea.core.api.service.DocumentEnviamentService;
 import es.caib.ripea.core.api.service.ExpedientService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.war.command.ExpedientAcumularCommand;
@@ -57,6 +58,8 @@ public class ExpedientController extends BaseUserController {
 	private MetaExpedientService metaExpedientService;
 	@Autowired
 	private ArxiuService arxiuService;
+	@Autowired
+	private DocumentEnviamentService documentEnviamentService;
 
 
 
@@ -166,7 +169,7 @@ public class ExpedientController extends BaseUserController {
 						entitatActual.getId()));
 		model.addAttribute(
 				"metaExpedients",
-				metaExpedientService.findAmbEntitatPerLectura(
+				metaExpedientService.findActiusAmbEntitatPerLectura(
 						entitatActual.getId()));
 		model.addAttribute(
 				"expedientEstatEnumOptions",
@@ -313,6 +316,19 @@ public class ExpedientController extends BaseUserController {
 	    		new CustomDateEditor(
 	    				new SimpleDateFormat("dd/MM/yyyy"),
 	    				true));
+	}
+
+	@RequestMapping(value = "/{expedientId}/enviament/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse enviamentDatatable(
+			HttpServletRequest request,
+			@PathVariable Long expedientId) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				documentEnviamentService.findAmbExpedient(
+						entitatActual.getId(),
+						expedientId));		
 	}
 
 }

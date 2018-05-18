@@ -15,17 +15,17 @@ import es.caib.ripea.core.api.exception.NotFoundException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface ExpedientEnviamentService {
+public interface DocumentEnviamentService {
 
 	/**
 	 * Crea una notificació d'un document de l'expedient a un ciutadà.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
+	 * @param expedientId
+	 *            Atribut id de l'expedient.
 	 * @param documentId
 	 *            Atribut id del document.
-	 * @param interessatId
-	 *            Atribut id de l'interessat destinatari de la notificació.
 	 * @param notificacio
 	 *            Dades de la notificació.
 	 * @return La notificació creada.
@@ -35,7 +35,6 @@ public interface ExpedientEnviamentService {
 	public DocumentNotificacioDto notificacioCreate(
 			Long entitatId,
 			Long documentId,
-			Long interessatId,
 			DocumentNotificacioDto notificacio) throws NotFoundException;
 
 	/**
@@ -45,6 +44,8 @@ public interface ExpedientEnviamentService {
 	 *            Atribut id de l'entitat.
 	 * @param expedientId
 	 *            Atribut id de l'expedient.
+	 * @param documentId
+	 *            Atribut id del document.
 	 * @param notificacio
 	 *            Dades de la notificació.
 	 * @return La notificació modificada.
@@ -53,7 +54,7 @@ public interface ExpedientEnviamentService {
 	 */
 	public DocumentNotificacioDto notificacioUpdate(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			DocumentNotificacioDto notificacio) throws NotFoundException;
 
 	/**
@@ -63,6 +64,8 @@ public interface ExpedientEnviamentService {
 	 *            Atribut id de l'entitat.
 	 * @param expedientId
 	 *            Atribut id de l'expedient.
+	 * @param documentId
+	 *            Atribut id del document.
 	 * @param notificacioId
 	 *            L'atribut id de la notificació.
 	 * @return La notificació modificada.
@@ -71,25 +74,7 @@ public interface ExpedientEnviamentService {
 	 */
 	public DocumentNotificacioDto notificacioDelete(
 			Long entitatId,
-			Long expedientId,
-			Long notificacioId) throws NotFoundException;
-
-	/**
-	 * Reintenta l'enviament d'una notificació electrònica feta amb anterioritat.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat.
-	 * @param expedientId
-	 *            Atribut id de l'expedient.
-	 * @param notificacioId
-	 *            L'atribut id de la notificació.
-	 * @return true si s'ha pogut enviar sense errors o false en cas contrari.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	public boolean notificacioRetry(
-			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			Long notificacioId) throws NotFoundException;
 
 	/**
@@ -99,6 +84,8 @@ public interface ExpedientEnviamentService {
 	 *            Atribut id de l'entitat.
 	 * @param expedientId
 	 *            Atribut id de l'expedient.
+	 * @param documentId
+	 *            Atribut id del document.
 	 * @param notificacioId
 	 *            L'atribut id de la notificació.
 	 * @return La notificació trobada.
@@ -107,19 +94,16 @@ public interface ExpedientEnviamentService {
 	 */
 	public DocumentNotificacioDto notificacioFindAmbId(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			Long notificacioId) throws NotFoundException;
-
-	/**
-	 * Processa les notificacions pendents de forma periòdica.
-	 */
-	public void notificacioProcessarPendents();
 
 	/**
 	 * Crea una publicació d'un document de l'expedient a un butlletí oficial.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
+	 * @param expedientId
+	 *            Atribut id de l'expedient.
 	 * @param documentId
 	 *            Atribut id del document.
 	 * @param publicacio
@@ -140,6 +124,8 @@ public interface ExpedientEnviamentService {
 	 *            Atribut id de l'entitat.
 	 * @param expedientId
 	 *            Atribut id de l'expedient.
+	 * @param documentId
+	 *            Atribut id del document.
 	 * @param publicacio
 	 *            Dades de la publicació.
 	 * @return La notificació modificada.
@@ -148,7 +134,7 @@ public interface ExpedientEnviamentService {
 	 */
 	public DocumentPublicacioDto publicacioUpdate(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			DocumentPublicacioDto publicacio) throws NotFoundException;
 
 	/**
@@ -158,6 +144,8 @@ public interface ExpedientEnviamentService {
 	 *            Atribut id de l'entitat.
 	 * @param expedientId
 	 *            Atribut id de l'expedient.
+	 * @param documentId
+	 *            Atribut id del document.
 	 * @param publicacioId
 	 *            L'atribut id de la publicació.
 	 * @return La publicació modificada.
@@ -166,7 +154,7 @@ public interface ExpedientEnviamentService {
 	 */
 	public DocumentPublicacioDto publicacioDelete(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			Long publicacioId) throws NotFoundException;
 
 	/**
@@ -176,6 +164,8 @@ public interface ExpedientEnviamentService {
 	 *            Atribut id de l'entitat.
 	 * @param expedientId
 	 *            Atribut id de l'expedient.
+	 * @param documentId
+	 *            Atribut id del document.
 	 * @param publicacioId
 	 *            L'atribut id de la publicació.
 	 * @return La publicació trobada.
@@ -184,11 +174,11 @@ public interface ExpedientEnviamentService {
 	 */
 	public DocumentPublicacioDto publicacioFindAmbId(
 			Long entitatId,
-			Long expedientId,
+			Long documentId,
 			Long publicacioId) throws NotFoundException;
 
 	/**
-	 * Retorna una llista de notificacions associades a un expedient.
+	 * Retorna la llista d'enviaments associats a un expedient.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
@@ -198,8 +188,27 @@ public interface ExpedientEnviamentService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	public List<DocumentEnviamentDto> enviamentFindAmbExpedient(
+	public List<DocumentEnviamentDto> findAmbExpedient(
 			Long entitatId,
 			Long expedientId) throws NotFoundException;
+
+	/**
+	 * Retorna la llista d'enviaments associats a un expedient.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param expedientId
+	 *            Atribut id de l'expedient.
+	 * @return La llista de notificacions.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	public List<DocumentEnviamentDto> findAmbDocument(
+			Long entitatId,
+			Long documentId) throws NotFoundException;
+	/**
+	 * Actualitza l'estat de les notificacions pendents de forma periòdica.
+	 */
+	public void notificacioActualitzarEstat();
 
 }

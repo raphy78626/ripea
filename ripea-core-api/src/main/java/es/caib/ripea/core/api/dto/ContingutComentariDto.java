@@ -42,5 +42,4 @@ public class ContingutComentariDto  extends AuditoriaDto {
 		return ToStringBuilder.reflectionToString(this);
 	}
 	
-	private static final long serialVersionUID = -6276985175501725918L;
 }

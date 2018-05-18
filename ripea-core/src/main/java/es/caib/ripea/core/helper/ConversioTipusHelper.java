@@ -15,9 +15,11 @@ import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto.ExecucioMassivaEstatDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
+import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.entity.AlertaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
+import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
@@ -74,10 +76,8 @@ public class ConversioTipusHelper {
 						target.setError(source.getError());
 						target.setOrdre(source.getOrdre());
 						target.setExecucioMassiva(convertir(source.getExecucioMassiva(), ExecucioMassivaDto.class));
-						
 						if (source.getContingut() instanceof DocumentEntity)
 							target.setContingut(convertir((DocumentEntity)source.getContingut(), DocumentDto.class));
-						
 						return target;
 					}
 				});
@@ -90,7 +90,33 @@ public class ConversioTipusHelper {
 						target.setError(source.getError());
 						target.setLlegida(source.getLlegida().booleanValue());
 						target.setContingutId(source.getContingut().getId());
-						
+						return target;
+					}
+				});
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<RegistreAnnexEntity, RegistreAnnexDetallDto>() {
+					public RegistreAnnexDetallDto convert(RegistreAnnexEntity source, Type<? extends RegistreAnnexDetallDto> destinationClass) {
+						RegistreAnnexDetallDto target = new RegistreAnnexDetallDto();
+						target.setId(source.getId());
+						target.setTitol(source.getTitol());
+						target.setFitxerNom(source.getTitol());
+						target.setFitxerTamany(source.getFitxerTamany());
+						target.setFitxerTipusMime(source.getFitxerTipusMime());
+						target.setDataCaptura(source.getDataCaptura());
+						target.setLocalitzacio(source.getLocalitzacio());
+						if (source.getOrigenCiutadaAdmin() != null)
+							target.setOrigenCiutadaAdmin(source.getOrigenCiutadaAdmin().toString());
+						if (source.getNtiTipusDocument() != null)
+							target.setNtiTipusDocument(source.getNtiTipusDocument().toString());
+						if (source.getSicresTipusDocument() != null)
+							target.setSicresTipusDocument(source.getSicresTipusDocument().toString());
+						if (source.getNtiElaboracioEstat() != null)
+							target.setNtiElaboracioEstat(source.getNtiElaboracioEstat().toString());
+						target.setObservacions(source.getObservacions());
+						target.setFirmaMode(source.getFirmaMode());
+						target.setTimestamp(source.getTimestamp());
+						target.setValidacioOCSP(source.getValidacioOCSP());
+						target.setFitxerArxiuUuid(source.getFitxerArxiuUuid());
 						return target;
 					}
 				});

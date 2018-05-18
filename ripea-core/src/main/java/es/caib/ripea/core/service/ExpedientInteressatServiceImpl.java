@@ -186,11 +186,13 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 					expedient,
 					null).build();
 		}
-		if (pare != null)
-			interessatEntity.setEsRepresentant(true);
+		if (pare != null) {
+			interessatEntity.updateEsRepresentant(true);
+		}
 		interessatEntity = interessatRepository.save(interessatEntity);
-		if (pare != null)
-			pare.setRepresentant(interessatEntity);
+		if (pare != null) {
+			pare.updateRepresentant(interessatEntity);
+		}
 		expedient.addInteressat(interessatEntity);
 		// Registra al log la creació de l'interessat
 		contingutLogHelper.log(
@@ -473,8 +475,7 @@ public class ExpedientInteressatServiceImpl implements ExpedientInteressatServic
 			if (interessat.getRepresentant() != null && 
 				interessat.getRepresentant().getId().equals(representantId)) {
 				InteressatEntity representant = interessatRepository.findOne(representantId);
-			
-				interessat.setRepresentant(null);
+				interessat.updateRepresentant(null);
 				interessatRepository.delete(representant);
 				//expedient.deleteInteressat(interessat);
 				// Registra al log la baixa de l'interessat

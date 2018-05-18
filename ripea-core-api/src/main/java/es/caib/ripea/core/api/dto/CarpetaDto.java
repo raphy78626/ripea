@@ -23,6 +23,4 @@ public class CarpetaDto extends ContingutDto {
 		return copia;
 	}
 
-	private static final long serialVersionUID = -139254994389509932L;
-
 }

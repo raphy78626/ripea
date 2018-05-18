@@ -878,9 +878,9 @@ public class ContingutHelper {
 			ContingutEntity contingut,
 			ExpedientEntity expedientSuperior,
 			FitxerDto fitxer) {
-		String classificacioDocumental = null;
+		String serieDocumental = null;
 		if (expedientSuperior != null) {
-			classificacioDocumental = expedientSuperior.getMetaExpedient().getClassificacioDocumental();
+			serieDocumental = expedientSuperior.getMetaExpedient().getSerieDocumental();
 		}
 		if (pluginHelper.isArxiuPluginActiu()) {
 			if (contingut instanceof ExpedientEntity) {
@@ -891,7 +891,7 @@ public class ContingutHelper {
 						(DocumentEntity)contingut,
 						fitxer,
 						contingut.getPare(),
-						classificacioDocumental);
+						serieDocumental);
 				documentHelper.actualitzarVersionsDocument((DocumentEntity)contingut);
 			} else if (contingut instanceof CarpetaEntity) {
 				pluginHelper.arxiuCarpetaActualitzar(

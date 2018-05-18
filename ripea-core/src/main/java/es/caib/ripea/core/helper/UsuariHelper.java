@@ -22,7 +22,6 @@ import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.plugin.usuari.DadesUsuari;
 
-
 /**
  * Helper per a operacions amb usuaris.
  * 
@@ -89,14 +88,22 @@ public class UsuariHelper {
 		if (usuari == null) {
 			logger.debug("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
+			// Primer cream l'usuari amb dades fictícies i després l'actualitzam.
+			// Així evitam possibles bucles infinits a l'hora de guardar registre
+			// de les peticions al plugin d'usuaris.
+			usuari = usuariRepository.save(
+					UsuariEntity.getBuilder(
+							auth.getName(),
+							auth.getName(),
+							"00000000X",
+							auth.getName() + "@" + "caib.es").build());
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
-				usuari = usuariRepository.save(
-						UsuariEntity.getBuilder(
-								dadesUsuari.getCodi(),
-								dadesUsuari.getNom(),
-								dadesUsuari.getNif(),
-								dadesUsuari.getEmail()).build());
+				usuari.update(
+						dadesUsuari.getNom(),
+						dadesUsuari.getNif(),
+						dadesUsuari.getEmail());
+				usuariRepository.save(usuari);
 			} else {
 				throw new NotFoundException(
 						auth.getName(),
@@ -105,8 +112,6 @@ public class UsuariHelper {
 		}
 		return usuari;
 	}
-
-
 
 	private static final Logger logger = LoggerFactory.getLogger(UsuariHelper.class);
 

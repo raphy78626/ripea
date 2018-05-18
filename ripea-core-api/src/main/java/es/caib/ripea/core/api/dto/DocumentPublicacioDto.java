@@ -12,12 +12,9 @@ import java.util.Date;
  */
 public class DocumentPublicacioDto extends DocumentEnviamentDto {
 
-	
 	private DocumentPublicacioTipusEnumDto tipus;
 	private Date dataPublicacio;
 	
-	
-
 	public DocumentPublicacioTipusEnumDto getTipus() {
 		return tipus;
 	}
@@ -31,10 +28,13 @@ public class DocumentPublicacioDto extends DocumentEnviamentDto {
 		this.dataPublicacio = dataPublicacio;
 	}
 
+	@Override
 	public String getDestinatari() {
 		return tipus.name();
 	}
-
-	private static final long serialVersionUID = -139254994389509932L;
+	@Override
+	public String getDestinatariAmbDocument() {
+		return tipus.name();
+	}
 
 }

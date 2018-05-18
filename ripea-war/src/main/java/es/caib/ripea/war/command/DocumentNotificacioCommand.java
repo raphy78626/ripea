@@ -4,6 +4,7 @@
 package es.caib.ripea.war.command;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -16,6 +17,7 @@ import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
+import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 
 /**
@@ -28,8 +30,6 @@ public class DocumentNotificacioCommand {
 	private Long id;
 	@NotNull(groups = {Create.class})
 	private Long documentId;
-	@NotNull(groups = {Create.class, Update.class})
-	private Long interessatId;
 	@NotNull
 	private DocumentNotificacioTipusEnumDto tipus;
 	private DocumentEnviamentEstatEnumDto estat;
@@ -38,16 +38,22 @@ public class DocumentNotificacioCommand {
 	private String assumpte;
 	@Size(groups = {Create.class, Update.class}, max = 256)
 	private String observacions;
+	private Date dataProgramada;
+	private Integer retard;
+	private Date dataCaducitat;
+	@NotNull(groups = {Create.class, Update.class})
+	private Long interessatId;
+	private InteressatIdiomaEnumDto seuIdioma;
 	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
-	private String avisTitol;
+	private String seuAvisTitol;
 	@NotEmpty(groups = {Electronica.class}) @Size(max = 1024)
-	private String avisText;
+	private String seuAvisText;
 	@Size(max = 200)
-	private String avisTextSms;
+	private String seuAvisTextMobil;
 	@NotEmpty(groups = {Electronica.class}) @Size(max = 256)
-	private String oficiTitol;
+	private String seuOficiTitol;
 	@NotEmpty(groups = {Electronica.class}) @Size(max = 1024)
-	private String oficiText;
+	private String seuOficiText;
 	private List<Long> annexos;
 
 
@@ -63,12 +69,6 @@ public class DocumentNotificacioCommand {
 	}
 	public void setDocumentId(Long documentId) {
 		this.documentId = documentId;
-	}
-	public Long getInteressatId() {
-		return interessatId;
-	}
-	public void setInteressatId(Long interessatId) {
-		this.interessatId = interessatId;
 	}
 	public DocumentNotificacioTipusEnumDto getTipus() {
 		return tipus;
@@ -94,35 +94,65 @@ public class DocumentNotificacioCommand {
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
 	}
-	public String getAvisTitol() {
-		return avisTitol;
+	public Date getDataProgramada() {
+		return dataProgramada;
 	}
-	public void setAvisTitol(String avisTitol) {
-		this.avisTitol = avisTitol;
+	public void setDataProgramada(Date dataProgramada) {
+		this.dataProgramada = dataProgramada;
 	}
-	public String getAvisText() {
-		return avisText;
+	public Integer getRetard() {
+		return retard;
 	}
-	public void setAvisText(String avisText) {
-		this.avisText = avisText;
+	public void setRetard(Integer retard) {
+		this.retard = retard;
 	}
-	public String getAvisTextSms() {
-		return avisTextSms;
+	public Date getDataCaducitat() {
+		return dataCaducitat;
 	}
-	public void setAvisTextSms(String avisTextSms) {
-		this.avisTextSms = avisTextSms;
+	public void setDataCaducitat(Date dataCaducitat) {
+		this.dataCaducitat = dataCaducitat;
 	}
-	public String getOficiTitol() {
-		return oficiTitol;
+	public Long getInteressatId() {
+		return interessatId;
 	}
-	public void setOficiTitol(String oficiTitol) {
-		this.oficiTitol = oficiTitol;
+	public void setInteressatId(Long interessatId) {
+		this.interessatId = interessatId;
 	}
-	public String getOficiText() {
-		return oficiText;
+	public InteressatIdiomaEnumDto getSeuIdioma() {
+		return seuIdioma;
 	}
-	public void setOficiText(String oficiText) {
-		this.oficiText = oficiText;
+	public void setSeuIdioma(InteressatIdiomaEnumDto seuIdioma) {
+		this.seuIdioma = seuIdioma;
+	}
+	public String getSeuAvisTitol() {
+		return seuAvisTitol;
+	}
+	public void setSeuAvisTitol(String seuAvisTitol) {
+		this.seuAvisTitol = seuAvisTitol;
+	}
+	public String getSeuAvisText() {
+		return seuAvisText;
+	}
+	public void setSeuAvisText(String seuAvisText) {
+		this.seuAvisText = seuAvisText;
+	}
+	public String getSeuAvisTextMobil() {
+		return seuAvisTextMobil;
+	}
+	public void setSeuAvisTextMobil(String seuAvisTextMobil) {
+		this.seuAvisTextMobil = seuAvisTextMobil;
+	}
+	public String getSeuOficiTitol() {
+		return seuOficiTitol;
+	}
+	public void setSeuOficiTitol(String seuOficiTitol) {
+		this.seuOficiTitol = seuOficiTitol;
+	}
+	public String getSeuOficiText() {
+		return seuOficiText;
+	}
+	public void setSeuOficiText(String seuOficiText) {
+		this.seuOficiText = seuOficiText;
 	}
 	public List<Long> getAnnexos() {
 		return annexos;

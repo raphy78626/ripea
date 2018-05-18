@@ -508,6 +508,7 @@ public interface MetaExpedientService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<MetaExpedientDto> findActiusAmbEntitatPerModificacio(
 			Long entitatId) throws NotFoundException;
+
 	/**
 	 * Consulta els meta-expedients d'una entitat amb el permis READ per
 	 * a l'usuari actual.
@@ -519,7 +520,7 @@ public interface MetaExpedientService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<MetaExpedientDto> findAmbEntitatPerLectura(
+	public List<MetaExpedientDto> findActiusAmbEntitatPerLectura(
 			Long entitatId) throws NotFoundException;
 
 	/**

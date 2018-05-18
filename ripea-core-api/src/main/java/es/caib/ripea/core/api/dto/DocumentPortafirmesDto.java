@@ -14,22 +14,13 @@ import java.util.Date;
 public class DocumentPortafirmesDto extends DocumentEnviamentDto {
 
 	private PortafirmesPrioritatEnumDto prioritat;
-	private Date dataCaducitat;
+	private Date caducitatData;
 	private String documentTipus;
 	private String[] responsables;
 	private MetaDocumentFirmaFluxTipusEnumDto fluxTipus;
 	private String fluxId;
 	private String portafirmesId;
-	private Date enviamentData;
-	private Integer enviamentCount;
-	private boolean enviamentError;
-	private String enviamentErrorDescripcio;
-	private Date processamentData;
-	private Integer processamentCount;
-	private boolean processamentError;
-	private String processamentErrorDescripcio;
-
-
+	private PortafirmesCallbackEstatEnumDto callbackEstat;
 
 	public PortafirmesPrioritatEnumDto getPrioritat() {
 		return prioritat;
@@ -37,11 +28,11 @@ public class DocumentPortafirmesDto extends DocumentEnviamentDto {
 	public void setPrioritat(PortafirmesPrioritatEnumDto prioritat) {
 		this.prioritat = prioritat;
 	}
-	public Date getDataCaducitat() {
-		return dataCaducitat;
+	public Date getCaducitatData() {
+		return caducitatData;
 	}
-	public void setDataCaducitat(Date dataCaducitat) {
-		this.dataCaducitat = dataCaducitat;
+	public void setCaducitatData(Date caducitatData) {
+		this.caducitatData = caducitatData;
 	}
 	public String getDocumentTipus() {
 		return documentTipus;
@@ -73,59 +64,20 @@ public class DocumentPortafirmesDto extends DocumentEnviamentDto {
 	public void setPortafirmesId(String portafirmesId) {
 		this.portafirmesId = portafirmesId;
 	}
-	public Date getEnviamentData() {
-		return enviamentData;
+	public PortafirmesCallbackEstatEnumDto getCallbackEstat() {
+		return callbackEstat;
 	}
-	public void setEnviamentData(Date enviamentData) {
-		this.enviamentData = enviamentData;
-	}
-	public Integer getEnviamentCount() {
-		return enviamentCount;
-	}
-	public void setEnviamentCount(Integer enviamentCount) {
-		this.enviamentCount = enviamentCount;
-	}
-	public boolean isEnviamentError() {
-		return enviamentError;
-	}
-	public void setEnviamentError(boolean enviamentError) {
-		this.enviamentError = enviamentError;
-	}
-	public String getEnviamentErrorDescripcio() {
-		return enviamentErrorDescripcio;
-	}
-	public void setEnviamentErrorDescripcio(String enviamentErrorDescripcio) {
-		this.enviamentErrorDescripcio = enviamentErrorDescripcio;
-	}
-	public Date getProcessamentData() {
-		return processamentData;
-	}
-	public void setProcessamentData(Date processamentData) {
-		this.processamentData = processamentData;
-	}
-	public Integer getProcessamentCount() {
-		return processamentCount;
-	}
-	public void setProcessamentCount(Integer processamentCount) {
-		this.processamentCount = processamentCount;
-	}
-	public boolean isProcessamentError() {
-		return processamentError;
-	}
-	public void setProcessamentError(boolean processamentError) {
-		this.processamentError = processamentError;
-	}
-	public String getProcessamentErrorDescripcio() {
-		return processamentErrorDescripcio;
-	}
-	public void setProcessamentErrorDescripcio(String processamentErrorDescripcio) {
-		this.processamentErrorDescripcio = processamentErrorDescripcio;
+	public void setCallbackEstat(PortafirmesCallbackEstatEnumDto callbackEstat) {
+		this.callbackEstat = callbackEstat;
 	}
 
+	@Override
 	public String getDestinatari() {
 		return Arrays.toString(responsables);
 	}
-
-	private static final long serialVersionUID = -139254994389509932L;
+	@Override
+	public String getDestinatariAmbDocument() {
+		return Arrays.toString(responsables);
+	}
 
 }

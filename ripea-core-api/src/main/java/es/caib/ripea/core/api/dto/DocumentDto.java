@@ -219,6 +219,4 @@ public class DocumentDto extends NodeDto {
 		return copia;
 	}
 
-	private static final long serialVersionUID = -139254994389509932L;
-
 }

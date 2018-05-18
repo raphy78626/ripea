@@ -48,6 +48,8 @@ public class IntegracioHelper {
 	public static final String INTCODI_CALLBACK = "CALLBACK";
 	public static final String INTCODI_DADESEXT = "DADESEXT";
 	public static final String INTCODI_SIGNATURA = "SIGNATURA";
+	public static final String INTCODI_VALIDASIG = "VALIDASIG";
+	public static final String INTCODI_NOTIFICACIO = "NOTIFICACIO";
 
 	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = Collections.synchronizedMap(new HashMap<String, LinkedList<IntegracioAccioDto>>());
 	private Map<String, Integer> maxAccionsIntegracio = new HashMap<String, Integer>();
@@ -86,6 +88,12 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_SIGNATURA));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_VALIDASIG));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_NOTIFICACIO));
 		return integracions;
 	}
 
@@ -247,10 +255,12 @@ public class IntegracioHelper {
 			integracio.setNom("Dades ext.");
 		} else if (INTCODI_SIGNATURA.equals(codi)) {
 			integracio.setNom("Signatura");
+		} else if (INTCODI_VALIDASIG.equals(codi)) {
+			integracio.setNom("Valida sig.");
+		} else if (INTCODI_NOTIFICACIO.equals(codi)) {
+			integracio.setNom("Notificació");
 		}
 		return integracio;
 	}
-
-	//private static final Logger logger = LoggerFactory.getLogger(IntegracioHelper.class);
 
 }

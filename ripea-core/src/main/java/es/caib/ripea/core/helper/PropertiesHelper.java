@@ -9,6 +9,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.caib.ripea.core.api.exception.PropietatNotFoundException;
+
 /**
  * Utilitat per accedir a les entrades del fitxer de properties.
  * 
@@ -71,25 +73,53 @@ public class PropertiesHelper extends Properties {
 		String val = getProperty(key);
         return (val == null) ? defaultValue : val;
 	}
+	public String getPropertyAmbComprovacio(String key) {
+		String valor = getProperty(key);
+		if (valor == null || valor.isEmpty()) {
+			throw new PropietatNotFoundException(key);
+		}
+		return valor;
+	}
 
 	public boolean getAsBoolean(String key) {
 		String value = getProperty(key);
-		if (value != null)
+		if (value != null) {
 			return new Boolean(getProperty(key)).booleanValue();
-		else
+		} else {
 			return false;
+		}
 	}
 	public int getAsInt(String key) {
-		return new Integer(getProperty(key)).intValue();
+		String value = getProperty(key);
+		if (value != null) {
+			return new Integer(value).intValue();
+		} else {
+			throw new PropietatNotFoundException(key);
+		}
 	}
 	public long getAsLong(String key) {
-		return new Long(getProperty(key)).longValue();
+		String value = getProperty(key);
+		if (value != null) {
+			return new Long(value).longValue();
+		} else {
+			throw new PropietatNotFoundException(key);
+		}
 	}
 	public float getAsFloat(String key) {
-		return new Float(getProperty(key)).floatValue();
+		String value = getProperty(key);
+		if (value != null) {
+			return new Float(value).floatValue();
+		} else {
+			throw new PropietatNotFoundException(key);
+		}
 	}
 	public double getAsDouble(String key) {
-		return new Double(getProperty(key)).doubleValue();
+		String value = getProperty(key);
+		if (value != null) {
+			return new Double(value).doubleValue();
+		} else {
+			throw new PropietatNotFoundException(key);
+		}
 	}
 
 	public Properties findByPrefix(String prefix) {

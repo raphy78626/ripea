@@ -36,6 +36,7 @@ import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.MultiplicitatEnumDto;
+import es.caib.ripea.core.api.dto.PortafirmesCallbackEstatEnumDto;
 import es.caib.ripea.core.api.dto.PortafirmesPrioritatEnumDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.SistemaExternException;
@@ -55,7 +56,6 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.DocumentHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
-import es.caib.ripea.core.helper.ExpedientHelper;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
@@ -100,8 +100,6 @@ public class DocumentServiceImpl implements DocumentService {
 	private PermisosHelper permisosHelper;
 	@Resource
 	private ContingutHelper contingutHelper;
-	@Resource
-	private ExpedientHelper expedientHelper;
 	@Resource
 	private DocumentHelper documentHelper;
 	@Resource
@@ -674,9 +672,7 @@ public class DocumentServiceImpl implements DocumentService {
 				document,
 				new DocumentEnviamentEstatEnumDto[] {
 						DocumentEnviamentEstatEnumDto.PENDENT,
-						DocumentEnviamentEstatEnumDto.ENVIAT_OK,
-						DocumentEnviamentEstatEnumDto.PROCESSAT_OK,
-						DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR
+						DocumentEnviamentEstatEnumDto.ENVIAT
 				});
 		if (enviamentsPendents.size() > 0) {
 			throw new ValidationException(
@@ -702,19 +698,18 @@ public class DocumentServiceImpl implements DocumentService {
 					"El document no te activada la firma amb portafirmes");
 		}
 		DocumentPortafirmesEntity documentPortafirmes = DocumentPortafirmesEntity.getBuilder(
-				document,
 				DocumentEnviamentEstatEnumDto.PENDENT,
 				assumpte,
-				new Date(),
 				prioritat,
 				dataCaducitat,
 				document.getMetaDocument().getPortafirmesDocumentTipus(),
 				document.getMetaDocument().getPortafirmesResponsables(),
 				document.getMetaDocument().getPortafirmesFluxTipus(),
-				document.getMetaDocument().getPortafirmesFluxId()).build();
+				document.getMetaDocument().getPortafirmesFluxId(),
+				document.getExpedient(),
+				document).build();
 		// Si l'enviament produeix excepcions la retorna
-		SistemaExternException sex = documentHelper.portafirmesEnviar(
-				documentPortafirmes);
+		SistemaExternException sex = documentHelper.portafirmesEnviar(documentPortafirmes);
 		if (sex != null) {
 			throw sex;
 		}
@@ -758,10 +753,7 @@ public class DocumentServiceImpl implements DocumentService {
 				true);
 		List<DocumentPortafirmesEntity> enviamentsPendents = documentPortafirmesRepository.findByDocumentAndEstatInOrderByCreatedDateDesc(
 				document,
-				new DocumentEnviamentEstatEnumDto[] {
-						DocumentEnviamentEstatEnumDto.ENVIAT_OK,
-						DocumentEnviamentEstatEnumDto.ENVIAT_ERROR,
-				});
+				new DocumentEnviamentEstatEnumDto[] {DocumentEnviamentEstatEnumDto.ENVIAT});
 		if (enviamentsPendents.size() == 0) {
 			throw new ValidationException(
 					document.getId(),
@@ -769,10 +761,10 @@ public class DocumentServiceImpl implements DocumentService {
 					"Aquest document no te enviaments a portafirmes pendents");
 		}
 		DocumentPortafirmesEntity documentPortafirmes = enviamentsPendents.get(0);
-		if (DocumentEnviamentEstatEnumDto.ENVIAT_OK.equals(documentPortafirmes.getEstat())) {
+		if (DocumentEnviamentEstatEnumDto.ENVIAT.equals(documentPortafirmes.getEstat())) {
 			pluginHelper.portafirmesDelete(documentPortafirmes);
 		}
-		documentPortafirmes.updateCancelacio();
+		documentPortafirmes.updateCancelat(new Date());
 		document.updateEstat(
 				DocumentEstatEnumDto.REDACCIO);
 		contingutLogHelper.log(
@@ -788,10 +780,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public Exception portafirmesCallback(
 			long portafirmesId,
-			PortafirmesCallbackEstatEnum estat) {
+			PortafirmesCallbackEstatEnumDto callbackEstat) {
 		logger.debug("Processant petició del callback ("
 				+ "portafirmesId=" + portafirmesId + ", "
-				+ "estat=" + estat + ")");
+				+ "callbackEstat=" + callbackEstat + ")");
 		DocumentPortafirmesEntity documentPortafirmes = documentPortafirmesRepository.findByPortafirmesId(
 				new Long(portafirmesId).toString());
 		if (documentPortafirmes == null) {
@@ -806,35 +798,8 @@ public class DocumentServiceImpl implements DocumentService {
 				documentPortafirmes.getEstat().name(),
 				false,
 				false);
-		boolean firmat = PortafirmesCallbackEstatEnum.DOCUMENT_FIRMAT.equals(estat);
-		boolean rebutjat = PortafirmesCallbackEstatEnum.DOCUMENT_REBUTJAT.equals(estat);
-		if (firmat) {
-			contingutLogHelper.log(
-					documentPortafirmes.getDocument(),
-					LogTipusEnumDto.PFIRMA_FIRMA,
-					documentPortafirmes.getPortafirmesId(),
-					null,
-					false,
-					false);
-			documentHelper.portafirmesProcessarFirma(documentPortafirmes);
-		}
-		if (rebutjat) {
-			documentPortafirmes.getDocument().updateEstat(
-					DocumentEstatEnumDto.REDACCIO);
-			documentPortafirmes.updateProcessament(
-					true,
-					false,
-					null,
-					true);
-			contingutLogHelper.log(
-					documentPortafirmes.getDocument(),
-					LogTipusEnumDto.PFIRMA_REBUIG,
-					documentPortafirmes.getPortafirmesId(),
-					null,
-					false,
-					false);
-		}
-		return null;
+		documentPortafirmes.updateCallbackEstat(callbackEstat);
+		return documentHelper.portafirmesProcessar(documentPortafirmes);
 	}
 
 	@Transactional
@@ -863,13 +828,13 @@ public class DocumentServiceImpl implements DocumentService {
 				false,
 				false,
 				true);
-		List<DocumentPortafirmesEntity> enviamentsPendents = documentPortafirmesRepository.findByDocumentAndEstatInOrderByCreatedDateDesc(
+		List<DocumentPortafirmesEntity> enviamentsPendents = documentPortafirmesRepository.findByDocumentAndEstatInAndErrorOrderByCreatedDateDesc(
 				document,
 				new DocumentEnviamentEstatEnumDto[] {
 						DocumentEnviamentEstatEnumDto.PENDENT,
-						DocumentEnviamentEstatEnumDto.ENVIAT_ERROR,
-						DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR,
-				});
+						DocumentEnviamentEstatEnumDto.ENVIAT
+				},
+				true);
 		if (enviamentsPendents.size() == 0) {
 			throw new ValidationException(
 					document.getId(),
@@ -884,10 +849,10 @@ public class DocumentServiceImpl implements DocumentService {
 				documentPortafirmes.getEstat().name(),
 				false,
 				false);
-		if (DocumentEnviamentEstatEnumDto.ENVIAT_ERROR.equals(documentPortafirmes.getEstat())) {
+		if (DocumentEnviamentEstatEnumDto.PENDENT.equals(documentPortafirmes.getEstat())) {
 			documentHelper.portafirmesEnviar(documentPortafirmes);
-		} else if (DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR.equals(documentPortafirmes.getEstat())) {
-			documentHelper.portafirmesProcessarFirma(documentPortafirmes);
+		} else if (DocumentEnviamentEstatEnumDto.ENVIAT.equals(documentPortafirmes.getEstat())) {
+			documentHelper.portafirmesProcessar(documentPortafirmes);
 		}
 	}
 
@@ -919,7 +884,10 @@ public class DocumentServiceImpl implements DocumentService {
 				true);
 		List<DocumentPortafirmesEntity> enviamentsPendents = documentPortafirmesRepository.findByDocumentAndEstatInOrderByCreatedDateDesc(
 				document,
-				DocumentEnviamentEstatEnumDto.values());
+				new DocumentEnviamentEstatEnumDto[] {
+						DocumentEnviamentEstatEnumDto.PENDENT,
+						DocumentEnviamentEstatEnumDto.ENVIAT
+				});
 		if (enviamentsPendents.size() == 0) {
 			throw new ValidationException(
 					document.getId(),

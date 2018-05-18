@@ -18,39 +18,41 @@ import es.caib.ripea.core.api.service.MetaExpedientService;
  */
 public class ExpedientHelper {
 
-	private static final String REQUEST_PARAMETER_ACCES_EXPEDIENTS = "isUsuariAccesExpedients";
-	private static final String SESSION_ATTRIBUTE_ENTITAT_ACTUAL = "EntitatHelper.entitatActual";
+	private static final String REQUEST_PARAMETER_ACCES_EXPEDIENTS = "ExpedientHelper.teAccesExpedients";
 
-
-	
 	public static void accesUsuariExpedients(
 			HttpServletRequest request,
 			MetaExpedientService metaExpedientService) {
-		
-		request.getSession().setAttribute(
+		request.setAttribute(
 				REQUEST_PARAMETER_ACCES_EXPEDIENTS,
-				isUsuariAccesExpedients(
-						request,
-						metaExpedientService));
+				teAccesExpedients(request, metaExpedientService));
 	}
-	
-	public static boolean isUsuariAccesExpedients(
+
+	public static Boolean teAccesExpedients(
+			HttpServletRequest request) {
+		return teAccesExpedients(request, null);
+	}
+	public static Boolean teAccesExpedients(
 			HttpServletRequest request,
 			MetaExpedientService metaExpedientService) {
-		
-		EntitatDto entitatActual = (EntitatDto)request.getSession().getAttribute(
-				SESSION_ATTRIBUTE_ENTITAT_ACTUAL);
-		
-		if (entitatActual != null) {
-			List<MetaExpedientDto> expedientsAccessibles =  metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId());
-			
-			boolean isUsuariAccesExpedients = false;
-			if (expedientsAccessibles != null && !expedientsAccessibles.isEmpty())
-				isUsuariAccesExpedients = true;
-			
-			return isUsuariAccesExpedients;
-		} else {
-			return false;
+		Boolean teAcces = (Boolean)request.getSession().getAttribute(REQUEST_PARAMETER_ACCES_EXPEDIENTS);
+		if (RolHelper.isRolActualUsuari(request) && teAcces == null && metaExpedientService != null) {
+			teAcces = new Boolean(false);
+			EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
+			if (entitatActual != null) {
+				List<MetaExpedientDto> expedientsAccessibles =  metaExpedientService.findActiusAmbEntitatPerLectura(entitatActual.getId());
+				teAcces = new Boolean(expedientsAccessibles != null && !expedientsAccessibles.isEmpty());
+			}
+			request.getSession().setAttribute(
+					REQUEST_PARAMETER_ACCES_EXPEDIENTS,
+					teAcces);
 		}
+		return teAcces;
 	}
+
+	public static void resetAccesUsuariExpedients(
+			HttpServletRequest request) {
+		request.getSession().removeAttribute(REQUEST_PARAMETER_ACCES_EXPEDIENTS);
+	}
+
 }

@@ -34,16 +34,18 @@
 				<rip:inputText name="nom" textKey="metaexpedient.form.camp.nom" required="true"/>
 				<rip:inputTextarea name="descripcio" textKey="metaexpedient.form.camp.descripcio"/>
 				<rip:inputText name="classificacioSia" textKey="metaexpedient.form.camp.classificacio.sia" required="true"/>
-				<rip:inputText name="classificacioDocumental" textKey="metaexpedient.form.camp.classificacio.doc" required="true"/>
+				<rip:inputText name="serieDocumental" textKey="metaexpedient.form.camp.serie.doc" required="true"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="notificacions">
-				<rip:inputText name="unitatAdministrativa" textKey="metaexpedient.form.camp.unitat.adm"/>
 				<rip:inputCheckbox name="notificacioActiva" textKey="metaexpedient.form.camp.notificacio.activa"/>
-				<rip:inputText name="notificacioOrganCodi" textKey="metaexpedient.form.camp.notificacio.organ"/>
-				<rip:inputText name="notificacioLlibreCodi" textKey="metaexpedient.form.camp.notificacio.llibre"/>
+				<rip:inputText name="notificacioSeuProcedimentCodi" textKey="metaexpedient.form.camp.notificacio.seu.proc.codi"/>
+				<rip:inputText name="notificacioSeuRegistreLlibre" textKey="metaexpedient.form.camp.notificacio.seu.reg.lib"/>
+				<rip:inputText name="notificacioSeuRegistreOficina" textKey="metaexpedient.form.camp.notificacio.seu.reg.ofi"/>
+				<rip:inputText name="notificacioSeuRegistreOrgan" textKey="metaexpedient.form.camp.notificacio.seu.reg.org"/>
+				<rip:inputText name="notificacioSeuExpedientUnitatOrganitzativa" textKey="metaexpedient.form.camp.notificacio.seu.exp.uo"/>
 				<rip:inputText name="notificacioAvisTitol" textKey="metaexpedient.form.camp.notificacio.avis.titol"/>
 				<rip:inputTextarea name="notificacioAvisText" textKey="metaexpedient.form.camp.notificacio.avis.text"/>
-				<rip:inputTextarea name="notificacioAvisTextSms" textKey="metaexpedient.form.camp.notificacio.avis.textsms"/>
+				<rip:inputTextarea name="notificacioAvisTextMobil" textKey="metaexpedient.form.camp.notificacio.avis.text.mobil"/>
 				<rip:inputText name="notificacioOficiTitol" textKey="metaexpedient.form.camp.notificacio.ofici.titol"/>
 				<rip:inputTextarea name="notificacioOficiText" textKey="metaexpedient.form.camp.notificacio.ofici.text"/>
 			</div>

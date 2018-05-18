@@ -480,13 +480,13 @@ tr.clicable {
 														<tbody>
 															<tr>
 																<td><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></td>
-																<td>${firma.tipus}</td>
+																<td><spring:message code="document.nti.tipfir.enum.${firma.tipus}"/></td>
 															</tr>
 															<tr>
 																<td><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></td>
 																<td>${firma.perfil}</td>
 															</tr>
-															<c:if test="${firma.tipus != 'TF06' and firma.tipus != 'TF05'}">
+															<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
 																<tr>
 																	<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 																	<td>
@@ -503,6 +503,35 @@ tr.clicable {
 																	<td>${firma.csvRegulacio}</td>
 																</tr>
 															</c:if>
+															<c:if test="${not empty firma.detalls}">
+																<tr>
+																	<td><strong><spring:message code="registre.annex.detalls.camp.firmaDetalls"/></strong></td>
+																	<td>
+																		<table class="table teble-striped table-bordered">
+																		<thead>
+																			<tr>
+																				<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.data"/></th>
+																				<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.nif"/></th>
+																				<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.nom"/></th>
+																				<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.emissor"/></th>
+																			</tr>
+																		<tbody>
+																		<c:forEach var="detall" items="${firma.detalls}">
+																			<tr>
+																				<td>
+																					<c:if test="${not empty detall.data}"><fmt:formatDate value="${detall.data}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if>
+																					<c:if test="${empty detall.data}"><spring:message code="registre.annex.detalls.camp.firmaDetalls.data.nd"/></c:if>
+																				</td>
+																				<td>${detall.responsableNif}</td>
+																				<td>${detall.responsableNom}</td>
+																				<td>${detall.emissorCertificat}</td>
+																			</tr>
+																		</c:forEach>
+																		</tbody>
+																		</table>
+																	</td>
+																</tr>
+															</c:if>
 														</tbody>
 														</table>
 													</div>
@@ -514,7 +543,6 @@ tr.clicable {
 							</div>
 						</div>
 					</c:forEach>
-				
 				</c:when>
 				<c:otherwise>
 					<c:choose>

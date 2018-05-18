@@ -41,7 +41,7 @@
 		<level value="DEBUG" />
 	</logger-->
 
-	<logger name="es.caib.ripea.plugin.caib.arxiu.client.ArxiuClientImpl">
+	<logger name="es.caib.plugins.arxiu.caib">
 		<level value="DEBUG" />
 	</logger>
 

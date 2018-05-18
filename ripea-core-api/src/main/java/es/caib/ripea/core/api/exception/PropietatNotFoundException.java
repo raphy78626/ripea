@@ -14,22 +14,17 @@ public class PropietatNotFoundException extends RuntimeException {
 	private String propietatCodi;
 
 	public PropietatNotFoundException(
-			String propietatCodi,
-			String message) {
-		super(message);
-		this.propietatCodi = propietatCodi;
-	}
-
-	public PropietatNotFoundException(
-			String propietatCodi,
-			String message,
-			Throwable cause) {
-		super(message, cause);
+			String propietatCodi) {
+		super(crearMessage(propietatCodi));
 		this.propietatCodi = propietatCodi;
 	}
 
 	public String getPropietatCodi() {
 		return propietatCodi;
+	}
+
+	private static String crearMessage(String propietatCodi) {
+		return "La propietat \"" + propietatCodi + "\" no està definida o no te valor";
 	}
 
 }

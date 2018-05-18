@@ -8,10 +8,6 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -28,68 +24,66 @@ import es.caib.ripea.core.api.dto.DocumentPublicacioTipusEnumDto;
 @EntityListeners(AuditingEntityListener.class)
 public class DocumentPublicacioEntity extends DocumentEnviamentEntity {
 
-	@Column(name = "tipus", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Column(name = "pub_tipus", nullable = false)
 	private DocumentPublicacioTipusEnumDto tipus;
-	@Column(name = "data_publicacio")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date dataPublicacio;
-
-
 
 	public DocumentPublicacioTipusEnumDto getTipus() {
 		return tipus;
-	}
-	public Date getDataPublicacio() {
-		return dataPublicacio;
 	}
 
 	public void update(
 			String assumpte,
 			String observacions,
 			DocumentPublicacioTipusEnumDto tipus,
-			Date dataPublicacio) {
+			Date enviatData,
+			Date processatData) {
 		this.assumpte = assumpte;
 		this.observacions = observacions;
 		this.tipus = tipus;
-		this.dataPublicacio = dataPublicacio;
+		this.enviatData = enviatData;
+		this.processatData = processatData;
 	}
 
 	public static Builder getBuilder(
-			ExpedientEntity expedient,
 			DocumentEnviamentEstatEnumDto estat,
 			String assumpte,
-			Date dataEnviament,
-			DocumentEntity document,
-			DocumentPublicacioTipusEnumDto tipus) {
+			DocumentPublicacioTipusEnumDto tipus,
+			ExpedientEntity expedient,
+			DocumentEntity document) {
 		return new Builder(
-				expedient,
 				estat,
 				assumpte,
-				dataEnviament,
-				document,
-				tipus);
+				tipus,
+				expedient,
+				document);
 	}
 
 	public static class Builder {
 		DocumentPublicacioEntity built;
 		Builder(
-				ExpedientEntity expedient,
 				DocumentEnviamentEstatEnumDto estat,
 				String assumpte,
-				Date dataEnviament,
-				DocumentEntity document,
-				DocumentPublicacioTipusEnumDto tipus) {
+				DocumentPublicacioTipusEnumDto tipus,
+				ExpedientEntity expedient,
+				DocumentEntity document) {
 			built = new DocumentPublicacioEntity();
-			built.expedient = expedient;
+			built.inicialitzar();
 			built.estat = estat;
 			built.assumpte = assumpte;
-			built.dataEnviament = dataEnviament;
-			built.document = document;
 			built.tipus = tipus;
+			built.expedient = expedient;
+			built.document = document;
 		}
 		public Builder observacions(String observacions) {
 			built.observacions = observacions;
+			return this;
+		}
+		public Builder enviatData(Date enviatData) {
+			built.enviatData = enviatData;
+			return this;
+		}
+		public Builder processatData(Date processatData) {
+			built.processatData = processatData;
 			return this;
 		}
 		public DocumentPublicacioEntity build() {
@@ -103,8 +97,8 @@ public class DocumentPublicacioEntity extends DocumentEnviamentEntity {
 		int result = super.hashCode();
 		result = prime * result + ((expedient == null) ? 0 : expedient.hashCode());
 		result = prime * result + ((document == null) ? 0 : document.hashCode());
-		result = prime * result + ((dataEnviament == null) ? 0 : dataEnviament.hashCode());
-		result = prime * result + ((dataPublicacio == null) ? 0 : dataPublicacio.hashCode());
+		result = prime * result + ((enviatData == null) ? 0 : enviatData.hashCode());
+		result = prime * result + ((processatData == null) ? 0 : processatData.hashCode());
 		result = prime * result + ((tipus == null) ? 0 : tipus.hashCode());
 		return result;
 	}
@@ -127,15 +121,15 @@ public class DocumentPublicacioEntity extends DocumentEnviamentEntity {
 				return false;
 		} else if (!document.equals(other.document))
 			return false;
-		if (dataEnviament == null) {
-			if (other.dataEnviament != null)
+		if (enviatData == null) {
+			if (other.enviatData != null)
 				return false;
-		} else if (!dataEnviament.equals(other.dataEnviament))
+		} else if (!enviatData.equals(other.enviatData))
 			return false;
-		if (dataPublicacio == null) {
-			if (other.dataPublicacio != null)
+		if (processatData == null) {
+			if (other.processatData != null)
 				return false;
-		} else if (!dataPublicacio.equals(other.dataPublicacio))
+		} else if (!processatData.equals(other.processatData))
 			return false;
 		if (tipus != other.tipus)
 			return false;

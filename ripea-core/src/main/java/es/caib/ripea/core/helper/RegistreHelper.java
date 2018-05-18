@@ -14,6 +14,9 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import es.caib.ripea.core.api.dto.ArxiuFirmaDto;
+import es.caib.ripea.core.api.dto.ArxiuFirmaPerfilEnumDto;
+import es.caib.ripea.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.registre.Firma;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
@@ -29,7 +32,7 @@ import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.FirmaEntity;
+import es.caib.ripea.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.RegistreInteressatEntity;
@@ -111,12 +114,10 @@ public class RegistreHelper {
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio,
 			ReglaEntity regla) {
-		
 		// Obté la unitat organitzativa per guardar la descripció a l'anotació del registre
 		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
 				entitat.getCodi(),
 				unitatAdministrativa);
-		
 		// Construeix l'anotació
 		RegistreEntity entity = RegistreEntity.getBuilder(
 				entitat,
@@ -195,6 +196,53 @@ public class RegistreHelper {
 			return null;
 		}
 	}
+
+	public List<ArxiuFirmaDto> convertirFirmesAnnexToArxiuFirmaDto(
+			RegistreAnnexEntity annex,
+			RegistreAnnex registreAnnex) {
+		List<ArxiuFirmaDto> firmes = null;
+		if (annex.getFirmes() != null) {
+			firmes = new ArrayList<ArxiuFirmaDto>();
+			for (int i = 0; i < annex.getFirmes().size(); i++) {
+				RegistreAnnexFirmaEntity annexFirma = annex.getFirmes().get(i);
+				byte[] firmaContingut = null;
+				if (registreAnnex != null) {
+					firmaContingut = registreAnnex.getFirmes().get(i).getContingut();
+				}
+				ArxiuFirmaDto firma = new ArxiuFirmaDto();
+				if ("TF01".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.CSV);
+				} else if ("TF02".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.XADES_DET);
+				} else if ("TF03".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.XADES_ENV);
+				} else if ("TF04".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.CADES_DET);
+				} else if ("TF05".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.CADES_ATT);
+				} else if ("TF06".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.PADES);
+				} else if ("TF07".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.SMIME);
+				} else if ("TF08".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.ODT);
+				} else if ("TF09".equalsIgnoreCase(annexFirma.getTipus())) {
+					firma.setTipus(ArxiuFirmaTipusEnumDto.OOXML);
+				}
+				firma.setPerfil(
+						ArxiuFirmaPerfilEnumDto.valueOf(annexFirma.getPerfil()));
+				firma.setFitxerNom(annexFirma.getFitxerNom());
+				firma.setTipusMime(annexFirma.getTipusMime());
+				firma.setCsvRegulacio(annexFirma.getCsvRegulacio());
+				firma.setAutofirma(annexFirma.isAutofirma());
+				firma.setContingut(firmaContingut);
+				firmes.add(firma);
+			}
+		}
+		return firmes;
+	}
+
+
 
 	private RegistreInteressat fromInteressatEntity(
 			RegistreInteressatEntity interessatEntity) {
@@ -332,14 +380,12 @@ public class RegistreHelper {
 				RegistreAnnexOrigenEnum.valorAsEnum(registreAnnex.getEniOrigen()),
 				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getEniTipusDocumental()),
 				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(registreAnnex.getSicresTipusDocument()),
-				registre,
-				registreAnnex.getFitxerContingut()).
+				registre).
 				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
 				localitzacio(registreAnnex.getLocalitzacio()).
 				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getEniEstatElaboracio())).
 				observacions(registreAnnex.getObservacions()).
 				build();
-		
 		if (registreAnnex.getFirmes() != null && registreAnnex.getFirmes().size() > 0) {
 			for (Firma firma: registreAnnex.getFirmes()) {
 				annexEntity.getFirmes().add(
@@ -348,23 +394,20 @@ public class RegistreHelper {
 								annexEntity));
 			}
 		}
-		
 		return annexEntity;
 	}
-	
-	private FirmaEntity toFirmaEntity(
+
+	private RegistreAnnexFirmaEntity toFirmaEntity(
 			Firma firma,
 			RegistreAnnexEntity annex) {
-		FirmaEntity firmaEntity = FirmaEntity.getBuilder(
-				firma.getTipus(), 
-				firma.getPerfil(), 
-				firma.getFitxerNom(), 
-				firma.getContingut(),
-				firma.getTipusMime(), 
-				firma.getCsvRegulacio(), 
-				false, // no és una autofirma de Ripea
+		RegistreAnnexFirmaEntity firmaEntity = RegistreAnnexFirmaEntity.getBuilder(
+				firma.getTipus(),
+				firma.getPerfil(),
+				firma.getFitxerNom(),
+				firma.getTipusMime(),
+				firma.getCsvRegulacio(),
+				false,
 				annex).build();
-		
 		return firmaEntity;
 	}
 

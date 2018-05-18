@@ -107,17 +107,19 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaExpedient.getCodi(),
 				metaExpedient.getNom(),
 				metaExpedient.getDescripcio(),
-				metaExpedient.getClassificacioDocumental(),
 				metaExpedient.getClassificacioSia(),
-				metaExpedient.getUnitatAdministrativa(),
+				metaExpedient.getSerieDocumental(),
+				metaExpedient.isNotificacioActiva(),
 				entitat,
-				metaExpedientPare,
-				metaExpedient.isNotificacioActiva()).
-				notificacioOrganCodi(metaExpedient.getNotificacioOrganCodi()).
-				notificacioLlibreCodi(metaExpedient.getNotificacioLlibreCodi()).
+				metaExpedientPare).
+				notificacioSeuProcedimentCodi(metaExpedient.getNotificacioSeuProcedimentCodi()).
+				notificacioSeuRegistreLlibre(metaExpedient.getNotificacioSeuRegistreLlibre()).
+				notificacioSeuRegistreOficina(metaExpedient.getNotificacioSeuRegistreOficina()).
+				notificacioSeuRegistreOrgan(metaExpedient.getNotificacioSeuRegistreOrgan()).
+				notificacioSeuExpedientUnitatOrganitzativa(metaExpedient.getNotificacioSeuExpedientUnitatOrganitzativa()).
 				notificacioAvisTitol(metaExpedient.getNotificacioAvisTitol()).
 				notificacioAvisText(metaExpedient.getNotificacioAvisText()).
-				notificacioAvisTextSms(metaExpedient.getNotificacioAvisTextSms()).
+				notificacioAvisTextMobil(metaExpedient.getNotificacioAvisTextMobil()).
 				notificacioOficiTitol(metaExpedient.getNotificacioOficiTitol()).
 				notificacioOficiText(metaExpedient.getNotificacioOficiText()).
 				build();
@@ -156,15 +158,17 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				metaExpedient.getCodi(),
 				metaExpedient.getNom(),
 				metaExpedient.getDescripcio(),
-				metaExpedient.getClassificacioDocumental(),
 				metaExpedient.getClassificacioSia(),
-				metaExpedient.getUnitatAdministrativa(),
+				metaExpedient.getSerieDocumental(),
 				metaExpedient.isNotificacioActiva(),
-				metaExpedient.getNotificacioOrganCodi(),
-				metaExpedient.getNotificacioLlibreCodi(),
+				metaExpedient.getNotificacioSeuProcedimentCodi(),
+				metaExpedient.getNotificacioSeuRegistreLlibre(),
+				metaExpedient.getNotificacioSeuRegistreOficina(),
+				metaExpedient.getNotificacioSeuRegistreOrgan(),
+				metaExpedient.getNotificacioSeuExpedientUnitatOrganitzativa(),
 				metaExpedient.getNotificacioAvisTitol(),
 				metaExpedient.getNotificacioAvisText(),
-				metaExpedient.getNotificacioAvisTextSms(),
+				metaExpedient.getNotificacioAvisTextMobil(),
 				metaExpedient.getNotificacioOficiTitol(),
 				metaExpedient.getNotificacioOficiText(),
 				metaExpedientPare);
@@ -836,7 +840,7 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				entitatId, 
 				new Permission[] {ExtendedPermission.CREATE});
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<MetaExpedientDto> findActiusAmbEntitatPerModificacio(
@@ -847,10 +851,10 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				entitatId, 
 				new Permission[] {ExtendedPermission.WRITE});
 	}	
-	
+
 	@Transactional(readOnly = true)
 	@Override
-	public List<MetaExpedientDto> findAmbEntitatPerLectura(
+	public List<MetaExpedientDto> findActiusAmbEntitatPerLectura(
 			Long entitatId) {
 		logger.debug("Consulta de meta-expedients de l'entitat amb el permis READ ("
 				+ "entitatId=" + entitatId +  ")");
@@ -858,33 +862,6 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 				entitatId, 
 				new Permission[] {ExtendedPermission.READ});
 	}
-	
-	/** Mètode comú per obtenir entitats i filtrar-les per un o més permisos.*/
-	private List<MetaExpedientDto> findActiusAmbEntitatPermis(
-			Long entitatId,
-			Permission[] permisos) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		List<MetaExpedientEntity> metaExpedients = metaExpedientRepository.findByEntitatAndActiuTrueOrderByNomAsc(entitat);
-		permisosHelper.filterGrantedAll(
-				metaExpedients,
-				new ObjectIdentifierExtractor<MetaNodeEntity>() {
-					public Long getObjectIdentifier(MetaNodeEntity metaNode) {
-						return metaNode.getId();
-					}
-				},
-				MetaNodeEntity.class,
-				permisos,
-				auth);
-		return conversioTipusHelper.convertirList(
-				metaExpedients,
-				MetaExpedientDto.class);		
-	}
-
 
 	@Override
 	@Transactional
@@ -1037,6 +1014,31 @@ public class MetaExpedientServiceImpl implements MetaExpedientService {
 		int ordre = 0;
 		for (MetaExpedientMetaDocumentEntity metaExpedientMetaDocument: metaExpedientMetaDocuments)
 			metaExpedientMetaDocument.updateOrdre(ordre++);
+	}
+
+	private List<MetaExpedientDto> findActiusAmbEntitatPermis(
+			Long entitatId,
+			Permission[] permisos) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		List<MetaExpedientEntity> metaExpedients = metaExpedientRepository.findByEntitatAndActiuTrueOrderByNomAsc(entitat);
+		permisosHelper.filterGrantedAll(
+				metaExpedients,
+				new ObjectIdentifierExtractor<MetaNodeEntity>() {
+					public Long getObjectIdentifier(MetaNodeEntity metaNode) {
+						return metaNode.getId();
+					}
+				},
+				MetaNodeEntity.class,
+				permisos,
+				auth);
+		return conversioTipusHelper.convertirList(
+				metaExpedients,
+				MetaExpedientDto.class);		
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(MetaExpedientServiceImpl.class);

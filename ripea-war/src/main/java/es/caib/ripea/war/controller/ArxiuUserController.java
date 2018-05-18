@@ -112,7 +112,7 @@ public class ArxiuUserController extends BaseUserController {
 						false));
 		model.addAttribute(
 				"metaExpedients",
-				metaExpedientService.findAmbEntitatPerLectura(entitatActual.getId()));
+				metaExpedientService.findActiusAmbEntitatPerLectura(entitatActual.getId()));
 		model.addAttribute(
 				getFiltreCommand(request, arxiuId));
 		return "arxiuUserExpedientList";

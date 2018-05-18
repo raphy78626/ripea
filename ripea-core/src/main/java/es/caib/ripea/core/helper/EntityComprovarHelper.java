@@ -532,7 +532,7 @@ public class EntityComprovarHelper {
 			throw new ValidationException(
 					documentId,
 					DocumentEntity.class,
-					"L'expedient especificat (id=" + expedient.getId() + ") no coincideix amb l'entitat del document (id=" + document.getExpedient().getId() + ")");
+					"L'expedient especificat (id=" + expedient.getId() + ") no coincideix amb l'expedient del document (id=" + document.getExpedient().getId() + ")");
 		}
 		if (document.getMetaDocument() != null && (comprovarPermisRead || comprovarPermisWrite || comprovarPermisDelete)) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();

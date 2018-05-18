@@ -36,6 +36,4 @@ public class DocumentVersioDto extends AuditoriaDto {
 		this.data = data;
 	}
 
-	private static final long serialVersionUID = -139254994389509932L;
-
 }

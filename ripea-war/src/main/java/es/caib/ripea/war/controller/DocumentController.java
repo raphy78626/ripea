@@ -7,13 +7,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.Validator;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +23,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,28 +31,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import es.caib.ripea.core.api.dto.DocumentDto;
-import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
-import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
-import es.caib.ripea.core.api.dto.DocumentPublicacioTipusEnumDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.ExpedientDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
-import es.caib.ripea.core.api.dto.MetaExpedientDto;
 import es.caib.ripea.core.api.dto.UsuariDto;
 import es.caib.ripea.core.api.service.AplicacioService;
-import es.caib.ripea.core.api.service.ContingutService;
 import es.caib.ripea.core.api.service.DocumentService;
-import es.caib.ripea.core.api.service.ExpedientEnviamentService;
-import es.caib.ripea.core.api.service.ExpedientInteressatService;
-import es.caib.ripea.war.command.DocumentNotificacioCommand;
-import es.caib.ripea.war.command.DocumentNotificacioCommand.Electronica;
-import es.caib.ripea.war.command.DocumentPublicacioCommand;
 import es.caib.ripea.war.command.PassarelaFirmaEnviarCommand;
 import es.caib.ripea.war.command.PortafirmesEnviarCommand;
-import es.caib.ripea.war.helper.EnumHelper;
 import es.caib.ripea.war.helper.MissatgesHelper;
 import es.caib.ripea.war.helper.ModalHelper;
-import es.caib.ripea.war.helper.ValidationHelper;
 import es.caib.ripea.war.passarelafirma.PassarelaFirmaConfig;
 import es.caib.ripea.war.passarelafirma.PassarelaFirmaHelper;
 
@@ -72,19 +55,10 @@ public class DocumentController extends BaseUserController {
 	@Autowired
 	private AplicacioService aplicacioService;
 	@Autowired
-	private ContingutService contingutService;
-	@Autowired
 	private DocumentService documentService;
-	@Autowired
-	private ExpedientEnviamentService expedientEnviamentService;
-	@Autowired
-	private ExpedientInteressatService expedientInteressatService;
 
 	@Autowired
 	private PassarelaFirmaHelper passarelaFirmaHelper;
-
-	@Autowired
-	private Validator validator;
 
 
 
@@ -219,101 +193,6 @@ public class DocumentController extends BaseUserController {
 				convertit.getContingut(),
 				response);
 		return null;
-	}
-
-	@RequestMapping(value = "/{documentId}/notificar", method = RequestMethod.GET)
-	public String notificarGet(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			Model model) {
-		ExpedientDto expedient = emplenarModelNotificacio(
-				request,
-				documentId,
-				model);
-		DocumentNotificacioCommand command = new DocumentNotificacioCommand();
-		MetaExpedientDto metaExpedient = expedient.getMetaExpedient();
-		command.setDocumentId(documentId);
-		command.setAvisTitol(metaExpedient.getNotificacioAvisTitol());
-		command.setAvisText(metaExpedient.getNotificacioAvisText());
-		command.setAvisTextSms(metaExpedient.getNotificacioAvisTextSms());
-		command.setOficiTitol(metaExpedient.getNotificacioOficiTitol());
-		command.setOficiText(metaExpedient.getNotificacioOficiText());
-		model.addAttribute(command);
-		return "notificacioForm";
-	}
-
-	@RequestMapping(value = "/{documentId}/notificar", method = RequestMethod.POST)
-	public String notificarPost(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			@Validated({DocumentNotificacioCommand.Create.class}) DocumentNotificacioCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		if (DocumentNotificacioTipusEnumDto.ELECTRONICA.equals(command.getTipus())) {
-			new ValidationHelper(validator).isValid(
-					command,
-					bindingResult,
-					Electronica.class);
-		}
-		if (bindingResult.hasErrors()) {
-			emplenarModelNotificacio(
-					request,
-					documentId,
-					model);
-			return "notificacioForm";
-		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		expedientEnviamentService.notificacioCreate(
-				entitatActual.getId(),
-				documentId,
-				command.getInteressatId(),
-				DocumentNotificacioCommand.asDto(command));
-		return this.getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../../contingut/" + documentId,
-				"document.controller.notificacio.ok");
-	}
-
-
-
-	@RequestMapping(value = "/{documentId}/publicar", method = RequestMethod.GET)
-	public String publicarGet(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			Model model) {
-		emplenarModelPublicacio(
-				request,
-				documentId,
-				model);
-		DocumentPublicacioCommand command = new DocumentPublicacioCommand();
-		command.setDocumentId(documentId);
-		model.addAttribute(command);
-		return "publicacioForm";
-	}
-
-	@RequestMapping(value = "/{documentId}/publicar", method = RequestMethod.POST)
-	public String publicarPost(
-			HttpServletRequest request,
-			@PathVariable Long documentId,
-			@Validated({DocumentPublicacioCommand.Create.class}) DocumentPublicacioCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		if (bindingResult.hasErrors()) {
-			emplenarModelPublicacio(
-					request,
-					documentId,
-					model);
-			return "publicacioForm";
-		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		expedientEnviamentService.publicacioCreate(
-				entitatActual.getId(),
-				documentId,
-				DocumentPublicacioCommand.asDto(command));
-		return this.getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../../contingut/" + documentId,
-				"document.controller.publicacio.ok");
 	}
 
 	@RequestMapping(value = "/{documentId}/firmaPassarela", method = RequestMethod.GET)
@@ -512,79 +391,6 @@ public class DocumentController extends BaseUserController {
 				request,
 				documentId,
 				model);
-	}
-
-	private ExpedientDto emplenarModelNotificacio(
-			HttpServletRequest request,
-			Long documentId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		DocumentDto document = (DocumentDto)contingutService.findAmbIdUser(
-				entitatActual.getId(),
-				documentId,
-				false,
-				false);
-		model.addAttribute(
-				"document",
-				document);
-		model.addAttribute(
-				"notificacioTipusEnumOptions",
-				EnumHelper.getOptionsForEnum(
-						DocumentNotificacioTipusEnumDto.class,
-						"notificacio.tipus.enum."));
-		model.addAttribute(
-				"notificacioEstatEnumOptions",
-				EnumHelper.getOptionsForEnum(
-						DocumentEnviamentEstatEnumDto.class,
-						"notificacio.estat.enum.",
-						new Enum<?>[] {DocumentEnviamentEstatEnumDto.PUBLICAT}));
-		model.addAttribute(
-				"interessats",
-				expedientInteressatService.findAmbDocumentPerNotificacio(
-						entitatActual.getId(),
-						documentId));
-		List<DocumentDto> annexos = documentService.findAmbExpedientIPermisRead(
-				entitatActual.getId(),
-				document.getExpedientPare().getId());
-		Iterator<DocumentDto> it = annexos.iterator();
-		while (it.hasNext()) {
-			DocumentDto annex = it.next();
-			if (annex.getId().equals(documentId)) {
-				it.remove();
-				break;
-			}
-		}
-		model.addAttribute("annexos", annexos);
-		return document.getExpedientPare();
-	}
-
-	private void emplenarModelPublicacio(
-			HttpServletRequest request,
-			Long documentId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"document",
-				contingutService.findAmbIdUser(
-						entitatActual.getId(),
-						documentId,
-						false,
-						false));
-		model.addAttribute(
-				"publicacioTipusEnumOptions",
-				EnumHelper.getOptionsForEnum(
-						DocumentPublicacioTipusEnumDto.class,
-						"publicacio.tipus.enum."));
-		model.addAttribute(
-				"publicacioEstatEnumOptions",
-				EnumHelper.getOptionsForEnum(
-						DocumentEnviamentEstatEnumDto.class,
-						"publicacio.estat.enum.",
-						new Enum<?>[] {
-							DocumentEnviamentEstatEnumDto.ENVIAT_ERROR,
-							DocumentEnviamentEstatEnumDto.PROCESSAT_OK,
-							DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR,
-							DocumentEnviamentEstatEnumDto.CANCELAT}));
 	}
 
 }

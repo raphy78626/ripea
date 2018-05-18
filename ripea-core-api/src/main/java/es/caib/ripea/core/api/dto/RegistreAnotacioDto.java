@@ -357,7 +357,6 @@ public class RegistreAnotacioDto extends ContingutDto {
 		this.justificant = justificant;
 	}
 	
-	
 	private Boolean llegida;
 	
 	public Boolean getLlegida() {
@@ -367,7 +366,4 @@ public class RegistreAnotacioDto extends ContingutDto {
 		this.llegida = llegida;
 	}
 	
-	
-	private static final long serialVersionUID = -8656873728034274066L;
-
 }

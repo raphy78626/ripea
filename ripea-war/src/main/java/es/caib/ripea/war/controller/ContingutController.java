@@ -385,8 +385,13 @@ public class ContingutController extends BaseUserController {
 						entitatActual.getId(),
 						contingutId,
 						registreId));
-		
-		try {
+		model.addAttribute(
+				"annexos",
+				registreService.getAnnexosAmbArxiu(
+						entitatActual.getId(),
+						contingutId,
+						registreId));
+		/*try {
 			model.addAttribute(
 					"annexos",
 					registreService.getAnnexosAmbArxiu(
@@ -402,8 +407,7 @@ public class ContingutController extends BaseUserController {
 					request,
 					annexosErrorMsg);
 			model.addAttribute("annexosErrorMsg", annexosErrorMsg);
-		}
-		
+		}*/
 		return "registreDetall";
 	}
 	
@@ -757,16 +761,15 @@ public class ContingutController extends BaseUserController {
 				EnumHelper.getOptionsForEnum(
 						DocumentEnviamentEstatEnumDto.class,
 						"notificacio.estat.enum.",
-						new Enum<?>[] {DocumentEnviamentEstatEnumDto.PUBLICAT}));
+						new Enum<?>[] {DocumentEnviamentEstatEnumDto.PROCESSAT}));
 		model.addAttribute(
 				"publicacioEstatEnumOptions",
 				EnumHelper.getOptionsForEnum(
 						DocumentEnviamentEstatEnumDto.class,
 						"publicacio.estat.enum.",
 						new Enum<?>[] {
-							DocumentEnviamentEstatEnumDto.ENVIAT_ERROR,
-							DocumentEnviamentEstatEnumDto.PROCESSAT_OK,
-							DocumentEnviamentEstatEnumDto.PROCESSAT_ERROR,
+							DocumentEnviamentEstatEnumDto.ENVIAT,
+							DocumentEnviamentEstatEnumDto.PROCESSAT,
 							DocumentEnviamentEstatEnumDto.CANCELAT}));
 		model.addAttribute(
 				"interessatTipusEnumOptions",

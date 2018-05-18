@@ -3,14 +3,13 @@
  */
 package es.caib.ripea.core.api.dto;
 
-
 /**
  * Enumeració amb els possibles tipus de notificacions.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 public enum DocumentNotificacioTipusEnumDto {
-	ELECTRONICA,
+	COMUNICACIO,
+	NOTIFICACIO,
 	MANUAL
-	//CORREOS
 }

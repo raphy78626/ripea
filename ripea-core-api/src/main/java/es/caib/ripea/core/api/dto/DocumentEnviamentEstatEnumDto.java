@@ -12,11 +12,8 @@ package es.caib.ripea.core.api.dto;
  */
 public enum DocumentEnviamentEstatEnumDto {
 	PENDENT,
-	ENVIAT_OK,
-	ENVIAT_ERROR,
-	PROCESSAT_OK,
-	PROCESSAT_REBUTJAT,
-	PROCESSAT_ERROR,
-	PUBLICAT,
+	ENVIAT,
+	PROCESSAT,
+	REBUTJAT,
 	CANCELAT
 }

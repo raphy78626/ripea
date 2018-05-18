@@ -109,6 +109,4 @@ public class BustiaDto extends ContingutDto {
 		return ToStringBuilder.reflectionToString(this);
 	}
 
-	private static final long serialVersionUID = -139254994389509932L;
-
 }

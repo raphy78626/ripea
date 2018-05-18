@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentPublicacioEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 
@@ -18,7 +19,10 @@ import es.caib.ripea.core.entity.ExpedientEntity;
  */
 public interface DocumentPublicacioRepository extends JpaRepository<DocumentPublicacioEntity, Long> {
 
-	List<DocumentPublicacioEntity> findByExpedientOrderByDataEnviamentAsc(
+	List<DocumentPublicacioEntity> findByExpedientOrderByEnviatDataAsc(
 			ExpedientEntity expedient);
+
+	List<DocumentPublicacioEntity> findByDocumentOrderByEnviatDataAsc(
+			DocumentEntity document);
 
 }

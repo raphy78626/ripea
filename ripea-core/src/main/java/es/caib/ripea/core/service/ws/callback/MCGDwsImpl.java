@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.ripea.core.api.dto.PortafirmesCallbackEstatEnumDto;
 import es.caib.ripea.core.api.service.DocumentService;
-import es.caib.ripea.core.api.service.DocumentService.PortafirmesCallbackEstatEnum;
 import es.caib.ripea.core.helper.IntegracioHelper;
 
 /**
@@ -51,19 +51,19 @@ public class MCGDwsImpl implements MCGDws {
 		accioParams.put("documentId", new Integer(documentId).toString());
 		accioParams.put("estat", estat.toString());
 		CallbackResponse callbackResponse = new CallbackResponse();
-		PortafirmesCallbackEstatEnum estatEnum = null;
+		PortafirmesCallbackEstatEnumDto estatEnum = null;
 		switch (estat) {
 		case 0:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_PAUSAT;
+			estatEnum = PortafirmesCallbackEstatEnumDto.PAUSAT;
 			break;
 		case 1:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_PENDENT;
+			estatEnum = PortafirmesCallbackEstatEnumDto.PENDENT;
 			break;
 		case 2:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_FIRMAT;
+			estatEnum = PortafirmesCallbackEstatEnumDto.FIRMAT;
 			break;
 		case 3:
-			estatEnum = PortafirmesCallbackEstatEnum.DOCUMENT_REBUTJAT;
+			estatEnum = PortafirmesCallbackEstatEnumDto.REBUTJAT;
 			break;
 		default:
 			String errorDescripcio = "No es reconeix el codi d'estat (" + estat + ")";

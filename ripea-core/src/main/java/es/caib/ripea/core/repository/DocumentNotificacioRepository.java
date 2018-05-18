@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
+import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.DocumentNotificacioEntity;
 import es.caib.ripea.core.entity.ExpedientEntity;
 
@@ -20,11 +21,14 @@ import es.caib.ripea.core.entity.ExpedientEntity;
  */
 public interface DocumentNotificacioRepository extends JpaRepository<DocumentNotificacioEntity, Long> {
 
-	List<DocumentNotificacioEntity> findByEstatAndTipus(
+	List<DocumentNotificacioEntity> findByEstatAndTipusIn(
 			DocumentEnviamentEstatEnumDto estat,
-			DocumentNotificacioTipusEnumDto tipus);
+			DocumentNotificacioTipusEnumDto[] tipus);
 
-	List<DocumentNotificacioEntity> findByExpedientOrderByDestinatariNomAscDestinatariLlinatge1AscDataEnviamentAsc(
+	List<DocumentNotificacioEntity> findByExpedientOrderByEnviatDataAsc(
 			ExpedientEntity expedient);
+
+	List<DocumentNotificacioEntity> findByDocumentOrderByEnviatDataAsc(
+			DocumentEntity document);
 
 }

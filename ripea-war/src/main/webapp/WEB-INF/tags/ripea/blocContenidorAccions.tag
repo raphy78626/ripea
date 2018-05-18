@@ -83,11 +83,11 @@
 				<c:set var="mostrarSeparador" value="${true}"/>
 			</c:if>
 			<c:if test="${contingut.expedientPare.agafat and expedientPareObertOInexistent}">
-				<c:if test="${contingut.estat == 'CUSTODIAT'}">
+				<%--c:if test="${contingut.estat == 'CUSTODIAT'}"--%>
 					<li><a href="../document/${contingut.id}/notificar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-envelope-o"></span>&nbsp;<spring:message code="comu.boto.notificar"/>...</a></li>
 					<li><a href="../document/${contingut.id}/publicar" data-toggle="modal" data-datatable-id="taulaEnviaments"><span class="fa fa-clipboard"></span>&nbsp;<spring:message code="comu.boto.publicar"/>...</a></li>
 					<c:set var="mostrarSeparador" value="${true}"/>
-				</c:if>
+				<%--/c:if--%>
 				<c:if test="${contingut.estat == 'REDACCIO' && contingut.metaNode.firmaPortafirmesActiva && contingut.documentTipus != 'FISIC'}">
 					<c:choose>
 						<c:when test="${contingut.valid}">

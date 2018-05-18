@@ -30,7 +30,7 @@ public class ElementsPendentsBustiaInterceptor extends HandlerInterceptorAdapter
 			HttpServletRequest request,
 			HttpServletResponse response,
 			Object handler) throws Exception {
-		ElementsPendentsBustiaHelper.countElementsPendentsBustia(
+		ElementsPendentsBustiaHelper.countElementsPendentsBusties(
 				request,
 				bustiaService);
 		return true;

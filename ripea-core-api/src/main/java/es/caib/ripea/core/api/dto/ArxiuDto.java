@@ -106,7 +106,4 @@ public class ArxiuDto extends ContingutDto {
 		return true;
 	}
 
-
-	private static final long serialVersionUID = -139254994389509932L;
-
 }

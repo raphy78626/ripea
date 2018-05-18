@@ -92,10 +92,8 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	protected InteressatIdiomaEnumDto preferenciaIdioma;
 	@Column(name = "not_autoritzat")
 	protected boolean notificacioAutoritzat;
-
 	@Column(name = "es_representant")
 	protected boolean esRepresentant;
-
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "expedient_id")
 	@ForeignKey(name = "ipa_expedient_interessat_fk")
@@ -104,124 +102,58 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 	@JoinColumn(name = "representant_id")
 	@ForeignKey(name = "ipa_interessat_interessat_fk")
 	protected InteressatEntity representant;
-	@Version
-	private long version = 0;
-
 	@Transient
 	private Long representantId;
 	@Transient
 	private Long representantIdentificador;
-
-
+	@Version
+	private long version = 0;
 
 	public InteressatDocumentTipusEnumDto getDocumentTipus() {
 		return documentTipus;
 	}
-	public void setDocumentTipus(InteressatDocumentTipusEnumDto documentTipus) {
-		this.documentTipus = documentTipus;
-	}
-
 	public String getDocumentNum() {
 		return documentNum;
 	}
-	public void setDocumentNum(String documentNum) {
-		this.documentNum = documentNum;
-	}
-
 	public String getPais() {
 		return pais;
 	}
-	public void setPais(String pais) {
-		this.pais = pais;
-	}
-
 	public String getProvincia() {
 		return provincia;
 	}
-	public void setProvincia(String provincia) {
-		this.provincia = provincia;
-	}
-
 	public String getMunicipi() {
 		return municipi;
 	}
-	public void setMunicipi(String municipi) {
-		this.municipi = municipi;
-	}
-
 	public String getAdresa() {
 		return adresa;
 	}
-	public void setAdresa(String adresa) {
-		this.adresa = adresa;
-	}
-
 	public String getCodiPostal() {
 		return codiPostal;
 	}
-	public void setCodiPostal(String codiPostal) {
-		this.codiPostal = codiPostal;
-	}
-
 	public String getEmail() {
 		return email;
 	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
 	public String getTelefon() {
 		return telefon;
 	}
-	public void setTelefon(String telefon) {
-		this.telefon = telefon;
-	}
-
 	public String getObservacions() {
 		return observacions;
 	}
-	public void setObservacions(String observacions) {
-		this.observacions = observacions;
-	}
-
 	public InteressatIdiomaEnumDto getPreferenciaIdioma() {
 		return preferenciaIdioma;
 	}
-	public void setPreferenciaIdioma(InteressatIdiomaEnumDto preferenciaIdioma) {
-		this.preferenciaIdioma = preferenciaIdioma;
-	}
-
 	public boolean isNotificacioAutoritzat() {
 		return notificacioAutoritzat;
 	}
-	public void setNotificacioAutoritzat(Boolean notificacioAutoritzat) {
-		this.notificacioAutoritzat = notificacioAutoritzat;
+	public boolean isEsRepresentant() {
+		return esRepresentant;
 	}
-
 	public ExpedientEntity getExpedient() {
 		return expedient;
 	}
-	public void setExpedient(ExpedientEntity expedient) {
-		this.expedient = expedient;
-	}
-
 	public InteressatEntity getRepresentant() {
 		return representant;
 	}
-	public void setRepresentant(InteressatEntity representant) {
-		this.representant = representant;
-	}
-
-	public long getVersion() {
-		return version;
-	}
-
-	public void setVersion(long version) {
-		this.version = version;
-	}
-	
-	public abstract String getIdentificador();
-	
 	public Long getRepresentantId() {
 		Long representantId = null;
 		if (representant != null) {
@@ -237,13 +169,15 @@ public abstract class InteressatEntity extends RipeaAuditable<Long> {
 		return representantIdentificador;
 	}
 
-	public boolean isEsRepresentant() {
-		return esRepresentant;
-	}
-	public void setEsRepresentant(Boolean esRepresentant) {
+	public void updateEsRepresentant(boolean esRepresentant) {
 		this.esRepresentant = esRepresentant;
 	}
-	
+	public void updateRepresentant(InteressatEntity representant) {
+		this.representant = representant;
+	}
+
+	public abstract String getIdentificador();
+
 	private static final long serialVersionUID = -2299453443943600172L;
 
 }

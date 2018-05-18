@@ -42,16 +42,16 @@ public class RipeaController {
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request) {
-		if (RolHelper.isUsuariActualSuperusuari(request)) {
+		if (RolHelper.isRolActualSuperusuari(request)) {
 			return "redirect:entitat";
 		} else {
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);
 			if (entitat == null)
 				throw new SecurityException("No te cap entitat assignada");
-			if (RolHelper.isUsuariActualAdministrador(request)) {
+			if (RolHelper.isRolActualAdministrador(request)) {
 				return "redirect:metaExpedient";
-			} else if (RolHelper.isUsuariActualUsuari(request)) {
-				if (ExpedientHelper.isUsuariAccesExpedients(request, metaExpedientService))
+			} else if (RolHelper.isRolActualUsuari(request)) {
+				if (ExpedientHelper.teAccesExpedients(request, metaExpedientService))
 					return "redirect:expedient";
 				else
 					return "redirect:bustiaUser";

@@ -37,25 +37,29 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 
 	@Column(name = "clasif_sia", length = 6, nullable = false)
 	private String classificacioSia;
-	@Column(name = "clasif_doc", length = 30, nullable = false)
-	private String classificacioDocumental;
-	@Column(name = "unitat_adm", length = 9)
-	private String unitatAdministrativa;
-	@Column(name = "notif_activa", nullable = false)
+	@Column(name = "serie_doc", length = 30, nullable = false)
+	private String serieDocumental;
+	@Column(name = "not_activa", nullable = false)
 	private boolean notificacioActiva;
-	@Column(name = "notif_organ_codi", length = 9)
-	private String notificacioOrganCodi;
-	@Column(name = "notif_llibre_codi", length = 4)
-	private String notificacioLlibreCodi;
-	@Column(name = "notif_avis_titol", length = 256)
+	@Column(name = "not_seu_proc_codi", length = 44)
+	private String notificacioSeuProcedimentCodi; // "IN0026NSPI"
+	@Column(name = "not_seu_reg_lib", length = 4)
+	private String notificacioSeuRegistreLlibre; // "L99";
+	@Column(name = "not_seu_reg_ofi", length = 9)
+	private String notificacioSeuRegistreOficina; // "O00009390"
+	@Column(name = "not_seu_reg_org", length = 9)
+	private String notificacioSeuRegistreOrgan; // "A04013511"
+	@Column(name = "not_seu_exp_uni", length = 9)
+	private String notificacioSeuExpedientUnitatOrganitzativa; // "1"
+	@Column(name = "not_avis_titol", length = 256)
 	private String notificacioAvisTitol;
-	@Column(name = "notif_avis_text", length = 1024)
+	@Column(name = "not_avis_text", length = 1024)
 	private String notificacioAvisText;
-	@Column(name = "notif_avis_textsms", length = 200)
-	private String notificacioAvisTextSms;
-	@Column(name = "notif_ofici_titol", length = 1024)
+	@Column(name = "not_avis_textm", length = 200)
+	private String notificacioAvisTextMobil;
+	@Column(name = "not_ofici_titol", length = 1024)
 	private String notificacioOficiTitol;
-	@Column(name = "notif_ofici_text", length = 256)
+	@Column(name = "not_ofici_text", length = 256)
 	private String notificacioOficiText;
 	@ManyToOne(
 			optional = true,
@@ -74,30 +78,30 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			joinColumns = {@JoinColumn(name = "metaexpedient_id")},
 			inverseJoinColumns = {@JoinColumn(name = "arxiu_id")})
 	protected List<ArxiuEntity> arxius;
-	
+
 	public String getClassificacioSia() {
 		return classificacioSia;
 	}
-	public MetaExpedientEntity getPare() {
-		return pare;
-	}
-	public List<ArxiuEntity> getArxius() {
-		return arxius;
-	}
-	public String getUnitatAdministrativa() {
-		return unitatAdministrativa;
-	}
-	public String getClassificacioDocumental() {
-		return classificacioDocumental;
+	public String getSerieDocumental() {
+		return serieDocumental;
 	}
 	public boolean isNotificacioActiva() {
 		return notificacioActiva;
 	}
-	public String getNotificacioOrganCodi() {
-		return notificacioOrganCodi;
+	public String getNotificacioSeuProcedimentCodi() {
+		return notificacioSeuProcedimentCodi;
 	}
-	public String getNotificacioLlibreCodi() {
-		return notificacioLlibreCodi;
+	public String getNotificacioSeuRegistreLlibre() {
+		return notificacioSeuRegistreLlibre;
+	}
+	public String getNotificacioSeuRegistreOficina() {
+		return notificacioSeuRegistreOficina;
+	}
+	public String getNotificacioSeuRegistreOrgan() {
+		return notificacioSeuRegistreOrgan;
+	}
+	public String getNotificacioSeuExpedientUnitatOrganitzativa() {
+		return notificacioSeuExpedientUnitatOrganitzativa;
 	}
 	public String getNotificacioAvisTitol() {
 		return notificacioAvisTitol;
@@ -105,8 +109,8 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 	public String getNotificacioAvisText() {
 		return notificacioAvisText;
 	}
-	public String getNotificacioAvisTextSms() {
-		return notificacioAvisTextSms;
+	public String getNotificacioAvisTextMobil() {
+		return notificacioAvisTextMobil;
 	}
 	public String getNotificacioOficiTitol() {
 		return notificacioOficiTitol;
@@ -114,22 +118,31 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 	public String getNotificacioOficiText() {
 		return notificacioOficiText;
 	}
+	public MetaExpedientEntity getPare() {
+		return pare;
+	}
 	public Set<MetaExpedientMetaDocumentEntity> getMetaDocuments() {
 		return metaDocuments;
 	}
+	public List<ArxiuEntity> getArxius() {
+		return arxius;
+	}
+
 	public void update(
 			String codi,
 			String nom,
 			String descripcio,
-			String classificacioDocumental,
 			String classificacioSia,
-			String unitatAdministrativa,
+			String serieDocumental,
 			boolean notificacioActiva,
-			String notificacioOrganCodi,
-			String notificacioLlibreCodi,
+			String notificacioSeuProcedimentCodi,
+			String notificacioSeuRegistreLlibre,
+			String notificacioSeuRegistreOficina,
+			String notificacioSeuRegistreOrgan,
+			String notificacioSeuExpedientUnitatOrganitzativa,
 			String notificacioAvisTitol,
 			String notificacioAvisText,
-			String notificacioAvisTextSms,
+			String notificacioAvisTextMobil,
 			String notificacioOficiTitol,
 			String notificacioOficiText,
 			MetaExpedientEntity pare) {
@@ -137,15 +150,17 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 				codi,
 				nom,
 				descripcio);
-		this.classificacioDocumental = classificacioDocumental;
 		this.classificacioSia = classificacioSia;
-		this.unitatAdministrativa = unitatAdministrativa;
+		this.serieDocumental = serieDocumental;
 		this.notificacioActiva = notificacioActiva;
-		this.notificacioOrganCodi = notificacioOrganCodi;
-		this.notificacioLlibreCodi = notificacioLlibreCodi;
+		this.notificacioSeuProcedimentCodi = notificacioSeuProcedimentCodi;
+		this.notificacioSeuRegistreLlibre = notificacioSeuRegistreLlibre;
+		this.notificacioSeuRegistreOficina = notificacioSeuRegistreOficina;
+		this.notificacioSeuRegistreOrgan = notificacioSeuRegistreOrgan;
+		this.notificacioSeuExpedientUnitatOrganitzativa = notificacioSeuExpedientUnitatOrganitzativa;
 		this.notificacioAvisTitol = notificacioAvisTitol;
 		this.notificacioAvisText = notificacioAvisText;
-		this.notificacioAvisTextSms = notificacioAvisTextSms;
+		this.notificacioAvisTextMobil = notificacioAvisTextMobil;
 		this.notificacioOficiTitol = notificacioOficiTitol;
 		this.notificacioOficiText = notificacioOficiText;
 		this.pare = pare;
@@ -176,19 +191,17 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			String codi,
 			String nom,
 			String descripcio,
-			String classificacioDocumental,
+			String serieDocumental,
 			String classificacioSia,
-			String unitatAdministrativa,
+			boolean notificacioActiva,
 			EntitatEntity entitat,
-			MetaExpedientEntity pare,
-			boolean notificacioActiva) {
+			MetaExpedientEntity pare) {
 		return new Builder(
 				codi,
 				nom,
 				descripcio,
-				classificacioDocumental,
+				serieDocumental,
 				classificacioSia,
-				unitatAdministrativa,
 				entitat,
 				pare,
 				notificacioActiva);
@@ -200,9 +213,8 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 				String codi,
 				String nom,
 				String descripcio,
-				String classificacioDocumental,
+				String serieDocumental,
 				String classificacioSia,
-				String unitatAdministrativa,
 				EntitatEntity entitat,
 				MetaExpedientEntity pare,
 				boolean notificacioActiva) {
@@ -210,24 +222,31 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			built.codi = codi;
 			built.nom = nom;
 			built.descripcio = descripcio;
-			built.classificacioDocumental = classificacioDocumental;
+			built.serieDocumental = serieDocumental;
 			built.classificacioSia = classificacioSia;
-			built.unitatAdministrativa = unitatAdministrativa;
 			built.entitat = entitat;
 			built.tipus = MetaNodeTipusEnum.EXPEDIENT;
 			built.pare = pare;
 			built.notificacioActiva = notificacioActiva;
 		}
-		public Builder classificacioDocumental(String classificacioDocumental) {
-			built.classificacioDocumental = classificacioDocumental;
+		public Builder notificacioSeuProcedimentCodi(String notificacioSeuProcedimentCodi) {
+			built.notificacioSeuProcedimentCodi = notificacioSeuProcedimentCodi;
 			return this;
 		}
-		public Builder notificacioOrganCodi(String notificacioOrganCodi) {
-			built.notificacioOrganCodi = notificacioOrganCodi;
+		public Builder notificacioSeuRegistreLlibre(String notificacioSeuRegistreLlibre) {
+			built.notificacioSeuRegistreLlibre = notificacioSeuRegistreLlibre;
 			return this;
 		}
-		public Builder notificacioLlibreCodi(String notificacioLlibreCodi) {
-			built.notificacioLlibreCodi = notificacioLlibreCodi;
+		public Builder notificacioSeuRegistreOficina(String notificacioSeuRegistreOficina) {
+			built.notificacioSeuRegistreOficina = notificacioSeuRegistreOficina;
+			return this;
+		}
+		public Builder notificacioSeuRegistreOrgan(String notificacioSeuRegistreOrgan) {
+			built.notificacioSeuRegistreOrgan = notificacioSeuRegistreOrgan;
+			return this;
+		}
+		public Builder notificacioSeuExpedientUnitatOrganitzativa(String notificacioSeuExpedientUnitatOrganitzativa) {
+			built.notificacioSeuExpedientUnitatOrganitzativa = notificacioSeuExpedientUnitatOrganitzativa;
 			return this;
 		}
 		public Builder notificacioAvisTitol(String notificacioAvisTitol) {
@@ -238,8 +257,8 @@ public class MetaExpedientEntity extends MetaNodeEntity {
 			built.notificacioAvisText = notificacioAvisText;
 			return this;
 		}
-		public Builder notificacioAvisTextSms(String notificacioAvisTextSms) {
-			built.notificacioAvisTextSms = notificacioAvisTextSms;
+		public Builder notificacioAvisTextMobil(String notificacioAvisTextMobil) {
+			built.notificacioAvisTextMobil = notificacioAvisTextMobil;
 			return this;
 		}
 		public Builder notificacioOficiTitol(String notificacioOficiTitol) {

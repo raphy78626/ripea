@@ -140,6 +140,4 @@ public class ReglaDto extends AuditoriaDto {
 		return ToStringBuilder.reflectionToString(this);
 	}
 
-	private static final long serialVersionUID = -139254994389509932L;
-
 }

@@ -65,7 +65,6 @@ import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.CsvHelper;
 import es.caib.ripea.core.helper.EmailHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
-import es.caib.ripea.core.helper.ExpedientHelper;
 import es.caib.ripea.core.helper.MessageHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
@@ -132,8 +131,6 @@ public class ExpedientServiceImpl implements ExpedientService {
 	private PermisosHelper permisosHelper;
 	@Resource
 	private ContingutHelper contingutHelper;
-	@Resource
-	private ExpedientHelper expedientHelper;
 	@Resource
 	private PaginacioHelper paginacioHelper;
 	@Resource

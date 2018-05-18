@@ -90,5 +90,4 @@ public class ExecucioMassivaContingutDto extends AuditoriaDto {
 		this.contingut = contingut;
 	}
 
-	private static final long serialVersionUID = 4061379951434174596L;
 }

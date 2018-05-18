@@ -3,7 +3,6 @@
  */
 package es.caib.ripea.core.api.dto;
 
-
 /**
  * Enumeració amb els possibles tipus de contingut.
  * 

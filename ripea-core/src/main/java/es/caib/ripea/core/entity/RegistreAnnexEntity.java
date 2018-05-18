@@ -18,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -83,24 +82,18 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	private String timestamp;
 	@Column(name = "validacio_ocsp", length = 100)
 	private String validacioOCSP;
-	
-	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "registre_id")
 	@ForeignKey(name = "ipa_annex_registre_fk")
 	private RegistreEntity registre;
-	@Version
-	private long version = 0;
-
-	@Transient
-	private byte[] fitxerContingut;
-	
 	@OneToMany(
 			mappedBy = "annex",
 			fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
-	private List<FirmaEntity> firmes;
+	private List<RegistreAnnexFirmaEntity> firmes;
+	@Version
+	private long version = 0;
 
 	public String getTitol() {
 		return titol;
@@ -150,7 +143,10 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	public RegistreEntity getRegistre() {
 		return registre;
 	}
-	
+	public List<RegistreAnnexFirmaEntity> getFirmes() {
+		return firmes;
+	}
+
 	public void updateFitxerArxiuUuid(String fitxerArxiuUuid) {
 		this.fitxerArxiuUuid = fitxerArxiuUuid;
 	}
@@ -164,8 +160,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			RegistreAnnexOrigenEnum origenCiutadaAdmin,
 			RegistreAnnexNtiTipusDocumentEnum ntiTipusDocument,
 			RegistreAnnexSicresTipusDocumentEnum sicresTipusDocument,
-			RegistreEntity registre,
-			byte[] fitxerContingut) {
+			RegistreEntity registre) {
 		return new Builder(
 				titol,
 				fitxerNom,
@@ -175,8 +170,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 				origenCiutadaAdmin,
 				ntiTipusDocument,
 				sicresTipusDocument,
-				registre,
-				fitxerContingut);
+				registre);
 	}
 	public static class Builder {
 		RegistreAnnexEntity built;
@@ -189,8 +183,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 				RegistreAnnexOrigenEnum origenCiutadaAdmin,
 				RegistreAnnexNtiTipusDocumentEnum ntiTipusDocument,
 				RegistreAnnexSicresTipusDocumentEnum sicresTipusDocument,
-				RegistreEntity registre,
-				byte[] fitxerContingut) {
+				RegistreEntity registre) {
 			built = new RegistreAnnexEntity();
 			built.titol = titol;
 			built.fitxerNom = fitxerNom;
@@ -204,8 +197,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			if (sicresTipusDocument != null)
 				built.sicresTipusDocument = sicresTipusDocument.getValor();
 			built.registre = registre;
-			built.fitxerContingut = fitxerContingut;
-			built.firmes = new ArrayList<FirmaEntity>();
+			built.firmes = new ArrayList<RegistreAnnexFirmaEntity>();
 		}
 		public Builder fitxerTipusMime(String fitxerTipusMime) {
 			built.fitxerTipusMime = fitxerTipusMime;
@@ -311,15 +303,5 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
-
-	public byte[] getFitxerContingut() {
-		return fitxerContingut;
-	}
-	public List<FirmaEntity> getFirmes() {
-		return firmes;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 
 }

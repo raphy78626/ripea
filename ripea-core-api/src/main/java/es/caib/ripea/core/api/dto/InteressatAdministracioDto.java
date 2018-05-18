@@ -32,6 +32,10 @@ public class InteressatAdministracioDto extends InteressatDto {
 		return ToStringBuilder.reflectionToString(this);
 	}
 
+	public String getNomComplet() {
+		return organCodi;
+	}
+
 	private static final long serialVersionUID = -139254994389509932L;
 
 }
