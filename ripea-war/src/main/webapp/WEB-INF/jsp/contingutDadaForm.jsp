@@ -62,7 +62,6 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-
 	<c:set var="formAction"><rip:modalUrl value="/contingut/${dadaCommand.nodeId}/dada/new"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="dadaCommand">
 		<form:hidden path="id"/>
@@ -92,6 +91,5 @@ $(document).ready(function() {
 			<a href="<c:url value="/contingut/${dadaCommand.nodeId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
-
 </body>
 </html>

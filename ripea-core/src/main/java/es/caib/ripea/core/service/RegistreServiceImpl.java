@@ -24,7 +24,8 @@ import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaTipus;
-import es.caib.ripea.core.api.dto.FirmaDto;
+import es.caib.ripea.core.api.dto.ArxiuFirmaDto;
+import es.caib.ripea.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
@@ -38,8 +39,8 @@ import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.FirmaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
+import es.caib.ripea.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.helper.AlertaHelper;
 import es.caib.ripea.core.helper.BustiaHelper;
@@ -402,7 +403,7 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 				
 				Firma firma = firmes.get(indexFirma);
-				FirmaEntity firmaEntity = annex.getFirmes().get(indexFirma);
+				RegistreAnnexFirmaEntity firmaEntity = annex.getFirmes().get(indexFirma);
 				if (firma != null && firmaEntity != null) {
 					arxiu.setNom(firmaEntity.getFitxerNom());
 					arxiu.setContentType(firmaEntity.getTipusMime());
@@ -450,43 +451,52 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				contingut,
 				registreId);
-
 		List<RegistreAnnexDetallDto> annexos = new ArrayList<RegistreAnnexDetallDto>();
 		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(annexEntity, RegistreAnnexDetallDto.class);
+			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(
+					annexEntity,
+					RegistreAnnexDetallDto.class);
 			if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
-				Document document = pluginHelper.arxiuDocumentConsultar(contingut, annex.getFitxerArxiuUuid(), null, true);
+				Document document = pluginHelper.arxiuDocumentConsultar(
+						contingut,
+						annex.getFitxerArxiuUuid(),
+						null,
+						true);
 				annex.setAmbDocument(true);
-				
 				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
-					annex.setFirmes(conversioTipusHelper.convertirList(document.getFirmes(), FirmaDto.class));
-					annex.setAmbFirma(true);
-					
-					int j = 0;
-					
-					Iterator<FirmaDto> it = annex.getFirmes().iterator();
+					List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
+							annexEntity,
+							null);
+					Iterator<ArxiuFirmaDto> it = firmes.iterator();
 					while (it.hasNext()) {
-						FirmaDto firma = it.next();
-						if (firma.getTipus() == "TF01") {
+						ArxiuFirmaDto firma = it.next();
+						if (!ArxiuFirmaTipusEnumDto.CSV.equals(firma.getTipus())) {
+							if (pluginHelper.isValidaSignaturaPluginActiu()) {
+								byte[] documentContingut = document.getContingut().getContingut();
+								byte[] firmaContingut = null;
+								if (	ArxiuFirmaTipusEnumDto.XADES_DET.equals(firma.getTipus()) ||
+										ArxiuFirmaTipusEnumDto.CADES_DET.equals(firma.getTipus())) {
+									// TODO obtenir contingut de la firma
+								}
+								firma.setDetalls(
+										pluginHelper.validaSignaturaObtenirDetalls(
+												documentContingut,
+												firmaContingut));
+							}
+						} else {
 							it.remove();
-						} else if (j < annexEntity.getFirmes().size()) {
-							firma.setFitxerNom(annexEntity.getFirmes().get(j).getFitxerNom());
-							firma.setTipusMime(annexEntity.getFirmes().get(j).getTipusMime());
-							firma.setAutofirma(annexEntity.getFirmes().get(j).getAutofirma());
-							j++;
 						}
 					}
+					annex.setFirmes(firmes);
+					annex.setAmbFirma(true);
 				}
 			}
 			annexos.add(annex);
 		}
-		
 		return annexos;
 	}
-	
-	
-	
-	@Transactional (readOnly = true)
+
+	@Transactional(readOnly = true)
 	@Override
 	public RegistreAnotacioDto findAmbIdentificador(String identificador) {
 		RegistreAnotacioDto registreAnotacioDto;
@@ -543,7 +553,51 @@ public class RegistreServiceImpl implements RegistreService {
 				finsDate == null,
 				finsDate);
 	}
-	
+
+	@Transactional
+	@Override
+	public RegistreAnotacioDto marcarLlegida(
+			Long entitatId,
+			Long contingutId,
+			Long registreId) {
+		logger.debug("Marcan com a llegida l'anotació de registre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "contingutId=" + contingutId + ", "
+				+ "registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		if (contingut instanceof BustiaEntity) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					contingutId,
+					true);
+		} else {
+			// Comprova l'accés al path del contenidor pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
+					true,
+					false,
+					false,
+					true);
+		}
+		RegistreEntity registre = registreRepository.findByPareAndId(
+					contingut,
+					registreId);
+		registre.updateLlegida(true);
+		
+		return (RegistreAnotacioDto) contingutHelper.toContingutDto(
+				registre);		
+	}
+
+
+
 	private RegistreAnnexDetallDto getJustificantPerRegistre(
 			EntitatEntity entitat,
 			ContingutEntity contingut,
@@ -631,48 +685,6 @@ public class RegistreServiceImpl implements RegistreService {
 			
 			return false;
 		}
-	}
-	
-	@Transactional
-	@Override
-	public RegistreAnotacioDto marcarLlegida(
-			Long entitatId,
-			Long contingutId,
-			Long registreId) {
-		logger.debug("Marcan com a llegida l'anotació de registre ("
-				+ "entitatId=" + entitatId + ", "
-				+ "contingutId=" + contingutId + ", "
-				+ "registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
-				entitat,
-				contingutId,
-				null);
-		if (contingut instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
-					entitat,
-					contingutId,
-					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					contingut,
-					true,
-					false,
-					false,
-					true);
-		}
-		RegistreEntity registre = registreRepository.findByPareAndId(
-					contingut,
-					registreId);
-		registre.updateLlegida(true);
-		
-		return (RegistreAnotacioDto) contingutHelper.toContingutDto(
-				registre);		
 	}
 	
 	private String obtenirJustificantNom(Document document) {

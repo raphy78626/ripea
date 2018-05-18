@@ -17,7 +17,7 @@ import es.caib.ripea.war.helper.ConversioTipusHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class ExpedientFiltreCommand {
-	
+
 	private Long arxiuId;
 	private Long metaExpedientId;
 	private String nom;
@@ -29,9 +29,7 @@ public class ExpedientFiltreCommand {
 	private Date dataTancatFi;
 	private boolean meusExpedients;
 	private String search;
-	
 	private Long tipusId;
-	
 
 	public Long getArxiuId() {
 		return arxiuId;
@@ -100,21 +98,18 @@ public class ExpedientFiltreCommand {
 	public void setSearch(String search) {
 		this.search = search;
 	}
-		
 	public Long getTipusId() {
 		return tipusId;
 	}
 	public void setTipusId(Long tipusId) {
 		this.tipusId = tipusId;
 	}
-	
-	
+
 	public static ExpedientFiltreCommand asCommand(ExpedientFiltreDto dto) {
 		return ConversioTipusHelper.convertir(
 				dto,
 				ExpedientFiltreCommand.class);
 	}
-	
 	public static ExpedientFiltreDto asDto(ExpedientFiltreCommand command) {
 		return ConversioTipusHelper.convertir(
 				command,

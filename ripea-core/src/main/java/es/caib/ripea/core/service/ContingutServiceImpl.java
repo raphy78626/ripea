@@ -32,6 +32,9 @@ import es.caib.plugins.arxiu.api.Firma;
 import es.caib.ripea.core.api.dto.ArxiuContingutDto;
 import es.caib.ripea.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.ArxiuDetallDto;
+import es.caib.ripea.core.api.dto.ArxiuFirmaDto;
+import es.caib.ripea.core.api.dto.ArxiuFirmaPerfilEnumDto;
+import es.caib.ripea.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutFiltreDto;
@@ -47,7 +50,6 @@ import es.caib.ripea.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.ripea.core.api.dto.DocumentTipusEnumDto;
 import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.ExpedientEstatEnumDto;
-import es.caib.ripea.core.api.dto.FirmaDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
@@ -1475,22 +1477,77 @@ public class ContingutServiceImpl implements ContingutService {
 			arxiuDetall.setFills(detallFills);
 		}
 		if (firmes != null) {
-			List<FirmaDto> detallFirmes = new ArrayList<FirmaDto>();
+			List<ArxiuFirmaDto> dtos = new ArrayList<ArxiuFirmaDto>();
 			for (Firma firma: firmes) {
-				FirmaDto detallFirma = new FirmaDto();
+				ArxiuFirmaDto dto = new ArxiuFirmaDto();
 				if (firma.getTipus() != null) {
-					detallFirma.setTipus(firma.getTipus().name());
+					switch (firma.getTipus()) {
+					case CSV:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.CSV);
+						break;
+					case XADES_DET:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.XADES_DET);
+						break;
+					case XADES_ENV:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.XADES_ENV);
+						break;
+					case CADES_DET:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.CADES_DET);
+						break;
+					case CADES_ATT:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.CADES_ATT);
+						break;
+					case PADES:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.PADES);
+						break;
+					case SMIME:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.SMIME);
+						break;
+					case ODT:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.ODT);
+						break;
+					case OOXML:
+						dto.setTipus(ArxiuFirmaTipusEnumDto.OOXML);
+						break;
+					}
 				}
 				if (firma.getPerfil() != null) {
-					detallFirma.setPerfil(firma.getPerfil().name());
+					switch (firma.getPerfil()) {
+					case BES:
+						dto.setPerfil(ArxiuFirmaPerfilEnumDto.BES);
+						break;
+					case EPES:
+						dto.setPerfil(ArxiuFirmaPerfilEnumDto.EPES);
+						break;
+					case LTV:
+						dto.setPerfil(ArxiuFirmaPerfilEnumDto.LTV);
+						break;
+					case T:
+						dto.setPerfil(ArxiuFirmaPerfilEnumDto.T);
+						break;
+					case C:
+						dto.setPerfil(ArxiuFirmaPerfilEnumDto.C);
+						break;
+					case X:
+						dto.setPerfil(ArxiuFirmaPerfilEnumDto.X);
+						break;
+					case XL:
+						dto.setPerfil(ArxiuFirmaPerfilEnumDto.XL);
+						break;
+					case A:
+						dto.setPerfil(ArxiuFirmaPerfilEnumDto.A);
+						break;
+					}
 				}
-				detallFirma.setFitxerNom(firma.getFitxerNom());
-				detallFirma.setContingut(firma.getContingut());
-				detallFirma.setTipusMime(firma.getTipusMime());
-				detallFirma.setCsvRegulacio(firma.getCsvRegulacio());
-				detallFirmes.add(detallFirma);
+				dto.setFitxerNom(firma.getFitxerNom());
+				if (ArxiuFirmaTipusEnumDto.CSV.equals(dto.getTipus())) {
+					dto.setContingut(firma.getContingut());
+				}
+				dto.setTipusMime(firma.getTipusMime());
+				dto.setCsvRegulacio(firma.getCsvRegulacio());
+				dtos.add(dto);
 			}
-			arxiuDetall.setFirmes(detallFirmes);
+			arxiuDetall.setFirmes(dtos);
 		}
 		return arxiuDetall;
 	}

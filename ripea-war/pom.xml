@@ -117,6 +117,26 @@
 			<groupId>org.fundaciobit.plugins</groupId>
 			<artifactId>plugin-signatureweb-miniappletinclient</artifactId>
 			<version>2.0.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk15on</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcpkix-jdk15on</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcmail-jdk16</artifactId>
+			<version>${bouncycastle.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk16</artifactId>
+			<version>${bouncycastle.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fundaciobit.plugins</groupId>
@@ -230,12 +250,16 @@
 		<profile>
 			<id>tomcat</id>
 			<activation>
+				<file>
+					<exists>appserv_tomcat</exists>
+				</file>
 				<activeByDefault>false</activeByDefault>
 			</activation>
 			<properties>
 				<application.context>application-context-tomcat.xml</application.context>
 				<enable.tomcat.ws.start>--&gt;</enable.tomcat.ws.start>
 				<enable.tomcat.ws.end>&lt;!--</enable.tomcat.ws.end>
+				<webjars.classpath>classpath:</webjars.classpath>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -297,10 +321,14 @@
 		<profile>
 			<id>jboss</id>
 			<activation>
+				<file>
+					<missing>appserv_tomcat</missing>
+				</file>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
 				<application.context>application-context-jboss.xml</application.context>
+				<webjars.classpath></webjars.classpath>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -370,6 +398,7 @@
 							<directory>${basedir}/src/main/webapp/WEB-INF</directory>
 							<includes>
 								<include>web.xml</include>
+								<include>ripea-servlet.xml</include>
 							</includes>
 							<targetPath>WEB-INF</targetPath>
 							<filtering>true</filtering>
@@ -402,15 +431,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<fork>true</fork>
-					<compilerVersion>${java.version}</compilerVersion>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
 			</plugin>
 		</plugins>
 		<finalName>ripea</finalName>

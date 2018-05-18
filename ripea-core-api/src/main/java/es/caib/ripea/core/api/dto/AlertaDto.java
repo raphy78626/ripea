@@ -3,8 +3,6 @@
  */
 package es.caib.ripea.core.api.dto;
 
-import java.util.Date;
-
 /**
  * Informació d'una alerta.
  * 
@@ -53,8 +51,5 @@ public class AlertaDto {
 	public void setContingutId(Long contingutId) {
 		this.contingutId = contingutId;
 	}
-	
-	
-	private static final long serialVersionUID = -2299453443943600172L;
 	
 }
