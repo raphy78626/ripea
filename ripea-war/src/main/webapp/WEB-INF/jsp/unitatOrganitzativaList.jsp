@@ -56,6 +56,8 @@
 				<th data-col-name="codiUnitatSuperior"><spring:message code="unitat.list.columna.codiUnitatSuperior"/></th>
 				
 				<th data-col-name="codiUnitatArrel"><spring:message code="unitat.list.columna.codiUnitatArrel"/></th>
+				
+				<th data-col-name="obsoleta"><spring:message code="unitat.list.columna.obolseta"/></th>
 			</tr>
 		</thead>
 	</table>

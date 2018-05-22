@@ -36,7 +36,15 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private Long tipusVia;
 	private String nomVia;
 	private String numVia; 
-
+	
+	private boolean obsoleta;
+	
+	public boolean isObsoleta() {
+		return obsoleta;
+	}
+	public void setObsoleta(boolean obsoleta) {
+		this.obsoleta = obsoleta;
+	}
 	public Long getId() {
 		return id;
 	}
