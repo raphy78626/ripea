@@ -80,6 +80,12 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 		return delegate.findAmbFiltre(entitatId,  filtre, paginacioParams);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public UnitatOrganitzativaDto findById(Long id) {
+		return delegate.findById(id);
+	}
+
 	/*@Autowired
 	UnitatsOrganitzativesService delegate;
 

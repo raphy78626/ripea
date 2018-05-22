@@ -52,7 +52,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		unitatOrganitzativaService.synchronize(entitatActual);
 
-		return "unitatOrganitzativaList";
+		return "redirect:/unitatOrganitzativa";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)

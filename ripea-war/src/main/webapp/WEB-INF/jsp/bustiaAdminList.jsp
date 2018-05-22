@@ -35,7 +35,7 @@
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
-					placeholderKey="bustia.list.filtre.unitat.codidir3"
+					placeholderKey="bustia.form.camp.unitat"
 					suggestValue="codi"
 					suggestText="nom" />
 			</div>

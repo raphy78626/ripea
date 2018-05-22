@@ -55,6 +55,7 @@ import es.caib.ripea.core.entity.FirmaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 import es.caib.ripea.core.entity.ReglaEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
@@ -81,6 +82,7 @@ import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.ReglaRepository;
+import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
 import es.caib.ripea.plugin.registre.RegistreAnotacioResposta;
 
@@ -108,7 +110,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private ContingutComentariRepository contingutComentariRepository;
 	@Resource
 	private AlertaRepository alertaRepository;
-
+	@Resource
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Resource
 	private PermisosHelper permisosHelper;
 	@Resource
@@ -158,33 +161,33 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				true,
 				false);
-		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
-				entitat.getCodi(),
-				bustia.getUnitatCodi());
+		UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository.findOne(bustia.getUnitatOrganitzativa().getId());
 		if (unitat == null) {
 			logger.error("No s'ha trobat la unitat administrativa (codi=" + bustia.getUnitatCodi() + ")");
 			throw new NotFoundException(
-					bustia.getUnitatCodi(),
-					UnitatOrganitzativaDto.class);
+					bustia.getUnitatOrganitzativa().getId(),
+					UnitatOrganitzativaEntity.class);
 		}
 		// Cerca la bústia superior
-		BustiaEntity bustiaPare = bustiaRepository.findByEntitatAndUnitatCodiAndPareNull(
+		BustiaEntity bustiaPare = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNull(
 				entitat,
-				bustia.getUnitatCodi());
+				unitat);
 		// Si la bústia superior no existeix la crea
 		if (bustiaPare == null) {
 			bustiaPare = bustiaRepository.save(
 					BustiaEntity.getBuilder(
 							entitat,
 							unitat.getDenominacio(),
-							bustia.getUnitatCodi(),
+							unitat.getCodi(),
+							unitat,
 							null).build());
 		}
 		// Crea la nova bústia
 		BustiaEntity entity = BustiaEntity.getBuilder(
 				entitat,
 				bustia.getNom(),
-				bustia.getUnitatCodi(),
+				unitat.getCodi(),
+				unitat,
 				bustiaPare).build();
 		bustiaRepository.save(entity);
 		// Registra al log la creació de la bústia
@@ -194,9 +197,9 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		// Si no hi ha cap bústia per defecte a dins l'unitat configura
 		// la bústia actual com a bústia per defecte
-		BustiaEntity bustiaPerDefecte = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
+		BustiaEntity bustiaPerDefecte = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
 				entitat,
-				bustia.getUnitatCodi());
+				unitat);
 		if (bustiaPerDefecte == null) {
 			entity.updatePerDefecte(true);
 			contingutLogHelper.log(
@@ -231,8 +234,13 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia.getId(),
 				false);
 		String nomOriginal = entity.getNom();
+		
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findOne(bustia.getUnitatOrganitzativa().getId());
 		entity.update(
-				bustia.getNom());
+				bustia.getNom(),
+				unitatOrganitzativa);
+
+		
 		// Registra al log la modificació de la bústia
 		contingutLogHelper.log(
 				entity,

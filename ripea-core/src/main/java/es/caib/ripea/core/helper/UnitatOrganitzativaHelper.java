@@ -15,6 +15,12 @@ import org.springframework.stereotype.Component;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
+import es.caib.ripea.core.repository.EntitatRepository;
+import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
+import es.caib.ripea.plugin.SistemaExternException;
+import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 
 
 /**
@@ -35,25 +41,53 @@ public class UnitatOrganitzativaHelper {
 	private PluginHelper pluginHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
-
-
-
+	@Resource
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Resource
+	private EntitatRepository entitatRepository;
+	
+	
+	public UnitatOrganitzativaDto toUnitatOrganitzativaDto(
+			UnitatOrganitzativaEntity source) {
+		return conversioTipusHelper.convertir(
+				source, 
+				UnitatOrganitzativaDto.class);
+	}
+	
 	public UnitatOrganitzativaDto findPerEntitatAndCodi(
 			String entitatCodi,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi);
-		for (UnitatOrganitzativaDto unitat: arbre.toDadesList()) {
-			if (unitat.getCodi().equals(unitatOrganitzativaCodi)) {
-				return unitat;
-			}
-		}
-		return null;
+		
+		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+		
+		return toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodiUnitatArrelAndCodi(
+				entitat.getUnitatArrel(),
+				unitatOrganitzativaCodi));
 	}
+
+//	public UnitatOrganitzativaDto findPerEntitatAndCodi(
+//			String entitatCodi,
+//			String unitatOrganitzativaCodi) {
+//		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi);
+//		for (UnitatOrganitzativaDto unitat: arbre.toDadesList()) {
+//			if (unitat.getCodi().equals(unitatOrganitzativaCodi)) {
+//				return unitat;
+//			}
+//		}
+//		return null;
+//	}
+	
+	
+//	public UnitatOrganitzativaDto findAmbCodi(
+//			String unitatOrganitzativaCodi) {
+//		return pluginHelper.unitatsOrganitzativesFindByCodi(
+//				unitatOrganitzativaCodi);
+//	}
 
 	public UnitatOrganitzativaDto findAmbCodi(
 			String unitatOrganitzativaCodi) {
-		return pluginHelper.unitatsOrganitzativesFindByCodi(
-				unitatOrganitzativaCodi);
+		return toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodi(
+				unitatOrganitzativaCodi));
 	}
 
 	public List<UnitatOrganitzativaDto> findPath(
@@ -108,6 +142,14 @@ public class UnitatOrganitzativaHelper {
 		}
 		return arbre;
 	}
+	
+	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitatFromPlugin(String entitatCodi)
+			throws SistemaExternException {
+
+		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+		return pluginHelper.unitatsOrganitzativesFindListByPare(entitat.getUnitatArrel());
+	}
+	
 
 	public UnitatOrganitzativaDto findConselleria(
 			String entitatCodi,

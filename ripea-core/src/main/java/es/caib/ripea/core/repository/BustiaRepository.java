@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -26,17 +27,35 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 	
 	List<BustiaEntity> findByEntitatAndActivaTrueAndPareNotNull(EntitatEntity entitat);
 
+//	List<BustiaEntity> findByEntitatAndUnitatCodiAndPareNotNull(
+//			EntitatEntity entitat,
+//			String unitatCodi);
+	
 	List<BustiaEntity> findByEntitatAndUnitatCodiAndPareNotNull(
-			EntitatEntity entitat,
-			String unitatCodi);
+	EntitatEntity entitat,
+	String unitatCodi);
 
-	BustiaEntity findByEntitatAndUnitatCodiAndPareNull(
+	BustiaEntity findByEntitatAndUnitatOrganitzativaAndPareNull(
 			EntitatEntity entitat,
-			String unitatCodi);
+			UnitatOrganitzativaEntity unitatOrganitzativa);
 
 	BustiaEntity findByEntitatAndUnitatCodiAndPerDefecteTrue(
 			EntitatEntity entitat,
 			String unitatCodi);
+	
+	@Query(	"from " +
+			"    BustiaEntity b " +
+			"where " +
+			"    b.entitat = :entitat " +
+			"and b.unitatOrganitzativa = :unitatOrganitzativa "
+			+ "and b.perDefecte = true"
+			)
+	BustiaEntity findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
+	
+	List<BustiaEntity> findByEntitatAndPerDefecteTrue(
+			EntitatEntity entitat);
 
 	@Query(	"from " +
 			"    BustiaEntity b " +

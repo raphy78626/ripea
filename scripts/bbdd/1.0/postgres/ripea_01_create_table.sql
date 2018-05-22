@@ -724,7 +724,7 @@ CREATE TABLE IPA_UNITAT_ORGANITZATIVA
   TIPUS_VIA 	 			bigint,
   NOM_VIA 					character varying(200),
   NUM_VIA 					character varying(100),
-  OBSOLETE					boolean,
+  OBSOLETA					boolean,
 
   CREATEDDATE          		timestamp without time zone,
   CREATEDBY_CODI       		character varying(256),

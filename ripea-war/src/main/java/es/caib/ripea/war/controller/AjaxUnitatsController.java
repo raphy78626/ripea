@@ -32,13 +32,13 @@ public class AjaxUnitatsController extends BaseAdminController {
 	@Autowired
 	private UnitatOrganitzativaService unitatOrganitzativaService;
 	
-	@RequestMapping(value = "/unitat/{codi}", method = RequestMethod.GET)
+	@RequestMapping(value = "/unitat/{unitatId}", method = RequestMethod.GET)
 	@ResponseBody
-	public UnitatOrganitzativaDto getByCodi(
+	public UnitatOrganitzativaDto getById(
 			HttpServletRequest request,
-			@PathVariable String codi,
+			@PathVariable Long unitatId,
 			Model model) {
-		return unitatOrganitzativaService.findByCodi(codi);
+		return unitatOrganitzativaService.findById(unitatId);
 	}
 
 	@RequestMapping(value = "/unitats/{text}", method = RequestMethod.GET)

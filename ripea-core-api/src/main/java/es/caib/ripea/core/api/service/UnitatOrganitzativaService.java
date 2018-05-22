@@ -93,4 +93,6 @@ public interface UnitatOrganitzativaService {
 	PaginaDto<UnitatOrganitzativaDto> findAmbFiltre(Long entitatId, UnitatOrganitzativaFiltreDto filtre,
 			PaginacioParamsDto paginacioParams);
 
+	UnitatOrganitzativaDto findById(Long id);
+
 }

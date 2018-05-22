@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -23,17 +22,20 @@ import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
 import es.caib.ripea.core.api.dto.TipusViaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
 import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
-import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 import es.caib.ripea.core.helper.CacheHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
-import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.PaginacioHelper.Converter;
+import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
+import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
+import es.caib.ripea.plugin.SistemaExternException;
 
 /**
  * Implementació del servei de gestió d'entitats.
@@ -55,14 +57,24 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Resource
+	private EntitatRepository entitatRepository;
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	
 
 	@Override
-	public void synchronize(EntitatDto entitatActual){
-		
-		List<UnitatOrganitzativaDto> unitatsOrganitzativesPerEntitat = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatActual.getCodi()).toDadesList();
-		
-		for(UnitatOrganitzativaDto unitatOrganitzativa: unitatsOrganitzativesPerEntitat){
-			create(entitatActual.getId() ,unitatOrganitzativa);
+	public void synchronize(EntitatDto entitatActual) {
+
+		List<UnitatOrganitzativaDto> unitatsOrganitzativesPerEntitat = new ArrayList<UnitatOrganitzativaDto>();
+		try {
+			unitatsOrganitzativesPerEntitat = unitatOrganitzativaHelper.findUnitatsOrganitzativesPerEntitatFromPlugin(entitatActual.getCodi());
+		} catch (SistemaExternException e) {
+			e.printStackTrace();
+		}
+
+		for (UnitatOrganitzativaDto unitatOrganitzativa : unitatsOrganitzativesPerEntitat) {
+			create(entitatActual.getId(), unitatOrganitzativa);
 		}
 	}
 	
@@ -104,13 +116,26 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	}
 	
 	
-	
 	public UnitatOrganitzativaDto toUnitatOrganitzativaDto(
 			UnitatOrganitzativaEntity source) {
 		return conversioTipusHelper.convertir(
 				source, 
 				UnitatOrganitzativaDto.class);
 	}
+	
+	
+	private List<UnitatOrganitzativaDto> toUnitatOrganitzativaDto(
+			List<UnitatOrganitzativaEntity> unitatsOrganitzatives) {
+		List<UnitatOrganitzativaDto> resposta = new ArrayList<UnitatOrganitzativaDto>();
+		for (UnitatOrganitzativaEntity unitatOrganitzativa: unitatsOrganitzatives) {
+			resposta.add(
+					toUnitatOrganitzativaDto(
+							unitatOrganitzativa));
+		}
+		return resposta;
+	}
+	
+	
 	
 	public void create(
 			Long entitatId,
@@ -150,17 +175,67 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 		
 	}
 	
+
+	
 	@Override
 	public List<UnitatOrganitzativaDto> findByEntitat(
-			String entitatCodi) {
-		return cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).toDadesList();
+			String entitatCodi) { 
+		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+		return toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodiUnitatArrel(entitat.getUnitatArrel()));
+//		return cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).toDadesList();
 	}
+	
+	@Override
+	public UnitatOrganitzativaDto findById(
+			Long id) {
+		UnitatOrganitzativaDto unitat = toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findOne(
+				id));
+		
+		if (unitat != null) {
+			unitat.setAdressa(
+					getAdressa(
+							unitat.getTipusVia(), 
+							unitat.getNomVia(), 
+							unitat.getNumVia()));
+			if (unitat.getCodiPais() != null && !"".equals(unitat.getCodiPais())) {
+				unitat.setCodiPais(("000" + unitat.getCodiPais()).substring(unitat.getCodiPais().length()));
+			}
+			if (unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat())) {
+				unitat.setCodiComunitat(("00" + unitat.getCodiComunitat()).substring(unitat.getCodiComunitat().length()));
+			}
+			if ((unitat.getCodiProvincia() == null || "".equals(unitat.getCodiProvincia())) && 
+					unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat())) {
+				List<ProvinciaDto> provincies = cacheHelper.findProvinciesPerComunitat(unitat.getCodiComunitat());
+				if (provincies != null && provincies.size() == 1) {
+					unitat.setCodiProvincia(provincies.get(0).getCodi());
+				}		
+			}
+			if (unitat.getCodiProvincia() != null && !"".equals(unitat.getCodiProvincia())) {
+				unitat.setCodiProvincia(("00" + unitat.getCodiProvincia()).substring(unitat.getCodiProvincia().length()));
+				if (unitat.getLocalitat() == null && unitat.getNomLocalitat() != null) {
+					MunicipiDto municipi = findMunicipiAmbNom(
+							unitat.getCodiProvincia(), 
+							unitat.getNomLocalitat());
+					if (municipi != null)
+						unitat.setLocalitat(municipi.getCodi());
+					else
+						logger.error("UNITAT ORGANITZATIVA. No s'ha trobat la localitat amb el nom: '" + unitat.getNomLocalitat() + "'");
+				}
+			}
+		}
+		return unitat;
+	}
+	
+	
 
 	@Override
 	public UnitatOrganitzativaDto findByCodi(
 			String unitatOrganitzativaCodi) {
-		UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(
-				unitatOrganitzativaCodi);
+		UnitatOrganitzativaDto unitat = toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodi(
+				unitatOrganitzativaCodi));
+		
+//		UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(
+//				unitatOrganitzativaCodi);
 		if (unitat != null) {
 			unitat.setAdressa(
 					getAdressa(

@@ -20,19 +20,20 @@
 	<rip:modalHead/>
 </head>
 <body>
-	<c:set var="formAction"><rip:modalUrl value="/bustiaAdmin/new"/></c:set>
+	<c:set var="formAction"><rip:modalUrl value="/bustiaAdmin/newOrModify"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="bustiaCommand" role="form">
 		<form:hidden path="id"/>
 		<form:hidden path="pareId"/>
 		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 		<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 		<rip:inputSuggest 
-			name="unitatCodi" 
+			name="unitatId" 
+			textKey="bustia.form.camp.unitat"
 			urlConsultaInicial="${urlConsultaInicial}" 
 			urlConsultaLlistat="${urlConsultaLlistat}" 
 			inline="false" 
 			placeholderKey="bustia.form.camp.unitat"
-			suggestValue="codi"
+			suggestValue="id"
 			suggestText="nom" />
 <%-- 		<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/> --%>
 		<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>

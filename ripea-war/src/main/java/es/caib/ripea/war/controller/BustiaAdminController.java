@@ -111,7 +111,8 @@ public class BustiaAdminController extends BaseAdminController {
 		return "bustiaAdminForm";
 	}
 	
-	@RequestMapping(value = "/new", method = RequestMethod.POST)
+	// save new or modified bústia
+	@RequestMapping(value = "/newOrModify", method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,
 			@Valid BustiaCommand command,
@@ -121,6 +122,7 @@ public class BustiaAdminController extends BaseAdminController {
 		if (bindingResult.hasErrors()) {
 			return "bustiaAdminForm";
 		}
+		// if it is modified
 		if (command.getId() != null) {
 			bustiaService.update(
 					entitatActual.getId(),
@@ -129,6 +131,7 @@ public class BustiaAdminController extends BaseAdminController {
 					request,
 					"redirect:bustiaAdmin",
 					"bustia.controller.modificat.ok");
+		//if it is new	
 		} else {
 			bustiaService.create(
 					entitatActual.getId(),

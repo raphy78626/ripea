@@ -32,6 +32,8 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 
 	@Column(name = "codi_unitat_arrel", length = 9) 
 	private String codiUnitatArrel;
+	
+	
 	@Column(name = "data_creacio_oficial") 
 	private Date dataCreacioOficial;
 	@Column(name = "data_supressio_oficial") 
@@ -65,8 +67,8 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 	@Column(name = "num_via", length = 100) 
 	private String numVia;
 	
-	@Column(name="obsolete")
-	private boolean obsolete;
+	@Column(name="obsoleta")
+	private boolean obsoleta;
 	
 	public String getCodi() {
 		return codi;
@@ -148,15 +150,16 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 		return numVia;
 	}
 
-	public boolean isObsolete() {
-		return obsolete;
+
+		
+	public boolean isObsoleta() {
+		return obsoleta;
 	}
 
-	public void updateObsolete(
-			boolean obsolete) {
-		this.obsolete = obsolete;
+	public void setObsoleta(boolean obsoleta) {
+		this.obsoleta = obsoleta;
 	}
-		
+
 	public void update(
 			String codi,
 			String denominacio,
@@ -221,7 +224,7 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 			Long tipusVia,
 			String nomVia,
 			String numVia,
-			boolean obsolete) {
+			boolean obsoleta) {
 		return new Builder(
 				codi,
 				denominacio,
@@ -243,7 +246,7 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 				tipusVia,
 				nomVia,
 				numVia,
-				obsolete);
+				obsoleta);
 	}
 	
 	public static class Builder {
@@ -269,7 +272,7 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 				Long tipusVia,
 				String nomVia,
 				String numVia,
-				boolean obsolete) {
+				boolean obsoleta) {
 			built = new UnitatOrganitzativaEntity();
 			built.codi = codi;
 			built.denominacio = denominacio;
@@ -291,7 +294,7 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 			built.tipusVia = tipusVia;
 			built.nomVia = nomVia;
 			built.numVia = numVia;
-			built.obsolete = obsolete;
+			built.obsoleta = obsoleta;
 		}
 		public UnitatOrganitzativaEntity build() {
 			return built;

@@ -3,12 +3,16 @@
  */
 package es.caib.ripea.core.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 
 /**
@@ -24,7 +28,7 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			"    UnitatOrganitzativaEntity uo " +
 			"where " +
 			"    uo.codiUnitatArrel = :codiUnitatArrel " +
-			"and (:esNullFiltreCodi = true or uo.codi = :codi) " +
+			"and (:esNullFiltreCodi = true or lower(uo.codi) like lower('%'||:codi||'%')) " +
 			"and (:esNullFiltreDenominacio = true or lower(uo.denominacio) like lower('%'||:denominacio||'%')) ")
 	Page<UnitatOrganitzativaEntity> findByEntitatAndUnitatCodiAndUnitatDenominacioFiltrePaginat(
 			@Param("codiUnitatArrel") String codiUnitatArrel,
@@ -33,5 +37,13 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			@Param("esNullFiltreDenominacio") boolean esNullFiltreDenominacio,
 			@Param("denominacio") String denominacio,		
 			Pageable pageable);
+	
+	
+	UnitatOrganitzativaEntity findByCodi(String codi);
+	
+	List<UnitatOrganitzativaEntity> findByCodiUnitatArrel(String codiUnitatArrel);
+	
+	UnitatOrganitzativaEntity findByCodiUnitatArrelAndCodi(String codiUnitatArrel, String codi);
+	
 	
 }
