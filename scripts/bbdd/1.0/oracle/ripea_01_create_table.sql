@@ -449,7 +449,8 @@ CREATE TABLE IPA_BUSTIA
   ID           NUMBER(19)                       NOT NULL,
   UNITAT_CODI  VARCHAR2(9)                      NOT NULL,
   PER_DEFECTE  NUMBER(1),
-  ACTIVA       NUMBER(1)
+  ACTIVA       NUMBER(1),
+  UNITAT_ID    NUMBER(19)
 );
 
 

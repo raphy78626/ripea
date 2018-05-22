@@ -26,7 +26,7 @@
 			<div class="col-md-5">
 				<rip:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-2">
 <%-- 				<rip:inputText name="unitatCodi" inline="true" placeholderKey="bustia.list.filtre.unitat.codidir3"/> --%>
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
@@ -39,7 +39,10 @@
 					suggestValue="codi"
 					suggestText="nom" />
 			</div>
-			<div class="col-md-4 pull-right">
+			<div class="col-md-2" style="padding-left: 30px;">
+				<rip:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+			</div>
+			<div class="col-md-3 pull-right">
 				<div class="pull-right">
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>

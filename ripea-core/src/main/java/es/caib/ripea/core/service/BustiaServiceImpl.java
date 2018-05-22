@@ -466,6 +466,8 @@ public class BustiaServiceImpl implements BustiaService {
 						filtre.getUnitatCodi(),
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
 						filtre.getNom(),
+						filtre.getUnitatObsoleta() == null,
+						filtre.getUnitatObsoleta(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				BustiaDto.class,
 				new Converter<BustiaEntity, BustiaDto>() {
