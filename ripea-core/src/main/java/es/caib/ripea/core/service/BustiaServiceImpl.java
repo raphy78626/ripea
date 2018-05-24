@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -828,25 +829,33 @@ public class BustiaServiceImpl implements BustiaService {
 				"comentari",
 				new String[] {"darrerMoviment.comentari"});
 		
-		Page<ContingutEntity> pagina = contingutRepository.findBustiaPendentByPareAndFiltre(
-				(bustia == null),
-				bustia,
-				pares,
-				filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
-				filtre.getContingutDescripcio(),
-				filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
-				filtre.getRemitent(),
-				(filtre.getDataRecepcioInici() == null),
-				filtre.getDataRecepcioInici(),
-				(filtre.getDataRecepcioFi() == null),
-				filtre.getDataRecepcioFi(),
-				(filtre.getEstatContingut() == null),
-				(filtre.getEstatContingut() != null ? filtre.getEstatContingut().ordinal() : 1),
-				paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
-				paginacioParams.getFiltre(),
-				paginacioHelper.toSpringDataPageable(
-						paginacioParams,
-						mapeigOrdenacio));
+		Page<ContingutEntity> pagina;
+		
+		// Hibernate doesn't support empty collection as parameter so if pares is empty we dont make query but just create a new empty page 
+		if (bustia == null && pares.isEmpty()) {
+			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
+		} else {
+			pagina = contingutRepository.findBustiaPendentByPareAndFiltre(
+					(bustia == null),
+					bustia,
+					pares,
+					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
+					filtre.getContingutDescripcio(),
+					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+					filtre.getRemitent(),
+					(filtre.getDataRecepcioInici() == null),
+					filtre.getDataRecepcioInici(),
+					(filtre.getDataRecepcioFi() == null),
+					filtre.getDataRecepcioFi(),
+					(filtre.getEstatContingut() == null),
+					(filtre.getEstatContingut() != null ? filtre.getEstatContingut().ordinal() : 1),
+					paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
+					paginacioParams.getFiltre(),
+					paginacioHelper.toSpringDataPageable(
+							paginacioParams,
+							mapeigOrdenacio));
+		}
+
 		return paginacioHelper.toPaginaDto(
 				pagina,
 				BustiaContingutDto.class,
