@@ -17,6 +17,8 @@ public class BustiaFiltreDto implements Serializable {
 
 	private String unitatCodi;
 	private String nom;
+	
+	// if the obsolete is true we look for the busties of extinguished or anulated unitats  
 	private Boolean unitatObsoleta;
 	
 	public Boolean getUnitatObsoleta() {

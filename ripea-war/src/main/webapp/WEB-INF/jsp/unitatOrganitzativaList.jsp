@@ -57,7 +57,7 @@
 				
 				<th data-col-name="codiUnitatArrel"><spring:message code="unitat.list.columna.codiUnitatArrel"/></th>
 				
-				<th data-col-name="obsoleta"><spring:message code="unitat.list.columna.obolseta"/></th>
+				<th data-col-name="estat"><spring:message code="unitat.list.columna.estat"/></th>
 			</tr>
 		</thead>
 	</table>

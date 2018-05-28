@@ -67,8 +67,7 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 	@Column(name = "num_via", length = 100) 
 	private String numVia;
 	
-	@Column(name="obsoleta")
-	private boolean obsoleta;
+
 	
 	public String getCodi() {
 		return codi;
@@ -152,13 +151,6 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 
 
 		
-	public boolean isObsoleta() {
-		return obsoleta;
-	}
-
-	public void setObsoleta(boolean obsoleta) {
-		this.obsoleta = obsoleta;
-	}
 
 	public void update(
 			String codi,
@@ -294,7 +286,6 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 			built.tipusVia = tipusVia;
 			built.nomVia = nomVia;
 			built.numVia = numVia;
-			built.obsoleta = obsoleta;
 		}
 		public UnitatOrganitzativaEntity build() {
 			return built;
