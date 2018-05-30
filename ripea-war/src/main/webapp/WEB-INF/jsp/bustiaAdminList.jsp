@@ -57,7 +57,13 @@
 				<th data-col-name="id" data-visible="false">#</th>
 				<th data-col-name="unitatCodi" data-visible="false"></th>
 				<th data-col-name="entitat.codi" data-visible="false"></th>
-				<th data-col-name="nom"><spring:message code="bustia.list.columna.nom"/></th>
+				<th data-col-name="nom" data-template="#nomTemplate">
+					<spring:message code="bustia.list.columna.nom"/>
+					<script id="nomTemplate" type="text/x-jsrender">
+						{{:nom}}
+						{{if unitatOrganitzativa.estat=='E'||unitatOrganitzativa.estat=='A'}}<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.pendent.registre.estat.error"/>"></span>{{/if}}
+					</script>
+				</th>
 				<th data-col-name="unitatOrganitzativa.codi"><spring:message code="bustia.list.columna.unitat.codi"/></th>
 				<th data-col-name="unitatOrganitzativa.denominacio"><spring:message code="bustia.list.columna.unitat.nom"/></th>			
 				<th data-col-name="perDefecte" data-template="#cellPerDefecteTemplate">

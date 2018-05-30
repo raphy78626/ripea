@@ -20,6 +20,38 @@
 	<rip:modalHead/>
 </head>
 <body>
+
+	<div class="panel panel-danger">
+		<div class="panel-heading">
+
+			<span class="fa fa-warning text-danger"></span> The unitat of this
+			bustia was changed
+		</div>
+		<div class="panel-body">
+			<div class="row">
+				<label class="col-xs-4 text-right">Type of change:</label>
+				<div class="col-xs-8">${bustiaDto.unitatOrganitzativa.tipusTranscissio}</div>
+			</div>
+			<div class="row">
+				<label class="col-xs-4 text-right">New unitats:</label>
+				<div class="col-xs-8">
+					<c:forEach items="${bustiaDto.unitatOrganitzativa.novaList}"
+						var="newUnitat" varStatus="loop">
+						${newUnitat.denominacio} (${newUnitat.codi})${!loop.last ? ',' : ''} 
+					</c:forEach>
+				</div>
+			</div>
+			<div class="row">
+				<label class="col-xs-4 text-right">Other busties affected:</label>
+				<div class="col-xs-8">
+					<c:forEach items="${bustiesOfOldUnitatWithoutCurrent}" var="bustia"
+						varStatus="loop">
+						${bustia.nom} ${!loop.last ? ',' : ''} 
+					</c:forEach>
+				</div>
+			</div>
+		</div>
+	</div>
 	<c:set var="formAction"><rip:modalUrl value="/bustiaAdmin/newOrModify"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="bustiaCommand" role="form">
 		<form:hidden path="id"/>
@@ -40,7 +72,10 @@
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/bustiaAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-		</div>
+		</div>		
 	</form:form>
+
+
+
 </body>
 </html>

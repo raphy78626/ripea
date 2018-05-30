@@ -64,6 +64,7 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	
 
 	@Override
+	@Transactional
 	public void synchronize(EntitatDto entitatActual) {
 
 		List<UnitatOrganitzativaDto> unitatsOrganitzativesPerEntitat = new ArrayList<UnitatOrganitzativaDto>();
@@ -108,35 +109,16 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 				new Converter<UnitatOrganitzativaEntity, UnitatOrganitzativaDto>() {
 					@Override
 					public UnitatOrganitzativaDto convert(UnitatOrganitzativaEntity source) {
-						return toUnitatOrganitzativaDto(
-								source);
+						return conversioTipusHelper.convertir(
+								source,
+								UnitatOrganitzativaDto.class);
 					}
 				});
 		return resultPagina;
 	}
 	
 	
-	public UnitatOrganitzativaDto toUnitatOrganitzativaDto(
-			UnitatOrganitzativaEntity source) {
-		return conversioTipusHelper.convertir(
-				source, 
-				UnitatOrganitzativaDto.class);
-	}
-	
-	
-	private List<UnitatOrganitzativaDto> toUnitatOrganitzativaDto(
-			List<UnitatOrganitzativaEntity> unitatsOrganitzatives) {
-		List<UnitatOrganitzativaDto> resposta = new ArrayList<UnitatOrganitzativaDto>();
-		for (UnitatOrganitzativaEntity unitatOrganitzativa: unitatsOrganitzatives) {
-			resposta.add(
-					toUnitatOrganitzativaDto(
-							unitatOrganitzativa));
-		}
-		return resposta;
-	}
-	
-	
-	
+	@Transactional
 	public void create(
 			Long entitatId,
 			UnitatOrganitzativaDto unitatOrganitzativa) {
@@ -178,18 +160,23 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 
 	
 	@Override
+	@Transactional(readOnly = true)
 	public List<UnitatOrganitzativaDto> findByEntitat(
 			String entitatCodi) { 
 		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
-		return toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodiUnitatArrel(entitat.getUnitatArrel()));
+		return conversioTipusHelper.convertirList(
+				unitatOrganitzativaRepository.findByCodiUnitatArrel(entitat.getUnitatArrel()),
+				UnitatOrganitzativaDto.class);
 //		return cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).toDadesList();
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
 	public UnitatOrganitzativaDto findById(
 			Long id) {
-		UnitatOrganitzativaDto unitat = toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findOne(
-				id));
+		UnitatOrganitzativaDto unitat = conversioTipusHelper.convertir(
+				unitatOrganitzativaRepository.findOne(id),
+				UnitatOrganitzativaDto.class);
 		
 		if (unitat != null) {
 			unitat.setAdressa(
@@ -229,10 +216,12 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	
 
 	@Override
+	@Transactional(readOnly = true)
 	public UnitatOrganitzativaDto findByCodi(
 			String unitatOrganitzativaCodi) {
-		UnitatOrganitzativaDto unitat = toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodi(
-				unitatOrganitzativaCodi));
+		UnitatOrganitzativaDto unitat = conversioTipusHelper.convertir(
+				unitatOrganitzativaRepository.findByCodi(unitatOrganitzativaCodi),
+				UnitatOrganitzativaDto.class);
 		
 //		UnitatOrganitzativaDto unitat = pluginHelper.unitatsOrganitzativesFindByCodi(
 //				unitatOrganitzativaCodi);

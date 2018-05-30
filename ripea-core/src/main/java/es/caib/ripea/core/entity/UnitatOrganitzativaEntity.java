@@ -1,14 +1,19 @@
 package es.caib.ripea.core.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.ripea.core.api.dto.TipusTranscissioEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 
 
@@ -17,9 +22,19 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 @EntityListeners(AuditingEntityListener.class)
 public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 
-	/**
-	 * 
-	 */
+
+	@JoinTable(name = "ipa_uo_sinc_rel", joinColumns = {
+	@JoinColumn(name = "antiga_uo", referencedColumnName = "id", nullable = false) }, inverseJoinColumns = {
+	@JoinColumn(name = "nova_uo", referencedColumnName = "id", nullable = false) })
+	@ManyToMany
+	private List<UnitatOrganitzativaEntity> novaList;
+	
+	@ManyToMany(mappedBy = "novaList")
+	private List<UnitatOrganitzativaEntity> antigaList;
+	
+	@Column(name = "tipus_transcissio")
+	private TipusTranscissioEnumDto tipusTranscissio;
+
 	private static final long serialVersionUID = 1L;
 	@Column(name = "codi", length = 9, nullable = false)
 	private String codi;
@@ -66,9 +81,34 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 	private String nomVia;
 	@Column(name = "num_via", length = 100) 
 	private String numVia;
-	
 
 	
+	
+
+
+	public TipusTranscissioEnumDto getTipusTranscissio() {
+		return tipusTranscissio;
+	}
+
+	public void setTipusTranscissio(TipusTranscissioEnumDto tipusTranscissio) {
+		this.tipusTranscissio = tipusTranscissio;
+	}
+
+	public List<UnitatOrganitzativaEntity> getNovaList() {
+		return novaList;
+	}
+
+	public void setNovaList(List<UnitatOrganitzativaEntity> novaList) {
+		this.novaList = novaList;
+	}
+
+	public List<UnitatOrganitzativaEntity> getAntigaList() {
+		return antigaList;
+	}
+
+	public void setAntigaList(List<UnitatOrganitzativaEntity> antigaList) {
+		this.antigaList = antigaList;
+	}
 	public String getCodi() {
 		return codi;
 	}

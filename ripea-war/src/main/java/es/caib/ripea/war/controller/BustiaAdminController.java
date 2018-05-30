@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.war.command.BustiaCommand;
@@ -101,6 +103,18 @@ public class BustiaAdminController extends BaseAdminController {
 			bustia = bustiaService.findById(
 					entitatActual.getId(),
 					bustiaId);
+		
+		// getting all the busties connected with old unitat excluding the one you are currently in 
+		List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
+		List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
+		for(BustiaDto bustiaI: bustiesOfOldUnitat){
+			if(!bustiaI.getId().equals(bustia.getId())){
+				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
+			}
+		}
+		model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);	
+		
+		model.addAttribute(bustia);	
 		BustiaCommand command = null;
 		if (bustia != null)
 			command = BustiaCommand.asCommand(bustia);

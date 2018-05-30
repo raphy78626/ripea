@@ -1,6 +1,9 @@
 -----------------------------------------------------------------
 -- 	#155: Poder ordenar bústies per nom d'unitat organitzat
 -----------------------------------------------------------------
+-----------------------------------------------------------------
+-- 	#165: Gestió i Sincronització de UO
+-----------------------------------------------------------------
 
 CREATE TABLE IPA_UNITAT_ORGANITZATIVA
 (
@@ -25,6 +28,7 @@ CREATE TABLE IPA_UNITAT_ORGANITZATIVA
   TIPUS_VIA 	 			NUMBER(19),
   NOM_VIA 					VARCHAR2(200),
   NUM_VIA 					VARCHAR2(100),
+  TIPUS_TRANSCISSIO 		NUMBER(1),
 
   CREATEDDATE          		TIMESTAMP(6),
   CREATEDBY_CODI       		VARCHAR2(256),
@@ -43,3 +47,17 @@ ALTER TABLE IPA_BUSTIA ADD (
     REFERENCES IPA_UNITAT_ORGANITZATIVA (ID));
     
 UPDATE IPA_BUSTIA SET UNITAT_ID = (SELECT ID FROM IPA_UNITAT_ORGANITZATIVA WHERE CODI = IPA_BUSTIA.UNITAT_CODI)
+
+CREATE TABLE IPA_UO_SINC_REL
+(
+  ID           					NUMBER(19)          NOT NULL,
+  ANTIGA_UO           			NUMBER(19)          NOT NULL,
+  NOVA_UO           			NUMBER(19)          NOT NULL,
+
+  CREATEDDATE          		TIMESTAMP(6),
+  CREATEDBY_CODI       		VARCHAR2(256),
+  LASTMODIFIEDDATE     		TIMESTAMP(6),
+  LASTMODIFIEDBY_CODI  		VARCHAR2(256)
+);
+ALTER TABLE IPA_UO_SINC_REL ADD (
+  CONSTRAINT IPA_UO_SINC_REL_PK PRIMARY KEY (ID));
