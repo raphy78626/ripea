@@ -45,10 +45,18 @@
 		<table id="unitatsOrganitzatives" data-toggle="datatable" data-url="<c:url value="/unitatOrganitzativa/datatable"/>" data-filter="#unitatOrganitzativaFiltreCommand" data-default-order="1" data-default-dir="asc" class="table table-bordered table-striped">
 		<thead>
 			<tr>
-				<th data-col-name="id" data-visible="false">#</th>
-				
-				<th data-col-name="codi"><spring:message code="unitat.list.columna.codi"/></th>
-				
+				<th data-col-name="id" data-visible="false">#</th>				
+				<th data-col-name="codi" data-template="#codiTemplate">
+					<spring:message code="unitat.list.columna.codi"/>
+					<script id="codiTemplate" type="text/x-jsrender">
+						{{:codi}} 
+						{{if estat=='E'||estat=='A'}}
+							<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
+								<span class="fa fa-warning text-danger pull-right" title="<spring:message code="unitat.list.obsoleta"/>"></span>
+							</a>
+						{{/if}}
+					</script>
+				</th>					
 				<th data-col-name="denominacio"><spring:message code="unitat.list.columna.denominacio"/></th>
 				
 				<th data-col-name="nifCif"><spring:message code="unitat.list.columna.nifCif"/></th>
@@ -57,7 +65,21 @@
 				
 				<th data-col-name="codiUnitatArrel"><spring:message code="unitat.list.columna.codiUnitatArrel"/></th>
 				
-				<th data-col-name="estat"><spring:message code="unitat.list.columna.estat"/></th>
+				<th data-col-name="estat" data-template="#estatTemplate">
+					<spring:message code="unitat.list.columna.estat"/>
+					<script id="estatTemplate" type="text/x-jsrender">
+						{{if estat =='V'}}
+							<spring:message code="unitat.estat.vigente"/>
+						{{else estat =='E''}}
+							<spring:message code="unitat.estat.extinguido"/>
+						{{else estat =='A''}}
+							<spring:message code="unitat.estat.anulado"/>
+						{{else estat =='T''}}
+							<spring:message code="unitat.estat.transitorio"/>
+						{{/if}}
+					</script>
+				</th>
+				
 			</tr>
 		</thead>
 	</table>
