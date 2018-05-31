@@ -45,15 +45,27 @@
 		<table id="unitatsOrganitzatives" data-toggle="datatable" data-url="<c:url value="/unitatOrganitzativa/datatable"/>" data-filter="#unitatOrganitzativaFiltreCommand" data-default-order="1" data-default-dir="asc" class="table table-bordered table-striped">
 		<thead>
 			<tr>
-				<th data-col-name="id" data-visible="false">#</th>				
-				<th data-col-name="codi" data-template="#codiTemplate">
+				<th data-col-name="id" data-visible="false">#</th>	
+				<th data-col-name="tipusTranscissio" data-visible="false">#</th>				
+				<th data-col-name="codi" width="80px" data-template="#codiTemplate">
 					<spring:message code="unitat.list.columna.codi"/>
 					<script id="codiTemplate" type="text/x-jsrender">
 						{{:codi}} 
 						{{if estat=='E'||estat=='A'}}
-							<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
-								<span class="fa fa-warning text-danger pull-right" title="<spring:message code="unitat.list.obsoleta"/>"></span>
-							</a>
+							{{if tipusTranscissio == 'DIVISIO'}}
+								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
+									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTranscissio.DIVISIO"/>"></span>
+								</a>
+							{{else tipusTranscissio == 'FUSIO'}}
+								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
+									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTranscissio.FUSIO"/>"></span>
+								</a>
+							{{else tipusTranscissio == 'SUBSTITUCIO'}}
+								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
+									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTranscissio.SUBSTITUCIO"/>"></span>
+								</a>
+							{{/if}}
+
 						{{/if}}
 					</script>
 				</th>					

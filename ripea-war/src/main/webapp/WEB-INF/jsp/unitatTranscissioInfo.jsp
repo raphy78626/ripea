@@ -21,7 +21,7 @@
 	<div class="panel panel-danger">
 		<div class="panel-heading">
 
-			<span class="fa fa-warning text-danger"></span> <spring:message code="unitat.list.obsoleta"/>
+			<span class="fa fa-warning text-danger"></span> <spring:message code="unitat.obsoleta"/>
 		</div>
 		<div class="panel-body">
 			<div class="row">
