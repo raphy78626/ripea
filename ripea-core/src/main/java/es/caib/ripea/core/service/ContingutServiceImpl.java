@@ -29,6 +29,7 @@ import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.ExpedientMetadades;
 import es.caib.plugins.arxiu.api.Firma;
+import es.caib.ripea.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.ripea.core.api.dto.ArxiuContingutDto;
 import es.caib.ripea.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.ripea.core.api.dto.ArxiuDetallDto;
@@ -56,6 +57,7 @@ import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.NtiOrigenEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
+import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.api.exception.ConteDocumentsDefinitiusException;
 import es.caib.ripea.core.api.exception.NotFoundException;
@@ -99,6 +101,7 @@ import es.caib.ripea.core.repository.EscriptoriRepository;
 import es.caib.ripea.core.repository.MetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeMetaDadaRepository;
 import es.caib.ripea.core.repository.MetaNodeRepository;
+import es.caib.ripea.core.repository.RegistreRepository;
 import es.caib.ripea.core.repository.UsuariRepository;
 import es.caib.ripea.plugin.arxiu.ArxiuContingutTipusEnum;
 import es.caib.ripea.plugin.arxiu.ArxiuDocumentContingut;
@@ -131,6 +134,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private DocumentRepository documentRepository;
 	@Resource
 	private AlertaRepository alertaRepository;
+	@Resource
+	private RegistreRepository registreRepository;
 
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
@@ -1173,6 +1178,73 @@ public class ContingutServiceImpl implements ContingutService {
 					@Override
 					public ContingutDto convert(ContingutEntity source) {
 						return contingutHelper.toContingutDto(
+								source,
+								false,
+								false,
+								false,
+								false,
+								true,
+								false,
+								false);
+					}
+				});
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public PaginaDto<RegistreAnotacioDto> findAnotacionsRegistre(
+			Long entitatId,
+			AnotacioRegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		logger.debug("Consulta d'anotacions de registre per usuari admin ("
+				+ "entitatId=" + entitatId + ", "
+				+ "filtre=" + filtre + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		Date dataInici = filtre.getDataCreacioInici();
+		if (dataInici != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataInici);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			dataInici = cal.getTime();
+		}
+		Date dataFi = filtre.getDataCreacioFi();
+		if (dataFi != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataFi);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			cal.set(Calendar.SECOND, 59);
+			cal.set(Calendar.MILLISECOND, 999);
+			dataFi = cal.getTime();
+		}
+		
+		return paginacioHelper.toPaginaDto(
+				registreRepository.findByFiltrePaginat(
+						entitat, 
+						(filtre.getUnitatOrganitzativa() == null),
+						filtre.getUnitatOrganitzativa(),
+						(filtre.getBustia() == null),
+						(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
+						(dataInici == null),
+						dataInici,
+						(dataFi == null),
+						dataFi,
+						(filtre.getEstat() == null),
+						filtre.getEstat(),
+						paginacioHelper.toSpringDataPageable(paginacioParams)),
+				RegistreAnotacioDto.class,
+				new Converter<RegistreEntity, RegistreAnotacioDto>() {
+					@Override
+					public RegistreAnotacioDto convert(RegistreEntity source) {
+						return (RegistreAnotacioDto)contingutHelper.toContingutDto(
 								source,
 								false,
 								false,

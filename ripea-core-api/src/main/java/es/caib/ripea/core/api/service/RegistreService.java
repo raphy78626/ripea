@@ -64,10 +64,10 @@ public interface RegistreService {
 			String motiu) throws NotFoundException;
 
 	/**
-	 * Processa periòdicament les regles pendents d'aplicar a les anotacions
-	 * de registre que no siguin regles de tipus backoffice de tipus Sistra.
+	 * Distribueix periòdicament les anotacions de registre que han arribat
+	 * al RIPEA i s'han quedat pendents de distribuir de forma asíncrona.
 	 */
-	public void reglaAplicarPendents();
+	public void distribuirAnotacionsPendents();
 
 	/**
 	 * Processa periòdicament les regles de tipus backoffice Sistra pendents d'aplicar 

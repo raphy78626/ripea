@@ -14,18 +14,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import es.caib.plugins.arxiu.api.ContingutOrigen;
+import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
+import es.caib.plugins.arxiu.api.DocumentFormat;
+import es.caib.plugins.arxiu.api.DocumentTipus;
+import es.caib.plugins.arxiu.api.FirmaPerfil;
+import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.ripea.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.Firma;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
+import es.caib.ripea.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.registre.RegistreTipusEnum;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.ReglaService;
 import es.caib.ripea.core.api.service.ws.BustiaV1WsService;
 import es.caib.ripea.core.helper.IntegracioHelper;
-
+import es.caib.ripea.core.helper.RegistreHelper;
 /**
  * Implementació dels mètodes per al servei d'enviament de
  * continguts a bústies.
@@ -47,6 +54,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	private BustiaService bustiaService;
 	@Resource
 	private IntegracioHelper integracioHelper;
+	@Resource
+	private RegistreHelper registreHelper;
 
 
 
@@ -74,12 +83,17 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					"entitat:" + entitat + ", " +
 					"unitatAdministrativa:" + unitatAdministrativa + ", " +
 					"numero:" + registreNumero + ")");
+			
 			validarAnotacioRegistre(registreEntrada);
-			bustiaService.registreAnotacioCrear(
+			
+			Long idRetornada = bustiaService.registreAnotacioCrear(
 					entitat,
 					RegistreTipusEnum.ENTRADA,
 					unitatAdministrativa,
 					registreEntrada);
+			
+			if (idRetornada != null)
+				registreHelper.distribuirAnotacioPendent(idRetornada);
 			
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_REGISTRE,
@@ -133,6 +147,31 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 
 	private void validarAnotacioRegistre(
 			RegistreAnotacio registreEntrada) {
+		
+		// Validació d'obligatorietat de camps
+		validarObligatorietatRegistre(registreEntrada);
+		
+		// Validació de format de camps
+		validarFormatCampsRegistre(registreEntrada);
+		
+		// Validació d'annexos
+		if (registreEntrada.getAnnexos() != null && registreEntrada.getAnnexos().size() > 0)
+			for (RegistreAnnex annex : registreEntrada.getAnnexos())
+				validarAnnex(annex);
+		
+		// Validació de precedència de justificant
+		if (registreEntrada.getJustificant() != null && registreEntrada.getJustificant().getFitxerArxiuUuid() == null) {
+			throw new ValidationException(
+					"El justificant adjuntat no conté un uuid (" +
+					"entitatCodi=" + registreEntrada.getEntitatCodi() + ", " +
+					"llibreCodi=" + registreEntrada.getLlibreCodi() + ", " +
+					"tipus=" + RegistreTipusEnum.ENTRADA.getValor() + ", " +
+					"numero=" + registreEntrada.getNumero() + ", " +
+					"data=" + registreEntrada.getData() + ")");
+		}
+	}
+	
+	private void validarObligatorietatRegistre(RegistreAnotacio registreEntrada) {
 		if (registreEntrada.getNumero() == null) {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'numero'");
@@ -165,10 +204,94 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'idiomaCodi'");
 		}
+	}
+	
+	private void validarFormatCampsRegistre(RegistreAnotacio registreEntrada) {
 		
-		if (registreEntrada.getAnnexos() != null && registreEntrada.getAnnexos().size() > 0)
-			for (RegistreAnnex annex : registreEntrada.getAnnexos())
-				validarAnnex(annex);
+		if (registreEntrada.getJustificant() != null)
+			validarFormatAnnex(registreEntrada.getJustificant());
+		
+		if (registreEntrada.getAnnexos() != null) {
+			for (RegistreAnnex annex: registreEntrada.getAnnexos()) {
+				validarFormatAnnex(annex);
+			}
+		}
+	}
+	
+	private void validarFormatAnnex(RegistreAnnex annex) {
+		if (annex.getEniOrigen() != null && !enumContains(ContingutOrigen.class, annex.getEniOrigen(), true)) {
+			throw new ValidationException(
+					"El valor de l'annex o justificant 'EniOrigen' no és vàlid");
+		}
+		if (annex.getEniEstatElaboracio() != null && !enumContains(DocumentEstatElaboracio.class, annex.getEniEstatElaboracio(), true)) {
+			throw new ValidationException(
+					"El valor de l'annex o justificant 'EniEstatElaboracio' no és vàlid");
+		}
+		if (annex.getEniTipusDocumental() != null && !enumContains(DocumentTipus.class, annex.getEniTipusDocumental(), true)) {
+			throw new ValidationException(
+					"El valor de l'annex o justificant 'EniTipusDocumental' no és vàlid");
+		}
+		if (annex.getSicresTipusDocument() != null && !enumContains(RegistreAnnexSicresTipusDocumentEnum.class, annex.getSicresTipusDocument(), true)) {
+			throw new ValidationException(
+					"El valor de l'annex o justificant 'SicresTipusDocument' no és vàlid");
+		}
+		
+		if (annex.getFitxerTipusMime() != null) {
+			if ("jpg".equalsIgnoreCase(annex.getFitxerTipusMime())) {
+				annex.setFitxerTipusMime("jpeg");
+			}
+			
+			if (!enumContains(DocumentFormat.class, annex.getFitxerTipusMime(), false)) {
+				throw new ValidationException(
+						"El valor de l'annex o justificant 'FitxerTipusMime' no és vàlid");
+			}
+		}
+		
+		if (annex.getFirmes() != null) {
+			for (Firma firma: annex.getFirmes()) {
+				validarFormatFirma(firma);
+			}
+		}
+	}
+	
+	
+	private void validarFormatFirma(Firma firma) {
+		if (firma.getTipus() != null && !enumContains(FirmaTipus.class, firma.getTipus(), true)) {
+			throw new ValidationException(
+					"El valor de la firma 'Tipus' no és vàlid");
+		}
+		if (firma.getPerfil() != null && !enumContains(FirmaPerfil.class, firma.getPerfil(), true)) {
+			throw new ValidationException(
+					"El valor de la firma 'Perfil' no és vàlid");
+		}
+		
+		
+		if (firma.getTipusMime() != null) {
+			if ("jpg".equalsIgnoreCase(firma.getTipusMime())) {
+				firma.setTipusMime("jpeg");
+			}
+			
+			if (!enumContains(DocumentFormat.class, firma.getTipusMime(), false)) {
+				throw new ValidationException(
+						"El valor de l'annex o justificant 'TipusMime' no és vàlid");
+			}
+		}
+	}
+	
+	
+	private <E extends Enum<E>> boolean enumContains(Class<E> enumerat, String test, boolean modeText) {
+	    for (Enum<E> c : enumerat.getEnumConstants()) {
+	    	if (modeText) {
+		        if (c.toString().equalsIgnoreCase(test)) {
+		            return true;
+		        }
+	    	} else {
+	        	if (c.name().equalsIgnoreCase(test)) {
+		            return true;
+		        }
+	    	}
+	    }
+	    return false;
 	}
 
 	/** Valida que l'annex:
@@ -182,6 +305,12 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'fitxerNom' per l'annex");
 		}
+		
+		if (annex.getFitxerArxiuUuid() == null && annex.getFitxerContingut() == null)
+			throw new ValidationException(
+					"S'ha d'especificar o bé la referència del document o el contingut del document"
+					+ " per l'annex [" + annex.getTitol() + "]");
+		
 		if (annex.getFirmes() != null && annex.getFirmes().size() > 0)
 			for (Firma firma : annex.getFirmes())
 				validaFirma(annex, firma);

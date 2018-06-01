@@ -235,7 +235,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('IPA_BSTWS')")
-	public void registreAnotacioCrear(
+	public Long registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,

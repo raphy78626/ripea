@@ -29,34 +29,57 @@ public class RegistreAnnexFirmaEntity extends RipeaAuditable<Long> {
 	@Column(name = "csv_regulacio")
 	private String csvRegulacio;
 	@Column(name = "autofirma")
-	private Boolean autofirma;
+	private Boolean autofirma = false;
+	@Column(name = "gesdoc_fir_id")
+	private String gesdocFirmaId;
+	
+	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "annex_id")
 	@ForeignKey(name = "ipa_firma_annex_fk")
 	private RegistreAnnexEntity annex;
-
+	
 	public String getTipus() {
 		return tipus;
 	}
+
 	public String getPerfil() {
 		return perfil;
 	}
+
 	public String getFitxerNom() {
 		return fitxerNom;
 	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	public String getTipusMime() {
 		return tipusMime;
 	}
+
 	public String getCsvRegulacio() {
 		return csvRegulacio;
 	}
+
 	public boolean isAutofirma() {
-		return autofirma != null && autofirma.booleanValue();
+		return autofirma != null ? autofirma : false ;
 	}
+
+	public String getGesdocFirmaId() {
+		return gesdocFirmaId;
+	}
+
 	public RegistreAnnexEntity getAnnex() {
 		return annex;
 	}
-
+	
+	public void updateGesdocFirmaId(String gesdocFirmaId) {
+		this.gesdocFirmaId = gesdocFirmaId;
+	}
+	
+	
 	public static Builder getBuilder(
 			String tipus,
 			String perfil,
@@ -74,7 +97,6 @@ public class RegistreAnnexFirmaEntity extends RipeaAuditable<Long> {
 				autofirma,
 				annex);
 	}
-
 	public static class Builder {
 		RegistreAnnexFirmaEntity built;
 		Builder(
@@ -86,11 +108,12 @@ public class RegistreAnnexFirmaEntity extends RipeaAuditable<Long> {
 				boolean autofirma,
 				RegistreAnnexEntity annex) {
 			built = new RegistreAnnexFirmaEntity();
+			
 			built.tipus = tipus;
 			built.perfil = perfil;
 			built.fitxerNom = fitxerNom;
 			built.tipusMime = tipusMime;
-			built.csvRegulacio = csvRegulacio;
+			built.csvRegulacio =csvRegulacio;
 			built.autofirma = autofirma;
 			built.annex = annex;
 		}

@@ -144,12 +144,12 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("IPA_BSTWS")
-	public void registreAnotacioCrear(
+	public Long registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) {
-		delegate.registreAnotacioCrear(
+		return delegate.registreAnotacioCrear(
 				entitatCodi,
 				tipus,
 				unitatAdministrativa,

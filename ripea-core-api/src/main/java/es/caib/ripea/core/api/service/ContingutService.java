@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.ripea.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.ripea.core.api.dto.ArxiuDetallDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
@@ -23,6 +24,7 @@ import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
+import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
@@ -385,6 +387,25 @@ public interface ContingutService {
 	public PaginaDto<ContingutDto> findAdmin(
 			Long entitatId,
 			ContingutFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException;
+	
+	/**
+	 * Obté una llista d'anotacions de registre donades d'alta dins RIPEA
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param filtre
+	 *            El filtre de la consulta.
+	 * @param paginacioParams
+	 *            Paràmetres per a dur a terme la paginació del resultats.
+	 * @return Una pàgina amb els continguts trobats.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('IPA_ADMIN')")
+	public PaginaDto<RegistreAnotacioDto> findAnotacionsRegistre(
+			Long entitatId,
+			AnotacioRegistreFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 
 	/**

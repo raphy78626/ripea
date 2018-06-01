@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.helper;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +23,6 @@ import org.fundaciobit.plugins.validatesignature.api.TimeStampInfo;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureRequest;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -88,6 +89,7 @@ import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.Municipi;
 import es.caib.ripea.plugin.dadesext.Pais;
 import es.caib.ripea.plugin.dadesext.Provincia;
+import es.caib.ripea.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.ripea.plugin.notificacio.EntregaPostalTipus;
 import es.caib.ripea.plugin.notificacio.Enviament;
 import es.caib.ripea.plugin.notificacio.EnviamentTipus;
@@ -115,6 +117,9 @@ import es.caib.ripea.plugin.usuari.DadesUsuariPlugin;
  */
 @Component
 public class PluginHelper {
+	
+	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP = "anotacions_registre_doc_tmp";
+	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP = "anotacions_registre_fir_tmp";
 
 	private DadesUsuariPlugin dadesUsuariPlugin;
 	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
@@ -127,6 +132,7 @@ public class PluginHelper {
 	private IValidateSignaturePlugin validaSignaturaPlugin;
 	private SignaturaPlugin signaturaPlugin;
 	private NotificacioPlugin notificacioPlugin;
+	private GestioDocumentalPlugin gestioDocumentalPlugin;
 
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
@@ -2641,7 +2647,96 @@ public class PluginHelper {
 		}
 	}
 
-
+	public String gestioDocumentalCreate(
+			String agrupacio,
+			InputStream contingut) {
+		try {
+			String gestioDocumentalId = getGestioDocumentalPlugin().create(
+					agrupacio,
+						contingut);
+			return gestioDocumentalId;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	public void gestioDocumentalUpdate(
+			String id,
+			String agrupacio,
+			InputStream contingut) {
+		try {
+			getGestioDocumentalPlugin().update(
+					id,
+					agrupacio,
+					contingut);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
+					ex);
+		}
+	}
+	public void gestioDocumentalDelete(
+			String id,
+			String agrupacio) {
+		try {
+			getGestioDocumentalPlugin().delete(
+					id,
+					agrupacio);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
+					ex);
+		}
+	}
+	public void gestioDocumentalGet(
+			String id,
+			String agrupacio,
+			OutputStream contingutOut) {
+		try {
+			getGestioDocumentalPlugin().get(
+					id,
+					agrupacio,
+					contingutOut);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	private boolean gestioDocumentalPluginConfiguracioProvada = false;
+	private GestioDocumentalPlugin getGestioDocumentalPlugin() {
+		if (gestioDocumentalPlugin == null && !gestioDocumentalPluginConfiguracioProvada) {
+			gestioDocumentalPluginConfiguracioProvada = true;
+			String pluginClass = getPropertyPluginGestioDocumental();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.newInstance();
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_GESDOC,
+							"Error al crear la instància del plugin de gestió documental",
+							ex);
+				}
+			} else {
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_USUARIS,
+						"La classe del plugin de gestió documental no està configurada");
+			}
+		}
+		return gestioDocumentalPlugin;
+	}
 
 	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
 			UnitatOrganitzativa unitatOrganitzativa,
@@ -3634,6 +3729,9 @@ public class PluginHelper {
 	private String getPropertyPluginNotificacio() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.notificacio.class");
+	}
+	private String getPropertyPluginGestioDocumental() {
+		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.gesdoc.class");
 	}
 
 	private String getPropertyPluginArxiuEscriptoriExpedientClassificacio() {

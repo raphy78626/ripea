@@ -82,6 +82,10 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	private String timestamp;
 	@Column(name = "validacio_ocsp", length = 100)
 	private String validacioOCSP;
+	@Column(name = "gesdoc_doc_id")
+	private String gesdocDocumentId;
+	
+	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "registre_id")
 	@ForeignKey(name = "ipa_annex_registre_fk")
@@ -140,6 +144,9 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	public String getValidacioOCSP() {
 		return validacioOCSP;
 	}
+	public String getGesdocDocumentId() {
+		return gesdocDocumentId;
+	}
 	public RegistreEntity getRegistre() {
 		return registre;
 	}
@@ -150,7 +157,7 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 	public void updateFitxerArxiuUuid(String fitxerArxiuUuid) {
 		this.fitxerArxiuUuid = fitxerArxiuUuid;
 	}
-
+	
 	public static Builder getBuilder(
 			String titol,
 			String fitxerNom,
@@ -232,6 +239,11 @@ public class RegistreAnnexEntity extends RipeaAuditable<Long> {
 			return built;
 		}
 	}
+	
+	public void updateGesdocDocumentId(String gesdocDocumentId) {
+		this.gesdocDocumentId = gesdocDocumentId;
+	}
+	
 
 	@Override
 	public int hashCode() {

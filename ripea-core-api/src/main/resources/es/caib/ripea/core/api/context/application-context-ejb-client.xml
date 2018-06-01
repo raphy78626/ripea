@@ -41,9 +41,9 @@
 			jndi-name="ripea/EntitatServiceBean/local"
 			business-interface="es.caib.ripea.core.api.service.EntitatService"/>
 	<jee:local-slsb
-			id="expedientEnviamentService"
-			jndi-name="ripea/ExpedientEnviamentServiceBean/local"
-			business-interface="es.caib.ripea.core.api.service.ExpedientEnviamentService"/>
+			id="documentEnviamentService"
+			jndi-name="ripea/DocumentEnviamentServiceBean/local"
+			business-interface="es.caib.ripea.core.api.service.DocumentEnviamentService"/>
 	<jee:local-slsb
 			id="expedientInteressatService"
 			jndi-name="ripea/ExpedientInteressatServiceBean/local"

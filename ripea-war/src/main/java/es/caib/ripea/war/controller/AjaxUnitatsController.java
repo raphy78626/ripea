@@ -38,6 +38,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable String codi,
 			Model model) {
+		getEntitatActualComprovantPermisos(request);
 		return unitatOrganitzativaService.findByCodi(codi);
 	}
 

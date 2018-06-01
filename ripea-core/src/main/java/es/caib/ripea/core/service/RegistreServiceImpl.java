@@ -11,9 +11,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,11 +27,9 @@ import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.ripea.core.api.dto.ArxiuFirmaDto;
 import es.caib.ripea.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
-import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
-import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
@@ -50,6 +48,7 @@ import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.MessageHelper;
 import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.repository.BustiaRepository;
@@ -193,38 +192,6 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	@Transactional
 	@Async
-	@Scheduled(fixedRateString = "${config:es.caib.ripea.tasca.regla.pendent.periode.execucio}")
-	public void reglaAplicarPendents() {
-		logger.debug("Aplicant regles a les anotacions pendents");
-		try {
-			List<RegistreEntity> pendents = registreRepository.findAmbReglaPendentProcessar();
-			logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
-			if (!pendents.isEmpty()) {
-				for (RegistreEntity pendent: pendents) {
-					try {
-						reglaAplicar(pendent);
-					} catch (Exception e) {
-						alertaHelper.crearAlerta(
-								messageHelper.getMessage(
-										"alertes.segon.pla.aplicar.regles.error",
-										new Object[] {pendent.getId()}),
-								e,
-								pendent.getId());
-						throw e;
-					}
-				}
-			} else {
-				logger.debug("No hi ha registres pendents de processar");
-			}
-		} catch (Exception e) {
-			logger.error("Error aplicant regles a les anotacions pendents.", e);
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	@Transactional
-	@Async
 	@Scheduled(fixedRateString = "60000")
 	public void reglaAplicarPendentsBackofficeSistra() {
 		logger.debug("Aplicant regles a les anotacions pendents per a regles de backoffice tipus Sistra");
@@ -249,7 +216,13 @@ public class RegistreServiceImpl implements RegistreService {
 						esperar = ara.before(properProcessamentCal.getTime());
 					}
 					if (!esperar) {
-						reglaAplicar(pendent);
+						try {
+							registreHelper.distribuirAnotacioPendent(pendent.getId());
+						} catch (Exception e) {
+							registreHelper.actualitzarEstatError(
+									pendent.getId(), 
+									e);
+						}
 					}
 				} catch (Exception e) {
 					alertaHelper.crearAlerta(
@@ -262,6 +235,42 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		} else {
 			logger.debug("No hi ha registres pendents de processar");
+		}
+	}
+	
+	@Value("${config:es.caib.ripea.tasca.dist.anotacio.asincrona}")
+    private boolean isDistAsincEnabled;
+	
+	@Override
+	@Transactional
+	@Scheduled(fixedDelayString = "${config:es.caib.ripea.tasca.dist.anotacio.pendent.periode.execucio}")
+	public void distribuirAnotacionsPendents() {
+		
+		if (isDistAsincEnabled) {
+		
+			logger.debug("Distribuïnt anotacions de registere pendents");
+			try {
+				String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.ripea.tasca.dist.anotacio.pendent.max.reintents");
+				List<RegistreEntity> pendents = registreRepository.findPendentsDistribuir(Integer.parseInt(maxReintents));
+				
+				logger.debug("Distribuïnt " + pendents.size() + " anotacion pendents");
+				if (!pendents.isEmpty()) {
+					for (RegistreEntity pendent: pendents) {
+						try {
+							registreHelper.distribuirAnotacioPendent(pendent.getId());
+						} catch (Exception e) {
+							registreHelper.actualitzarEstatError(
+									pendent.getId(), 
+									e);
+						}
+					}
+				} else {
+					logger.debug("No hi ha anotacions pendents de distribuïr");
+				}
+			} catch (Exception e) {
+				logger.error("Error distribuïnt anotacions pendents", e);
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -289,7 +298,17 @@ public class RegistreServiceImpl implements RegistreService {
 				bustia);
 		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
 				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
-			return reglaAplicar(anotacio);
+			
+			try {
+				registreHelper.distribuirAnotacioPendent(anotacio.getId());
+				return true;
+			} catch (Exception e) {
+				registreHelper.actualitzarEstatError(
+						anotacio.getId(), 
+						e);
+				return false;
+			}
+			
 		} else {
 			throw new ValidationException(
 					anotacio.getId(),
@@ -320,9 +339,17 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
 				registreId,
 				bustia);
-		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
-				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
-			return reglaAplicar(anotacio);
+		if (RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
+			RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
+			try {
+				registreHelper.distribuirAnotacioPendent(anotacio.getId());
+				return true;
+			} catch (Exception e) {
+				registreHelper.actualitzarEstatError(
+						anotacio.getId(), 
+						e);
+				return false;
+			}
 		} else {
 			throw new ValidationException(
 					anotacio.getId(),
@@ -460,33 +487,37 @@ public class RegistreServiceImpl implements RegistreService {
 						null,
 						true);
 				annex.setAmbDocument(true);
+				
 				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
-					List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
-							annexEntity,
-							null);
-					Iterator<ArxiuFirmaDto> it = firmes.iterator();
+					List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(annexEntity, null);
+					Iterator<Firma> it = document.getFirmes().iterator();
+					
+					int firmaIndex = 0;
 					while (it.hasNext()) {
-						ArxiuFirmaDto firma = it.next();
-						if (!ArxiuFirmaTipusEnumDto.CSV.equals(firma.getTipus())) {
+						Firma arxiuFirma = it.next();
+						if (!FirmaTipus.CSV.equals(arxiuFirma.getTipus())) {
+							ArxiuFirmaDto firma = firmes.get(firmaIndex);
 							if (pluginHelper.isValidaSignaturaPluginActiu()) {
 								byte[] documentContingut = document.getContingut().getContingut();
-								byte[] firmaContingut = null;
+								byte[] firmaContingut = arxiuFirma.getContingut();
 								if (	ArxiuFirmaTipusEnumDto.XADES_DET.equals(firma.getTipus()) ||
 										ArxiuFirmaTipusEnumDto.CADES_DET.equals(firma.getTipus())) {
-									// TODO obtenir contingut de la firma
+									firmaContingut = arxiuFirma.getContingut();
 								}
 								firma.setDetalls(
 										pluginHelper.validaSignaturaObtenirDetalls(
 												documentContingut,
 												firmaContingut));
 							}
+							firmaIndex++;
 						} else {
 							it.remove();
 						}
 					}
 					annex.setFirmes(firmes);
 					annex.setAmbFirma(true);
-				}
+ 				}
+				
 			}
 			annexos.add(annex);
 		}
@@ -626,64 +657,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return annex;
 	}
 
-	private boolean reglaAplicar(
-			RegistreEntity anotacio) {
-		contingutLogHelper.log(
-				anotacio,
-				LogTipusEnumDto.PROCESSAMENT,
-				null,
-				null,
-				false,
-				false);
-		logger.debug("Aplicant regla a anotació de registre (" +
-				"anotacioId=" + anotacio.getId() + ", " +
-				"anotacioNum=" + anotacio.getIdentificador() + ", " +
-				"reglaId=" + anotacio.getRegla().getId() + ", " +
-				"reglaTipus=" + anotacio.getRegla().getTipus().name() + ", " +
-				(anotacio.getRegla().getBackofficeTipus() != null ?
-						"reglaBackofficeTipus=" + anotacio.getRegla().getBackofficeTipus().name() + ", " 
-						: "") +
-				"metaExpedient=" + anotacio.getRegla().getMetaExpedient() + ", " +
-				"arxiu=" + anotacio.getRegla().getArxiu() + ", " +
-				"bustia=" + anotacio.getRegla().getBustia() + ")");
-		try {
-			reglaHelper.aplicar(anotacio.getId());
-			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
-			
-			alertaHelper.crearAlerta(
-					messageHelper.getMessage(
-							"alertes.segon.pla.aplicar.regles",
-							new Object[] {anotacio.getId()}),
-					null,
-					anotacio.getId());
-			
-			return true;
-		} catch (Exception ex) {
-			String procesError;
-			if (ex instanceof ScheduledTaskException) {
-				procesError = ex.getMessage();
-			} else {
-				procesError = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
-			}
-			reglaHelper.actualitzarEstatError(
-					anotacio.getId(),
-					procesError);
-			logger.debug("Processament anotació ERROR (" +
-					"id=" + anotacio.getId() + ", " +
-					"núm.=" + anotacio.getIdentificador() + "): " +
-					procesError);
-			
-			alertaHelper.crearAlerta(
-					messageHelper.getMessage(
-							"alertes.segon.pla.aplicar.regles.error",
-							new Object[] {anotacio.getId()}),
-					ex,
-					anotacio.getId());
-			
-			return false;
-		}
-	}
-	
 	private String obtenirJustificantNom(Document document) {
 		String fileName = "";
 		String fileExtension = "";

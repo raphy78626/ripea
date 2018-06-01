@@ -15,6 +15,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.ripea.core.api.dto.ArxiuDetallDto;
 import es.caib.ripea.core.api.dto.ContingutComentariDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
@@ -28,6 +29,7 @@ import es.caib.ripea.core.api.dto.EscriptoriDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
+import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ContingutService;
@@ -301,6 +303,13 @@ public class ContingutServiceBean implements ContingutService {
 	public List<Long> findIdsMassiusAmbFiltre(Long entitatId, ContingutMassiuFiltreDto filtre)
 			throws NotFoundException {
 		return delegate.findIdsMassiusAmbFiltre(entitatId, filtre);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<RegistreAnotacioDto> findAnotacionsRegistre(Long entitatId, AnotacioRegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException {
+		return delegate.findAnotacionsRegistre(entitatId, filtre, paginacioParams);
 	}
 
 }

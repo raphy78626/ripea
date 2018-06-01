@@ -540,7 +540,8 @@ CREATE TABLE IPA_REGISTRE_ANNEX
   CREATEDDATE          timestamp without time zone,
   CREATEDBY_CODI       character varying(256),
   LASTMODIFIEDDATE     timestamp without time zone,
-  LASTMODIFIEDBY_CODI  character varying(256)
+  LASTMODIFIEDBY_CODI  character varying(256),
+  GESDOC_DOC_ID 	   character varying(50)
 );
 
 CREATE TABLE IPA_REGISTRE_ANNEX_FIRMA
@@ -556,7 +557,8 @@ CREATE TABLE IPA_REGISTRE_ANNEX_FIRMA
   CREATEDDATE          timestamp without time zone,
   CREATEDBY_CODI       character varying(256),
   LASTMODIFIEDDATE     timestamp without time zone,
-  LASTMODIFIEDBY_CODI  character varying(256)
+  LASTMODIFIEDBY_CODI  character varying(256),
+  GESDOC_FIR_ID 	   character varying(50)
 );
 
 

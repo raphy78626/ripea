@@ -94,7 +94,7 @@ $(document).ready(function() {
 						{{:nom}}
 						{{if error}}<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.pendent.registre.estat.error"/>"></span>{{/if}}
 						{{if alerta}}
-							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.registre.segonpla"/>"></span>
+							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
 						{{/if}}
 					</script>
 				</th>

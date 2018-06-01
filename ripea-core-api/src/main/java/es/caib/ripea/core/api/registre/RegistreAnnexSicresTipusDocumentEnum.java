@@ -37,5 +37,10 @@ public enum RegistreAnnexSicresTipusDocumentEnum {
 			return null;
         return lookup.get(valor); 
     }
+	
+	@Override
+	public String toString() {
+		return valor;
+	}
 
 }
