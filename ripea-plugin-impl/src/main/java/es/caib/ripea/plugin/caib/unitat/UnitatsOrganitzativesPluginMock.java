@@ -3,9 +3,12 @@
  */
 package es.caib.ripea.plugin.caib.unitat;
 
+import java.net.MalformedURLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 import es.caib.ripea.plugin.SistemaExternException;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 import es.caib.ripea.plugin.unitat.UnitatsOrganitzativesPlugin;
@@ -24,6 +27,17 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 	private static final String CODI_UNITAT_FILLA = "12345678Z";
 
 	private List<UnitatOrganitzativa> unitats;
+	
+	
+	@Override
+	public UnitatOrganitzativa obtenerUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+		return null;
+	}
+	
+	@Override
+	public List<UnitatOrganitzativa> obtenerArbolUnidades(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+		return null;
+	}
 
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(

@@ -43,6 +43,14 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 	
 	List<UnitatOrganitzativaEntity> findByCodiUnitatArrel(String codiUnitatArrel);
 	
+	@Query(	"from " +
+			"    UnitatOrganitzativaEntity uo " +
+			"where " +
+			"    uo.codiUnitatArrel = :codiUnitatArrel " +
+			"and uo.estat!='V') ")
+	List<UnitatOrganitzativaEntity> findByCodiUnitatArrelAndEstatNotV(
+			@Param("codiUnitatArrel") String codiUnitatArrel);
+	
 	UnitatOrganitzativaEntity findByCodiUnitatArrelAndCodi(String codiUnitatArrel, String codi);
 	
 	

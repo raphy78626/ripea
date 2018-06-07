@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import es.caib.ripea.core.api.dto.MunicipiDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
+import es.caib.ripea.core.api.dto.TipusTranscissioEnumDto;
 import es.caib.ripea.core.api.dto.TipusViaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
@@ -67,16 +69,32 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	@Transactional
 	public void synchronize(EntitatDto entitatActual) {
 
-		List<UnitatOrganitzativaDto> unitatsOrganitzativesPerEntitat = new ArrayList<UnitatOrganitzativaDto>();
-		try {
-			unitatsOrganitzativesPerEntitat = unitatOrganitzativaHelper.findUnitatsOrganitzativesPerEntitatFromPlugin(entitatActual.getCodi());
-		} catch (SistemaExternException e) {
-			e.printStackTrace();
+		
+		EntitatEntity entitat = entitatRepository.getOne(entitatActual.getId());
+		
+		unitatOrganitzativaHelper.sincronizarOActualizar(entitat.getId(), entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());		
+		
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		
+		// if this is first synchronization set current date as a date of first
+		// sinchronization and the last actualization
+		if (entitat.getFechaSincronizacion() == null) {
+			entitat.updateFechaActualizacion(timestamp);
+			entitat.updateFechaSincronizacion(timestamp);
+		// if this is not the first synchronization only change date of actualization
+		} else {
+			entitat.updateFechaActualizacion(timestamp);
 		}
-
-		for (UnitatOrganitzativaDto unitatOrganitzativa : unitatsOrganitzativesPerEntitat) {
-			create(entitatActual.getId(), unitatOrganitzativa);
-		}
+		
+		
+//		List<UnitatOrganitzativaDto> unitatsOrganitzativesPerEntitat = new ArrayList<UnitatOrganitzativaDto>();
+//		
+//			unitatsOrganitzativesPerEntitat = unitatOrganitzativaHelper.findUnitatsOrganitzativesPerEntitatFromPlugin(entitatActual.getCodi());
+//	
+//		for (UnitatOrganitzativaDto unitatOrganitzativa : unitatsOrganitzativesPerEntitat) {
+//			create(entitatActual.getId(), unitatOrganitzativa);
+//		}
+		
 	}
 	
 	@Override
@@ -109,9 +127,10 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 				new Converter<UnitatOrganitzativaEntity, UnitatOrganitzativaDto>() {
 					@Override
 					public UnitatOrganitzativaDto convert(UnitatOrganitzativaEntity source) {
-						return conversioTipusHelper.convertir(
+						UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
 								source,
 								UnitatOrganitzativaDto.class);
+						return unitatDto;
 					}
 				});
 		return resultPagina;
@@ -170,13 +189,19 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 //		return cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).toDadesList();
 	}
 	
+	
+
+	
 	@Override
 	@Transactional(readOnly = true)
 	public UnitatOrganitzativaDto findById(
 			Long id) {
+		UnitatOrganitzativaEntity unitatEntity = unitatOrganitzativaRepository.findOne(id);
 		UnitatOrganitzativaDto unitat = conversioTipusHelper.convertir(
 				unitatOrganitzativaRepository.findOne(id),
 				UnitatOrganitzativaDto.class);
+		
+		unitat = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity, unitat);
 		
 		if (unitat != null) {
 			unitat.setAdressa(
@@ -212,6 +237,8 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 		}
 		return unitat;
 	}
+	
+	
 	
 	
 

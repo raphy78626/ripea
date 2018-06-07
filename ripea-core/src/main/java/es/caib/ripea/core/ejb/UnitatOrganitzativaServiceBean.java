@@ -17,6 +17,7 @@ import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
+import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
 
 /**
@@ -68,8 +69,8 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 
 	@Override
 	@RolesAllowed("tothom")
-	public void synchronize(
-			EntitatDto entitatActual) {
+	public void synchronize (
+			EntitatDto entitatActual) throws SistemaExternException {
 		delegate.synchronize(entitatActual);
 	}
 

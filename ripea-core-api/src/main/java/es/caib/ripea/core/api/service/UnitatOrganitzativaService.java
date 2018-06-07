@@ -80,6 +80,7 @@ public interface UnitatOrganitzativaService {
 	/**
 	 * 
 	 * @param entitatActual
+	 * @throws es.caib.ripea.plugin.SistemaExternException 
 	 * 				
 	 */
 	void synchronize(EntitatDto entitatActual);

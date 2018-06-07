@@ -99,7 +99,9 @@ public class BustiaAdminController extends BaseAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		BustiaDto bustia = null;
-		if (bustiaId != null)
+		if (bustiaId != null){
+			
+		
 			bustia = bustiaService.findById(
 					entitatActual.getId(),
 					bustiaId);
@@ -112,9 +114,10 @@ public class BustiaAdminController extends BaseAdminController {
 				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
 			}
 		}
-		model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);	
-		
+		model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
 		model.addAttribute(bustia);	
+		}
+		
 		BustiaCommand command = null;
 		if (bustia != null)
 			command = BustiaCommand.asCommand(bustia);

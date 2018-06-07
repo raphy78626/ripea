@@ -5,6 +5,7 @@ package es.caib.ripea.plugin.unitat;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,6 +43,7 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 	private Long tipusVia;
 	private String nomVia;
 	private String numVia; 
+	protected List<String> historicosUO;
 
 
 	public UnitatOrganitzativa() {
@@ -91,7 +93,8 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 			String nomLocalitat,
 			Long tipusVia,
 			String nomVia,
-			String numVia) {
+			String numVia,
+			List<String> historicosUO) {
 		this.codi = codi;
 		this.denominacio = denominacio;
 		this.nifCif = nifCif;
@@ -107,6 +110,7 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 		this.tipusVia = tipusVia;
 		this.nomVia = nomVia;
 		this.numVia = numVia;
+		this.historicosUO = historicosUO;
 	}
 	
 	
@@ -163,6 +167,16 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 		this.tipusVia = tipusVia;
 		this.nomVia = nomVia;
 		this.numVia = numVia;
+	}
+	
+	
+
+	public List<String> getHistoricosUO() {
+		return historicosUO;
+	}
+
+	public void setHistoricosUO(List<String> historicosUO) {
+		this.historicosUO = historicosUO;
 	}
 
 	public String getCodi() {

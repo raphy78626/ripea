@@ -61,6 +61,7 @@ import es.caib.ripea.core.entity.MetaExpedientSequenciaEntity;
 import es.caib.ripea.core.entity.MetaNodeEntity;
 import es.caib.ripea.core.entity.NodeEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 import es.caib.ripea.core.entity.UsuariEntity;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.repository.ContingutMovimentRepository;
@@ -281,10 +282,14 @@ public class ContingutHelper {
 //					bustia.getUnitatCodi());
 //			dto.setUnitat(unitatOrganitzativa);
 //===============================================================================================================
-			dto.setUnitatOrganitzativa(
-					conversioTipusHelper.convertir(
-							bustia.getUnitatOrganitzativa(),
-							UnitatOrganitzativaDto.class));
+			UnitatOrganitzativaEntity unitatEntity = bustia.getUnitatOrganitzativa();
+			
+			UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
+					unitatEntity,
+					UnitatOrganitzativaDto.class);
+			
+			unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity, unitatDto);
+			dto.setUnitatOrganitzativa(unitatDto);
 			resposta = dto;
 		} else if (deproxied instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)deproxied;

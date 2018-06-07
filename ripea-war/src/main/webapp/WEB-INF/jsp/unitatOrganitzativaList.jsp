@@ -51,7 +51,7 @@
 					<spring:message code="unitat.list.columna.codi"/>
 					<script id="codiTemplate" type="text/x-jsrender">
 						{{:codi}} 
-						{{if estat=='E'||estat=='A'}}
+						{{if estat=='E'||estat=='A'||estat=='T'}}
 							{{if tipusTranscissio == 'DIVISIO'}}
 								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
 									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTranscissio.DIVISIO"/>"></span>
@@ -82,11 +82,11 @@
 					<script id="estatTemplate" type="text/x-jsrender">
 						{{if estat =='V'}}
 							<spring:message code="unitat.estat.vigente"/>
-						{{else estat =='E''}}
+						{{else estat =='E'}}
 							<spring:message code="unitat.estat.extinguido"/>
-						{{else estat =='A''}}
+						{{else estat =='A'}}
 							<spring:message code="unitat.estat.anulado"/>
-						{{else estat =='T''}}
+						{{else estat =='T'}}
 							<spring:message code="unitat.estat.transitorio"/>
 						{{/if}}
 					</script>

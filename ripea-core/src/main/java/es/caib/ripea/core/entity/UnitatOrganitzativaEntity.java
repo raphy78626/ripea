@@ -86,6 +86,9 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 	
 
 
+	
+	
+
 	public TipusTranscissioEnumDto getTipusTranscissio() {
 		return tipusTranscissio;
 	}
@@ -188,10 +191,38 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 	public String getNumVia() {
 		return numVia;
 	}
-
-
-		
-
+	
+	public void update(
+			String codi,
+			String denominacio,
+			String nifCif,
+			String estat, 
+			String codiUnitatSuperior,
+			String codiUnitatArrel,
+			String codiPais,
+			String codiComunitat,
+			String codiProvincia,
+			String codiPostal,
+			String localitat,
+			Long tipusVia,
+			String nomVia,
+			String numVia) {
+		this.codi = codi;
+		this.denominacio = denominacio;
+		this.nifCif = nifCif;
+		this.estat = estat;
+		this.codiUnitatSuperior = codiUnitatSuperior;
+		this.codiUnitatArrel = codiUnitatArrel;
+		this.codiPais = codiPais;
+		this.codiComunitat = codiComunitat;
+		this.codiProvincia = codiProvincia;
+		this.codiPostal = codiPostal;
+		this.localitat = localitat;
+		this.tipusVia = tipusVia;
+		this.nomVia = nomVia;
+		this.numVia = numVia;
+	}
+	
 	public void update(
 			String codi,
 			String denominacio,

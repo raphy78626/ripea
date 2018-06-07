@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.entity;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,15 +39,30 @@ public class EntitatEntity extends RipeaAuditable<Long> {
 	private String cif;
 	@Column(name = "unitat_arrel", length = 9, nullable = false)
 	private String unitatArrel;
+	@Column(name = "fecha_actualizacion")
+	Timestamp fechaActualizacion;
+	@Column(name = "fecha_sincronizacion")
+	Timestamp fechaSincronizacion;
+	
 	@Column(name = "activa")
 	private boolean activa = true;
 	@OneToMany(mappedBy = "entitat", cascade = {CascadeType.ALL})
 	private Set<MetaNodeEntity> metaNodes = new HashSet<MetaNodeEntity>();
 	@Version
 	private long version = 0;
-
-
-
+	
+	public Timestamp getFechaActualizacion() {
+		return fechaActualizacion;
+	}
+	public void updateFechaActualizacion(Timestamp fechaActualizacion) {
+		this.fechaActualizacion = fechaActualizacion;
+	}
+	public Timestamp getFechaSincronizacion() {
+		return fechaSincronizacion;
+	}
+	public void updateFechaSincronizacion(Timestamp fechaSincronizacion) {
+		this.fechaSincronizacion = fechaSincronizacion;
+	}
 	public String getCodi() {
 		return codi;
 	}

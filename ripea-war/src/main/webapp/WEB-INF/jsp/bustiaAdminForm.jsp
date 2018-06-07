@@ -21,45 +21,77 @@
 </head>
 <body>
 
-	<div class="panel panel-danger">
-		<div class="panel-heading">
-			<span class="fa fa-warning text-danger"></span> <spring:message code="bustia.list.unitatObsoleta"/>
+
+	<c:if test="${bustiaDto.unitatOrganitzativa.tipusTranscissio != null}">
+
+		<div class="panel panel-danger">
+			<div class="panel-heading">
+				<span class="fa fa-warning text-danger"></span>
+				<spring:message code="bustia.list.unitatObsoleta" />
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<label class="col-xs-4 text-right"><spring:message
+							code="bustia.form.tipusTranscissio" /></label>
+					<div class="col-xs-8">
+						<c:if
+							test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'DIVISIO'}">
+							<spring:message code="unitat.tipusTranscissio.DIVISIO" />
+						</c:if>
+						<c:if
+							test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
+							<spring:message code="unitat.tipusTranscissio.FUSIO" />
+						</c:if>
+						<c:if
+							test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'SUBSTITUCIO'}">
+							<spring:message code="unitat.tipusTranscissio.SUBSTITUCIO" />
+						</c:if>
+					</div>
+				</div>
+				<div class="row">
+					<label class="col-xs-4 text-right"><spring:message
+							code="bustia.form.novesUnitats" /></label>
+					<div class="col-xs-8">
+						<ul style="padding-left: 17px;">
+							<c:forEach items="${bustiaDto.unitatOrganitzativa.novaList}"
+								var="newUnitat" varStatus="loop">
+								<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
+							</c:forEach>
+						</ul>
+					</div>
+				</div>
+				<c:if test="${!empty bustiesOfOldUnitatWithoutCurrent}">
+					<div class="row">
+						<label class="col-xs-4 text-right"><spring:message
+								code="bustia.form.altresBustiesAfectades" /></label>
+						<div class="col-xs-8">
+							<ul style="padding-left: 17px;">
+								<c:forEach items="${bustiesOfOldUnitatWithoutCurrent}"
+									var="bustia" varStatus="loop">
+									<li>${bustia.nom}</li>
+								</c:forEach>
+							</ul>
+						</div>
+					</div>
+				</c:if>
+				<c:if test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
+					<div class="row">
+						<label class="col-xs-4 text-right"><spring:message
+								code="unitat.transcissioInfo.altresUnitatsFusionades" /></label>
+						<div class="col-xs-8">
+							<ul style="padding-left: 17px;">
+								<c:forEach
+									items="${bustiaDto.unitatOrganitzativa.altresUnitatsFusionades}"
+									var="unitatMap" varStatus="loop">
+									<li>${unitatMap.value} (${unitatMap.key})</li>
+								</c:forEach>
+							</ul>
+						</div>
+					</div>
+				</c:if>
+			</div>
 		</div>
-		<div class="panel-body">
-			<div class="row">
-				<label class="col-xs-4 text-right"><spring:message code="bustia.form.tipusTranscissio"/></label>
-				<div class="col-xs-8">
-					<c:if test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'DIVISIO'}">
-						<spring:message code="unitat.tipusTranscissio.DIVISIO"/>
-					</c:if>
-					<c:if test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
-						<spring:message code="unitat.tipusTranscissio.FUSIO"/>
-					</c:if>
-					<c:if test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'SUBSTITUCIO'}">
-						<spring:message code="unitat.tipusTranscissio.SUBSTITUCIO"/>
-					</c:if>
-				</div>
-			</div>
-			<div class="row">
-				<label class="col-xs-4 text-right"><spring:message code="bustia.form.novesUnitats"/></label>
-				<div class="col-xs-8">
-					<c:forEach items="${bustiaDto.unitatOrganitzativa.novaList}"
-						var="newUnitat" varStatus="loop">
-						${newUnitat.denominacio} (${newUnitat.codi})${!loop.last ? ',' : ''} 
-					</c:forEach>
-				</div>
-			</div>
-			<div class="row">
-				<label class="col-xs-4 text-right"><spring:message code="bustia.form.altresBustiesAfectades"/></label>
-				<div class="col-xs-8">
-					<c:forEach items="${bustiesOfOldUnitatWithoutCurrent}" var="bustia"
-						varStatus="loop">
-						${bustia.nom} ${!loop.last ? ',' : ''} 
-					</c:forEach>
-				</div>
-			</div>
-		</div>
-	</div>
+	</c:if>
 	<c:set var="formAction"><rip:modalUrl value="/bustiaAdmin/newOrModify"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="bustiaCommand" role="form">
 		<form:hidden path="id"/>
