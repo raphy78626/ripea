@@ -12,7 +12,12 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.PaginaDto;
+import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
+import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
 
 /**
@@ -60,6 +65,26 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 				provincia,
 				municipi,
 				arrel);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void synchronize (
+			EntitatDto entitatActual) throws SistemaExternException {
+		delegate.synchronize(entitatActual);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<UnitatOrganitzativaDto> findAmbFiltre(Long entitatId, UnitatOrganitzativaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		return delegate.findAmbFiltre(entitatId,  filtre, paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public UnitatOrganitzativaDto findById(Long id) {
+		return delegate.findById(id);
 	}
 
 	/*@Autowired

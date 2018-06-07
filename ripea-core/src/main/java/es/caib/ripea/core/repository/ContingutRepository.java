@@ -109,7 +109,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"    ContingutEntity c " +
 			"where " +
 			"    (:esPareNull = true or c.pare = :pare) " +
-			"and (:esPareNull = false or c.pare in (:pares))" +
+			"and (:esPareNull = false or c.pare in (:pares)) " +
 			"and (:esNullContingutDescripcio = true or lower(c.nom) like lower('%'||:contingutDescripcio||'%')) " +
 			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +

@@ -20,26 +20,102 @@
 	<rip:modalHead/>
 </head>
 <body>
-	<c:set var="formAction"><rip:modalUrl value="/bustiaAdmin/new"/></c:set>
+
+
+	<c:if test="${bustiaDto.unitatOrganitzativa.tipusTranscissio != null}">
+
+		<div class="panel panel-danger">
+			<div class="panel-heading">
+				<span class="fa fa-warning text-danger"></span>
+				<spring:message code="bustia.list.unitatObsoleta" />
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<label class="col-xs-4 text-right"><spring:message
+							code="bustia.form.tipusTranscissio" /></label>
+					<div class="col-xs-8">
+						<c:if
+							test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'DIVISIO'}">
+							<spring:message code="unitat.tipusTranscissio.DIVISIO" />
+						</c:if>
+						<c:if
+							test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
+							<spring:message code="unitat.tipusTranscissio.FUSIO" />
+						</c:if>
+						<c:if
+							test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'SUBSTITUCIO'}">
+							<spring:message code="unitat.tipusTranscissio.SUBSTITUCIO" />
+						</c:if>
+					</div>
+				</div>
+				<div class="row">
+					<label class="col-xs-4 text-right"><spring:message
+							code="bustia.form.novesUnitats" /></label>
+					<div class="col-xs-8">
+						<ul style="padding-left: 17px;">
+							<c:forEach items="${bustiaDto.unitatOrganitzativa.novaList}"
+								var="newUnitat" varStatus="loop">
+								<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
+							</c:forEach>
+						</ul>
+					</div>
+				</div>
+				<c:if test="${!empty bustiesOfOldUnitatWithoutCurrent}">
+					<div class="row">
+						<label class="col-xs-4 text-right"><spring:message
+								code="bustia.form.altresBustiesAfectades" /></label>
+						<div class="col-xs-8">
+							<ul style="padding-left: 17px;">
+								<c:forEach items="${bustiesOfOldUnitatWithoutCurrent}"
+									var="bustia" varStatus="loop">
+									<li>${bustia.nom}</li>
+								</c:forEach>
+							</ul>
+						</div>
+					</div>
+				</c:if>
+				<c:if test="${bustiaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
+					<div class="row">
+						<label class="col-xs-4 text-right"><spring:message
+								code="unitat.transcissioInfo.altresUnitatsFusionades" /></label>
+						<div class="col-xs-8">
+							<ul style="padding-left: 17px;">
+								<c:forEach
+									items="${bustiaDto.unitatOrganitzativa.altresUnitatsFusionades}"
+									var="unitatMap" varStatus="loop">
+									<li>${unitatMap.value} (${unitatMap.key})</li>
+								</c:forEach>
+							</ul>
+						</div>
+					</div>
+				</c:if>
+			</div>
+		</div>
+	</c:if>
+	<c:set var="formAction"><rip:modalUrl value="/bustiaAdmin/newOrModify"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="bustiaCommand" role="form">
 		<form:hidden path="id"/>
 		<form:hidden path="pareId"/>
 		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 		<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 		<rip:inputSuggest 
-			name="unitatCodi" 
+			name="unitatId" 
+			textKey="bustia.form.camp.unitat"
 			urlConsultaInicial="${urlConsultaInicial}" 
 			urlConsultaLlistat="${urlConsultaLlistat}" 
 			inline="false" 
 			placeholderKey="bustia.form.camp.unitat"
-			suggestValue="codi"
+			suggestValue="id"
 			suggestText="nom" />
 <%-- 		<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/> --%>
 		<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/bustiaAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-		</div>
+		</div>		
 	</form:form>
+
+
+
 </body>
 </html>

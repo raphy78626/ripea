@@ -5,6 +5,10 @@ package es.caib.ripea.core.api.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+
 
 /**
  * Informació d'una unitat organitzativa.
@@ -13,6 +17,7 @@ import java.util.Date;
  */
 public class UnitatOrganitzativaDto implements Serializable {
 
+	private Long id;
 	private String codi;
 	private String denominacio;
 	private String nifCif;
@@ -35,7 +40,37 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private Long tipusVia;
 	private String nomVia;
 	private String numVia; 
+	
+	private TipusTranscissioEnumDto tipusTranscissio;
+	
+	private List<UnitatOrganitzativaDto> novaList;
+	private Map<String, String> altresUnitatsFusionades;
 
+
+	public Map<String, String> getAltresUnitatsFusionades() {
+		return altresUnitatsFusionades;
+	}
+	public void setAltresUnitatsFusionades(Map<String, String> altresUnitatsFusionades) {
+		this.altresUnitatsFusionades = altresUnitatsFusionades;
+	}
+	public TipusTranscissioEnumDto getTipusTranscissio() {
+		return tipusTranscissio;
+	}
+	public void setTipusTranscissio(TipusTranscissioEnumDto tipusTranscissio) {
+		this.tipusTranscissio = tipusTranscissio;
+	}
+	public List<UnitatOrganitzativaDto> getNovaList() {
+		return novaList;
+	}
+	public void setNovaList(List<UnitatOrganitzativaDto> novaList) {
+		this.novaList = novaList;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getCodi() {
 		return codi;
 	}

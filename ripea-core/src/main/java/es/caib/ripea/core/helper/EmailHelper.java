@@ -197,9 +197,10 @@ public class EmailHelper {
 				missatge,
 				bustia)) {
 			missatge.setFrom(getRemitent());
-			String unitatOrganitzativa = getUnitatOrganitzativaNom(
-					bustia.getEntitat(),
-					bustia.getUnitatCodi());
+//			String unitatOrganitzativa = getUnitatOrganitzativaNom(
+//					bustia.getEntitat(),
+//					bustia.getUnitatCodi());
+			String unitatOrganitzativa = bustia.getUnitatOrganitzativa().getDenominacio();
 			missatge.setSubject(PREFIX_RIPEA + " Nova anotació de registre rebuda a la bústia: " + bustia.getNom());
 			missatge.setText(
 					"Nova anotació de registre pendent de processar a la bústia:\n" +

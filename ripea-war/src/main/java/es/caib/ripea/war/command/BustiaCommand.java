@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import es.caib.ripea.core.api.dto.BustiaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 
 /**
@@ -21,10 +22,9 @@ public class BustiaCommand {
 	private Long id;
 	@NotEmpty @Size(max=256)
 	private String nom;
-	@NotEmpty @Size(max=9)
 	private String unitatCodi;
+	private Long unitatId;
 	private Long pareId;
-
 	private Long entitatId;
 
 
@@ -60,15 +60,31 @@ public class BustiaCommand {
 		this.entitatId = entitatId;
 	}
 
-	public static BustiaCommand asCommand(BustiaDto dto) {
-		return ConversioTipusHelper.convertir(
-				dto,
-				BustiaCommand.class);
+	public Long getUnitatId() {
+		return unitatId;
 	}
+	public void setUnitatId(Long unitatId) {
+		this.unitatId = unitatId;
+	}
+	
+	public static BustiaCommand asCommand(BustiaDto dto) {
+		BustiaCommand command = ConversioTipusHelper.convertir(
+				dto, 
+				BustiaCommand.class);
+		if (dto.getUnitatOrganitzativa() != null)
+			command.setUnitatId(
+					dto.getUnitatOrganitzativa().getId());
+		return command;
+	}
+	
 	public static BustiaDto asDto(BustiaCommand command) {
-		return ConversioTipusHelper.convertir(
+		BustiaDto bustiaDto = ConversioTipusHelper.convertir(
 				command,
 				BustiaDto.class);
+		UnitatOrganitzativaDto unitatOrganitzativaDto = new UnitatOrganitzativaDto();
+		unitatOrganitzativaDto.setId(command.getUnitatId());
+		bustiaDto.setUnitatOrganitzativa(unitatOrganitzativaDto);
+		return bustiaDto;
 	}
 
 	@Override

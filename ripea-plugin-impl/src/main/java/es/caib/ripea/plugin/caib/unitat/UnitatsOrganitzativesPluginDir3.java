@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +43,29 @@ import es.caib.ripea.plugin.utils.PropertiesHelper;
  */
 public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlugin {
 
+	
+	@Override
+	public UnitatOrganitzativa obtenerUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+		return toUnitatOrganitzativa(getObtenerUnidadesService().obtenerUnidad(
+				pareCodi,
+				fechaActualizacion,
+				fechaSincronizacion));
+	}
+	
+	@Override
+	public List<UnitatOrganitzativa> obtenerArbolUnidades(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+		List<UnitatOrganitzativa> unitatOrganitzativa = new ArrayList<UnitatOrganitzativa>();
+		List<UnidadTF> arbol = getObtenerUnidadesService().obtenerArbolUnidades(
+				pareCodi,
+				fechaActualizacion,
+				fechaSincronizacion);
+		
+		for(UnidadTF unidadTF: arbol){
+			unitatOrganitzativa.add(toUnitatOrganitzativa(unidadTF));
+		}
+		return unitatOrganitzativa;
+	}
+	
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(String pareCodi) throws SistemaExternException {
 		try {
@@ -206,7 +230,8 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 				unidad.getDescripcionLocalidad(),
 				unidad.getCodigoTipoVia(), 
 				unidad.getNombreVia(), 
-				unidad.getNumVia());
+				unidad.getNumVia(),
+				unidad.getHistoricosUO());
 		return unitat;
 	}
 

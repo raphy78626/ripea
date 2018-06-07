@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.Resource;
+
 import org.fundaciobit.plugins.signature.api.FileInfoSignature;
 import org.fundaciobit.plugins.validatesignature.api.CertificateInfo;
 import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
@@ -83,6 +85,14 @@ import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
+import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
+import es.caib.ripea.plugin.ciutada.CiutadaDocument;
+import es.caib.ripea.plugin.ciutada.CiutadaExpedientInformacio;
+import es.caib.ripea.plugin.ciutada.CiutadaNotificacioEstat;
+import es.caib.ripea.plugin.ciutada.CiutadaNotificacioResultat;
+import es.caib.ripea.plugin.ciutada.CiutadaPersona;
+import es.caib.ripea.plugin.ciutada.CiutadaPlugin;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.dadesext.ComunitatAutonoma;
@@ -141,8 +151,12 @@ public class PluginHelper {
 	private IntegracioHelper integracioHelper;
 	@Autowired
 	private DocumentHelper documentHelper;
+
 	@Autowired
 	private DadesExternesHelper dadesExternesHelper;
+	@Resource
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+
 
 
 
@@ -211,6 +225,7 @@ public class PluginHelper {
 		}
 	}
 	
+
 	public List<UnitatOrganitzativaDto> unitatsOrganitzativesFindListByPare(
 			String pareCodi) {
 		String accioDescripcio = "Consulta llista d'unitats donat un pare";
@@ -220,7 +235,29 @@ public class PluginHelper {
 		try {
 			List<UnitatOrganitzativa> resposta = getUnitatsOrganitzativesPlugin().findAmbPare(
 					pareCodi);
-			return conversioTipusHelper.convertirList(resposta, UnitatOrganitzativaDto.class);
+			
+			if (resposta != null) {
+				integracioHelper.addAccioOk(
+						IntegracioHelper.INTCODI_UNITATS,
+						accioDescripcio,
+						accioParams,
+						IntegracioAccioTipusEnumDto.ENVIAMENT,
+						System.currentTimeMillis() - t0);
+				return conversioTipusHelper.convertirList(resposta, UnitatOrganitzativaDto.class);
+			} else {
+				String errorMissatge = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
+				integracioHelper.addAccioError(
+						IntegracioHelper.INTCODI_UNITATS,
+						accioDescripcio,
+						accioParams,
+						IntegracioAccioTipusEnumDto.ENVIAMENT,
+						System.currentTimeMillis() - t0,
+						errorMissatge);
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_UNITATS,
+						errorMissatge);
+			}
+				
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";
 			integracioHelper.addAccioError(
@@ -238,6 +275,13 @@ public class PluginHelper {
 		}
 	}
 
+	/**
+	 * Takes the list of unitats from database and converts it to the tree
+	 * 
+	 * @param pareCodi 
+	 * 				unitatArrel
+	 * @return tree of unitats
+	 */
 	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(
 			String pareCodi) {
 		String accioDescripcio = "Consulta de l'arbre d'unitats donat un pare";
@@ -245,8 +289,10 @@ public class PluginHelper {
 		accioParams.put("unitatPare", pareCodi);
 		long t0 = System.currentTimeMillis();
 		try {
-			List<UnitatOrganitzativa> unitatsOrganitzatives = getUnitatsOrganitzativesPlugin().findAmbPare(
-					pareCodi);
+			List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository.findByCodiUnitatArrel(pareCodi);
+			
+			List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
+			
 			ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
 			// Cerca l'unitat organitzativa arrel
 			UnitatOrganitzativa unitatOrganitzativaArrel = null;
@@ -299,6 +345,8 @@ public class PluginHelper {
 					ex);
 		}
 	}
+
+
 	public UnitatOrganitzativaDto unitatsOrganitzativesFindByCodi(
 			String codi) {
 		String accioDescripcio = "Consulta d'unitat organitzativa donat el seu codi";
@@ -2745,17 +2793,25 @@ public class PluginHelper {
 		}
 		return gestioDocumentalPlugin;
 	}
-
+	/**
+	 * 
+	 * @param unitatOrganitzativa - in first call it is unitat arrel, later the children nodes
+	 * @param unitatsOrganitzatives
+	 * @param pare - in first call it is null, later pare
+	 * @return
+	 */
 	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
 			UnitatOrganitzativa unitatOrganitzativa,
 			List<UnitatOrganitzativa> unitatsOrganitzatives,
 			ArbreNodeDto<UnitatOrganitzativaDto> pare) {
+		// current unitat organitzativa
 		ArbreNodeDto<UnitatOrganitzativaDto> resposta = new ArbreNodeDto<UnitatOrganitzativaDto>(
 				pare,
 				conversioTipusHelper.convertir(
 						unitatOrganitzativa,
 						UnitatOrganitzativaDto.class));
 		String codiUnitat = (unitatOrganitzativa != null) ? unitatOrganitzativa.getCodi() : null;
+		// for every child of current unitat call recursively this method
 		for (UnitatOrganitzativa uo: unitatsOrganitzatives) {
 			if (	(codiUnitat == null && uo.getCodiUnitatSuperior() == null) ||
 					(uo.getCodiUnitatSuperior() != null && uo.getCodiUnitatSuperior().equals(codiUnitat))) {
@@ -3466,7 +3522,7 @@ public class PluginHelper {
 		}
 		return dadesUsuariPlugin;
 	}
-	private UnitatsOrganitzativesPlugin getUnitatsOrganitzativesPlugin() {
+	public UnitatsOrganitzativesPlugin getUnitatsOrganitzativesPlugin() {
 		if (unitatsOrganitzativesPlugin == null) {
 			String pluginClass = getPropertyPluginUnitatsOrganitzatives();
 			if (pluginClass != null && pluginClass.length() > 0) {

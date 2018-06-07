@@ -3,7 +3,10 @@
  */
 package es.caib.ripea.plugin.unitat;
 
+import java.net.MalformedURLException;
+import java.sql.Timestamp;
 import java.util.List;
+
 
 import es.caib.ripea.plugin.SistemaExternException;
 
@@ -14,7 +17,19 @@ import es.caib.ripea.plugin.SistemaExternException;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface UnitatsOrganitzativesPlugin {
+	
+	
 
+	public UnitatOrganitzativa obtenerUnidad(
+			String pareCodi, 
+			Timestamp fechaActualizacion, 
+			Timestamp fechaSincronizacion) throws MalformedURLException;
+	
+	public List<UnitatOrganitzativa> obtenerArbolUnidades(
+			String pareCodi, 
+			Timestamp fechaActualizacion, 
+			Timestamp fechaSincronizacion) throws MalformedURLException;
+	
 	/**
 	 * Retorna la llista d'unitats organitzatives filles donada
 	 * una unitat pare.

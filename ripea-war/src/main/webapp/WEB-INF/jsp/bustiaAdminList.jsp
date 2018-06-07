@@ -26,7 +26,7 @@
 			<div class="col-md-5">
 				<rip:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-2">
 <%-- 				<rip:inputText name="unitatCodi" inline="true" placeholderKey="bustia.list.filtre.unitat.codidir3"/> --%>
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
@@ -35,11 +35,14 @@
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
-					placeholderKey="bustia.list.filtre.unitat.codidir3"
+					placeholderKey="bustia.form.camp.unitat"
 					suggestValue="codi"
 					suggestText="nom" />
 			</div>
-			<div class="col-md-4 pull-right">
+			<div class="col-md-2" style="padding-left: 30px;">
+				<rip:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+			</div>
+			<div class="col-md-3 pull-right">
 				<div class="pull-right">
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
@@ -54,17 +57,15 @@
 				<th data-col-name="id" data-visible="false">#</th>
 				<th data-col-name="unitatCodi" data-visible="false"></th>
 				<th data-col-name="entitat.codi" data-visible="false"></th>
-				<th data-col-name="nom"><spring:message code="bustia.list.columna.nom"/></th>
-				<th data-col-name="unitat" data-template="#denominacioTemplate">
-					<spring:message code="bustia.list.columna.unitat"/>
-					<script id="denominacioTemplate" type="text/x-jsrender">
-						{{if unitat}}
-							{{:unitatCodi}} - {{:unitat.denominacio}}
-						{{else}}
-							{{:unitatCodi}}
-						{{/if}}
+				<th data-col-name="nom" data-template="#nomTemplate">
+					<spring:message code="bustia.list.columna.nom"/>
+					<script id="nomTemplate" type="text/x-jsrender">
+						{{:nom}}
+						{{if unitatOrganitzativa.estat=='E'||unitatOrganitzativa.estat=='A'}}<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.pendent.registre.estat.error"/>"></span>{{/if}}
 					</script>
 				</th>
+				<th data-col-name="unitatOrganitzativa.codi"><spring:message code="bustia.list.columna.unitat.codi"/></th>
+				<th data-col-name="unitatOrganitzativa.denominacio"><spring:message code="bustia.list.columna.unitat.nom"/></th>			
 				<th data-col-name="perDefecte" data-template="#cellPerDefecteTemplate">
 					<spring:message code="bustia.list.columna.per.defecte"/>
 					<script id="cellPerDefecteTemplate" type="text/x-jsrender">
