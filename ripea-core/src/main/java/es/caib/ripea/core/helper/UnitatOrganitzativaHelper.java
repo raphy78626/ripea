@@ -165,22 +165,24 @@ public class UnitatOrganitzativaHelper {
 		return unitat;
 	}
 	
-	
-	public static UnitatOrganitzativaDto assignAltresUnitatsFusionades(UnitatOrganitzativaEntity unitatOrganitzativaEntity,
-			UnitatOrganitzativaDto unitatOrganitzativaDto) {
-
-		Map<String, String> altresUnitatsFusionades = new HashMap<String, String>();
-		if (unitatOrganitzativaEntity.getTipusTranscissio() == TipusTranscissioEnumDto.FUSIO) {
-			List<UnitatOrganitzativaEntity> antigaUnitats = unitatOrganitzativaEntity.getNovaList().get(0)
-					.getAntigaList();
-			for (UnitatOrganitzativaEntity unitatEntity : antigaUnitats) {
-				if (unitatOrganitzativaEntity.getCodi() != unitatEntity.getCodi()) {
-					altresUnitatsFusionades.put(unitatEntity.getCodi(), unitatEntity.getDenominacio());
+	public static UnitatOrganitzativaDto assignAltresUnitatsFusionades(
+			UnitatOrganitzativaEntity unitatOrganitzativaEntity, UnitatOrganitzativaDto unitatOrganitzativaDto) {
+		if (unitatOrganitzativaEntity != null && unitatOrganitzativaDto != null) {
+			Map<String, String> altresUnitatsFusionades = new HashMap<String, String>();
+			if (unitatOrganitzativaEntity.getTipusTranscissio() == TipusTranscissioEnumDto.FUSIO) {
+				List<UnitatOrganitzativaEntity> antigaUnitats = unitatOrganitzativaEntity.getNovaList().get(0)
+						.getAntigaList();
+				for (UnitatOrganitzativaEntity unitatEntity : antigaUnitats) {
+					if (unitatOrganitzativaEntity.getCodi() != unitatEntity.getCodi()) {
+						altresUnitatsFusionades.put(unitatEntity.getCodi(), unitatEntity.getDenominacio());
+					}
 				}
 			}
-		}
-		unitatOrganitzativaDto.setAltresUnitatsFusionades(altresUnitatsFusionades);
-		return unitatOrganitzativaDto;
+			unitatOrganitzativaDto.setAltresUnitatsFusionades(altresUnitatsFusionades);
+			return unitatOrganitzativaDto;
+		} else
+			return null;
+
 	}
 	
     
