@@ -37,7 +37,7 @@ import es.caib.ripea.core.service.ws.bustia.BustiaV1WsServiceImpl;
 		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-@RolesAllowed({"IPA_BSTWS"})
+@RolesAllowed({"tothom"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BustiaV1WsServiceBean implements BustiaV1WsService {

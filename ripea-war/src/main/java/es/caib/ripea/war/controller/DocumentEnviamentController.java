@@ -195,7 +195,7 @@ public class DocumentEnviamentController extends BaseUserController {
 			@PathVariable Long notificacioId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		boolean fetaAmbExit = expedientEnviamentService.notificacioRetry(
+		boolean fetaAmbExit = documentEnviamentService.notificacioRetry(
 				entitatActual.getId(),
 				documentId,
 				notificacioId);

@@ -357,6 +357,16 @@ public class RegistreAnotacioDto extends ContingutDto {
 		this.justificant = justificant;
 	}
 	
+	public String getInteressatsResum() {
+		String interessatsResum = "";
+		if (this.interessats != null)
+			for (RegistreInteressat interessat: this.interessats) {
+				interessatsResum += interessat.getNom() + " " + interessat.getLlinatge1() + " " + interessat.getLlinatge2() + "<br>"; 
+			}
+		
+		return interessatsResum;
+	}
+	
 	private Boolean llegida;
 	
 	public Boolean getLlegida() {

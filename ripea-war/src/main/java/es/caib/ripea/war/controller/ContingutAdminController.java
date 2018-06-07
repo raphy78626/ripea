@@ -212,6 +212,7 @@ public class ContingutAdminController extends BaseAdminController {
 		}
 		return "redirect:../../../" + registreId + "/info";
 	}
+	
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -221,8 +222,6 @@ public class ContingutAdminController extends BaseAdminController {
 	    				new SimpleDateFormat("dd/MM/yyyy"),
 	    				true));
 	}
-
-
 
 	private ContingutFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
@@ -239,5 +238,4 @@ public class ContingutAdminController extends BaseAdminController {
 		}
 		return filtreCommand;
 	}
-
 }

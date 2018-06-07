@@ -3,7 +3,7 @@
  */
 package es.caib.ripea.core.service;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,13 +18,10 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.plugins.arxiu.api.ContingutArxiu;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.ripea.core.api.dto.ArbreDto;
-import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.BustiaContingutDto;
 import es.caib.ripea.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
@@ -32,17 +29,14 @@ import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.BustiaFiltreDto;
 import es.caib.ripea.core.api.dto.BustiaUserFiltreDto;
 import es.caib.ripea.core.api.dto.ContingutDto;
-import es.caib.ripea.core.api.dto.DocumentNtiTipoFirmaEnumDto;
-import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.PermisDto;
-import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.BustiaServiceException;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
+import es.caib.ripea.core.api.registre.Firma;
 import es.caib.ripea.core.api.registre.RegistreAnnex;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
@@ -71,11 +65,11 @@ import es.caib.ripea.core.helper.PaginacioHelper.Converter;
 import es.caib.ripea.core.helper.PermisosHelper;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.helper.PluginHelper;
+import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
 import es.caib.ripea.core.helper.ReglaHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.helper.UsuariHelper;
-import es.caib.ripea.core.helper.XmlHelper;
 import es.caib.ripea.core.repository.AlertaRepository;
 import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.ContingutComentariRepository;
@@ -430,9 +424,9 @@ public class BustiaServiceImpl implements BustiaService {
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatCodiAndPareNotNull(entitat, unitatCodi);
 		List<BustiaDto> resposta = toBustiaDto(
 				busties,
-				true,
+				false,
 				false);
-		omplirPermisosPerBusties(resposta, true);
+		omplirPermisosPerBusties(resposta, false);
 		return resposta;
 	}
 
@@ -666,9 +660,9 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
-	public void registreAnotacioCrear(
+	public Long registreAnotacioCrear(
 			String entitatUnitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatOrganitzativa,
@@ -678,9 +672,13 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "tipus=" + tipus + ", "
 				+ "unitatOrganitzativa=" + unitatOrganitzativa + ","
 				+ "anotacio=" + anotacio.getIdentificador() + ")");
+		
+		Long idAnotacioRetornada = null;
+		
 		EntitatEntity entitatPerUnitat = entitatRepository.findByUnitatArrel(entitatUnitatCodi);
 		if (entitatPerUnitat == null) {
 			throw new NotFoundException(
+					
 					entitatUnitatCodi,
 					EntitatEntity.class);
 		}
@@ -707,15 +705,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"numero=" + anotacio.getNumero() + ", " +
 					"data=" + anotacio.getData() + ")");
 		}
-		if (anotacio.getJustificant() != null && anotacio.getJustificant().getFitxerArxiuUuid() == null) {
-			throw new ValidationException(
-					"El justificant adjuntat no conté un uuid (" +
-					"entitatCodi=" + anotacio.getEntitatCodi() + ", " +
-					"llibreCodi=" + anotacio.getLlibreCodi() + ", " +
-					"tipus=" + RegistreTipusEnum.ENTRADA.getValor() + ", " +
-					"numero=" + anotacio.getNumero() + ", " +
-					"data=" + anotacio.getData() + ")");
-		}
+		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
@@ -726,21 +716,25 @@ public class BustiaServiceImpl implements BustiaService {
 				unitatOrganitzativa,
 				anotacio,
 				reglaAplicable);
-		registreRepository.saveAndFlush(anotacioEntity);
-		if (anotacioEntity.getAnnexos() != null && !anotacioEntity.getAnnexos().isEmpty()) {
-			// Creació de l'expedient temporal pels annexos de l'anotació
-			ContingutArxiu expedientCreat = pluginHelper.arxiuExpedientPerAnotacioCrear(
-					anotacioEntity, 
-					bustia);
-			anotacioEntity.updateExpedientArxiuUuid(expedientCreat.getIdentificador());
+		
+		Boolean isDistribucioAsincrona = "true".equalsIgnoreCase(PropertiesHelper.getProperties().getProperty("es.caib.ripea.tasca.dist.anotacio.asincrona"));
+		
+		if (anotacioEntity.getProcesEstat() == RegistreProcesEstatEnum.NO_PROCES) {
+			anotacioEntity.updateProces(
+					anotacioEntity.getData(), 
+					RegistreProcesEstatEnum.PROCESSAT, 
+					null);
+
+		} else if (isDistribucioAsincrona) {
+			guardarFitxersGesDoc(anotacioEntity, anotacio);
+		} else {
+			guardarFitxersGesDoc(anotacioEntity, anotacio);
 			registreRepository.saveAndFlush(anotacioEntity);
-			// Processament dels documents annexos
-			processarAnnexosRegistre(
-					anotacioEntity,
-					anotacio,
-					bustia,
-					expedientCreat);
+			idAnotacioRetornada = anotacioEntity.getId();
 		}
+		
+		registreRepository.saveAndFlush(anotacioEntity);
+		
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
@@ -755,6 +749,8 @@ public class BustiaServiceImpl implements BustiaService {
 		bustiaHelper.evictElementsPendentsBustia(
 				bustia.getEntitat(),
 				bustia);
+		
+		return idAnotacioRetornada;
 	}
 
 	@Transactional
@@ -1158,148 +1154,32 @@ public class BustiaServiceImpl implements BustiaService {
 		return bustiaContingut;
 	}
 
-	private void processarAnnexosRegistre(
-			RegistreEntity anotacioEntity,
-			RegistreAnotacio anotacio,
-			BustiaEntity bustia,
-			ContingutArxiu expedientCreat) {
-		try {
+	private void guardarFitxersGesDoc(
+			RegistreEntity anotacioEntity, 
+			RegistreAnotacio anotacio) {
+		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
 			for (int i = 0; i < anotacioEntity.getAnnexos().size(); i++) {
 				RegistreAnnexEntity annexEntity = anotacioEntity.getAnnexos().get(i);
 				RegistreAnnex annex = anotacio.getAnnexos().get(i);
-				// Si tenim contingut de fitxer i també referència del registre, hem de tornar una excepció
-				if (annexEntity.getFitxerArxiuUuid() == null && annex.getFitxerContingut() == null) {
-					throw new ValidationException(
-							"S'ha d'especificar o bé la referència del document o el contingut del document"
-							+ " per l'annex [" + annexEntity.getTitol() + "]");
-				} else {
-					guardarDocumentAnnex(
-							annexEntity, 
-							bustia,
-							expedientCreat,
-							annex);
+				if (annex.getFitxerContingut() != null && annex.getFitxerContingut().length > 0) {
+					annexEntity.updateGesdocDocumentId(pluginHelper.gestioDocumentalCreate(
+							PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+							new ByteArrayInputStream(annex.getFitxerContingut())));
 				}
-				// Si l'anotació té una regla sistra llavors intenta extreure la informació dels identificadors
-				// del tràmit i del procediment de l'annex
-				if (anotacioEntity.getRegla() != null &&
-					anotacioEntity.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE &&
-					anotacioEntity.getRegla().getBackofficeTipus() == BackofficeTipusEnumDto.SISTRA) {
-					if (annexEntity.getFitxerNom().equals("DatosPropios.xml") || annexEntity.getFitxerNom().equals("Asiento.xml")) {
-						processarAnnexSistra(
-								anotacioEntity,
-								annexEntity,
-								annex.getFitxerContingut());
+				
+				for (int j = 0; j < annexEntity.getFirmes().size(); j++) {
+					RegistreAnnexFirmaEntity firmaEntity = annexEntity.getFirmes().get(j);
+					Firma firma = annex.getFirmes().get(j);
+					if (firma.getContingut() != null && firma.getContingut().length > 0) {
+						firmaEntity.updateGesdocFirmaId(pluginHelper.gestioDocumentalCreate(
+								PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+								new ByteArrayInputStream(firma.getContingut())));
 					}
 				}
 			}
-		} catch (Exception ex) {
-			try {
-				pluginHelper.arxiuExpedientEsborrarPerUuid(
-						anotacioEntity.getExpedientArxiuUuid());
-			} catch (Exception ex2) {
-				logger.error(
-						"Error al eliminar o tancar l'expedient creat l'arxiu digital",
-						ex2);
-			}
-			throw new BustiaServiceException(
-					"Error al processar els annexos de l'anotació de registre",
-					ex);
 		}
 	}
-
-	/*
-	 * Mètode privat per obrir el document annex de tipus sistra i extreure'n
-	 * informació per a l'anotació de registre. La informació que es pot extreure
-	 * depén del document:
-	 * - Asiento.xml: ASIENTO_REGISTRAL.DATOS_ASUNTO.IDENTIFICADOR_TRAMITE (VARCHAR2(20))
-	 * - DatosPropios.xml: DATOS_PROPIOS.INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO (VARCHAR2(100))
-	 * 
-	 * @param anotacio 
-	 * 			Anotació del registre
-	 * @param annex
-	 * 			Document annex amb el contingut per a llegir.
-	 */
-	private void processarAnnexSistra(
-			RegistreEntity anotacio,
-			RegistreAnnexEntity annex,
-			byte[] annexContingut) {
-		try {
-			org.w3c.dom.Document doc = XmlHelper.getDocumentFromContent(annexContingut);
-			if (annex.getFitxerNom().equals("DatosPropios.xml")) {
-				String identificadorProcediment = XmlHelper.getNodeValue(
-						doc.getDocumentElement(), "INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO");
-				anotacio.updateIdentificadorProcedimentSistra(identificadorProcediment);
-			} else if (annex.getFitxerNom().equals("Asiento.xml")) {
-				String identificadorTramit = XmlHelper.getNodeValue(
-						doc.getDocumentElement(), "DATOS_ASUNTO.IDENTIFICADOR_TRAMITE");
-				anotacio.updateIdentificadorTramitSistra(identificadorTramit);
-			}		
-		} catch (Exception e) {
-			logger.error(
-					"Error processant l'annex per l'anotació amb regla backoffice SISTRA " + annex.getFitxerNom(),
-					e);
-		}
-	}
-
-	private void guardarDocumentAnnex(
-			RegistreAnnexEntity annex,
-			BustiaEntity bustia,
-			ContingutArxiu expedientCreat,
-			RegistreAnnex registreAnnex) throws IOException {
-		byte[] contingut = null;
-		if (registreAnnex.getFitxerContingut() != null) {
-			contingut = registreAnnex.getFitxerContingut();
-		} else {
-			Document arxiuDocument = pluginHelper.arxiuDocumentConsultar(
-					bustia,
-					annex.getFitxerArxiuUuid(),
-					null,
-					true);
-			if (arxiuDocument.getContingut() != null) {
-				contingut = arxiuDocument.getContingut().getContingut();
-			} else {
-				throw new ValidationException(
-						"No s'ha trobat cap contingut per l'annex (" +
-						"uuid=" + annex.getFitxerArxiuUuid() + ")");
-			}
-		}
-		FitxerDto fitxer = new FitxerDto();
-		fitxer.setNom(annex.getFitxerNom());
-		fitxer.setContingut(contingut);
-		fitxer.setContentType(annex.getFitxerTipusMime());
-		fitxer.setTamany(contingut.length);
-		if (pluginHelper.isRegistreSignarAnnexos() && annex.getFirmes().size() == 0) {
-			// Ripea signa amb el plugin de signatures els annexos sense firmes
-			pluginHelper.signaturaSignarCadesDetached(
-					annex,
-					contingut);
-			String tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
-			String perfil = FirmaPerfil.BES.toString();
-			String fitxerNom = annex.getFitxerNom();
-			String tipusMime = "csig";
-			String csvRegulacio = null;
-			RegistreAnnexFirmaEntity annexFirma = RegistreAnnexFirmaEntity.getBuilder(
-					tipus,
-					perfil,
-					fitxerNom + "_cades_det.csig",
-					//firmaContingut,
-					tipusMime,
-					csvRegulacio,
-					true, // firmat des de RIPEA
-					annex).build();
-			annex.getFirmes().add(annexFirma);
-		}
-		String uuidDocument = pluginHelper.arxiuDocumentAnnexCrear(
-				annex,
-				bustia,
-				fitxer,
-				registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
-						annex,
-						registreAnnex),
-				expedientCreat);
-		annex.updateFitxerArxiuUuid(uuidDocument);
-	}
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 
 }

@@ -37,8 +37,8 @@ import es.caib.ripea.ws.v1.bustia.RegistreAnotacio;
 public class BustiaV1Test {
 
 	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/ripea/ws/v1/bustia";
-	private static final String USERNAME = "tomeud";
-	private static final String PASSWORD = "tomeud15";
+	private static final String USERNAME = "admin";
+	private static final String PASSWORD = "admin15";
 
 
 
@@ -74,7 +74,7 @@ public class BustiaV1Test {
         File file = new File("c:/Feina/RIPEA/annexos/foto.jpg");
         byte[] encodedContingut = FileUtils.readFileToByteArray(file);
         RegistreAnnex annex1 = new RegistreAnnex();
-        annex1.setTitol("algo");
+        annex1.setTitol("Annex imatge");
         annex1.setFitxerNom(file.getName());
         annex1.setFitxerTipusMime(FilenameUtils.getExtension(file.getName()));
         annex1.setFitxerContingut(encodedContingut);
@@ -85,6 +85,8 @@ public class BustiaV1Test {
         annex1.setEniTipusDocumental("TD01");
         annex1.setSicresTipusDocument("01");
         afegirFirmes(annex1);
+        
+        anotacio.getAnnexos().add(annex1);
         
         
         File file2 = new File("c:/Feina/RIPEA/annexos/annex2.pdf");
@@ -100,8 +102,9 @@ public class BustiaV1Test {
         annex2.setEniEstatElaboracio("EE01");
         annex2.setEniTipusDocumental("TD02");
         annex2.setSicresTipusDocument("02");
+//        afegirFirmes(annex2);
         
-        anotacio.getAnnexos().add(annex2);
+//        anotacio.getAnnexos().add(annex2);
         
         File file3 = new File("c:/Feina/RIPEA/annexos/justificant.pdf");
         byte[] encodedContingut3 = FileUtils.readFileToByteArray(file3);
@@ -118,7 +121,7 @@ public class BustiaV1Test {
         justificant.setSicresTipusDocument("02");
         justificant.setFitxerArxiuUuid("9f33c5c7-7d0f-4d70-9082-c541a42cc041");
         
-        anotacio.setJustificant(justificant);
+//        anotacio.setJustificant(justificant);
         
         try {
     		getBustiaServicePort().enviarAnotacioRegistreEntrada(
@@ -154,7 +157,7 @@ public class BustiaV1Test {
 		firma2.setCsvRegulacio("Regulació CSV 2");
 		
 		annex.getFirmes().add(firma);
-		annex.getFirmes().add(firma2);
+//		annex.getFirmes().add(firma2);
 	}
 
 	private BustiaV1 getBustiaServicePort() throws MalformedURLException {

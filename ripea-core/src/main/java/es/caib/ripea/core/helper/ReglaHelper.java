@@ -13,6 +13,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.axis.encoding.Base64;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,15 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
 import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
+import es.caib.ripea.core.api.exception.AplicarReglaException;
 import es.caib.ripea.core.api.exception.ScheduledTaskException;
 import es.caib.ripea.core.api.registre.RegistreAnotacio;
-import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.ripea.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
-import es.caib.ripea.core.api.service.ws.RipeaBackofficeResultatProces;
-import es.caib.ripea.core.api.service.ws.RipeaBackofficeWsService;
 import es.caib.ripea.core.api.service.bantel.wsClient.v2.BantelFacadeException;
+import es.caib.ripea.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
 import es.caib.ripea.core.api.service.bantel.wsClient.v2.model.ReferenciaEntrada;
 import es.caib.ripea.core.api.service.bantel.wsClient.v2.model.ReferenciasEntrada;
+import es.caib.ripea.core.api.service.ws.RipeaBackofficeResultatProces;
+import es.caib.ripea.core.api.service.ws.RipeaBackofficeWsService;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.ContingutMovimentEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -64,6 +66,10 @@ public class ReglaHelper {
 	private BustiaHelper bustiaHelper;
 	@Resource
 	private EmailHelper emailHelper;
+	@Resource
+	private MessageHelper messageHelper;
+	@Resource
+	private AlertaHelper alertaHelper;
 
 	private final static String CLAU_XIFRAT = "3çS)ZX!3a94_*?S2";
 
@@ -216,17 +222,14 @@ public class ReglaHelper {
 			error = ExceptionUtils.getStackTrace(t);
 		}
 		if (error != null) {
-			throw new ScheduledTaskException(error);
+			throw new AplicarReglaException(error);
 		} else {
 			if (pendentBustia != null) {
 				bustiaHelper.evictElementsPendentsBustia(
 						regla.getEntitat(),
 						pendentBustia);
 			}
-			pendent.updateProces(
-					new Date(),
-					RegistreProcesEstatEnum.PROCESSAT, // (ReglaTipusEnumDto.BUSTIA.equals(regla.getTipus())) ? RegistreProcesEstatEnum.PROCESSAT_VISIBLE : RegistreProcesEstatEnum.PROCESSAT_OCULT,
-					error);
+			
 			// Si la regla és del tipus backoffice marca com a esborrat el contingut una vegada processat
 			if (ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
 				pendent.updateEsborrat(1);
@@ -234,53 +237,75 @@ public class ReglaHelper {
 		}
 	}
 
-	@Transactional
-	public void actualitzarEstatError(
-			Long pendentId,
-			String error) {
-		RegistreEntity pendent = registreRepository.findOne(pendentId);
-		ReglaEntity regla = pendent.getRegla();
-		if (ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
-			Integer intentsRegla = regla.getBackofficeIntents();
-			if (intentsRegla == null) {
-				pendent.updateProces(
-						new Date(),
-						RegistreProcesEstatEnum.ERROR,
-						error);
-			} else {
-				Integer intentsPendent = pendent.getProcesIntents();
-				if (intentsPendent != null && intentsPendent.intValue() >= intentsRegla.intValue() - 1) {
-					pendent.updateProces(
-							new Date(),
-							RegistreProcesEstatEnum.ERROR,
-							error);
-				} else {
-					pendent.updateProces(
-							new Date(),
-							RegistreProcesEstatEnum.PENDENT,
-							error);
-				}
-			}
-		} else {
-			pendent.updateProces(
-					new Date(),
-					RegistreProcesEstatEnum.ERROR,
-					error);
-		}
-	}
-
 	/** Mètode per encriptar un text per a generar la clau d'accès. */
 	public static String encrypt(String input){
-		   byte[] crypted = null;
-		   try{
-		     SecretKeySpec skey = new SecretKeySpec(CLAU_XIFRAT.getBytes(), "AES");
-		       Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-		       cipher.init(Cipher.ENCRYPT_MODE, skey);
-		       crypted = cipher.doFinal(input.getBytes());
-		     }catch(Exception e){
-		      System.out.println(e.toString());
-		     }
-		     return new String(Base64.encode(crypted));
-		 }
+	   byte[] crypted = null;
+	   try{
+	     SecretKeySpec skey = new SecretKeySpec(CLAU_XIFRAT.getBytes(), "AES");
+	       Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+	       cipher.init(Cipher.ENCRYPT_MODE, skey);
+	       crypted = cipher.doFinal(input.getBytes());
+	     }catch(Exception e){
+	      System.out.println(e.toString());
+	     }
+	     return new String(Base64.encode(crypted));
+	 }
 	
+	public boolean reglaAplicar(
+			RegistreEntity anotacio) {
+		contingutLogHelper.log(
+				anotacio,
+				LogTipusEnumDto.PROCESSAMENT,
+				null,
+				null,
+				false,
+				false);
+		logger.debug("Aplicant regla a anotació de registre (" +
+				"anotacioId=" + anotacio.getId() + ", " +
+				"anotacioNum=" + anotacio.getIdentificador() + ", " +
+				"reglaId=" + anotacio.getRegla().getId() + ", " +
+				"reglaTipus=" + anotacio.getRegla().getTipus().name() + ", " +
+				(anotacio.getRegla().getBackofficeTipus() != null ?
+						"reglaBackofficeTipus=" + anotacio.getRegla().getBackofficeTipus().name() + ", " 
+						: "") +
+				"metaExpedient=" + anotacio.getRegla().getMetaExpedient() + ", " +
+				"arxiu=" + anotacio.getRegla().getArxiu() + ", " +
+				"bustia=" + anotacio.getRegla().getBustia() + ")");
+		try {
+			aplicar(anotacio.getId());
+			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
+			
+			alertaHelper.crearAlerta(
+					messageHelper.getMessage(
+							"alertes.segon.pla.aplicar.regles",
+							new Object[] {anotacio.getId()}),
+					null,
+					anotacio.getId());
+			
+			return true;
+		} catch (Exception ex) {
+			String procesError;
+			if (ex instanceof ScheduledTaskException) {
+				procesError = ex.getMessage();
+			} else {
+				procesError = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
+			}
+			
+			logger.debug("Processament anotació ERROR (" +
+					"id=" + anotacio.getId() + ", " +
+					"núm.=" + anotacio.getIdentificador() + "): " +
+					procesError);
+			
+			alertaHelper.crearAlerta(
+					messageHelper.getMessage(
+							"alertes.segon.pla.aplicar.regles.error",
+							new Object[] {anotacio.getId()}),
+					ex,
+					anotacio.getId());
+			
+			return false;
+		}
+	}
+	
+	private static final Logger logger = LoggerFactory.getLogger(ReglaHelper.class);
 }

@@ -6,6 +6,8 @@ package es.caib.ripea.core.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.ripea.core.entity.ContingutEntity;
+import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
 
 /**
@@ -37,6 +40,18 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 		    "	and (r.regla.backofficeTipus is null or r.regla.backofficeTipus <> es.caib.ripea.core.api.dto.BackofficeTipusEnumDto.SISTRA) " +
 		    "order by r.data asc")
 	List<RegistreEntity> findAmbReglaPendentProcessar();
+	
+	/** Consulta les anotacions de registre pendents de distribuïr
+	 * que s'han rebut anteriorment via WS
+	 * @return
+	 */
+	@Query("from RegistreEntity r " +
+			"where ((r.procesEstat = es.caib.ripea.core.api.registre.RegistreProcesEstatEnum.PENDENT and r.procesData is null) " +
+			" or (r.procesEstat = es.caib.ripea.core.api.registre.RegistreProcesEstatEnum.ERROR and (r.procesIntents is null or r.procesIntents <= :maxReintents))) " +
+			" and r.procesEstatSistra is null" +
+		    " order by r.data asc")
+	List<RegistreEntity> findPendentsDistribuir(
+			@Param("maxReintents") int maxReintents);
 	
 	/** Consulta les anotacions de registre pendents de processar amb regles per a tipus backoffice sistra que
 	 * estiguin en estat pendent o error de sistra i que no hagin superat el nombre de reintents.
@@ -107,4 +122,31 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullFins") boolean esNullFins,
 			@Param("fins") Date fins
 		);
+	
+	
+	@Query(	"select " +
+			"    r " +
+			"from " +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.entitat = :entitat " +
+			"	and (:esNullUnitatOrganitzativa = true or r.unitatAdministrativa = :unitatOrganitzativa) " +
+			"   and (:esNullBustia = true or r.pare.id = :bustia) " +
+			"	and (:esNullDataInici = true or r.data >= :dataInici) " +
+			"	and (:esNullDataFi = true or r.data <= :dataFi) " +
+			"	and (:esNullProcesEstat = true or r.procesEstat = :procesEstat) " +
+		    "order by r.data desc")
+	public Page<RegistreEntity> findByFiltrePaginat(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
+			@Param("unitatOrganitzativa") String unitatOrganitzativa,
+			@Param("esNullBustia") boolean esNullBustia,
+			@Param("bustia") Long bustia,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
+			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
+			Pageable pageable);
 }

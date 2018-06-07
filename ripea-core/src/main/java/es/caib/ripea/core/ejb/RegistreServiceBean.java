@@ -59,13 +59,9 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	public void reglaAplicarPendents() {
-		delegate.reglaAplicarPendents();
-	}
-
-	@Override
+	@RolesAllowed("tothom")
 	public void reglaAplicarPendentsBackofficeSistra() {
-		delegate.reglaAplicarPendents();
+		delegate.reglaAplicarPendentsBackofficeSistra();
 	}
 	
 	@Override
@@ -153,6 +149,12 @@ public class RegistreServiceBean implements RegistreService {
 				entitatId,
 				contingutId,
 				registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void distribuirAnotacionsPendents() {
+		delegate.distribuirAnotacionsPendents();
 	}
 
 }
