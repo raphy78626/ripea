@@ -38,7 +38,13 @@ public class AjaxUnitatsController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable String codi,
 			Model model) {
-		return unitatOrganitzativaService.findByCodi(codi);
+		UnitatOrganitzativaDto unitat = unitatOrganitzativaService.findByCodi(codi);
+		if (unitat == null) {
+			unitat = new UnitatOrganitzativaDto();
+			unitat.setCodi(codi);
+			unitat.setDenominacio(codi);
+		}
+		return unitat;
 	}
 
 	@RequestMapping(value = "/unitats/{text}", method = RequestMethod.GET)
