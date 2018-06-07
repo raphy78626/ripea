@@ -13,6 +13,7 @@ public interface SignaturaPlugin {
 			String id, 
 			String nom, 
 			String motiu,
+			String tipusFirma,
 			byte[] contingut) throws SistemaExternException;
 
 }

@@ -684,18 +684,32 @@ public class RegistreHelper {
 		byte[] firmaRipeaContingut = null;
 		if (pluginHelper.isRegistreSignarAnnexos() && annex.getFirmes().size() == 0) {
 			// Ripea signa amb el plugin de signatures els annexos sense firmes
-			firmaRipeaContingut = pluginHelper.signaturaSignarCadesDetached(
+			firmaRipeaContingut = pluginHelper.signaturaRipeaSignar(
 					annex,
 					contingut);
-			String tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
-			String perfil = FirmaPerfil.BES.toString();
-			String fitxerNom = annex.getFitxerNom();
-			String tipusMime = "csig";
+			
+			String tipus = null;
+			String perfil = null;
+			String fitxerNom = null;
+			String tipusMime = null;
 			String csvRegulacio = null;
+			
+			if ("pdf".equalsIgnoreCase(annex.getFitxerTipusMime())) {
+				tipus = DocumentNtiTipoFirmaEnumDto.TF06.toString();
+				perfil = FirmaPerfil.EPES.toString();
+				fitxer.setContingut(firmaRipeaContingut);
+				firmaRipeaContingut = null;
+			} else {
+				tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
+				perfil = FirmaPerfil.BES.toString();
+				fitxerNom = annex.getFitxerNom() + "_cades_det.csig";
+				tipusMime = "csig";
+			}
+			
 			RegistreAnnexFirmaEntity annexFirma = RegistreAnnexFirmaEntity.getBuilder(
 					tipus,
 					perfil,
-					fitxerNom + "_cades_det.csig",
+					fitxerNom,
 					tipusMime,
 					csvRegulacio,
 					true, // firmat des de RIPEA

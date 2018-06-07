@@ -104,7 +104,7 @@ public class BustiaV1Test {
         annex2.setSicresTipusDocument("02");
 //        afegirFirmes(annex2);
         
-//        anotacio.getAnnexos().add(annex2);
+        anotacio.getAnnexos().add(annex2);
         
         File file3 = new File("c:/Feina/RIPEA/annexos/justificant.pdf");
         byte[] encodedContingut3 = FileUtils.readFileToByteArray(file3);
