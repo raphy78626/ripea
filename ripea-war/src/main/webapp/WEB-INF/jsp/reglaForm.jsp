@@ -41,6 +41,83 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
+
+
+	<c:if test="${reglaDto.unitatOrganitzativa.tipusTranscissio != null}">
+
+		<div class="panel panel-danger">
+			<div class="panel-heading">
+				<span class="fa fa-warning text-danger"></span>
+				<spring:message code="regla.list.unitatObsoleta" />
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<label class="col-xs-4 text-right"><spring:message
+							code="regla.form.tipusTranscissio" /></label>
+					<div class="col-xs-8">
+						<c:if
+							test="${reglaDto.unitatOrganitzativa.tipusTranscissio == 'DIVISIO'}">
+							<spring:message code="unitat.tipusTranscissio.DIVISIO" />
+						</c:if>
+						<c:if
+							test="${reglaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
+							<spring:message code="unitat.tipusTranscissio.FUSIO" />
+						</c:if>
+						<c:if
+							test="${reglaDto.unitatOrganitzativa.tipusTranscissio == 'SUBSTITUCIO'}">
+							<spring:message code="unitat.tipusTranscissio.SUBSTITUCIO" />
+						</c:if>
+					</div>
+				</div>
+				<div class="row">
+					<label class="col-xs-4 text-right"><spring:message
+							code="regla.form.novesUnitats" /></label>
+					<div class="col-xs-8">
+						<ul style="padding-left: 17px;">
+							<c:forEach items="${reglaDto.unitatOrganitzativa.novaList}"
+								var="newUnitat" varStatus="loop">
+								<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
+							</c:forEach>
+						</ul>
+					</div>
+				</div>
+				<c:if test="${!empty reglesOfOldUnitatWithoutCurrent}">
+					<div class="row">
+						<label class="col-xs-4 text-right"><spring:message
+								code="regla.form.altresReglesAfectades" /></label>
+						<div class="col-xs-8">
+							<ul style="padding-left: 17px;">
+								<c:forEach items="${reglesOfOldUnitatWithoutCurrent}"
+									var="regla" varStatus="loop">
+									<li>${regla.nom}</li>
+								</c:forEach>
+							</ul>
+						</div>
+					</div>
+				</c:if>
+				<c:if
+					test="${reglaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
+					<div class="row">
+						<label class="col-xs-4 text-right"><spring:message
+								code="unitat.transcissioInfo.altresUnitatsFusionades" /></label>
+						<div class="col-xs-8">
+							<ul style="padding-left: 17px;">
+								<c:forEach
+									items="${reglaDto.unitatOrganitzativa.altresUnitatsFusionades}"
+									var="unitatMap" varStatus="loop">
+									<li>${unitatMap.value} (${unitatMap.key})</li>
+								</c:forEach>
+							</ul>
+						</div>
+					</div>
+				</c:if>
+			</div>
+		</div>
+	</c:if>
+
+
+
+
 	<c:set var="formAction"><rip:modalUrl value="/regla"/></c:set>
 	<ul class="nav nav-tabs" role="tablist">
 		<li role="presentation" class="active"><a href="#comunes" aria-controls="comunes" role="tab" data-toggle="tab"><spring:message code="regla.form.pipella.comunes"/></a></li>
@@ -59,12 +136,13 @@ $(document).ready(function() {
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<rip:inputSuggest 
-					name="unitatCodi" 
+					name="unitatId" 
+					textKey="bustia.form.camp.unitat"
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="false" 
 					placeholderKey="bustia.form.camp.unitat"
-					suggestValue="codi"
+					suggestValue="id"
 					suggestText="nom" />
 			</div>
 			<div role="tabpanel" class="tab-pane" id="especifiques">

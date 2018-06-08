@@ -57,25 +57,25 @@ public class UnitatOrganitzativaHelper {
 			throws SistemaExternException {
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
-//
-//		try {
-//			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
-//					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
-//			if (unidadPadreWS != null) {
-//
-//				List<UnitatOrganitzativa> arbol = pluginHelper.getUnitatsOrganitzativesPlugin()
-//						.obtenerArbolUnidades(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
-//
-//				UnitatOrganitzativaEntity unitatPadre = sincronizarUnitat(unidadPadreWS, entidadId);
-//				sincronizarHistoricosUnitat(unitatPadre, unidadPadreWS);
-//
-//				if (arbol.size() > 0) {
-//					for (UnitatOrganitzativa unidadWS : arbol) {
-//						UnitatOrganitzativaEntity unitat = sincronizarUnitat(unidadWS, entidadId);
-//						sincronizarHistoricosUnitat(unitat, unidadWS);
-//					}
-//				}
-//								
+
+		try {
+			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
+					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
+			if (unidadPadreWS != null) {
+
+				List<UnitatOrganitzativa> arbol = pluginHelper.getUnitatsOrganitzativesPlugin()
+						.obtenerArbolUnidades(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
+
+				UnitatOrganitzativaEntity unitatPadre = sincronizarUnitat(unidadPadreWS, entidadId);
+				sincronizarHistoricosUnitat(unitatPadre, unidadPadreWS);
+
+				if (arbol.size() > 0) {
+					for (UnitatOrganitzativa unidadWS : arbol) {
+						UnitatOrganitzativaEntity unitat = sincronizarUnitat(unidadWS, entidadId);
+						sincronizarHistoricosUnitat(unitat, unidadWS);
+					}
+				}
+								
 				List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
 						.findByCodiUnitatArrelAndEstatNotV(entitat.getUnitatArrel());
 
@@ -98,14 +98,14 @@ public class UnitatOrganitzativaHelper {
 				
 				
 				
-//			} else {
-//				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
-//			}
-//		} catch (Exception ex) {
-//			throw new SistemaExternException(
-//					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
-//					ex);
-//		}
+			} else {
+				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
+			}
+		} catch (Exception ex) {
+			throw new SistemaExternException(
+					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
+					ex);
+		}
 
 	}
 	

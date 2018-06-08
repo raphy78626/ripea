@@ -53,6 +53,12 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	protected String assumpteCodi;
 	@Column(name = "unitat_codi", length = 9)
 	protected String unitatCodi;
+	
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "unitat_id")
+	@ForeignKey(name = "ipa_unitat_regla_fk")
+	protected UnitatOrganitzativaEntity unitatOrganitzativa;
+	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "metaexpedient_id")
 	@ForeignKey(name = "ipa_metaexpedient_regla_fk")
@@ -90,7 +96,9 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 	private long version = 0;
 
 
-
+	public UnitatOrganitzativaEntity getUnitatOrganitzativa() {
+		return unitatOrganitzativa;
+	}
 	public String getNom() {
 		return nom;
 	}
@@ -148,12 +156,12 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 			String descripcio,
 			ReglaTipusEnumDto tipus,
 			String assumpteCodi,
-			String unitatCodi) {
+			UnitatOrganitzativaEntity unitatOrganitzativa) {
 		this.nom = nom;
 		this.descripcio = descripcio;
 		this.tipus = tipus;
 		this.assumpteCodi = assumpteCodi;
-		this.unitatCodi = unitatCodi;
+		this.unitatOrganitzativa = unitatOrganitzativa;
 	}
 	public void updatePerTipusExpedient(
 			MetaExpedientEntity metaExpedient,
@@ -193,14 +201,14 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 			String nom,
 			ReglaTipusEnumDto tipus,
 			String assumpteCodi,
-			String unitatCodi,
+			UnitatOrganitzativaEntity unitatOrganitzativa,
 			int ordre) {
 		return new Builder(
 				entitat,
 				nom,
 				tipus,
 				assumpteCodi,
-				unitatCodi,
+				unitatOrganitzativa,
 				ordre);
 	}
 	public static class Builder {
@@ -210,14 +218,14 @@ public class ReglaEntity extends RipeaAuditable<Long> {
 				String nom,
 				ReglaTipusEnumDto tipus,
 				String assumpteCodi,
-				String unitatCodi,
+				UnitatOrganitzativaEntity unitatOrganitzativa,
 				int ordre) {
 			built = new ReglaEntity();
 			built.entitat = entitat;
 			built.nom = nom;
 			built.tipus = tipus;
 			built.assumpteCodi = assumpteCodi;
-			built.unitatCodi = unitatCodi;
+			built.unitatOrganitzativa = unitatOrganitzativa;
 			built.ordre = ordre;
 			built.activa = true;
 		}

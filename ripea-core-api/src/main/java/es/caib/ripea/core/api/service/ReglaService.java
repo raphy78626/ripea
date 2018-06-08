@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.api.service;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -160,5 +162,7 @@ public interface ReglaService {
 	public PaginaDto<ReglaDto> findAmbEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams);
+
+	List<ReglaDto> findByEntitatAndUnitatCodi(Long entitatId, String unitatCodi);
 
 }

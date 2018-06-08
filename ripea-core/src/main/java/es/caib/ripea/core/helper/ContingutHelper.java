@@ -283,7 +283,6 @@ public class ContingutHelper {
 //			dto.setUnitat(unitatOrganitzativa);
 //===============================================================================================================
 			UnitatOrganitzativaEntity unitatEntity = bustia.getUnitatOrganitzativa();
-			
 			UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
 					unitatEntity,
 					UnitatOrganitzativaDto.class);
