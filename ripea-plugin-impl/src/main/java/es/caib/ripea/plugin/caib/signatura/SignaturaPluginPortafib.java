@@ -45,6 +45,7 @@ public class SignaturaPluginPortafib implements SignaturaPlugin {
 			String id,
 			String nom,
 			String motiu,
+			String tipusFirma,
 			byte[] contingut) throws SistemaExternException {
 
 		File sourceFile = null;
@@ -57,12 +58,23 @@ public class SignaturaPluginPortafib implements SignaturaPlugin {
 			// Guarda el contingut en un arxiu temporal
 			sourceFile = getArxiuTemporal(id, contingut);
 			String source = sourceFile.getAbsolutePath();
-			String dest = source + "_cades_detached.csig";
-		
-			// XADES DETACHED
+			
+			
+			String dest = null;
 			IRubricGenerator rubricGenerator = null;
-			String signType = FileInfoSignature.SIGN_TYPE_CADES; // CAdES
-			int signMode = FileInfoSignature.SIGN_MODE_EXPLICIT; // Detached
+			String signType = tipusFirma;
+			int signMode;
+			
+			if (tipusFirma.equals(FileInfoSignature.SIGN_TYPE_PADES)) {
+				dest = source + "_PADES.pdf";
+				signType = FileInfoSignature.SIGN_TYPE_PADES; // PADES
+				signMode = FileInfoSignature.SIGN_MODE_IMPLICIT; // IMPLICIT
+			} else {
+				dest = source + "_cades_detached.csig";
+				signType = FileInfoSignature.SIGN_TYPE_CADES; // CAdES
+				signMode = FileInfoSignature.SIGN_MODE_EXPLICIT; // Detached
+			}
+			
 			boolean userRequiresTimeStamp = false;
 			signFile(
 					id,

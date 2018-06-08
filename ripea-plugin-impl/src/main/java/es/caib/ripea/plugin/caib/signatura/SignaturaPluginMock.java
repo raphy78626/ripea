@@ -26,6 +26,7 @@ public class SignaturaPluginMock implements SignaturaPlugin {
 			String id,
 			String nom,
 			String motiu,
+			String tipusFirma,
 			byte[] contingut) throws SistemaExternException {
 		
 		if (id != null && "e".equals(id)) {

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.fundaciobit.plugins.signature.api.FileInfoSignature;
 import org.fundaciobit.plugins.validatesignature.api.CertificateInfo;
 import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
 import org.fundaciobit.plugins.validatesignature.api.SignatureDetailInfo;
@@ -2316,7 +2317,7 @@ public class PluginHelper {
 		return this.getPropertyPluginRegistreSignarAnnexos();
 	}
 
-	public byte[] signaturaSignarCadesDetached(
+	public byte[] signaturaRipeaSignar(
 			RegistreAnnexEntity annex,
 			byte[] annexContingut) {
 		String accioDescripcio = "Signatura del document des del servidor";
@@ -2330,10 +2331,17 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			String motiu = "Autofirma en servidor de RIPEA";
+			String tipusFirma;
+			if ("pdf".equalsIgnoreCase(annex.getFitxerTipusMime()))
+				tipusFirma = FileInfoSignature.SIGN_TYPE_PADES;
+			else
+				tipusFirma = FileInfoSignature.SIGN_TYPE_CADES;
+			
 			byte[] firmaContingut = getSignaturaPlugin().signar(
 					annex.getId().toString(),
 					annex.getFitxerNom(),
 					motiu,
+					tipusFirma,
 					annexContingut);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_SIGNATURA,

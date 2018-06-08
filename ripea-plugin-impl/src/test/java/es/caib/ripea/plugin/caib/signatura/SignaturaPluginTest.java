@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.fundaciobit.plugins.signature.api.FileInfoSignature;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,10 +43,11 @@ public class SignaturaPluginTest {
 		String id = "0";
 		String nom = "";
 		String motiu = "prova signatura";
+		String tipusFirma = FileInfoSignature.SIGN_TYPE_CADES;
 		byte[] contingut = this.obtenirContingutPerFirmar();
 		SignaturaPlugin signaturaPlugin = new SignaturaPluginPortafib();
 		try {
-			byte[] signatura = signaturaPlugin.signar(id, nom, motiu, contingut);
+			byte[] signatura = signaturaPlugin.signar(id, nom, motiu, tipusFirma, contingut);
 			assertNotNull("La firma retornada no pot ser nul·la", signatura);
 		} catch ( Exception e ) {
 			System.err.println("Excepció obtinguda signant: " + e.getMessage());
@@ -60,9 +62,10 @@ public class SignaturaPluginTest {
 		String id = "0";
 		String nom = "";
 		String motiu = "prova signatura";
+		String tipusFirma = FileInfoSignature.SIGN_TYPE_CADES;
 		byte[] contingut = new byte[0];
 		SignaturaPlugin signaturaPlugin = new SignaturaPluginMock();
-		byte[] signatura = signaturaPlugin.signar(id, nom, motiu, contingut);
+		byte[] signatura = signaturaPlugin.signar(id, nom, motiu, tipusFirma, contingut);
 		assertNotNull("La firma retornada no pot ser nul·la", signatura);
 	}
 
@@ -72,10 +75,11 @@ public class SignaturaPluginTest {
 		String id = "e"; // id per provocar una excepció
 		String nom = "";
 		String motiu = "prova signatura";
+		String tipusFirma = FileInfoSignature.SIGN_TYPE_CADES;
 		byte[] contingut = new byte[0];
 		SignaturaPlugin signaturaPlugin = new SignaturaPluginMock();
 		try {
-			signaturaPlugin.signar(id, nom, motiu, contingut);
+			signaturaPlugin.signar(id, nom, motiu, tipusFirma, contingut);
 			fail("S'esperava una excepció quan l'id és \"e\".");
 		} catch (Exception e) {
 			
