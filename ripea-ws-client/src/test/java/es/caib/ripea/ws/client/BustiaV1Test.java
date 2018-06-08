@@ -84,7 +84,7 @@ public class BustiaV1Test {
         annex1.setEniEstatElaboracio("EE01");
         annex1.setEniTipusDocumental("TD01");
         annex1.setSicresTipusDocument("01");
-        afegirFirmes(annex1);
+//        afegirFirmes(annex1);
         
         anotacio.getAnnexos().add(annex1);
         

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.fundaciobit.plugins.signature.api.FileInfoSignature;
 import org.fundaciobit.plugins.validatesignature.api.CertificateInfo;
 import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
 import org.fundaciobit.plugins.validatesignature.api.SignatureDetailInfo;
@@ -2333,9 +2332,9 @@ public class PluginHelper {
 			String motiu = "Autofirma en servidor de RIPEA";
 			String tipusFirma;
 			if ("pdf".equalsIgnoreCase(annex.getFitxerTipusMime()))
-				tipusFirma = FileInfoSignature.SIGN_TYPE_PADES;
+				tipusFirma = "PADES";
 			else
-				tipusFirma = FileInfoSignature.SIGN_TYPE_CADES;
+				tipusFirma = "CADES";
 			
 			byte[] firmaContingut = getSignaturaPlugin().signar(
 					annex.getId().toString(),
