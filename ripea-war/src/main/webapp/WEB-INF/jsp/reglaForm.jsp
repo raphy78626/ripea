@@ -43,7 +43,7 @@ $(document).ready(function() {
 <body>
 
 
-	<c:if test="${reglaDto.unitatOrganitzativa.tipusTranscissio != null}">
+	<c:if test="${reglaDto.unitatOrganitzativa.tipusTransicio != null}">
 
 		<div class="panel panel-danger">
 			<div class="panel-heading">
@@ -53,19 +53,19 @@ $(document).ready(function() {
 			<div class="panel-body">
 				<div class="row">
 					<label class="col-xs-4 text-right"><spring:message
-							code="regla.form.tipusTranscissio" /></label>
+							code="regla.form.tipusTransicio" /></label>
 					<div class="col-xs-8">
 						<c:if
-							test="${reglaDto.unitatOrganitzativa.tipusTranscissio == 'DIVISIO'}">
-							<spring:message code="unitat.tipusTranscissio.DIVISIO" />
+							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'DIVISIO'}">
+							<spring:message code="unitat.tipusTransicio.DIVISIO" />
 						</c:if>
 						<c:if
-							test="${reglaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
-							<spring:message code="unitat.tipusTranscissio.FUSIO" />
+							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}">
+							<spring:message code="unitat.tipusTransicio.FUSIO" />
 						</c:if>
 						<c:if
-							test="${reglaDto.unitatOrganitzativa.tipusTranscissio == 'SUBSTITUCIO'}">
-							<spring:message code="unitat.tipusTranscissio.SUBSTITUCIO" />
+							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'SUBSTITUCIO'}">
+							<spring:message code="unitat.tipusTransicio.SUBSTITUCIO" />
 						</c:if>
 					</div>
 				</div>
@@ -96,10 +96,10 @@ $(document).ready(function() {
 					</div>
 				</c:if>
 				<c:if
-					test="${reglaDto.unitatOrganitzativa.tipusTranscissio == 'FUSIO'}">
+					test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}">
 					<div class="row">
 						<label class="col-xs-4 text-right"><spring:message
-								code="unitat.transcissioInfo.altresUnitatsFusionades" /></label>
+								code="unitat.transicioInfo.altresUnitatsFusionades" /></label>
 						<div class="col-xs-8">
 							<ul style="padding-left: 17px;">
 								<c:forEach

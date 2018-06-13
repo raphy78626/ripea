@@ -1,5 +1,6 @@
 package es.caib.ripea.core.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.ripea.core.api.dto.TipusTranscissioEnumDto;
+import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
 import es.caib.ripea.core.audit.RipeaAuditable;
 
 
@@ -27,13 +28,13 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 	@JoinColumn(name = "antiga_uo", referencedColumnName = "id", nullable = false) }, inverseJoinColumns = {
 	@JoinColumn(name = "nova_uo", referencedColumnName = "id", nullable = false) })
 	@ManyToMany
-	private List<UnitatOrganitzativaEntity> novaList;
+	private List<UnitatOrganitzativaEntity> noves = new ArrayList<UnitatOrganitzativaEntity>();
 	
-	@ManyToMany(mappedBy = "novaList")
-	private List<UnitatOrganitzativaEntity> antigaList;
+	@ManyToMany(mappedBy = "noves")
+	private List<UnitatOrganitzativaEntity> antigues = new ArrayList<UnitatOrganitzativaEntity>();
 	
-	@Column(name = "tipus_transcissio")
-	private TipusTranscissioEnumDto tipusTranscissio;
+	@Column(name = "tipus_transicio")
+	private TipusTransicioEnumDto tipusTransicio;
 
 	private static final long serialVersionUID = 1L;
 	@Column(name = "codi", length = 9, nullable = false)
@@ -87,31 +88,30 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 
 
 	
-	
 
-	public TipusTranscissioEnumDto getTipusTranscissio() {
-		return tipusTranscissio;
+	public List<UnitatOrganitzativaEntity> getNoves() {
+		return noves;
+	}
+	public TipusTransicioEnumDto getTipusTransicio() {
+		return tipusTransicio;
 	}
 
-	public void setTipusTranscissio(TipusTranscissioEnumDto tipusTranscissio) {
-		this.tipusTranscissio = tipusTranscissio;
+	public void updateTipusTransicio(TipusTransicioEnumDto tipusTransicio) {
+		this.tipusTransicio = tipusTransicio;
 	}
 
-	public List<UnitatOrganitzativaEntity> getNovaList() {
-		return novaList;
+	public void addNova(UnitatOrganitzativaEntity nova) {
+		noves.add(nova);
 	}
 
-	public void setNovaList(List<UnitatOrganitzativaEntity> novaList) {
-		this.novaList = novaList;
+	public void addAntiga(UnitatOrganitzativaEntity antiga) {
+		antigues.add(antiga);
 	}
 
-	public List<UnitatOrganitzativaEntity> getAntigaList() {
-		return antigaList;
+	public List<UnitatOrganitzativaEntity> getAntigues() {
+		return antigues;
 	}
 
-	public void setAntigaList(List<UnitatOrganitzativaEntity> antigaList) {
-		this.antigaList = antigaList;
-	}
 	public String getCodi() {
 		return codi;
 	}
@@ -268,96 +268,96 @@ public class UnitatOrganitzativaEntity extends RipeaAuditable<Long>{
 	
 	public static Builder getBuilder(
 			String codi,
-			String denominacio,
-			String nifCif,
-			String codiUnitatSuperior,
-			String codiUnitatArrel,
-			Date dataCreacioOficial,
-			Date dataSupressioOficial,
-			Date dataExtincioFuncional,
-			Date dataAnulacio,
-			String estat, 
-			String codiPais,
-			String codiComunitat,
-			String codiProvincia,
-			String codiPostal,
-			String nomLocalitat,
-			String localitat,
-			String adressa,
-			Long tipusVia,
-			String nomVia,
-			String numVia,
-			boolean obsoleta) {
+			String denominacio) {
 		return new Builder(
 				codi,
-				denominacio,
-				nifCif,
-				codiUnitatSuperior,
-				codiUnitatArrel,
-				dataCreacioOficial,
-				dataSupressioOficial,
-				dataExtincioFuncional,
-				dataAnulacio,
-				estat, 
-				codiPais,
-				codiComunitat,
-				codiProvincia,
-				codiPostal,
-				nomLocalitat,
-				localitat,
-				adressa,
-				tipusVia,
-				nomVia,
-				numVia,
-				obsoleta);
+				denominacio);
 	}
 	
 	public static class Builder {
 		UnitatOrganitzativaEntity built;
 		Builder(
 				String codi,
-				String denominacio,
-				String nifCif,
-				String codiUnitatSuperior,
-				String codiUnitatArrel,
-				Date dataCreacioOficial,
-				Date dataSupressioOficial,
-				Date dataExtincioFuncional,
-				Date dataAnulacio,
-				String estat, 
-				String codiPais,
-				String codiComunitat,
-				String codiProvincia,
-				String codiPostal,
-				String nomLocalitat,
-				String localitat,
-				String adressa,
-				Long tipusVia,
-				String nomVia,
-				String numVia,
-				boolean obsoleta) {
+				String denominacio) {
 			built = new UnitatOrganitzativaEntity();
 			built.codi = codi;
 			built.denominacio = denominacio;
-			built.nifCif = nifCif;
-			built.codiUnitatSuperior = codiUnitatSuperior;
-			built.codiUnitatArrel = codiUnitatArrel;
-			built.dataCreacioOficial = dataCreacioOficial;
-			built.dataSupressioOficial = dataSupressioOficial;
-			built.dataExtincioFuncional = dataExtincioFuncional;
-			built.dataAnulacio = dataAnulacio;
-			built.estat = estat; 
-			built.codiPais = codiPais;
-			built.codiComunitat = codiComunitat;
-			built.codiProvincia = codiProvincia;
-			built.codiPostal = codiPostal;
-			built.nomLocalitat = nomLocalitat;
-			built.localitat = localitat;
-			built.adressa = adressa;
-			built.tipusVia = tipusVia;
-			built.nomVia = nomVia;
-			built.numVia = numVia;
 		}
+
+		public Builder nifCif(String nifCif) {
+			built.nifCif = nifCif;
+			return this;
+		}
+		public Builder codiUnitatSuperior(String codiUnitatSuperior) {
+			built.codiUnitatSuperior = codiUnitatSuperior;
+			return this;
+		}
+		public Builder codiUnitatArrel(String codiUnitatArrel) {
+			built.codiUnitatArrel = codiUnitatArrel;
+			return this;
+		}
+		public Builder dataCreacioOficial(Date dataCreacioOficial) {
+			built.dataCreacioOficial = dataCreacioOficial;
+			return this;
+		}
+		public Builder dataSupressioOficial(Date dataSupressioOficial) {
+			built.dataSupressioOficial = dataSupressioOficial;
+			return this;
+		}
+		public Builder dataExtincioFuncional(Date dataExtincioFuncional) {
+			built.dataExtincioFuncional = dataExtincioFuncional;
+			return this;
+		}
+		public Builder dataAnulacio(Date dataAnulacio) {
+			built.dataAnulacio = dataAnulacio;
+			return this;
+		}
+		public Builder estat(String estat) {
+			built.estat = estat;
+			return this;
+		}
+		public Builder codiPais(String codiPais) {
+			built.codiPais = codiPais;
+			return this;
+		}
+		public Builder codiComunitat(String codiComunitat) {
+			built.codiComunitat = codiComunitat;
+			return this;
+		}
+		public Builder codiProvincia(String codiProvincia) {
+			built.codiProvincia = codiProvincia;
+			return this;
+		}
+		public Builder codiPostal(String codiPostal) {
+			built.codiPostal = codiPostal;
+			return this;
+		}
+		public Builder nomLocalitat(String nomLocalitat) {
+			built.nomLocalitat = nomLocalitat;
+			return this;
+		}
+		public Builder localitat(String localitat) {
+			built.localitat = localitat;
+			return this;
+		}
+		public Builder adressa(String adressa) {
+			built.adressa = adressa;
+			return this;
+		}
+		public Builder tipusVia(Long tipusVia) {
+			built.tipusVia = tipusVia;
+			return this;
+		}
+		public Builder nomVia(String nomVia) {
+			built.nomVia = nomVia;
+			return this;
+		}
+		public Builder numVia(String numVia) {
+			built.numVia = numVia;
+			return this;
+		}
+		
+		
 		public UnitatOrganitzativaEntity build() {
 			return built;
 		}

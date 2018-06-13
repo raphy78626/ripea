@@ -41,7 +41,7 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private String nomVia;
 	private String numVia; 
 	
-	private TipusTranscissioEnumDto tipusTranscissio;
+	private TipusTransicioEnumDto tipusTransicio;
 	
 	private List<UnitatOrganitzativaDto> novaList;
 	private Map<String, String> altresUnitatsFusionades;
@@ -53,11 +53,11 @@ public class UnitatOrganitzativaDto implements Serializable {
 	public void setAltresUnitatsFusionades(Map<String, String> altresUnitatsFusionades) {
 		this.altresUnitatsFusionades = altresUnitatsFusionades;
 	}
-	public TipusTranscissioEnumDto getTipusTranscissio() {
-		return tipusTranscissio;
+	public TipusTransicioEnumDto getTipusTransicio() {
+		return tipusTransicio;
 	}
-	public void setTipusTranscissio(TipusTranscissioEnumDto tipusTranscissio) {
-		this.tipusTranscissio = tipusTranscissio;
+	public void setTipusTransicio(TipusTransicioEnumDto tipusTransicio) {
+		this.tipusTransicio = tipusTransicio;
 	}
 	public List<UnitatOrganitzativaDto> getNovaList() {
 		return novaList;

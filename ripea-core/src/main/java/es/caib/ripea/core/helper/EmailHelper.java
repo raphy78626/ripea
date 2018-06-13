@@ -52,6 +52,9 @@ public class EmailHelper {
 	
 	@Resource
 	private JavaMailSender mailSender;
+	
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 	@Resource
 	private CacheHelper cacheHelper;
@@ -295,7 +298,7 @@ public class EmailHelper {
 	private String getUnitatOrganitzativaNom(
 			EntitatEntity entitat,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbreUnitats = cacheHelper.findUnitatsOrganitzativesPerEntitat(
+		ArbreDto<UnitatOrganitzativaDto> arbreUnitats = unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPare(
 				entitat.getCodi());
 		for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbreUnitats.toList()) {
 			UnitatOrganitzativaDto unitat = node.getDades();

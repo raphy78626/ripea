@@ -7,7 +7,7 @@
 
 <html>
 <head>
-	<title><spring:message code="unitat.transcissioInfo.unitatObsoleta"/></title>
+	<title><spring:message code="unitat.transicioInfo.unitatObsoleta"/></title>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
@@ -25,21 +25,21 @@
 		</div>
 		<div class="panel-body">
 			<div class="row">
-				<label class="col-xs-4 text-right"><spring:message code="unitat.transcissioInfo.tipusTranscissio"/></label>
+				<label class="col-xs-4 text-right"><spring:message code="unitat.transicioInfo.tipusTransicio"/></label>
 				<div class="col-xs-8">
-					<c:if test="${unitatOrganitzativaDto.tipusTranscissio == 'DIVISIO'}">
-						<spring:message code="unitat.tipusTranscissio.DIVISIO"/>
+					<c:if test="${unitatOrganitzativaDto.tipusTransicio == 'DIVISIO'}">
+						<spring:message code="unitat.tipusTransicio.DIVISIO"/>
 					</c:if>
-					<c:if test="${unitatOrganitzativaDto.tipusTranscissio == 'FUSIO'}">
-						<spring:message code="unitat.tipusTranscissio.FUSIO"/>
+					<c:if test="${unitatOrganitzativaDto.tipusTransicio == 'FUSIO'}">
+						<spring:message code="unitat.tipusTransicio.FUSIO"/>
 					</c:if>
-					<c:if test="${unitatOrganitzativaDto.tipusTranscissio == 'SUBSTITUCIO'}">
-						<spring:message code="unitat.tipusTranscissio.SUBSTITUCIO"/>
+					<c:if test="${unitatOrganitzativaDto.tipusTransicio == 'SUBSTITUCIO'}">
+						<spring:message code="unitat.tipusTransicio.SUBSTITUCIO"/>
 					</c:if>				
 				</div>
 			</div>
 			<div class="row">
-				<label class="col-xs-4 text-right"><spring:message code="unitat.transcissioInfo.novesUnitats"/></label>
+				<label class="col-xs-4 text-right"><spring:message code="unitat.transicioInfo.novesUnitats"/></label>
 				<div class="col-xs-8">
 					<ul style="padding-left: 17px;">
 						<c:forEach items="${unitatOrganitzativaDto.novaList}"
@@ -50,7 +50,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<label class="col-xs-4 text-right"><spring:message code="unitat.transcissioInfo.bustiesAfectades"/></label>
+				<label class="col-xs-4 text-right"><spring:message code="unitat.transicioInfo.bustiesAfectades"/></label>
 				<div class="col-xs-8">
 					<ul style="padding-left: 17px;">
 						<c:forEach items="${bustiesOfOldUnitat}" var="bustia"
@@ -60,9 +60,9 @@
 					</ul>
 				</div>
 			</div>
-			<c:if test="${unitatOrganitzativaDto.tipusTranscissio == 'FUSIO'}">
+			<c:if test="${unitatOrganitzativaDto.tipusTransicio == 'FUSIO'}">
 			<div class="row">
-				<label class="col-xs-4 text-right"><spring:message code="unitat.transcissioInfo.altresUnitatsFusionades"/></label>
+				<label class="col-xs-4 text-right"><spring:message code="unitat.transicioInfo.altresUnitatsFusionades"/></label>
 				<div class="col-xs-8">
 					<ul style="padding-left: 17px;">
 						<c:forEach items="${unitatOrganitzativaDto.altresUnitatsFusionades}" var="unitatMap"

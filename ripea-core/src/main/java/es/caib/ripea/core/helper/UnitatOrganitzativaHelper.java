@@ -14,10 +14,13 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
-import es.caib.ripea.core.api.dto.TipusTranscissioEnumDto;
+import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.EntitatEntity;
@@ -52,75 +55,124 @@ public class UnitatOrganitzativaHelper {
 	
 	
 	
-	
-	public void sincronizarOActualizar(Long entidadId, Timestamp fechaActualizacion, Timestamp fechaSincronizacion)
-			throws SistemaExternException {
+//	public void checkBeforeSynchronization(Long entidadId, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{
+//		
+//
+//		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+//
+//		try {
+//			//getting last changes from webservices for unitat arrel
+//			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
+//					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
+//			if (unidadPadreWS != null) {
+//				
+//				//getting last changes from webservices for list of unitats
+//				List<UnitatOrganitzativa> arbol = pluginHelper.getUnitatsOrganitzativesPlugin()
+//						.obtenerArbolUnidades(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
+//				
+//				//getting all vigent unitats
+//				List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
+//						.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
+//
+////				for(UnitatOrganitzativaEntity vigentUnitat: vigentUnitats){
+////					for(UnitatOrganitzativa unitat: arbol){
+////						if(unitat.getCodi() == vigentUnitat.getCodi()){
+////							
+////						}
+////					}
+////				}
+//				
+//				
+//				
+//				
+//				
+//
+//
+//			} else {
+//				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
+//			}
+//		} catch (Exception ex) {
+//			throw new SistemaExternException(
+//					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
+//					ex);
+//		}
+//
+//		
+//	}
 
-		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+	public void sincronizarOActualizar(EntitatEntity entitat){
 
-		try {
-			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
-					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
-			if (unidadPadreWS != null) {
+		List<UnitatOrganitzativa> unitats;
+		
+//			 UnitatOrganitzativa unidadPadreWS =
+//			 pluginHelper.findUnidad(entitat.getUnitatArrel(), entitat.getFechaActualizacion(),
+//			entitat.getFechaSincronizacion());
+//			 System.out.println(unidadPadreWS);
 
-				List<UnitatOrganitzativa> arbol = pluginHelper.getUnitatsOrganitzativesPlugin()
-						.obtenerArbolUnidades(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
+			// if (unidadPadreWS != null) {
+			if (true) {
+				unitats = pluginHelper.findAmbPare(
+						entitat.getUnitatArrel(),
+						entitat.getFechaActualizacion(),
+						entitat.getFechaSincronizacion());
+			} 
+//			else {
+//				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
+//			}
 
-				UnitatOrganitzativaEntity unitatPadre = sincronizarUnitat(unidadPadreWS, entidadId);
-				sincronizarHistoricosUnitat(unitatPadre, unidadPadreWS);
 
-				if (arbol.size() > 0) {
-					for (UnitatOrganitzativa unidadWS : arbol) {
-						UnitatOrganitzativaEntity unitat = sincronizarUnitat(unidadWS, entidadId);
-						sincronizarHistoricosUnitat(unitat, unidadWS);
-					}
-				}
-								
-				List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
-						.findByCodiUnitatArrelAndEstatNotV(entitat.getUnitatArrel());
+			// UnitatOrganitzativaEntity unitatPadre =
+			// sincronizarUnitat(unidadPadreWS, entidadId);
+			// sincronizarHistoricosUnitat(unitatPadre, unidadPadreWS);
 
-				//setting type of transition
-				for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats) {
-					
-					if (obsoleteUnitat.getNovaList().size() > 1) {
-						obsoleteUnitat.setTipusTranscissio(TipusTranscissioEnumDto.DIVISIO);
-					} else {
-						if(obsoleteUnitat.getNovaList().size() == 1){
-							
-							if(obsoleteUnitat.getNovaList().get(0).getAntigaList().size()>1){
-								obsoleteUnitat.setTipusTranscissio(TipusTranscissioEnumDto.FUSIO);
-							} else if(obsoleteUnitat.getNovaList().get(0).getAntigaList().size()==1){
-								obsoleteUnitat.setTipusTranscissio(TipusTranscissioEnumDto.SUBSTITUCIO);
-							}
+			System.out.println("UNITATS INSIDE");
+			for (UnitatOrganitzativa unidadWS : unitats) {
+				
+				
+				System.out.println("codi: " + unidadWS.getCodi() + ", parent: "+unidadWS.getCodiUnitatSuperior()+", estat: "+unidadWS.getEstat());
+				
+				sincronizarUnitat(unidadWS);
+			}
+			
+			// historicos
+				for (UnitatOrganitzativa unidadWS : unitats) {
+					UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository.findByCodiUnitatArrelAndCodi(entitat.getUnitatArrel(), unidadWS.getCodi());
+					sincronizarHistoricosUnitat(unitat, unidadWS);
+				}			
+
+			List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
+					.findByCodiUnitatArrelAndEstatNotV(entitat.getUnitatArrel());
+
+			// setting type of transition
+			for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats) {
+				
+				if (obsoleteUnitat.getNoves().size() > 1) {
+					obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.DIVISIO);
+				} else {
+					if (obsoleteUnitat.getNoves().size() == 1) {
+						if (obsoleteUnitat.getNoves().get(0).getAntigues().size() > 1) {
+							obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.FUSIO);
+						} else if (obsoleteUnitat.getNoves().get(0).getAntigues().size() == 1) {
+							obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.SUBSTITUCIO);
 						}
 					}
 				}
-				
-				
-				
-			} else {
-				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
 			}
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
-					ex);
-		}
+	}
+	
 
-	}
-	
-	
 	public void sincronizarHistoricosUnitat(
-			UnitatOrganitzativaEntity unitat,
-			UnitatOrganitzativa unidadWS){
-		
-		List<UnitatOrganitzativaEntity> historicosUO = new ArrayList<UnitatOrganitzativaEntity>();
-		for (String historicoCodi : unidadWS.getHistoricosUO()) {
-			historicosUO.add(unitatOrganitzativaRepository.findByCodi(historicoCodi));
+			UnitatOrganitzativaEntity unitat, 
+			UnitatOrganitzativa unidadWS) {
+
+		if (unidadWS.getHistoricosUO()!=null && !unidadWS.getHistoricosUO().isEmpty()) {
+			for (String historicoCodi : unidadWS.getHistoricosUO()) {
+				UnitatOrganitzativaEntity nova = unitatOrganitzativaRepository.findByCodi(historicoCodi);
+				unitat.addNova(nova);
+				nova.addAntiga(unitat);
+			}
 		}
-		unitat.setNovaList(historicosUO);
 	}
-	
 	
 
 	/**
@@ -130,38 +182,57 @@ public class UnitatOrganitzativaHelper {
 	 * @param entidadId
 	 * @throws Exception
 	 */
-	public UnitatOrganitzativaEntity sincronizarUnitat(UnitatOrganitzativa unitatWS, Long entidadId) throws Exception {
+	public UnitatOrganitzativaEntity sincronizarUnitat(UnitatOrganitzativa unitatWS) {
 
 
 		UnitatOrganitzativaEntity unitat = null;
 
 		if (unitatWS != null) {
-			// checks if unitat already exists in databse
+					
+			// checks if unitat already exists in database
 			unitat = unitatOrganitzativaRepository.findByCodi(unitatWS.getCodi());
 			//if not it creates a new one
 			if (unitat == null) {
-				unitat = new UnitatOrganitzativaEntity();
+				unitat = UnitatOrganitzativaEntity.getBuilder(
+						unitatWS.getCodi(),
+						unitatWS.getDenominacio()).
+						nifCif(unitatWS.getNifCif()).
+						estat(unitatWS.getEstat()).
+						codiUnitatSuperior(unitatWS.getCodiUnitatSuperior()).
+						codiUnitatArrel("A04025121").
+						codiPais(unitatWS.getCodiPais()).
+						codiComunitat(unitatWS.getCodiComunitat()).
+						codiProvincia(unitatWS.getCodiProvincia()).
+						codiPostal(unitatWS.getCodiPostal()).
+						nomLocalitat(unitatWS.getNomLocalitat()).
+						tipusVia(unitatWS.getTipusVia()).
+						nomVia(unitatWS.getNomVia()).
+						numVia(unitatWS.getNumVia())
+						.build();
+				unitatOrganitzativaRepository.save(unitat);
+			} else {
+				unitat.update(
+						unitatWS.getCodi(),
+						unitatWS.getDenominacio(),
+						unitatWS.getNifCif(),
+						unitatWS.getEstat(),
+						unitatWS.getCodiUnitatSuperior(),
+						"A04025121",
+						unitatWS.getCodiPais(),
+						unitatWS.getCodiComunitat(),
+						unitatWS.getCodiProvincia(),
+						unitatWS.getCodiPostal(),
+						unitatWS.getNomLocalitat(),
+						unitatWS.getTipusVia(),
+						unitatWS.getNomVia(),
+						unitatWS.getNumVia());
 			}
 
-			unitat.update(
-					unitatWS.getCodi(),
-					unitatWS.getDenominacio(),
-					unitatWS.getNifCif(),
-					unitatWS.getEstat(),
-					unitatWS.getCodiUnitatSuperior(),
-					unitatWS.getCodiUnitatArrel(),
-					unitatWS.getCodiPais(),
-					unitatWS.getCodiComunitat(),
-					unitatWS.getCodiProvincia(),
-					unitatWS.getCodiPostal(),
-					unitatWS.getNomLocalitat(),
-					unitatWS.getTipusVia(),
-					unitatWS.getNomVia(),
-					unitatWS.getNumVia());
+			
 			// Guardamos el Unitat
-			unitat = unitatOrganitzativaRepository.save(unitat);
+			//unitat = unitatOrganitzativaRepository.save(unitat);
+			//unitatOrganitzativaRepository.flush();
 		}
-
 		return unitat;
 	}
 	
@@ -169,9 +240,9 @@ public class UnitatOrganitzativaHelper {
 			UnitatOrganitzativaEntity unitatOrganitzativaEntity, UnitatOrganitzativaDto unitatOrganitzativaDto) {
 		if (unitatOrganitzativaEntity != null && unitatOrganitzativaDto != null) {
 			Map<String, String> altresUnitatsFusionades = new HashMap<String, String>();
-			if (unitatOrganitzativaEntity.getTipusTranscissio() == TipusTranscissioEnumDto.FUSIO) {
-				List<UnitatOrganitzativaEntity> antigaUnitats = unitatOrganitzativaEntity.getNovaList().get(0)
-						.getAntigaList();
+			if (unitatOrganitzativaEntity.getTipusTransicio() == TipusTransicioEnumDto.FUSIO) {
+				List<UnitatOrganitzativaEntity> antigaUnitats = unitatOrganitzativaEntity.getNoves().get(0)
+						.getAntigues();
 				for (UnitatOrganitzativaEntity unitatEntity : antigaUnitats) {
 					if (unitatOrganitzativaEntity.getCodi() != unitatEntity.getCodi()) {
 						altresUnitatsFusionades.put(unitatEntity.getCodi(), unitatEntity.getDenominacio());
@@ -233,7 +304,7 @@ public class UnitatOrganitzativaHelper {
 	public List<UnitatOrganitzativaDto> findPath(
 			String entitatCodi,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi);
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(entitatCodi);
 		List<UnitatOrganitzativaDto> superiors = new ArrayList<UnitatOrganitzativaDto>();
 		String codiActual = unitatOrganitzativaCodi;
 		do {
@@ -253,7 +324,7 @@ public class UnitatOrganitzativaHelper {
 	public ArbreDto<UnitatOrganitzativaDto> findPerEntitatAmbCodisPermesos(
 			String entitatCodi,
 			Set<String> unitatCodiPermesos) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).clone();
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(entitatCodi).clone();
 		if (unitatCodiPermesos != null) {
 			// Calcula els nodes a "salvar" afegint els nodes permesos
 			// i tots els seus pares.
@@ -283,18 +354,18 @@ public class UnitatOrganitzativaHelper {
 		return arbre;
 	}
 	
-	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitatFromPlugin(String entitatCodi)
-			throws SistemaExternException {
-
-		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
-		return pluginHelper.unitatsOrganitzativesFindListByPare(entitat.getUnitatArrel());
-	}
+//	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitatFromPlugin(String entitatCodi)
+//			throws SistemaExternException {
+//
+//		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+//		return pluginHelper.unitatsOrganitzativesFindListByPare(entitat.getUnitatArrel());
+//	}
 	
 
 	public UnitatOrganitzativaDto findConselleria(
 			String entitatCodi,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).clone();
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(entitatCodi).clone();
 		UnitatOrganitzativaDto unitatConselleria = null;
 		for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
 			UnitatOrganitzativaDto uo = node.getDades();
@@ -325,5 +396,78 @@ public class UnitatOrganitzativaHelper {
 		}
 		return trobada;
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Takes the list of unitats from database and converts it to the tree
+	 * 
+	 * @param pareCodi 
+	 * 				unitatArrel
+	 * @return tree of unitats
+	 */
+	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(String pareCodi) {
+
+		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
+				.findByCodiUnitatArrel(pareCodi);
+
+		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
+				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
+
+		ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
+		// Cerca l'unitat organitzativa arrel
+		UnitatOrganitzativa unitatOrganitzativaArrel = null;
+		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
+			if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
+				unitatOrganitzativaArrel = unitatOrganitzativa;
+				break;
+			}
+		}
+		if (unitatOrganitzativaArrel != null) {
+			// Omple l'arbre d'unitats organitzatives
+			resposta.setArrel(getNodeArbreUnitatsOrganitzatives(unitatOrganitzativaArrel, unitatsOrganitzatives, null));
+			return resposta;
+
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param unitatOrganitzativa - in first call it is unitat arrel, later the children nodes
+	 * @param unitatsOrganitzatives
+	 * @param pare - in first call it is null, later pare
+	 * @return
+	 */
+	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
+			UnitatOrganitzativa unitatOrganitzativa,
+			List<UnitatOrganitzativa> unitatsOrganitzatives,
+			ArbreNodeDto<UnitatOrganitzativaDto> pare) {
+		// current unitat organitzativa
+		ArbreNodeDto<UnitatOrganitzativaDto> resposta = new ArbreNodeDto<UnitatOrganitzativaDto>(
+				pare,
+				conversioTipusHelper.convertir(
+						unitatOrganitzativa,
+						UnitatOrganitzativaDto.class));
+		String codiUnitat = (unitatOrganitzativa != null) ? unitatOrganitzativa.getCodi() : null;
+		// for every child of current unitat call recursively this method
+		for (UnitatOrganitzativa uo: unitatsOrganitzatives) {
+			if (	(codiUnitat == null && uo.getCodiUnitatSuperior() == null) ||
+					(uo.getCodiUnitatSuperior() != null && uo.getCodiUnitatSuperior().equals(codiUnitat))) {
+				resposta.addFill(
+						getNodeArbreUnitatsOrganitzatives(
+								uo,
+								unitatsOrganitzatives,
+								resposta));
+			}
+		}
+		return resposta;
+	}
+	
+	
+	
 
 }

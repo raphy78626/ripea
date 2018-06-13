@@ -24,21 +24,23 @@ public class UnitatsOrganitzativesPluginCaibMock implements UnitatsOrganitzative
 
 	
 	@Override
-	public UnitatOrganitzativa obtenerUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+	public UnitatOrganitzativa findUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
 		return null;
 	}
 	
-	@Override
-	public List<UnitatOrganitzativa> obtenerArbolUnidades(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
-		return null;
-	}
-	
+//	@Override
+//	public List<UnitatOrganitzativa> obtenerArbolUnidades(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+//		return null;
+//	}
+//	
 	
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(
-			String pareCodi) throws SistemaExternException {
+			String pareCodi, 
+			Timestamp fechaActualizacion, 
+			Timestamp fechaSincronizacion) throws SistemaExternException{
 		try {
 			return (List<UnitatOrganitzativa>)deserialize(
 					"/es/caib/ripea/plugin/unitat/ArbreUnitatsCaib.ser");
@@ -50,16 +52,7 @@ public class UnitatsOrganitzativesPluginCaibMock implements UnitatsOrganitzative
 		}
 	}
 
-	@Override
-	public UnitatOrganitzativa findAmbCodi(
-			String codi) throws SistemaExternException {
-		List<UnitatOrganitzativa> unitats = findAmbPare(null);
-		for (UnitatOrganitzativa unitat: unitats) {
-			if (unitat.getCodi().equals(codi))
-				return unitat;
-		}
-		return null;
-	}
+
 
 	/*@SuppressWarnings("unchecked")
 	@Override

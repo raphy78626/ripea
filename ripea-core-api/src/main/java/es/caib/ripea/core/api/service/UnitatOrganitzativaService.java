@@ -77,13 +77,7 @@ public interface UnitatOrganitzativaService {
 			Boolean arrel);
 
 
-	/**
-	 * 
-	 * @param entitatActual
-	 * @throws es.caib.ripea.plugin.SistemaExternException 
-	 * 				
-	 */
-	void synchronize(EntitatDto entitatActual);
+
 
 	/**
 	 * @param entitatId
@@ -95,5 +89,7 @@ public interface UnitatOrganitzativaService {
 			PaginacioParamsDto paginacioParams);
 
 	UnitatOrganitzativaDto findById(Long id);
+
+	void synchronize(Long entitatId);
 
 }

@@ -237,17 +237,6 @@ public class CacheHelper {
 				usuariCodi);
 	}
 
-	@Cacheable(value = "unitatsOrganitzatives", key="#entitatCodi")
-	public ArbreDto<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitat(
-			String entitatCodi) {
-		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
-		return pluginHelper.unitatsOrganitzativesFindArbreByPare(
-				entitat.getUnitatArrel());
-	}
-	@CacheEvict(value = "unitatsOrganitzatives", key="#entitatCodi")
-	public void evictUnitatsOrganitzativesPerEntitat(
-			String entitatCodi) {
-	}
 
 	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
 	public long countElementsPendentsBustiesUsuari(

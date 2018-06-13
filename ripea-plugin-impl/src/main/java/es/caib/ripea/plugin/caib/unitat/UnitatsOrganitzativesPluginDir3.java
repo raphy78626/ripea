@@ -45,7 +45,10 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 
 	
 	@Override
-	public UnitatOrganitzativa obtenerUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+	public UnitatOrganitzativa findUnidad(
+			String pareCodi, 
+			Timestamp fechaActualizacion, 
+			Timestamp fechaSincronizacion) throws MalformedURLException {
 		return toUnitatOrganitzativa(getObtenerUnidadesService().obtenerUnidad(
 				pareCodi,
 				fechaActualizacion,
@@ -53,47 +56,24 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 	}
 	
 	@Override
-	public List<UnitatOrganitzativa> obtenerArbolUnidades(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
-		List<UnitatOrganitzativa> unitatOrganitzativa = new ArrayList<UnitatOrganitzativa>();
-		List<UnidadTF> arbol = getObtenerUnidadesService().obtenerArbolUnidades(
-				pareCodi,
-				fechaActualizacion,
-				fechaSincronizacion);
-		
-		for(UnidadTF unidadTF: arbol){
-			unitatOrganitzativa.add(toUnitatOrganitzativa(unidadTF));
-		}
-		return unitatOrganitzativa;
-	}
-	
-	@Override
-	public List<UnitatOrganitzativa> findAmbPare(String pareCodi) throws SistemaExternException {
+	public List<UnitatOrganitzativa> findAmbPare(
+			String pareCodi,
+			Timestamp fechaActualizacion,
+			Timestamp fechaSincronizacion) throws SistemaExternException {
 		try {
-			UnidadTF unidadPare = getObtenerUnidadesService().obtenerUnidad(
+			List<UnitatOrganitzativa> unitatOrganitzativa = new ArrayList<UnitatOrganitzativa>();
+			List<UnidadTF> arbol = getObtenerUnidadesService().obtenerArbolUnidades(
 					pareCodi,
-					null,
-					null);
-			if (unidadPare != null) {
-				List<UnitatOrganitzativa> unitats = new ArrayList<UnitatOrganitzativa>();
-				List<UnidadTF> unidades = getObtenerUnidadesService().obtenerArbolUnidades(
-						pareCodi,
-						null,
-						null);//df.format(new Date()));
-				if (unidades != null) {
-					unidades.add(0, unidadPare);
-					for (UnidadTF unidad: unidades) {
-						if ("V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
-							unitats.add(toUnitatOrganitzativa(unidad));
-						}
-					}
-				} else {
-					unitats.add(toUnitatOrganitzativa(unidadPare));
-				}
-				return unitats;
-			} else {
-				throw new SistemaExternException(
-						"No s'han trobat la unitat pare (pareCodi=" + pareCodi + ")");
+					fechaActualizacion,
+					fechaSincronizacion);
+			
+			System.out.println("TF");
+			for(UnidadTF unidadTF: arbol){
+				System.out.println("codi: " + unidadTF.getCodigo() + ", parent: "+unidadTF.getCodUnidadSuperior()+", estat: "+unidadTF.getCodigoEstadoEntidad());
+				
+				unitatOrganitzativa.add(toUnitatOrganitzativa(unidadTF));
 			}
+			return unitatOrganitzativa;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via WS (" +
@@ -101,32 +81,8 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					ex);
 		}
 	}
+	
 
-	@Override
-	public UnitatOrganitzativa findAmbCodi(String codi) throws SistemaExternException {
-		try {
-			UnitatOrganitzativa unitat = null;
-			UnidadTF unidad = getObtenerUnidadesService().obtenerUnidad(
-					codi,
-					null,
-					null);
-			if (unidad != null && "V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
-				unitat = toUnitatOrganitzativa(unidad);
-			} else {
-				throw new SistemaExternException(
-						"La unitat organitzativa no està vigent (" +
-						"codi=" + codi + ")");
-			}
-			return unitat;
-		} catch (SistemaExternException ex) {
-			throw ex;
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'ha pogut consultar la unitat organitzativa (" +
-					"codi=" + codi + ")",
-					ex);
-		}
-	}
 
 	public List<UnitatOrganitzativa> cercaUnitats(
 			String codi, 

@@ -46,23 +46,23 @@
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>	
-				<th data-col-name="tipusTranscissio" data-visible="false">#</th>				
+				<th data-col-name="tipusTransicio" data-visible="false">#</th>				
 				<th data-col-name="codi" width="80px" data-template="#codiTemplate">
 					<spring:message code="unitat.list.columna.codi"/>
 					<script id="codiTemplate" type="text/x-jsrender">
 						{{:codi}} 
 						{{if estat=='E'||estat=='A'||estat=='T'}}
-							{{if tipusTranscissio == 'DIVISIO'}}
-								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
-									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTranscissio.DIVISIO"/>"></span>
+							{{if tipusTransicio == 'DIVISIO'}}
+								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTransicioInfo" data-toggle="modal">
+									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTransicio.DIVISIO"/>"></span>
 								</a>
-							{{else tipusTranscissio == 'FUSIO'}}
-								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
-									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTranscissio.FUSIO"/>"></span>
+							{{else tipusTransicio == 'FUSIO'}}
+								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTransicioInfo" data-toggle="modal">
+									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTransicio.FUSIO"/>"></span>
 								</a>
-							{{else tipusTranscissio == 'SUBSTITUCIO'}}
-								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTranscissioInfo" data-toggle="modal">
-									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTranscissio.SUBSTITUCIO"/>"></span>
+							{{else tipusTransicio == 'SUBSTITUCIO'}}
+								<a href="${unitatCodiUrlPrefix}unitatOrganitzativa/{{:id}}/unitatTransicioInfo" data-toggle="modal">
+									<span class="fa fa-warning text-danger pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.obsoleta.tipusTransicio.SUBSTITUCIO"/>"></span>
 								</a>
 							{{/if}}
 
@@ -70,8 +70,6 @@
 					</script>
 				</th>					
 				<th data-col-name="denominacio"><spring:message code="unitat.list.columna.denominacio"/></th>
-				
-				<th data-col-name="nifCif"><spring:message code="unitat.list.columna.nifCif"/></th>
 				
 				<th data-col-name="codiUnitatSuperior"><spring:message code="unitat.list.columna.codiUnitatSuperior"/></th>
 				

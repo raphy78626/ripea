@@ -3,6 +3,8 @@
  */
 package es.caib.ripea.core.ejb;
 
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -123,6 +125,17 @@ public class ReglaServiceBean implements ReglaService {
 		return delegate.findAmbEntitatPaginat(
 				entitatId,
 				paginacioParams);
+	}
+	
+	
+
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public List<ReglaDto> findByEntitatAndUnitatCodi(Long entitatId, String unitatCodi) {
+		return delegate.findByEntitatAndUnitatCodi(
+				entitatId,
+				unitatCodi);
 	}
 
 }

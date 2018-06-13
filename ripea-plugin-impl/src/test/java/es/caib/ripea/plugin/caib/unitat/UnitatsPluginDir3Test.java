@@ -49,7 +49,7 @@ public class UnitatsPluginDir3Test {
 
 	@Test
 	public void test() throws SistemaExternException {
-		List<UnitatOrganitzativa> unitats = plugin.findAmbPare(UNITAT_ARREL);
+		List<UnitatOrganitzativa> unitats = plugin.findAmbPare(UNITAT_ARREL, null, null);
 		for (UnitatOrganitzativa unitat: unitats) {
 			System.out.println(">>> [" + unitat.getCodi() + "] " + unitat.getDenominacio());
 		}

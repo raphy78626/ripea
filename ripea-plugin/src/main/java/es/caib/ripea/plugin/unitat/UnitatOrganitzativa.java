@@ -10,6 +10,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
+
 /**
  * Informació d'una unitat organitzativa.
  * 
@@ -45,7 +47,21 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 	private String numVia; 
 	protected List<String> historicosUO;
 
-
+	
+	public UnitatOrganitzativa(
+			String codi,
+			String denominacio,
+			String codiUnitatSuperior,
+			String codiUnitatArrel,
+			String estat,
+			List<String> historicosUO) {
+		this.codi = codi;
+		this.denominacio = denominacio;
+		this.codiUnitatSuperior = codiUnitatSuperior;
+		this.codiUnitatArrel = codiUnitatArrel;
+		this.estat = estat;
+		this.historicosUO = historicosUO;
+	}
 	public UnitatOrganitzativa() {
 		
 	}
@@ -78,6 +94,9 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 		this.codiUnitatSuperior = codiUnitatSuperior;
 		this.codiUnitatArrel = codiUnitatArrel;
 	}
+	
+	
+
 	public UnitatOrganitzativa(
 			String codi,
 			String denominacio,

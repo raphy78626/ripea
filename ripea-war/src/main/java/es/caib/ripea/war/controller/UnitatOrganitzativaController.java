@@ -58,7 +58,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			HttpServletRequest request) {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		unitatOrganitzativaService.synchronize(entitatActual);
+		unitatOrganitzativaService.synchronize(entitatActual.getId());
 
 		return "redirect:/unitatOrganitzativa";
 	}
@@ -80,7 +80,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	
 	
 	
-	@RequestMapping(value = "/{unitatId}/unitatTranscissioInfo", method = RequestMethod.GET)
+	@RequestMapping(value = "/{unitatId}/unitatTransicioInfo", method = RequestMethod.GET)
 	public String formGet(
 			HttpServletRequest request,
 			@PathVariable Long unitatId,
@@ -98,7 +98,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		model.addAttribute("bustiesOfOldUnitat", bustiesOfOldUnitat);	
 
 	
-		return "unitatTranscissioInfo";
+		return "unitatTransicioInfo";
 	}
 	
 	

@@ -21,7 +21,7 @@ import es.caib.ripea.core.api.dto.MunicipiDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
-import es.caib.ripea.core.api.dto.TipusTranscissioEnumDto;
+import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
 import es.caib.ripea.core.api.dto.TipusViaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
@@ -67,12 +67,10 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 
 	@Override
 	@Transactional
-	public void synchronize(EntitatDto entitatActual) {
-
+	public void synchronize(Long entitatId) {
+		EntitatEntity entitat = entitatRepository.getOne(entitatId);
 		
-		EntitatEntity entitat = entitatRepository.getOne(entitatActual.getId());
-		
-		unitatOrganitzativaHelper.sincronizarOActualizar(entitat.getId(), entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());		
+		unitatOrganitzativaHelper.sincronizarOActualizar(entitat);		
 		
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		
@@ -137,45 +135,45 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	}
 	
 	
-	@Transactional
-	public void create(
-			Long entitatId,
-			UnitatOrganitzativaDto unitatOrganitzativa) {
-		logger.debug("Creant una nova unitat organitzativa ("
-				+ "entitatId=" + entitatId + ", "
-				+ "unitatOrganitzativa=" + unitatOrganitzativa + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		
-		UnitatOrganitzativaEntity entity = UnitatOrganitzativaEntity.getBuilder(
-				unitatOrganitzativa.getCodi(),
-				unitatOrganitzativa.getDenominacio(),
-				unitatOrganitzativa.getNifCif(),
-				unitatOrganitzativa.getCodiUnitatSuperior(),
-				unitatOrganitzativa.getCodiUnitatArrel(),
-				unitatOrganitzativa.getDataCreacioOficial(),
-				unitatOrganitzativa.getDataSupressioOficial(),
-				unitatOrganitzativa.getDataExtincioFuncional(),
-				unitatOrganitzativa.getDataAnulacio(),
-				unitatOrganitzativa.getEstat(), 
-				unitatOrganitzativa.getCodiPais(),
-				unitatOrganitzativa.getCodiComunitat(),
-				unitatOrganitzativa.getCodiProvincia(),
-				unitatOrganitzativa.getCodiPostal(),
-				unitatOrganitzativa.getNomLocalitat(),
-				unitatOrganitzativa.getLocalitat(),
-				unitatOrganitzativa.getAdressa(),
-				unitatOrganitzativa.getTipusVia(),
-				unitatOrganitzativa.getNomVia(),
-				unitatOrganitzativa.getNumVia(),
-				false).build();
-		unitatOrganitzativaRepository.save(entity);
-		
-	}
-	
+//	@Transactional
+//	public void create(
+//			Long entitatId,
+//			UnitatOrganitzativaDto unitatOrganitzativa) {
+//		logger.debug("Creant una nova unitat organitzativa ("
+//				+ "entitatId=" + entitatId + ", "
+//				+ "unitatOrganitzativa=" + unitatOrganitzativa + ")");
+//		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+//				entitatId,
+//				false,
+//				true,
+//				false);
+//		
+//		UnitatOrganitzativaEntity entity = UnitatOrganitzativaEntity.getBuilder(
+//				unitatOrganitzativa.getCodi(),
+//				unitatOrganitzativa.getDenominacio(),
+//				unitatOrganitzativa.getNifCif(),
+//				unitatOrganitzativa.getCodiUnitatSuperior(),
+//				unitatOrganitzativa.getCodiUnitatArrel(),
+//				unitatOrganitzativa.getDataCreacioOficial(),
+//				unitatOrganitzativa.getDataSupressioOficial(),
+//				unitatOrganitzativa.getDataExtincioFuncional(),
+//				unitatOrganitzativa.getDataAnulacio(),
+//				unitatOrganitzativa.getEstat(), 
+//				unitatOrganitzativa.getCodiPais(),
+//				unitatOrganitzativa.getCodiComunitat(),
+//				unitatOrganitzativa.getCodiProvincia(),
+//				unitatOrganitzativa.getCodiPostal(),
+//				unitatOrganitzativa.getNomLocalitat(),
+//				unitatOrganitzativa.getLocalitat(),
+//				unitatOrganitzativa.getAdressa(),
+//				unitatOrganitzativa.getTipusVia(),
+//				unitatOrganitzativa.getNomVia(),
+//				unitatOrganitzativa.getNumVia(),
+//				false).build();
+//		unitatOrganitzativaRepository.save(entity);
+//		
+//	}
+//	
 
 	
 	@Override

@@ -70,8 +70,9 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	@Override
 	@RolesAllowed("tothom")
 	public void synchronize (
-			EntitatDto entitatActual) throws SistemaExternException {
-		delegate.synchronize(entitatActual);
+			Long entitatId
+			) throws SistemaExternException {
+		delegate.synchronize(entitatId);
 	}
 
 	@Override
