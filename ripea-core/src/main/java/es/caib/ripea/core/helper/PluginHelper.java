@@ -2331,7 +2331,7 @@ public class PluginHelper {
 		try {
 			String motiu = "Autofirma en servidor de RIPEA";
 			String tipusFirma;
-			if ("pdf".equalsIgnoreCase(annex.getFitxerTipusMime()))
+			if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime()))
 				tipusFirma = "PADES";
 			else
 				tipusFirma = "CADES";

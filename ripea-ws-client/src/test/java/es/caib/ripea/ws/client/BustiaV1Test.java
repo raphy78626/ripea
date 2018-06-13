@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -20,7 +21,6 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.Handler;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
 import es.caib.ripea.ws.v1.bustia.BustiaV1;
@@ -76,7 +76,7 @@ public class BustiaV1Test {
         RegistreAnnex annex1 = new RegistreAnnex();
         annex1.setTitol("Annex imatge");
         annex1.setFitxerNom(file.getName());
-        annex1.setFitxerTipusMime(FilenameUtils.getExtension(file.getName()));
+        annex1.setFitxerTipusMime(Files.probeContentType(file.toPath()));
         annex1.setFitxerContingut(encodedContingut);
         annex1.setFitxerTamany((int)(file.length()));
         annex1.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
@@ -84,7 +84,7 @@ public class BustiaV1Test {
         annex1.setEniEstatElaboracio("EE01");
         annex1.setEniTipusDocumental("TD01");
         annex1.setSicresTipusDocument("01");
-//        afegirFirmes(annex1);
+        afegirFirmes(annex1);
         
         anotacio.getAnnexos().add(annex1);
         
@@ -94,7 +94,8 @@ public class BustiaV1Test {
         RegistreAnnex annex2 = new RegistreAnnex();
         annex2.setTitol("annexproves2");
         annex2.setFitxerNom(file2.getName());
-        annex2.setFitxerTipusMime(FilenameUtils.getExtension(file2.getName()));
+//        annex2.setFitxerTipusMime(FilenameUtils.getExtension(file2.getName()));
+        annex2.setFitxerTipusMime(Files.probeContentType(file2.toPath()));
         annex2.setFitxerContingut(encodedContingut2);
         annex2.setFitxerTamany((int)(file2.length()));
         annex2.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
@@ -111,7 +112,7 @@ public class BustiaV1Test {
         RegistreAnnex justificant = new RegistreAnnex();
         justificant.setTitol("justificant");
         justificant.setFitxerNom(file3.getName());
-        justificant.setFitxerTipusMime(FilenameUtils.getExtension(file3.getName()));
+        justificant.setFitxerTipusMime(Files.probeContentType(file3.toPath()));
         justificant.setFitxerContingut(encodedContingut3);
         justificant.setFitxerTamany((int)(file3.length()));
         justificant.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
@@ -143,7 +144,7 @@ public class BustiaV1Test {
         firma.setPerfil("BES");
         firma.setContingut(firmaContingut);
         firma.setFitxerNom("2018-01-24_CAdES_Detached_foto_jpg.csig");
-        firma.setTipusMime(FilenameUtils.getExtension(firma.getFitxerNom()));
+        firma.setTipusMime(Files.probeContentType(firmaFile.toPath()));
         firma.setCsvRegulacio("Regulació CSV 1");
 		
 		Firma firma2 = new Firma();
@@ -153,7 +154,7 @@ public class BustiaV1Test {
 		firma2.setPerfil("EPES");
 		firma2.setContingut(firmaContingut2);
 		firma2.setFitxerNom("2018-01-24_CAdES_Detached_foto_jpg.csig");
-		firma2.setTipusMime(FilenameUtils.getExtension(firma.getFitxerNom()));
+		firma2.setTipusMime(Files.probeContentType(firmaFile2.toPath()));
 		firma2.setCsvRegulacio("Regulació CSV 2");
 		
 		annex.getFirmes().add(firma);

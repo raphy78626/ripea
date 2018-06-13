@@ -694,7 +694,7 @@ public class RegistreHelper {
 			String tipusMime = null;
 			String csvRegulacio = null;
 			
-			if ("pdf".equalsIgnoreCase(annex.getFitxerTipusMime())) {
+			if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime())) {
 				tipus = DocumentNtiTipoFirmaEnumDto.TF06.toString();
 				perfil = FirmaPerfil.EPES.toString();
 				fitxer.setContingut(firmaRipeaContingut);
@@ -703,7 +703,7 @@ public class RegistreHelper {
 				tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
 				perfil = FirmaPerfil.BES.toString();
 				fitxerNom = annex.getFitxerNom() + "_cades_det.csig";
-				tipusMime = "csig";
+				tipusMime = "application/octet-stream";
 			}
 			
 			RegistreAnnexFirmaEntity annexFirma = RegistreAnnexFirmaEntity.getBuilder(
