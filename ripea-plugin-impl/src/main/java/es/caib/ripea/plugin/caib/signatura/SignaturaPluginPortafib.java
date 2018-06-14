@@ -62,10 +62,12 @@ public class SignaturaPluginPortafib implements SignaturaPlugin {
 			
 			String dest = null;
 			IRubricGenerator rubricGenerator = null;
-			String signType = tipusFirma;
+			
+			
+			String signType;
 			int signMode;
 			
-			if (tipusFirma.equals(FileInfoSignature.SIGN_TYPE_PADES)) {
+			if ("PADES".equalsIgnoreCase(tipusFirma)) {
 				dest = source + "_PADES.pdf";
 				signType = FileInfoSignature.SIGN_TYPE_PADES; // PADES
 				signMode = FileInfoSignature.SIGN_MODE_IMPLICIT; // IMPLICIT

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import es.caib.plugins.arxiu.api.ContingutOrigen;
 import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
-import es.caib.plugins.arxiu.api.DocumentFormat;
 import es.caib.plugins.arxiu.api.DocumentTipus;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
@@ -236,17 +235,6 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					"El valor de l'annex o justificant 'SicresTipusDocument' no és vàlid");
 		}
 		
-		if (annex.getFitxerTipusMime() != null) {
-			if ("jpg".equalsIgnoreCase(annex.getFitxerTipusMime())) {
-				annex.setFitxerTipusMime("jpeg");
-			}
-			
-			if (!enumContains(DocumentFormat.class, annex.getFitxerTipusMime(), false)) {
-				throw new ValidationException(
-						"El valor de l'annex o justificant 'FitxerTipusMime' no és vàlid");
-			}
-		}
-		
 		if (annex.getFirmes() != null) {
 			for (Firma firma: annex.getFirmes()) {
 				validarFormatFirma(firma);
@@ -263,18 +251,6 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		if (firma.getPerfil() != null && !enumContains(FirmaPerfil.class, firma.getPerfil(), true)) {
 			throw new ValidationException(
 					"El valor de la firma 'Perfil' no és vàlid");
-		}
-		
-		
-		if (firma.getTipusMime() != null) {
-			if ("jpg".equalsIgnoreCase(firma.getTipusMime())) {
-				firma.setTipusMime("jpeg");
-			}
-			
-			if (!enumContains(DocumentFormat.class, firma.getTipusMime(), false)) {
-				throw new ValidationException(
-						"El valor de l'annex o justificant 'TipusMime' no és vàlid");
-			}
 		}
 	}
 	
