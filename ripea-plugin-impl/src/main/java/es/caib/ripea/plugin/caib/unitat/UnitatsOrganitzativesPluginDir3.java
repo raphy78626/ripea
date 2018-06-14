@@ -49,10 +49,17 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 			String pareCodi, 
 			Timestamp fechaActualizacion, 
 			Timestamp fechaSincronizacion) throws MalformedURLException {
-		return toUnitatOrganitzativa(getObtenerUnidadesService().obtenerUnidad(
-				pareCodi,
-				fechaActualizacion,
-				fechaSincronizacion));
+
+		UnidadTF unidad = getObtenerUnidadesService().obtenerUnidad(
+				pareCodi, 
+				fechaActualizacion, 
+				fechaSincronizacion);
+		if (unidad != null) {
+			return toUnitatOrganitzativa(unidad);
+		} else {
+			return null;
+		}
+
 	}
 	
 	@Override

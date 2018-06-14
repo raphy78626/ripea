@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
@@ -174,6 +175,14 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 //		
 //	}
 //	
+	@Override
+	@Transactional(readOnly = true)
+	public ArbreDto<UnitatOrganitzativaDto> findTree(Long id){
+		
+		EntitatEntity entitat = entitatRepository.findOne(id);
+		return unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPareAndEstatVigent(entitat.getUnitatArrel());
+	}
+	
 
 	
 	@Override

@@ -22,6 +22,7 @@ import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
+import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.war.command.UnitatOrganitzativaFiltreCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
@@ -62,6 +63,23 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 
 		return "redirect:/unitatOrganitzativa";
 	}
+	
+	
+	@RequestMapping(value = "/mostrarArbre", method = RequestMethod.GET)
+	public String mostrarArbre(
+			HttpServletRequest request,
+			Model model) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		model.addAttribute(
+				"arbreUnitatsOrganitzatives",
+				unitatOrganitzativaService.findTree(entitatActual.getId()));
+		
+		return "unitatArbre";
+	}
+	
+	
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String bustiaPost(

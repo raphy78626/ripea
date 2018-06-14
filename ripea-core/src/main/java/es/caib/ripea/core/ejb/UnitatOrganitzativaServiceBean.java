@@ -12,6 +12,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
@@ -87,6 +88,15 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	public UnitatOrganitzativaDto findById(Long id) {
 		return delegate.findById(id);
 	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public ArbreDto<UnitatOrganitzativaDto> findTree(Long id) {
+		return delegate.findTree(id);
+	}
+	
+
+	
 
 	/*@Autowired
 	UnitatsOrganitzativesService delegate;

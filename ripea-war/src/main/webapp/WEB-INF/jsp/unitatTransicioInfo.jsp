@@ -42,24 +42,27 @@
 				<label class="col-xs-4 text-right"><spring:message code="unitat.transicioInfo.novesUnitats"/></label>
 				<div class="col-xs-8">
 					<ul style="padding-left: 17px;">
-						<c:forEach items="${unitatOrganitzativaDto.novaList}"
+						<c:forEach items="${unitatOrganitzativaDto.noves}"
 							var="newUnitat" varStatus="loop">
 							<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
 						</c:forEach>
 					</ul>
 				</div>
 			</div>
-			<div class="row">
-				<label class="col-xs-4 text-right"><spring:message code="unitat.transicioInfo.bustiesAfectades"/></label>
-				<div class="col-xs-8">
-					<ul style="padding-left: 17px;">
-						<c:forEach items="${bustiesOfOldUnitat}" var="bustia"
-							varStatus="loop">
-							<li>${bustia.nom}</li>
-						</c:forEach>
-					</ul>
+			<c:if test="${!empty bustiesOfOldUnitat}">
+				<div class="row">
+					<label class="col-xs-4 text-right"><spring:message
+							code="unitat.transicioInfo.bustiesAfectades" /></label>
+					<div class="col-xs-8">
+						<ul style="padding-left: 17px;">
+							<c:forEach items="${bustiesOfOldUnitat}" var="bustia"
+								varStatus="loop">
+								<li>${bustia.nom}</li>
+							</c:forEach>
+						</ul>
+					</div>
 				</div>
-			</div>
+			</c:if>
 			<c:if test="${unitatOrganitzativaDto.tipusTransicio == 'FUSIO'}">
 			<div class="row">
 				<label class="col-xs-4 text-right"><spring:message code="unitat.transicioInfo.altresUnitatsFusionades"/></label>

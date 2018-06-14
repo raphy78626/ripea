@@ -25,6 +25,7 @@ import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity.Builder;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
@@ -104,9 +105,9 @@ public class UnitatOrganitzativaHelper {
 
 		List<UnitatOrganitzativa> unitats;
 		
-//			 UnitatOrganitzativa unidadPadreWS =
-//			 pluginHelper.findUnidad(entitat.getUnitatArrel(), entitat.getFechaActualizacion(),
-//			entitat.getFechaSincronizacion());
+			 UnitatOrganitzativa unidadPadreWS =
+			 pluginHelper.findUnidad(entitat.getUnitatArrel(), entitat.getFechaActualizacion(),
+			entitat.getFechaSincronizacion());
 //			 System.out.println(unidadPadreWS);
 
 			// if (unidadPadreWS != null) {
@@ -175,6 +176,7 @@ public class UnitatOrganitzativaHelper {
 	}
 	
 
+
 	/**
 	 * This method creates new (if it doesnt already exists) or updates existing unidad in database with the given unitatWS  
 	 * 
@@ -186,9 +188,8 @@ public class UnitatOrganitzativaHelper {
 
 
 		UnitatOrganitzativaEntity unitat = null;
-
-		if (unitatWS != null) {
-					
+		
+		if (unitatWS != null) {					
 			// checks if unitat already exists in database
 			unitat = unitatOrganitzativaRepository.findByCodi(unitatWS.getCodi());
 			//if not it creates a new one
@@ -227,6 +228,7 @@ public class UnitatOrganitzativaHelper {
 						unitatWS.getNomVia(),
 						unitatWS.getNumVia());
 			}
+			
 
 			
 			// Guardamos el Unitat
@@ -435,6 +437,113 @@ public class UnitatOrganitzativaHelper {
 		return null;
 	}
 	
+	
+//	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(
+//			String pareCodi) {
+//		String accioDescripcio = "Consulta de l'arbre d'unitats donat un pare";
+//		Map<String, String> accioParams = new HashMap<String, String>();
+//		accioParams.put("unitatPare", pareCodi);
+//		long t0 = System.currentTimeMillis();
+//		try {
+//			List<UnitatOrganitzativa> unitatsOrganitzatives = getUnitatsOrganitzativesPlugin().findAmbPare(
+//					pareCodi);
+//			ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
+//			// Cerca l'unitat organitzativa arrel
+//			UnitatOrganitzativa unitatOrganitzativaArrel = null;
+//			for (UnitatOrganitzativa unitatOrganitzativa: unitatsOrganitzatives) {
+//				if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
+//					unitatOrganitzativaArrel = unitatOrganitzativa;
+//					break;
+//				}
+//			}
+//			if (unitatOrganitzativaArrel != null) {
+//				// Omple l'arbre d'unitats organitzatives
+//				resposta.setArrel(
+//						getNodeArbreUnitatsOrganitzatives(
+//								unitatOrganitzativaArrel,
+//								unitatsOrganitzatives,
+//								null));
+//				integracioHelper.addAccioOk(
+//						IntegracioHelper.INTCODI_UNITATS,
+//						accioDescripcio,
+//						accioParams,
+//						IntegracioAccioTipusEnumDto.ENVIAMENT,
+//						System.currentTimeMillis() - t0);
+//				return resposta;
+//			} else {
+//				String errorMissatge = "No s'ha trobat la unitat organitzativa arrel (codi=" + pareCodi + ")";
+//				integracioHelper.addAccioError(
+//						IntegracioHelper.INTCODI_UNITATS,
+//						accioDescripcio,
+//						accioParams,
+//						IntegracioAccioTipusEnumDto.ENVIAMENT,
+//						System.currentTimeMillis() - t0,
+//						errorMissatge);
+//				throw new SistemaExternException(
+//						IntegracioHelper.INTCODI_UNITATS,
+//						errorMissatge);
+//			}
+//		} catch (Exception ex) {
+//			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";
+//			integracioHelper.addAccioError(
+//					IntegracioHelper.INTCODI_UNITATS,
+//					accioDescripcio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0,
+//					errorDescripcio,
+//					ex);
+//			throw new SistemaExternException(
+//					IntegracioHelper.INTCODI_UNITATS,
+//					errorDescripcio,
+//					ex);
+//		}
+//	}
+	
+	/**
+	 * Takes the list of unitats from database and converts it to the tree
+	 * 
+	 * @param pareCodi 
+	 * 				unitatArrel
+	 * @return tree of unitats
+	 */
+	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPareAndEstatVigent(String pareCodi) {
+
+		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
+				.findByCodiUnitatArrelAndEstatV(pareCodi);
+		
+		
+		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
+				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
+
+		ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
+		// Cerca l'unitat organitzativa arrel
+		UnitatOrganitzativa unitatOrganitzativaArrel = null;
+		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
+			if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
+
+//				unitatOrganitzativa.setCodiUnitatSuperior("A04019281");
+				unitatOrganitzativa.setCodiUnitatArrel(null);
+				unitatOrganitzativa.setCodiUnitatSuperior(null);
+				unitatOrganitzativaArrel = unitatOrganitzativa;
+//				unitatOrganitzativaArrel = new UnitatOrganitzativa("A04019281", "Govern de les Illes Balears", null, null, "V", null);
+				break;
+			}
+		}
+		if (unitatOrganitzativaArrel != null) {
+			// Omple l'arbre d'unitats organitzatives
+			resposta.setArrel(getNodeArbreUnitatsOrganitzatives(unitatOrganitzativaArrel, unitatsOrganitzatives, null));
+			return resposta;
+
+		} else {
+			return null;
+		}
+	}
+	
+	
+	
+	
+	
 	/**
 	 * 
 	 * @param unitatOrganitzativa - in first call it is unitat arrel, later the children nodes
@@ -453,8 +562,9 @@ public class UnitatOrganitzativaHelper {
 						unitatOrganitzativa,
 						UnitatOrganitzativaDto.class));
 		String codiUnitat = (unitatOrganitzativa != null) ? unitatOrganitzativa.getCodi() : null;
-		// for every child of current unitat call recursively this method
+		// for every child of current unitat call recursively getNodeArbreUnitatsOrganitzatives()
 		for (UnitatOrganitzativa uo: unitatsOrganitzatives) {
+			//searches for children of current unitat
 			if (	(codiUnitat == null && uo.getCodiUnitatSuperior() == null) ||
 					(uo.getCodiUnitatSuperior() != null && uo.getCodiUnitatSuperior().equals(codiUnitat))) {
 				resposta.addFill(

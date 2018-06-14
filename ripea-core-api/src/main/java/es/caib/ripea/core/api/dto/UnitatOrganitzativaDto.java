@@ -43,7 +43,7 @@ public class UnitatOrganitzativaDto implements Serializable {
 	
 	private TipusTransicioEnumDto tipusTransicio;
 	
-	private List<UnitatOrganitzativaDto> novaList;
+	private List<UnitatOrganitzativaDto> noves;
 	private Map<String, String> altresUnitatsFusionades;
 
 
@@ -59,11 +59,11 @@ public class UnitatOrganitzativaDto implements Serializable {
 	public void setTipusTransicio(TipusTransicioEnumDto tipusTransicio) {
 		this.tipusTransicio = tipusTransicio;
 	}
-	public List<UnitatOrganitzativaDto> getNovaList() {
-		return novaList;
+	public List<UnitatOrganitzativaDto> getNoves() {
+		return noves;
 	}
-	public void setNovaList(List<UnitatOrganitzativaDto> novaList) {
-		this.novaList = novaList;
+	public void setNoves(List<UnitatOrganitzativaDto> noves) {
+		this.noves = noves;
 	}
 	public Long getId() {
 		return id;
@@ -194,6 +194,10 @@ public class UnitatOrganitzativaDto implements Serializable {
 
 	public String getNom() {
 		return this.denominacio + " (" + this.codi + ")";
+	}
+	
+	public String getCodiAndNom() {
+		return this.codi + " - " + this.denominacio + "";
 	}
 	
 	private static final long serialVersionUID = -5602898182576627524L;

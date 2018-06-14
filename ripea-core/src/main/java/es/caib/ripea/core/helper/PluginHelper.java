@@ -226,6 +226,8 @@ public class PluginHelper {
 		}
 	}
 	
+	
+	
 	public UnitatOrganitzativa findUnidad(
 			String pareCodi, 
 			Timestamp fechaActualizacion, 
@@ -240,7 +242,7 @@ public class PluginHelper {
 			UnitatOrganitzativa unitat = getUnitatsOrganitzativesPlugin().findUnidad(
 					pareCodi, fechaActualizacion, fechaSincronizacion);
 			
-			if (unitat != null) {
+//			if (unitat != null) {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
@@ -248,19 +250,19 @@ public class PluginHelper {
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
 				return unitat;
-			} else {
-				String errorMissatge = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
-				integracioHelper.addAccioError(
-						IntegracioHelper.INTCODI_UNITATS,
-						accioDescripcio,
-						accioParams,
-						IntegracioAccioTipusEnumDto.ENVIAMENT,
-						System.currentTimeMillis() - t0,
-						errorMissatge);
-				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_UNITATS,
-						errorMissatge);
-			}
+//			} else {
+//				String errorMissatge = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
+//				integracioHelper.addAccioError(
+//						IntegracioHelper.INTCODI_UNITATS,
+//						accioDescripcio,
+//						accioParams,
+//						IntegracioAccioTipusEnumDto.ENVIAMENT,
+//						System.currentTimeMillis() - t0,
+//						errorMissatge);
+//				throw new SistemaExternException(
+//						IntegracioHelper.INTCODI_UNITATS,
+//						errorMissatge);
+//			}
 				
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";

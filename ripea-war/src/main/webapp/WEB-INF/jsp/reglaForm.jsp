@@ -74,7 +74,7 @@ $(document).ready(function() {
 							code="regla.form.novesUnitats" /></label>
 					<div class="col-xs-8">
 						<ul style="padding-left: 17px;">
-							<c:forEach items="${reglaDto.unitatOrganitzativa.novaList}"
+							<c:forEach items="${reglaDto.unitatOrganitzativa.noves}"
 								var="newUnitat" varStatus="loop">
 								<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
 							</c:forEach>

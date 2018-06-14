@@ -53,7 +53,7 @@
 							code="bustia.form.novesUnitats" /></label>
 					<div class="col-xs-8">
 						<ul style="padding-left: 17px;">
-							<c:forEach items="${bustiaDto.unitatOrganitzativa.novaList}"
+							<c:forEach items="${bustiaDto.unitatOrganitzativa.noves}"
 								var="newUnitat" varStatus="loop">
 								<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
 							</c:forEach>
