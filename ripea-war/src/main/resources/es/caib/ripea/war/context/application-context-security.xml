@@ -16,6 +16,8 @@
 		<sec:intercept-url pattern="/ws/v0/bustia*" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/ws/v1/bustia*" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/ws/bantel*" access="isAnonymous()"/>
+		<sec:intercept-url pattern="/rest/notib*" access="isAnonymous()" filters="none"/>
+<!-- 		<sec:intercept-url pattern="/rest/notib/notificaCanvi" access="isAnonymous()"/> -->
 		
 		<sec:intercept-url pattern="/rest/v0/bustia" access="hasRole('IPA_BSTWS')"/>
 		<sec:intercept-url pattern="/rest/v1/bustia" access="hasRole('IPA_BSTWS')"/>
@@ -33,7 +35,8 @@
 			<sec:frame-options policy="SAMEORIGIN"/>
 		</sec:headers>
 	</sec:http>
-
+	<sec:http pattern="/rest/notib**" security="none"/>
+		
 	<sec:authentication-manager alias="authenticationManager">
 		<sec:authentication-provider ref="preAuthenticatedAuthenticationProvider"/>
 	</sec:authentication-manager>

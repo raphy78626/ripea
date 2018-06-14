@@ -10,8 +10,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +23,7 @@ import es.caib.ripea.core.api.dto.DocumentPublicacioDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
 import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.ripea.core.api.dto.LogTipusEnumDto;
+import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.DocumentEnviamentService;
 import es.caib.ripea.core.entity.DocumentEntity;
@@ -688,37 +687,63 @@ public class DocumentEnviamentServiceImpl implements DocumentEnviamentService {
 
 	@Override
 	@Transactional
-	@Async
-	@Scheduled(fixedRateString = "${config:es.caib.ripea.tasca.notificacio.pendent.periode.execucio}")
-	public void notificacioActualitzarEstat() {
-		logger.debug("Refrescant estat de les notificacions pendents");
-		List<DocumentNotificacioEntity> pendents = documentNotificacioRepository.findByEstatAndTipusIn(
-				DocumentEnviamentEstatEnumDto.ENVIAT,
-				new DocumentNotificacioTipusEnumDto[] {
-					DocumentNotificacioTipusEnumDto.NOTIFICACIO,
-					DocumentNotificacioTipusEnumDto.COMUNICACIO,
-				});
-		logger.debug("Refrescant estat de " + pendents.size() + " notificacions pendents");
-		if (!pendents.isEmpty()) {
-			for (DocumentNotificacioEntity pendent: pendents) {
-				try {
-					pluginHelper.notificacioActualitzarEstat(pendent);
-				} catch (Exception ex) {
-					Throwable rootCause = ExceptionUtils.getRootCause(ex);
-					if (rootCause == null) rootCause = ex;
-					alertaHelper.crearAlerta(
-							messageHelper.getMessage(
-									"alertes.segon.pla.notificacions.error",
-									new Object[] {pendent.getId()}),
-							ex,
-							pendent.getExpedient().getId());
-				}
-			}
-		} else {
-			logger.debug("No hi ha notificacions pendents de processar");
+	public void notificacioActualitzarEstat(String identificador, String referencia) {
+		
+		DocumentNotificacioEntity notificacio = documentNotificacioRepository.findByEnviamentIdentificadorAndEnviamentReferencia(
+				identificador,
+				referencia);
+		if (notificacio == null) {
+			throw new NotFoundException(
+					"[" + identificador + ", " + referencia + "]",
+					DocumentNotificacioEntity.class);
+		}
+		
+		try {
+			pluginHelper.notificacioActualitzarEstat(notificacio);
+		} catch (Exception ex) {
+			Throwable rootCause = ExceptionUtils.getRootCause(ex);
+			if (rootCause == null) rootCause = ex;
+			alertaHelper.crearAlerta(
+					messageHelper.getMessage(
+							"alertes.segon.pla.notificacions.error",
+							new Object[] {notificacio.getId()}),
+					ex,
+					notificacio.getExpedient().getId());
 		}
 	}
+	
+//	@Override
+//	@Transactional
+//	@Async
+//	@Scheduled(fixedRateString = "${config:es.caib.ripea.tasca.notificacio.pendent.periode.execucio}")
+//	public void notificacioActualitzarEstat() {
+//		logger.debug("Refrescant estat de les notificacions pendents");
+//		List<DocumentNotificacioEntity> pendents = documentNotificacioRepository.findByEstatAndTipusIn(
+//				DocumentEnviamentEstatEnumDto.ENVIAT,
+//				new DocumentNotificacioTipusEnumDto[] {
+//					DocumentNotificacioTipusEnumDto.NOTIFICACIO,
+//					DocumentNotificacioTipusEnumDto.COMUNICACIO,
+//				});
+//		logger.debug("Refrescant estat de " + pendents.size() + " notificacions pendents");
+//		if (!pendents.isEmpty()) {
+//			for (DocumentNotificacioEntity pendent: pendents) {
+//				try {
+//					pluginHelper.notificacioActualitzarEstat(pendent);
+//				} catch (Exception ex) {
+//					Throwable rootCause = ExceptionUtils.getRootCause(ex);
+//					if (rootCause == null) rootCause = ex;
+//					alertaHelper.crearAlerta(
+//							messageHelper.getMessage(
+//									"alertes.segon.pla.notificacions.error",
+//									new Object[] {pendent.getId()}),
+//							ex,
+//							pendent.getExpedient().getId());
+//				}
+//			}
+//		} else {
+//			logger.debug("No hi ha notificacions pendents de processar");
+//		}
+//	}
 
 	private static final Logger logger = LoggerFactory.getLogger(DocumentEnviamentServiceImpl.class);
-
 }

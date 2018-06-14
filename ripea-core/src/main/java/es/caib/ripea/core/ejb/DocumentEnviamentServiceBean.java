@@ -146,9 +146,16 @@ public class DocumentEnviamentServiceBean implements DocumentEnviamentService {
 				documentId);
 	}
 
+//	@Override
+//	public void notificacioActualitzarEstat() {
+//		delegate.notificacioActualitzarEstat();
+//	}
+
 	@Override
-	public void notificacioActualitzarEstat() {
-		delegate.notificacioActualitzarEstat();
+	public void notificacioActualitzarEstat(String identificador, String referencia) {
+		delegate.notificacioActualitzarEstat(
+				identificador,
+				referencia);
 	}
 
 }

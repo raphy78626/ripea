@@ -316,6 +316,8 @@ public class NotificacioPluginNotib implements NotificacioPlugin {
 			ParametresSeu parametresSeu = new ParametresSeu();
 			parametresSeu.setExpedientSerieDocumental(
 					notificacio.getSeuExpedientSerieDocumental());
+			parametresSeu.setProcedimentCodi(
+					notificacio.getSeuProcedimentCodi());
 			parametresSeu.setExpedientUnitatOrganitzativa(
 					notificacio.getSeuExpedientUnitatOrganitzativa());
 			parametresSeu.setExpedientIdentificadorEni(

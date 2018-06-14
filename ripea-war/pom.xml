@@ -240,6 +240,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>es.caib.notib</groupId>
+			<artifactId>notib-client</artifactId>
+			<version>${notib.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ripea-applet</artifactId>
 			<version>${ripea.version}</version>

@@ -98,6 +98,7 @@ import es.caib.ripea.plugin.notificacio.Notificacio;
 import es.caib.ripea.plugin.notificacio.NotificacioPlugin;
 import es.caib.ripea.plugin.notificacio.Persona;
 import es.caib.ripea.plugin.notificacio.RespostaConsultaEstatEnviament;
+import es.caib.ripea.plugin.notificacio.RespostaEnviar;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocument;
 import es.caib.ripea.plugin.portafirmes.PortafirmesDocumentTipus;
 import es.caib.ripea.plugin.portafirmes.PortafirmesFluxBloc;
@@ -2579,7 +2580,11 @@ public class PluginHelper {
 			not.setSeuAvisTextMobil(notificacio.getSeuAvisTextMobil());
 			not.setSeuOficiTitol(notificacio.getSeuOficiTitol());
 			not.setSeuOficiText(notificacio.getSeuOficiText());
-			getNotificacioPlugin().enviar(not);
+			RespostaEnviar resposta = getNotificacioPlugin().enviar(not);
+			notificacio.updateEnviat(
+					new Date(), 
+					resposta.getIdentificador(), 
+					resposta.getReferencies().get(0).getReferencia());
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_NOTIFICACIO,
 					accioDescripcio,

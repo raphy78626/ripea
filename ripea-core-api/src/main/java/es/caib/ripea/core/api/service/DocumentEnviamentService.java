@@ -206,9 +206,21 @@ public interface DocumentEnviamentService {
 	public List<DocumentEnviamentDto> findAmbDocument(
 			Long entitatId,
 			Long documentId) throws NotFoundException;
+	
 	/**
-	 * Actualitza l'estat de les notificacions pendents de forma periòdica.
+	 * Actualitza l'estat d'un enviament de la notificació.
+	 * 
+	 * @param identificador
+	 * 			Identificador de la notificació 
+	 * @param referencia
+	 * 			Referència de l'enviament
+	 * 
 	 */
-	public void notificacioActualitzarEstat();
+	public void notificacioActualitzarEstat(String identificador, String referencia);
+	
+//	/**
+//	 * Actualitza l'estat de les notificacions pendents de forma periòdica.
+//	 */
+//	public void notificacioActualitzarEstat();
 
 }

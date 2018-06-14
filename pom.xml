@@ -25,6 +25,7 @@
 		<regweb.version>3.0.5</regweb.version>
 		<dir3caib.version>1.0.7</dir3caib.version>
 		<slf4j.version>1.5.11</slf4j.version>
+		<notib.version>0.1</notib.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

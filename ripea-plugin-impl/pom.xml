@@ -11,13 +11,13 @@
 		<dependency>
 			<groupId>es.caib.notib</groupId>
 			<artifactId>notib-client</artifactId>
-			<version>0.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.geronimo.specs</groupId>
-					<artifactId>geronimo-javamail_1.4_spec</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>${notib.version}</version>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.geronimo.specs</groupId> -->
+<!-- 					<artifactId>geronimo-javamail_1.4_spec</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
 		</dependency>
 		<dependency>
 			<groupId>fr.opensagres.xdocreport</groupId>
