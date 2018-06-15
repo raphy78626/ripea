@@ -55,26 +55,70 @@ public class UnitatOrganitzativaHelper {
 	private EntitatRepository entitatRepository;
 	
 	
+
+	/**
+	 * Searches for an return the unitat object with the given codi from the given list of unitats
+	 * @param codi
+	 * @param allUnitats
+	 * @return
+	 */
+	private UnitatOrganitzativa getUnitatFromCodi(String codi, List<UnitatOrganitzativa> allUnitats){
+		
+		UnitatOrganitzativa unitatFromCodi = null;
+		for (UnitatOrganitzativa unitatWS : allUnitats) {
+			if (unitatWS.equals(codi)) {
+				unitatFromCodi = unitatWS;
+			}
+		}
+		return unitatFromCodi;
+	}
+	
+	/**
+	 * Method to get last historicos (recursive to cover cumulative synchro case) 
+	 * @param unitat
+	 * @return
+	 */
+	private List<UnitatOrganitzativa> getLastHistoricos(UnitatOrganitzativa unitat, List<UnitatOrganitzativa> unitatsFromWebService){
+		for (String historicoCodi: unitat.getHistoricosUO()){
+			
+			
+			getUnitatFromCodi(historicoCodi, unitatsFromWebService);
+			
+		}
+		return null;
+	}
+	
 	
 //	public void checkBeforeSynchronization(Long entidadId, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{
 //		
 //
 //		EntitatEntity entitat = entitatRepository.getOne(entidadId);
 //
-//		try {
-//			//getting last changes from webservices for unitat arrel
-//			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
-//					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
-//			if (unidadPadreWS != null) {
+////		try {
+////			//getting last changes from webservices for unitat arrel
+////			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
+////					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
+////			if (unidadPadreWS != null) {
 //				
 //				//getting last changes from webservices for list of unitats
-//				List<UnitatOrganitzativa> arbol = pluginHelper.getUnitatsOrganitzativesPlugin()
-//						.obtenerArbolUnidades(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
+//				List<UnitatOrganitzativa> unitats = pluginHelper.findAmbPare(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
 //				
 //				//getting all vigent unitats
 //				List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 //						.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
-//
+//				
+//				
+//				List<UnitatOrganitzativa> unitatsObsolete = new ArrayList<>();
+//				for(UnitatOrganitzativa unitat: unitats){
+//					
+//					if(){
+//						
+//					}
+//					Mulitmap
+//				}
+//				
+////			}
+//				
 ////				for(UnitatOrganitzativaEntity vigentUnitat: vigentUnitats){
 ////					for(UnitatOrganitzativa unitat: arbol){
 ////						if(unitat.getCodi() == vigentUnitat.getCodi()){
@@ -89,14 +133,14 @@ public class UnitatOrganitzativaHelper {
 //				
 //
 //
-//			} else {
-//				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
-//			}
-//		} catch (Exception ex) {
-//			throw new SistemaExternException(
-//					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
-//					ex);
-//		}
+////			} else {
+////				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
+////			}
+////		} catch (Exception ex) {
+////			throw new SistemaExternException(
+////					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
+////					ex);
+////		}
 //
 //		
 //	}
@@ -130,8 +174,8 @@ public class UnitatOrganitzativaHelper {
 			for (UnitatOrganitzativa unidadWS : unitats) {
 				
 				
-				System.out.println("codi: " + unidadWS.getCodi() + ", parent: "+unidadWS.getCodiUnitatSuperior()+", estat: "+unidadWS.getEstat());
-				
+				System.out.println("codi: " + unidadWS.getCodi() + ", historicos:" + unidadWS.getHistoricosUO() + ", estat: " + unidadWS.getEstat());
+							
 				sincronizarUnitat(unidadWS);
 			}
 			
@@ -365,9 +409,9 @@ public class UnitatOrganitzativaHelper {
 	
 
 	public UnitatOrganitzativaDto findConselleria(
-			String entitatCodi,
+			String unitatPare,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(entitatCodi).clone();
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(unitatPare).clone();
 		UnitatOrganitzativaDto unitatConselleria = null;
 		for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
 			UnitatOrganitzativaDto uo = node.getDades();

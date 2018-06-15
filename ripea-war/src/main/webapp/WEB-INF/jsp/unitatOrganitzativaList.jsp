@@ -21,8 +21,8 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 </head>
 <body>
-	<div class="text-right" data-toggle="botons-titol">
-		<a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
+	<div data-toggle="botons-titol" style="margin-right: 15px;">
+		<a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal"  class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
 		<a href="<c:url value="/unitatOrganitzativa/synchronize"/>"  class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
 	</div>
 

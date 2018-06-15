@@ -4,6 +4,7 @@
 package es.caib.ripea.plugin.caib.unitat;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -74,9 +75,21 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					fechaActualizacion,
 					fechaSincronizacion);
 			
+
+			
+			
 			System.out.println("TF");
 			for(UnidadTF unidadTF: arbol){
-				System.out.println("codi: " + unidadTF.getCodigo() + ", parent: "+unidadTF.getCodUnidadSuperior()+", estat: "+unidadTF.getCodigoEstadoEntidad());
+				
+
+				for (Field field : unidadTF.getClass().getDeclaredFields()) {
+				    field.setAccessible(true);
+				    String name = field.getName();
+				    Object value = field.get(unidadTF);
+				    System.out.print(name+": "+ value+", ");
+				}
+				System.out.println();
+
 				
 				unitatOrganitzativa.add(toUnitatOrganitzativa(unidadTF));
 			}
