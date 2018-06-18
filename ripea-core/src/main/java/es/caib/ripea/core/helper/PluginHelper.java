@@ -3643,9 +3643,10 @@ public class PluginHelper {
 							ex);
 				}
 			} else {
-				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_VALIDASIG,
-						"No està configurada la classe per al plugin de validació de signatures");
+//				throw new SistemaExternException(
+//						IntegracioHelper.INTCODI_VALIDASIG,
+//						"No està configurada la classe per al plugin de validació de signatures");
+				return null;
 			}
 		}
 		return validaSignaturaPlugin;
