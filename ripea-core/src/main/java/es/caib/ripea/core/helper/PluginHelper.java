@@ -1002,6 +1002,19 @@ public class PluginHelper {
 			String nodeId,
 			String versio,
 			boolean ambContingut) {
+		return arxiuDocumentConsultar(
+				contingut,
+				nodeId,
+				versio,
+				ambContingut,
+				false);
+	}
+	public Document arxiuDocumentConsultar(
+			ContingutEntity contingut,
+			String nodeId,
+			String versio,
+			boolean ambContingut,
+			boolean ambVersioImprimible) {
 		String accioDescripcio = "Consulta d'un document";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("contingutId", contingut.getId().toString());
@@ -1022,6 +1035,19 @@ public class PluginHelper {
 					arxiuUuid,
 					versio,
 					ambContingut);
+			
+			if (ambVersioImprimible && ambContingut && documentDetalls.getFirmes() != null && !documentDetalls.getFirmes().isEmpty()) {
+				boolean isPdf = false;
+				for (Firma firma : documentDetalls.getFirmes()) {
+					if (firma.getTipus() == FirmaTipus.PADES) {
+						isPdf = true;
+					}
+				}
+				if (isPdf) {
+					documentDetalls.setContingut(getArxiuPlugin().documentImprimible(documentDetalls.getIdentificador()));
+				}
+			}
+			
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
