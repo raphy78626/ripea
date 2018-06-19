@@ -94,6 +94,11 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	public ArbreDto<UnitatOrganitzativaDto> findTree(Long id) {
 		return delegate.findTree(id);
 	}
+
+	@Override
+	public void predictSynchronization(Long entitatId) {
+		delegate.predictSynchronization(entitatId);
+	}
 	
 
 	

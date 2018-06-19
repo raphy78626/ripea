@@ -23,7 +23,8 @@
 <body>
 	<div data-toggle="botons-titol" style="margin-right: 15px;">
 		<a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal"  class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
-		<a href="<c:url value="/unitatOrganitzativa/synchronize"/>"  class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
+		<a href="<c:url value="/unitatOrganitzativa/synchronizeGet"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
+
 	</div>
 
 		<form:form action="" method="post" cssClass="well" commandName="unitatOrganitzativaFiltreCommand">

@@ -95,4 +95,6 @@ public interface UnitatOrganitzativaService {
 
 	ArbreDto<UnitatOrganitzativaDto> findTree(Long id);
 
+	void predictSynchronization(Long entitatId);
+
 }

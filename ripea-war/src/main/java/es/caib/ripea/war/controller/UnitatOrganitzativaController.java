@@ -54,8 +54,18 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		return "unitatOrganitzativaList";
 	}
 	
-	@RequestMapping(value = "/synchronize", method = RequestMethod.GET)
-	public String synchronize(
+	@RequestMapping(value = "/synchronizeGet", method = RequestMethod.GET)
+	public String synchronizeGet(
+			HttpServletRequest request) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		unitatOrganitzativaService.predictSynchronization(entitatActual.getId());
+
+		return "synchronizationPrediction";
+	}
+	
+	@RequestMapping(value = "/saveSynchronize", method = RequestMethod.POST)
+	public String synchronizePost(
 			HttpServletRequest request) {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -63,6 +73,8 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 
 		return "redirect:/unitatOrganitzativa";
 	}
+	
+	
 	
 	
 	@RequestMapping(value = "/mostrarArbre", method = RequestMethod.GET)

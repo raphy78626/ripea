@@ -66,84 +66,117 @@ public class UnitatOrganitzativaHelper {
 		
 		UnitatOrganitzativa unitatFromCodi = null;
 		for (UnitatOrganitzativa unitatWS : allUnitats) {
-			if (unitatWS.equals(codi)) {
+			if (unitatWS.getCodi().equals(codi)) {
 				unitatFromCodi = unitatWS;
 			}
 		}
 		return unitatFromCodi;
 	}
 	
+	
 	/**
-	 * Method to get last historicos (recursive to cover cumulative synchro case) 
-	 * @param unitat
-	 * @return
+	 * Starting point, calls recursive method to get last historicos
+	 * @param unitat - unitats which historicos we are looking for
+	 * @param unitatsFromWebService - unitats used for getting unitat object from codi 
+	 * @param addHistoricos - initially empty list to add the last historicos (unitats that dont have historicos)
 	 */
 	private List<UnitatOrganitzativa> getLastHistoricos(UnitatOrganitzativa unitat, List<UnitatOrganitzativa> unitatsFromWebService){
-		for (String historicoCodi: unitat.getHistoricosUO()){
-			
-			
-			getUnitatFromCodi(historicoCodi, unitatsFromWebService);
-			
-		}
-		return null;
+		
+		List<UnitatOrganitzativa> lastHistorcos = new ArrayList<>();
+		getLastHistoricosRecursive(unitat, unitatsFromWebService, lastHistorcos);
+		return lastHistorcos;
 	}
 	
 	
-//	public void checkBeforeSynchronization(Long entidadId, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{
-//		
-//
-//		EntitatEntity entitat = entitatRepository.getOne(entidadId);
-//
-////		try {
-////			//getting last changes from webservices for unitat arrel
-////			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
-////					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
-////			if (unidadPadreWS != null) {
-//				
-//				//getting last changes from webservices for list of unitats
-//				List<UnitatOrganitzativa> unitats = pluginHelper.findAmbPare(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
-//				
-//				//getting all vigent unitats
-//				List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
-//						.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
-//				
-//				
-//				List<UnitatOrganitzativa> unitatsObsolete = new ArrayList<>();
-//				for(UnitatOrganitzativa unitat: unitats){
-//					
-//					if(){
-//						
-//					}
-//					Mulitmap
-//				}
-//				
-////			}
-//				
-////				for(UnitatOrganitzativaEntity vigentUnitat: vigentUnitats){
-////					for(UnitatOrganitzativa unitat: arbol){
-////						if(unitat.getCodi() == vigentUnitat.getCodi()){
-////							
-////						}
-////					}
-////				}
-//				
-//				
-//				
-//				
-//				
-//
-//
-////			} else {
-////				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
-////			}
-////		} catch (Exception ex) {
-////			throw new SistemaExternException(
-////					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
-////					ex);
-////		}
-//
-//		
-//	}
+	
+	/**
+	 * Method to get last historicos (recursive to cover cumulative synchro case)
+	 * @param unitat - unitats which historicos we are looking for
+	 * @param unitatsFromWebService - unitats used for getting unitat object from codi 
+	 * @param addHistoricos - initially empty list to add the last historicos (unitats that dont have historicos)
+	 */
+	private void getLastHistoricosRecursive(UnitatOrganitzativa unitat, List<UnitatOrganitzativa> unitatsFromWebService,  List<UnitatOrganitzativa> lastHistorcos){
+
+			if (unitat.getHistoricosUO() == null || unitat.getHistoricosUO().isEmpty()) {
+				lastHistorcos.add(unitat);
+			} else {
+				for (String historicoCodi : unitat.getHistoricosUO()) {
+					getLastHistoricosRecursive(getUnitatFromCodi(historicoCodi, unitatsFromWebService),
+							unitatsFromWebService, lastHistorcos);
+				}
+			}
+	}
+	
+	public void predictSynchronization(Long entidadId) throws SistemaExternException{
+		
+
+		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+
+//		try {
+//			//getting last changes from webservices for unitat arrel
+//			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
+//					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
+//			if (unidadPadreWS != null) {
+				
+				//getting list of last changes from webservices 
+				List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(), entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
+				
+				//getting all vigent unitats
+				List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
+						.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
+				
+				//list of unitats which are vigent now in database but in synchronization list taken from webservices they are marked as obsolete
+				List<UnitatOrganitzativa> unitatsVigentObsolete = new ArrayList<>();
+				
+				for(UnitatOrganitzativaEntity unitatV: vigentUnitats){
+					for(UnitatOrganitzativa unitatWS: unitatsWS){					
+						if(unitatV.getCodi().equals(unitatWS.getCodi()) && unitatV.getEstat()!="V" && !unitatV.getCodi().equals(entitat.getUnitatArrel())){
+							unitatsVigentObsolete.add(unitatWS);
+						}
+					}
+				}
+				System.out.println("PREDICTION: ");
+				for(UnitatOrganitzativa vigentObsolete: unitatsVigentObsolete){
+					
+					
+
+					
+					System.out.print("codi: " + vigentObsolete.getCodi());
+//					List<UnitatOrganitzativa> lastHistoricos = getLastHistoricos(vigentObsolete, unitatsWS);
+					System.out.print(" ,historicos: ");
+					for(UnitatOrganitzativa last: getLastHistoricos(vigentObsolete, unitatsWS)){
+						System.out.print(last.getCodi());
+					}
+					System.out.println();
+				}
+				
+				
+				
+				
+				
+				
+				
+//			}
+				
+
+				
+				
+				
+				
+				
+
+
+//			} else {
+//				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
+//			}
+//		} catch (Exception ex) {
+//			throw new SistemaExternException(
+//					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
+//					ex);
+//		}
+
+		
+	}
 
 	public void sincronizarOActualizar(EntitatEntity entitat){
 

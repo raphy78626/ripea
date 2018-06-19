@@ -27,7 +27,7 @@
 		<div class="panel panel-danger">
 			<div class="panel-heading">
 				<span class="fa fa-warning text-danger"></span>
-				<spring:message code="bustia.list.unitatObsoleta" />
+				<spring:message code="bustia.list.unitatObsoleta" arguments="${bustiaDto.nom}"/> 
 			</div>
 			<div class="panel-body">
 				<div class="row">

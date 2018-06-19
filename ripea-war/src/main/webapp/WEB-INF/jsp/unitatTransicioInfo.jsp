@@ -20,8 +20,8 @@
 
 	<div class="panel panel-danger">
 		<div class="panel-heading">
-
-			<span class="fa fa-warning text-danger"></span> <spring:message code="unitat.obsoleta" arguments="${unitatOrganitzativaDto.denominacio} (${unitatOrganitzativaDto.codi})"/> 
+			<span class="fa fa-warning text-danger"></span> 
+			<spring:message code="unitat.obsoleta" arguments="${unitatOrganitzativaDto.denominacio} (${unitatOrganitzativaDto.codi})"/> 
 		</div>
 		<div class="panel-body">
 			<div class="row">

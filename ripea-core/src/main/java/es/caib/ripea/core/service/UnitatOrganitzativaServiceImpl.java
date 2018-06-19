@@ -65,6 +65,15 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	
+	
+	
+	@Override
+	@Transactional
+	public void predictSynchronization(Long entitatId) {
+
+		unitatOrganitzativaHelper.predictSynchronization(entitatId);		
+	}
+	
 
 	@Override
 	@Transactional
