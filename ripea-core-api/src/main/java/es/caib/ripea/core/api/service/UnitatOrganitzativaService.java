@@ -11,9 +11,12 @@ import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaD3Dto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
+
+
 
 /**
  * Declaració dels mètodes per a gestionar continguts.
@@ -95,6 +98,7 @@ public interface UnitatOrganitzativaService {
 
 	ArbreDto<UnitatOrganitzativaDto> findTree(Long id);
 
-	void predictSynchronization(Long entitatId);
+	List<UnitatOrganitzativaDto> predictSynchronization(Long entitatId);
+
 
 }

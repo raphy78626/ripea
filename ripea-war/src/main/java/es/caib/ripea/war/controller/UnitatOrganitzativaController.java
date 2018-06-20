@@ -4,10 +4,13 @@
 package es.caib.ripea.war.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +26,8 @@ import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
+import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 import es.caib.ripea.war.command.UnitatOrganitzativaFiltreCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
@@ -41,6 +46,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 
 	@Autowired
 	private UnitatOrganitzativaService unitatOrganitzativaService;
+	
 	@Autowired
 	private BustiaService bustiaService;
 
@@ -56,10 +62,89 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	
 	@RequestMapping(value = "/synchronizeGet", method = RequestMethod.GET)
 	public String synchronizeGet(
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			Model model) {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		unitatOrganitzativaService.predictSynchronization(entitatActual.getId());
+		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = unitatOrganitzativaService.predictSynchronization(entitatActual.getId());
+		
+		MultiMap splitMap = new MultiHashMap();
+		MultiMap mergeOrSubstMap = new MultiHashMap();
+
+		for (UnitatOrganitzativaDto vigentObsolete : unitatsVigentObsoleteDto) {
+			if (vigentObsolete.getLastHistoricosUnitats().size() > 1) {
+				for (UnitatOrganitzativaDto hist : vigentObsolete.getLastHistoricosUnitats()) {
+					splitMap.put(vigentObsolete, hist);
+				}
+			} else {
+				//check if the map already contains key with this codi 
+				UnitatOrganitzativaDto mergeOrSubstKeyWS = vigentObsolete.getLastHistoricosUnitats().get(0);
+				UnitatOrganitzativaDto keyWithTheSameCodi = null;
+				Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
+				for (UnitatOrganitzativaDto mergeOrSubstKeyMap : keysMergeOrSubst) {
+					if (mergeOrSubstKeyMap.getCodi().equals(mergeOrSubstKeyWS.getCodi())) {
+						keyWithTheSameCodi = mergeOrSubstKeyMap;
+					}
+				}
+				//if it contains already key with the same codi, assign found key
+				if (keyWithTheSameCodi != null) {
+					mergeOrSubstMap.put(keyWithTheSameCodi, vigentObsolete);
+				} else {
+					mergeOrSubstMap.put(mergeOrSubstKeyWS, vigentObsolete);
+				}
+			}
+		}
+		
+		MultiMap mergeMap = new MultiHashMap();
+		MultiMap substMap = new MultiHashMap();
+		
+		//differantiate between substitution and merge
+		Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
+		for (UnitatOrganitzativaDto mergeOrSubstKey : keysMergeOrSubst) {
+			List<UnitatOrganitzativaDto> values = (List<UnitatOrganitzativaDto>) mergeOrSubstMap.get(mergeOrSubstKey);
+			if (values.size()>1){
+				for(UnitatOrganitzativaDto value: values){
+					mergeMap.put(mergeOrSubstKey, value);
+				}
+			} else {
+				substMap.put(mergeOrSubstKey, values.get(0));
+			}
+		}
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+		Set<UnitatOrganitzativaDto> keysSplit = splitMap.keySet();
+		System.out.println("SPLITS: ");
+		for (UnitatOrganitzativaDto splitKey : keysSplit) {
+			System.out.println(splitMap.get(splitKey));
+		}
+
+		Set<UnitatOrganitzativaDto> mergeKeys = mergeMap.keySet();
+		System.out.println("MERGES: ");
+		for (UnitatOrganitzativaDto mergeKey : mergeKeys) {
+			System.out.println(mergeKey.getCodi() + " "+mergeKey+": "+ mergeOrSubstMap.get(mergeKey));
+		}
+		
+		Set<UnitatOrganitzativaDto> substKeys = substMap.keySet();
+		System.out.println("SUBSTUTIONS: ");
+		for (UnitatOrganitzativaDto substKey : substKeys) {
+			System.out.println(substKey.getCodi() + " "+substKey+": "+ mergeOrSubstMap.get(substKey));
+		}
+		
+		
+		model.addAttribute("splitMap", splitMap);
+		model.addAttribute("mergeMap", mergeMap);
+		model.addAttribute("substMap", substMap);
+		
+		
 
 		return "synchronizationPrediction";
 	}

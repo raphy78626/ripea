@@ -29,7 +29,40 @@
 
 		</div>
 		<div class="panel-body">
-		PREDDICTION!!!!
+
+			SPLITS: <br/>
+			<c:forEach var="splitMap" items="${splitMap}">
+				<c:set var="key" value="${splitMap.key}" />
+				<c:set var="values" value="${splitMap.value}" />
+				${key.codi}  -->
+				<c:forEach var="value" items="${values}">
+					${value.codi},
+				</c:forEach>
+			</c:forEach>
+			
+			<br/>MERGE: <br/>
+			<c:forEach var="mergeMap" items="${mergeMap}">
+				<c:set var="key" value="${mergeMap.key}" />
+				<c:set var="values" value="${mergeMap.value}" />
+				<c:forEach var="value" items="${values}">
+					${value.codi},
+				</c:forEach>
+				: ${key.codi} 
+			</c:forEach>
+			
+			<br/>SUBSTITUCION: <br/>
+			<c:forEach var="substMap" items="${substMap}">
+				<c:set var="key" value="${substMap.key}" />
+				<c:set var="values" value="${substMap.value}" />
+				<c:forEach var="value" items="${values}">
+					${value.codi},
+				</c:forEach>
+				: ${key.codi} 
+			</c:forEach>
+			
+			
+
+
 		</div>
 	</div>
 

@@ -10,6 +10,7 @@ import java.util.Map;
 
 
 
+
 /**
  * Informació d'una unitat organitzativa.
  * 
@@ -45,8 +46,18 @@ public class UnitatOrganitzativaDto implements Serializable {
 	
 	private List<UnitatOrganitzativaDto> noves;
 	private Map<String, String> altresUnitatsFusionades;
+	
 
+	private List<UnitatOrganitzativaDto> lastHistoricosUnitats;
+	
+	public List<UnitatOrganitzativaDto> getLastHistoricosUnitats() {
+		return lastHistoricosUnitats;
+	}
 
+	public void setLastHistoricosUnitats(List<UnitatOrganitzativaDto> lastHistoricosUnitats) {
+		this.lastHistoricosUnitats = lastHistoricosUnitats;
+	}
+	
 	public Map<String, String> getAltresUnitatsFusionades() {
 		return altresUnitatsFusionades;
 	}

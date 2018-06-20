@@ -3,7 +3,6 @@
  */
 package es.caib.ripea.core.helper;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,19 +12,20 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.stereotype.Component;
+
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
+
+import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
-import es.caib.ripea.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
-import es.caib.ripea.core.entity.UnitatOrganitzativaEntity.Builder;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
@@ -107,135 +107,101 @@ public class UnitatOrganitzativaHelper {
 			}
 	}
 	
-	public void predictSynchronization(Long entidadId) throws SistemaExternException{
+	public List<UnitatOrganitzativaDto> predictSynchronization(Long entidadId) throws SistemaExternException{
 		
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
 
-//		try {
-//			//getting last changes from webservices for unitat arrel
-//			UnitatOrganitzativa unidadPadreWS = pluginHelper.getUnitatsOrganitzativesPlugin()
-//					.obtenerUnidad(entitat.getUnitatArrel(), fechaActualizacion, fechaSincronizacion);
-//			if (unidadPadreWS != null) {
-				
-				//getting list of last changes from webservices 
-				List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(), entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
-				
-				//getting all vigent unitats
-				List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
-						.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
-				
-				//list of unitats which are vigent now in database but in synchronization list taken from webservices they are marked as obsolete
-				List<UnitatOrganitzativa> unitatsVigentObsolete = new ArrayList<>();
-				
-				for(UnitatOrganitzativaEntity unitatV: vigentUnitats){
-					for(UnitatOrganitzativa unitatWS: unitatsWS){					
-						if(unitatV.getCodi().equals(unitatWS.getCodi()) && unitatV.getEstat()!="V" && !unitatV.getCodi().equals(entitat.getUnitatArrel())){
-							unitatsVigentObsolete.add(unitatWS);
-						}
-					}
-				}
-				System.out.println("PREDICTION: ");
-				for(UnitatOrganitzativa vigentObsolete: unitatsVigentObsolete){
-					
-					
-
-					
-					System.out.print("codi: " + vigentObsolete.getCodi());
-//					List<UnitatOrganitzativa> lastHistoricos = getLastHistoricos(vigentObsolete, unitatsWS);
-					System.out.print(" ,historicos: ");
-					for(UnitatOrganitzativa last: getLastHistoricos(vigentObsolete, unitatsWS)){
-						System.out.print(last.getCodi());
-					}
-					System.out.println();
-				}
-				
-				
-				
-				
-				
-				
-				
-//			}
-				
-
-				
-				
-				
-				
-				
-
-
-//			} else {
-//				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
-//			}
-//		} catch (Exception ex) {
-//			throw new SistemaExternException(
-//					"No s'han pogut consultar les unitats organitzatives via WS (" + "entidadId=" + entidadId + ")",
-//					ex);
-//		}
-
+		// getting list of last changes from webservices
+		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(),
+				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 		
-	}
+		
+		// getting all vigent unitats
+		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
+				.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
 
-	public void sincronizarOActualizar(EntitatEntity entitat){
+		// list of unitats which are vigent now in database but in
+		// synchronization list taken from webservices they are marked as
+		// obsolete
+		List<UnitatOrganitzativa> unitatsVigentObsolete = new ArrayList<>();
+		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) {
+			for (UnitatOrganitzativa unitatWS : unitatsWS) {
+				if (unitatV.getCodi().equals(unitatWS.getCodi()) && unitatV.getEstat() != "V"
+						&& !unitatV.getCodi().equals(entitat.getUnitatArrel())) {
+					unitatsVigentObsolete.add(unitatWS);
+				}
+			}
+		}
+
+		// setting list of last historicos unitats in every vigent unitat
+		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {
+			if (vigentObsolete.getCodi().equals("A04026201")) {
+				System.out.println();
+			}
+			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
+		}
+		
+		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = new ArrayList<>();
+		for(UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete){
+			unitatsVigentObsoleteDto.add(conversioTipusHelper.convertir(
+					vigentObsolete, 
+					UnitatOrganitzativaDto.class));
+		}
+		
+		return unitatsVigentObsoleteDto;
+	}
+	
+	
+
+	
+
+	public void sincronizarOActualizar(EntitatEntity entitat) {
 
 		List<UnitatOrganitzativa> unitats;
-		
-			 UnitatOrganitzativa unidadPadreWS =
-			 pluginHelper.findUnidad(entitat.getUnitatArrel(), entitat.getFechaActualizacion(),
-			entitat.getFechaSincronizacion());
-//			 System.out.println(unidadPadreWS);
 
-			// if (unidadPadreWS != null) {
-			if (true) {
-				unitats = pluginHelper.findAmbPare(
-						entitat.getUnitatArrel(),
-						entitat.getFechaActualizacion(),
-						entitat.getFechaSincronizacion());
-			} 
-//			else {
-//				throw new SistemaExternException("No s'han trobat la unitat pare (entidadId=" + entidadId + ")");
-//			}
+		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getUnitatArrel(),
+				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 
+		if (true) {
+			unitats = pluginHelper.findAmbPare(entitat.getUnitatArrel(), entitat.getFechaActualizacion(),
+					entitat.getFechaSincronizacion());
+		}
 
-			// UnitatOrganitzativaEntity unitatPadre =
-			// sincronizarUnitat(unidadPadreWS, entidadId);
-			// sincronizarHistoricosUnitat(unitatPadre, unidadPadreWS);
+		System.out.println("UNITATS INSIDE");
+		for (UnitatOrganitzativa unidadWS : unitats) {
 
-			System.out.println("UNITATS INSIDE");
-			for (UnitatOrganitzativa unidadWS : unitats) {
-				
-				
-				System.out.println("codi: " + unidadWS.getCodi() + ", historicos:" + unidadWS.getHistoricosUO() + ", estat: " + unidadWS.getEstat());
-							
-				sincronizarUnitat(unidadWS);
-			}
-			
-			// historicos
-				for (UnitatOrganitzativa unidadWS : unitats) {
-					UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository.findByCodiUnitatArrelAndCodi(entitat.getUnitatArrel(), unidadWS.getCodi());
-					sincronizarHistoricosUnitat(unitat, unidadWS);
-				}			
+			System.out.println("codi: " + unidadWS.getCodi() + ", historicos:" + unidadWS.getHistoricosUO()
+					+ ", estat: " + unidadWS.getEstat());
 
-			List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
-					.findByCodiUnitatArrelAndEstatNotV(entitat.getUnitatArrel());
+			sincronizarUnitat(unidadWS);
+		}
 
-			// setting type of transition
-			for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats) {
-				
-				if (obsoleteUnitat.getNoves().size() > 1) {
-					obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.DIVISIO);
-				} else {
-					if (obsoleteUnitat.getNoves().size() == 1) {
-						if (obsoleteUnitat.getNoves().get(0).getAntigues().size() > 1) {
-							obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.FUSIO);
-						} else if (obsoleteUnitat.getNoves().get(0).getAntigues().size() == 1) {
-							obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.SUBSTITUCIO);
-						}
+		// historicos
+		for (UnitatOrganitzativa unidadWS : unitats) {
+			UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository
+					.findByCodiUnitatArrelAndCodi(entitat.getUnitatArrel(), unidadWS.getCodi());
+			sincronizarHistoricosUnitat(unitat, unidadWS);
+		}
+
+		List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
+				.findByCodiUnitatArrelAndEstatNotV(entitat.getUnitatArrel());
+
+		// setting type of transition
+		for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats) {
+
+			if (obsoleteUnitat.getNoves().size() > 1) {
+				obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.DIVISIO);
+			} else {
+				if (obsoleteUnitat.getNoves().size() == 1) {
+					if (obsoleteUnitat.getNoves().get(0).getAntigues().size() > 1) {
+						obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.FUSIO);
+					} else if (obsoleteUnitat.getNoves().get(0).getAntigues().size() == 1) {
+						obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.SUBSTITUCIO);
 					}
 				}
 			}
+		}
 	}
 	
 

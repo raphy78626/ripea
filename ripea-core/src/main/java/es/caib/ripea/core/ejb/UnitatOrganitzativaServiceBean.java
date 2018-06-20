@@ -96,10 +96,9 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	}
 
 	@Override
-	public void predictSynchronization(Long entitatId) {
-		delegate.predictSynchronization(entitatId);
+	public List<UnitatOrganitzativaDto> predictSynchronization(Long entitatId) {
+		return delegate.predictSynchronization(entitatId);
 	}
-	
 
 	
 

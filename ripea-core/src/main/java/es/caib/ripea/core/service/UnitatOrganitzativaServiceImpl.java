@@ -39,6 +39,7 @@ import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 import es.caib.ripea.plugin.SistemaExternException;
+import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 
 /**
  * Implementació del servei de gestió d'entitats.
@@ -69,9 +70,9 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	
 	@Override
 	@Transactional
-	public void predictSynchronization(Long entitatId) {
+	public List<UnitatOrganitzativaDto> predictSynchronization(Long entitatId) {
 
-		unitatOrganitzativaHelper.predictSynchronization(entitatId);		
+		return unitatOrganitzativaHelper.predictSynchronization(entitatId);		
 	}
 	
 

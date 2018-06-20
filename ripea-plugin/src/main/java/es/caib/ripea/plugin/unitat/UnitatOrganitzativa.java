@@ -46,8 +46,12 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 	private String nomVia;
 	private String numVia; 
 	protected List<String> historicosUO;
+	
+	private List<UnitatOrganitzativa> lastHistoricosUnitats;
 
 	
+	
+
 	public UnitatOrganitzativa(
 			String codi,
 			String denominacio,
@@ -188,8 +192,14 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 		this.numVia = numVia;
 	}
 	
-	
 
+
+	public List<UnitatOrganitzativa> getLastHistoricosUnitats() {
+		return lastHistoricosUnitats;
+	}
+	public void setLastHistoricosUnitats(List<UnitatOrganitzativa> lastHistoricosUnitats) {
+		this.lastHistoricosUnitats = lastHistoricosUnitats;
+	}
 	public List<String> getHistoricosUO() {
 		return historicosUO;
 	}
