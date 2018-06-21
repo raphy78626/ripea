@@ -112,15 +112,6 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		}
 
 		
-		
-		
-		
-		
-		
-		
-		
-		
-
 		Set<UnitatOrganitzativaDto> keysSplit = splitMap.keySet();
 		System.out.println("SPLITS: ");
 		for (UnitatOrganitzativaDto splitKey : keysSplit) {
@@ -139,13 +130,11 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			System.out.println(substKey.getCodi() + " "+substKey+": "+ mergeOrSubstMap.get(substKey));
 		}
 		
-		
 		model.addAttribute("splitMap", splitMap);
 		model.addAttribute("mergeMap", mergeMap);
 		model.addAttribute("substMap", substMap);
 		
 		
-
 		return "synchronizationPrediction";
 	}
 	
@@ -156,7 +145,10 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		unitatOrganitzativaService.synchronize(entitatActual.getId());
 
-		return "redirect:/unitatOrganitzativa";
+		return getModalControllerReturnValueSuccess(
+				request,
+				"redirect:unitatOrganitzativa",
+				"unitat.controller.synchronize.ok");
 	}
 	
 	
