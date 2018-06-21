@@ -106,18 +106,18 @@ CREATE TABLE IPA_METAEXPEDIENT
   ID                 BIGINT                     NOT NULL,
   PARE_ID            bigint,
   CLASIF_SIA         character varying(6)       NOT NULL,
-  CLASIF_DOC         character varying(30)      NOT NULL,
-  UNITAT_ADM         character varying(9),
-  UNITAT_ADM_DESC    character varying(10),
-  NOTIF_ACTIVA       boolean                    NOT NULL,
-  NOTIF_UNITAT_ADM   character varying(9),
-  NOTIF_ORGAN_CODI   character varying(9),
-  NOTIF_LLIBRE_CODI  character varying(4),
-  NOTIF_AVIS_TITOL   character varying(256),
-  NOTIF_AVIS_TEXT    character varying(1024),
-  NOTIF_AVIS_TEXTSMS character varying(200),
-  NOTIF_OFICI_TITOL  character varying(256),
-  NOTIF_OFICI_TEXT   character varying(1024)
+  SERIE_DOC          character varying(30)      NOT NULL,
+  NOT_ACTIVA         boolean                    NOT NULL,
+  NOT_SEU_PROC_CODI  character varying(44),
+  NOT_SEU_REG_LIB    character varying(4),
+  NOT_SEU_REG_OFI    character varying(9),
+  NOT_SEU_REG_ORG    character varying(9),
+  NOT_SEU_EXP_UNI    character varying(9),
+  NOT_AVIS_TITOL     character varying(256),
+  NOT_AVIS_TEXT      character varying(1024),
+  NOT_AVIS_TEXTM     character varying(200),
+  NOT_OFICI_TITOL    character varying(256),
+  NOT_OFICI_TEXT     character varying(1024)
 );
 
 
@@ -139,6 +139,7 @@ CREATE TABLE IPA_METAEXP_SEQ
   LASTMODIFIEDBY_CODI  character varying(64),
   META_EXPEDIENT_ID    bigint                    NOT NULL
 );
+
 
 CREATE TABLE IPA_INTERESSAT
 (
@@ -214,6 +215,7 @@ CREATE TABLE IPA_CONT_MOV
   LASTMODIFIEDBY_CODI  character varying(64)
 );
 
+
 CREATE TABLE IPA_CONT_MOV_EMAIL 
 (
   ID 					BIGINT 					NOT NULL, 
@@ -229,6 +231,7 @@ CREATE TABLE IPA_CONT_MOV_EMAIL
   CREATEDBY_CODI       	character varying(64),
   LASTMODIFIEDBY_CODI  	character varying(64)
 );
+
 
 CREATE TABLE IPA_CONT_LOG
 (
@@ -376,57 +379,54 @@ CREATE TABLE IPA_DOCUMENT
 
 CREATE TABLE IPA_DOCUMENT_ENVIAMENT
 (
-  ID                   BIGINT                   NOT NULL,
-  DTYPE                character varying(32)    NOT NULL,
-  ASSUMPTE             character varying(256)   NOT NULL,
-  ESTAT                character varying(255)   NOT NULL,
-  DATA_ENVIAMENT       timestamp without time zone NOT NULL,
+  ID                   BIGINT                      NOT NULL,
+  DTYPE                character varying(32)       NOT NULL,
+  ESTAT                character varying(255)      NOT NULL,
+  ASSUMPTE             character varying(256)      NOT NULL,
   OBSERVACIONS         character varying(256),
-  DATA_PUBLICACIO      timestamp without time zone,
-  TIPUS                character varying(255),
-  DATA_RECEPCIO        timestamp without time zone,
-  REGISTRE_NUM         character varying(100),
-  DESTIN_DOCNUM        character varying(17),
-  DESTIN_DOCTIP        integer,
-  DESTIN_EMAIL         character varying(160),
-  DESTIN_LLING1        character varying(30),
-  DESTIN_LLING2        character varying(30),
-  DESTIN_NOM           character varying(30),
-  DESTIN_PAICOD        character varying(4),
-  DESTIN_PRVCOD        character varying(2),
-  DESTIN_MUNCOD        character varying(5),
-  DESTIN_REPRES        boolean,
-  UNITAT_ADM           character varying(9),
-  ORGAN_CODI           character varying(9),
-  LLIBRE_CODI          character varying(4),
-  AVIS_TITOL           character varying(256),
-  AVIS_TEXT            character varying(1024),
-  AVIS_TEXTSMS         character varying(200),
-  OFICI_TITOL          character varying(256),
-  OFICI_TEXT           character varying(1024),
-  IDIOMA               character varying(2),
-  PFIRMES_PRIORI       character varying(64),
-  PFIRMES_DATCAD       timestamp without time zone,
-  PFIRMES_DOCTIP       character varying(64),
-  PFIRMES_RESPONSABLES character varying(1024),
-  PFIRMES_FLUXTIP      character varying(64),
-  PFIRMES_FLUXID       character varying(64),
-  PFIRMES_ID           character varying(64),
-  ENVIAM_DATA          timestamp without time zone,
-  ENVIAM_COUNT         integer,
-  ENVIAM_ERROR         boolean,
-  ENVIAM_ERROR_DESC    character varying(2048),
-  PROCES_DATA          timestamp without time zone,
-  PROCES_COUNT         integer,
-  PROCES_ERROR         boolean,
-  PROCES_ERROR_DESC    character varying(2048),
-  DOCUMENT_ID          bigint                  NOT NULL,
-  EXPEDIENT_ID         bigint                  NOT NULL,
+  ENVIAT_DATA          timestamp without time zone NOT NULL,
+  PROCESSAT_DATA       timestamp without time zone,
+  CANCELAT_DATA        timestamp without time zone,
+  ERROR                boolean,
+  ERROR_DESC           character varying(255),
+  INTENT_NUM           integer,
+  INTENT_DATA          timestamp without time zone,
+  INTENT_PROXIM_DATA   timestamp without time zone,
+  NOT_TIPUS            integer,
+  NOT_DATA_PROG        timestamp without time zone,
+  NOT_RETARD           integer,
+  NOT_DATA_CADUCITAT   timestamp without time zone,
+  NOT_INTERESSAT_ID    BIGINT,
+  NOT_SEU_IDIOMA       character varying(2),
+  NOT_SEU_AVIS_TITOL   character varying(256), 
+  NOT_SEU_AVIS_TEXT    character varying(1024),
+  NOT_SEU_AVIS_TEXTM   character varying(200),
+  NOT_SEU_OFICI_TITOL  character varying(256),
+  NOT_SEU_OFICI_TEXT   character varying(1024),
+  NOT_ENV_ID           character varying(100),
+  NOT_ENV_REF          character varying(100),
+  NOT_ENV_DAT_ESTAT    character varying(20),
+  NOT_ENV_DAT_DATA     timestamp without time zone,
+  NOT_ENV_DAT_ORIG     character varying(20),
+  NOT_ENV_CERT_DATA    timestamp without time zone,
+  NOT_ENV_CERT_ORIG    character varying(20),
+  NOT_ENV_CERT_ARXIUID character varying(50),
+  PF_PRIORITAT         integer,
+  PF_CAD_DATA          timestamp without time zone,
+  PF_DOC_TIPUS         character varying(64),
+  PF_RESPONSABLES      character varying(1024),
+  PF_FLUX_TIPUS        integer,
+  PF_FLUX_ID           character varying(64),
+  PF_PORTAFIRMES_ID    character varying(64),
+  PF_CALLBACK_ESTAT    integer,
+  PUB_TIPUS            integer,
+  DOCUMENT_ID          BIGINT                      NOT NULL,
+  EXPEDIENT_ID         BIGINT                      NOT NULL,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   CREATEDBY_CODI       character varying(256),
   LASTMODIFIEDBY_CODI  character varying(256),
-  VERSION              bigint                  NOT NULL
+  VERSION              BIGINT                      NOT NULL
 );
 
 
@@ -544,6 +544,7 @@ CREATE TABLE IPA_REGISTRE_ANNEX
   GESDOC_DOC_ID 	   character varying(50)
 );
 
+
 CREATE TABLE IPA_REGISTRE_ANNEX_FIRMA
 (
   ID                   BIGINT                   	NOT NULL,
@@ -659,6 +660,7 @@ CREATE TABLE IPA_ACL_OBJECT_IDENTITY
   ENTRIES_INHERITING  boolean                   NOT NULL
 );
 
+
 CREATE TABLE IPA_CONT_COMMENT
 (
   ID                   BIGINT                   NOT NULL,
@@ -669,6 +671,7 @@ CREATE TABLE IPA_CONT_COMMENT
   CREATEDBY_CODI       character varying(64),
   LASTMODIFIEDBY_CODI  character varying(64)
 );
+
 
 CREATE TABLE IPA_EXECUCIO_MASSIVA
 (
@@ -686,6 +689,7 @@ CREATE TABLE IPA_EXECUCIO_MASSIVA
   LASTMODIFIEDBY_CODI  character varying(64),
   LASTMODIFIEDDATE     timestamp without time zone
 );
+
 
 CREATE TABLE IPA_MASSIVA_CONTINGUT
 (
