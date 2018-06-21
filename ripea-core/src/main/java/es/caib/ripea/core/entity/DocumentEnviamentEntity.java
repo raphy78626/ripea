@@ -11,6 +11,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -52,6 +54,7 @@ import es.caib.ripea.core.audit.RipeaAuditable;
 public abstract class DocumentEnviamentEntity extends RipeaAuditable<Long> {
 
 	@Column(name = "estat", nullable = false)
+	@Enumerated(EnumType.STRING)
 	protected DocumentEnviamentEstatEnumDto estat;
 	@Column(name = "assumpte", length = 256, nullable = false)
 	protected String assumpte;

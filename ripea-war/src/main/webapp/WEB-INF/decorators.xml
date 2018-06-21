@@ -7,6 +7,7 @@
 		<pattern>/nodeco*</pattern>
 		<pattern>/ws*</pattern>
 		<pattern>/webdav*</pattern>
+		<pattern>/rest/notib*</pattern>
 	</excludes>
 	<decorator name="senseCapNiPeus" page="senseCapNiPeus.jsp">
 		<pattern>/firmapassarela*</pattern>

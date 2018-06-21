@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.helper;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.fundaciobit.plugins.validatesignature.api.CertificateInfo;
 import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
 import org.fundaciobit.plugins.validatesignature.api.SignatureDetailInfo;
@@ -94,6 +96,7 @@ import es.caib.ripea.plugin.notificacio.EntregaPostalTipus;
 import es.caib.ripea.plugin.notificacio.Enviament;
 import es.caib.ripea.plugin.notificacio.EnviamentTipus;
 import es.caib.ripea.plugin.notificacio.Notificacio;
+import es.caib.ripea.plugin.notificacio.NotificacioEstat;
 import es.caib.ripea.plugin.notificacio.NotificacioPlugin;
 import es.caib.ripea.plugin.notificacio.Persona;
 import es.caib.ripea.plugin.notificacio.RespostaConsultaEstatEnviament;
@@ -121,6 +124,8 @@ public class PluginHelper {
 	
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP = "anotacions_registre_doc_tmp";
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP = "anotacions_registre_fir_tmp";
+	public static final String GESDOC_AGRUPACIO_CERTIFICACIONS = "certificacions";
+	public static final String GESDOC_AGRUPACIO_NOTIFICACIONS = "notificacions";
 
 	private DadesUsuariPlugin dadesUsuariPlugin;
 	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
@@ -2581,7 +2586,8 @@ public class PluginHelper {
 			not.setSeuOficiText(notificacio.getSeuOficiText());
 			RespostaEnviar resposta = getNotificacioPlugin().enviar(not);
 			notificacio.updateEnviat(
-					new Date(), 
+					new Date(),
+					resposta.getEstat().equals(NotificacioEstat.ENVIADA),
 					resposta.getIdentificador(), 
 					resposta.getReferencies().get(0).getReferencia());
 			integracioHelper.addAccioOk(
@@ -2600,6 +2606,9 @@ public class PluginHelper {
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
 					ex);
+			notificacio.updateEnviatError(
+					ExceptionUtils.getStackTrace(ex), 
+					null);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_NOTIFICACIO,
 					errorDescripcio,
@@ -2630,12 +2639,28 @@ public class PluginHelper {
 		try {
 			RespostaConsultaEstatEnviament resposta = getNotificacioPlugin().consultarEnviament(
 					notificacio.getEnviamentReferencia());
+			String gestioDocumentalId = notificacio.getEnviamentCertificacioArxiuId();
+			if (resposta.getCertificacioData() != null) {
+				byte[] certificacio = resposta.getCertificacioContingut();
+				if (gestioDocumentalId != null && notificacio.getEnviamentCertificacioData().before(resposta.getCertificacioData())) {
+					gestioDocumentalDelete(
+							notificacio.getEnviamentCertificacioArxiuId(),
+							GESDOC_AGRUPACIO_CERTIFICACIONS);
+				}
+				if (gestioDocumentalId == null || notificacio.getEnviamentCertificacioData().before(resposta.getCertificacioData())) {
+					gestioDocumentalId = gestioDocumentalCreate(
+							PluginHelper.GESDOC_AGRUPACIO_CERTIFICACIONS,
+							new ByteArrayInputStream(certificacio));
+				}
+			}
+			
 			notificacio.updateEnviamentEstat(
-					resposta.getEstat().name(),
+					resposta.getEstat(),
 					resposta.getEstatData(),
 					resposta.getEstatOrigen(),
 					resposta.getCertificacioData(),
-					resposta.getCertificacioOrigen());
+					resposta.getCertificacioOrigen(),
+					gestioDocumentalId);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_NOTIFICACIO,
 					accioDescripcio,
@@ -3777,7 +3802,7 @@ public class PluginHelper {
 	private Integer getPropertyNotificacioCaducitatNumDies() {
 		String valor = PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.notificacio.caducitat.num.dies");
-		return (valor != null) ? new Integer(valor) : null;
+		return (valor != null) ? new Integer(valor) : 15;
 	}
 	private boolean getPropertyNotificacioEnviamentPostalActiu() {
 		return PropertiesHelper.getProperties().getAsBoolean(

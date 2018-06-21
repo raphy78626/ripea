@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
 import es.caib.ripea.core.api.dto.DocumentNotificacioTipusEnumDto;
 import es.caib.ripea.core.api.dto.InteressatIdiomaEnumDto;
+import es.caib.ripea.plugin.notificacio.EnviamentEstat;
 
 /**
  * Classe del model de dades que representa una notificació d'un document
@@ -76,6 +77,8 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 	private Date enviamentCertificacioData;
 	@Column(name = "not_env_cert_orig", length = 20)
 	private String enviamentCertificacioOrigen;
+	@Column(name = "not_env_cert_arxiuid", length = 50)
+	private String enviamentCertificacioArxiuId;
 
 	public DocumentNotificacioTipusEnumDto getTipus() {
 		return tipus;
@@ -131,7 +134,10 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 	public String getEnviamentCertificacioOrigen() {
 		return enviamentCertificacioOrigen;
 	}
-
+	public String getEnviamentCertificacioArxiuId() {
+		return enviamentCertificacioArxiuId;
+	}
+	
 	public void update(
 			DocumentEnviamentEstatEnumDto estat,
 			String assumpte,
@@ -145,24 +151,46 @@ public class DocumentNotificacioEntity extends DocumentEnviamentEntity {
 
 	public void updateEnviat(
 			Date enviatData,
+			boolean enviat,
 			String enviamentIdentificador,
 			String enviamentReferencia) {
 		super.updateEnviat(enviatData);
 		this.enviamentIdentificador = enviamentIdentificador;
 		this.enviamentReferencia = enviamentReferencia;
+		if (!enviat) {
+			this.enviatData = null;
+			this.estat = DocumentEnviamentEstatEnumDto.PENDENT;
+		}
 	}
 
 	public void updateEnviamentEstat(
-			String enviamentDatatEstat,
+			EnviamentEstat enviamentDatatEstat,
 			Date enviamentDatatData,
 			String enviamentDatatOrigen,
 			Date enviamentCertificacioData,
-			String enviamentCertificacioOrigen) {
-		this.enviamentDatatEstat = enviamentDatatEstat;
+			String enviamentCertificacioOrigen,
+			String enviamentCertificacioArxiuId) {
+		this.enviamentDatatEstat = enviamentDatatEstat.name();
 		this.enviamentDatatData = enviamentDatatData;
 		this.enviamentDatatOrigen = enviamentDatatOrigen;
 		this.enviamentCertificacioData = enviamentCertificacioData;
 		this.enviamentCertificacioOrigen = enviamentCertificacioOrigen;
+		this.enviamentCertificacioArxiuId = enviamentCertificacioArxiuId;
+		switch (enviamentDatatEstat) {
+		case LLEGIDA:
+		case NOTIFICADA:
+			updateProcessat(true, enviamentDatatData);
+			break;
+		case EXPIRADA:
+		case REBUTJADA:
+			updateProcessat(false, enviamentDatatData);
+			break;
+		case NOTIB_ENVIADA:
+			updateEnviat(enviamentDatatData);
+			break;
+		default:
+			break;
+		}
 	}
 
 	public static Builder getBuilder(

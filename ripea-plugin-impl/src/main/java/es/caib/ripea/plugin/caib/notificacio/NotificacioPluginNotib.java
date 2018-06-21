@@ -330,6 +330,8 @@ public class NotificacioPluginNotib implements NotificacioPlugin {
 					notificacio.getSeuRegistreOficina());
 			parametresSeu.setRegistreLlibre(
 					notificacio.getSeuRegistreLlibre());
+			parametresSeu.setRegistreOrgan(
+					notificacio.getSeuRegistreOrgan());
 			parametresSeu.setIdioma(
 					notificacio.getSeuIdioma());
 			parametresSeu.setAvisTitol(

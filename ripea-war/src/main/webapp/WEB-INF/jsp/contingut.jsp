@@ -868,36 +868,41 @@ $(document).ready(function() {
 											{{/if}}
 										</script>
 									</th>
-									<th data-col-name="dataEnviament" data-converter="datetime" data-orderable="false" width="20%"><spring:message code="contingut.enviament.columna.data"/></th>
+									<th data-col-name="enviatData" data-converter="datetime" data-orderable="false" width="20%"><spring:message code="contingut.enviament.columna.data"/></th>
 									<th data-col-name="assumpte" data-orderable="false" width="25%"><spring:message code="contingut.enviament.columna.assumpte"/></th>
 									<th data-col-name="destinatari" data-orderable="false" data-visible="false" width="20%">
 										<spring:message code="contingut.enviament.columna.destinatari"/>
 									</th>
+									<th data-col-name="documentId" data-visible="false"/>
 									<th data-col-name="estat" data-template="#cellEnviamentEstatTemplate" data-orderable="false" width="10%">
 										<spring:message code="contingut.enviament.columna.estat"/>
 										<script id="cellEnviamentEstatTemplate" type="text/x-jsrender">
 											{{if notificacio}}
 												{{if estat == 'PENDENT'}}
 													<span class="label label-warning"><span class="fa fa-clock-o"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
-												{{else estat == 'ENVIAT_OK'}}
-													<span class="label label-info"><span class="fa fa-envelope-o"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
-												{{else estat == 'ENVIAT_ERROR'}}
-													<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
-												{{else estat == 'PROCESSAT_OK'}}
-													<span class="label label-success"><span class="fa fa-check"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
-												{{else estat == 'PROCESSAT_REBUTJAT'}}
+												{{else estat == 'ENVIAT'}}
+													{{if error}}
+														<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+													{{else}}
+														<span class="label label-info"><span class="fa fa-envelope-o"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+													{{/if}}
+												{{else estat == 'PROCESSAT'}}
+													{{if error}}
+														<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+													{{else}}
+														<span class="label label-success"><span class="fa fa-check"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
+													{{/if}}
+												{{else estat == 'REBUTJAT'}}
 													<span class="label label-default"><span class="fa fa-times"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
-												{{else estat == 'PROCESSAT_ERROR'}}
-													<span class="label label-danger"><span class="fa fa-warning"></span> {{:~eval('notificacioEstatText["' + estat + '"]')}}</span>
 												{{/if}}
 											{{else publicacio}}
 												{{if estat == 'PENDENT'}}
 													<span class="label label-warning"><span class="fa fa-clock-o"></span> {{:~eval('publicacioEstatText["' + estat + '"]')}}</span>
-												{{else estat == 'ENVIAT_OK'}}
+												{{else estat == 'ENVIAT'}}
 													<span class="label label-info"><span class="fa fa-envelope-o"></span> {{:~eval('publicacioEstatText["' + estat + '"]')}}</span>
-												{{else estat == 'PROCESSAT_REBUTJAT'}}
+												{{else estat == 'REBUTJAT'}}
 													<span class="label label-default"><span class="fa fa-times"></span> {{:~eval('publicacioEstatText["' + estat + '"]')}}</span>
-												{{else estat == 'PUBLICAT'}}
+												{{else estat == 'PROCESSAT'}}
 													<span class="label label-danger"><span class="fa fa-check"></span> {{:~eval('publicacioEstatText["' + estat + '"]')}}</span>
 												{{/if}}
 											{{/if}}
@@ -908,7 +913,7 @@ $(document).ready(function() {
 											<div class="dropdown">
 												<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 												<ul class="dropdown-menu">
-													<li><a href="../expedient/${contingut.id}/{{if notificacio}}notificacio{{else}}publicacio{{/if}}/{{:id}}/info" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
+													<li><a href="../document/{{:documentId}}/{{if notificacio}}notificacio{{else}}publicacio{{/if}}/{{:id}}/info" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
 													{{if notificacio && tipus == 'MANUAL'}}
 														<li><a href="../expedient/${contingut.id}/notificacio/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
 														<li><a href="../expedient/${contingut.id}/notificacio/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="contingut.confirmacio.esborrar.notificacio"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>

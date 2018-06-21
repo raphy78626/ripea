@@ -20,7 +20,7 @@
 		<li role="presentation">
 			<a href="#annexos" aria-controls="annexos" role="tab" data-toggle="tab"><spring:message code="notificacio.info.pipella.annexos"/> <span class="badge">${fn:length(notificacio.annexos)}</span></a>
 		</li>
-		<c:if test="${notificacio.enviamentError || notificacio.processamentError}">
+		<c:if test="${notificacio.error}">
 			<li role="presentation">
 				<a href="#errors" class="text-danger" aria-controls="errors" role="tab" data-toggle="tab"><span class="fa fa-exclamation-triangle"></span> <spring:message code="notificacio.info.pipella.errors"/></a>
 			</li>
@@ -33,29 +33,29 @@
 				<dt><spring:message code="notificacio.info.camp.document"/></dt>
 				<dd>${notificacio.document.nom}</dd>
 				<dt><spring:message code="notificacio.info.camp.data.enviament"/></dt>
-				<dd><fmt:formatDate value="${notificacio.dataEnviament}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				<dd><fmt:formatDate value="${notificacio.enviatData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
 				<dt><spring:message code="notificacio.info.camp.tipus"/></dt>
 				<dd><spring:message code="notificacio.tipus.enum.${notificacio.tipus}"/></dd>
 				<dt><spring:message code="notificacio.info.camp.estat"/></dt>
 				<dd><spring:message code="notificacio.estat.enum.${notificacio.estat}"/></dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.document"/></dt>
-				<dd>${notificacio.destinatariDocumentNum}</dd>
+				<dd>${notificacio.interessat.documentNum}</dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.nom"/></dt>
-				<dd>${notificacio.destinatariNomSencer}</dd>
+				<dd>${notificacio.interessat.nomComplet}</dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.email"/></dt>
-				<dd>${notificacio.destinatariEmail}</dd>
+				<dd>${notificacio.interessat.email}</dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.pais"/></dt>
-				<dd>${notificacio.destinatariPaisCodi}</dd>
+				<dd>${notificacio.interessat.pais}</dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.provincia"/></dt>
-				<dd>${notificacio.destinatariProvinciaCodi}</dd>
+				<dd>${notificacio.interessat.provincia}</dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.municipi"/></dt>
-				<dd>${notificacio.destinatariMunicipiCodi}</dd>
+				<dd>${notificacio.interessat.municipi}</dd>
 				<dt><spring:message code="notificacio.info.camp.interessat.representant"/></dt>
-				<dd>${notificacio.destinatariRepresentant}</dd>
+				<dd>${notificacio.interessat.representantIdentificador}</dd>
 				<dt><spring:message code="notificacio.info.camp.assumpte"/></dt>
 				<dd>${notificacio.assumpte}</dd>
 				<dt><spring:message code="notificacio.info.camp.idioma"/></dt>
-				<dd><spring:message code="interessat.idioma.enum.${notificacio.idioma}"/></dd>
+				<dd><spring:message code="interessat.idioma.enum.${notificacio.interessat.preferenciaIdioma}"/></dd>
 				<c:if test="${not empty notificacio.observacions}">
 					<dt><spring:message code="notificacio.info.camp.observacions"/></dt>
 					<dd>${notificacio.observacions}</dd>
@@ -65,15 +65,15 @@
 		<div class="tab-pane" id="avisofici" role="tabpanel">
 			<dl class="dl-horizontal">
 				<dt><spring:message code="notificacio.info.camp.avis.titol"/></dt>
-				<dd>${notificacio.avisTitol}</dd>
+				<dd>${notificacio.seuAvisTitol}</dd>
 				<dt><spring:message code="notificacio.info.camp.avis.text"/></dt>
-				<dd>${notificacio.avisText}</dd>
+				<dd>${notificacio.seuAvisText}</dd>
 				<dt><spring:message code="notificacio.info.camp.avis.text.sms"/></dt>
-				<dd>${notificacio.avisTextSms}</dd>
+				<dd>${notificacio.seuAvisTextMobil}</dd>
 				<dt><spring:message code="notificacio.info.camp.ofici.titol"/></dt>
-				<dd>${notificacio.oficiTitol}</dd>
+				<dd>${notificacio.seuOficiTitol}</dd>
 				<dt><spring:message code="notificacio.info.camp.ofici.text"/></dt>
-				<dd>${notificacio.oficiText}</dd>
+				<dd>${notificacio.seuOficiText}</dd>
 			</dl>
 		</div>
 		<div class="tab-pane" id="annexos" role="tabpanel">
@@ -82,7 +82,7 @@
 			</c:forEach>
 		</div>
 		<div class="tab-pane" id="errors" role="tabpanel">
-			<c:if test="${notificacio.enviamentError}">
+			<c:if test="${notificacio.error}">
 				<div class="alert well-sm alert-danger alert-dismissable">
 					<span class="fa fa-exclamation-triangle"></span>
 					<spring:message code="notificacio.info.errors.enviament"/>
@@ -104,6 +104,7 @@
 					</div>
 				</div>
 			</c:if>
+<%--
 			<c:if test="${notificacio.processamentError}">
 				<div class="alert well-sm alert-danger alert-dismissable">
 					<span class="fa fa-exclamation-triangle"></span>
@@ -126,6 +127,7 @@
 					</div>
 				</div>
 			</c:if>
+--%>
 		</div>
 	</div>
 	<div id="modal-botons" class="well">

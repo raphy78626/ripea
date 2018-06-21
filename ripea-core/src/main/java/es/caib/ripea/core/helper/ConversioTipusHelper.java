@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +17,18 @@ import es.caib.ripea.core.api.dto.DocumentDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaContingutDto.ExecucioMassivaEstatDto;
 import es.caib.ripea.core.api.dto.ExecucioMassivaDto;
+import es.caib.ripea.core.api.dto.InteressatAdministracioDto;
+import es.caib.ripea.core.api.dto.InteressatDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaFisicaDto;
+import es.caib.ripea.core.api.dto.InteressatPersonaJuridicaDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.entity.AlertaEntity;
 import es.caib.ripea.core.entity.DocumentEntity;
 import es.caib.ripea.core.entity.ExecucioMassivaContingutEntity;
+import es.caib.ripea.core.entity.InteressatAdministracioEntity;
+import es.caib.ripea.core.entity.InteressatEntity;
+import es.caib.ripea.core.entity.InteressatPersonaFisicaEntity;
+import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFacade;
@@ -117,6 +127,44 @@ public class ConversioTipusHelper {
 						target.setTimestamp(source.getTimestamp());
 						target.setValidacioOCSP(source.getValidacioOCSP());
 						target.setFitxerArxiuUuid(source.getFitxerArxiuUuid());
+						return target;
+					}
+				});
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<InteressatEntity, InteressatDto>() {
+					public InteressatDto convert(InteressatEntity source, Type<? extends InteressatDto> destinationClass) {
+						InteressatDto target = null;
+						if(source instanceof HibernateProxy) {
+							HibernateProxy hibernateProxy = (HibernateProxy) source;
+							LazyInitializer initializer = hibernateProxy.getHibernateLazyInitializer();
+							source = (InteressatEntity)initializer.getImplementation();
+						}
+						if (source instanceof  InteressatAdministracioEntity) {
+							target = new InteressatAdministracioDto();
+							((InteressatAdministracioDto)target).setOrganCodi(((InteressatAdministracioEntity)source).getOrganCodi());
+						} else if (source instanceof  InteressatPersonaFisicaEntity) {
+							target = new InteressatPersonaFisicaDto();
+							((InteressatPersonaFisicaDto)target).setNom(((InteressatPersonaFisicaEntity)source).getNom());
+							((InteressatPersonaFisicaDto)target).setLlinatge1(((InteressatPersonaFisicaEntity)source).getLlinatge1());
+							((InteressatPersonaFisicaDto)target).setLlinatge2(((InteressatPersonaFisicaEntity)source).getLlinatge2());
+						} else if (source instanceof  InteressatPersonaJuridicaEntity) {
+							target = new InteressatPersonaJuridicaDto();
+							((InteressatPersonaJuridicaDto)target).setRaoSocial(((InteressatPersonaJuridicaEntity)source).getRaoSocial());
+						} 
+						target.setId(source.getId());
+						target.setDocumentNum(source.getDocumentNum());
+						target.setPais(source.getPais());
+						target.setProvincia(source.getProvincia());
+						target.setMunicipi(source.getMunicipi());
+						target.setAdresa(source.getAdresa());
+						target.setCodiPostal(source.getCodiPostal());
+						target.setEmail(source.getEmail());
+						target.setTelefon(source.getTelefon());
+						target.setObservacions(source.getObservacions());
+						target.setPreferenciaIdioma(source.getPreferenciaIdioma());
+						target.setNotificacioAutoritzat(source.isNotificacioAutoritzat());
+						target.setRepresentantId(source.getRepresentantId());
+						target.setRepresentantIdentificador(source.getRepresentantIdentificador());
 						return target;
 					}
 				});
