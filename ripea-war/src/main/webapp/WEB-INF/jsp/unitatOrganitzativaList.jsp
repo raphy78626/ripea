@@ -21,11 +21,6 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 </head>
 <body>
-	<div data-toggle="botons-titol" style="margin-right: 15px;">
-		<a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal"  class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
-		<a href="<c:url value="/unitatOrganitzativa/synchronizeGet"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
-
-	</div>
 
 		<form:form action="" method="post" cssClass="well" commandName="unitatOrganitzativaFiltreCommand">
 			<div class="row">
@@ -44,7 +39,7 @@
 			</div>
 		</form:form>
 
-		<table id="unitatsOrganitzatives" data-toggle="datatable" data-url="<c:url value="/unitatOrganitzativa/datatable"/>" data-filter="#unitatOrganitzativaFiltreCommand" data-default-order="1" data-default-dir="asc" class="table table-bordered table-striped">
+		<table id="unitatsOrganitzatives" data-toggle="datatable" data-url="<c:url value="/unitatOrganitzativa/datatable"/>" data-filter="#unitatOrganitzativaFiltreCommand" data-default-order="1" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-bordered table-striped">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>	
@@ -95,5 +90,11 @@
 			</tr>
 		</thead>
 	</table>
-	
+	<script id="botonsTemplate" type="text/x-jsrender">
+		<div style="float: right">
+			<a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal"  class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
+			<a href="<c:url value="/unitatOrganitzativa/synchronizeGet"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
+		</div>
+	</script>
+
 </body>

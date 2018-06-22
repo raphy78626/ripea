@@ -44,8 +44,8 @@
 		<c:set var="isAllEmpty" value="${empty substMap and empty splitMap and empty substMap}"/>
 		<c:if test="${isAllEmpty}">
 			<div class="panel panel-default">
-				<div class="panel-heading">NO CHANGES</div>
-				<div class="panel-body">EVERYTHING IS UP TO DATE!!</div>
+				<div class="panel-heading"><spring:message code="unitat.synchronize.prediction.noChanges" /></div>
+				<div class="panel-body"><spring:message code="unitat.synchronize.prediction.upToDate" /></div>
 			</div>
 		</c:if>
 
@@ -143,9 +143,9 @@
 	</div>
 
 	<c:set var="formAction"><rip:modalUrl value="/unitatOrganitzativa/saveSynchronize"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal"role="form">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" role="form">
 		<div id="modal-botons">
-			<button type="submit" class="btn btn-success"<c:if test="${isAllEmpty}"><c:out value="disabled='disabled'"/></c:if>><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+			<button type="submit" class="btn btn-success"<c:if test="${isAllEmpty}"><c:out value="disabled='disabled'"/></c:if>><span class="fa fa-save"></span> <spring:message code="unitat.list.boto.synchronize"/></button>
 			<a href="<c:url value="/unitatOrganitzativa"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>		
 	</form:form>
