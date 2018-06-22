@@ -51,30 +51,30 @@ $(document).ready(function() {
 				<spring:message code="regla.list.unitatObsoleta" />
 			</div>
 			<div class="panel-body">
-				<div class="row">
-					<label class="col-xs-4 text-right"><spring:message
-							code="regla.form.tipusTransicio" /></label>
-					<div class="col-xs-8">
-						<c:if
-							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'DIVISIO'}">
-							<spring:message code="unitat.tipusTransicio.DIVISIO" />
-						</c:if>
-						<c:if
-							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}">
-							<spring:message code="unitat.tipusTransicio.FUSIO" />
-						</c:if>
-						<c:if
-							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'SUBSTITUCIO'}">
-							<spring:message code="unitat.tipusTransicio.SUBSTITUCIO" />
-						</c:if>
-					</div>
-				</div>
+<!-- 				<div class="row"> -->
+<%-- 					<label class="col-xs-4 text-right"><spring:message --%>
+<%-- 							code="regla.form.tipusTransicio" /></label> --%>
+<!-- 					<div class="col-xs-8"> -->
+<%-- 						<c:if --%>
+<%-- 							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'DIVISIO'}"> --%>
+<%-- 							<spring:message code="unitat.tipusTransicio.DIVISIO" /> --%>
+<%-- 						</c:if> --%>
+<%-- 						<c:if --%>
+<%-- 							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}"> --%>
+<%-- 							<spring:message code="unitat.tipusTransicio.FUSIO" /> --%>
+<%-- 						</c:if> --%>
+<%-- 						<c:if --%>
+<%-- 							test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'SUBSTITUCIO'}"> --%>
+<%-- 							<spring:message code="unitat.tipusTransicio.SUBSTITUCIO" /> --%>
+<%-- 						</c:if> --%>
+<!-- 					</div> -->
+<!-- 				</div> -->
 				<div class="row">
 					<label class="col-xs-4 text-right"><spring:message
 							code="regla.form.novesUnitats" /></label>
 					<div class="col-xs-8">
 						<ul style="padding-left: 17px;">
-							<c:forEach items="${reglaDto.unitatOrganitzativa.noves}"
+							<c:forEach items="${reglaDto.unitatOrganitzativa.lastHistoricosUnitats}"
 								var="newUnitat" varStatus="loop">
 								<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
 							</c:forEach>
@@ -95,22 +95,22 @@ $(document).ready(function() {
 						</div>
 					</div>
 				</c:if>
-				<c:if
-					test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}">
-					<div class="row">
-						<label class="col-xs-4 text-right"><spring:message
-								code="unitat.transicioInfo.altresUnitatsFusionades" /></label>
-						<div class="col-xs-8">
-							<ul style="padding-left: 17px;">
-								<c:forEach
-									items="${reglaDto.unitatOrganitzativa.altresUnitatsFusionades}"
-									var="unitatMap" varStatus="loop">
-									<li>${unitatMap.value} (${unitatMap.key})</li>
-								</c:forEach>
-							</ul>
-						</div>
-					</div>
-				</c:if>
+<%-- 				<c:if --%>
+<%-- 					test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}"> --%>
+<!-- 					<div class="row"> -->
+<%-- 						<label class="col-xs-4 text-right"><spring:message --%>
+<%-- 								code="unitat.transicioInfo.altresUnitatsFusionades" /></label> --%>
+<!-- 						<div class="col-xs-8"> -->
+<!-- 							<ul style="padding-left: 17px;"> -->
+<%-- 								<c:forEach --%>
+<%-- 									items="${reglaDto.unitatOrganitzativa.altresUnitatsFusionades}" --%>
+<%-- 									var="unitatMap" varStatus="loop"> --%>
+<%-- 									<li>${unitatMap.value} (${unitatMap.key})</li> --%>
+<%-- 								</c:forEach> --%>
+<!-- 							</ul> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<%-- 				</c:if> --%>
 			</div>
 		</div>
 	</c:if>

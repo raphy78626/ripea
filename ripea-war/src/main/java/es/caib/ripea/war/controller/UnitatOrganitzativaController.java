@@ -70,7 +70,9 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		
 		MultiMap splitMap = new MultiHashMap();
 		MultiMap mergeOrSubstMap = new MultiHashMap();
-
+		
+		
+		// differentiate between split and (subst/merge)
 		for (UnitatOrganitzativaDto vigentObsolete : unitatsVigentObsoleteDto) {
 			if (vigentObsolete.getLastHistoricosUnitats().size() > 1) {
 				for (UnitatOrganitzativaDto hist : vigentObsolete.getLastHistoricosUnitats()) {
@@ -112,23 +114,23 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		}
 
 		
-		Set<UnitatOrganitzativaDto> keysSplit = splitMap.keySet();
-		System.out.println("SPLITS: ");
-		for (UnitatOrganitzativaDto splitKey : keysSplit) {
-			System.out.println(splitMap.get(splitKey));
-		}
-
-		Set<UnitatOrganitzativaDto> mergeKeys = mergeMap.keySet();
-		System.out.println("MERGES: ");
-		for (UnitatOrganitzativaDto mergeKey : mergeKeys) {
-			System.out.println(mergeKey.getCodi() + " "+mergeKey+": "+ mergeOrSubstMap.get(mergeKey));
-		}
-		
-		Set<UnitatOrganitzativaDto> substKeys = substMap.keySet();
-		System.out.println("SUBSTUTIONS: ");
-		for (UnitatOrganitzativaDto substKey : substKeys) {
-			System.out.println(substKey.getCodi() + " "+substKey+": "+ mergeOrSubstMap.get(substKey));
-		}
+//		Set<UnitatOrganitzativaDto> keysSplit = splitMap.keySet();
+//		System.out.println("SPLITS: ");
+//		for (UnitatOrganitzativaDto splitKey : keysSplit) {
+//			System.out.println(splitMap.get(splitKey));
+//		}
+//
+//		Set<UnitatOrganitzativaDto> mergeKeys = mergeMap.keySet();
+//		System.out.println("MERGES: ");
+//		for (UnitatOrganitzativaDto mergeKey : mergeKeys) {
+//			System.out.println(mergeKey.getCodi() + " "+mergeKey+": "+ mergeOrSubstMap.get(mergeKey));
+//		}
+//		
+//		Set<UnitatOrganitzativaDto> substKeys = substMap.keySet();
+//		System.out.println("SUBSTUTIONS: ");
+//		for (UnitatOrganitzativaDto substKey : substKeys) {
+//			System.out.println(substKey.getCodi() + " "+substKey+": "+ mergeOrSubstMap.get(substKey));
+//		}
 		
 		model.addAttribute("splitMap", splitMap);
 		model.addAttribute("mergeMap", mergeMap);

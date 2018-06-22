@@ -145,7 +145,7 @@
 	<c:set var="formAction"><rip:modalUrl value="/unitatOrganitzativa/saveSynchronize"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal"role="form">
 		<div id="modal-botons">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+			<button type="submit" class="btn btn-success"<c:if test="${isAllEmpty}"><c:out value="disabled='disabled'"/></c:if>><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/unitatOrganitzativa"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>		
 	</form:form>

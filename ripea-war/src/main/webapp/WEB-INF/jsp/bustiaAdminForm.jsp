@@ -27,33 +27,33 @@
 		<div class="panel panel-danger">
 			<div class="panel-heading">
 				<span class="fa fa-warning text-danger"></span>
-				<spring:message code="bustia.list.unitatObsoleta" arguments="${bustiaDto.nom}"/> 
+				<spring:message code="bustia.list.unitatObsoleta"/> 
 			</div>
 			<div class="panel-body">
-				<div class="row">
-					<label class="col-xs-4 text-right"><spring:message
-							code="bustia.form.tipusTransicio" /></label>
-					<div class="col-xs-8">
-						<c:if
-							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'DIVISIO'}">
-							<spring:message code="unitat.tipusTransicio.DIVISIO" />
-						</c:if>
-						<c:if
-							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}">
-							<spring:message code="unitat.tipusTransicio.FUSIO" />
-						</c:if>
-						<c:if
-							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'SUBSTITUCIO'}">
-							<spring:message code="unitat.tipusTransicio.SUBSTITUCIO" />
-						</c:if>
-					</div>
-				</div>
+<!-- 				<div class="row"> -->
+<%-- 					<label class="col-xs-4 text-right"><spring:message --%>
+<%-- 							code="bustia.form.tipusTransicio" /></label> --%>
+<!-- 					<div class="col-xs-8"> -->
+<%-- 						<c:if --%>
+<%-- 							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'DIVISIO'}"> --%>
+<%-- 							<spring:message code="unitat.tipusTransicio.DIVISIO" /> --%>
+<%-- 						</c:if> --%>
+<%-- 						<c:if --%>
+<%-- 							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}"> --%>
+<%-- 							<spring:message code="unitat.tipusTransicio.FUSIO" /> --%>
+<%-- 						</c:if> --%>
+<%-- 						<c:if --%>
+<%-- 							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'SUBSTITUCIO'}"> --%>
+<%-- 							<spring:message code="unitat.tipusTransicio.SUBSTITUCIO" /> --%>
+<%-- 						</c:if> --%>
+<!-- 					</div> -->
+<!-- 				</div> -->
 				<div class="row">
 					<label class="col-xs-4 text-right"><spring:message
 							code="bustia.form.novesUnitats" /></label>
 					<div class="col-xs-8">
 						<ul style="padding-left: 17px;">
-							<c:forEach items="${bustiaDto.unitatOrganitzativa.noves}"
+							<c:forEach items="${bustiaDto.unitatOrganitzativa.lastHistoricosUnitats}"
 								var="newUnitat" varStatus="loop">
 								<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
 							</c:forEach>
@@ -63,32 +63,32 @@
 				<c:if test="${!empty bustiesOfOldUnitatWithoutCurrent}">
 					<div class="row">
 						<label class="col-xs-4 text-right"><spring:message
-								code="bustia.form.altresBustiesAfectades" /></label>
+ 								code="bustia.form.altresBustiesAfectades" /></label> 
 						<div class="col-xs-8">
-							<ul style="padding-left: 17px;">
-								<c:forEach items="${bustiesOfOldUnitatWithoutCurrent}"
-									var="bustia" varStatus="loop">
-									<li>${bustia.nom}</li>
-								</c:forEach>
-							</ul>
-						</div>
-					</div>
-				</c:if>
-				<c:if test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}">
-					<div class="row">
-						<label class="col-xs-4 text-right"><spring:message
-								code="unitat.transicioInfo.altresUnitatsFusionades" /></label>
-						<div class="col-xs-8">
-							<ul style="padding-left: 17px;">
-								<c:forEach
-									items="${bustiaDto.unitatOrganitzativa.altresUnitatsFusionades}"
-									var="unitatMap" varStatus="loop">
-									<li>${unitatMap.value} (${unitatMap.key})</li>
-								</c:forEach>
-							</ul>
-						</div>
-					</div>
-				</c:if>
+ 							<ul style="padding-left: 17px;"> 
+								<c:forEach items="${bustiesOfOldUnitatWithoutCurrent}" 
+ 									var="bustia" varStatus="loop"> 
+ 									<li>${bustia.nom}</li> 
+ 								</c:forEach> 
+ 							</ul> 
+ 						</div> 
+ 					</div> 
+ 				</c:if> 
+<%-- 				<c:if test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}"> --%>
+<!-- 					<div class="row"> -->
+<%-- 						<label class="col-xs-4 text-right"><spring:message --%>
+<%-- 								code="unitat.transicioInfo.altresUnitatsFusionades" /></label> --%>
+<!-- 						<div class="col-xs-8"> -->
+<!-- 							<ul style="padding-left: 17px;"> -->
+<%-- 								<c:forEach --%>
+<%-- 									items="${bustiaDto.unitatOrganitzativa.altresUnitatsFusionades}" --%>
+<%-- 									var="unitatMap" varStatus="loop"> --%>
+<%-- 									<li>${unitatMap.value} (${unitatMap.key})</li> --%>
+<%-- 								</c:forEach> --%>
+<!-- 							</ul> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<%-- 				</c:if> --%>
 			</div>
 		</div>
 	</c:if>

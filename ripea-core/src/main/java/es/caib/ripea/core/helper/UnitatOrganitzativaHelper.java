@@ -152,8 +152,41 @@ public class UnitatOrganitzativaHelper {
 		return unitatsVigentObsoleteDto;
 	}
 	
-	
+	/**
+	 * Method to get last historicos (recursive to cover cumulative synchro case)
+	 * @param unitat
+	 * @param lastHistorcos
+	 */
+	public void getLastHistoricosRecursive(UnitatOrganitzativaDto unitat, List<UnitatOrganitzativaDto> lastHistorcos) {
 
+		if (unitat.getNoves() == null || unitat.getNoves().isEmpty()) {
+			lastHistorcos.add(unitat);
+		} else {
+			for (UnitatOrganitzativaDto unitatI : unitat.getNoves()) {
+				getLastHistoricosRecursive(unitatI, lastHistorcos);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Starting point, calls recursive method to get last historicos
+	 * and sets last historicos and sets the type of transition
+	 * 
+	 * @param uo
+	 * @return
+	 */
+	public UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo) {
+
+		List<UnitatOrganitzativaDto> lastHistorcos = new ArrayList<>();
+		getLastHistoricosRecursive(uo, lastHistorcos);
+		uo.setLastHistoricosUnitats(lastHistorcos);
+		
+		return uo;
+	}
+	
+	
+	
 	
 
 	public void sincronizarOActualizar(EntitatEntity entitat) {
