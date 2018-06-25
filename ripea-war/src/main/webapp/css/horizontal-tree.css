@@ -89,13 +89,28 @@
 }
 
 
+.branch.empty-branch:before {
+	border-color: white;
+}
 
- .overflow-ellipsis{
- 	overflow:hidden;
-    text-overflow:ellipsis;
- }
+.entry.empty-entry:last-child:after {
+	border-color: white;
+}
+.label.empty-label{
+	background:  white; 
+	border-color: white !important;
+}
 
- .border-red {
+.overflow-ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.border-yellow {
+	border-color: #faebcc !important;
+}
+
+.border-red {
  	border-color: #ebccd1 !important;
  }
  .border-green {

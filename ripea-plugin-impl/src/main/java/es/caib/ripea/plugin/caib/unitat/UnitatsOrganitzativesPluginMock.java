@@ -39,14 +39,17 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 	public List<UnitatOrganitzativa> findAmbPare(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{
 		
 		List<UnitatOrganitzativa> unitats = new ArrayList<>();
-		unitats.add(new UnitatOrganitzativa("EA0004099", "Adif-Alta Velocidad","E00003601", "E00003601","T", new ArrayList<>(Arrays.asList("E00125501", "EA0004100"))));
-		unitats.add(new UnitatOrganitzativa("E00125501", "Administracion del Estado en el Exterior - Representacion Permanente de Transportes","E00003601", "E00003601","V", null));
-		unitats.add(new UnitatOrganitzativa("EA0004100", "AENA Aeropuertos, S.A.","E00003601", "E00003601","V", null));
-		unitats.add(new UnitatOrganitzativa("E04865601", "Agencia Estatal de Seguridad Aerea","E00003601", "E00003601","T", new ArrayList<>(Arrays.asList("EA0004101"))));
-		unitats.add(new UnitatOrganitzativa("E04978901", "Agencia Estatal de Seguridad Ferroviaria","E04590204", "E00003601","T", new ArrayList<>(Arrays.asList("EA0004101"))));
-		unitats.add(new UnitatOrganitzativa("EA0004101", "AENA Desarrollo Internacional, S.A.","E00003601", "E00003601","V",null));
-		unitats.add(new UnitatOrganitzativa("EA0004518", "Autoridad Portuaria de Baleares","E00003601", "E00003601","T", new ArrayList<>(Arrays.asList("EA0008120"))));
-		unitats.add(new UnitatOrganitzativa("EA0008120", "Autoridad Portuaria de Gijón","E00003601", "E00003601","V", null));
+		unitats.add(new UnitatOrganitzativa("A04026201", "B3 Prueba Marilen","A04025121", "A04025121","E", new ArrayList<>(Arrays.asList("A04026203", "A04026205"))));
+		unitats.add(new UnitatOrganitzativa("A04026203", "Administracion del Estado en el Exterior - Representacion Permanente de Transportes","A04025121", "A04025121","V", null));
+		unitats.add(new UnitatOrganitzativa("A04026205", "AENA Aeropuertos, S.A.","A04025121", "A04025121","V", null));
+		unitats.add(new UnitatOrganitzativa("A04026185", "Agencia Estatal de Seguridad Aerea","A04025121", "A04025121","E", new ArrayList<>(Arrays.asList("A04026187"))));
+		unitats.add(new UnitatOrganitzativa("A04026163", "Agencia Estatal de Seguridad Ferroviaria","A04025121", "A04025121","E", new ArrayList<>(Arrays.asList("A04026187"))));
+		unitats.add(new UnitatOrganitzativa("A04026187", "AENA Desarrollo Internacional, S.A.","A04025121", "A04025121","V",null));
+
+		
+//		unitats.add(new UnitatOrganitzativa("A04026161", "B1 Prueba Marilen","A04025121", "A04025121","E", new ArrayList<>(Arrays.asList("A04026191"))));
+//		unitats.add(new UnitatOrganitzativa("A04026191", "Denom Completa 1.1.","A04026163", "A04025121","V", null));
+		unitats.add(new UnitatOrganitzativa("A04026202", "B3 Prueba Marilen 1.1.11111111111111111","A04026201", "A04025121","V", null));
 		
 		return unitats;
 	}

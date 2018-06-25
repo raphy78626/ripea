@@ -117,7 +117,7 @@ public class UnitatOrganitzativaHelper {
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 		
 		
-		// getting all vigent unitats
+		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
 
@@ -125,9 +125,9 @@ public class UnitatOrganitzativaHelper {
 		// synchronization list taken from webservices they are marked as
 		// obsolete
 		List<UnitatOrganitzativa> unitatsVigentObsolete = new ArrayList<>();
-		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) {
+		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) { 
 			for (UnitatOrganitzativa unitatWS : unitatsWS) {
-				if (unitatV.getCodi().equals(unitatWS.getCodi()) && unitatV.getEstat() != "V"
+				if (unitatV.getCodi().equals(unitatWS.getCodi()) && !unitatWS.getEstat().equals("V")
 						&& !unitatV.getCodi().equals(entitat.getUnitatArrel())) {
 					unitatsVigentObsolete.add(unitatWS);
 				}
@@ -136,12 +136,13 @@ public class UnitatOrganitzativaHelper {
 
 		// setting list of last historicos unitats in every vigent unitat
 		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {
-			if (vigentObsolete.getCodi().equals("A04026201")) {
-				System.out.println();
-			}
+//			if (vigentObsolete.getCodi().equals("A04026201")) {
+//				System.out.println();
+//			}
 			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
 		}
 		
+		// converting form UnitatOrganitzativa to UnitatOrganitzativaDto
 		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = new ArrayList<>();
 		for(UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete){
 			unitatsVigentObsoleteDto.add(conversioTipusHelper.convertir(
@@ -151,6 +152,44 @@ public class UnitatOrganitzativaHelper {
 		
 		return unitatsVigentObsoleteDto;
 	}
+	
+	public List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId){
+		
+		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+		
+		// getting list of last changes from webservices
+		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(),
+				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
+		
+		
+		// getting all vigent unitats from database
+		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
+				.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
+		
+		 
+		// list of vigent unitats from webservice
+		List<UnitatOrganitzativa> unitatsVigentsWithChangedAttributes = new ArrayList<>();
+		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) {
+			for (UnitatOrganitzativa unitatWS : unitatsWS) {
+				if (unitatV.getCodi().equals(unitatWS.getCodi()) && unitatV.getEstat().equals("V")
+						&& unitatWS.getHistoricosUO() == null
+						&& !unitatV.getCodi().equals(entitat.getUnitatArrel())) {
+					unitatsVigentsWithChangedAttributes.add(unitatWS);
+				}
+			}
+		}
+		
+		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
+		List<UnitatOrganitzativaDto> unitatsVigentsWithChangedAttributesDto = new ArrayList<>();
+		for(UnitatOrganitzativa vigent : unitatsVigentsWithChangedAttributes){
+			unitatsVigentsWithChangedAttributesDto.add(conversioTipusHelper.convertir(
+					vigent, 
+					UnitatOrganitzativaDto.class));
+		}
+		
+		return unitatsVigentsWithChangedAttributesDto;
+	}
+	
 	
 	/**
 	 * Method to get last historicos (recursive to cover cumulative synchro case)
@@ -187,7 +226,7 @@ public class UnitatOrganitzativaHelper {
 	
 	
 	
-	
+
 
 	public void sincronizarOActualizar(EntitatEntity entitat) {
 

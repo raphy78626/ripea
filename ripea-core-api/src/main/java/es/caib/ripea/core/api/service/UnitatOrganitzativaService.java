@@ -100,5 +100,7 @@ public interface UnitatOrganitzativaService {
 
 	List<UnitatOrganitzativaDto> predictSynchronization(Long entitatId);
 
+	List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId);
+
 
 }

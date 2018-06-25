@@ -100,6 +100,11 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 		return delegate.predictSynchronization(entitatId);
 	}
 
+	@Override
+	public List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId) {
+		return delegate.getVigentsFromWebService(entidadId);
+	}
+
 	
 
 	/*@Autowired

@@ -78,7 +78,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 				for (UnitatOrganitzativaDto hist : vigentObsolete.getLastHistoricosUnitats()) {
 					splitMap.put(vigentObsolete, hist);
 				}
-			} else {
+			} else if(vigentObsolete.getLastHistoricosUnitats().size() == 1){
 				//check if the map already contains key with this codi 
 				UnitatOrganitzativaDto mergeOrSubstKeyWS = vigentObsolete.getLastHistoricosUnitats().get(0);
 				UnitatOrganitzativaDto keyWithTheSameCodi = null;
@@ -112,7 +112,10 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 				substMap.put(mergeOrSubstKey, values.get(0));
 			}
 		}
-
+		
+		List<UnitatOrganitzativaDto> unitatsVigents = unitatOrganitzativaService.getVigentsFromWebService(entitatActual.getId());
+		
+		
 		
 //		Set<UnitatOrganitzativaDto> keysSplit = splitMap.keySet();
 //		System.out.println("SPLITS: ");
@@ -131,6 +134,8 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 //		for (UnitatOrganitzativaDto substKey : substKeys) {
 //			System.out.println(substKey.getCodi() + " "+substKey+": "+ mergeOrSubstMap.get(substKey));
 //		}
+		
+		model.addAttribute("unitatsVigents", unitatsVigents);
 		
 		model.addAttribute("splitMap", splitMap);
 		model.addAttribute("mergeMap", mergeMap);
