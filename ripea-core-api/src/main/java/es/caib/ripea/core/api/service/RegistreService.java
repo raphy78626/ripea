@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
@@ -229,4 +230,21 @@ public interface RegistreService {
 			Long entitatId,
 			Long contingutId,
 			Long registreId);
+
+	/**
+	 * Obté un fitxer amb l'informe de l'apunt de registre
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param contingutId
+	 *            Atribut id del contingut pare a on està situada l'anotació.
+	 * @param registreId
+	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
+	 *            
+	 * @return L'anotació modificada
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public FitxerDto informeRegistre(
+			Long entitatId, 
+			Long registreId) throws Exception;
 }

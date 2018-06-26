@@ -13,6 +13,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
@@ -155,6 +156,16 @@ public class RegistreServiceBean implements RegistreService {
 	@RolesAllowed("tothom")
 	public void distribuirAnotacionsPendents() {
 		delegate.distribuirAnotacionsPendents();
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public FitxerDto informeRegistre(
+			Long entitatId, 
+			Long registreId) throws Exception {
+		return delegate.informeRegistre(
+				entitatId, 
+				registreId);
 	}
 
 }

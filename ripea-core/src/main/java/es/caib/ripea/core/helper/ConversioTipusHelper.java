@@ -168,6 +168,40 @@ public class ConversioTipusHelper {
 						return target;
 					}
 				});
+//		mapperFactory.getConverterFactory().registerConverter(
+//				new CustomConverter<RegistreInteressatEntity, InteressatDto>() {
+//					public InteressatDto convert(RegistreInteressatEntity source, Type<? extends InteressatDto> destinationClass) {
+//						InteressatDto target = null;
+//						if(source instanceof HibernateProxy) {
+//							HibernateProxy hibernateProxy = (HibernateProxy) source;
+//							LazyInitializer initializer = hibernateProxy.getHibernateLazyInitializer();
+//							source = (RegistreInteressatEntity)initializer.getImplementation();
+//						}
+//						if (source.getTipus().equals(RegistreInteressatTipusEnum.ADMINISTRACIO)) {
+//							target = new InteressatAdministracioDto();
+//							((InteressatAdministracioDto)target).setOrganCodi(source.getRaoSocial());
+//						} else if (source.getTipus().equals(RegistreInteressatTipusEnum.PERSONA_FIS)) {
+//							target = new InteressatPersonaFisicaDto();
+//							((InteressatPersonaFisicaDto)target).setNom(source.getNom());
+//							((InteressatPersonaFisicaDto)target).setLlinatge1(source.getLlinatge1());
+//							((InteressatPersonaFisicaDto)target).setLlinatge2(source.getLlinatge2());
+//						} else if (source.getTipus().equals(RegistreInteressatTipusEnum.PERSONA_JUR)) {
+//							target = new InteressatPersonaJuridicaDto();
+//							((InteressatPersonaJuridicaDto)target).setRaoSocial(source.getRaoSocial());
+//						} 
+//						target.setId(source.getId());
+//						target.setDocumentNum(source.getDocumentNum());
+//						target.setPais(source.getPais());
+//						target.setProvincia(source.getProvincia());
+//						target.setMunicipi(source.getMunicipi());
+//						target.setAdresa(source.getAdresa());
+//						target.setCodiPostal(source.getCodiPostal());
+//						target.setEmail(source.getEmail());
+//						target.setTelefon(source.getTelefon());
+//						target.setObservacions(source.getObservacions());
+//						return target;
+//					}
+//				});
 	}
 
 	public <T> T convertir(Object source, Class<T> targetType) {

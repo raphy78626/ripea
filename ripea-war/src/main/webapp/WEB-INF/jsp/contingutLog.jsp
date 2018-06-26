@@ -256,6 +256,9 @@ $(document).ready(function() {
 		</div>
 	</div>
 	<div id="modal-botons" class="well">
+		<c:if test="${contingut.tipus == 'REGISTRE'}">
+			<a href="<c:url value="/contingut/${contingut.id}/log/export"/>" class="btn btn-default" data-modal-norefresh="true"><spring:message code="comu.boto.exportar"/></a>
+		</c:if>
 		<a href="<c:url value="/contingut/${contingut.id}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>

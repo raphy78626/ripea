@@ -592,6 +592,29 @@ public class ContingutController extends BaseUserController {
 						"log.objecte.tipus.enum."));
 		return "contingutLog";
 	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/log/export", method = RequestMethod.GET)
+	public String export(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long contingutId) throws Exception {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		FitxerDto fitxer;
+//		try {
+			fitxer = registreService.informeRegistre(
+					entitatActual.getId(),
+					contingutId);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+//		} catch (Exception e) {
+//			MissatgesHelper.error(request, e.getMessage());
+//		}
+		
+		return null;
+		
+	}
 
 	@RequestMapping(value = "/contingut/{contingutId}/log/{contingutLogId}/detalls", method = RequestMethod.GET)
 	@ResponseBody

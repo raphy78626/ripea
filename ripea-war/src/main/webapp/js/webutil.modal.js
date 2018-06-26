@@ -164,12 +164,19 @@
 									});
 								} else {
 									clon.on('click', function () {
-										iframe.hide();
-										$('.modal-body .datatable-dades-carregant').css('padding-bottom', '0px');
-										$('.modal-body .datatable-dades-carregant').css('padding-top', '60px');
-										$('.modal-body .datatable-dades-carregant').show();
-										element.click();
-										return false;
+										debugger;
+										if (!element.data("modal-norefresh")) {
+											iframe.hide();
+											$('.modal-body .datatable-dades-carregant').css('padding-bottom', '0px');
+											$('.modal-body .datatable-dades-carregant').css('padding-top', '60px');
+											$('.modal-body .datatable-dades-carregant').show();
+											element.click();
+											return false;
+										} else {
+											element.click();
+											return true;
+										}
+										
 									});
 								}
 								$('.modal-footer', $(iframe).parent().parent()).append(clon);

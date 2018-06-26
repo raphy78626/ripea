@@ -3,14 +3,20 @@
  */
 package es.caib.ripea.core.service;
 
+import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,13 +30,20 @@ import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaTipus;
+import es.caib.ripea.core.api.dto.ApuntAccioModel;
+import es.caib.ripea.core.api.dto.ApuntInteressatModel;
+import es.caib.ripea.core.api.dto.ApuntMovimentModel;
 import es.caib.ripea.core.api.dto.ArxiuFirmaDto;
 import es.caib.ripea.core.api.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.ripea.core.api.dto.ContingutLogDto;
+import es.caib.ripea.core.api.dto.ContingutMovimentDto;
+import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.FitxerDto;
 import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
+import es.caib.ripea.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.ripea.core.api.service.RegistreService;
@@ -40,6 +53,7 @@ import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.entity.RegistreInteressatEntity;
 import es.caib.ripea.core.helper.AlertaHelper;
 import es.caib.ripea.core.helper.BustiaHelper;
 import es.caib.ripea.core.helper.ContingutHelper;
@@ -47,6 +61,7 @@ import es.caib.ripea.core.helper.ContingutLogHelper;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.MessageHelper;
+import es.caib.ripea.core.helper.PlantillaHelper;
 import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.PropertiesHelper;
 import es.caib.ripea.core.helper.RegistreHelper;
@@ -55,6 +70,7 @@ import es.caib.ripea.core.repository.BustiaRepository;
 import es.caib.ripea.core.repository.ExpedientRepository;
 import es.caib.ripea.core.repository.RegistreAnnexRepository;
 import es.caib.ripea.core.repository.RegistreRepository;
+import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 
 /**
  * Implementació dels mètodes per a gestionar anotacions
@@ -624,6 +640,173 @@ public class RegistreServiceImpl implements RegistreService {
 				registre);		
 	}
 
+	@SuppressWarnings("unused")
+	@Transactional (readOnly = true)
+	@Override
+	public FitxerDto informeRegistre(Long entitatId, Long registreId) throws Exception {
+
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				registreId,
+				null);
+		
+		InputStream in = getClass().getResourceAsStream("/es/caib/ripea/core/plantilles/plantilla_informe_apunt_v.odt");
+		byte[] plantilla = IOUtils.toByteArray(in);
+		
+		Map<String, Object> model = getModelRegistre(registreId);
+		
+		EntitatDto entitatDto = conversioTipusHelper.convertir(
+				entitat,
+				EntitatDto.class);
+		
+		model.put("entitat", entitatDto);
+		
+		byte[] informe = PlantillaHelper.generatePDF(plantilla, false, model, true);
+		
+		FitxerDto fitxer = new FitxerDto();
+		fitxer.setContingut(informe);
+		fitxer.setContentType("application/pdf");
+		fitxer.setNom("Informe registre.pdf");
+		
+		return fitxer;
+	}
+	
+	private Map<String, Object> getModelRegistre(Long registreId) {
+		
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+		RegistreEntity registreEntity = registreRepository.findOne(registreId);
+		Map<String, String> registre = new HashMap<String, String>();
+		registre.put("tipus", messageHelper.getMessage("registre.anotacio.tipus.enum." + registreEntity.getRegistreTipus().name()));
+		registre.put("tipusAssumpte", registreEntity.getAssumpteTipusDescripcio() != null ? registreEntity.getAssumpteTipusDescripcio() : "" + 
+									" (" + registreEntity.getAssumpteTipusCodi() + ")");
+		registre.put("codiAssumpte", registreEntity.getAssumpteDescripcio() + " (" + registreEntity.getAssumpteCodi() + ")");
+		registre.put("numero", registreEntity.getNumero());
+		registre.put("data", df.format(registreEntity.getData()));
+		registre.put("llibre", registreEntity.getLlibreDescripcio() + " (" + registreEntity.getLlibreCodi() + ")");
+		registre.put("oficina", registreEntity.getOficinaDescripcio() + " (" + registreEntity.getOficinaCodi() + ")");
+		registre.put("organ", registreEntity.getUnitatAdministrativaDescripcio() + " (" + registreEntity.getUnitatAdministrativa() + ")");
+		registre.put("extracte", registreEntity.getExtracte());
+		
+		
+//		List<InteressatDto> interessats = conversioTipusHelper.convertirList(
+//				registreEntity.getInteressats(),
+//				InteressatDto.class);
+		List<ApuntInteressatModel> interessats = new ArrayList<ApuntInteressatModel>();
+		List<ApuntAccioModel> accions = new ArrayList<ApuntAccioModel>();
+		List<ApuntMovimentModel> moviments = new ArrayList<ApuntMovimentModel>();
+		
+		for (RegistreInteressatEntity registreInteressat: registreEntity.getInteressats()) {
+			ApuntInteressatModel interessat = new ApuntInteressatModel();
+			interessat.setTipus(messageHelper.getMessage("registre.interessat.tipus.enum." + registreInteressat.getTipus().name()));
+			interessat.setDocument(registreInteressat.getDocumentNum());
+			
+			if (registreInteressat.getTipus().equals(RegistreInteressatTipusEnum.PERSONA_FIS)) {
+				StringBuilder sb = new StringBuilder();
+				if (registreInteressat.getNom() != null) {
+					sb.append(registreInteressat.getNom());
+				}
+				if (registreInteressat.getLlinatge1() != null) {
+					sb.append(" ");
+					sb.append(registreInteressat.getLlinatge1());
+					if (registreInteressat.getLlinatge2() != null) {
+						sb.append(" ");
+						sb.append(registreInteressat.getLlinatge2());
+					}
+				}
+				interessat.setNomComplet(sb.toString());
+			} else {
+				interessat.setNomComplet(registreInteressat.getRaoSocial());
+			}
+			if (registreInteressat.getRepresentant() != null) {
+				interessat.setRepresentantDocument(registreInteressat.getRepresentant().getDocumentNum());
+			} else {
+				interessat.setRepresentantDocument("");
+			}
+			interessats.add(interessat);
+		}
+		
+		List<ContingutLogDto> contingutLogs = contingutLogHelper.findLogsContingut(registreEntity);
+		for (ContingutLogDto contingutLog: contingutLogs) {
+			ApuntAccioModel accio = new ApuntAccioModel();
+			accio.setData(contingutLog.getCreatedDate());
+			accio.setUsuari(contingutLog.getCreatedBy() != null ? contingutLog.getCreatedBy().getNom() : "");
+			String strAccio = "";
+			if (contingutLog.isSecundari()) {
+				if (contingutLog.getObjecteLogTipus() != null) {
+					strAccio = messageHelper.getMessage("log.tipus.enum." + contingutLog.getObjecteLogTipus().name()) + " ";
+				}
+				strAccio += messageHelper.getMessage("log.objecte.tipus.enum." + contingutLog.getObjecteTipus().name());
+				strAccio += "#" + contingutLog.getObjecteId();
+				accio.setAccio(strAccio);
+			} else {
+				strAccio = messageHelper.getMessage("log.tipus.enum." + contingutLog.getTipus().name());
+			}
+			accio.setAccio(strAccio);
+			accio.setParam1(contingutLog.getParam1() != null ? contingutLog.getParam1() : "");
+			accio.setParam2(contingutLog.getParam2() != null ? contingutLog.getParam2() : "");
+			accions.add(accio);
+		}
+		
+		List<ContingutMovimentDto> contingutMoviments = contingutLogHelper.findMovimentsContingut(registreEntity);
+		for (ContingutMovimentDto contingutMoviment: contingutMoviments) {
+			ApuntMovimentModel moviment = new ApuntMovimentModel();
+			moviment.setData(contingutMoviment.getData());
+			moviment.setUsuari(contingutMoviment.getRemitent().getNom());
+			if (contingutMoviment.getOrigen() != null) {
+				moviment.setOrigen(
+						messageHelper.getMessage("contingut.tipus.enum." + contingutMoviment.getOrigen().getTipus().name()) + 
+						"#" + contingutMoviment.getOrigen().getId());
+			} else {
+				moviment.setOrigen("");
+			}
+			moviment.setDesti(
+					messageHelper.getMessage("contingut.tipus.enum." + contingutMoviment.getDesti().getTipus().name()) + 
+					"#" + contingutMoviment.getDesti().getId());
+			moviment.setComentari(contingutMoviment.getComentari() != null ? contingutMoviment.getComentari() : "");
+			moviments.add(moviment);
+		}
+		
+		model.put("registre", registre);
+		
+		model.put("interessats", interessats);
+		model.put("accions", accions);
+		model.put("moviments", moviments);
+		
+		// Interessats
+		FieldsMetadata metadataInteressats = new FieldsMetadata();
+		metadataInteressats.addFieldAsList("interessats.tipus");
+		metadataInteressats.addFieldAsList("interessats.document");
+		metadataInteressats.addFieldAsList("interessats.nomComplet");
+		metadataInteressats.addFieldAsList("interessats.representantDocument");
+		model.put("interessatsMetadata", metadataInteressats);
+				
+		// Accions
+		FieldsMetadata metadataAccions = new FieldsMetadata();
+		metadataAccions.addFieldAsList("accions.data");
+		metadataAccions.addFieldAsList("accions.usuari");
+		metadataAccions.addFieldAsList("accions.accio");
+		metadataAccions.addFieldAsList("accions.param1");
+		metadataAccions.addFieldAsList("accions.param2");
+		model.put("accionsMetadata", metadataAccions);
+		
+		// Moviments
+		FieldsMetadata metadataMoviments = new FieldsMetadata();
+		metadataMoviments.addFieldAsList("moviments.data");
+		metadataMoviments.addFieldAsList("moviments.usuari");
+		metadataMoviments.addFieldAsList("moviments.origen");
+		metadataMoviments.addFieldAsList("moviments.desti");
+		metadataMoviments.addFieldAsList("moviments.comentari");
+		model.put("movimentsMetadata", metadataMoviments);
+		
+		return model;
+	}
 
 
 	private RegistreAnnexDetallDto getJustificantPerRegistre(

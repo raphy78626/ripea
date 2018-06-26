@@ -227,6 +227,95 @@
 			<version>1.6</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- Ús de plantilles docx -->
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
+			<version>${xdocreport.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>fr.opensagres.xdocreport</groupId>
+					<artifactId>
+						fr.opensagres.xdocreport.document
+					</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Ús de plantilles odt -->
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
+			<version>${xdocreport.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.template</artifactId>
+			<version>${xdocreport.version}</version>
+		</dependency>
+		<!-- Ús de freemarker en plantilles -->
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
+			<version>${xdocreport.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>fr.opensagres.xdocreport</groupId>
+					<artifactId>
+						fr.opensagres.xdocreport.template
+					</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Ús de velocity en plantilles -->
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
+			<version>${xdocreport.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>fr.opensagres.xdocreport</groupId>
+					<artifactId>
+						fr.opensagres.xdocreport.template
+					</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Conversió de docx a pdf -->
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.converter.docx.xwpf</artifactId>
+			<version>${xdocreport.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>xml-apis</artifactId>
+					<groupId>xml-apis</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>stax-api</artifactId>
+					<groupId>stax</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Conversió de odt a pdf -->
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.converter.odt.odfdom</artifactId>
+			<version>${xdocreport.converter.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>xml-apis</artifactId>
+					<groupId>xml-apis</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>xercesImpl</artifactId>
+					<groupId>xerces</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ripea-plugin-impl</artifactId>
