@@ -82,6 +82,19 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 		return unitatOrganitzativaHelper.getVigentsFromWebService(entidadId);
 	}
 	
+	@Override
+	@Transactional
+	public boolean isFirstSincronization(Long entidadId) {
+
+		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+
+		if (entitat.getFechaSincronizacion() == null) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
 	
 
 	@Override
@@ -133,7 +146,7 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 
 		
 		PaginaDto<UnitatOrganitzativaDto> resultPagina =  paginacioHelper.toPaginaDto(
-				unitatOrganitzativaRepository.findByEntitatAndUnitatCodiAndUnitatDenominacioFiltrePaginat(
+				unitatOrganitzativaRepository.findByUnitatCodiArrelAndUnitatDenominacioFiltrePaginat(
 						entitat.getUnitatArrel(),
 						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
 						filtre.getCodi(),

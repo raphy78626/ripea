@@ -30,7 +30,7 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			"    uo.codiUnitatArrel = :codiUnitatArrel " +
 			"and (:esNullFiltreCodi = true or lower(uo.codi) like lower('%'||:codi||'%')) " +
 			"and (:esNullFiltreDenominacio = true or lower(uo.denominacio) like lower('%'||:denominacio||'%')) ")
-	Page<UnitatOrganitzativaEntity> findByEntitatAndUnitatCodiAndUnitatDenominacioFiltrePaginat(
+	Page<UnitatOrganitzativaEntity> findByUnitatCodiArrelAndUnitatDenominacioFiltrePaginat(
 			@Param("codiUnitatArrel") String codiUnitatArrel,
 			@Param("esNullFiltreCodi") boolean esNullFiltreCodi,
 			@Param("codi") String codi, 

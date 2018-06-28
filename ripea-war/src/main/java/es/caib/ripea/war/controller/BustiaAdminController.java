@@ -101,7 +101,38 @@ public class BustiaAdminController extends BaseAdminController {
 	}
 	
 	
-	
+
+	@RequestMapping(value = "/{bustiaId}/bustiaTransicioInfo", method = RequestMethod.GET)
+	public String bustiaTransicioInfo(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaDto bustia = null;
+		if (bustiaId != null){
+			
+			bustia = bustiaService.findById(
+					entitatActual.getId(),
+					bustiaId);
+			
+		// setting last historicos to the unitat of this bustia
+		bustia.setUnitatOrganitzativa(unitatOrganitzativaHelper.getLastHistoricos(bustia.getUnitatOrganitzativa()));
+			
+		
+		// getting all the busties connected with old unitat excluding the one you are currently in 
+		List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
+		List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
+		for(BustiaDto bustiaI: bustiesOfOldUnitat){
+			if(!bustiaI.getId().equals(bustia.getId())){
+				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
+			}
+		}
+		model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
+		model.addAttribute(bustia);	
+		}
+		
+		return "bustiaTransicioInfo";
+	}
 
 
 	

@@ -232,17 +232,17 @@ public class PluginHelper {
 			String pareCodi, 
 			Timestamp fechaActualizacion, 
 			Timestamp fechaSincronizacion) {
-		String accioDescripcio = "Consulta llista d'unitats donat un pare"; //??????????
+		String accioDescripcio = "Consulta unitat donat un pare"; 
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("unitatPare", pareCodi);
-		accioParams.put("fechaActualizacion", fechaActualizacion.toString());
-		accioParams.put("fechaSincronizacion", fechaSincronizacion.toString());
+		accioParams.put("fechaActualizacion", fechaActualizacion == null ? null : fechaActualizacion.toString());
+		accioParams.put("fechaSincronizacion", fechaSincronizacion == null ? null : fechaSincronizacion.toString());
 		long t0 = System.currentTimeMillis();
 		try {
 			UnitatOrganitzativa unitat = getUnitatsOrganitzativesPlugin().findUnidad(
 					pareCodi, fechaActualizacion, fechaSincronizacion);
 			
-//			if (unitat != null) {
+			if (unitat != null) {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
@@ -250,19 +250,19 @@ public class PluginHelper {
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
 				return unitat;
-//			} else {
-//				String errorMissatge = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
-//				integracioHelper.addAccioError(
-//						IntegracioHelper.INTCODI_UNITATS,
-//						accioDescripcio,
-//						accioParams,
-//						IntegracioAccioTipusEnumDto.ENVIAMENT,
-//						System.currentTimeMillis() - t0,
-//						errorMissatge);
-//				throw new SistemaExternException(
-//						IntegracioHelper.INTCODI_UNITATS,
-//						errorMissatge);
-//			}
+			} else {
+				String errorMissatge = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
+				integracioHelper.addAccioError(
+						IntegracioHelper.INTCODI_UNITATS,
+						accioDescripcio,
+						accioParams,
+						IntegracioAccioTipusEnumDto.ENVIAMENT,
+						System.currentTimeMillis() - t0,
+						errorMissatge);
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_UNITATS,
+						errorMissatge);
+			}
 				
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";
@@ -290,8 +290,8 @@ public class PluginHelper {
 		String accioDescripcio = "Consulta llista d'unitats donat un pare";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("unitatPare", pareCodi);
-		accioParams.put("fechaActualizacion", fechaActualizacion.toString());
-		accioParams.put("fechaSincronizacion", fechaSincronizacion.toString());
+		accioParams.put("fechaActualizacion", fechaActualizacion == null ? null : fechaActualizacion.toString());
+		accioParams.put("fechaSincronizacion", fechaSincronizacion == null ? null : fechaSincronizacion.toString());
 		long t0 = System.currentTimeMillis();
 		try {
 			List<UnitatOrganitzativa> arbol = getUnitatsOrganitzativesPlugin().findAmbPare(

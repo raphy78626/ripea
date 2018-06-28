@@ -102,5 +102,7 @@ public interface UnitatOrganitzativaService {
 
 	List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId);
 
+	boolean isFirstSincronization(Long entidadId);
+
 
 }

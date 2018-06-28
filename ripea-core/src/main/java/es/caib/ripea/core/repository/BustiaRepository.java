@@ -31,9 +31,14 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 //			EntitatEntity entitat,
 //			String unitatCodi);
 	
-	List<BustiaEntity> findByEntitatAndUnitatCodiAndPareNotNull(
+	List<BustiaEntity> findByEntitatAndUnitatOrganitzativaAndPareNotNull(
 	EntitatEntity entitat,
-	String unitatCodi);
+	UnitatOrganitzativaEntity unitatOrganitzativa);
+	
+	List<BustiaEntity> findByEntitatAndUnitatOrganitzativa(
+	EntitatEntity entitat,
+	UnitatOrganitzativaEntity unitatOrganitzativa);
+
 
 	BustiaEntity findByEntitatAndUnitatOrganitzativaAndPareNull(
 			EntitatEntity entitat,

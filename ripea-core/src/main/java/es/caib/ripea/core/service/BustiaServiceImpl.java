@@ -358,9 +358,9 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				id,
 				false);
-		List<BustiaEntity> bustiesMateixaUnitat = bustiaRepository.findByEntitatAndUnitatCodiAndPareNotNull(
+		List<BustiaEntity> bustiesMateixaUnitat = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(
 				entitat,
-				bustia.getUnitatCodi());
+				bustia.getUnitatOrganitzativa());
 		for (BustiaEntity bu: bustiesMateixaUnitat) {
 			if (bu.isPerDefecte()) {
 				// Registra al log la modificació de la bústia
@@ -430,7 +430,8 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				true,
 				false);
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatCodiAndPareNotNull(entitat, unitatCodi);
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(unitatCodi);
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatOrganitzativa(entitat, unitatOrganitzativa);
 		List<BustiaDto> resposta = toBustiaDto(
 				busties,
 				false,

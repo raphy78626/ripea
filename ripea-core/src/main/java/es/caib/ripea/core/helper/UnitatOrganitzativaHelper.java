@@ -12,13 +12,8 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-
 import org.springframework.stereotype.Component;
 
-import org.apache.commons.collections.MultiHashMap;
-import org.apache.commons.collections.MultiMap;
-
-import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ArbreNodeDto;
 import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
@@ -111,7 +106,10 @@ public class UnitatOrganitzativaHelper {
 		
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
-
+		
+		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getUnitatArrel(),
+				null, null);
+		
 		// getting list of last changes from webservices
 		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
@@ -136,9 +134,6 @@ public class UnitatOrganitzativaHelper {
 
 		// setting list of last historicos unitats in every vigent unitat
 		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {
-//			if (vigentObsolete.getCodi().equals("A04026201")) {
-//				System.out.println();
-//			}
 			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
 		}
 		
@@ -233,19 +228,14 @@ public class UnitatOrganitzativaHelper {
 		List<UnitatOrganitzativa> unitats;
 
 		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getUnitatArrel(),
-				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
+				null, null);
 
-		if (true) {
+
 			unitats = pluginHelper.findAmbPare(entitat.getUnitatArrel(), entitat.getFechaActualizacion(),
 					entitat.getFechaSincronizacion());
-		}
 
-		System.out.println("UNITATS INSIDE");
+
 		for (UnitatOrganitzativa unidadWS : unitats) {
-
-			System.out.println("codi: " + unidadWS.getCodi() + ", historicos:" + unidadWS.getHistoricosUO()
-					+ ", estat: " + unidadWS.getEstat());
-
 			sincronizarUnitat(unidadWS);
 		}
 
@@ -315,7 +305,8 @@ public class UnitatOrganitzativaHelper {
 						nifCif(unitatWS.getNifCif()).
 						estat(unitatWS.getEstat()).
 						codiUnitatSuperior(unitatWS.getCodiUnitatSuperior()).
-						codiUnitatArrel("A04025121").
+//						codiUnitatArrel("A04025121").
+						codiUnitatArrel(unitatWS.getCodiUnitatArrel()).
 						codiPais(unitatWS.getCodiPais()).
 						codiComunitat(unitatWS.getCodiComunitat()).
 						codiProvincia(unitatWS.getCodiProvincia()).
@@ -333,7 +324,8 @@ public class UnitatOrganitzativaHelper {
 						unitatWS.getNifCif(),
 						unitatWS.getEstat(),
 						unitatWS.getCodiUnitatSuperior(),
-						"A04025121",
+//						"A04025121",
+						unitatWS.getCodiUnitatArrel(),
 						unitatWS.getCodiPais(),
 						unitatWS.getCodiComunitat(),
 						unitatWS.getCodiProvincia(),
@@ -637,11 +629,9 @@ public class UnitatOrganitzativaHelper {
 		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
 			if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
 
-//				unitatOrganitzativa.setCodiUnitatSuperior("A04019281");
 				unitatOrganitzativa.setCodiUnitatArrel(null);
 				unitatOrganitzativa.setCodiUnitatSuperior(null);
 				unitatOrganitzativaArrel = unitatOrganitzativa;
-//				unitatOrganitzativaArrel = new UnitatOrganitzativa("A04019281", "Govern de les Illes Balears", null, null, "V", null);
 				break;
 			}
 		}

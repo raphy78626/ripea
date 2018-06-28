@@ -61,7 +61,11 @@
 					<spring:message code="bustia.list.columna.nom"/>
 					<script id="nomTemplate" type="text/x-jsrender">
 						{{:nom}}
-						{{if unitatOrganitzativa.estat=='E'||unitatOrganitzativa.estat=='A' || unitatOrganitzativa.estat=='T'}}<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.obsoleta"/>"></span>{{/if}}
+						{{if unitatOrganitzativa.estat=='E'||unitatOrganitzativa.estat=='A' || unitatOrganitzativa.estat=='T'}}
+							<a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/bustiaTransicioInfo" data-toggle="modal">
+								<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.obsoleta"/>"></span>
+							</a>
+						{{/if}}
 					</script>
 				</th>
 				<th data-col-name="unitatOrganitzativa.codi"><spring:message code="bustia.list.columna.unitat.codi"/></th>

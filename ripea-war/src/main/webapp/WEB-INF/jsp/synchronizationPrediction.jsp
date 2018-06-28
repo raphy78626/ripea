@@ -40,141 +40,154 @@
 
 
 	<div class="panel-group">
-
-		<c:set var="isAllEmpty"
-			value="${empty substMap and empty splitMap and empty mergeMap and empty unitatsVigents}" />
-		<c:if test="${isAllEmpty}">
+		<c:if test="${isFirstSincronization}">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<spring:message code="unitat.synchronize.prediction.noChanges" />
+					<spring:message code="unitat.synchronize.prediction.firstSincroHeader" />
 				</div>
 				<div class="panel-body">
-					<spring:message code="unitat.synchronize.prediction.upToDate" />
+					<spring:message code="unitat.synchronize.prediction.firstSincroDescription" />
 				</div>
 			</div>
 		</c:if>
-
-		<c:if test="${!empty splitMap}">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<spring:message code="unitat.synchronize.prediction.splits" />
+		<c:if test="${!isFirstSincronization}">
+			<c:set var="isAllEmpty"
+				value="${empty substMap and empty splitMap and empty mergeMap and empty unitatsVigents}" />
+			<c:if test="${isAllEmpty}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message code="unitat.synchronize.prediction.noChanges" />
+					</div>
+					<div class="panel-body">
+						<spring:message code="unitat.synchronize.prediction.upToDate" />
+					</div>
 				</div>
-				<div class="panel-body">
-					<c:forEach var="splitMap" items="${splitMap}">
-						<c:set var="key" value="${splitMap.key}" />
-						<c:set var="values" value="${splitMap.value}" />
-						<div class=horizontal-left>
-							<div id="wrapper">
-								<span class="label bg-danger border-red overflow-ellipsis"
-									title="${key.codi} - ${key.denominacio}"> ${key.codi} -
-									${key.denominacio} </span>
-								<div class="branch lv1">
-									<c:forEach var="value" items="${values}">
-										<div class="entry">
-											<span class="label bg-success border-green overflow-ellipsis"
-												title="${value.codi} - ${value.denominacio}">${value.codi}
-												- ${value.denominacio}</span>
-										</div>
-									</c:forEach>
+			</c:if>
+
+			<c:if test="${!empty splitMap}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message code="unitat.synchronize.prediction.splits" />
+					</div>
+					<div class="panel-body">
+						<c:forEach var="splitMap" items="${splitMap}">
+							<c:set var="key" value="${splitMap.key}" />
+							<c:set var="values" value="${splitMap.value}" />
+							<div class=horizontal-left>
+								<div id="wrapper">
+									<span class="label bg-danger border-red overflow-ellipsis"
+										title="${key.codi} - ${key.denominacio}"> ${key.codi} -
+										${key.denominacio} </span>
+									<div class="branch lv1">
+										<c:forEach var="value" items="${values}">
+											<div class="entry">
+												<span
+													class="label bg-success border-green overflow-ellipsis"
+													title="${value.codi} - ${value.denominacio}">${value.codi}
+													- ${value.denominacio}</span>
+											</div>
+										</c:forEach>
+									</div>
 								</div>
 							</div>
-						</div>
-					</c:forEach>
+						</c:forEach>
+					</div>
 				</div>
-			</div>
-		</c:if>
+			</c:if>
 
-		<c:if test="${!empty substMap}">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<spring:message code="unitat.synchronize.prediction.substitucions" />
-				</div>
-				<div class="panel-body">
-					<c:forEach var="substMap" items="${substMap}">
-						<c:set var="key" value="${substMap.key}" />
-						<c:set var="values" value="${substMap.value}" />
-						<div class=horizontal-right>
-							<div id="wrapper">
-								<span
-									class="label bg-success border-green right-postion-20 overflow-ellipsis"
-									title="${key.codi} - ${key.denominacio}"> ${key.codi} -
-									${key.denominacio} </span>
-								<div class="branch lv1">
-									<c:forEach var="value" items="${values}">
-										<div class="entry sole">
-											<span class="label bg-danger border-red overflow-ellipsis"
-												title="${value.codi} - ${value.denominacio}">
-												${value.codi} - ${value.denominacio} </span>
-										</div>
-									</c:forEach>
+			<c:if test="${!empty substMap}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message code="unitat.synchronize.prediction.substitucions" />
+					</div>
+					<div class="panel-body">
+						<c:forEach var="substMap" items="${substMap}">
+							<c:set var="key" value="${substMap.key}" />
+							<c:set var="values" value="${substMap.value}" />
+							<div class=horizontal-right>
+								<div id="wrapper">
+									<span
+										class="label bg-success border-green right-postion-20 overflow-ellipsis"
+										title="${key.codi} - ${key.denominacio}"> ${key.codi} -
+										${key.denominacio} </span>
+									<div class="branch lv1">
+										<c:forEach var="value" items="${values}">
+											<div class="entry sole">
+												<span class="label bg-danger border-red overflow-ellipsis"
+													title="${value.codi} - ${value.denominacio}">
+													${value.codi} - ${value.denominacio} </span>
+											</div>
+										</c:forEach>
+									</div>
 								</div>
 							</div>
-						</div>
-					</c:forEach>
+						</c:forEach>
+					</div>
 				</div>
-			</div>
-		</c:if>
+			</c:if>
 
 
-		<c:if test="${!empty mergeMap}">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<spring:message code="unitat.synchronize.prediction.merges" />
-				</div>
-				<div class="panel-body">
-					<c:forEach var="mergeMap" items="${mergeMap}">
-						<c:set var="key" value="${mergeMap.key}" />
-						<c:set var="values" value="${mergeMap.value}" />
-						<div class=horizontal-right>
-							<div id="wrapper">
-								<span
-									class="label bg-success border-green right-postion-20 overflow-ellipsis"
-									title="${key.codi} - ${key.denominacio}"> ${key.codi} -
-									${key.denominacio} </span>
-								<div class="branch lv1">
-									<c:forEach var="value" items="${values}">
-										<div class="entry">
-											<span class="label bg-danger border-red overflow-ellipsis"
-												title="${value.codi} - ${value.denominacio}">
-												${value.codi} - ${value.denominacio} </span>
-										</div>
-									</c:forEach>
+			<c:if test="${!empty mergeMap}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message code="unitat.synchronize.prediction.merges" />
+					</div>
+					<div class="panel-body">
+						<c:forEach var="mergeMap" items="${mergeMap}">
+							<c:set var="key" value="${mergeMap.key}" />
+							<c:set var="values" value="${mergeMap.value}" />
+							<div class=horizontal-right>
+								<div id="wrapper">
+									<span
+										class="label bg-success border-green right-postion-20 overflow-ellipsis"
+										title="${key.codi} - ${key.denominacio}"> ${key.codi} -
+										${key.denominacio} </span>
+									<div class="branch lv1">
+										<c:forEach var="value" items="${values}">
+											<div class="entry">
+												<span class="label bg-danger border-red overflow-ellipsis"
+													title="${value.codi} - ${value.denominacio}">
+													${value.codi} - ${value.denominacio} </span>
+											</div>
+										</c:forEach>
+									</div>
 								</div>
 							</div>
-						</div>
-					</c:forEach>
+						</c:forEach>
+					</div>
 				</div>
-			</div>
-		</c:if>
+			</c:if>
 
 
 
-		<c:if test="${!empty unitatsVigents}">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<spring:message code="unitat.synchronize.prediction.atributesChanged" />
-				</div>
-				<div class="panel-body">
-					<c:forEach var="unitatVigent" items="${unitatsVigents}">
+			<c:if test="${!empty unitatsVigents}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message
+							code="unitat.synchronize.prediction.atributesChanged" />
+					</div>
+					<div class="panel-body">
+						<c:forEach var="unitatVigent" items="${unitatsVigents}">
 
-						<div class=horizontal-left>
-							<div id="wrapper" style="margin-left: 15px">
-								<span class="label bg-warning border-yellow overflow-ellipsis"
-									title="${unitatVigent.codi} - ${unitatVigent.denominacio}"> ${unitatVigent.codi} -
-									${unitatVigent.denominacio} </span>
-								<div class="branch lv1 empty-branch">
+							<div class=horizontal-left>
+								<div id="wrapper" style="margin-left: 15px">
+									<span class="label bg-warning border-yellow overflow-ellipsis"
+										title="${unitatVigent.codi} - ${unitatVigent.denominacio}">
+										${unitatVigent.codi} - ${unitatVigent.denominacio} </span>
+									<div class="branch lv1 empty-branch">
 										<div class="entry sole empty-entry">
-											<span class="label bg-warning border-yellow overflow-ellipsis empty-label"></span>
+											<span
+												class="label bg-warning border-yellow overflow-ellipsis empty-label"></span>
 										</div>
+									</div>
 								</div>
 							</div>
-						</div>
-						
-					</c:forEach>
-				</div>
-			</div>
-		</c:if>
 
+						</c:forEach>
+					</div>
+				</div>
+			</c:if>
+		</c:if>
 
 	</div>
 
@@ -185,7 +198,7 @@
 		cssClass="form-horizontal" role="form">
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"
-				<c:if test="${isAllEmpty}"><c:out value="disabled='disabled'"/></c:if>>
+				<c:if test="${isAllEmpty and !isFirstSincronization}"><c:out value="disabled='disabled'"/></c:if>>
 				<span class="fa fa-save"></span>
 				<spring:message code="unitat.list.boto.synchronize" />
 			</button>

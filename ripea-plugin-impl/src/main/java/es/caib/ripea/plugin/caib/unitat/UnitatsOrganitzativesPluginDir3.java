@@ -74,23 +74,17 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					pareCodi,
 					fechaActualizacion,
 					fechaSincronizacion);
-			
 
-			
-			
-			System.out.println("TF");
+//			System.out.println("TF");
 			for(UnidadTF unidadTF: arbol){
-				
+//				for (Field field : unidadTF.getClass().getDeclaredFields()) {
+//				    field.setAccessible(true);
+//				    String name = field.getName();
+//				    Object value = field.get(unidadTF);
+//				    System.out.print(name+": "+ value+", ");
+//				}
+//				System.out.println();
 
-				for (Field field : unidadTF.getClass().getDeclaredFields()) {
-				    field.setAccessible(true);
-				    String name = field.getName();
-				    Object value = field.get(unidadTF);
-				    System.out.print(name+": "+ value+", ");
-				}
-				System.out.println();
-
-				
 				unitatOrganitzativa.add(toUnitatOrganitzativa(unidadTF));
 			}
 			return unitatOrganitzativa;
@@ -122,7 +116,8 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					+ "&conOficinas=" + (ambOficines != null && ambOficines ? "true" : "false")
 					+ "&unidadRaiz=" + (esUnitatArrel != null && esUnitatArrel ? "true" : "false")
 					+ "&provincia="+ (provincia != null ? provincia : "-1")
-					+ "&localidad=" + (municipi != null ? municipi : "-1"));
+					+ "&localidad=" + (municipi != null ? municipi : "-1")
+					+ "&vigentes=true");
 			HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
