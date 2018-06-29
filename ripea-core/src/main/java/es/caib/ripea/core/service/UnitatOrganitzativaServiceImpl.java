@@ -4,7 +4,6 @@
 package es.caib.ripea.core.service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.ripea.core.api.dto.ArbreDto;
-import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.MunicipiDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
-import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
 import es.caib.ripea.core.api.dto.TipusViaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
@@ -38,8 +35,6 @@ import es.caib.ripea.core.helper.PluginHelper;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
-import es.caib.ripea.plugin.SistemaExternException;
-import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 
 /**
  * Implementació del servei de gestió d'entitats.

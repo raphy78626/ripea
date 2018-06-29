@@ -4,7 +4,6 @@
 package es.caib.ripea.plugin.caib.unitat;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;

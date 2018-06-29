@@ -20,13 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
-import es.caib.ripea.plugin.unitat.UnitatOrganitzativa;
 import es.caib.ripea.war.command.BustiaCommand;
 import es.caib.ripea.war.command.BustiaFiltreCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;

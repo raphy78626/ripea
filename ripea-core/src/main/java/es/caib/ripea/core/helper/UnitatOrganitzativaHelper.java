@@ -628,9 +628,6 @@ public class UnitatOrganitzativaHelper {
 		UnitatOrganitzativa unitatOrganitzativaArrel = null;
 		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
 			if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
-
-				unitatOrganitzativa.setCodiUnitatArrel(null);
-				unitatOrganitzativa.setCodiUnitatSuperior(null);
 				unitatOrganitzativaArrel = unitatOrganitzativa;
 				break;
 			}
@@ -660,8 +657,8 @@ public class UnitatOrganitzativaHelper {
 			UnitatOrganitzativa unitatOrganitzativa,
 			List<UnitatOrganitzativa> unitatsOrganitzatives,
 			ArbreNodeDto<UnitatOrganitzativaDto> pare) {
-		// current unitat organitzativa
-		ArbreNodeDto<UnitatOrganitzativaDto> resposta = new ArbreNodeDto<UnitatOrganitzativaDto>(
+		// creating current arbre node and filling it with pare arbre node and dades as current unitat
+		ArbreNodeDto<UnitatOrganitzativaDto> currentArbreNode = new ArbreNodeDto<UnitatOrganitzativaDto>(
 				pare,
 				conversioTipusHelper.convertir(
 						unitatOrganitzativa,
@@ -672,14 +669,14 @@ public class UnitatOrganitzativaHelper {
 			//searches for children of current unitat
 			if (	(codiUnitat == null && uo.getCodiUnitatSuperior() == null) ||
 					(uo.getCodiUnitatSuperior() != null && uo.getCodiUnitatSuperior().equals(codiUnitat))) {
-				resposta.addFill(
+				currentArbreNode.addFill(
 						getNodeArbreUnitatsOrganitzatives(
 								uo,
 								unitatsOrganitzatives,
-								resposta));
+								currentArbreNode));
 			}
 		}
-		return resposta;
+		return currentArbreNode;
 	}
 	
 	

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
-import es.caib.ripea.core.api.dto.ReglaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.ReglaDto;
 import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
@@ -28,7 +27,6 @@ import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.ReglaService;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
-import es.caib.ripea.war.command.BustiaCommand;
 import es.caib.ripea.war.command.ReglaCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
