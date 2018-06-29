@@ -52,6 +52,9 @@ public class EmailHelper {
 	
 	@Resource
 	private JavaMailSender mailSender;
+	
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 	@Resource
 	private CacheHelper cacheHelper;
@@ -197,9 +200,10 @@ public class EmailHelper {
 				missatge,
 				bustia)) {
 			missatge.setFrom(getRemitent());
-			String unitatOrganitzativa = getUnitatOrganitzativaNom(
-					bustia.getEntitat(),
-					bustia.getUnitatCodi());
+//			String unitatOrganitzativa = getUnitatOrganitzativaNom(
+//					bustia.getEntitat(),
+//					bustia.getUnitatCodi());
+			String unitatOrganitzativa = bustia.getUnitatOrganitzativa().getDenominacio();
 			missatge.setSubject(PREFIX_RIPEA + " Nova anotació de registre rebuda a la bústia: " + bustia.getNom());
 			missatge.setText(
 					"Nova anotació de registre pendent de processar a la bústia:\n" +
@@ -294,7 +298,7 @@ public class EmailHelper {
 	private String getUnitatOrganitzativaNom(
 			EntitatEntity entitat,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbreUnitats = cacheHelper.findUnitatsOrganitzativesPerEntitat(
+		ArbreDto<UnitatOrganitzativaDto> arbreUnitats = unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPare(
 				entitat.getCodi());
 		for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbreUnitats.toList()) {
 			UnitatOrganitzativaDto unitat = node.getDades();

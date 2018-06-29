@@ -3,7 +3,10 @@
  */
 package es.caib.ripea.plugin.unitat;
 
+import java.net.MalformedURLException;
+import java.sql.Timestamp;
 import java.util.List;
+
 
 import es.caib.ripea.plugin.SistemaExternException;
 
@@ -14,6 +17,13 @@ import es.caib.ripea.plugin.SistemaExternException;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface UnitatsOrganitzativesPlugin {
+	
+	
+
+	public UnitatOrganitzativa findUnidad(
+			String pareCodi, 
+			Timestamp fechaActualizacion, 
+			Timestamp fechaSincronizacion) throws MalformedURLException;
 
 	/**
 	 * Retorna la llista d'unitats organitzatives filles donada
@@ -21,24 +31,20 @@ public interface UnitatsOrganitzativesPlugin {
 	 * 
 	 * @param pareCodi
 	 *            Codi de la unitat pare.
+	 * @param fechaActualizacion
+	 *            Data de la darrera actualització.
+	 * @param fechaSincronizacion
+	 *            Data de la primera sincronització.
 	 * @return La llista d'unitats organitzatives.
 	 * @throws SistemaExternException
 	 *            Si es produeix un error al consultar les unitats organitzatives.
 	 */
 	public List<UnitatOrganitzativa> findAmbPare(
-			String pareCodi) throws SistemaExternException;
+			String pareCodi,
+			Timestamp fechaActualizacion,
+			Timestamp fechaSincronizacion) throws SistemaExternException;
+	
 
-	/**
-	 * Retorna l'unitat organitzativa donat el seu codi.
-	 * 
-	 * @param codi
-	 *            Codi de l'unitat organitzativa.
-	 * @return La unitat organitzativa.
-	 * @throws SistemaExternException
-	 *            Si es produeix un error al consultar les unitats organitzatives.
-	 */
-	public UnitatOrganitzativa findAmbCodi(
-			String codi) throws SistemaExternException;
 
 	/**
 	 * Retorna la llista d'unitats organitzatives filles donat un filtre.

@@ -21,7 +21,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import es.caib.ripea.core.api.dto.ArbreDto;
 import es.caib.ripea.core.api.dto.ComunitatDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.dto.MetaDadaDto;
@@ -32,7 +31,6 @@ import es.caib.ripea.core.api.dto.NivellAdministracioDto;
 import es.caib.ripea.core.api.dto.PaisDto;
 import es.caib.ripea.core.api.dto.ProvinciaDto;
 import es.caib.ripea.core.api.dto.TipusViaDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.dto.ValidacioErrorDto;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.DadaEntity;
@@ -237,17 +235,6 @@ public class CacheHelper {
 				usuariCodi);
 	}
 
-	@Cacheable(value = "unitatsOrganitzatives", key="#entitatCodi")
-	public ArbreDto<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitat(
-			String entitatCodi) {
-		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
-		return pluginHelper.unitatsOrganitzativesFindArbreByPare(
-				entitat.getUnitatArrel());
-	}
-	@CacheEvict(value = "unitatsOrganitzatives", key="#entitatCodi")
-	public void evictUnitatsOrganitzativesPerEntitat(
-			String entitatCodi) {
-	}
 
 	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
 	public long countElementsPendentsBustiesUsuari(

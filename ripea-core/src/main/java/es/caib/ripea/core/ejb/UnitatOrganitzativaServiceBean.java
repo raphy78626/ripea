@@ -12,7 +12,13 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.ripea.core.api.dto.ArbreDto;
+import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.PaginaDto;
+import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
+import es.caib.ripea.core.api.exception.SistemaExternException;
 import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
 
 /**
@@ -62,6 +68,53 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 				arrel);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public void synchronize (
+			Long entitatId
+			) throws SistemaExternException {
+		delegate.synchronize(entitatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<UnitatOrganitzativaDto> findAmbFiltre(Long entitatId, UnitatOrganitzativaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		return delegate.findAmbFiltre(entitatId,  filtre, paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public UnitatOrganitzativaDto findById(Long id) {
+		return delegate.findById(id);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public ArbreDto<UnitatOrganitzativaDto> findTree(Long id) {
+		return delegate.findTree(id);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> predictSynchronization(Long entitatId) {
+		return delegate.predictSynchronization(entitatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId) {
+		return delegate.getVigentsFromWebService(entidadId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean isFirstSincronization(Long entidadId) {
+		return delegate.isFirstSincronization(entidadId);
+	}
+	
+	
+	
 	/*@Autowired
 	UnitatsOrganitzativesService delegate;
 

@@ -3,6 +3,9 @@
  */
 package es.caib.ripea.war.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -23,6 +26,7 @@ import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.ReglaService;
+import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.war.command.ReglaCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
@@ -45,7 +49,8 @@ public class ReglaController  extends BaseAdminController {
 	private BustiaService bustiaService;
 	@Autowired
 	private MetaExpedientService metaExpedientService;
-
+	@Autowired
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -88,14 +93,36 @@ public class ReglaController  extends BaseAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ReglaDto regla = null;
-		if (reglaId != null)
+		if (reglaId != null) {
 			regla = reglaService.findOne(
 					entitatActual.getId(),
 					reglaId);
+			
+			// setting last historicos to the unitat of this regla
+			regla.setUnitatOrganitzativa(unitatOrganitzativaHelper.getLastHistoricos(regla.getUnitatOrganitzativa()));
+		
+			// getting all the regles connected with old unitat excluding the
+			// one you are currently in
+			List<ReglaDto> reglesOfOldUnitat = reglaService.findByEntitatAndUnitatCodi(
+					entitatActual.getId(),
+					regla.getUnitatOrganitzativa().getCodi());
+			List<ReglaDto> reglesOfOldUnitatWithoutCurrent = new ArrayList<ReglaDto>();
+			for (ReglaDto reglaI : reglesOfOldUnitat) {
+				if (!reglaI.getId().equals(regla.getId())) {
+					reglesOfOldUnitatWithoutCurrent.add(reglaI);
+				}
+			}
+		model.addAttribute("reglesOfOldUnitatWithoutCurrent", reglesOfOldUnitatWithoutCurrent);
+		model.addAttribute(regla);	
+		}
+		
+		ReglaCommand command = null;
 		if (regla != null)
-			model.addAttribute(ReglaCommand.asCommand(regla));
+			command = ReglaCommand.asCommand(regla);
 		else
-			model.addAttribute(new ReglaCommand());
+			command = new ReglaCommand();
+		
+		model.addAttribute(command);
 		emplenarModelFormulari(
 				request,
 				model);
@@ -183,11 +210,12 @@ public class ReglaController  extends BaseAdminController {
 		reglaService.moveDown(
 				entitatActual.getId(),
 				reglaId);
+		
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../regla",
 				null);
-	}
+	} 
 	@RequestMapping(value = "/{reglaId}/move/{posicio}", method = RequestMethod.GET)
 	public String move(
 			HttpServletRequest request,
@@ -203,7 +231,6 @@ public class ReglaController  extends BaseAdminController {
 				"redirect:../../regla",
 				null);
 	}
-
 	@RequestMapping(value = "/{reglaId}/delete", method = RequestMethod.GET)
 	public String delete(
 			HttpServletRequest request,

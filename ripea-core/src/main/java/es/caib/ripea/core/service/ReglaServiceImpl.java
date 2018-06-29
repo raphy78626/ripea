@@ -3,6 +3,7 @@
  */
 package es.caib.ripea.core.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -12,9 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.PaginaDto;
 import es.caib.ripea.core.api.dto.PaginacioParamsDto;
 import es.caib.ripea.core.api.dto.ReglaDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.service.ReglaService;
 import es.caib.ripea.core.entity.ArxiuEntity;
@@ -22,11 +25,14 @@ import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.ReglaEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 import es.caib.ripea.core.helper.ConversioTipusHelper;
 import es.caib.ripea.core.helper.EntityComprovarHelper;
 import es.caib.ripea.core.helper.PaginacioHelper;
+import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.core.repository.EntitatRepository;
 import es.caib.ripea.core.repository.ReglaRepository;
+import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 
 /**
  * Implementació dels mètodes per a gestionar regles.
@@ -47,8 +53,8 @@ public class ReglaServiceImpl implements ReglaService {
 	private PaginacioHelper paginacioHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
-
-
+	@Resource
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 
 	@Override
 	@Transactional
@@ -69,7 +75,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getNom(),
 				regla.getTipus(),
 				regla.getAssumpteCodi(),
-				regla.getUnitatCodi(),
+				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId()),
 				ordre).build();
 		return toReglaDto(reglaRepository.save(entity));
 	}
@@ -95,7 +101,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getDescripcio(),
 				regla.getTipus(),
 				regla.getAssumpteCodi(),
-				regla.getUnitatCodi());
+				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId())); 
 		switch(regla.getTipus()) {
 		case BACKOFFICE:
 			entity.updatePerTipusBackoffice(
@@ -282,6 +288,25 @@ public class ReglaServiceImpl implements ReglaService {
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				ReglaDto.class);
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<ReglaDto> findByEntitatAndUnitatCodi(
+			Long entitatId, 
+			String unitatCodi) {
+		logger.debug("Cercant las regles de la unitat (" 
+				+ "entitatId=" + entitatId 
+				+ ", " + "unitatCodi=" + unitatCodi
+				+ ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, true, false);
+
+		List<ReglaEntity> regles = reglaRepository.findByEntitatAndUnitatCodi(entitat, unitatCodi);
+		List<ReglaDto> resposta = new ArrayList<ReglaDto>();
+		for (ReglaEntity regla : regles) {
+			resposta.add(toReglaDto(regla));
+		}
+		return resposta;
+	}
 
 
 
@@ -318,6 +343,14 @@ public class ReglaServiceImpl implements ReglaService {
 			dto.setBustiaId(regla.getBustia().getId());
 		if (regla.getMetaExpedient() != null)
 			dto.setMetaExpedientId(regla.getMetaExpedient().getId());
+		
+		UnitatOrganitzativaEntity unitatEntity = regla.getUnitatOrganitzativa();
+		UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
+				unitatEntity,
+				UnitatOrganitzativaDto.class);
+		unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity, unitatDto);
+		dto.setUnitatOrganitzativa(unitatDto);
+		
 		return dto;
 	}
 

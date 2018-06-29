@@ -5,9 +5,12 @@ package es.caib.ripea.plugin.unitat;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import es.caib.ripea.core.api.dto.TipusTransicioEnumDto;
 
 /**
  * Informació d'una unitat organitzativa.
@@ -42,8 +45,27 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 	private Long tipusVia;
 	private String nomVia;
 	private String numVia; 
+	protected List<String> historicosUO;
+	
+	private List<UnitatOrganitzativa> lastHistoricosUnitats;
 
+	
+	
 
+	public UnitatOrganitzativa(
+			String codi,
+			String denominacio,
+			String codiUnitatSuperior,
+			String codiUnitatArrel,
+			String estat,
+			List<String> historicosUO) {
+		this.codi = codi;
+		this.denominacio = denominacio;
+		this.codiUnitatSuperior = codiUnitatSuperior;
+		this.codiUnitatArrel = codiUnitatArrel;
+		this.estat = estat;
+		this.historicosUO = historicosUO;
+	}
 	public UnitatOrganitzativa() {
 		
 	}
@@ -76,6 +98,9 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 		this.codiUnitatSuperior = codiUnitatSuperior;
 		this.codiUnitatArrel = codiUnitatArrel;
 	}
+	
+	
+
 	public UnitatOrganitzativa(
 			String codi,
 			String denominacio,
@@ -91,7 +116,8 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 			String nomLocalitat,
 			Long tipusVia,
 			String nomVia,
-			String numVia) {
+			String numVia,
+			List<String> historicosUO) {
 		this.codi = codi;
 		this.denominacio = denominacio;
 		this.nifCif = nifCif;
@@ -107,6 +133,7 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 		this.tipusVia = tipusVia;
 		this.nomVia = nomVia;
 		this.numVia = numVia;
+		this.historicosUO = historicosUO;
 	}
 	
 	
@@ -163,6 +190,22 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 		this.tipusVia = tipusVia;
 		this.nomVia = nomVia;
 		this.numVia = numVia;
+	}
+	
+
+
+	public List<UnitatOrganitzativa> getLastHistoricosUnitats() {
+		return lastHistoricosUnitats;
+	}
+	public void setLastHistoricosUnitats(List<UnitatOrganitzativa> lastHistoricosUnitats) {
+		this.lastHistoricosUnitats = lastHistoricosUnitats;
+	}
+	public List<String> getHistoricosUO() {
+		return historicosUO;
+	}
+
+	public void setHistoricosUO(List<String> historicosUO) {
+		this.historicosUO = historicosUO;
 	}
 
 	public String getCodi() {

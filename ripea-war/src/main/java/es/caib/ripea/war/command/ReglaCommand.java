@@ -9,8 +9,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
+import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.ReglaDto;
 import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.war.helper.ConversioTipusHelper;
 
 /**
@@ -30,6 +32,7 @@ public class ReglaCommand {
 	private String assumpteCodi;
 	@Size(max = 9)
 	private String unitatCodi;
+	private Long unitatId;
 	private Long metaExpedientId;
 	private Long arxiuId;
 	private Long bustiaId;
@@ -45,6 +48,12 @@ public class ReglaCommand {
 
 
 
+	public Long getUnitatId() {
+		return unitatId;
+	}
+	public void setUnitatId(Long unitatId) {
+		this.unitatId = unitatId;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -137,14 +146,23 @@ public class ReglaCommand {
 		this.backofficeTempsEntreIntents = backofficeTempsEntreIntents;
 	}
 	public static ReglaCommand asCommand(ReglaDto dto) {
-		return ConversioTipusHelper.convertir(
+		ReglaCommand command = ConversioTipusHelper.convertir(
 				dto,
 				ReglaCommand.class);
+		 
+		if (dto.getUnitatOrganitzativa() != null)
+			command.setUnitatId(
+					dto.getUnitatOrganitzativa().getId());
+		return command;
 	}
 	public static ReglaDto asDto(ReglaCommand command) {
-		return ConversioTipusHelper.convertir(
+		ReglaDto reglaDto = ConversioTipusHelper.convertir(
 				command,
 				ReglaDto.class);
+		UnitatOrganitzativaDto unitatOrganitzativaDto = new UnitatOrganitzativaDto();
+		unitatOrganitzativaDto.setId(command.getUnitatId());
+		reglaDto.setUnitatOrganitzativa(unitatOrganitzativaDto);
+		return reglaDto;
 	}
 
 	@Override

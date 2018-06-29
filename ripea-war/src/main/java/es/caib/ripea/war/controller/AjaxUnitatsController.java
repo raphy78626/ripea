@@ -32,20 +32,14 @@ public class AjaxUnitatsController extends BaseAdminController {
 	@Autowired
 	private UnitatOrganitzativaService unitatOrganitzativaService;
 	
-	@RequestMapping(value = "/unitat/{codi}", method = RequestMethod.GET)
+	@RequestMapping(value = "/unitat/{unitatId}", method = RequestMethod.GET)
 	@ResponseBody
-	public UnitatOrganitzativaDto getByCodi(
+	public UnitatOrganitzativaDto getById(
 			HttpServletRequest request,
-			@PathVariable String codi,
+			@PathVariable Long unitatId,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
-		UnitatOrganitzativaDto unitat = unitatOrganitzativaService.findByCodi(codi);
-		if (unitat == null) {
-			unitat = new UnitatOrganitzativaDto();
-			unitat.setCodi(codi);
-			unitat.setDenominacio(codi);
-		}
-		return unitat;
+
+		return unitatOrganitzativaService.findById(unitatId);
 	}
 
 	@RequestMapping(value = "/unitats/{text}", method = RequestMethod.GET)

@@ -33,12 +33,23 @@ $(document).ready(function() {
 		<thead>
 			<tr>
 				<th data-col-name="ordre" data-visible="false"></th>
-				<th data-col-name="nom" data-orderable="false"><spring:message code="regla.list.columna.nom"/></th>
+				<th data-col-name="nom" data-orderable="false"data-template="#nomTemplate">
+					<spring:message code="regla.list.columna.nom"/>
+					<script id="nomTemplate" type="text/x-jsrender">
+						{{:nom}}
+						{{if unitatOrganitzativa != null}}
+							{{if unitatOrganitzativa.estat=='E'||unitatOrganitzativa.estat=='A' || unitatOrganitzativa.estat=='T'}}
+								<span class="fa fa-warning text-danger pull-right" title="<spring:message code="regla.obsoleta"/>"></span>
+							{{/if}}
+						{{/if}}
+					</script>
+				</th>
 				<th data-col-name="tipus" data-orderable="false" data-renderer="enum(ReglaTipusEnumDto)">
 					<spring:message code="regla.list.columna.tipus"/>
 				</th>
 				<th data-col-name="assumpteCodi" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
-				<th data-col-name="unitatCodi" data-orderable="false"><spring:message code="regla.list.columna.unitat"/></th>
+				<th data-col-name="unitatOrganitzativa.codi" data-orderable="false"><spring:message code="regla.list.columna.unitat.codi"/></th>
+				<th data-col-name="unitatOrganitzativa.denominacio" data-orderable="false"><spring:message code="regla.list.columna.unitat.nom"/></th>
 				<th data-col-name="activa" data-template="#cellActivaTemplate" data-orderable="false">
 					<spring:message code="regla.list.columna.activa"/>
 					<script id="cellActivaTemplate" type="text/x-jsrender">

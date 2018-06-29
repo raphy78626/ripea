@@ -31,5 +31,17 @@ public class SistemaExternException extends RuntimeException {
 	public String getSistemaExternCodi() {
 		return sistemaExternCodi;
 	}
+	
+	public SistemaExternException(Throwable cause) {
+		super(cause);
+	}
+
+	public SistemaExternException(String message) {
+		super(message);
+	}
+
+	public SistemaExternException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 }

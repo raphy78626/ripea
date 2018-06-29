@@ -6,6 +6,7 @@ package es.caib.ripea.core.helper;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.fundaciobit.plugins.validatesignature.api.CertificateInfo;
@@ -84,6 +87,7 @@ import es.caib.ripea.core.entity.InteressatPersonaJuridicaEntity;
 import es.caib.ripea.core.entity.MetaExpedientEntity;
 import es.caib.ripea.core.entity.RegistreAnnexEntity;
 import es.caib.ripea.core.entity.RegistreEntity;
+import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 import es.caib.ripea.plugin.conversio.ConversioArxiu;
 import es.caib.ripea.plugin.conversio.ConversioPlugin;
 import es.caib.ripea.plugin.dadesext.ComunitatAutonoma;
@@ -148,6 +152,9 @@ public class PluginHelper {
 	private DocumentHelper documentHelper;
 	@Autowired
 	private DadesExternesHelper dadesExternesHelper;
+	@Resource
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+
 
 
 
@@ -216,16 +223,44 @@ public class PluginHelper {
 		}
 	}
 	
-	public List<UnitatOrganitzativaDto> unitatsOrganitzativesFindListByPare(
-			String pareCodi) {
-		String accioDescripcio = "Consulta llista d'unitats donat un pare";
+	
+	
+	public UnitatOrganitzativa findUnidad(
+			String pareCodi, 
+			Timestamp fechaActualizacion, 
+			Timestamp fechaSincronizacion) {
+		String accioDescripcio = "Consulta unitat donat un pare"; 
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("unitatPare", pareCodi);
+		accioParams.put("fechaActualizacion", fechaActualizacion == null ? null : fechaActualizacion.toString());
+		accioParams.put("fechaSincronizacion", fechaSincronizacion == null ? null : fechaSincronizacion.toString());
 		long t0 = System.currentTimeMillis();
 		try {
-			List<UnitatOrganitzativa> resposta = getUnitatsOrganitzativesPlugin().findAmbPare(
-					pareCodi);
-			return conversioTipusHelper.convertirList(resposta, UnitatOrganitzativaDto.class);
+			UnitatOrganitzativa unitat = getUnitatsOrganitzativesPlugin().findUnidad(
+					pareCodi, fechaActualizacion, fechaSincronizacion);
+			
+			if (unitat != null) {
+				integracioHelper.addAccioOk(
+						IntegracioHelper.INTCODI_UNITATS,
+						accioDescripcio,
+						accioParams,
+						IntegracioAccioTipusEnumDto.ENVIAMENT,
+						System.currentTimeMillis() - t0);
+				return unitat;
+			} else {
+				String errorMissatge = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
+				integracioHelper.addAccioError(
+						IntegracioHelper.INTCODI_UNITATS,
+						accioDescripcio,
+						accioParams,
+						IntegracioAccioTipusEnumDto.ENVIAMENT,
+						System.currentTimeMillis() - t0,
+						errorMissatge);
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_UNITATS,
+						errorMissatge);
+			}
+				
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";
 			integracioHelper.addAccioError(
@@ -242,41 +277,33 @@ public class PluginHelper {
 					ex);
 		}
 	}
-
-	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(
-			String pareCodi) {
-		String accioDescripcio = "Consulta de l'arbre d'unitats donat un pare";
+	
+	
+	
+	public List<UnitatOrganitzativa> findAmbPare(
+			String pareCodi, 
+			Timestamp fechaActualizacion, 
+			Timestamp fechaSincronizacion) {
+		String accioDescripcio = "Consulta llista d'unitats donat un pare";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("unitatPare", pareCodi);
+		accioParams.put("fechaActualizacion", fechaActualizacion == null ? null : fechaActualizacion.toString());
+		accioParams.put("fechaSincronizacion", fechaSincronizacion == null ? null : fechaSincronizacion.toString());
 		long t0 = System.currentTimeMillis();
 		try {
-			List<UnitatOrganitzativa> unitatsOrganitzatives = getUnitatsOrganitzativesPlugin().findAmbPare(
-					pareCodi);
-			ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
-			// Cerca l'unitat organitzativa arrel
-			UnitatOrganitzativa unitatOrganitzativaArrel = null;
-			for (UnitatOrganitzativa unitatOrganitzativa: unitatsOrganitzatives) {
-				if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
-					unitatOrganitzativaArrel = unitatOrganitzativa;
-					break;
-				}
-			}
-			if (unitatOrganitzativaArrel != null) {
-				// Omple l'arbre d'unitats organitzatives
-				resposta.setArrel(
-						getNodeArbreUnitatsOrganitzatives(
-								unitatOrganitzativaArrel,
-								unitatsOrganitzatives,
-								null));
+			List<UnitatOrganitzativa> arbol = getUnitatsOrganitzativesPlugin().findAmbPare(
+					pareCodi, fechaActualizacion, fechaSincronizacion);
+			
+			if (arbol != null) {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
-				return resposta;
+				return arbol;
 			} else {
-				String errorMissatge = "No s'ha trobat la unitat organitzativa arrel (codi=" + pareCodi + ")";
+				String errorMissatge = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
 				integracioHelper.addAccioError(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
@@ -304,39 +331,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	public UnitatOrganitzativaDto unitatsOrganitzativesFindByCodi(
-			String codi) {
-		String accioDescripcio = "Consulta d'unitat organitzativa donat el seu codi";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("codi", codi);
-		long t0 = System.currentTimeMillis();
-		try {
-			UnitatOrganitzativaDto unitatOrganitzativa = conversioTipusHelper.convertir(
-					getUnitatsOrganitzativesPlugin().findAmbCodi(codi),
-					UnitatOrganitzativaDto.class);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_UNITATS,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return unitatOrganitzativa;
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_UNITATS,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_UNITATS,
-					errorDescripcio,
-					ex);
-		}
-	}
+	
 	
 	public List<UnitatOrganitzativaDto> unitatsOrganitzativesFindByFiltre(
 			String codiUnitat, 
@@ -2801,28 +2796,7 @@ public class PluginHelper {
 		return gestioDocumentalPlugin;
 	}
 
-	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
-			UnitatOrganitzativa unitatOrganitzativa,
-			List<UnitatOrganitzativa> unitatsOrganitzatives,
-			ArbreNodeDto<UnitatOrganitzativaDto> pare) {
-		ArbreNodeDto<UnitatOrganitzativaDto> resposta = new ArbreNodeDto<UnitatOrganitzativaDto>(
-				pare,
-				conversioTipusHelper.convertir(
-						unitatOrganitzativa,
-						UnitatOrganitzativaDto.class));
-		String codiUnitat = (unitatOrganitzativa != null) ? unitatOrganitzativa.getCodi() : null;
-		for (UnitatOrganitzativa uo: unitatsOrganitzatives) {
-			if (	(codiUnitat == null && uo.getCodiUnitatSuperior() == null) ||
-					(uo.getCodiUnitatSuperior() != null && uo.getCodiUnitatSuperior().equals(codiUnitat))) {
-				resposta.addFill(
-						getNodeArbreUnitatsOrganitzatives(
-								uo,
-								unitatsOrganitzatives,
-								resposta));
-			}
-		}
-		return resposta;
-	}
+
 
 	/*private CiutadaPersona toPluginCiutadaPersona(
 			InteressatEntity interessat) {

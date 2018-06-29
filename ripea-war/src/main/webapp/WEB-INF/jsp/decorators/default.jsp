@@ -187,6 +187,7 @@ body {
 										<li><a href="<c:url value="/metaDada"/>"><spring:message code="decorator.menu.metadades"/></a></li>
 										<li class="divider"></li>
 										<li><a href="<c:url value="/bustiaAdmin"/>"><spring:message code="decorator.menu.busties"/></a></li>
+										<li><a href="<c:url value="/unitatOrganitzativa"/>"><spring:message code="decorator.menu.unitats"/></a></li>
 										<li><a href="<c:url value="/arxiuAdmin"/>"><spring:message code="decorator.menu.arxius"/></a></li>
 										<li class="divider"></li>
 										<li><a href="<c:url value="/regla"/>"><spring:message code="decorator.menu.regles"/></a></li>

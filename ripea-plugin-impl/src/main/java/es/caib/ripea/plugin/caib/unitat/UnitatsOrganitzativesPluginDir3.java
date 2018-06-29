@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,34 +43,50 @@ import es.caib.ripea.plugin.utils.PropertiesHelper;
  */
 public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlugin {
 
+	
 	@Override
-	public List<UnitatOrganitzativa> findAmbPare(String pareCodi) throws SistemaExternException {
+	public UnitatOrganitzativa findUnidad(
+			String pareCodi, 
+			Timestamp fechaActualizacion, 
+			Timestamp fechaSincronizacion) throws MalformedURLException {
+
+		UnidadTF unidad = getObtenerUnidadesService().obtenerUnidad(
+				pareCodi, 
+				fechaActualizacion, 
+				fechaSincronizacion);
+		if (unidad != null) {
+			return toUnitatOrganitzativa(unidad);
+		} else {
+			return null;
+		}
+
+	}
+	
+	@Override
+	public List<UnitatOrganitzativa> findAmbPare(
+			String pareCodi,
+			Timestamp fechaActualizacion,
+			Timestamp fechaSincronizacion) throws SistemaExternException {
 		try {
-			UnidadTF unidadPare = getObtenerUnidadesService().obtenerUnidad(
+			List<UnitatOrganitzativa> unitatOrganitzativa = new ArrayList<UnitatOrganitzativa>();
+			List<UnidadTF> arbol = getObtenerUnidadesService().obtenerArbolUnidades(
 					pareCodi,
-					null,
-					null);
-			if (unidadPare != null) {
-				List<UnitatOrganitzativa> unitats = new ArrayList<UnitatOrganitzativa>();
-				List<UnidadTF> unidades = getObtenerUnidadesService().obtenerArbolUnidades(
-						pareCodi,
-						null,
-						null);//df.format(new Date()));
-				if (unidades != null) {
-					unidades.add(0, unidadPare);
-					for (UnidadTF unidad: unidades) {
-						if ("V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
-							unitats.add(toUnitatOrganitzativa(unidad));
-						}
-					}
-				} else {
-					unitats.add(toUnitatOrganitzativa(unidadPare));
-				}
-				return unitats;
-			} else {
-				throw new SistemaExternException(
-						"No s'han trobat la unitat pare (pareCodi=" + pareCodi + ")");
+					fechaActualizacion,
+					fechaSincronizacion);
+
+//			System.out.println("TF");
+			for(UnidadTF unidadTF: arbol){
+//				for (Field field : unidadTF.getClass().getDeclaredFields()) {
+//				    field.setAccessible(true);
+//				    String name = field.getName();
+//				    Object value = field.get(unidadTF);
+//				    System.out.print(name+": "+ value+", ");
+//				}
+//				System.out.println();
+
+				unitatOrganitzativa.add(toUnitatOrganitzativa(unidadTF));
 			}
+			return unitatOrganitzativa;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via WS (" +
@@ -77,32 +94,8 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					ex);
 		}
 	}
+	
 
-	@Override
-	public UnitatOrganitzativa findAmbCodi(String codi) throws SistemaExternException {
-		try {
-			UnitatOrganitzativa unitat = null;
-			UnidadTF unidad = getObtenerUnidadesService().obtenerUnidad(
-					codi,
-					null,
-					null);
-			if (unidad != null && "V".equalsIgnoreCase(unidad.getCodigoEstadoEntidad())) {
-				unitat = toUnitatOrganitzativa(unidad);
-			} else {
-				throw new SistemaExternException(
-						"La unitat organitzativa no està vigent (" +
-						"codi=" + codi + ")");
-			}
-			return unitat;
-		} catch (SistemaExternException ex) {
-			throw ex;
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'ha pogut consultar la unitat organitzativa (" +
-					"codi=" + codi + ")",
-					ex);
-		}
-	}
 
 	public List<UnitatOrganitzativa> cercaUnitats(
 			String codi, 
@@ -122,7 +115,8 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 					+ "&conOficinas=" + (ambOficines != null && ambOficines ? "true" : "false")
 					+ "&unidadRaiz=" + (esUnitatArrel != null && esUnitatArrel ? "true" : "false")
 					+ "&provincia="+ (provincia != null ? provincia : "-1")
-					+ "&localidad=" + (municipi != null ? municipi : "-1"));
+					+ "&localidad=" + (municipi != null ? municipi : "-1")
+					+ "&vigentes=true");
 			HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
@@ -206,7 +200,8 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 				unidad.getDescripcionLocalidad(),
 				unidad.getCodigoTipoVia(), 
 				unidad.getNombreVia(), 
-				unidad.getNumVia());
+				unidad.getNumVia(),
+				unidad.getHistoricosUO());
 		return unitat;
 	}
 

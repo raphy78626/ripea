@@ -5,6 +5,11 @@ package es.caib.ripea.core.api.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+
+
 
 /**
  * Informació d'una unitat organitzativa.
@@ -13,6 +18,7 @@ import java.util.Date;
  */
 public class UnitatOrganitzativaDto implements Serializable {
 
+	private Long id;
 	private String codi;
 	private String denominacio;
 	private String nifCif;
@@ -35,7 +41,47 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private Long tipusVia;
 	private String nomVia;
 	private String numVia; 
+	
+	private TipusTransicioEnumDto tipusTransicio;
+	
+	private List<UnitatOrganitzativaDto> noves;
+	private Map<String, String> altresUnitatsFusionades;
+	
 
+	private List<UnitatOrganitzativaDto> lastHistoricosUnitats;
+	
+	public List<UnitatOrganitzativaDto> getLastHistoricosUnitats() {
+		return lastHistoricosUnitats;
+	}
+
+	public void setLastHistoricosUnitats(List<UnitatOrganitzativaDto> lastHistoricosUnitats) {
+		this.lastHistoricosUnitats = lastHistoricosUnitats;
+	}
+	
+	public Map<String, String> getAltresUnitatsFusionades() {
+		return altresUnitatsFusionades;
+	}
+	public void setAltresUnitatsFusionades(Map<String, String> altresUnitatsFusionades) {
+		this.altresUnitatsFusionades = altresUnitatsFusionades;
+	}
+	public TipusTransicioEnumDto getTipusTransicio() {
+		return tipusTransicio;
+	}
+	public void setTipusTransicio(TipusTransicioEnumDto tipusTransicio) {
+		this.tipusTransicio = tipusTransicio;
+	}
+	public List<UnitatOrganitzativaDto> getNoves() {
+		return noves;
+	}
+	public void setNoves(List<UnitatOrganitzativaDto> noves) {
+		this.noves = noves;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getCodi() {
 		return codi;
 	}
@@ -159,6 +205,10 @@ public class UnitatOrganitzativaDto implements Serializable {
 
 	public String getNom() {
 		return this.denominacio + " (" + this.codi + ")";
+	}
+	
+	public String getCodiAndNom() {
+		return this.codi + " - " + this.denominacio + "";
 	}
 	
 	private static final long serialVersionUID = -5602898182576627524L;

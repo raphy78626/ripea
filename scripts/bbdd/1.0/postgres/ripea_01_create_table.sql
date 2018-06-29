@@ -38,7 +38,9 @@ CREATE TABLE IPA_ENTITAT
   CREATEDBY_CODI       character varying(64),
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDBY_CODI  character varying(64),
-  LASTMODIFIEDDATE     timestamp without time zone
+  LASTMODIFIEDDATE     timestamp without time zone,
+  FECHA_ACTUALIZACION  TIMESTAMP WITHOUT TIME ZONE,
+  FECHA_SINCRONIZACION TIMESTAMP WITHOUT TIME ZONE
 );
 
 
@@ -448,7 +450,8 @@ CREATE TABLE IPA_BUSTIA
   ID           BIGINT                           NOT NULL,
   UNITAT_CODI  character varying(9)             NOT NULL,
   PER_DEFECTE  boolean,
-  ACTIVA       boolean
+  ACTIVA       boolean,
+  UNITAT_ID    BIGINT
 );
 
 
@@ -618,7 +621,8 @@ CREATE TABLE IPA_REGLA
   USUARI               character varying(64),
   ARXIU_ID             bigint,
   BUSTIA_ID            bigint,
-  METAEXPEDIENT_ID     bigint
+  METAEXPEDIENT_ID     bigint,
+  UNITAT_ID 		   BIGINT
 );
 
 
@@ -705,4 +709,70 @@ CREATE TABLE IPA_MASSIVA_CONTINGUT
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDBY_CODI  character varying(64),
   LASTMODIFIEDDATE     timestamp without time zone
+);
+
+CREATE TABLE IPA_UNITAT_ORGANITZATIVA
+(
+  ID           				BIGINT              					NOT NULL,
+  CODI 						character varying(9) 					NOT NULL,
+  DENOMINACIO 				character varying(500) 					NOT NULL,
+  NIF_CIF 					character varying(9),
+  CODI_UNITAT_SUPERIOR 		character varying(9),
+  CODI_UNITAT_ARREL 		character varying(9),
+  DATA_CREACIO_OFICIAL 		timestamp without time zone,
+  DATA_SUPRESSIO_OFICIAL 	timestamp without time zone,
+  DATA_EXTINCIO_FUNCIONAL 	timestamp without time zone,
+  DATA_ANULACIO 	 		timestamp without time zone,
+  ESTAT 					character varying(1),
+  CODI_PAIS 				character varying(3),
+  CODI_COMUNITAT 			character varying(1),
+  CODI_PROVINCIA 			character varying(1),
+  CODI_POSTAL 				character varying(5),
+  NOM_LOCALITAT 			character varying(50),
+  LOCALITAT 				character varying(40),
+  ADRESSA 					character varying(70),
+  TIPUS_VIA 	 			bigint,
+  NOM_VIA 					character varying(200),
+  NUM_VIA 					character varying(100),
+  OBSOLETA					boolean,
+
+  CREATEDDATE          		timestamp without time zone,
+  CREATEDBY_CODI       		character varying(256),
+  LASTMODIFIEDDATE     		timestamp without time zone,
+  LASTMODIFIEDBY_CODI  		character varying(256)
+);
+
+CREATE TABLE IPA_UNITAT_ORGANITZATIVA (
+  ID           				BIGINT          NOT NULL,
+  CODI 						CHARACTER VARYING(9) 		NOT NULL,
+  DENOMINACIO 				CHARACTER VARYING(300) 		NOT NULL,
+  NIF_CIF 					CHARACTER VARYING(9),
+  CODI_UNITAT_SUPERIOR 		CHARACTER VARYING(9),
+  CODI_UNITAT_ARREL 		CHARACTER VARYING(9),
+  DATA_CREACIO_OFICIAL 		TIMESTAMP WITHOUT TIME ZONE,
+  DATA_SUPRESSIO_OFICIAL 	TIMESTAMP WITHOUT TIME ZONE,
+  DATA_EXTINCIO_FUNCIONAL 	TIMESTAMP WITHOUT TIME ZONE,
+  DATA_ANULACIO 	 		TIMESTAMP WITHOUT TIME ZONE,
+  ESTAT 					BOOLEAN,
+  CODI_PAIS 				CHARACTER VARYING(3),
+  CODI_COMUNITAT 			CHARACTER VARYING(2),
+  CODI_PROVINCIA 			CHARACTER VARYING(2),
+  CODI_POSTAL 				CHARACTER VARYING(5),
+  NOM_LOCALITAT 			CHARACTER VARYING(50),
+  LOCALITAT 				CHARACTER VARYING(40),
+  ADRESSA 					CHARACTER VARYING(70),
+  TIPUS_VIA 	 			BIGINT,
+  NOM_VIA 					CHARACTER VARYING(200),
+  NUM_VIA 					CHARACTER VARYING(100),
+  TIPUS_TRANSICIO 		    INTEGER,
+
+  CREATEDDATE          		TIMESTAMP WITHOUT TIME ZONE,
+  CREATEDBY_CODI       		CHARACTER VARYING(256),
+  LASTMODIFIEDDATE     		TIMESTAMP WITHOUT TIME ZONE,
+  LASTMODIFIEDBY_CODI  		CHARACTER VARYING(256)
+);
+
+CREATE TABLE IPA_UO_SINC_REL (
+  ANTIGA_UO         			BIGINT          NOT NULL,
+  NOVA_UO           			BIGINT          NOT NULL
 );
