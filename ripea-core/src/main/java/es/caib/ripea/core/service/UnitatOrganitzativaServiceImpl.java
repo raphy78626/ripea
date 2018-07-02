@@ -72,6 +72,13 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	
 	@Override
 	@Transactional
+	public List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entitatId) {
+
+		return unitatOrganitzativaHelper.predictFirstSynchronization(entitatId);		
+	}
+	
+	@Override
+	@Transactional
 	public List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId) {
 
 		return unitatOrganitzativaHelper.getVigentsFromWebService(entidadId);

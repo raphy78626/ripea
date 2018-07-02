@@ -72,11 +72,12 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		MultiMap mergeMap = new MultiHashMap();
 		MultiMap substMap = new MultiHashMap();
 		List<UnitatOrganitzativaDto> unitatsVigents = new ArrayList<>();
+		List<UnitatOrganitzativaDto> unitatsVigentsFirstSincro = new ArrayList<>();
 		
 		boolean isFirstSincronization = unitatOrganitzativaService.isFirstSincronization(entitatActual.getId());
 		
 		if(isFirstSincronization){
-			
+			unitatsVigentsFirstSincro = unitatOrganitzativaService.predictFirstSynchronization(entitatActual.getId());
 		} else {
 			List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = unitatOrganitzativaService
 					.predictSynchronization(entitatActual.getId());
@@ -149,6 +150,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		}
 		
 		
+		model.addAttribute("unitatsVigentsFirstSincro", unitatsVigentsFirstSincro);
 
 		model.addAttribute("splitMap", splitMap);
 		model.addAttribute("mergeMap", mergeMap);

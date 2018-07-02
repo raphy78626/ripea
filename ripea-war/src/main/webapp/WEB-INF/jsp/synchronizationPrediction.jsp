@@ -43,10 +43,35 @@
 		<c:if test="${isFirstSincronization}">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<spring:message code="unitat.synchronize.prediction.firstSincroHeader" />
+					<spring:message
+						code="unitat.synchronize.prediction.firstSincroHeader" />
 				</div>
 				<div class="panel-body">
-					<spring:message code="unitat.synchronize.prediction.firstSincroDescription" />
+
+					<c:if test="${empty unitatsVigentsFirstSincro}">
+						<spring:message code="unitat.synchronize.prediction.firstSincroNoUnitatsVigent" />
+					</c:if>
+
+					<c:if test="${!empty unitatsVigentsFirstSincro}">
+						<c:forEach var="unitatVigentFirstSincro"
+							items="${unitatsVigentsFirstSincro}">
+
+							<div class=horizontal-left>
+								<div id="wrapper" style="margin-left: 15px">
+									<span class="label bg-success border-green overflow-ellipsis"
+										title="${unitatVigentFirstSincro.codi} - ${unitatVigentFirstSincro.denominacio}">
+										${unitatVigentFirstSincro.codi} -
+										${unitatVigentFirstSincro.denominacio} </span>
+									<div class="branch lv1 empty-branch">
+										<div class="entry sole empty-entry">
+											<span
+												class="label bg-warning border-yellow overflow-ellipsis empty-label"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</c:forEach>
+					</c:if>
 				</div>
 			</div>
 		</c:if>

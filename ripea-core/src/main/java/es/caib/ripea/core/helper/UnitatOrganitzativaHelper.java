@@ -102,6 +102,31 @@ public class UnitatOrganitzativaHelper {
 			}
 	}
 	
+	
+	public List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entidadId) throws SistemaExternException{
+		
+
+		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+		
+		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getUnitatArrel(),
+				null, null);
+		
+		
+		List<UnitatOrganitzativa> unitatsVigentsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(),
+				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
+		
+		
+		// converting form UnitatOrganitzativa to UnitatOrganitzativaDto
+		List<UnitatOrganitzativaDto> unitatsVigentWSDto = new ArrayList<>();
+		for(UnitatOrganitzativa vigentObsolete : unitatsVigentsWS){
+			unitatsVigentWSDto.add(conversioTipusHelper.convertir(
+					vigentObsolete, 
+					UnitatOrganitzativaDto.class));
+		}
+		
+		return unitatsVigentWSDto;
+	}
+	
 	public List<UnitatOrganitzativaDto> predictSynchronization(Long entidadId) throws SistemaExternException{
 		
 

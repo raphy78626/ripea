@@ -104,5 +104,7 @@ public interface UnitatOrganitzativaService {
 
 	boolean isFirstSincronization(Long entidadId);
 
+	List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entitatId);
+
 
 }
