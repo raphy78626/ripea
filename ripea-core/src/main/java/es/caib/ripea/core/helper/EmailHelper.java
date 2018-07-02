@@ -299,7 +299,7 @@ public class EmailHelper {
 			EntitatEntity entitat,
 			String unitatOrganitzativaCodi) {
 		ArbreDto<UnitatOrganitzativaDto> arbreUnitats = unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPare(
-				entitat.getCodi());
+				entitat.getUnitatArrel());
 		for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbreUnitats.toList()) {
 			UnitatOrganitzativaDto unitat = node.getDades();
 			if (unitat.getCodi().equals(unitatOrganitzativaCodi)) {
