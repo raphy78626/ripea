@@ -612,8 +612,8 @@ public class ArxiuServiceImpl implements ArxiuService {
 			}
 		}
 		// Consulta l'arbre
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerEntitatAmbCodisPermesos(
-				entitat.getCodi(),
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerUnitatArrelAmbCodisPermesos(
+				entitat.getUnitatArrel(),
 				arxiuUnitatCodis);
 		if (ambContadorExpedientsPendents) {
 			// Consulta els contadors d'expedients per a tots els arxius
