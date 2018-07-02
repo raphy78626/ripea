@@ -113,6 +113,14 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 		return delegate.isFirstSincronization(entidadId);
 	}
 	
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entidadId) {
+		return delegate.predictFirstSynchronization(entidadId);
+	}
+	
+	
+	
 	
 	
 	/*@Autowired
