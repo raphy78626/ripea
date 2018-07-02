@@ -307,7 +307,7 @@ public class BustiaServiceImpl implements BustiaService {
 			// Valida que si s'esborra encara hi hagi una altra per defecte d'alternativa
 			BustiaEntity bustiaPerDefecteAlternativa = null;
 			List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
-					entitat.getCodi(),
+					entitat.getUnitatArrel(),
 					bustia.getUnitatCodi());
 			if (path != null && !path.isEmpty()) {
 				BustiaEntity bustiaAux;

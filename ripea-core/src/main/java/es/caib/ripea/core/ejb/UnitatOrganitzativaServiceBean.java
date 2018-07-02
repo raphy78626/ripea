@@ -119,6 +119,11 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 		return delegate.predictFirstSynchronization(entidadId);
 	}
 	
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre) {
+		return delegate.findByEntitatAndFiltre(entitatCodi, filtre);
+	}
 	
 	
 	

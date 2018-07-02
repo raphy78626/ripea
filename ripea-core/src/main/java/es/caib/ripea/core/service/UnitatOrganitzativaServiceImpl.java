@@ -230,6 +230,21 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	}
 	
 	
+	@Override
+	@Transactional(readOnly = true)
+	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(
+			String entitatCodi, String filtre) { 
+		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+		return conversioTipusHelper.convertirList(
+				unitatOrganitzativaRepository.findByUnitatCodiArrelAndCodiAndDenominacioFiltre(
+						entitat.getUnitatArrel(),
+						filtre == null || filtre.isEmpty(), 
+						filtre),
+				UnitatOrganitzativaDto.class);
+	}
+	
+	
+
 
 	
 	@Override

@@ -37,6 +37,18 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			Pageable pageable);
 	
 	
+	@Query(	"from " +
+			"    UnitatOrganitzativaEntity uo " +
+			"where " +
+			"    uo.codiUnitatArrel = :codiUnitatArrel " +
+			"and (:esNullFiltre = true or lower(uo.codi) like lower('%'||:filtre||'%')) " +
+			"or (:esNullFiltre = true or lower(uo.denominacio) like lower('%'||:filtre||'%')) ")
+	List<UnitatOrganitzativaEntity> findByUnitatCodiArrelAndCodiAndDenominacioFiltre(
+			@Param("codiUnitatArrel") String codiUnitatArrel,
+			@Param("esNullFiltre") boolean esNullFiltreCodi,
+			@Param("filtre") String filtre);
+	
+	
 	UnitatOrganitzativaEntity findByCodi(String codi);
 	
 	List<UnitatOrganitzativaEntity> findByCodiUnitatArrel(String codiUnitatArrel);

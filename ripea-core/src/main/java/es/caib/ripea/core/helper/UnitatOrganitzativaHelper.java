@@ -436,9 +436,9 @@ public class UnitatOrganitzativaHelper {
 	}
 
 	public List<UnitatOrganitzativaDto> findPath(
-			String entitatCodi,
+			String unitatArrel,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(entitatCodi);
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(unitatArrel);
 		List<UnitatOrganitzativaDto> superiors = new ArrayList<UnitatOrganitzativaDto>();
 		String codiActual = unitatOrganitzativaCodi;
 		do {
@@ -455,10 +455,10 @@ public class UnitatOrganitzativaHelper {
 		return superiors;
 	}
 
-	public ArbreDto<UnitatOrganitzativaDto> findPerEntitatAmbCodisPermesos(
-			String entitatCodi,
+	public ArbreDto<UnitatOrganitzativaDto> findPerUnitatArrelAmbCodisPermesos(
+			String unitatArrel,
 			Set<String> unitatCodiPermesos) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(entitatCodi).clone();
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(unitatArrel).clone();
 		if (unitatCodiPermesos != null) {
 			// Calcula els nodes a "salvar" afegint els nodes permesos
 			// i tots els seus pares.
