@@ -48,20 +48,13 @@ public class AjaxUnitatsController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable String text,
 			Model model) {
-		List<UnitatOrganitzativaDto> unitatsFiltrades = new ArrayList<UnitatOrganitzativaDto>();
+
 		
-		if (text != null) {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService.findByEntitat(entitatActual.getCodi());
-			
-			text = text.toUpperCase();
-			for (UnitatOrganitzativaDto unitat: unitatsEntitat) {
-				if (unitat.getCodi().matches("(?i:.*" + text + ".*)") || unitat.getDenominacio().matches("(?i:.*" + text + ".*)"))
-					unitatsFiltrades.add(unitat);
-			}
-		}
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
+				.findByEntitatAndFiltre(entitatActual.getCodi(), text);
 		
-		return unitatsFiltrades;
+		return unitatsEntitat;
 	}
 
 	/*private static final String SESSION_ATTRIBUTE_FILTRE = "AjaxUnitatsController.session.filtre";
