@@ -98,6 +98,8 @@
 		<form:hidden path="pareId"/>
 		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 		<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+		<input id="isOrganigrama" name="isOrganigrama" type="hidden" value="${isOrganigrama}"/>
+<%-- 		<rip:inputHidden name="isOrganigrama"/> --%>
 		<rip:inputSuggest 
 			name="unitatId" 
 			textKey="bustia.form.camp.unitat"
