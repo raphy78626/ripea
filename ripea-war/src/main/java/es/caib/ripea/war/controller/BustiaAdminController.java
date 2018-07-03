@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
 import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
+import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
 import es.caib.ripea.war.command.BustiaCommand;
 import es.caib.ripea.war.command.BustiaFiltreCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
@@ -41,9 +41,9 @@ public class BustiaAdminController extends BaseAdminController {
 
 	@Autowired
 	private BustiaService bustiaService;
-	
 	@Autowired
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	private UnitatOrganitzativaService unitatService;
+	
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -111,7 +111,7 @@ public class BustiaAdminController extends BaseAdminController {
 					bustiaId);
 			
 		// setting last historicos to the unitat of this bustia
-		bustia.setUnitatOrganitzativa(unitatOrganitzativaHelper.getLastHistoricos(bustia.getUnitatOrganitzativa()));
+		bustia.setUnitatOrganitzativa(unitatService.getLastHistoricos(bustia.getUnitatOrganitzativa()));
 			
 		
 		// getting all the busties connected with old unitat excluding the one you are currently in 
@@ -146,7 +146,7 @@ public class BustiaAdminController extends BaseAdminController {
 					bustiaId);
 			
 			// setting last historicos to the unitat of this bustia
-			bustia.setUnitatOrganitzativa(unitatOrganitzativaHelper.getLastHistoricos(bustia.getUnitatOrganitzativa()));
+			bustia.setUnitatOrganitzativa(unitatService.getLastHistoricos(bustia.getUnitatOrganitzativa()));
 			
 		
 		// getting all the busties connected with old unitat excluding the one you are currently in 
