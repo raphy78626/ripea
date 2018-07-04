@@ -35,6 +35,8 @@ import es.caib.ripea.core.api.dto.ApuntInteressatModel;
 import es.caib.ripea.core.api.dto.ApuntMovimentModel;
 import es.caib.ripea.core.api.dto.ArxiuFirmaDto;
 import es.caib.ripea.core.api.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.ripea.core.api.dto.BustiaDto;
+import es.caib.ripea.core.api.dto.ContingutDto;
 import es.caib.ripea.core.api.dto.ContingutLogDto;
 import es.caib.ripea.core.api.dto.ContingutMovimentDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
@@ -760,15 +762,11 @@ public class RegistreServiceImpl implements RegistreService {
 			moviment.setData(contingutMoviment.getData());
 			moviment.setUsuari(contingutMoviment.getRemitent().getNom());
 			if (contingutMoviment.getOrigen() != null) {
-				moviment.setOrigen(
-						messageHelper.getMessage("contingut.tipus.enum." + contingutMoviment.getOrigen().getTipus().name()) + 
-						"#" + contingutMoviment.getOrigen().getId());
+				moviment.setOrigen(getContingutNom(contingutMoviment.getOrigen()));
 			} else {
 				moviment.setOrigen("");
 			}
-			moviment.setDesti(
-					messageHelper.getMessage("contingut.tipus.enum." + contingutMoviment.getDesti().getTipus().name()) + 
-					"#" + contingutMoviment.getDesti().getId());
+			moviment.setDesti(getContingutNom(contingutMoviment.getDesti()));
 			moviment.setComentari(contingutMoviment.getComentari() != null ? contingutMoviment.getComentari() : "");
 			moviments.add(moviment);
 		}
@@ -807,6 +805,44 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		return model;
 	}
+	
+	private String getContingutNom(ContingutDto contingut) {
+		String msg = messageHelper.getMessage("contingut.tipus.enum." + contingut.getTipus().name());
+		switch (contingut.getTipus()) {
+			case BUSTIA:
+				BustiaDto bustia = (BustiaDto)contingut;
+				msg += ": " + bustia.getNom() + " (" + bustia.getUnitatCodi() + ")";
+				break;
+			case EXPEDIENT:
+			case DOCUMENT:
+			case CARPETA:
+			case ESCRIPTORI:
+			case ARXIU:
+			case REGISTRE:
+			default:
+				msg += ": " + contingut.getNom();
+		}
+		return msg;
+	}
+//	public ContingutTipusEnumDto getTipus() {
+//		if (isExpedient()) {
+//			return ContingutTipusEnumDto.EXPEDIENT;
+//		} else if (isDocument()) {
+//			return ContingutTipusEnumDto.DOCUMENT;
+//		} else if (isCarpeta()) {
+//			return ContingutTipusEnumDto.CARPETA;
+//		} else if (isEscriptori()) {
+//			return ContingutTipusEnumDto.ESCRIPTORI;
+//		} else if (isArxiv()) {
+//			return ContingutTipusEnumDto.ARXIU;
+//		} else if (isBustia()) {
+//			return ContingutTipusEnumDto.BUSTIA;
+//		} else if (isRegistre()) {
+//			return ContingutTipusEnumDto.REGISTRE;
+//		} else {
+//			return null;
+//		}
+//	}
 
 
 	private RegistreAnnexDetallDto getJustificantPerRegistre(
