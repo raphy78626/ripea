@@ -42,6 +42,7 @@ import es.caib.ripea.core.api.service.RegistreService;
 import es.caib.ripea.war.command.BustiaUserFiltreCommand;
 import es.caib.ripea.war.command.ContenidorCommand.Create;
 import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
+import es.caib.ripea.war.command.ContingutReenviarCommand;
 import es.caib.ripea.war.command.ExpedientCommand;
 import es.caib.ripea.war.command.ExpedientFiltreCommand;
 import es.caib.ripea.war.command.MarcarProcessatCommand;
@@ -302,7 +303,7 @@ public class BustiaUserController extends BaseUserController {
 				bustiaId,
 				contingutId,
 				model);
-		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+		ContingutReenviarCommand command = new ContingutReenviarCommand();
 		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
 		return "bustiaPendentRegistreReenviar";
@@ -312,7 +313,7 @@ public class BustiaUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
-			@Valid ContingutMoureCopiarEnviarCommand command,
+			@Valid ContingutReenviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -327,7 +328,7 @@ public class BustiaUserController extends BaseUserController {
 		bustiaService.contingutPendentReenviar(
 				entitatActual.getId(),
 				bustiaId,
-				command.getDestiId(),
+				command.getDestins(),
 				contingutId,
 				command.getComentariEnviar());
 		return getModalControllerReturnValueSuccess(

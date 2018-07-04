@@ -52,5 +52,26 @@ public class Firma {
 	public void setCsvRegulacio(String csvRegulacio) {
 		this.csvRegulacio = csvRegulacio;
 	}
+	public Firma(
+			String tipus, 
+			String perfil, 
+			String fitxerNom, 
+			byte[] contingut, 
+			String tipusMime, 
+			String csv,
+			String csvRegulacio) {
+		super();
+		this.tipus = tipus;
+		this.perfil = perfil;
+		this.fitxerNom = fitxerNom;
+		this.contingut = contingut;
+		this.tipusMime = tipusMime;
+		this.csv = csv;
+		this.csvRegulacio = csvRegulacio;
+	}
+	public Firma() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 }

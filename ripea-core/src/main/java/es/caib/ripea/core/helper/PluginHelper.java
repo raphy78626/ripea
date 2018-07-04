@@ -91,6 +91,8 @@ import es.caib.ripea.plugin.dadesext.DadesExternesPlugin;
 import es.caib.ripea.plugin.dadesext.Municipi;
 import es.caib.ripea.plugin.dadesext.Pais;
 import es.caib.ripea.plugin.dadesext.Provincia;
+import es.caib.ripea.plugin.distribucio.DistribucioPlugin;
+import es.caib.ripea.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.ripea.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.ripea.plugin.notificacio.EntregaPostalTipus;
 import es.caib.ripea.plugin.notificacio.Enviament;
@@ -139,6 +141,7 @@ public class PluginHelper {
 	private SignaturaPlugin signaturaPlugin;
 	private NotificacioPlugin notificacioPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
+	private DistribucioPlugin distribucioPlugin;
 
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
@@ -150,6 +153,41 @@ public class PluginHelper {
 	private DadesExternesHelper dadesExternesHelper;
 
 
+	public String distribuirContingutAnotacioPendent(RegistreEntity anotacio, BustiaEntity bustia) {
+		String accioDescripcio = "Distribucio de contingut d'anotació de registre";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("anotacioCodi", anotacio.getIdentificador());
+		accioParams.put("bustiaNom", bustia.getNom());
+		long t0 = System.currentTimeMillis();
+		try {
+			DistribucioRegistreAnotacio registreAnotacio = conversioTipusHelper.convertir(anotacio, DistribucioRegistreAnotacio.class);
+			String unitatArrelCodi = bustia.getEntitat().getUnitatArrel();
+			
+			String identificadorRetorn = getDistribucioPlugin().ditribuirAssentament(registreAnotacio, unitatArrelCodi);
+			
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return identificadorRetorn;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de distribucio";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					errorDescripcio,
+					ex);
+		}
+	}
 
 	public DadesUsuari dadesUsuariFindAmbCodi(
 			String usuariCodi) {
@@ -688,14 +726,14 @@ public class PluginHelper {
 		}
 	}
 	
-	public void arxiuExpedientEsborrarPerUuid(
-			String uuid) {
+	public void eliminarContingutExistent(
+			String idContingut) {
 		String accioDescripcio = "Eliminació d'un expedient";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("uuid", uuid);
+		accioParams.put("idContingut", idContingut);
 		long t0 = System.currentTimeMillis();
 		try {
-			getArxiuPlugin().expedientEsborrar(uuid);
+			getArxiuPlugin().expedientEsborrar(idContingut);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
@@ -3749,6 +3787,28 @@ public class PluginHelper {
 		}
 		return notificacioPlugin;
 	}
+	
+	private DistribucioPlugin getDistribucioPlugin() {
+		if (distribucioPlugin == null) {
+			String pluginClass = getPropertyPluginDistribucio();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					distribucioPlugin = (DistribucioPlugin)clazz.newInstance();
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_NOTIFICACIO,
+							"Error al crear la instància del plugin de distribucio",
+							ex);
+				}
+			} else {
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_NOTIFICACIO,
+						"No està configurada la classe per al plugin de distribucio");
+			}
+		}
+		return distribucioPlugin;
+	}
 
 	private String getPropertyPluginDadesUsuari() {
 		return PropertiesHelper.getProperties().getProperty(
@@ -3793,6 +3853,10 @@ public class PluginHelper {
 	private String getPropertyPluginNotificacio() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.ripea.plugin.notificacio.class");
+	}
+	private String getPropertyPluginDistribucio() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.ripea.plugins.distribucio.fitxers.class");
 	}
 	private String getPropertyPluginGestioDocumental() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.gesdoc.class");

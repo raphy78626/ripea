@@ -17,6 +17,7 @@
 <%@ attribute name="isArbreSeleccionable" type="java.lang.Boolean"%>
 <%@ attribute name="isFullesSeleccionable" type="java.lang.Boolean"%>
 <%@ attribute name="isOcultarCounts" type="java.lang.Boolean"%>
+<%@ attribute name="isSeleccioMultiple" type="java.lang.Boolean"%>
 <%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
@@ -24,6 +25,7 @@
 <c:set var="campLabelSize"><c:choose><c:when test="${not empty labelSize}">${labelSize}</c:when><c:otherwise>4</c:otherwise></c:choose></c:set>
 <c:set var="campInputSize">${12 - campLabelSize}</c:set>
 <c:set var="fullesAtributInfoText"><c:if test="${not empty fullesAtributInfoKey}"><spring:message code="${fullesAtributInfoKey}"/></c:if></c:set>
+<c:set var="isSeleccioMultiple" value="${(empty isSeleccioMultiple) ? false : isSeleccioMultiple}" />
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
 	<label class="control-label col-xs-${campLabelSize}" for="${campPath}">${campLabelText}</label>
 	<div class="col-xs-${campInputSize}">
@@ -38,6 +40,14 @@
 </div>
 <script>
 	function changedCallback_${campPath}(e, data) {
-		$('#${campPath}').val(data.node.id);
+		if(${isSeleccioMultiple}) {
+			var i, j, r = [];
+		    for(i = 0, j = data.selected.length; i < j; i++) {
+		      r.push(data.instance.get_node(data.selected[i]).id);
+		    }
+			$('#${campPath}').val(r);
+		} else {
+			$('#${campPath}').val(data.node.id);
+		}
 	}
 </script>

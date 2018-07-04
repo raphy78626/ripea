@@ -10,7 +10,7 @@ package es.caib.ripea.plugin;
  */
 @SuppressWarnings("serial")
 public class SistemaExternException extends Exception {
-
+	
 	public SistemaExternException() {
 		super();
 	}
@@ -24,6 +24,19 @@ public class SistemaExternException extends Exception {
 	}
 
 	public SistemaExternException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
+	public SistemaExternException(
+			String sistemaExternCodi,
+			String message) {
+		super(message);
+	}
+
+	public SistemaExternException(
+			String sistemaExternCodi,
+			String message,
+			Throwable cause) {
 		super(message, cause);
 	}
 

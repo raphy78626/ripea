@@ -328,7 +328,7 @@ public interface BustiaService {
 	public void contingutPendentReenviar(
 			Long entitatId,
 			Long bustiaOrigenId,
-			Long bustiaDestiId,
+			Long[] bustiaDestiIds,
 			Long contingutId,
 			String comentari) throws NotFoundException;
 

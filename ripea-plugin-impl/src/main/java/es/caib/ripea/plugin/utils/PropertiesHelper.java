@@ -9,6 +9,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.caib.ripea.core.api.exception.PropietatNotFoundException;
+
 /**
  * Utilitat per accedir a les entrades del fitxer de properties.
  * 
@@ -51,6 +53,14 @@ public class PropertiesHelper extends Properties {
 		}
 		return instance;
 	}
+	
+	public String getPropertyAmbComprovacio(String key) {
+		String valor = getProperty(key);
+		if (valor == null || valor.isEmpty()) {
+			throw new PropietatNotFoundException(key);
+		}
+		return valor;
+	}
 
 	public String getProperty(String key) {
 		if (llegirSystem)
@@ -86,6 +96,37 @@ public class PropertiesHelper extends Properties {
 		this.llegirSystem = llegirSystem;
 	}
 
+	public Properties findAll() {
+		return findByPrefix(null);
+	}
+	public Properties findByPrefix(String prefix) {
+		Properties properties = new Properties();
+		if (llegirSystem) {
+			for (Object key: System.getProperties().keySet()) {
+				if (key instanceof String) {
+					String keystr = (String)key;
+					if (prefix == null || keystr.startsWith(prefix)) {
+						properties.put(
+								keystr,
+								System.getProperty(keystr));
+					}
+				}
+			}
+		} else {
+			for (Object key: this.keySet()) {
+				if (key instanceof String) {
+					String keystr = (String)key;
+					if (prefix == null || keystr.startsWith(prefix)) {
+						properties.put(
+								keystr,
+								getProperty(keystr));
+					}
+				}
+			}
+		}
+		return properties;
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(PropertiesHelper.class);
 	private static final long serialVersionUID = 1L;
 

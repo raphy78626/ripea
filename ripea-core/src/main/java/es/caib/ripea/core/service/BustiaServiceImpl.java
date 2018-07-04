@@ -901,13 +901,13 @@ public class BustiaServiceImpl implements BustiaService {
 	public void contingutPendentReenviar(
 			Long entitatId,
 			Long bustiaOrigenId,
-			Long bustiaDestiId,
+			Long[] bustiaDestiIds,
 			Long contingutId,
 			String comentari) throws NotFoundException {
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaOrigenId=" + bustiaOrigenId + ", "
-				+ "bustiaDestiId=" + bustiaDestiId + ", "
+				+ "bustiaDestiIds=" + bustiaDestiIds + ", "
 				+ "contingutId=" + contingutId + ", "
 				+ "comentari=" + comentari + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -921,7 +921,7 @@ public class BustiaServiceImpl implements BustiaService {
 				true);
 		BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
 				entitat,
-				bustiaDestiId,
+				bustiaDestiIds[0],
 				false);
 		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,

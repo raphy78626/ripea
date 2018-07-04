@@ -50,6 +50,7 @@ public class IntegracioHelper {
 	public static final String INTCODI_SIGNATURA = "SIGNATURA";
 	public static final String INTCODI_VALIDASIG = "VALIDASIG";
 	public static final String INTCODI_NOTIFICACIO = "NOTIFICACIO";
+	public static final String INTCODI_DISTRIBUCIO = "DISTRIBUCIO";
 	public static final String INTCODI_GESDOC = "GESDOC";
 
 	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = Collections.synchronizedMap(new HashMap<String, LinkedList<IntegracioAccioDto>>());

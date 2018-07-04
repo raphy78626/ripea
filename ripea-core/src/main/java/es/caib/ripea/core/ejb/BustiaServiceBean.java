@@ -204,13 +204,13 @@ public class BustiaServiceBean implements BustiaService {
 	public void contingutPendentReenviar(
 			Long entitatId,
 			Long bustiaOrigenId,
-			Long bustiaDestiId,
+			Long[] bustiaDestiIds,
 			Long contingutId,
 			String comentari) throws NotFoundException {
 		delegate.contingutPendentReenviar(
 				entitatId,
 				bustiaOrigenId,
-				bustiaDestiId,
+				bustiaDestiIds,
 				contingutId,
 				comentari);
 	}

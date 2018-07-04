@@ -14,9 +14,16 @@
 	<script src="<c:url value="/js/jstree.min.js"/>"></script>
 </head>
 <body>
-	<form:form action="" class="form-horizontal" commandName="contingutMoureCopiarEnviarCommand">
+	<form:form action="" class="form-horizontal" commandName="contingutReenviarCommand">
 		<form:hidden path="origenId"/>
-		<rip:inputArbre name="destiId" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
+		<div class="form-group">
+			<div class="col-xs-offset-4 col-xs-8">
+			    <span class="fa fa-exclamation-triangle text-success" title=""></span>
+			    <spring:message code="contingut.enviar.info.seleccio.multiple"/>
+			</div>
+	    </div>
+		<rip:inputArbre name="destins" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"/>
+		<rip:inputCheckbox name="deixarCopia" textKey="contingut.enviar.camp.deixar.copia"/>
 		<rip:inputTextarea name="comentariEnviar" textKey="contingut.enviar.camp.comentari"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>

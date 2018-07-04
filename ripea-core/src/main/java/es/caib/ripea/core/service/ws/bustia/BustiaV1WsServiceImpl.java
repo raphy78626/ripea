@@ -277,21 +277,20 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	 * @throws ValidationException
 	 */
 	private void validarAnnex(RegistreAnnex annex) throws ValidationException{
-		if (annex.getFitxerNom() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'fitxerNom' per l'annex");
-		}
 		
 		if (annex.getFitxerArxiuUuid() == null && annex.getFitxerContingut() == null)
 			throw new ValidationException(
 					"S'ha d'especificar o bé la referència del document o el contingut del document"
 					+ " per l'annex [" + annex.getTitol() + "]");
 		
+		if (annex.getFitxerContingut() != null && annex.getFitxerNom() == null) {
+			throw new ValidationException(
+					"Es obligatori especificar un valor pel camp 'fitxerNom' per l'annex");
+		}
+		
 		if (annex.getFirmes() != null && annex.getFirmes().size() > 0)
 			for (Firma firma : annex.getFirmes())
 				validaFirma(annex, firma);
-
-		
 	}
 
 	/** Valida la firma. Valida:
