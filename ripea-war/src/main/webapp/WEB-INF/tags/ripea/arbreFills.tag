@@ -23,7 +23,7 @@
 	</c:forEach>
 	<c:forEach var="fulla" items="${fulles}">
 		<c:if test="${fulla[fullesAtributPare] == pare.dades[atributId]}">
-			<li id="${fulla[fullesAtributId]}" data-jstree='{"icon":"${fullesIcona}"}' data-nom="${fulla[fullesAtributNom]}" data-codi-uo="${pare.dades['codi']}">
+			<li id="${fulla[fullesAtributId]}" data-jstree='{"icon":"${fullesIcona}"}'>
 				${fulla[fullesAtributNom]}
 				<c:if test="${!empty fullesAtributInfoText && fulla[fullesAtributInfo]}">${fullesAtributInfoText}</c:if>
 			</li>

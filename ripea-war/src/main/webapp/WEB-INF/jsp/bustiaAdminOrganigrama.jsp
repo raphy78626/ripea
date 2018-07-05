@@ -30,17 +30,23 @@ function changedCallback(e, data) {
 	$('#panellInfo').css('visibility', '');
 	$('#panellInfo').css('display', 'none');
 	$(".datatable-dades-carregant").css("display", "block");
-	var baseUrl = "bustiaAdmin/" + data.node.id;
-	$('#permis-boto-nou').attr('href', baseUrl + '/permis/new');
-	$('#permisos').webutilDatatable('refresh-url', baseUrl  + '/permis/datatable');
-	$('#nom', $('#panellInfo')).val($('#' + data.node.id).data('nom'));
-	uo = $('#unitatCodi', $('#panellInfo')); //.val($('#' + data.node.id).data('codi-uo')).change();
+
+	var bustiaId = data.node.id;
+	
+	var permisUrl = "bustiaAdmin/" + bustiaId + "/permis";
+	$('#permis-boto-nou').attr('href', baseUrl + '/new');
+	$('#permisos').webutilDatatable('refresh-url', baseUrl  + '/datatable');
+
+// 	uo = $('#unitatCodi', $('#panellInfo')); //.val($('#' + data.node.id).data('codi-uo')).change();
 
 	var urlConsulta = uo.data('urlInicial') + "/" + $('#' + data.node.id).data('codi-uo');
 	var suggestValue = uo.data('suggestValue');
 	var suggestText = uo.data('suggestText');
+
+
 	
 	$.ajax({
+		type: 'GET',
 		url: urlConsulta,
 		async: false,
 		success: function(resposta) {
@@ -85,60 +91,61 @@ function changedCallback(e, data) {
 				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-5">
-				<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="${unitatCodiUrlPrefix}bustiaAdminOrganigrama/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
-				<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
-			</div>
-			<div class="col-md-7" id="panellInfo"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h2><spring:message code="bustia.form.titol.modificar"/><small><%-- ${bustia.nom} --%></small></h2>
-					</div>
-					<div class="panel-body">
-						<form:form action="${formAction}" method="post" commandName="bustiaCommand" role="form">
-							<form:hidden path="id"/>
-							<form:hidden path="pareId"/>
+	</form:form>
+	<div class="row">
+		<div class="col-md-5">
+			<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="${unitatCodiUrlPrefix}bustiaAdminOrganigrama/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
+			<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
+		</div>
+		<div class="col-md-7" id="panellInfo"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2><spring:message code="bustia.form.titol.modificar"/><small><%-- ${bustia.nom} --%></small></h2>
+				</div>
+				<div class="panel-body">
+					<form:form action="${formAction}" method="post" commandName="bustiaCommand" role="form">
+						<form:hidden path="id"/>
+						<form:hidden path="pareId"/>
 <%-- 							<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/> --%>
-							<rip:inputSuggest 
-								name="unitatCodi" 
-								urlConsultaInicial="${urlConsultaInicial}" 
-								urlConsultaLlistat="${urlConsultaLlistat}" 
-								inline="false"
-								placeholderKey="bustia.form.camp.unitat"
-								suggestValue="codi"
-								suggestText="nom"
-								textKey="bustia.form.camp.unitat"
-								required="true" />
-							</br>
-							<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
-							<div class="panel panel-default" style="margin-top: 45px;">
-								<div class="panel-heading">
-									<h2><spring:message code="bustia.permis.titol"/><small><%-- ${permis.nom} --%></small></h2>
+						<rip:inputSuggest 
+							name="unitatCodi" 
+							urlConsultaInicial="${urlConsultaInicial}" 
+							urlConsultaLlistat="${urlConsultaLlistat}" 
+							inline="false"
+							placeholderKey="bustia.form.camp.unitat"
+							suggestValue="codi"
+							suggestText="nom"
+							textKey="bustia.form.camp.unitat"
+							required="true" />
+						<br/>
+						<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
+						<div class="panel panel-default" style="margin-top: 45px;">
+							<div class="panel-heading">
+								<h2><spring:message code="bustia.permis.titol"/><small><%-- ${permis.nom} --%></small></h2>
+							</div>
+							<div class="panel-body">
+								<div class="text-right boto-nou-permis-organigrama" data-toggle="botons-titol">
+									<a class="btn btn-default" id="permis-boto-nou" href="" data-toggle="modal" data-datatable-id="permisos"><span class="fa fa-plus"></span>&nbsp;<spring:message code="permis.list.boto.nou.permis"/></a>
 								</div>
-								<div class="panel-body">
-									<div class="text-right boto-nou-permis-organigrama" data-toggle="botons-titol">
-										<a class="btn btn-default" id="permis-boto-nou" href="" data-toggle="modal" data-datatable-id="permisos"><span class="fa fa-plus"></span>&nbsp;<spring:message code="permis.list.boto.nou.permis"/></a>
-									</div>
-									<table id="permisos" data-toggle="datatable" data-url="<c:url value="/permis/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" class="table table-striped table-bordered">
-										<thead>
-											<tr>
-												<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="permis.list.columna.tipus"/></th>
-												<th data-col-name="principalNom"><spring:message code="entitat.permis.columna.principal"/></th>
-												<th data-col-name="administration" data-template="#cellAdministrationTemplate">
-													<spring:message code="permis.list.columna.administracio"/>
-													<script id="cellAdministrationTemplate" type="text/x-jsrender">
+								<table id="permisos" data-toggle="datatable" data-url="<c:url value="/permis/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" class="table table-striped table-bordered">
+									<thead>
+										<tr>
+											<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="permis.list.columna.tipus"/></th>
+											<th data-col-name="principalNom"><spring:message code="entitat.permis.columna.principal"/></th>
+											<th data-col-name="administration" data-template="#cellAdministrationTemplate">
+												<spring:message code="permis.list.columna.administracio"/>
+												<script id="cellAdministrationTemplate" type="text/x-jsrender">
 														{{if administration}}<span class="fa fa-check"></span>{{/if}}
 													</script>
-													</th>
-													<th data-col-name="read" data-template="#cellReadTemplate">
-													<spring:message code="permis.list.columna.usuari"/>
-													<script id="cellReadTemplate" type="text/x-jsrender">
+												</th>
+												<th data-col-name="read" data-template="#cellReadTemplate">
+												<spring:message code="permis.list.columna.usuari"/>
+												<script id="cellReadTemplate" type="text/x-jsrender">
 														{{if read}}<span class="fa fa-check"></span>{{/if}}
 													</script>
-													</th>
-													<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
-													<script id="cellAccionsTemplate" type="text/x-jsrender">
+												</th>
+												<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
+												<script id="cellAccionsTemplate" type="text/x-jsrender">
 														<div class="dropdown">
 															<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 															<ul class="dropdown-menu">
@@ -147,36 +154,36 @@ function changedCallback(e, data) {
 															</ul>
 														</div>
 													</script>
-												</th>
-											</tr>
-										</thead>
-									</table>
-								</div>
+											</th>
+										</tr>
+									</thead>
+								</table>
 							</div>
-							<div class="row">
-								<div class="col-md-4">
-									<button class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
-								</div>
-							
-								<div class="col-md-2">
-									<button class="btn btn-default"><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
-								</div>
-							
-								<div class="col-md-3" style="margin-left: 15px;">
-									<button class="btn btn-default"><span class="fa fa-trash-o"></span> <spring:message code="contingut.admin.boto.esborrar"/></button>
-								</div>
-							
-								<div class="col-md-2">
-									<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-								</div>
-							</div>						
-						</form:form>
-					</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<button class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
+							</div>
+						
+							<div class="col-md-2">
+								<button class="btn btn-default"><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
+							</div>
+						
+							<div class="col-md-3" style="margin-left: 15px;">
+								<button class="btn btn-default"><span class="fa fa-trash-o"></span> <spring:message code="contingut.admin.boto.esborrar"/></button>
+							</div>
+						
+							<div class="col-md-2">
+								<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+							</div>
+						</div>						
+					</form:form>
 				</div>
 			</div>
-			<div class="col-md-7 datatable-dades-carregant" style="display: none; text-align: center; margin-top: 100px;">
-				<span class="fa fa-circle-o-notch fa-spin fa-3x"></span>
-			</div>
 		</div>
-	</form:form>
+		<div class="col-md-7 datatable-dades-carregant" style="display: none; text-align: center; margin-top: 100px;">
+			<span class="fa fa-circle-o-notch fa-spin fa-3x"></span>
+		</div>
+	</div>
+
 </body>

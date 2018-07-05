@@ -13,9 +13,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.ripea.core.api.dto.BustiaDto;
 import es.caib.ripea.core.api.dto.EntitatDto;
+import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
 import es.caib.ripea.war.command.BustiaCommand;
@@ -115,9 +117,8 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	
 	
 	
-	
 	@RequestMapping(value = "/{bustiaId}", method = RequestMethod.GET)
-	public String formGet(
+	public BustiaDto bustiaGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
@@ -131,8 +132,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			
 		// setting last historicos to the unitat of this bustia
 		bustia.setUnitatOrganitzativa(unitatOrganitzativaHelper.getLastHistoricos(bustia.getUnitatOrganitzativa()));
-			
-		
+				
 		// getting all the busties connected with old unitat excluding the one you are currently in 
 		List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
 		List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
@@ -141,14 +141,52 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
 			}
 		}
-		model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
-		model.addAttribute(bustia);	
-		
-
-		BustiaCommand command = BustiaCommand.asCommand(bustia);
-
-		return "bustiaAdminForm";
+		return bustia;
 	}
+	
+
+	
+	
+	
+	
+	
+
+	
+	
+	
+//	@RequestMapping(value = "/{bustiaId}", method = RequestMethod.GET)
+//	public String formGet(
+//			HttpServletRequest request,
+//			@PathVariable Long bustiaId,
+//			Model model) {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+//		BustiaDto bustia = null;
+//
+//			
+//		bustia = bustiaService.findById(
+//					entitatActual.getId(),
+//					bustiaId);
+//			
+//		// setting last historicos to the unitat of this bustia
+//		bustia.setUnitatOrganitzativa(unitatOrganitzativaHelper.getLastHistoricos(bustia.getUnitatOrganitzativa()));
+//			
+//		
+//		// getting all the busties connected with old unitat excluding the one you are currently in 
+//		List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
+//		List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
+//		for(BustiaDto bustiaI: bustiesOfOldUnitat){
+//			if(!bustiaI.getId().equals(bustia.getId())){
+//				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
+//			}
+//		}
+//		model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
+//		model.addAttribute(bustia);	
+//		
+//
+//		BustiaCommand command = BustiaCommand.asCommand(bustia);
+//
+//		return "bustiaAdminForm";
+//	}
 	
 	
 

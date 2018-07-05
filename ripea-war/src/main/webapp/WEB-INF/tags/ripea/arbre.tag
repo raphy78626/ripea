@@ -26,7 +26,7 @@
 	<c:if test="${not empty arbre and not empty arbre.arrel}">
 		<c:set var="arrel" value="${arbre.arrel}"/>
 		<ul>
-			<li id="${arbre.arrel.dades[atributId]}" class="jstree-open" data-node="${arbre.arrel.dades}" data-jstree='{"icon":"fa fa-home fa-lg"<c:if test="${not empty seleccionatId and arbre.arrel.dades[atributId] == seleccionatId}">, "selected": true</c:if>}'>
+			<li id="${arbre.arrel.dades[atributId]}" class="jstree-open" data-jstree='{"icon":"fa fa-home fa-lg"<c:if test="${not empty seleccionatId and arbre.arrel.dades[atributId] == seleccionatId}">, "selected": true</c:if>}'>
 				<small>${arbre.arrel.dades[atributNom]}<c:if test="${not isOcultarCounts and arbre.arrel.mostrarCount}"> <span class="badge">${arbre.arrel.count}</span></c:if></small>
 				<rip:arbreFills pare="${arbre.arrel}" fills="${arbre.arrel.fills}" atributId="${atributId}" atributNom="${atributNom}" seleccionatId="${seleccionatId}" fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" isOcultarCounts="${isOcultarCounts}"/>
 			</li>
@@ -90,5 +90,5 @@
 	.on('deselect_all.jstree', function (e, data) {
 		//console.log('>>> deselect_all.jstree');
 		//return ${changedCallback}(e, data);
-	})</c:if>;
+	})</c:if>;	
 </script>

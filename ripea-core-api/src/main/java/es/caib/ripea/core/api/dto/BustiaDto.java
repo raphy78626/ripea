@@ -25,7 +25,6 @@ public class BustiaDto extends ContingutDto {
 
 	private List<PermisDto> permisos;
 	private boolean usuariActualRead;
-	private UnitatOrganitzativaDto unitat;
 	private String pareNom;
 
 
@@ -72,12 +71,7 @@ public class BustiaDto extends ContingutDto {
 	public void setUsuariActualRead(boolean usuariActualRead) {
 		this.usuariActualRead = usuariActualRead;
 	}
-	public UnitatOrganitzativaDto getUnitat() {
-		return unitat;
-	}
-	public void setUnitat(UnitatOrganitzativaDto unitat) {
-		this.unitat = unitat;
-	}
+
 
 	public String getPareNom() {
 		return pareNom;
@@ -92,19 +86,6 @@ public class BustiaDto extends ContingutDto {
 			return permisos.size();
 	}
 
-	private static final String SEPARADOR_NOM_UNITAT = " / ";
-	public String getNomAmbUnitat() {
-		if (unitat != null) {
-			if (unitat.getDenominacio() != null)
-				return unitat.getDenominacio() + SEPARADOR_NOM_UNITAT + nom;
-			else if (unitat.getCodi() != null)
-				return unitat.getCodi() + SEPARADOR_NOM_UNITAT + nom;
-			else
-				return "[?]" + SEPARADOR_NOM_UNITAT + nom;
-		} else {
-			return nom;
-		}
-	}
 
 	protected CarpetaDto copiarContenidor(ContingutDto original) {
 		CarpetaDto copia = new CarpetaDto();
