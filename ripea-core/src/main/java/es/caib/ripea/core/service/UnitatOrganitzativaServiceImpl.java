@@ -4,6 +4,7 @@
 package es.caib.ripea.core.service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +97,12 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 			return false;
 		}
 
+	}
+	
+	@Override
+	@Transactional
+	public UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo) {
+		return unitatOrganitzativaHelper.getLastHistoricos(uo);
 	}
 	
 

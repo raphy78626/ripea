@@ -26,7 +26,7 @@ import es.caib.ripea.core.api.service.ArxiuService;
 import es.caib.ripea.core.api.service.BustiaService;
 import es.caib.ripea.core.api.service.MetaExpedientService;
 import es.caib.ripea.core.api.service.ReglaService;
-import es.caib.ripea.core.helper.UnitatOrganitzativaHelper;
+import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
 import es.caib.ripea.war.command.ReglaCommand;
 import es.caib.ripea.war.helper.DatatablesHelper;
 import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
@@ -50,7 +50,7 @@ public class ReglaController  extends BaseAdminController {
 	@Autowired
 	private MetaExpedientService metaExpedientService;
 	@Autowired
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	private UnitatOrganitzativaService unitatService;
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -99,7 +99,7 @@ public class ReglaController  extends BaseAdminController {
 					reglaId);
 			
 			// setting last historicos to the unitat of this regla
-			regla.setUnitatOrganitzativa(unitatOrganitzativaHelper.getLastHistoricos(regla.getUnitatOrganitzativa()));
+			regla.setUnitatOrganitzativa(unitatService.getLastHistoricos(regla.getUnitatOrganitzativa()));
 		
 			// getting all the regles connected with old unitat excluding the
 			// one you are currently in
