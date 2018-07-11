@@ -23,8 +23,10 @@ import es.caib.ripea.core.api.exception.NotFoundException;
 import es.caib.ripea.core.api.exception.ValidationException;
 import es.caib.ripea.core.entity.BustiaEntity;
 import es.caib.ripea.core.entity.EntitatEntity;
+import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
 import es.caib.ripea.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.ripea.core.repository.BustiaRepository;
+import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 import es.caib.ripea.core.security.ExtendedPermission;
 
 /**
@@ -37,7 +39,8 @@ public class BustiaHelper {
 
 	@Resource
 	private BustiaRepository bustiaRepository;
-
+	@Resource
+	private UnitatOrganitzativaRepository unitatRepository;
 	@Resource
 	private CacheHelper cacheHelper;
 	@Resource
@@ -73,7 +76,7 @@ public class BustiaHelper {
 						auth);
 			}
 			for (BustiaEntity bustia: busties)
-				bustiaUnitatCodis.add(bustia.getUnitatCodi());
+				bustiaUnitatCodis.add(bustia.getUnitatOrganitzativa().getCodi());
 		}
 		// Consulta l'arbre
 		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerUnitatArrelAmbCodisPermesos(
@@ -130,7 +133,43 @@ public class BustiaHelper {
 		}
 		return arbre;
 	}
+	
+	
+	
+	
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
+			EntitatEntity entitat,
+			String bustiaNomFiltre,
+			Long unitatIdFiltre) {
+		
+		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatRepository.findOne(unitatIdFiltre): null;
+		
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltre(entitat,
+				unitatIdFiltre == null, 
+				unitat,
+				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
+				bustiaNomFiltre);
+		
+		Set<String> bustiaUnitatCodis = new HashSet<String>();
+		for (BustiaEntity bustia: busties)
+			bustiaUnitatCodis.add(bustia.getUnitatOrganitzativa().getCodi());
+			
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerUnitatArrelAmbCodisPermesos(
+				entitat.getUnitatArrel(),
+				bustiaUnitatCodis);
 
+		return arbre;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
 	public BustiaEntity findBustiaDesti(
 			EntitatEntity entitat,
 			String unitatOrganitzativaCodi) {

@@ -295,16 +295,16 @@
 					<artifactId>jta</artifactId>
 					<version>1.1</version>
 				</dependency>
-<!-- 				<dependency> -->
-<!-- 					<groupId>${project.groupId}</groupId> -->
-<!-- 					<artifactId>ripea-core</artifactId> -->
-<!-- 					<version>${ripea.version}</version> -->
-<!-- 				</dependency> -->
-<!-- 				<dependency> -->
-<!-- 					<groupId>${project.groupId}</groupId> -->
-<!-- 					<artifactId>ripea-plugin-impl</artifactId> -->
-<!-- 					<version>${ripea.version}</version> -->
-<!-- 				</dependency> -->
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ripea-core</artifactId>
+					<version>${ripea.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ripea-plugin-impl</artifactId>
+					<version>${ripea.version}</version>
+				</dependency>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ripea-lib-common</artifactId>

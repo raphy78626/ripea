@@ -455,6 +455,12 @@ public class UnitatOrganitzativaHelper {
 		return superiors;
 	}
 
+	/**
+	 * Returns the tree of unitats containing unitats specified in @param unitatCodiPermesos and their parent unitats on the path up to the root unitat
+	 * @param unitatArrel
+	 * @param unitatCodiPermesos
+	 * @return
+	 */
 	public ArbreDto<UnitatOrganitzativaDto> findPerUnitatArrelAmbCodisPermesos(
 			String unitatArrel,
 			Set<String> unitatCodiPermesos) {

@@ -393,4 +393,11 @@ public interface BustiaService {
 			Long id,
 			Long permisId) throws NotFoundException;
 
+	List<BustiaDto> findAmbEntitat(Long entitatId);
+
+	ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
+			Long unitatIdFiltre);
+
+	List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre);
+
 }

@@ -456,13 +456,16 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
-		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatCodi"});
+		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatId"});
+		
+
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId()==null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId()) ;
 		
 		PaginaDto<BustiaDto> resultPagina =  paginacioHelper.toPaginaDto(
-				bustiaRepository.findByEntitatAndUnitatCodiAndBustiaNomFiltrePaginat(
+				bustiaRepository.findByEntitatAndUnitatAndBustiaNomFiltrePaginat(
 						entitat,
-						filtre.getUnitatCodi() == null || filtre.getUnitatCodi().isEmpty(), 
-						filtre.getUnitatCodi(),
+						filtre.getUnitatId() == null, 
+						unitat,
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
 						filtre.getNom(),
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
@@ -500,7 +503,58 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 	}
-
+	
+	@Override
+	@Transactional
+	public List<BustiaDto> findAmbEntitat(
+			Long entitatId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.debug("Cercant bústies de l'entitat ("
+				+ "entitatId=" + entitatId + ", "
+				+ "usuariCodi=" + auth.getName() + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				false);
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+		return toBustiaDto(
+				busties,
+				false,
+				false);
+	}
+	
+	@Override
+	@Transactional
+	public List<BustiaDto> findAmbEntitatAndFiltre(
+			Long entitatId, 
+			String bustiaNomFiltre,
+			Long unitatIdFiltre) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.debug("Cercant bústies de l'entitat ("
+				+ "entitatId=" + entitatId + ", "
+				+ "usuariCodi=" + auth.getName() + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				false);
+		
+		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatOrganitzativaRepository.findOne(unitatIdFiltre): null;
+		
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltre(
+				entitat,
+				unitatIdFiltre == null, 
+				unitat,
+				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
+				bustiaNomFiltre);
+		
+		return toBustiaDto(
+				busties,
+				false,
+				false);
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public PaginaDto<BustiaDto> findPermesesPerUsuari(
@@ -1000,6 +1054,29 @@ public class BustiaServiceImpl implements BustiaService {
 				nomesBustiesPermeses,
 				comptarElementsPendents);
 	}
+	
+	
+	@Override
+	@Transactional
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
+			Long entitatId,
+			String bustiaNomFiltre,
+			Long unitatIdFiltre) {
+		logger.debug("Consulta de l'arbre d'unitats organitzatives ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaNomFiltre=" + bustiaNomFiltre + ", "
+				+ "unitatIdFiltre=" + unitatIdFiltre + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		return bustiaHelper.findArbreUnitatsOrganitzativesAmbFiltre(
+				entitat,
+				bustiaNomFiltre,
+				unitatIdFiltre);
+	}
+	
 
 	@Override
 	@Transactional

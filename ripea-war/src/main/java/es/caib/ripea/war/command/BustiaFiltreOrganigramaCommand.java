@@ -14,10 +14,15 @@ public class BustiaFiltreOrganigramaCommand {
 
 	private String unitatCodiFiltre;
 	private String nomFiltre;
+	private Long unitatIdFiltre;
 	
 	
-	
-	
+	public Long getUnitatIdFiltre() {
+		return unitatIdFiltre;
+	}
+	public void setUnitatIdFiltre(Long unitatIdFiltre) {
+		this.unitatIdFiltre = unitatIdFiltre;
+	}
 	public String getUnitatCodiFiltre() {
 		return unitatCodiFiltre;
 	}

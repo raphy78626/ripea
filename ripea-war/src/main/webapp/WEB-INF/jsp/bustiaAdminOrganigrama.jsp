@@ -26,6 +26,8 @@
 	<link href="<c:url value="/webjars/jstree/3.2.1/dist/themes/default/style.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/webjars/jstree/3.2.1/dist/jstree.min.js"/>"></script>
 <script>
+
+
 function changedCallback(e, data) {
 	$('#panellInfo').css('visibility', '');
 	$('#panellInfo').css('display', 'none');
@@ -34,55 +36,86 @@ function changedCallback(e, data) {
 	var bustiaId = data.node.id;
 	
 	var permisUrl = "bustiaAdmin/" + bustiaId + "/permis";
-	$('#permis-boto-nou').attr('href', baseUrl + '/new');
-	$('#permisos').webutilDatatable('refresh-url', baseUrl  + '/datatable');
-
-// 	uo = $('#unitatCodi', $('#panellInfo')); //.val($('#' + data.node.id).data('codi-uo')).change();
-
-	var urlConsulta = uo.data('urlInicial') + "/" + $('#' + data.node.id).data('codi-uo');
-	var suggestValue = uo.data('suggestValue');
-	var suggestText = uo.data('suggestText');
+	$('#permis-boto-nou').attr('href', permisUrl + '/new');
+	$('#permisos').webutilDatatable('refresh-url', permisUrl  + '/datatable');
 
 
-	
+	var bustiaUrl = "bustiaAdminOrganigrama/" + bustiaId;
+
+	var bustiaNomSel = $('#nom', $('#panellInfo'));
+	var unitatSel = $('#unitatId', $('#panellInfo'));
+ 
 	$.ajax({
 		type: 'GET',
-		url: urlConsulta,
-		async: false,
+		url: bustiaUrl,
 		success: function(resposta) {
-			uo.append(
-						$('<option>', {
-							value: resposta[suggestValue],
-							text: resposta[suggestText],
-							selected: true
-						}));
+
+			bustiaNomSel.val(resposta.nom);
+			var newOption = new Option(resposta.unitatOrganitzativa.nom, resposta.unitatOrganitzativa.id, false, true);
+			unitatSel.append(newOption).trigger('change');
+			
+			$('#id', $('#panellInfo')).val(resposta.id);
+			$('#pareId', $('#panellInfo')).val(resposta.pare.id);
+
+
+			var isActiva = resposta.activa;
+			if(isActiva) {
+				$('#activarBtn').hide();
+				$('#desactivarBtn').show();
+				} else {
+					$('#activarBtn').show();
+					$('#desactivarBtn').hide();
+				}
 		},
-		error: function(resposta) {
-			alert("error");
+	 	complete: function() {		
+			$('#panellInfo').css('display', 'block');
+			$(".datatable-dades-carregant").css("display", "none");
 		}
+
 	});
 
-	$('#panellInfo').css('display', 'block');
-	$(".datatable-dades-carregant").css("display", "none");
 };
+
+
+function deleteBustia() {
+	  if (confirm('<spring:message code="contingut.confirmacio.esborrar.node"/>')) {
+		  location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/delete";		
+	  } 
+}
+
+function marcarPerDefecte() {
+	location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/default";
+}
+
+function activar() {
+	location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/enable";
+}
+
+function desactivar() {
+	location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/disable";
+}
+
+
+
+
+
 </script>
 </head>
 <body>
-	<form:form action="" method="get" cssClass="well" commandName="bustiaFiltreOrganigramaCommand">
+	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreOrganigramaCommand">
 		<div class="row">
 			<div class="col-md-5">
 				<rip:inputText name="nomFiltre" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
 			<div class="col-md-3">
 				<rip:inputSuggest
-					name="unitatCodiFiltre" 
+					name="unitatIdFiltre" 
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true"
 					placeholderKey="bustia.form.camp.unitat"
-					suggestValue="codi"
+					suggestValue="id"
 					suggestText="nom"/>
-				<%-- <rip:inputText name="unitatCodi" inline="true" placeholderKey="bustia.list.filtre.unitat.codidir3"/> --%>
 			</div>
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
@@ -94,8 +127,12 @@ function changedCallback(e, data) {
 	</form:form>
 	<div class="row">
 		<div class="col-md-5">
-			<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="${unitatCodiUrlPrefix}bustiaAdminOrganigrama/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
-			<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi" fullesIcona="fa fa-inbox fa-lg" changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
+ 			<c:set var="fullesAtributInfoText"><spring:message code="contingut.enviar.info.bustia.defecte"/></c:set> 
+			<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="bustiaAdminOrganigrama/new" 
+				data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
+			<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" 
+				fullesAtributPare="unitatCodi" fullesAtributInfo="perDefecte" fullesAtributInfoText="${fullesAtributInfoText}"  fullesIcona="fa fa-inbox fa-lg" 
+				changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
 		</div>
 		<div class="col-md-7" id="panellInfo"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
 			<div class="panel panel-default">
@@ -103,22 +140,25 @@ function changedCallback(e, data) {
 					<h2><spring:message code="bustia.form.titol.modificar"/><small><%-- ${bustia.nom} --%></small></h2>
 				</div>
 				<div class="panel-body">
+					<c:set var="formAction"><rip:modalUrl value="/bustiaAdminOrganigrama/modify"/></c:set>
 					<form:form action="${formAction}" method="post" commandName="bustiaCommand" role="form">
 						<form:hidden path="id"/>
 						<form:hidden path="pareId"/>
-<%-- 							<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/> --%>
+
 						<rip:inputSuggest 
-							name="unitatCodi" 
+							name="unitatId" 
 							urlConsultaInicial="${urlConsultaInicial}" 
 							urlConsultaLlistat="${urlConsultaLlistat}" 
 							inline="false"
 							placeholderKey="bustia.form.camp.unitat"
-							suggestValue="codi"
+							suggestValue="id"
 							suggestText="nom"
 							textKey="bustia.form.camp.unitat"
 							required="true" />
 						<br/>
+						<br/>
 						<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
+						<br/>
 						<div class="panel panel-default" style="margin-top: 45px;">
 							<div class="panel-heading">
 								<h2><spring:message code="bustia.permis.titol"/><small><%-- ${permis.nom} --%></small></h2>
@@ -136,15 +176,15 @@ function changedCallback(e, data) {
 												<spring:message code="permis.list.columna.administracio"/>
 												<script id="cellAdministrationTemplate" type="text/x-jsrender">
 														{{if administration}}<span class="fa fa-check"></span>{{/if}}
-													</script>
-												</th>
-												<th data-col-name="read" data-template="#cellReadTemplate">
+												</script>
+											</th>
+											<th data-col-name="read" data-template="#cellReadTemplate">
 												<spring:message code="permis.list.columna.usuari"/>
 												<script id="cellReadTemplate" type="text/x-jsrender">
 														{{if read}}<span class="fa fa-check"></span>{{/if}}
-													</script>
-												</th>
-												<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
+												</script>
+											</th>
+											<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 												<script id="cellAccionsTemplate" type="text/x-jsrender">
 														<div class="dropdown">
 															<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
@@ -153,7 +193,7 @@ function changedCallback(e, data) {
 																<li><a href="permis/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="entitat.permis.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 															</ul>
 														</div>
-													</script>
+												</script>
 											</th>
 										</tr>
 									</thead>
@@ -162,15 +202,16 @@ function changedCallback(e, data) {
 						</div>
 						<div class="row">
 							<div class="col-md-4">
-								<button class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
+								<button type="button" onclick="marcarPerDefecte()" class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
 							</div>
 						
 							<div class="col-md-2">
-								<button class="btn btn-default"><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
+								<button id="activarBtn" type="button" onclick="activar()" style="display: none;" class="btn btn-default"><span class="fa fa-check"></span> <spring:message code="comu.boto.activar"/></button>
+								<button id="desactivarBtn" type="button" onclick="desactivar()" style="display: none;" class="btn btn-default"><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
 							</div>
 						
 							<div class="col-md-3" style="margin-left: 15px;">
-								<button class="btn btn-default"><span class="fa fa-trash-o"></span> <spring:message code="contingut.admin.boto.esborrar"/></button>
+								<button type="button" class="btn btn-default" onclick="deleteBustia()"><span class="fa fa-trash-o"></span> <spring:message code="contingut.admin.boto.esborrar"/></button>
 							</div>
 						
 							<div class="col-md-2">

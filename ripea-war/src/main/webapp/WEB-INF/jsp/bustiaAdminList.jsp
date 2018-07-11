@@ -31,12 +31,12 @@
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<rip:inputSuggest 
-					name="unitatCodi" 
+					name="unitatId" 
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
 					placeholderKey="bustia.form.camp.unitat"
-					suggestValue="codi"
+					suggestValue="id"
 					suggestText="nom" />
 			</div>
 			<div class="col-md-2" style="padding-left: 30px;">
