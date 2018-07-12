@@ -26,8 +26,7 @@ public class BustiaDto extends ContingutDto {
 	private List<PermisDto> permisos;
 	private boolean usuariActualRead;
 	private String pareNom;
-
-
+	
 
 	public UnitatOrganitzativaDto getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
@@ -49,6 +48,9 @@ public class BustiaDto extends ContingutDto {
 	}
 	public boolean isActiva() {
 		return activa;
+	}
+	public boolean isInactiva() {
+		return !activa;
 	}
 	public void setActiva(boolean activa) {
 		this.activa = activa;

@@ -28,6 +28,7 @@
 <script>
 
 
+
 function changedCallback(e, data) {
 	$('#panellInfo').css('visibility', '');
 	$('#panellInfo').css('display', 'none');
@@ -95,11 +96,12 @@ function desactivar() {
 	location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/disable";
 }
 
-
-
-
-
 </script>
+<style>
+.fullesAtributCssClass {
+    opacity: 0.5;
+}
+</style>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreOrganigramaCommand">
@@ -132,7 +134,7 @@ function desactivar() {
 				data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
 			<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" 
 				fullesAtributPare="unitatCodi" fullesAtributInfo="perDefecte" fullesAtributInfoText="${fullesAtributInfoText}"  fullesIcona="fa fa-inbox fa-lg" 
-				changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}"/>
+				changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" fullesAtributCssClass="inactiva"/>
 		</div>
 		<div class="col-md-7" id="panellInfo"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
 			<div class="panel panel-default">

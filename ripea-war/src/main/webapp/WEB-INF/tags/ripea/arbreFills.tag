@@ -13,6 +13,7 @@
 <%@ attribute name="fullesIcona"%>
 <%@ attribute name="fullesAtributInfo"%>
 <%@ attribute name="fullesAtributInfoText"%>
+<%@ attribute name="fullesAtributCssClass"%> <!-- Name of the boolean attribute of the leaf, if not empty and true, the css class: fullesAtributCssClass will be applied -->
 <%@ attribute name="isOcultarCounts" type="java.lang.Boolean"%>
 <ul>
 	<c:forEach var="fill" items="${fills}">
@@ -24,7 +25,14 @@
 	<c:forEach var="fulla" items="${fulles}">
 		<c:if test="${fulla[fullesAtributPare] == pare.dades[atributId]}">
 			<li id="${fulla[fullesAtributId]}" data-jstree='{"icon":"${fullesIcona}"}'>
-				${fulla[fullesAtributNom]}
+				<c:choose>
+					<c:when test="${!empty fullesAtributCssClass && fulla[fullesAtributCssClass]==true}">
+					 	<a class="fullesAtributCssClass">${fulla[fullesAtributNom]} <span style="padding-top: 4.5px;" class="fa fa-warning text-danger pull-right" title="mine"></span></a> 
+					</c:when>    
+					<c:otherwise>
+						${fulla[fullesAtributNom]}
+					</c:otherwise>
+				</c:choose>		
 				<c:if test="${!empty fullesAtributInfoText && fulla[fullesAtributInfo]}">${fullesAtributInfoText}</c:if>
 			</li>
 		</c:if>
