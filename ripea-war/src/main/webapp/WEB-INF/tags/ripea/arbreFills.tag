@@ -13,24 +13,33 @@
 <%@ attribute name="fullesIcona"%>
 <%@ attribute name="fullesAtributInfo"%>
 <%@ attribute name="fullesAtributInfoText"%>
-<%@ attribute name="fullesAtributCssClass"%> <!-- Name of the boolean attribute of the leaf, if not empty and true, the css class: fullesAtributCssClass will be applied -->
+<%@ attribute name="fullesAtributCssClassCondition"%> <!-- Name of the boolean attribute of the leaf, if not empty and true, the css class: fullesAtributCssClass will be applied -->
+<%@ attribute name="fullesAtributInfo2Condition"%> <!-- Name of the boolean attribute of the leaf, if not empty and true, the text specified by: fullesAtributInfo2Text will be displayed  -->
+<%@ attribute name="fullesAtributInfo2Text"%> 
 <%@ attribute name="isOcultarCounts" type="java.lang.Boolean"%>
 <ul>
 	<c:forEach var="fill" items="${fills}">
 		<li id="${fill.dades[atributId]}" data-jstree='{"icon":"fa fa-folder fa-lg"<c:if test="${not empty seleccionatId and fill.dades[atributId] == seleccionatId}">, "selected": true</c:if>}'>
 			<small>${fill.dades[atributNom]}<c:if test="${not isOcultarCounts and fill.mostrarCount}"> <span class="badge">${fill.count}</span></c:if></small>
-			<rip:arbreFills pare="${fill}" fills="${fill.fills}" atributId="${atributId}" atributNom="${atributNom}" seleccionatId="${seleccionatId}"  fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" isOcultarCounts="${isOcultarCounts}"/>
+			<rip:arbreFills pare="${fill}" fills="${fill.fills}" atributId="${atributId}" atributNom="${atributNom}" seleccionatId="${seleccionatId}"  fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" isOcultarCounts="${isOcultarCounts}" fullesAtributInfo2Condition="${fullesAtributInfo2Condition}" fullesAtributInfo2Text="${fullesAtributInfo2Text}"/>
 		</li>
 	</c:forEach>
 	<c:forEach var="fulla" items="${fulles}">
 		<c:if test="${fulla[fullesAtributPare] == pare.dades[atributId]}">
 			<li id="${fulla[fullesAtributId]}" data-jstree='{"icon":"${fullesIcona}"}'>
 				<c:choose>
-					<c:when test="${!empty fullesAtributCssClass && fulla[fullesAtributCssClass]==true}">
-					 	<a class="fullesAtributCssClass">${fulla[fullesAtributNom]} <span style="padding-top: 4.5px;" class="fa fa-warning text-danger pull-right" title="mine"></span></a> 
+					<c:when test="${!empty fullesAtributCssClassCondition && fulla[fullesAtributCssClassCondition]}">
+					 	<a class="fullesAtributCssClass">${fulla[fullesAtributNom]} 
+						 	<c:if test="${!empty fullesAtributInfoText && fulla[fullesAtributInfo]}">${fullesAtributInfoText}</c:if>
+						 	<c:if test="${!empty fullesAtributInfo2Condition && fulla[fullesAtributInfo2Condition]}">${fullesAtributInfo2Text}</c:if>
+					 	</a> 
 					</c:when>    
 					<c:otherwise>
-						${fulla[fullesAtributNom]}
+					 	<a >${fulla[fullesAtributNom]} 
+					 		<c:if test="${!empty fullesAtributInfoText && fulla[fullesAtributInfo]}">${fullesAtributInfoText}</c:if>
+							<c:if test="${!empty fullesAtributInfo2Condition && fulla[fullesAtributInfo2Condition]}">${fullesAtributInfo2Text}</c:if>
+						 	
+					 	</a> 
 					</c:otherwise>
 				</c:choose>		
 				<c:if test="${!empty fullesAtributInfoText && fulla[fullesAtributInfo]}">${fullesAtributInfoText}</c:if>

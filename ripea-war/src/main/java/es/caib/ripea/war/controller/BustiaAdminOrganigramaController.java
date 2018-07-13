@@ -73,16 +73,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
 				arbreUnitatsOrganitzatives);
-		
-//		BustiaDto bustia = null;
-//		if (bustiaId != null)
-//			bustia = bustiaService.findById(
-//					entitatActual.getId(),
-//					bustiaId);
-//		BustiaCommand command = null;
-//		if (bustia != null)
-//			command = BustiaCommand.asCommand(bustia);
-//		else
+	
 		BustiaCommand command = new BustiaCommand();
 		command.setEntitatId(entitatActual.getId());
 		model.addAttribute("bustiaCommand", command);
@@ -262,24 +253,44 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		BustiaDto bustia = null;
 
-			
 		bustia = bustiaService.findById(
 					entitatActual.getId(),
 					bustiaId);
 			
 //		// setting last historicos to the unitat of this bustia
-//		bustia.setUnitatOrganitzativa(unitatService.getLastHistoricos(bustia.getUnitatOrganitzativa()));
-//				
-//		// getting all the busties connected with old unitat excluding the one you are currently in 
-//		List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
-//		List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
-//		for(BustiaDto bustiaI: bustiesOfOldUnitat){
-//			if(!bustiaI.getId().equals(bustia.getId())){
-//				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
-//			}
-//		}
+		bustia.setUnitatOrganitzativa(unitatService.getLastHistoricos(bustia.getUnitatOrganitzativa()));
+
 		return bustia;
 	}
+	
+	@RequestMapping(value = "/{bustiaId}/otherBustiesOfUnitatObsoleta", method = RequestMethod.GET)
+	@ResponseBody
+	public List<BustiaDto> bustiesOfOldUnitat(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaDto bustia = null;
+
+		bustia = bustiaService.findById(
+				entitatActual.getId(),
+				bustiaId);
+
+		// getting unitat with the last historicos calculated and assigned
+		bustia.setUnitatOrganitzativa(unitatService.getLastHistoricos(bustia.getUnitatOrganitzativa()));
+				
+		// getting all the busties connected with old unitat excluding the one you are currently in 
+		List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
+		List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
+		for(BustiaDto bustiaI: bustiesOfOldUnitat){
+			if(!bustiaI.getId().equals(bustia.getId())){
+				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
+			}
+		}
+		return bustiesOfOldUnitatWithoutCurrent;
+	}
+	
+	
 	
 
 	

@@ -49,17 +49,19 @@ function changedCallback(e, data) {
 	$.ajax({
 		type: 'GET',
 		url: bustiaUrl,
-		success: function(resposta) {
+		success: function(bustiaDto) {
 
-			bustiaNomSel.val(resposta.nom);
-			var newOption = new Option(resposta.unitatOrganitzativa.nom, resposta.unitatOrganitzativa.id, false, true);
+			// setting bustia id and pare id
+			$('#id', $('#panellInfo')).val(bustiaDto.id);
+			$('#pareId', $('#panellInfo')).val(bustiaDto.pare.id);
+
+			// setting selected bustia name and unitat
+			bustiaNomSel.val(bustiaDto.nom);
+			var newOption = new Option(bustiaDto.unitatOrganitzativa.nom, bustiaDto.unitatOrganitzativa.id, false, true);
 			unitatSel.append(newOption).trigger('change');
-			
-			$('#id', $('#panellInfo')).val(resposta.id);
-			$('#pareId', $('#panellInfo')).val(resposta.pare.id);
 
-
-			var isActiva = resposta.activa;
+			// showing activate or desactivate button depending on whether bustia is active or not
+			var isActiva = bustiaDto.activa;
 			if(isActiva) {
 				$('#activarBtn').hide();
 				$('#desactivarBtn').show();
@@ -67,6 +69,44 @@ function changedCallback(e, data) {
 					$('#activarBtn').show();
 					$('#desactivarBtn').hide();
 				}
+			// showing obsolete panel if unitat of this bustia is obsoleta
+			if(bustiaDto.unitatOrganitzativa.tipusTransicio != null) {
+				$('#panelUnitatObsoleta').show();	
+			} else {
+				$('#panelUnitatObsoleta').hide();
+			}
+			// setting last historico unitats
+			$("#lastHistoricosUnitats").empty();
+			$.each( bustiaDto.unitatOrganitzativa.lastHistoricosUnitats, function( key, newUnitat ) {
+				$("#lastHistoricosUnitats").append('<li>'+newUnitat.denominacio+' ('+newUnitat.codi+')'+'</li>');
+			});
+
+		},
+	 	complete: function() {		
+			$('#panellInfo').css('display', 'block');
+			$(".datatable-dades-carregant").css("display", "none");
+		}
+
+	});
+
+	var otherBustiesOfUnitatObsoletaUrl = "bustiaAdminOrganigrama/" + bustiaId +"/otherBustiesOfUnitatObsoleta";
+	$.ajax({
+		type: 'GET',
+		url: otherBustiesOfUnitatObsoletaUrl,
+		success: function(otherBustiesOfUnitatObsoleta) {
+
+			// showing obsolete panel if unitat of this bustia is obsoleta
+			if(!$.isEmptyObject(otherBustiesOfUnitatObsoleta)) {
+				$('#otherBustiesOfUnitatObsoletaPanel').show();	
+			} else {
+				$('#otherBustiesOfUnitatObsoletaPanel').hide();
+			}
+
+			$("#otherBustiesOfUnitatObsoleta").empty();
+			$.each( otherBustiesOfUnitatObsoleta, function( key, otherBustia ) {
+				$("#otherBustiesOfUnitatObsoleta").append('<li>'+otherBustia.nom+'</li>');
+			});
+
 		},
 	 	complete: function() {		
 			$('#panellInfo').css('display', 'block');
@@ -130,11 +170,13 @@ function desactivar() {
 	<div class="row">
 		<div class="col-md-5">
  			<c:set var="fullesAtributInfoText"><spring:message code="contingut.enviar.info.bustia.defecte"/></c:set> 
+ 			<c:set var="fullesAtributInfo2Text"><span style="padding-top: 4.5px; padding-left: 2px;" class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.list.unitatObsoleta"/>"></span></c:set> 
+ 			
 			<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="bustiaAdminOrganigrama/new" 
 				data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
 			<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" 
 				fullesAtributPare="unitatCodi" fullesAtributInfo="perDefecte" fullesAtributInfoText="${fullesAtributInfoText}"  fullesIcona="fa fa-inbox fa-lg" 
-				changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" fullesAtributCssClass="inactiva"/>
+				changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" fullesAtributCssClassCondition="inactiva" fullesAtributInfo2Condition="unitatObsoleta" fullesAtributInfo2Text="${fullesAtributInfo2Text}"/>
 		</div>
 		<div class="col-md-7" id="panellInfo"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
 			<div class="panel panel-default">
@@ -142,6 +184,31 @@ function desactivar() {
 					<h2><spring:message code="bustia.form.titol.modificar"/><small><%-- ${bustia.nom} --%></small></h2>
 				</div>
 				<div class="panel-body">
+					<div class="panel panel-danger" id="panelUnitatObsoleta" style="display: none;">
+						<div class="panel-heading">
+							<span class="fa fa-warning text-danger"></span>
+							<spring:message code="bustia.list.unitatObsoleta"/> 
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<label class="col-xs-4 text-right"><spring:message
+										code="bustia.form.novesUnitats" /></label>
+								<div class="col-xs-8">
+									<ul style="padding-left: 17px;" id="lastHistoricosUnitats">
+									</ul>
+								</div>
+							</div>
+								<div class="row" id="otherBustiesOfUnitatObsoletaPanel" style="display: none;">
+									<label class="col-xs-4 text-right"><spring:message
+			 								code="bustia.form.altresBustiesAfectades" /></label> 
+									<div class="col-xs-8">
+			 							<ul style="padding-left: 17px;" id="otherBustiesOfUnitatObsoleta"> 
+			 							</ul> 
+			 						</div> 
+			 					</div> 
+						</div>
+					</div>
+
 					<c:set var="formAction"><rip:modalUrl value="/bustiaAdminOrganigrama/modify"/></c:set>
 					<form:form action="${formAction}" method="post" commandName="bustiaCommand" role="form">
 						<form:hidden path="id"/>

@@ -431,7 +431,7 @@ public class BustiaServiceImpl implements BustiaService {
 				true,
 				false);
 		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(unitatCodi);
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatOrganitzativa(entitat, unitatOrganitzativa);
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, unitatOrganitzativa);
 		List<BustiaDto> resposta = toBustiaDto(
 				busties,
 				false,
@@ -462,7 +462,7 @@ public class BustiaServiceImpl implements BustiaService {
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId()==null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId()) ;
 		
 		PaginaDto<BustiaDto> resultPagina =  paginacioHelper.toPaginaDto(
-				bustiaRepository.findByEntitatAndUnitatAndBustiaNomFiltrePaginat(
+				bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginat(
 						entitat,
 						filtre.getUnitatId() == null, 
 						unitat,
