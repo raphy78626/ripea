@@ -40,6 +40,21 @@ function changedCallback(e, data) {
 	$('#permis-boto-nou').attr('href', permisUrl + '/new');
 	$('#permisos').webutilDatatable('refresh-url', permisUrl  + '/datatable');
 
+	$('#permisos').off('draw.dt');
+	$('#permisos').on( 'draw.dt', function () {
+		
+ 	$.each($('#permisos .dropdown-menu a'), function( key, permisionLink ) {
+ 	 	
+	 		var link = $(permisionLink).attr('href');
+	 		var replaced = link.replace("bustiaIdString", bustiaId);
+	 		$(permisionLink).attr('href', replaced);
+	 	});
+		
+	});
+		
+
+	
+
 
 	var bustiaUrl = "bustiaAdminOrganigrama/" + bustiaId;
 
@@ -115,13 +130,13 @@ function changedCallback(e, data) {
 
 	});
 
-};
+ };
 
 
 function deleteBustia() {
-	  if (confirm('<spring:message code="contingut.confirmacio.esborrar.node"/>')) {
-		  location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/delete";		
-	  } 
+	 if (confirm('<spring:message code="contingut.confirmacio.esborrar.node"/>')) {
+	  location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/delete";		
+	 } 
 }
 
 function marcarPerDefecte() {
@@ -135,6 +150,18 @@ function activar() {
 function desactivar() {
 	location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/disable";
 }
+
+$(document).ready(
+
+	function() { 
+		if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()){
+			$('#arbreUnitatsOrganitzatives').jstree('open_all');
+		}
+});
+
+
+
+
 
 </script>
 <style>
@@ -172,8 +199,14 @@ function desactivar() {
  			<c:set var="fullesAtributInfoText"><spring:message code="contingut.enviar.info.bustia.defecte"/></c:set> 
  			<c:set var="fullesAtributInfo2Text"><span style="padding-top: 4.5px; padding-left: 2px;" class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.list.unitatObsoleta"/>"></span></c:set> 
  			
-			<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="bustiaAdminOrganigrama/new" 
-				data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
+ 			
+			<div style="padding-bottom: 10px;">
+ 				<button class="btn btn-default" onclick="$('#arbreUnitatsOrganitzatives').jstree('open_all');"><span class="fa fa-caret-square-o-down"></span> <spring:message code="unitat.arbre.expandeix"/></button> 
+ 				<button class="btn btn-default" onclick="$('#arbreUnitatsOrganitzatives').jstree('close_all');"><span class="fa fa-caret-square-o-up"></span> <spring:message code="unitat.arbre.contreu"/></button> 
+ 				<a style="float: right;" id="bustia-boto-nova" class="btn btn-default" href="bustiaAdminOrganigrama/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a> 
+			</div>
+ 			
+
 			<rip:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" 
 				fullesAtributPare="unitatCodi" fullesAtributInfo="perDefecte" fullesAtributInfoText="${fullesAtributInfoText}"  fullesIcona="fa fa-inbox fa-lg" 
 				changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" fullesAtributCssClassCondition="inactiva" fullesAtributInfo2Condition="unitatObsoleta" fullesAtributInfo2Text="${fullesAtributInfo2Text}"/>
@@ -258,8 +291,8 @@ function desactivar() {
 														<div class="dropdown">
 															<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 															<ul class="dropdown-menu">
-																<li><a href="permis/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
-																<li><a href="permis/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="entitat.permis.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+																<li><a href="bustiaAdmin/bustiaIdString/permis/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+																<li><a href="bustiaAdmin/bustiaIdString/permis/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="entitat.permis.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 															</ul>
 														</div>
 												</script>

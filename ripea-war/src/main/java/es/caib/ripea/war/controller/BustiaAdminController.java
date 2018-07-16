@@ -149,16 +149,16 @@ public class BustiaAdminController extends BaseAdminController {
 			bustia.setUnitatOrganitzativa(unitatService.getLastHistoricos(bustia.getUnitatOrganitzativa()));
 			
 		
-		// getting all the busties connected with old unitat excluding the one you are currently in 
-		List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
-		List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
-		for(BustiaDto bustiaI: bustiesOfOldUnitat){
-			if(!bustiaI.getId().equals(bustia.getId())){
-				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
+			// getting all the busties connected with old unitat excluding the one you are currently in 
+			List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
+			List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
+			for(BustiaDto bustiaI: bustiesOfOldUnitat){
+				if(!bustiaI.getId().equals(bustia.getId())){
+					bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
+				}
 			}
-		}
-		model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
-		model.addAttribute(bustia);	
+			model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
+			model.addAttribute(bustia);	
 		}
 		
 		BustiaCommand command = null;

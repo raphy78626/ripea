@@ -236,12 +236,17 @@ public class UnitatOrganitzativaHelper {
 	 * @return
 	 */
 	public UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo) {
-
-		List<UnitatOrganitzativaDto> lastHistorcos = new ArrayList<>();
-		getLastHistoricosRecursive(uo, lastHistorcos);
-		uo.setLastHistoricosUnitats(lastHistorcos);
 		
-		return uo;
+		// if there are no historicos leave them empty and don´t go into recursive method
+		if (uo.getNoves() == null || uo.getNoves().isEmpty()) {
+			return uo;
+		} else {
+			List<UnitatOrganitzativaDto> lastHistorcos = new ArrayList<>();
+			getLastHistoricosRecursive(uo, lastHistorcos);
+			uo.setLastHistoricosUnitats(lastHistorcos);
+
+			return uo;
+		}
 	}
 	
 	
