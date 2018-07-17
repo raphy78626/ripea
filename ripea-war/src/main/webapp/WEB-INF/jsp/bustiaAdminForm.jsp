@@ -98,6 +98,8 @@
 		<form:hidden path="pareId"/>
 		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 		<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+		<input id="isOrganigrama" name="isOrganigrama" type="hidden" value="${isOrganigrama}"/>
+<%-- 		<rip:inputHidden name="isOrganigrama"/> --%>
 		<rip:inputSuggest 
 			name="unitatId" 
 			textKey="bustia.form.camp.unitat"
@@ -110,7 +112,7 @@
 <%-- 		<rip:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/> --%>
 		<rip:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
 		<div id="modal-botons">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+			<button id="addBustiaButton" type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/bustiaAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>		
 	</form:form>

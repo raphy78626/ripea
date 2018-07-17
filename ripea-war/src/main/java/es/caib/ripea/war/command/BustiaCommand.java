@@ -28,7 +28,6 @@ public class BustiaCommand {
 	private Long entitatId;
 
 
-
 	public Long getId() {
 		return id;
 	}

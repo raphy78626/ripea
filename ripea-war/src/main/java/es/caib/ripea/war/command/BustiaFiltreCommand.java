@@ -19,7 +19,15 @@ public class BustiaFiltreCommand {
 	private String unitatCodi;
 	private String nom;
 	private Boolean unitatObsoleta;
+	private Long unitatId;
 	
+	
+	public Long getUnitatId() {
+		return unitatId;
+	}
+	public void setUnitatId(Long unitatId) {
+		this.unitatId = unitatId;
+	}
 	public Boolean getUnitatObsoleta() {
 		return unitatObsoleta;
 	}

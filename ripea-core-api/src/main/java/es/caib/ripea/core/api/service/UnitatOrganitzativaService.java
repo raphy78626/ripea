@@ -109,6 +109,4 @@ public interface UnitatOrganitzativaService {
 	List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre);
 
 	UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo);
-
-
 }

@@ -111,3 +111,14 @@ table.dataTable tr.datatable-dades-carregant div {
 	color: #999;
 	margin-bottom: 0px;
 }
+
+.boto-nou-permis-organigrama {
+    position: relative!important;
+    height: 0px!important;
+    top: -8px!important;
+    left: 0px!important;
+}
+
+.form-group-organigrama {
+	margin-bottom: 50px;
+}

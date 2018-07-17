@@ -253,5 +253,24 @@ public class BustiaServiceBean implements BustiaService {
 		return delegate.findPermesesPerUsuari(entitatId);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public List<BustiaDto> findAmbEntitat(Long entitatId) {
+		return delegate.findAmbEntitat(entitatId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNom, Long unitatIdFiltre) {
+		return delegate.findAmbEntitatAndFiltre(entitatId, bustiaNom, unitatIdFiltre);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId,
+			String bustiaNomFiltre, Long unitatIdFiltre) {
+		return delegate.findArbreUnitatsOrganitzativesAmbFiltre(entitatId, bustiaNomFiltre, unitatIdFiltre);
+	}
+
 	
 }

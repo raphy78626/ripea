@@ -124,14 +124,12 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre) {
 		return delegate.findByEntitatAndFiltre(entitatCodi, filtre);
 	}
-
+	
 	@Override
 	@RolesAllowed("tothom")
 	public UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo) {
 		return delegate.getLastHistoricos(uo);
-	}
-	
-	
+	}	
 	
 	
 	/*@Autowired

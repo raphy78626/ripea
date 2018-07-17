@@ -14,6 +14,9 @@
 <%@ attribute name="fullesIcona"%>
 <%@ attribute name="fullesAtributInfo"%>
 <%@ attribute name="fullesAtributInfoText"%>
+<%@ attribute name="fullesAtributCssClassCondition"%> <!-- Name of the boolean attribute of the leaf, if not empty and true, the css class: fullesAtributCssClass will be applied -->
+<%@ attribute name="fullesAtributInfo2Condition"%> <!-- Name of the boolean attribute of the leaf, if not empty and true, text specified by: fullesAtributInfo2Text will be displayed  -->
+<%@ attribute name="fullesAtributInfo2Text"%> 
 <%@ attribute name="isArbreSeleccionable" type="java.lang.Boolean"%>
 <%@ attribute name="isFullesSeleccionable" type="java.lang.Boolean"%>
 <%@ attribute name="isOcultarCounts" type="java.lang.Boolean"%>
@@ -28,7 +31,7 @@
 		<ul>
 			<li id="${arbre.arrel.dades[atributId]}" class="jstree-open" data-jstree='{"icon":"fa fa-home fa-lg"<c:if test="${not empty seleccionatId and arbre.arrel.dades[atributId] == seleccionatId}">, "selected": true</c:if>}'>
 				<small>${arbre.arrel.dades[atributNom]}<c:if test="${not isOcultarCounts and arbre.arrel.mostrarCount}"> <span class="badge">${arbre.arrel.count}</span></c:if></small>
-				<rip:arbreFills pare="${arbre.arrel}" fills="${arbre.arrel.fills}" atributId="${atributId}" atributNom="${atributNom}" seleccionatId="${seleccionatId}" fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" isOcultarCounts="${isOcultarCounts}"/>
+				<rip:arbreFills pare="${arbre.arrel}" fills="${arbre.arrel.fills}" atributId="${atributId}" atributNom="${atributNom}" seleccionatId="${seleccionatId}" fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" isOcultarCounts="${isOcultarCounts}" fullesAtributCssClassCondition="${fullesAtributCssClassCondition}" fullesAtributInfo2Condition="${fullesAtributInfo2Condition}" fullesAtributInfo2Text="${fullesAtributInfo2Text}"/>
 			</li>
 		</ul>
 	</c:if>

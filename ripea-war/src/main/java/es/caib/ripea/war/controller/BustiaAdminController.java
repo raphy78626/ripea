@@ -149,16 +149,16 @@ public class BustiaAdminController extends BaseAdminController {
 			bustia.setUnitatOrganitzativa(unitatService.getLastHistoricos(bustia.getUnitatOrganitzativa()));
 			
 		
-		// getting all the busties connected with old unitat excluding the one you are currently in 
-		List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
-		List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
-		for(BustiaDto bustiaI: bustiesOfOldUnitat){
-			if(!bustiaI.getId().equals(bustia.getId())){
-				bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
+			// getting all the busties connected with old unitat excluding the one you are currently in 
+			List<BustiaDto> bustiesOfOldUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatOrganitzativa().getCodi());
+			List<BustiaDto> bustiesOfOldUnitatWithoutCurrent = new ArrayList<BustiaDto>();
+			for(BustiaDto bustiaI: bustiesOfOldUnitat){
+				if(!bustiaI.getId().equals(bustia.getId())){
+					bustiesOfOldUnitatWithoutCurrent.add(bustiaI);
+				}
 			}
-		}
-		model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
-		model.addAttribute(bustia);	
+			model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
+			model.addAttribute(bustia);	
 		}
 		
 		BustiaCommand command = null;
@@ -171,6 +171,9 @@ public class BustiaAdminController extends BaseAdminController {
 		return "bustiaAdminForm";
 	}
 	
+	
+	
+	
 	// save new or modified bústia
 	@RequestMapping(value = "/newOrModify", method = RequestMethod.POST)
 	public String save(
@@ -182,14 +185,16 @@ public class BustiaAdminController extends BaseAdminController {
 		if (bindingResult.hasErrors()) {
 			return "bustiaAdminForm";
 		}
+		String isOrganigrama = request.getParameter("isOrganigrama");
 		// if it is modified
 		if (command.getId() != null) {
 			bustiaService.update(
 					entitatActual.getId(),
 					BustiaCommand.asDto(command));
+			
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:bustiaAdmin",
+					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
 					"bustia.controller.modificat.ok");
 		//if it is new	
 		} else {
@@ -198,7 +203,7 @@ public class BustiaAdminController extends BaseAdminController {
 					BustiaCommand.asDto(command));
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:bustiaAdmin",
+					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
 					"bustia.controller.creat.ok");
 		}
 	}

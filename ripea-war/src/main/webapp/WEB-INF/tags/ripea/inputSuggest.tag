@@ -22,9 +22,9 @@
 <c:set var="minimumInputLength"><c:choose><c:when test="${not empty minimumInputLength}">${minimumInputLength}</c:when><c:otherwise>${3}</c:otherwise></c:choose></c:set>
 <c:set var="suggestValue"><c:choose><c:when test="${not empty suggestValue}">${suggestValue}</c:when><c:otherwise>id</c:otherwise></c:choose></c:set>
 <c:set var="suggestText"><c:choose><c:when test="${not empty suggestText}">${suggestText}</c:when><c:otherwise>text</c:otherwise></c:choose></c:set>
-
 <c:set var="campLabelSize"><c:choose><c:when test="${not empty labelSize}">${labelSize}</c:when><c:otherwise>4</c:otherwise></c:choose></c:set>
 <c:set var="campInputSize">${12 - campLabelSize}</c:set>
+
 <spring:bind path="${name}">
 	<c:set var="campValue" value="${status.value}"/>
 </spring:bind>
