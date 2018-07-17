@@ -289,6 +289,7 @@ public class ContingutHelper {
 			
 			unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity, unitatDto);
 			dto.setUnitatOrganitzativa(unitatDto);
+			dto.setUnitatCodi(bustia.getUnitatOrganitzativa().getCodi());
 			resposta = dto;
 		} else if (deproxied instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)deproxied;
